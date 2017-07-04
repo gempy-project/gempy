@@ -1,0 +1,6 @@
+numpy
+matplotlib
+theano
+pandas
+seaborn
+
