@@ -31,7 +31,7 @@ except ModuleNotFoundError:
     warnings.warn('Vtk package is not installed. No vtk visualization available.')
 from gempy.DataManagement import InputData, InterpolatorInput
 from IPython.core.debugger import Tracer
-
+from .Topology import Topology
 
 
 
