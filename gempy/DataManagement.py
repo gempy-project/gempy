@@ -1338,21 +1338,28 @@ class InterpolatorInput:
             # Ref layers matrix #VAR
             # Calculation of the ref matrix and tile. Iloc works with the row number
             # Here we extract the reference points
-            aux_1 = self._data_scaled.interfaces.iloc[ref_position][['X', 'Y', 'Z']].as_matrix()
+            self.pandas_ref_layer_points = self._data_scaled.interfaces.iloc[ref_position].apply(
+                lambda x: np.repeat(x, len_interfaces - 1))
 
-            # We initialize the matrix
-            ref_layer_points = np.zeros((0, 3))
-
-            # TODO I hate loop it has to be a better way
-            # Tiling very reference points as many times as rest of the points we have
-            for e, i in enumerate(len_interfaces):
-                ref_layer_points = np.vstack((ref_layer_points, np.tile(aux_1[e], (i - 1, 1))))
-
+            #
+            #
+            # aux_1 = self._data_scaled.interfaces.iloc[ref_position][['X', 'Y', 'Z']].as_matrix()
+            #
+            # # We initialize the matrix
+            # ref_layer_points = np.zeros((0, 3))
+            #
+            # # TODO I hate loop it has to be a better way
+            # # Tiling very reference points as many times as rest of the points we have
+            # for e, i in enumerate(len_interfaces):
+            #     ref_layer_points = np.vstack((ref_layer_points, np.tile(aux_1[e], (i - 1, 1))))
+            #
+            #
+            ref_layer_points = self.pandas_ref_layer_points[['X', 'Y', 'Z']].as_matrix()
             # -DEP- was just a check point
             self.ref_layer_points = ref_layer_points
 
             # Check no reference points in rest points (at least in coor x)
-            assert not any(aux_1[:, 0]) in rest_layer_points[:, 0], \
+            assert not any(ref_layer_points[:, 0]) in rest_layer_points[:, 0], \
                 'A reference point is in the rest list point. Check you do ' \
                 'not have duplicated values in your dataframes'
 
