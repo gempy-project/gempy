@@ -1,0 +1,337 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Chapter 2: A real example. Importing data and setting series &#8212; GemPy 4 documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     '4',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Chapter 3: Faults" href="ch3.html" />
+    <link rel="prev" title="Chapter 1: GemPy Basic" href="ch1.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="chapter-2-a-real-example-importing-data-and-setting-series">
+<h1>Chapter 2: A real example. Importing data and setting series<a class="headerlink" href="#chapter-2-a-real-example-importing-data-and-setting-series" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="data-management">
+<h2>Data Management<a class="headerlink" href="#data-management" title="Permalink to this headline">¶</a></h2>
+<p>In this example we will show how we can import data from a csv and
+generate a model with several depositional series.</p>
+<p>In this case instead loading a geo_data object directly, we will create
+one. The main atributes we need to pass are: - Extent: X min, X max, Y
+min, Y max, Z min, Z max - Resolution: X,Y,Z</p>
+<p>Additionaly we can pass the address to csv files (GeoModeller3D format)
+with the data.</p>
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>formation</th>
+      <th>series</th>
+      <th>order_series</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>735484.817806</td>
+      <td>6.891936e+06</td>
+      <td>-1819.319309</td>
+      <td>SimpleMafic2</td>
+      <td>Default serie</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>722693.188000</td>
+      <td>6.907492e+06</td>
+      <td>555.452867</td>
+      <td>SimpleMafic1</td>
+      <td>Default serie</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>725092.188000</td>
+      <td>6.913005e+06</td>
+      <td>514.864987</td>
+      <td>SimpleMafic1</td>
+      <td>Default serie</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>744692.688000</td>
+      <td>6.890291e+06</td>
+      <td>496.019711</td>
+      <td>SimpleMafic1</td>
+      <td>Default serie</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>738924.813000</td>
+      <td>6.900194e+06</td>
+      <td>551.633725</td>
+      <td>SimpleMafic1</td>
+      <td>Default serie</td>
+      <td>1</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>You can visualize the points in 3D (work in progress)</p>
+<p>Or a projection in 2D:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData</span> <span class="n">at</span> <span class="mh">0x7f8d04466ba8</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<img alt="../_images/ch2_7_1.png" src="../_images/ch2_7_1.png" />
+<p>This model consist in 3 different depositional series. This mean that
+only data in the same depositional series affect the interpolation. To
+select with formations belong to witch series we will use the
+<code class="docutils literal"><span class="pre">set_data_series</span></code> function which takes a python dictionary as input.</p>
+<p>We can see the unique formations with:</p>
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Default serie</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>SimpleMafic2</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>SimpleBIF</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>SimpleMafic1</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>EarlyGranite</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>Setting the series we also give the specific order of the series. In
+python 3.6 and above the dictionaries conserve the key order so it is
+not necessary to give explicitly the order of the series.</p>
+<p>Notice as well that the order of the formations within each series is
+not relevant for the result but in case of being wrong can lead to
+confusing color coding (work in progress).</p>
+<p>In the representation given by <code class="docutils literal"><span class="pre">get_series</span></code> the elements get repeated
+but is only how Pandas print tables.</p>
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>EarlyGranite_Series</th>
+      <th>BIF_Series</th>
+      <th>SimpleMafic_Series</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>EarlyGranite</td>
+      <td>SimpleMafic2</td>
+      <td>SimpleMafic1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>EarlyGranite</td>
+      <td>SimpleBIF</td>
+      <td>SimpleMafic1</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+<div class="section" id="computing-the-model">
+<h2>Computing the model<a class="headerlink" href="#computing-the-model" title="Permalink to this headline">¶</a></h2>
+<p>Now as in the previous chapter we just need to create the interpolator
+object and compute the model.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">I</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">setting</span>
+<span class="n">float32</span>
+<span class="n">I</span> <span class="n">am</span> <span class="n">here</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">9</span> <span class="mi">9</span> <span class="mi">9</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">miguel</span><span class="o">/</span><span class="n">anaconda3</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="o">.</span><span class="mi">6</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">scipy</span><span class="o">/</span><span class="n">linalg</span><span class="o">/</span><span class="n">basic</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">223</span><span class="p">:</span> <span class="ne">RuntimeWarning</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span>
+<span class="n">Ill</span><span class="o">-</span><span class="n">conditioned</span> <span class="n">matrix</span> <span class="n">detected</span><span class="o">.</span> <span class="n">Result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">guaranteed</span> <span class="n">to</span> <span class="n">be</span> <span class="n">accurate</span><span class="o">.</span>
+<span class="n">Reciprocal</span> <span class="n">condition</span> <span class="n">number</span><span class="p">:</span> <span class="mf">2.4606194415355276e-08</span>
+  <span class="s1">&#39; condition number: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rcond</span><span class="p">),</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now if we analyse the results we have a 3D array where the axis 0
+represent the superposition of the series (potential fields). The color
+coding is working process yet.</p>
+<img alt="../_images/ch2_17_0.png" src="../_images/ch2_17_0.png" />
+<img alt="../_images/ch2_17_1.png" src="../_images/ch2_17_1.png" />
+<img alt="../_images/ch2_17_2.png" src="../_images/ch2_17_2.png" />
+<p>The axis 1 keeps the potential field:</p>
+<img alt="../_images/ch2_19_0.png" src="../_images/ch2_19_0.png" />
+<img alt="../_images/ch2_19_1.png" src="../_images/ch2_19_1.png" />
+<img alt="../_images/ch2_19_2.png" src="../_images/ch2_19_2.png" />
+<p>And the axis 2 keeps the faults network that in this model since there
+is not faults does not represent anything.</p>
+<p>Additionally with can export the blocks to vtk in order to visualize
+them in Paraview. We are working in visualization in place as well.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../index.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to GeMpy’s documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Kriging.html">Kriging structure of the <em>Potential field method</em></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ch1.html">Chapter 1: GemPy Basic</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Chapter 2: A real example. Importing data and setting series</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#data-management">Data Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#computing-the-model">Computing the model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ch3.html">Chapter 3: Faults</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ch4.html">Chapter 4: Bayesian Statistics (Working in progress proof of concept)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../tutorial.html">Tutorial</a><ul>
+      <li>Previous: <a href="ch1.html" title="previous chapter">Chapter 1: GemPy Basic</a></li>
+      <li>Next: <a href="ch3.html" title="next chapter">Chapter 3: Faults</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Notebooks/ch2.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/Notebooks/ch2.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
