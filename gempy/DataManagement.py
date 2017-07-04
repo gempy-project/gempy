@@ -1343,16 +1343,7 @@ class InterpolatorInput:
 
             #
             #
-            # aux_1 = self._data_scaled.interfaces.iloc[ref_position][['X', 'Y', 'Z']].as_matrix()
-            #
-            # # We initialize the matrix
-            # ref_layer_points = np.zeros((0, 3))
-            #
-            # # TODO I hate loop it has to be a better way
-            # # Tiling very reference points as many times as rest of the points we have
-            # for e, i in enumerate(len_interfaces):
-            #     ref_layer_points = np.vstack((ref_layer_points, np.tile(aux_1[e], (i - 1, 1))))
-            #
+
             #
             ref_layer_points = self.pandas_ref_layer_points[['X', 'Y', 'Z']].as_matrix()
             # -DEP- was just a check point
