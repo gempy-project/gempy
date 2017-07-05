@@ -73,6 +73,8 @@ class InputData(object):
         # Create default grid object. TODO: (Is this necessary now?)
         self.grid = self.set_grid(extent=None, resolution=None, grid_type="regular_3D", **kwargs)
 
+        self.geo_data_type = 'InputData'
+
     def import_data(self, path_i, path_f, **kwargs):
         """
 
@@ -585,340 +587,343 @@ class InputData(object):
             return np.vstack(map(np.ravel, g)).T.astype("float32")
 
     # DEP!
-    class InterpolatorClass(object):
-        """
-        -DOCS NOT UPDATED- Class which contain all needed methods to perform potential field implicit modelling in theano
-
-        Args:
-            _data(GeMpy_core.DataManagement): All values of a DataManagement object
-            _grid(GeMpy_core.grid): A grid object
-            **kwargs: Arbitrary keyword arguments.
-
-        Keyword Args:
-            verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0
-        """
-
-        def __init__(self, _data_scaled, _grid_scaled=None, *args, **kwargs):
-
-            # verbose is a list of strings. See theanograph
-            verbose = kwargs.get('verbose', [0])
-            # -DEP-rescaling_factor = kwargs.get('rescaling_factor', None)
-
-            # Here we can change the dtype for stability and GPU vs CPU
-            dtype = kwargs.get('dtype', 'float32')
-            self.dtype = dtype
-
-            range_var = kwargs.get('range_var', None)
-
-            # Drift grade
-            u_grade = kwargs.get('u_grade', [2, 2])
-
-
-
-            # We hide the scaled copy of DataManagement object from the user. The scaling happens in gempy what is a
-            # bit weird. Maybe at some point I should bring the function to this module
-            self._data_scaled = _data_scaled
-
-            # In case someone wants to provide a grid otherwise we extract it from the DataManagement object.
-            if not _grid_scaled:
-                self._grid_scaled = _data_scaled.grid
-            else:
-                self._grid_scaled = _grid_scaled
-
-            # Importing the theano graph. The methods of this object generate different parts of graph.
-            # See theanograf doc
-            self.tg = theanograf.TheanoGraph_pro(dtype=dtype, verbose=verbose,)
-
-            # Sorting data in case the user provides it unordered
-            self.order_table()
-
-            # Setting theano parameters
-            self.set_theano_shared_parameteres(range_var=range_var)
-
-            # Extracting data from the pandas dataframe to numpy array in the required form for the theano function
-            self.data_prep(u_grade=u_grade)
-
-            # Avoid crashing my pc
-            import theano
-            if theano.config.optimizer != 'fast_run':
-                assert self.tg.grid_val_T.get_value().shape[0] * \
-                       np.math.factorial(len(self.tg.len_series_i.get_value())) < 2e7, \
-                       'The grid is too big for the number of potential fields. Reduce the grid or change the' \
-                       'optimization flag to fast run'
-
-        def set_formation_number(self):
-            """
-                    Set a unique number to each formation. NOTE: this method is getting deprecated since the user does not need
-                    to know it and also now the numbers must be set in the order of the series as well. Therefore this method
-                    has been moved to the interpolator class as preprocessing
-
-            Returns: Column in the interfaces and foliations dataframes
-            """
-            try:
-                ip_addresses = self._data_scaled.interfaces["formation"].unique()
-                ip_dict = dict(zip(ip_addresses, range(1, len(ip_addresses) + 1)))
-                self._data_scaled.interfaces['formation number'] = self._data_scaled.interfaces['formation'].replace(ip_dict)
-                self._data_scaled.foliations['formation number'] = self._data_scaled.foliations['formation'].replace(ip_dict)
-            except ValueError:
-                pass
-
-        def order_table(self):
-            """
-            First we sort the dataframes by the series age. Then we set a unique number for every formation and resort
-            the formations. All inplace
-            """
-
-            # We order the pandas table by series
-            self._data_scaled.interfaces.sort_values(by=['order_series'],  # , 'formation number'],
-                                                     ascending=True, kind='mergesort',
-                                                     inplace=True)
-
-            self._data_scaled.foliations.sort_values(by=['order_series'],  # , 'formation number'],
-                                                     ascending=True, kind='mergesort',
-                                                     inplace=True)
-
-            # Give formation number
-            if not 'formation number' in self._data_scaled.interfaces.columns:
-                print('I am here')
-                self.set_formation_number()
-
-            # We order the pandas table by formation (also by series in case something weird happened)
-            self._data_scaled.interfaces.sort_values(by=['order_series', 'formation number'],
-                                                     ascending=True, kind='mergesort',
-                                                     inplace=True)
-
-            self._data_scaled.foliations.sort_values(by=['order_series', 'formation number'],
-                                                     ascending=True, kind='mergesort',
-                                                     inplace=True)
-
-            # Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset
-            # the index. For some of the methods (pn.drop) we have to apply afterwards we need to reset these indeces
-            self._data_scaled.interfaces.reset_index(drop=True, inplace=True)
-
-        def data_prep(self, **kwargs):
-            """
-            Ideally this method will extract the data from the pandas dataframes to individual numpy arrays to be input
-            of the theano function. However since some of the shared parameters are function of these arrays shape I also
-            set them here
-            Returns:
-                idl (list): List of arrays which are the input for the theano function:
-                    - numpy.array: dips_position
-                    - numpy.array: dip_angles
-                    - numpy.array: azimuth
-                    - numpy.array: polarity
-                    - numpy.array: ref_layer_points
-                    - numpy.array: rest_layer_points
-            """
-
-            u_grade = kwargs.get('u_grade', None)
-            # ==================
-            # Extracting lengths
-            # ==================
-            # Array containing the size of every formation. Interfaces
-            len_interfaces = np.asarray(
-                [np.sum(self._data_scaled.interfaces['formation number'] == i)
-                 for i in self._data_scaled.interfaces['formation number'].unique()])
-
-            # Size of every layer in rests. SHARED (for theano)
-            len_rest_form = (len_interfaces - 1)
-            self.tg.number_of_points_per_formation_T.set_value(len_rest_form)
-
-            # Position of the first point of every layer
-            ref_position = np.insert(len_interfaces[:-1], 0, 0).cumsum()
-
-            # Drop the reference points using pandas indeces to get just the rest_layers array
-            pandas_rest_layer_points = self._data_scaled.interfaces.drop(ref_position)
-            self.pandas_rest_layer_points = pandas_rest_layer_points
-            # TODO: do I need this? PYTHON
-            # DEP- because per series the foliations do not belong to a formation but to the whole series
-            # len_foliations = np.asarray(
-            #     [np.sum(self._data_scaled.foliations['formation number'] == i)
-            #      for i in self._data_scaled.foliations['formation number'].unique()])
-
-            # -DEP- I think this was just a kind of print to know what was going on
-            #self.pandas_rest = pandas_rest_layer_points
-
-            # Array containing the size of every series. Interfaces.
-            len_series_i = np.asarray(
-                [np.sum(pandas_rest_layer_points['order_series'] == i)
-                 for i in pandas_rest_layer_points['order_series'].unique()])
-
-            # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
-            self.tg.len_series_i.set_value(np.insert(len_series_i, 0, 0).cumsum())
-
-            # Array containing the size of every series. Foliations.
-            len_series_f = np.asarray(
-                [np.sum(self._data_scaled.foliations['order_series'] == i)
-                 for i in self._data_scaled.foliations['order_series'].unique()])
-
-            # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
-            self.tg.len_series_f.set_value(np.insert(len_series_f, 0, 0).cumsum())
-
-            # =========================
-            # Choosing Universal drifts
-            # =========================
-
-            if u_grade is None:
-                u_grade = np.zeros_like(len_series_i)
-                u_grade[len_series_i > 12] = 9
-                u_grade[(len_series_i > 6) & (len_series_i < 12)] = 3
-            print(u_grade)
-            # it seems I have to pass list instead array_like that is weird
-            self.tg.u_grade_T.set_value(list(u_grade))
-
-            # ================
-            # Prepare Matrices
-            # ================
-            # Rest layers matrix # PYTHON VAR
-            rest_layer_points = pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix()
-
-            # TODO delete
-            # -DEP- Again i was just a check point
-            # self.rest_layer_points = rest_layer_points
-
-            # Ref layers matrix #VAR
-            # Calculation of the ref matrix and tile. Iloc works with the row number
-            # Here we extract the reference points
-            aux_1 = self._data_scaled.interfaces.iloc[ref_position][['X', 'Y', 'Z']].as_matrix()
-
-            # We initialize the matrix
-            ref_layer_points = np.zeros((0, 3))
-
-            # TODO I hate loop it has to be a better way
-            # Tiling very reference points as many times as rest of the points we have
-            for e, i in enumerate(len_interfaces):
-                ref_layer_points = np.vstack((ref_layer_points, np.tile(aux_1[e], (i - 1, 1))))
-
-            # -DEP- was just a check point
-            #self.ref_layer_points = ref_layer_points
-
-            # Check no reference points in rest points (at least in coor x)
-            assert not any(aux_1[:, 0]) in rest_layer_points[:, 0], \
-                'A reference point is in the rest list point. Check you do ' \
-                'not have duplicated values in your dataframes'
-
-            # Foliations, this ones I tile them inside theano. PYTHON VAR
-            dips_position = self._data_scaled.foliations[['X', 'Y', 'Z']].as_matrix()
-            dip_angles = self._data_scaled.foliations["dip"].as_matrix()
-            azimuth = self._data_scaled.foliations["azimuth"].as_matrix()
-            polarity = self._data_scaled.foliations["polarity"].as_matrix()
-
-            # Set all in a list casting them in the chosen dtype
-            idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity,
-                   ref_layer_points, rest_layer_points)]
-
-            return idl
-
-        def set_theano_shared_parameteres(self, **kwargs):
-            """
-            Here we create most of the kriging parameters. The user can pass them as kwargs otherwise we pick the
-            default values from the DataManagement info. The share variables are set in place. All the parameters here
-            are independent of the input data so this function only has to be called if you change the extent or grid or
-            if you want to change one the kriging parameters.
-            Args:
-                _data_rescaled: DataManagement object
-                _grid_rescaled: Grid object
-            Keyword Args:
-                u_grade (int): Drift grade. Default to 2.
-                range_var (float): Range of the variogram. Default 3D diagonal of the extent
-                c_o (float): Covariance at lag 0. Default range_var ** 2 / 14 / 3. See my paper when I write it
-                nugget_effect (flaot): Nugget effect of foliations. Default to 0.01
-            """
-
-            # Kwargs
-            u_grade = kwargs.get('u_grade', 2)
-            range_var = kwargs.get('range_var', None)
-            c_o = kwargs.get('c_o', None)
-            nugget_effect = kwargs.get('nugget_effect', 0.01)
-
-            # -DEP- Now I rescale the data so we do not need this
-            # rescaling_factor = kwargs.get('rescaling_factor', None)
-
-            # Default range
-            if not range_var:
-                range_var = np.sqrt((self._data_scaled.extent[0] - self._data_scaled.extent[1]) ** 2 +
-                                    (self._data_scaled.extent[2] - self._data_scaled.extent[3]) ** 2 +
-                                    (self._data_scaled.extent[4] - self._data_scaled.extent[5]) ** 2)
-
-
-            # Default covariance at 0
-            if not c_o:
-                c_o = range_var ** 2 / 14 / 3
-
-            # Asserting that the drift grade is in this range
-           # assert (0 <= all(u_grade) <= 2)
-
-            # Creating the drift matrix. TODO find the official name of this matrix?
-            _universal_matrix = np.vstack((self._grid_scaled.grid.T,
-                                           (self._grid_scaled.grid ** 2).T,
-                                           self._grid_scaled.grid[:, 0] * self._grid_scaled.grid[:, 1],
-                                           self._grid_scaled.grid[:, 0] * self._grid_scaled.grid[:, 2],
-                                           self._grid_scaled.grid[:, 1] * self._grid_scaled.grid[:, 2]))
-
-            # Setting shared variables
-            # Range
-            self.tg.a_T.set_value(np.cast[self.dtype](range_var))
-            # Covariance at 0
-            self.tg.c_o_T.set_value(np.cast[self.dtype](c_o))
-            # Foliations nugget effect
-            self.tg.nugget_effect_grad_T.set_value(np.cast[self.dtype](nugget_effect))
-
-            # TODO change the drift to the same style I have the faults so I do not need to do this
-            # # Drift grade
-            # if u_grade == 0:
-            #     self.tg.u_grade_T.set_value(u_grade)
-            # else:
-            #     self.tg.u_grade_T.set_value(u_grade)
-                # TODO: To be sure what is the mathematical meaning of this -> It seems that nothing
-                # TODO Deprecated
-                # self.tg.c_resc.set_value(1)
-
-            # Just grid. I add a small number to avoid problems with the origin point
-            self.tg.grid_val_T.set_value(np.cast[self.dtype](self._grid_scaled.grid + 10e-6))
-            # Universal grid
-            self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](_universal_matrix + 1e-10))
-
-            # Initialization of the block model
-            self.tg.final_block.set_value(np.zeros((1, self._grid_scaled.grid.shape[0]), dtype='float32'))
-
-            # Initialization of the boolean array that represent the areas of the block model to be computed in the
-            # following series
-            #self.tg.yet_simulated.set_value(np.ones((_grid_rescaled.grid.shape[0]), dtype='int'))
-
-            # Unique number assigned to each lithology
-            #self.tg.n_formation.set_value(np.insert(_data_rescaled.interfaces['formation number'].unique(),
-            #                                        0, 0)[::-1])
-
-            self.tg.n_formation.set_value(self._data_scaled.interfaces['formation number'].unique())
-
-            # Number of formations per series. The function is not pretty but the result is quite clear
-            self.tg.n_formations_per_serie.set_value(
-                np.insert(self._data_scaled.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0))
-
-        def get_kriging_parameters(self, verbose=0):
-            # range
-            print('range', self.tg.a_T.get_value(), self.tg.a_T.get_value() * self._data_scaled.rescaling_factor)
-            # Number of drift equations
-            print('Number of drift equations', self.tg.u_grade_T.get_value())
-            # Covariance at 0
-            print('Covariance at 0', self.tg.c_o_T.get_value())
-            # Foliations nugget effect
-            print('Foliations nugget effect', self.tg.nugget_effect_grad_T.get_value())
-
-            if verbose > 0:
-                # Input data shapes
-
-                # Lenght of the interfaces series
-                print('Length of the interfaces series', self.tg.len_series_i.get_value())
-                # Length of the foliations series
-                print('Length of the foliations series', self.tg.len_series_f.get_value())
-                # Number of formation
-                print('Number of formations', self.tg.n_formation.get_value())
-                # Number of formations per series
-                print('Number of formations per series', self.tg.n_formations_per_serie.get_value())
-                # Number of points per formation
-                print('Number of points per formation (rest)', self.tg.number_of_points_per_formation_T.get_value())
-
+    # class InterpolatorClass(object):
+    #     """
+    #     -DOCS NOT UPDATED- Class which contain all needed methods to perform potential field implicit modelling in theano
+    #
+    #     Args:
+    #         _data(GeMpy_core.DataManagement): All values of a DataManagement object
+    #         _grid(GeMpy_core.grid): A grid object
+    #         **kwargs: Arbitrary keyword arguments.
+    #
+    #     Keyword Args:
+    #         verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0
+    #     """
+    #
+    #     def __init__(self, _data_scaled, _grid_scaled=None, *args, **kwargs):
+    #
+    #         # verbose is a list of strings. See theanograph
+    #         verbose = kwargs.get('verbose', [0])
+    #         # -DEP-rescaling_factor = kwargs.get('rescaling_factor', None)
+    #
+    #         # Here we can change the dtype for stability and GPU vs CPU
+    #         dtype = kwargs.get('dtype', 'float32')
+    #         self.dtype = dtype
+    #         self.geo_data_type = 'InterpolatorInput'
+    #
+    #         range_var = kwargs.get('range_var', None)
+    #
+    #         # Drift grade
+    #         u_grade = kwargs.get('u_grade', [2, 2])
+    #
+    #
+    #
+    #         # We hide the scaled copy of DataManagement object from the user. The scaling happens in gempy what is a
+    #         # bit weird. Maybe at some point I should bring the function to this module
+    #         self._data_scaled = _data_scaled
+    #
+    #         # In case someone wants to provide a grid otherwise we extract it from the DataManagement object.
+    #         if not _grid_scaled:
+    #             self._grid_scaled = _data_scaled.grid
+    #         else:
+    #             self._grid_scaled = _grid_scaled
+    #
+    #         # Importing the theano graph. The methods of this object generate different parts of graph.
+    #         # See theanograf doc
+    #         self.tg = theanograf.TheanoGraph_pro(dtype=dtype, verbose=verbose,)
+    #
+    #         # Sorting data in case the user provides it unordered
+    #         self.order_table()
+    #
+    #         # Setting theano parameters
+    #         self.set_theano_shared_parameteres(range_var=range_var)
+    #
+    #         # Extracting data from the pandas dataframe to numpy array in the required form for the theano function
+    #         self.data_prep(u_grade=u_grade)
+    #
+    #         # Avoid crashing my pc
+    #         import theano
+    #         if theano.config.optimizer != 'fast_run':
+    #             assert self.tg.grid_val_T.get_value().shape[0] * \
+    #                    np.math.factorial(len(self.tg.len_series_i.get_value())) < 2e7, \
+    #                    'The grid is too big for the number of potential fields. Reduce the grid or change the' \
+    #                    'optimization flag to fast run'
+    #
+    #
+    #
+    #     def set_formation_number(self):
+    #         """
+    #                 Set a unique number to each formation. NOTE: this method is getting deprecated since the user does not need
+    #                 to know it and also now the numbers must be set in the order of the series as well. Therefore this method
+    #                 has been moved to the interpolator class as preprocessing
+    #
+    #         Returns: Column in the interfaces and foliations dataframes
+    #         """
+    #         try:
+    #             ip_addresses = self._data_scaled.interfaces["formation"].unique()
+    #             ip_dict = dict(zip(ip_addresses, range(1, len(ip_addresses) + 1)))
+    #             self._data_scaled.interfaces['formation number'] = self._data_scaled.interfaces['formation'].replace(ip_dict)
+    #             self._data_scaled.foliations['formation number'] = self._data_scaled.foliations['formation'].replace(ip_dict)
+    #         except ValueError:
+    #             pass
+    #
+    #     def order_table(self):
+    #         """
+    #         First we sort the dataframes by the series age. Then we set a unique number for every formation and resort
+    #         the formations. All inplace
+    #         """
+    #
+    #         # We order the pandas table by series
+    #         self._data_scaled.interfaces.sort_values(by=['order_series'],  # , 'formation number'],
+    #                                                  ascending=True, kind='mergesort',
+    #                                                  inplace=True)
+    #
+    #         self._data_scaled.foliations.sort_values(by=['order_series'],  # , 'formation number'],
+    #                                                  ascending=True, kind='mergesort',
+    #                                                  inplace=True)
+    #
+    #         # Give formation number
+    #         if not 'formation number' in self._data_scaled.interfaces.columns:
+    #             print('I am here')
+    #             self.set_formation_number()
+    #
+    #         # We order the pandas table by formation (also by series in case something weird happened)
+    #         self._data_scaled.interfaces.sort_values(by=['order_series', 'formation number'],
+    #                                                  ascending=True, kind='mergesort',
+    #                                                  inplace=True)
+    #
+    #         self._data_scaled.foliations.sort_values(by=['order_series', 'formation number'],
+    #                                                  ascending=True, kind='mergesort',
+    #                                                  inplace=True)
+    #
+    #         # Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset
+    #         # the index. For some of the methods (pn.drop) we have to apply afterwards we need to reset these indeces
+    #         self._data_scaled.interfaces.reset_index(drop=True, inplace=True)
+    #
+    #     def data_prep(self, **kwargs):
+    #         """
+    #         Ideally this method will extract the data from the pandas dataframes to individual numpy arrays to be input
+    #         of the theano function. However since some of the shared parameters are function of these arrays shape I also
+    #         set them here
+    #         Returns:
+    #             idl (list): List of arrays which are the input for the theano function:
+    #                 - numpy.array: dips_position
+    #                 - numpy.array: dip_angles
+    #                 - numpy.array: azimuth
+    #                 - numpy.array: polarity
+    #                 - numpy.array: ref_layer_points
+    #                 - numpy.array: rest_layer_points
+    #         """
+    #
+    #         u_grade = kwargs.get('u_grade', None)
+    #         # ==================
+    #         # Extracting lengths
+    #         # ==================
+    #         # Array containing the size of every formation. Interfaces
+    #         len_interfaces = np.asarray(
+    #             [np.sum(self._data_scaled.interfaces['formation number'] == i)
+    #              for i in self._data_scaled.interfaces['formation number'].unique()])
+    #
+    #         # Size of every layer in rests. SHARED (for theano)
+    #         len_rest_form = (len_interfaces - 1)
+    #         self.tg.number_of_points_per_formation_T.set_value(len_rest_form)
+    #
+    #         # Position of the first point of every layer
+    #         ref_position = np.insert(len_interfaces[:-1], 0, 0).cumsum()
+    #
+    #         # Drop the reference points using pandas indeces to get just the rest_layers array
+    #         pandas_rest_layer_points = self._data_scaled.interfaces.drop(ref_position)
+    #         self.pandas_rest_layer_points = pandas_rest_layer_points
+    #         # TODO: do I need this? PYTHON
+    #         # DEP- because per series the foliations do not belong to a formation but to the whole series
+    #         # len_foliations = np.asarray(
+    #         #     [np.sum(self._data_scaled.foliations['formation number'] == i)
+    #         #      for i in self._data_scaled.foliations['formation number'].unique()])
+    #
+    #         # -DEP- I think this was just a kind of print to know what was going on
+    #         #self.pandas_rest = pandas_rest_layer_points
+    #
+    #         # Array containing the size of every series. Interfaces.
+    #         len_series_i = np.asarray(
+    #             [np.sum(pandas_rest_layer_points['order_series'] == i)
+    #              for i in pandas_rest_layer_points['order_series'].unique()])
+    #
+    #         # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
+    #         self.tg.len_series_i.set_value(np.insert(len_series_i, 0, 0).cumsum())
+    #
+    #         # Array containing the size of every series. Foliations.
+    #         len_series_f = np.asarray(
+    #             [np.sum(self._data_scaled.foliations['order_series'] == i)
+    #              for i in self._data_scaled.foliations['order_series'].unique()])
+    #
+    #         # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
+    #         self.tg.len_series_f.set_value(np.insert(len_series_f, 0, 0).cumsum())
+    #
+    #         # =========================
+    #         # Choosing Universal drifts
+    #         # =========================
+    #
+    #         if u_grade is None:
+    #             u_grade = np.zeros_like(len_series_i)
+    #             u_grade[len_series_i > 12] = 9
+    #             u_grade[(len_series_i > 6) & (len_series_i < 12)] = 3
+    #         print(u_grade)
+    #         # it seems I have to pass list instead array_like that is weird
+    #         self.tg.u_grade_T.set_value(list(u_grade))
+    #
+    #         # ================
+    #         # Prepare Matrices
+    #         # ================
+    #         # Rest layers matrix # PYTHON VAR
+    #         rest_layer_points = pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix()
+    #
+    #         # TODO delete
+    #         # -DEP- Again i was just a check point
+    #         # self.rest_layer_points = rest_layer_points
+    #
+    #         # Ref layers matrix #VAR
+    #         # Calculation of the ref matrix and tile. Iloc works with the row number
+    #         # Here we extract the reference points
+    #         aux_1 = self._data_scaled.interfaces.iloc[ref_position][['X', 'Y', 'Z']].as_matrix()
+    #
+    #         # We initialize the matrix
+    #         ref_layer_points = np.zeros((0, 3))
+    #
+    #         # TODO I hate loop it has to be a better way
+    #         # Tiling very reference points as many times as rest of the points we have
+    #         for e, i in enumerate(len_interfaces):
+    #             ref_layer_points = np.vstack((ref_layer_points, np.tile(aux_1[e], (i - 1, 1))))
+    #
+    #         # -DEP- was just a check point
+    #         #self.ref_layer_points = ref_layer_points
+    #
+    #         # Check no reference points in rest points (at least in coor x)
+    #         assert not any(aux_1[:, 0]) in rest_layer_points[:, 0], \
+    #             'A reference point is in the rest list point. Check you do ' \
+    #             'not have duplicated values in your dataframes'
+    #
+    #         # Foliations, this ones I tile them inside theano. PYTHON VAR
+    #         dips_position = self._data_scaled.foliations[['X', 'Y', 'Z']].as_matrix()
+    #         dip_angles = self._data_scaled.foliations["dip"].as_matrix()
+    #         azimuth = self._data_scaled.foliations["azimuth"].as_matrix()
+    #         polarity = self._data_scaled.foliations["polarity"].as_matrix()
+    #
+    #         # Set all in a list casting them in the chosen dtype
+    #         idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity,
+    #                ref_layer_points, rest_layer_points)]
+    #
+    #         return idl
+    #
+    #     def set_theano_shared_parameteres(self, **kwargs):
+    #         """
+    #         Here we create most of the kriging parameters. The user can pass them as kwargs otherwise we pick the
+    #         default values from the DataManagement info. The share variables are set in place. All the parameters here
+    #         are independent of the input data so this function only has to be called if you change the extent or grid or
+    #         if you want to change one the kriging parameters.
+    #         Args:
+    #             _data_rescaled: DataManagement object
+    #             _grid_rescaled: Grid object
+    #         Keyword Args:
+    #             u_grade (int): Drift grade. Default to 2.
+    #             range_var (float): Range of the variogram. Default 3D diagonal of the extent
+    #             c_o (float): Covariance at lag 0. Default range_var ** 2 / 14 / 3. See my paper when I write it
+    #             nugget_effect (flaot): Nugget effect of foliations. Default to 0.01
+    #         """
+    #
+    #         # Kwargs
+    #         u_grade = kwargs.get('u_grade', 2)
+    #         range_var = kwargs.get('range_var', None)
+    #         c_o = kwargs.get('c_o', None)
+    #         nugget_effect = kwargs.get('nugget_effect', 0.01)
+    #
+    #         # -DEP- Now I rescale the data so we do not need this
+    #         # rescaling_factor = kwargs.get('rescaling_factor', None)
+    #
+    #         # Default range
+    #         if not range_var:
+    #             range_var = np.sqrt((self._data_scaled.extent[0] - self._data_scaled.extent[1]) ** 2 +
+    #                                 (self._data_scaled.extent[2] - self._data_scaled.extent[3]) ** 2 +
+    #                                 (self._data_scaled.extent[4] - self._data_scaled.extent[5]) ** 2)
+    #
+    #
+    #         # Default covariance at 0
+    #         if not c_o:
+    #             c_o = range_var ** 2 / 14 / 3
+    #
+    #         # Asserting that the drift grade is in this range
+    #        # assert (0 <= all(u_grade) <= 2)
+    #
+    #         # Creating the drift matrix. TODO find the official name of this matrix?
+    #         _universal_matrix = np.vstack((self._grid_scaled.grid.T,
+    #                                        (self._grid_scaled.grid ** 2).T,
+    #                                        self._grid_scaled.grid[:, 0] * self._grid_scaled.grid[:, 1],
+    #                                        self._grid_scaled.grid[:, 0] * self._grid_scaled.grid[:, 2],
+    #                                        self._grid_scaled.grid[:, 1] * self._grid_scaled.grid[:, 2]))
+    #
+    #         # Setting shared variables
+    #         # Range
+    #         self.tg.a_T.set_value(np.cast[self.dtype](range_var))
+    #         # Covariance at 0
+    #         self.tg.c_o_T.set_value(np.cast[self.dtype](c_o))
+    #         # Foliations nugget effect
+    #         self.tg.nugget_effect_grad_T.set_value(np.cast[self.dtype](nugget_effect))
+    #
+    #         # TODO change the drift to the same style I have the faults so I do not need to do this
+    #         # # Drift grade
+    #         # if u_grade == 0:
+    #         #     self.tg.u_grade_T.set_value(u_grade)
+    #         # else:
+    #         #     self.tg.u_grade_T.set_value(u_grade)
+    #             # TODO: To be sure what is the mathematical meaning of this -> It seems that nothing
+    #             # TODO Deprecated
+    #             # self.tg.c_resc.set_value(1)
+    #
+    #         # Just grid. I add a small number to avoid problems with the origin point
+    #         self.tg.grid_val_T.set_value(np.cast[self.dtype](self._grid_scaled.grid + 10e-6))
+    #         # Universal grid
+    #         self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](_universal_matrix + 1e-10))
+    #
+    #         # Initialization of the block model
+    #         self.tg.final_block.set_value(np.zeros((1, self._grid_scaled.grid.shape[0]), dtype='float32'))
+    #
+    #         # Initialization of the boolean array that represent the areas of the block model to be computed in the
+    #         # following series
+    #         #self.tg.yet_simulated.set_value(np.ones((_grid_rescaled.grid.shape[0]), dtype='int'))
+    #
+    #         # Unique number assigned to each lithology
+    #         #self.tg.n_formation.set_value(np.insert(_data_rescaled.interfaces['formation number'].unique(),
+    #         #                                        0, 0)[::-1])
+    #
+    #         self.tg.n_formation.set_value(self._data_scaled.interfaces['formation number'].unique())
+    #
+    #         # Number of formations per series. The function is not pretty but the result is quite clear
+    #         self.tg.n_formations_per_serie.set_value(
+    #             np.insert(self._data_scaled.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0))
+    #
+    #     def get_kriging_parameters(self, verbose=0):
+    #         # range
+    #         print('range', self.tg.a_T.get_value(), self.tg.a_T.get_value() * self._data_scaled.rescaling_factor)
+    #         # Number of drift equations
+    #         print('Number of drift equations', self.tg.u_grade_T.get_value())
+    #         # Covariance at 0
+    #         print('Covariance at 0', self.tg.c_o_T.get_value())
+    #         # Foliations nugget effect
+    #         print('Foliations nugget effect', self.tg.nugget_effect_grad_T.get_value())
+    #
+    #         if verbose > 0:
+    #             # Input data shapes
+    #
+    #             # Lenght of the interfaces series
+    #             print('Length of the interfaces series', self.tg.len_series_i.get_value())
+    #             # Length of the foliations series
+    #             print('Length of the foliations series', self.tg.len_series_f.get_value())
+    #             # Number of formation
+    #             print('Number of formations', self.tg.n_formation.get_value())
+    #             # Number of formations per series
+    #             print('Number of formations per series', self.tg.n_formations_per_serie.get_value())
+    #             # Number of points per formation
+    #             print('Number of points per formation (rest)', self.tg.number_of_points_per_formation_T.get_value())
+    #
 
 class InterpolatorInput:
     def __init__(self, geo_data, compile_theano=True, compute_all=True, u_grade=None, rescaling_factor=None, **kwargs):
@@ -927,7 +932,7 @@ class InterpolatorInput:
         assert isinstance(geo_data, InputData), 'You need to pass a InputData object'
         # Here we can change the dtype for stability and GPU vs CPU
         self.dtype = kwargs.get('dtype', 'float32')
-
+        self.geo_data_type = 'InterpolatorInput'
 
         #self.in_data = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
         # Set some parameters. TODO posibly this should go in kwargs
@@ -940,6 +945,10 @@ class InterpolatorInput:
 
         # Rescaling
         self.data = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
+
+        # # This are necessary parameters for the visualization package
+        self.resolution = self.data.resolution
+        self.extent = self.extent_rescaled.as_matrix()
 
         # Creating interpolator class with all the precompilation options
         self.interpolator = self.set_interpolator(**kwargs)
