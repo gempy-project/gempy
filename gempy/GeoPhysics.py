@@ -11,7 +11,7 @@ from scipy.constants import G
 class GeoPhysicsPreprocessing(object):
 
     # TODO geophysics grid different that modeling grid
-    def __init__(self, interp_data, z, ai_extent, res_grav=[5, 5], n_cells=1000, grid=None):
+    def __init__(self, interp_data, z, ai_extent, res_grav=[5, 5], n_cells=1000, grid=None, mode='range'):
         """
 
         Args:
@@ -22,6 +22,10 @@ class GeoPhysicsPreprocessing(object):
             grid: This is the model grid
         """
         self.interp_data = interp_data
+        self.max_range = (interp_data.extent_rescaled['Z'].max() - interp_data.extent_rescaled['Z'].min())*0.9
+        print(self.max_range)
+        self.mode = mode
+
         self.res_grav = res_grav
         self.z = z
         self.ai_extent = ai_extent
@@ -36,21 +40,29 @@ class GeoPhysicsPreprocessing(object):
             self.grid = grid.astype(self.interp_data.dtype)
 
         self.airborne_plane = self.set_airborne_plane(z, res_grav)
-
+        self.n_measurements = self.res_grav[0]*self.res_grav[1]
         # self.closest_cells_index = self.set_closest_cells()
         # self.tz = self.z_decomposition()
 
     def looping_z_decomp(self, chunk_size):
         n_points_0 = 0
         final_tz = np.zeros((self.n_cells, 0))
-        self.closest_cells_all = np.zeros((self.n_cells, 0), dtype=np.int)
+
+        if self.mode is 'n_closest':
+            self.closest_cells_all = np.zeros((self.n_cells, 0), dtype=np.int)
+        if self.mode is 'range':
+            self.closest_cells_all = False
+
         n_chunks = int(self.res_grav[0]*self.res_grav[1]/ chunk_size)
 
         for n_points_1 in np.linspace(chunk_size, self.res_grav[0]*self.res_grav[1], n_chunks,
                                       endpoint=True, dtype=int):
             self.n_measurements = n_points_1 - n_points_0
             self.airborne_plane_op = self.airborne_plane[n_points_0:n_points_1]
-            self.closest_cells_all = np.hstack((self.closest_cells_all, self.set_closest_cells()))
+            if not self.closest_cells_all:
+                self.closest_cells_all = self.set_closest_cells()
+            else:
+                self.closest_cells_all = np.dstack((self.closest_cells_all, self.set_closest_cells()))
             tz = self.z_decomposition()
             final_tz = np.hstack((final_tz, tz))
             n_points_0 = n_points_1
@@ -86,7 +98,7 @@ class GeoPhysicsPreprocessing(object):
             (x_2 ** 2).sum(1).reshape((1, x_2.shape[0])) -
             2 * x_1.dot(x_2.T), 0
         ))
-        self.eu = theano.function([x_1, x_2], sqd)
+        self.eu = theano.function([x_1, x_2], sqd, allow_input_downcast=True)
 
     def compute_distance(self):
         # if the resolution is too high is going to consume too much memory
@@ -102,14 +114,17 @@ class GeoPhysicsPreprocessing(object):
         r = self.compute_distance()
 
         # This is a integer matrix at least
-        self.closest_cells_index = np.argsort(r, axis=0)[:self.n_cells, :]
+        if self.mode =='n_closest':
+            self.closest_cells_index = np.argsort(r, axis=0)[:self.n_cells, :]
+            # DEP?-- I need to make an auxiliary index for axis 1
+            self._axis_1 = np.indices((self.n_cells, self.n_measurements))[1]
 
-        # DEP?-- I need to make an auxiliary index for axis 1
-        self._axis_1 = np.indices((self.n_cells, self.n_measurements))[1]
+            # I think it is better to save it in memory since recompute distance can be too heavy
+            self.selected_dist = r[self.closest_cells_index, self._axis_1]
 
-        # I think it is better to save it in memory since recompute distance can be too heavy
-        self.selected_dist = r[self.closest_cells_index, self._axis_1]
-
+        if self.mode == 'range':
+            self.closest_cells_index = np.where(r < self.max_range)
+            self.selected_dist = r[self.closest_cells_all]
 
         return self.closest_cells_index
 
@@ -119,11 +134,13 @@ class GeoPhysicsPreprocessing(object):
         selected_grid_y = np.zeros((0, self.n_cells))
         selected_grid_z = np.zeros((0, self.n_cells))
 
+        n_cells = self.closest_cells_index[0].shape[0]/self.n_measurements
+        i_0 = 0
         # I am going to loop it in order to keep low memory (first loop in gempy?)
-        for i in range(self.n_measurements):
-            selected_grid_x = np.vstack((selected_grid_x, self.grid[:, 0][self.closest_cells_index[:, i]]))
-            selected_grid_y = np.vstack((selected_grid_y, self.grid[:, 1][self.closest_cells_index[:, i]]))
-            selected_grid_z = np.vstack((selected_grid_z, self.grid[:, 2][self.closest_cells_index[:, i]]))
+        for i_1 in np.linspace(n_cells, self.closest_cells_index[0].shape[0], self.n_measurements+1): #range(self.n_measurements):
+            selected_grid_x = np.vstack((selected_grid_x, self.grid[:, 0][self.closest_cells_index[0][i_0:i_1]]))
+            selected_grid_y = np.vstack((selected_grid_y, self.grid[:, 1][self.closest_cells_index[0][i_0:i_1]]))
+            selected_grid_z = np.vstack((selected_grid_z, self.grid[:, 2][self.closest_cells_index[0][i_0:i_1]]))
 
         return selected_grid_x.T, selected_grid_y.T, selected_grid_z.T
 
@@ -137,12 +154,18 @@ class GeoPhysicsPreprocessing(object):
 
     def z_decomposition(self):
 
+        # We get the 100 closest point of our grid!
         s_gr_x, s_gr_y, s_gr_z = self.select_grid()
+
+        # This is the euclidean distances between the plane (size size chunk) and the selected voxels. Repeated 8 time
+        # for the next eq
         s_r = np.repeat(np.expand_dims(self.selected_dist, axis=2), 8, axis=2)
 
         # x_cor = np.expand_dims(np.dstack((s_gr_x - self.vox_size[0], s_gr_x + self.vox_size[0])).T, axis=2)
         # y_cor = np.expand_dims(np.dstack((s_gr_y - self.vox_size[1], s_gr_y + self.vox_size[1])).T, axis=2)
         # z_cor = np.expand_dims(np.dstack((s_gr_z - self.vox_size[2], s_gr_z + self.vox_size[2])).T, axis=2)
+
+        # Now we need the coordinates not at the center of the voxel but at the sides
         x_cor = np.stack((s_gr_x - self.vox_size[0], s_gr_x + self.vox_size[0]), axis=2)
         y_cor = np.stack((s_gr_y - self.vox_size[1], s_gr_y + self.vox_size[1]), axis=2)
         z_cor = np.stack((s_gr_z - self.vox_size[2], s_gr_z + self.vox_size[2]), axis=2)
@@ -155,7 +178,7 @@ class GeoPhysicsPreprocessing(object):
 
         mu = np.array([1, -1, -1, 1, -1, 1, 1, -1])
 
-        tz = np.sum(- G * mu * (
+        tz = np.sum(- G/self.interp_data.rescaling_factor * mu * (
                 x_matrix * np.log(y_matrix + s_r) +
                 y_matrix * np.log(x_matrix + s_r) -
                 z_matrix * np.arctan(x_matrix * y_matrix /
@@ -164,7 +187,7 @@ class GeoPhysicsPreprocessing(object):
         return tz
 
     # This has to be also a theano function
-    def compute_gravity(self, block):
+    def compute_gravity(self, block, tz):
 
         block_matrix = np.tile(block, (1, self.res_grav[0] * self.res_grav[1]))
         block_matrix_sel = block_matrix[self.closest_cells_all,

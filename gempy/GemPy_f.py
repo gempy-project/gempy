@@ -27,11 +27,11 @@ import copy
 from gempy.Visualization import PlotData
 try:
     from gempy.visualization_vtk import visualize, export_vtk_rectilinear
-except ModuleNotFoundError:
+except:# ModuleNotFoundError:
     warnings.warn('Vtk package is not installed. No vtk visualization available.')
 from gempy.DataManagement import InputData, InterpolatorInput
 from IPython.core.debugger import Tracer
-from .Topology import Topology
+# from .Topology import Topology
 
 
 

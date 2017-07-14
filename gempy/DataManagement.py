@@ -1020,6 +1020,7 @@ class InterpolatorInput:
         new_coord_foliations = (geo_data.foliations[['X', 'Y', 'Z']] -
                                 centers) / rescaling_factor + 0.5001
         try:
+            print('I am here')
             geo_data.interfaces[['X_std', 'Y_std', 'Z_std']] = (geo_data.interfaces[
                                                                     ['X_std', 'Y_std', 'Z_std']]) / rescaling_factor
             geo_data.foliations[['X_std', 'Y_std', 'Z_std']] = (geo_data.foliations[
@@ -1042,6 +1043,14 @@ class InterpolatorInput:
         self.extent_rescaled = new_coord_extent
 
         return geo_data_rescaled
+
+    def get_formation_number(self):
+        pn_series = self.data.interfaces.groupby('formation number').formation.unique()
+        ip_addresses = {}
+        for e, i in enumerate(pn_series):
+            ip_addresses[i[0]] = e + 1
+        ip_addresses['DefaultBasement'] = 0
+        return ip_addresses
 
     # DEP?
     def set_airbore_plane(self, z, res_grav):
