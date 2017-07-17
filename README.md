@@ -33,6 +33,11 @@ GemPy requires `Python 3.X` and makes use of numerous open-source libraries:
 * `vtk` for interactive 3-D visualization
 * `skimage` and `networkx` for 3-D topology analysis and graph handling
 
+Overall we recommend the use of a dedicated Python distribution, such as 
+[Anaconda](https://www.continuum.io/what-is-anaconda), for hassle-free package installation. 
+We are curently working on providing GemPy also via Anaconda Cloud, for easier installation of 
+its dependencies.
+
 ### Installation
 
 Installing the latest release version of GemPy itself is easily done using PyPI:
