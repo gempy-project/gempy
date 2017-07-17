@@ -19,6 +19,10 @@ uncertainties.
 ## Examples
 
 Put one or two fancy examples here.
+ 
+![alt text]("/docs/readme_images/readme_input_data.png")
+
+
 
 ## Getting Started
 
@@ -30,7 +34,10 @@ GemPy requires `Python 3.X` and makes use of numerous open-source libraries:
 * `pandas`
 * `matplotlib`
 * `theano`
-* `vtk` for interactive 3-D visualization
+
+Optional:
+
+* `vtk` for interactive 3-D visualization (VTK v. 7.X is required for Python 3)
 * `skimage` and `networkx` for 3-D topology analysis and graph handling
 
 Overall we recommend the use of a dedicated Python distribution, such as 
