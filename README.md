@@ -1,6 +1,6 @@
 # GemPy
 
-[![PyPI](https://img.shields.io/badge/pypi-v0.9-green.svg)]() 
+[![PyPI](https://img.shields.io/badge/pypi-v0.9-yellow.svg)]() 
 [![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)]() 
 
 
@@ -69,4 +69,4 @@ And manually install it using the following command in the repository directory:
 
 Extensive documentation for GemPy is hosted at [gempy.readthedocs.io](http://gempy.readthedocs.io/),
 explaining its capabilities, [the theory behind it](http://gempy.readthedocs.io/Kriging.html) and 
-extensive providing detailed [tutorials](http://gempy.readthedocs.io/tutorial.html).
+ providing detailed [tutorials](http://gempy.readthedocs.io/tutorial.html) on how to use it.
