@@ -194,6 +194,7 @@ def select_series(geo_data, series):
         new_geo_data.foliations = geo_data.foliations[geo_data.foliations['series'].isin(series)]
     return new_geo_data
 
+
 def set_data_series(geo_data, series_distribution=None, order_series=None,
                         update_p_field=True, verbose=0):
 
