@@ -19,9 +19,15 @@ uncertainties.
 
 ## Examples
 
-Put one or two fancy examples here.
+GemPy uses interface (i.e. layer interface points, fault plane points) and foliation data 
+(i.e. dip values of the surfaces) as input. The following plot shows exemplatory input data of 
+four different lithology interfaces and a fault interface (blue), with only two dip 
+measurements (arrows).
  
-![alt text](/docs/readme_images/readme_input_data.png)
+![alt text](/docs/readme_images/readme_input_data.png, "text")
+
+From this input data GemPy can implicitly construct a full 3-D structural geological model:
+
 ![alt text](/docs/readme_images/readme_fault_model_block.png)
 
 ## Getting Started
@@ -61,3 +67,6 @@ And manually install it using the following command in the repository directory:
 
 ## Documentation
 
+Extensive documentation for GemPy is hosted at [gempy.readthedocs.io](http://gempy.readthedocs.io/),
+explaining its capabilities, [the theory behind it](http://gempy.readthedocs.io/Kriging.html) and 
+extensive providing detailed [tutorials](http://gempy.readthedocs.io/tutorial.html).
