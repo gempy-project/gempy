@@ -24,7 +24,7 @@ GemPy uses interface (i.e. layer interface points, fault plane points) and folia
 four different lithology interfaces and a fault interface (blue), with only two dip 
 measurements (arrows).
  
-![alt text](/docs/readme_images/readme_input_data.png, "text")
+![alt text](/docs/readme_images/readme_input_data.png)
 
 From this input data GemPy can implicitly construct a full 3-D structural geological model:
 
