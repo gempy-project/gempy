@@ -21,7 +21,7 @@ uncertainties.
 
 Put one or two fancy examples here.
  
-![alt text]("/docs/readme_images/readme_input_data.png")
+![alt text](/docs/readme_images/readme_input_data.png)
 ![alt text](/docs/readme_images/readme_fault_model_block.png)
 
 ## Getting Started
