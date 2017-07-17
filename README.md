@@ -12,7 +12,7 @@ uncertainties.
 ## Table of Contents
 
 * [Examples](##Examples)
-* [Getting Started](##Getting Started)
+* [Getting Started](##GettingStarted)
     * [Prerequisits](###Prerequisits)
     * [Installation](###Installation)
     
@@ -21,8 +21,7 @@ uncertainties.
 Put one or two fancy examples here.
  
 ![alt text]("/docs/readme_images/readme_input_data.png")
-
-
+![alt text](/docs/readme_images/readme_fault_model_block.png)
 
 ## Getting Started
 
