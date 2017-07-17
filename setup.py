@@ -4,6 +4,14 @@ setup(
     name='gempy',
     version='0.9',
     packages=['gempy'],
+    install_requires=[
+        'numpy',
+        'pandas',
+        'matplotlib',
+        'theano',
+        'skimage',
+        'vtk'
+    ],
     url='https://github.com/cgre-aachen/gempy',
     download_url='https://github.com/cgre-aachen/gempy/archive/0.9.tar.gz',
     license='MIT',
