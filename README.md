@@ -15,7 +15,8 @@ uncertainties.
 * [Getting Started](##GettingStarted)
     * [Prerequisits](###Prerequisits)
     * [Installation](###Installation)
-    
+* [Documentation](##Documentation)
+
 ## Examples
 
 Put one or two fancy examples here.
@@ -57,3 +58,6 @@ Otherwise you can clone the current repository:
 And manually install it using the following command in the repository directory:
 
 `$ python install.py`
+
+## Documentation
+
