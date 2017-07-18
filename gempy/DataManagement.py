@@ -1356,16 +1356,19 @@ class InterpolatorInput:
             # Ref layers matrix #VAR
             # Calculation of the ref matrix and tile. Iloc works with the row number
             # Here we extract the reference points
-            self.pandas_ref_layer_points = self._data_scaled.interfaces.iloc[ref_position].apply(
-                lambda x: np.repeat(x, len_interfaces - 1))
+            self.pandas_ref_layer_points = self._data_scaled.interfaces.iloc[ref_position]#.apply(
+              #  lambda x: np.repeat(x, len_interfaces - 1))
+            self.len_interfaces = len_interfaces
 
             #
             #
 
             #
-            ref_layer_points = self.pandas_ref_layer_points[['X', 'Y', 'Z']].as_matrix()
+            pandas_ref_layer_points_rep = self.pandas_ref_layer_points.apply(lambda x: np.repeat(x, len_interfaces - 1))
+            ref_layer_points = pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()
+
             # -DEP- was just a check point
-            self.ref_layer_points = ref_layer_points
+            # self.ref_layer_points = ref_layer_points
 
             # Check no reference points in rest points (at least in coor x)
             assert not any(ref_layer_points[:, 0]) in rest_layer_points[:, 0], \
