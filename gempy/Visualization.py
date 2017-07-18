@@ -40,10 +40,10 @@ class PlotData(object):
 
     def __init__(self, _data, cd_rgb=color_dict_rgb, cd_hex=color_dict_hex, **kwargs):
 
-        if _data.geo_data_type == 'InterpolatorInput':
-            self._data = _data.data
-        else:
-            self._data = _data
+        # if _data.geo_data_type == 'InterpolatorInput':
+        #     self._data = _data.data
+        # else:
+        #     self._data = _data
 
         if 'potential_field' in kwargs:
             self._potential_field_p = kwargs['potential_field']
