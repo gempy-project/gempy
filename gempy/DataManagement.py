@@ -1472,6 +1472,12 @@ class InterpolatorInput:
             self.tg.n_formations_per_serie.set_value(
                 np.insert(self._data_scaled.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0))
 
+            self.tg.final_potential_field_at_formations.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
+                                                                           dtype=self.dtype))
+            self.tg.final_potential_field_at_faults.set_value(
+                np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
+                         dtype=self.dtype))
+
         def get_kriging_parameters(self, verbose=0):
             # range
             print('range', self.tg.a_T.get_value(), self.tg.a_T.get_value() * self._data_scaled.rescaling_factor)

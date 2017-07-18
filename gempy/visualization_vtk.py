@@ -51,17 +51,37 @@ class vtkVisualization():
         # ///////////////////////////////////////////////////////////////////////////////////////////////////////
         for e, r in enumerate(self.ren_list):
             # add axes actor to all renderers
-            r.AddActor(self._create_axes(self.camera_list[e]))
+            axe = self._create_axes(self.camera_list[e])
+
+            r.AddActor(axe)
             r.ResetCamera()
 
-    def render_model(self):
+    def render_model(self, size=(1920, 1080), fullscreen=False):
 
         # initialize and start the app
+
+        if fullscreen:
+            self.renwin.FullScreenOn()
+        self.renwin.SetSize(size)
         self.interactor.Initialize()
         self.interactor.Start()
 
         # close_window(interactor)
         del self.renwin, self.interactor
+
+    def create_surface(self, vertices, simpleces, f, alpha=0.8 ):
+        surf_polydata = vtk.vtkPolyData()
+        surf_polydata.SetPoints(vertices)
+        surf_polydata.SetPolys(simpleces)
+
+        surf_mapper = vtk.vtkPolyData()
+        surf_mapper.SetInputData(surf_polydata)
+
+        surf_actor = vtk.vtkActor()
+        surf_actor.GetProperty().SetColor(self.C_LOT[f])
+        surf_actor.GetProperty().SetOpacity(alpha)
+
+        return surf_actor
 
     def create_sphere(self, X, Y, Z, f, n_sphere=0, n_render=0, n_index=0, r=0.03):
         s = vtk.vtkSphereWidget()
@@ -84,7 +104,7 @@ class vtkVisualization():
 
     def create_foliation(self, X, Y, Z, f,
                                Gx, Gy, Gz,
-                               n_sphere=0, n_render=0, n_index=0, r=0.1):
+                               n_sphere=0, n_render=0, n_index=0, r=0.1, alpha=0.5):
         d = vtk.vtkPlaneWidget()
         d.SetInteractor(self.interactor)
         d.SetRepresentationToSurface()
@@ -102,7 +122,7 @@ class vtkVisualization():
         d.SetNormal(Gx, Gy, Gz)
         d.GetPlaneProperty().SetColor(self.C_LOT[f])
         d.GetHandleProperty().SetColor(self.C_LOT[f])
-        d.GetHandleProperty().SetOpacity(0.5)
+        d.GetHandleProperty().SetOpacity(alpha)
         d.SetCurrentRenderer(self.ren_list[n_render])
         d.n_plane = n_sphere
         d.n_render = n_render
@@ -112,6 +132,16 @@ class vtkVisualization():
         d.On()
 
         return d
+
+    def set_surfaces(self, surfaces):
+
+        self.s_rend_1 = []
+        self.s_rend_2 = []
+        self.s_rend_3 = []
+        self.s_rend_4 = []
+
+        pass
+
 
     def set_interfaces(self):
         self.s_rend_1 = []
@@ -347,8 +377,8 @@ class vtkVisualization():
         # define background colors of the renderers
         # TODO: Tune renderer colors
         # TODO: Try to make renderer titles (floating text?!)
-        ren_color = [(66 / 250, 66 / 250, 66 / 250), (0.5, 0., 0.1), (0.1, 0.5, 0.1), (0.1, 0.1, 0.5)]
-
+      #  ren_color = [(66 / 250, 66 / 250, 66 / 250), (0.5, 0., 0.1), (0.1, 0.5, 0.1), (0.1, 0.1, 0.5)]
+        ren_color = [(66 / 250, 66 / 250, 66 / 250), (60 / 250, 60 / 250, 60 / 250), (60 / 250, 60 / 250, 60 / 250), (60 / 250, 60 / 250, 60 / 250)]
         for i in range(self.n_ren):
             # set active camera for each renderer
             self.ren_list[i].SetActiveCamera(self.camera_list[i])

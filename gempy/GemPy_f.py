@@ -34,73 +34,6 @@ from IPython.core.debugger import Tracer
 # from .Topology import Topology
 
 
-
-
-# DEP?
-# def rescale_data(geo_data, rescaling_factor=None):
-#     """
-#     Rescale the data of a DataManagement object between 0 and 1 due to stability problem of the float32.
-#     Args:
-#         geo_data: DataManagement object with the real scale data
-#         rescaling_factor(float): factor of the rescaling. Default to maximum distance in one the axis
-#
-#     Returns:
-#
-#     """
-#     max_coord = _pn.concat(
-#         [geo_data.foliations, geo_data.interfaces]).max()[['X', 'Y', 'Z']]
-#     min_coord = _pn.concat(
-#         [geo_data.foliations, geo_data.interfaces]).min()[['X', 'Y', 'Z']]
-#
-#     if not rescaling_factor:
-#         rescaling_factor = 2*_np.max(max_coord - min_coord)
-#
-#     centers = (max_coord+min_coord)/2
-#
-#     new_coord_interfaces = (geo_data.interfaces[['X', 'Y', 'Z']] -
-#                            centers) / rescaling_factor + 0.5001
-#
-#     new_coord_foliations = (geo_data.foliations[['X', 'Y', 'Z']] -
-#                            centers) / rescaling_factor + 0.5001
-#
-#     new_coord_extent = (geo_data.extent - _np.repeat(centers, 2)) / rescaling_factor + 0.5001
-#
-#     geo_data_rescaled = copy.deepcopy(geo_data)
-#     geo_data_rescaled.interfaces[['X', 'Y', 'Z']] = new_coord_interfaces
-#     geo_data_rescaled.foliations[['X', 'Y', 'Z']] = new_coord_foliations
-#     geo_data_rescaled.extent = new_coord_extent.as_matrix()
-#
-#     geo_data_rescaled.grid.grid = (geo_data.grid.grid - centers.as_matrix()) /rescaling_factor + 0.5001
-#
-#     geo_data_rescaled.rescaling_factor = rescaling_factor
-#
-#     return geo_data_rescaled
-
-# TODO needs to be updated
-# def compute_block_model(geo_data, series_number="all",
-#                         series_distribution=None, order_series=None,
-#                         extent=None, resolution=None, grid_type="regular_3D",
-#                         verbose=0, **kwargs):
-#
-#     if extent or resolution:
-#         set_grid(geo_data, extent=extent, resolution=resolution, grid_type=grid_type, **kwargs)
-#
-#     if series_distribution:
-#         set_data_series(geo_data, series_distribution=series_distribution, order_series=order_series, verbose=0)
-#
-#     if not getattr(geo_data, 'interpolator', None):
-#         import warnings
-#
-#         warnings.warn('Using default interpolation values')
-#         set_interpolator(geo_data)
-#
-#     geo_data.interpolator.tg.final_block.set_value(_np.zeros_like(geo_data.grid.grid[:, 0]))
-#
-#     geo_data.interpolator.compute_block_model(series_number=series_number, verbose=verbose)
-#
-#     return geo_data.interpolator.tg.final_block
-
-
 def data_to_pickle(geo_data, path=False):
 
     geo_data.data_to_pickle(path)
@@ -257,49 +190,6 @@ def set_grid(geo_data, new_grid=None, extent=None, resolution=None, grid_type="r
 
         geo_data.grid = geo_data.GridClass(extent, resolution, grid_type=grid_type, **kwargs)
 
-#DEP?
-# def set_interpolator(geo_data,  *args, **kwargs):
-#     """
-#     Method to initialize the class interpolator. All the constant parameters for the interpolation can be passed
-#     as args, otherwise they will take the default value (TODO: documentation of the dafault values)
-#
-#     Args:
-#         *args: Variable length argument list
-#         **kwargs: Arbitrary keyword arguments.
-#
-#     Keyword Args:
-#         range_var: Range of the variogram. Default None
-#         c_o: Covariance at 0. Default None
-#         nugget_effect: Nugget effect of the gradients. Default 0.01
-#         u_grade: Grade of the polynomial used in the universal part of the Kriging. Default 2
-#         rescaling_factor: Magic factor that multiplies the covariances). Default 2
-#
-#     Returns:
-#         self.Interpolator (GeMpy_core.Interpolator): Object to perform the potential field method
-#         self.Plot(GeMpy_core.PlotData): Object to visualize data and results. It gets updated.
-#     """
-#
-#     rescaling_factor = kwargs.get('rescaling_factor', None)
-#
-#     if 'u_grade' in kwargs:
-#         compile_theano = True
-#
-#     if not getattr(geo_data, 'grid', None):
-#         set_grid(geo_data)
-#
-#     geo_data_int = rescale_data(geo_data, rescaling_factor=rescaling_factor)
-#
-#     if not getattr(geo_data_int, 'interpolator', None) or compile_theano:
-#         print('I am in the setting')
-#         geo_data_int.interpolator = geo_data_int.InterpolatorClass(geo_data_int, geo_data_int.grid,
-#                                                                    *args, **kwargs)
-#     else:
-#         geo_data_int.interpolator._data = geo_data_int
-#         geo_data_int.interpolator._grid = geo_data_int.grid
-#         geo_data_int.interpolator.set_theano_shared_parameteres(geo_data_int, geo_data_int.interpolator._grid, **kwargs)
-#
-#     return geo_data_int
-
 
 def plot_data(geo_data, direction="y", series="all", **kwargs):
     plot = PlotData(geo_data)
@@ -327,11 +217,6 @@ def plot_data_3D(geo_data):
     r, i = visualize(geo_data)
     del r, i
     return None
-
-
-# DEP
-# def compute_potential_fields(geo_data, verbose=0):
-#     geo_data.interpolator.compute_potential_fields(verbose=verbose)
 
 
 def set_interpolation_data(geo_data, **kwargs):
@@ -392,5 +277,5 @@ def compute_model(interp_data, u_grade=None):
         interp_data.compile_th_fn()
 
     i = interp_data.get_input_data(u_grade=u_grade)
-    sol = interp_data.th_fn(*i)
+    sol, interp_data.potential_at_interfaces = interp_data.th_fn(*i)
     return _np.squeeze(sol)
