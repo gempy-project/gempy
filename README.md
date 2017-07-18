@@ -1,44 +1,72 @@
-Welcome to GeMpy's documentation!
-=================================
-#### A 3D Structural geologic implicit modelling in python. (v 0.3)
+# GemPy
 
-GeMpy is an opensource project for the generation of 3D structural geological modelling. The algorithm is based on a especial type of Universal cokrigin interpolation created by Laujaunie et al (1997) and developed along the past years by (*add many more papers!!!*). This tool allows the generation of models with relative complex structures just from data. 
-
-The results look like this:
-
-![img](https://github.com/nre-aachen/GeMpy/blob/master/docs/source/images/sandstone_example.png)
-
-Its implicit nature allows the user to generate complete 3D geological models through the interpolation of:
-- Interfaces points: 3D points in space that delimit the different formation in a given setting.
-- Foliations: Measurements of the poles (perpendicular to the layer) at any point in the 3D space.
-
-![img](https://github.com/nre-aachen/GeMpy/blob/master/docs/source/images/input_example.png)
-
-In addition to the interpolation GeMpy has been created with the idea of perform Bayesian Inferences in geological modeling (de la Varga and Wellmann, 2016). Due to this, the whole interpolation algorithm has been written in the optimization packge theano (http://deeplearning.net/software/theano/) what allows the computation of gradients opening the door to the use of advance HMC methods coupling GeMpy and PyMC3 (https://pymc-devs.github.io/pymc3/notebooks/getting_started.html). Also, the use of theano allows the use of the GPU through cuda (see theano doc for more information).
+[![PyPI](https://img.shields.io/badge/pypi-v0.9-yellow.svg)]() 
+[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)]() 
 
 
-### Documentation
-------------------
-The documentation is hosted in http://gempy.readthedocs.io
+GemPy is an open-source, Python-based 3-D structural geological modeling software, 
+which allows the implicit (i.e. automatic) creation of complex geological models from interface 
+and foliation data. It also sports support for stochastic modeling to adress parameter and model
+uncertainties.
+
+## Table of Contents
+
+* [Examples](##Examples)
+* [Getting Started](##GettingStarted)
+    * [Prerequisits](###Prerequisits)
+    * [Installation](###Installation)
+* [Documentation](##Documentation)
+
+## Examples
+
+GemPy uses interface (i.e. layer interface points, fault plane points) and foliation data 
+(i.e. dip values of the surfaces) as input. The following plot shows exemplatory input data of 
+four different lithology interfaces and a fault interface (blue), with only two dip 
+measurements (arrows).
+ 
+![alt text](/docs/readme_images/readme_input_data.png)
+
+From this input data GemPy can implicitly construct a full 3-D structural geological model:
+
+![alt text](/docs/readme_images/readme_fault_model_block.png)
+
+## Getting Started
+
+### Prerequisits
+
+GemPy requires `Python 3.X` and makes use of numerous open-source libraries:
+
+* `numpy`
+* `pandas`
+* `matplotlib`
+* `theano`
+
+Optional:
+
+* `vtk` for interactive 3-D visualization (VTK v. 7.X is required for Python 3)
+* `skimage` and `networkx` for 3-D topology analysis and graph handling
+
+Overall we recommend the use of a dedicated Python distribution, such as 
+[Anaconda](https://www.continuum.io/what-is-anaconda), for hassle-free package installation. 
+We are curently working on providing GemPy also via Anaconda Cloud, for easier installation of 
+its dependencies.
 
 ### Installation
-----------------
 
-GeMpy is in a development state and therefore the easiest way to install it is running
+Installing the latest release version of GemPy itself is easily done using PyPI:
 
-    python setup.py install
+`$ pip install gempy`
 
-### How to get started
-----------------------
+Otherwise you can clone the current repository:
 
-In the folder Prototype Notebooks you can find a couple of examples where you can learn how to generate and visualize some models
+`$ git clone https://github.com/cgre-aachen/gempy.git`
 
-### Depencdencies
------------------
+And manually install it using the following command in the repository directory:
 
-GeMpy is built making use of theano what complicates the installation proces (we recommend to use Linux for this matter).
-Beside theano some the python packages used in GeMpy are:
-- numpy
-- matplotlib
-- pandas
-- vtk
+`$ python install.py`
+
+## Documentation
+
+Extensive documentation for GemPy is hosted at [gempy.readthedocs.io](http://gempy.readthedocs.io/),
+explaining its capabilities, [the theory behind it](http://gempy.readthedocs.io/Kriging.html) and 
+ providing detailed [tutorials](http://gempy.readthedocs.io/tutorial.html) on how to use it.

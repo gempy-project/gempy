@@ -127,6 +127,7 @@ def select_series(geo_data, series):
         new_geo_data.foliations = geo_data.foliations[geo_data.foliations['series'].isin(series)]
     return new_geo_data
 
+
 def set_data_series(geo_data, series_distribution=None, order_series=None,
                         update_p_field=True, verbose=0):
 
@@ -142,6 +143,12 @@ def set_data_series(geo_data, series_distribution=None, order_series=None,
 
 
 def set_interfaces(geo_data, interf_Dataframe, append=False, update_p_field=True):
+    """
+     Method to change or append a Dataframe to interfaces in place.
+     Args:
+         interf_Dataframe: pandas.core.frame.DataFrame with the data
+         append: Bool: if you want to append the new data frame or substitute it
+     """
     geo_data.set_interfaces(interf_Dataframe, append=append)
     # To update the interpolator parameters without calling a new object
     try:

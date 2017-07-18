@@ -1020,7 +1020,7 @@ class InterpolatorInput:
         new_coord_foliations = (geo_data.foliations[['X', 'Y', 'Z']] -
                                 centers) / rescaling_factor + 0.5001
         try:
-            print('I am here')
+            # print('I am here')
             geo_data.interfaces[['X_std', 'Y_std', 'Z_std']] = (geo_data.interfaces[
                                                                     ['X_std', 'Y_std', 'Z_std']]) / rescaling_factor
             geo_data.foliations[['X_std', 'Y_std', 'Z_std']] = (geo_data.foliations[
@@ -1112,7 +1112,7 @@ class InterpolatorInput:
 
         # First creation
         if not getattr(self, 'interpolator', None):
-            print('I am in the setting')
+            # print('I am in the setting')
             interpolator = self.InterpolatorClass(geo_data_in, geo_data_in.grid, *args, **kwargs)
 
         # Update
@@ -1256,7 +1256,7 @@ class InterpolatorInput:
 
             # Give formation number
             if not 'formation number' in self._data_scaled.interfaces.columns:
-                print('I am here')
+                # print('I am here')
                 self.set_formation_number()
 
             # We order the pandas table by formation (also by series in case something weird happened)
