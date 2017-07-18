@@ -1360,10 +1360,7 @@ class InterpolatorInput:
               #  lambda x: np.repeat(x, len_interfaces - 1))
             self.len_interfaces = len_interfaces
 
-            #
-            #
 
-            #
             pandas_ref_layer_points_rep = self.pandas_ref_layer_points.apply(lambda x: np.repeat(x, len_interfaces - 1))
             ref_layer_points = pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()
 

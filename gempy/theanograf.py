@@ -1243,7 +1243,7 @@ class TheanoGraph_pro(object):
             if 'faults block' in self.verbose:
                 self.fault_matrix = theano.printing.Print('I am outside the faults')(fault_matrix[-1])
         else:
-            pfai_fault = 0
+            pfai_fault = T.vector()
        # self.u_grade_T = theano.printing.Print('drift degree')(self.u_grade_T)
        # self.a_T = theano.printing.Print('range')(self.a_T)
         self.compute_all = compute_all
@@ -1262,13 +1262,6 @@ class TheanoGraph_pro(object):
                                dict(input=self.len_series_f[n_faults:], taps=[0, 1]),
                                dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),
                                dict(input=self.u_grade_T[n_faults:], taps=[0])]
-                # all_series_pf, updates3 = theano.scan(
-                #      fn=self.compute_a_series,
-                #      outputs_info=final_block_init,
-                #      sequences=[dict(input=self.len_series_i[n_faults:], taps=[0, 1]),
-                #                 dict(input=self.len_series_f[n_faults:], taps=[0, 1]),
-                #                 dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),
-                #                 dict(input=self.u_grade_T[n_faults:], taps=[0])]
                 )
 
             else:
@@ -1284,14 +1277,17 @@ class TheanoGraph_pro(object):
 
             all_series = loop_results[0]
             pfai_for = loop_results[1]
+            if n_faults == 0:
+                pfai = pfai_for
+            else:
+                pfai = T.vertical_stack(pfai_fault, pfai_for)
         else:
             # We just pass the faults block
             all_series = self.fault_matrix
-            pfai_for = 0
+            pfai = pfai_fault
 
-        pfai = T.vertical_stack(pfai_fault, pfai_for)
+       # pfai = T.vertical_stack(pfai_fault, pfai_for)
         #self.pot_value.set_value(self.final_potential_field_at_interfaces)
-        nothing = theano.shared(2)
         return all_series, pfai
 
     # ==================================

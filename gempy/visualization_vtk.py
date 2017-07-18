@@ -4,6 +4,7 @@ import sys
 import numpy as np
 from gempy.colors import *
 
+
 class vtkVisualization():
     def __init__(self, geo_data,  verbose=0,  win_size=(1000, 800),
                  ren_name='GemPy 3D-Editor',
@@ -537,7 +538,9 @@ def visualize(geo_data,
             # TODO: Hand down correct iso-surface colors for each layer interface
             surfaces.append(CustomPolyData(color=C_LOT[geo_data.formations[c]],
                                            surface_alpha=surface_alpha))  # vtk.vtkPolyData
-            surfaces[-1].SetPoints(_pf_p)
+            surfaces[-1].SetPoints(
+
+            )
             surfaces[-1].SetPolys(_pf_tris)
 
         # create surface mappers and actors
