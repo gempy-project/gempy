@@ -43,7 +43,7 @@ class PlotData(object):
         # if _data.geo_data_type == 'InterpolatorInput':
         #     self._data = _data.data
         # else:
-        #     self._data = _data
+        self._data = _data
 
         if 'potential_field' in kwargs:
             self._potential_field_p = kwargs['potential_field']
