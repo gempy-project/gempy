@@ -13,5 +13,4 @@ Code
     :members:
 .. automodule:: Visualization
     :members:
-.. automodule:: visualization_vtk
-    :members:
+

@@ -46,24 +46,24 @@
             
   <div class="section" id="chapter-4-bayesian-statistics-working-in-progress-proof-of-concept">
 <h1>Chapter 4: Bayesian Statistics (Working in progress proof of concept)<a class="headerlink" href="#chapter-4-bayesian-statistics-working-in-progress-proof-of-concept" title="Permalink to this headline">¶</a></h1>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1"># These two lines are necessary only if gempy is not installed</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># These two lines are necessary only if gempy is not installed</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../&quot;</span><span class="p">)</span>
 
 <span class="c1"># Importing gempy</span>
-<span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="kn">as</span> <span class="nn">gp</span>
 
 <span class="c1"># Embedding matplotlib figures into the notebooks</span>
-<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
 
 <span class="c1"># Aux imports</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
 </pre></div>
 </div>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s1">&#39;../input_data/sandstone.pickle&#39;</span><span class="p">)</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s1">&#39;../input_data/sandstone.pickle&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Assigning series to formations as well as their order (timewise)</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Assigning series to formations as well as their order (timewise)</span>
 <span class="n">gp</span><span class="o">.</span><span class="n">set_data_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;EarlyGranite_Series&quot;</span><span class="p">:</span> <span class="s1">&#39;EarlyGranite&#39;</span><span class="p">,</span>
                               <span class="s2">&quot;BIF_Series&quot;</span><span class="p">:(</span><span class="s1">&#39;SimpleMafic2&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpleBIF&#39;</span><span class="p">),</span>
                               <span class="s2">&quot;SimpleMafic_Series&quot;</span><span class="p">:</span><span class="s1">&#39;SimpleMafic1&#39;</span><span class="p">},</span>
@@ -111,11 +111,11 @@
   </tbody>
 </table>
 </div><p>Setting uncertainties adding the values to the Dataframe.</p>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;X_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;X_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
 <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;Y_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;Z_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
 
-<span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;X_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;X_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
 <span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;Y_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 <span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;Z_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
 
@@ -264,12 +264,12 @@
     </tr>
   </tbody>
 </table>
-</div><div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1"># input_data_T = interp_data.interpolator.tg.input_parameters_list()</span>
+</div><div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># input_data_T = interp_data.interpolator.tg.input_parameters_list()</span>
 <span class="c1"># input_data_P = interp_data.get_input_data(u_grade=[3, 3])</span>
 <span class="c1"># select = interp_data.interpolator.pandas_rest_layer_points[&#39;formation&#39;] == &#39;Reservoir&#39;</span>
 </pre></div>
 </div>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">compile_theano</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">compile_theano</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
                                    <span class="n">u_grade</span><span class="o">=</span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">])</span>
 </pre></div>
 </div>
@@ -281,8 +281,8 @@
 </div>
 <p>Now the generation of the geomodel will be an operation embedded in a
 larger tree.</p>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">theano</span>
-<span class="kn">import</span> <span class="nn">theano.tensor</span> <span class="k">as</span> <span class="nn">T</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">theano</span>
+<span class="kn">import</span> <span class="nn">theano.tensor</span> <span class="kn">as</span> <span class="nn">T</span>
 <span class="n">geomodel</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">OpFromGraph</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">input_parameters_list</span><span class="p">(),</span>
                               <span class="p">[</span><span class="n">interp_data</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">whole_block_model</span><span class="p">(</span><span class="mi">0</span><span class="p">)],</span>
                               <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
@@ -299,8 +299,8 @@ Now the trick is that using the theano function T.set_subtensor, we can
 change one deterministic value of the input arrays(the ones printed in
 the cell above) by a stochastic pymc3 object. Then with the new arrays
 we just have to call the theano operation and pymc will do the rest</p>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1"># This is the creation of the model</span>
-<span class="kn">import</span> <span class="nn">pymc3</span> <span class="k">as</span> <span class="nn">pm</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># This is the creation of the model</span>
+<span class="kn">import</span> <span class="nn">pymc3</span> <span class="kn">as</span> <span class="nn">pm</span>
 <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">compute_test_value</span> <span class="o">=</span> <span class="s1">&#39;off&#39;</span>
 <span class="c1">#theano.config.warn_float64 = &#39;warn&#39;</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Model</span><span class="p">()</span>
@@ -343,14 +343,14 @@ we just have to call the theano operation and pymc will do the rest</p>
   <span class="s1">&#39; condition number: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rcond</span><span class="p">),</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">compute_test_value</span> <span class="o">=</span> <span class="s1">&#39;ignore&#39;</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">compute_test_value</span> <span class="o">=</span> <span class="s1">&#39;ignore&#39;</span>
 <span class="c1"># This is the sampling</span>
 <span class="c1"># BEFORE RUN THIS FOR LONG CHECK IN THE MODULE THEANOGRAF THAT THE FLAG</span>
 <span class="c1"># THEANO OPTIMIZER IS IN &#39;fast_run&#39;!!</span>
 <span class="k">with</span> <span class="n">model</span><span class="p">:</span>
    <span class="c1"># backend = pm.backends.ndarray.NDArray(&#39;geomodels&#39;)</span>
     <span class="n">step</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">NUTS</span><span class="p">()</span>
-    <span class="n">trace</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span> <span class="p">)</span>
+    <span class="n">trace</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span> <span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span>  0%|          | 0/40 [00:00&lt;?, ?it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
@@ -415,10 +415,10 @@ Reciprocal condition number: 3.935079107009187e-08
   &#39;reparameterize.&#39; % self._chain_id)
 </pre></div>
 </div>
-<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">trace</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s1">&#39;GemPy&#39;</span><span class="p">)[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="mi">13</span><span class="p">,</span>
-                       <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                       <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>

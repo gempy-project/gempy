@@ -201,7 +201,7 @@ and default of for the grid class.</li>
 <dt id="DataManagement.InputData">
 <em class="property">class </em><code class="descclassname">DataManagement.</code><code class="descname">InputData</code><span class="sig-paren">(</span><em>extent, resolution=[50, 50, 50], path_i=None, path_f=None, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InputData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InputData" title="Permalink to this definition">¶</a></dt>
 <dd><p>-DOCS NOT UPDATED- Class to import the raw data of the model and set data classifications into formations and series.
-This objects will contain the main information of the model/</p>
+This objects will contain the main information of the model.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -311,10 +311,32 @@ versions used to export and import the pickle differ it may give problems
 <dl class="method">
 <dt id="DataManagement.InputData.get_formation_number">
 <code class="descname">get_formation_number</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InputData.get_formation_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InputData.get_formation_number" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a dictionary with the key the name of the formation and the value their number
-:return:</p>
-<blockquote>
-<div>dict: key the name of the formation and the value their number</div></blockquote>
+<dd><p>Get a dictionary with the key the name of the formation and the value their number</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">key the name of the formation and the value their number</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="DataManagement.InputData.get_formations">
+<code class="descname">get_formations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InputData.get_formations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InputData.get_formations" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Returns a list of formations</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -484,8 +506,15 @@ the formations. All inplace</p>
 <dl class="method">
 <dt id="DataManagement.InputData.reset_indices">
 <code class="descname">reset_indices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InputData.reset_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InputData.reset_indices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Resets dataframe indices for foliations and interfaces.
-:returns: None</p>
+<dd><p>Resets dataframe indices for foliations and interfaces.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -518,7 +547,14 @@ append: Bool: if you want to append the new data frame or substitute it</dd>
 <dd><p>Set a unique number to each formation. NOTE: this method is getting deprecated since the user does not need
 to know it and also now the numbers must be set in the order of the series as well. Therefore this method
 has been moved to the interpolator class as preprocessing</p>
-<p>Returns: Column in the interfaces and foliations dataframes</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Column in the interfaces and foliations dataframes</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -575,6 +611,304 @@ self.foliations: one extra column with the given series</p>
 </td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self.series</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="DataManagement.InterpolatorInput">
+<em class="property">class </em><code class="descclassname">DataManagement.</code><code class="descname">InterpolatorInput</code><span class="sig-paren">(</span><em>geo_data</em>, <em>compile_theano=True</em>, <em>compute_all=True</em>, <em>u_grade=None</em>, <em>rescaling_factor=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>InterpolatorInput is a class that contains all the preprocessing operations to prepare the data to compute the model.
+Also is the object that has to be manipulated to vary the data without recompile the modeling function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>geo_data</strong> (<em>gempy.DataManagement.InputData</em>) – All values of a DataManagement object</li>
+<li><strong>compile_theano</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – select if the theano function is compiled during the initialization. Default: True</li>
+<li><strong>compute_all</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – <p>If true the solution gives back the block model of lithologies, the potential field and
+the block model of faults. If False only return the block model of lithologies. This may be important to speed</p>
+<blockquote>
+<div>up the computation. Default True</div></blockquote>
+</li>
+<li><strong>u_grade</strong> (<em>list</em>) – grade of the polynomial for the universal part of the Kriging interpolations. The value has to</li>
+<li><strong>either 0</strong><strong>, </strong><strong>3</strong><strong> or </strong><strong>9</strong> (<em>be</em>) – </li>
+<li><strong>on the number of points given as input to try to avoid singular matrix. NOTE</strong> (<em>depends</em>) – if during the computation</li>
+<li><strong>the model a singular matrix is returned try to reduce the u_grade of the series.</strong> (<em>of</em>) – </li>
+<li><strong>rescaling_factor</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – rescaling factor of the input data to improve the stability when float32 is used. By</li>
+<li><strong>the rescaling factor is calculated to obtein values between 0 and 1.</strong> (<em>defaut</em>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>dtype</strong> (<em>'str'</em>) – Choosing if using float32 or float64. This is important if is intended to use the GPU</li>
+<li><strong>Also InterpolatorClass kwargs</strong> (<em>See</em>) – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="DataManagement.InterpolatorInput.geo_data">
+<code class="descname">geo_data</code><a class="headerlink" href="#DataManagement.InterpolatorInput.geo_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Original gempy.DataManagement.InputData object</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="DataManagement.InterpolatorInput.geo_data_res">
+<code class="descname">geo_data_res</code><a class="headerlink" href="#DataManagement.InterpolatorInput.geo_data_res" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rescaled data. It has the same structure has gempy.InputData</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="DataManagement.InterpolatorInput.interpolator">
+<code class="descname">interpolator</code><a class="headerlink" href="#DataManagement.InterpolatorInput.interpolator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance of the gempy.DataManagement.InterpolaorInput.InterpolatorClass. See Also
+gempy.DataManagement.InterpolaorInput.InterpolatorClass docs
+th_fn: Theano function which compute the interpolation</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="DataManagement.InterpolatorInput.dtype">
+<code class="descname">dtype</code><a class="headerlink" href="#DataManagement.InterpolatorInput.dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>type of float</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="DataManagement.InterpolatorInput.InterpolatorClass">
+<em class="property">class </em><code class="descname">InterpolatorClass</code><span class="sig-paren">(</span><em>geo_data_res</em>, <em>grid_res=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.InterpolatorClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.InterpolatorClass" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>-DOCS NOT UPDATED-</dt>
+<dd>Class which contain all needed methods to perform potential field implicit modelling in theano.
+Here there are methods to modify the shared parameters of the theano graph as well as the final
+preparation of the data from DataFrames to numpy arrays</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>geo_data_res</strong> – Rescaled data. It has the same structure has gempy.InputData</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>range_var</strong> – Range of the variogram. Default None</li>
+<li><strong>c_o</strong> – Covariance at 0. Default None</li>
+<li><strong>nugget_effect</strong> – Nugget effect of the gradients. Default 0.01</li>
+<li><strong>u_grade</strong> – Grade of the polynomial used in the universal part of the Kriging. Default 2</li>
+<li><strong>rescaling_factor</strong> – Magic factor that multiplies the covariances). Default 2</li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Level of verbosity during the execution of the functions (up to 5). Default 0</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<dl class="method">
+<dt id="DataManagement.InterpolatorInput.InterpolatorClass.data_prep">
+<code class="descname">data_prep</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.InterpolatorClass.data_prep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.InterpolatorClass.data_prep" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ideally this method will extract the data from the pandas dataframes to individual numpy arrays to be input
+of the theano function. However since some of the shared parameters are function of these arrays shape I also
+set them here
+:returns:</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>List of arrays which are the input for the theano function:</dt>
+<dd><ul class="first last simple">
+<li>numpy.array: dips_position</li>
+<li>numpy.array: dip_angles</li>
+<li>numpy.array: azimuth</li>
+<li>numpy.array: polarity</li>
+<li>numpy.array: ref_layer_points</li>
+<li>numpy.array: rest_layer_points</li>
+</ul>
+</dd>
+</dl>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">idl (list)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="DataManagement.InterpolatorInput.InterpolatorClass.get_kriging_parameters">
+<code class="descname">get_kriging_parameters</code><span class="sig-paren">(</span><em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.InterpolatorClass.get_kriging_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.InterpolatorClass.get_kriging_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the kringing parameters
+:param verbose: if &gt; 0 print all the shape values as well.
+:type verbose: int</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="DataManagement.InterpolatorInput.InterpolatorClass.order_table">
+<code class="descname">order_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.InterpolatorClass.order_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.InterpolatorClass.order_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>First we sort the dataframes by the series age. Then we set a unique number for every formation and resort
+the formations. All inplace</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="DataManagement.InterpolatorInput.InterpolatorClass.set_formation_number">
+<code class="descname">set_formation_number</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.InterpolatorClass.set_formation_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.InterpolatorClass.set_formation_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a unique number to each formation. NOTE: this method is getting deprecated since the user does not need
+to know it and also now the numbers must be set in the order of the series as well. Therefore this method
+has been moved to the interpolator class as preprocessing</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Column in the interfaces and foliations dataframes</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="DataManagement.InterpolatorInput.InterpolatorClass.set_theano_shared_parameteres">
+<code class="descname">set_theano_shared_parameteres</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.InterpolatorClass.set_theano_shared_parameteres"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.InterpolatorClass.set_theano_shared_parameteres" title="Permalink to this definition">¶</a></dt>
+<dd><p>Here we create most of the kriging parameters. The user can pass them as kwargs otherwise we pick the
+default values from the DataManagement info. The share variables are set in place. All the parameters here
+are independent of the input data so this function only has to be called if you change the extent or grid or
+if you want to change one the kriging parameters.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>u_grade</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Drift grade. Default to 2.</li>
+<li><strong>range_var</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Range of the variogram. Default 3D diagonal of the extent</li>
+<li><strong>c_o</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Covariance at lag 0. Default range_var ** 2 / 14 / 3. See my paper when I write it</li>
+<li><strong>nugget_effect</strong> (<em>flaot</em>) – Nugget effect of foliations. Default to 0.01</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="method">
+<dt id="DataManagement.InterpolatorInput.compile_th_fn">
+<code class="descname">compile_th_fn</code><span class="sig-paren">(</span><em>compute_all=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.compile_th_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.compile_th_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compile the theano function given the input data.
+:param compute_all: If true the solution gives back the block model of lithologies, the potential field and</p>
+<blockquote>
+<div><dl class="docutils">
+<dt>the block model of faults. If False only return the block model of lithologies. This may be important to speed</dt>
+<dd>up the computation. Default True</dd>
+</dl>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Compiled function if C or CUDA which computes the interpolation given the input data
+(XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="DataManagement.InterpolatorInput.get_formation_number">
+<code class="descname">get_formation_number</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.get_formation_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.get_formation_number" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a dictionary with the key the name of the formation and the value their number</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">key the name of the formation and the value their number</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="DataManagement.InterpolatorInput.get_input_data">
+<code class="descname">get_input_data</code><span class="sig-paren">(</span><em>u_grade=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.get_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.get_input_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the theano variables that are input. This are necessary to compile the theano function
+or a theno op for pymc3
+:param u_grade: grade of the polynomial for the universal part of the Kriging interpolations. The value has to
+:type u_grade: list</p>
+<blockquote>
+<div>be either 0, 3 or 9 (number of equations) and the length has to be the number of series. By default the value
+depends on the number of points given as input to try to avoid singular matrix. NOTE: if during the computation
+of the model a singular matrix is returned try to reduce the u_grade of the series.</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">input nodes of the theano graph</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.variables</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="DataManagement.InterpolatorInput.rescale_data">
+<code class="descname">rescale_data</code><span class="sig-paren">(</span><em>geo_data</em>, <em>rescaling_factor=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.rescale_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.rescale_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rescale the data of a DataManagement object between 0 and 1 due to stability problem of the float32.
+:param geo_data: Original gempy.DataManagement.InputData object
+:param rescaling_factor: factor of the rescaling. Default to maximum distance in one the axis
+:type rescaling_factor: float</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Rescaled data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">gempy.DataManagement.InputData</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="DataManagement.InterpolatorInput.update_interpolator">
+<code class="descname">update_interpolator</code><span class="sig-paren">(</span><em>geo_data_res=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.update_interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.update_interpolator" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Method to update the constant parameters of the class interpolator (i.e. theano shared).</dt>
+<dd>All the constant parameters for the interpolation can be passed</dd>
+</dl>
+<p>as kwargs, otherwise they will take the default value (TODO: documentation of the dafault values)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>geo_data_res</strong> – Rescaled gempy.DataManagement.InputData object.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>range_var</strong> – Range of the variogram. Default None</li>
+<li><strong>c_o</strong> – Covariance at 0. Default None</li>
+<li><strong>nugget_effect</strong> – Nugget effect of the gradients. Default 0.01</li>
+<li><strong>u_grade</strong> – Grade of the polynomial used in the universal part of the Kriging. Default 2</li>
+</ul>
 </td>
 </tr>
 </tbody>
