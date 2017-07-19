@@ -463,7 +463,8 @@ class InputData(object):
         to know it and also now the numbers must be set in the order of the series as well. Therefore this method
         has been moved to the interpolator class as preprocessing
 
-        Returns: Column in the interfaces and foliations dataframes
+        Returns:
+            Column in the interfaces and foliations dataframes
         """
         if not formation_order:
             formation_order = self.interfaces["formation"].unique()
@@ -478,6 +479,7 @@ class InputData(object):
     def reset_indices(self):
         """
         Resets dataframe indices for foliations and interfaces.
+
         Returns:
             None
         """
@@ -698,8 +700,8 @@ class InterpolatorInput:
         #self.extent = self.extent_rescaled.as_matrix()
 
         # Creating interpolator class with all the precompilation options
-        self.interpolator = self.set_interpolator(**kwargs)
-
+        # --DEP-- self.interpolator = self.set_interpolator(**kwargs)
+        self.interpolator = self.InterpolatorClass(self.geo_data_res, self.geo_data_res.grid, **kwargs)
         if compile_theano:
             self.th_fn = self.compile_th_fn(compute_all=compute_all)
 
@@ -715,7 +717,6 @@ class InterpolatorInput:
             theano.function: Compiled function if C or CUDA which computes the interpolation given the input data
             (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
         """
-
 
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.interpolator.tg.input_parameters_list()
@@ -803,33 +804,117 @@ class InterpolatorInput:
         ip_addresses['DefaultBasement'] = 0
         return ip_addresses
 
-    # DEP?
-    def set_airbore_plane(self, z, res_grav):
+    # --DEP--
+    # def set_interpolator(self, geo_data=None, **kwargs):
+    #     """
+    #     Method to initialize the class interpolator. All the constant parameters for the interpolation can be passed
+    #     as args, otherwise they will take the default value (TODO: documentation of the dafault values)
+    #
+    #     Args:
+    #         geo_data: Original gempy.DataManagement.InputData object. If given it rescales it again Default takes the property
+    #
+    #     Keyword Args:
+    #         range_var: Range of the variogram. Default None
+    #         c_o: Covariance at 0. Default None
+    #         nugget_effect: Nugget effect of the gradients. Default 0.01
+    #         u_grade: Grade of the polynomial used in the universal part of the Kriging. Default 2
+    #         rescaling_factor: Magic factor that multiplies the covariances). Default 2
+    #
+    #     Returns:
+    #         self.Interpolator (GeMpy_core.Interpolator): Object to perform the potential field method
+    #     """
+    #
+    #     if 'u_grade' in kwargs:
+    #         compile_theano = True
+    #
+    #     range_var = kwargs.get('range_var', None)
+    #
+    #     rescaling_factor = kwargs.get('rescaling_factor', None)
+    #
+    #     if geo_data:
+    #         geo_data_in = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
+    #         self.geo_data_res = geo_data_in
+    #     else:
+    #         geo_data_in = self.geo_data_res
+    #
+    #     # First creation
+    #     if not getattr(self, 'interpolator', None):
+    #         # print('I am in the setting')
+    #         interpolator = self.InterpolatorClass(geo_data_in, geo_data_in.grid, **kwargs)
+    #
+    #     # Update
+    #     else:
+    #         print('I am in update')
+    #         # I update the data
+    #         self.interpolator._data_scaled = geo_data_in
+    #         self.interpolator._grid_scaled = geo_data_in.grid
+    #         # I order it again just in case. TODO if this still necessary
+    #         self.interpolator.order_table()
+    #
+    #         # Refresh all shared parameters of
+    #         self.interpolator.set_theano_shared_parameteres(range_var=range_var)
+    #         interpolator = None
+    #
+    #     return interpolator
 
-        # Rescale z
-        z_res = (z-self.centers[2])/self.rescaling_factor + 0.5001
-
-        # Create xy meshgrid
-        xy = np.meshgrid(np.linspace(self.extent_rescaled.iloc[0],
-                                     self.extent_rescaled.iloc[1], res_grav[0]),
-                         np.linspace(self.extent_rescaled.iloc[2],
-                                     self.extent_rescaled.iloc[3], res_grav[1]))
-        z = np.ones(res_grav[0]*res_grav[1])*z_res
-
-        # Transformation
-        xy_ravel = np.vstack(map(np.ravel, xy))
-        airborne_plane = np.vstack((xy_ravel, z)).T.astype(self.dtype)
-
-        return airborne_plane
-
-    def set_interpolator(self, geo_data = None, *args, **kwargs):
+    def update_interpolator(self, geo_data_res=None, **kwargs):
         """
-        Method to initialize the class interpolator. All the constant parameters for the interpolation can be passed
-        as args, otherwise they will take the default value (TODO: documentation of the dafault values)
+        Method to update the constant parameters of the class interpolator (i.e. theano shared).
+         All the constant parameters for the interpolation can be passed
+        as kwargs, otherwise they will take the default value (TODO: documentation of the dafault values)
 
         Args:
-            *args: Variable length argument list
-            **kwargs: Arbitrary keyword arguments.
+            geo_data_res: Rescaled gempy.DataManagement.InputData object.
+
+        Keyword Args:
+           range_var: Range of the variogram. Default None
+           c_o: Covariance at 0. Default None
+           nugget_effect: Nugget effect of the gradients. Default 0.01
+           u_grade: Grade of the polynomial used in the universal part of the Kriging. Default 2
+        """
+
+        if geo_data_res:
+            geo_data_in = geo_data_res
+            self.geo_data_res = geo_data_in
+        else:
+            geo_data_in = self.geo_data_res
+
+        print('I am in update')
+        # I update the data
+        self.interpolator.geo_data_res = geo_data_in
+        self.interpolator.grid_res = geo_data_in.grid
+        # I order it again just in case. TODO if this still necessary
+        self.interpolator.order_table()
+        self.interpolator.set_theano_shared_parameteres(**kwargs)
+
+    def get_input_data(self, u_grade=None):
+        """
+        Get the theano variables that are input. This are necessary to compile the theano function
+        or a theno op for pymc3
+        Args:
+             u_grade (list): grade of the polynomial for the universal part of the Kriging interpolations. The value has to
+            be either 0, 3 or 9 (number of equations) and the length has to be the number of series. By default the value
+            depends on the number of points given as input to try to avoid singular matrix. NOTE: if during the computation
+            of the model a singular matrix is returned try to reduce the u_grade of the series.
+
+        Returns:
+            theano.variables: input nodes of the theano graph
+        """
+
+        if not u_grade:
+            u_grade = self.u_grade
+        return self.interpolator.data_prep(u_grade=u_grade)
+
+    class InterpolatorClass(object):
+        """
+        -DOCS NOT UPDATED-
+         Class which contain all needed methods to perform potential field implicit modelling in theano.
+         Here there are methods to modify the shared parameters of the theano graph as well as the final
+         preparation of the data from DataFrames to numpy arrays
+
+        Args:
+             geo_data_res (gempy.DataManagement.InterpolatorInput): Rescaled data. It has the same structure has gempy.InputData
+            grid(gempy.DataManagement.grid): A grid object rescaled. Default takes it from the InterpolatorInput object.
 
         Keyword Args:
             range_var: Range of the variogram. Default None
@@ -837,96 +922,10 @@ class InterpolatorInput:
             nugget_effect: Nugget effect of the gradients. Default 0.01
             u_grade: Grade of the polynomial used in the universal part of the Kriging. Default 2
             rescaling_factor: Magic factor that multiplies the covariances). Default 2
-
-        Returns:
-            self.Interpolator (GeMpy_core.Interpolator): Object to perform the potential field method
-            self.Plot(GeMpy_core.PlotData): Object to visualize data and results. It gets updated.
-        """
-
-        if 'u_grade' in kwargs:
-            compile_theano = True
-
-        range_var = kwargs.get('range_var', None)
-
-        rescaling_factor = kwargs.get('rescaling_factor', None)
-
-
-        #DEP?
-        #if not getattr(geo_data, 'grid', None):
-        #    set_grid(geo_data)
-
-        if geo_data:
-            geo_data_in = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
-            self.geo_data_res = geo_data_in
-        else:
-            geo_data_in = self.geo_data_res
-
-        # First creation
-        if not getattr(self, 'interpolator', None):
-            # print('I am in the setting')
-            interpolator = self.InterpolatorClass(geo_data_in, geo_data_in.grid, *args, **kwargs)
-
-        # Update
-        else:
-            print('I am in update')
-            self.interpolator._data_scaled = geo_data_in
-            self.interpolator._grid_scaled = geo_data_in.grid
-            self.interpolator.order_table()
-            self.interpolator.set_theano_shared_parameteres(range_var=range_var)
-            interpolator = None
-
-        return interpolator
-
-    def update_interpolator(self, geo_data=None, *args, **kwargs):
-        """
-        Update variables without compiling the theano function
-        Args:
-            geo_data:
-            *args:
-            **kwargs:
-
-        Returns:
-
-        """
-        if 'u_grade' in kwargs:
-            compile_theano = True
-
-        range_var = kwargs.get('range_var', None)
-
-        rescaling_factor = kwargs.get('rescaling_factor', None)
-
-
-        if geo_data:
-            geo_data_in = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
-            self.geo_data_res = geo_data_in
-        else:
-            geo_data_in = self.geo_data_res
-
-        print('I am in update')
-        self.interpolator._data_scaled = geo_data_in
-        self.interpolator._grid_scaled = geo_data_in.grid
-        self.interpolator.order_table()
-        self.interpolator.set_theano_shared_parameteres(range_var=range_var)
-
-    def get_input_data(self, u_grade=None):
-        if not u_grade:
-            u_grade = self.u_grade
-        return self.interpolator.data_prep(u_grade=u_grade)
-
-    class InterpolatorClass(object):
-        """
-        -DOCS NOT UPDATED- Class which contain all needed methods to perform potential field implicit modelling in theano
-
-        Args:
-            _data(GeMpy_core.DataManagement): All values of a DataManagement object
-            _grid(GeMpy_core.grid): A grid object
-            **kwargs: Arbitrary keyword arguments.
-
-        Keyword Args:
             verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0
         """
 
-        def __init__(self, _data_scaled, _grid_scaled=None, *args, **kwargs):
+        def __init__(self, geo_data_res, grid_res=None, **kwargs):
 
             # verbose is a list of strings. See theanograph
             verbose = kwargs.get('verbose', [0])
@@ -935,23 +934,24 @@ class InterpolatorInput:
             # Here we can change the dtype for stability and GPU vs CPU
             dtype = kwargs.get('dtype', 'float32')
             self.dtype = dtype
-            print(self.dtype)
+
+            if dtype in verbose:
+                print(self.dtype)
+
             range_var = kwargs.get('range_var', None)
 
             # Drift grade
             u_grade = kwargs.get('u_grade', [2, 2])
 
-
-
             # We hide the scaled copy of DataManagement object from the user. The scaling happens in gempy what is a
             # bit weird. Maybe at some point I should bring the function to this module
-            self._data_scaled = _data_scaled
+            self.geo_data_res = geo_data_res
 
             # In case someone wants to provide a grid otherwise we extract it from the DataManagement object.
-            if not _grid_scaled:
-                self._grid_scaled = _data_scaled.grid
+            if not grid_res:
+                self.grid_res = geo_data_res.grid
             else:
-                self._grid_scaled = _grid_scaled
+                self.grid_res = grid_res
 
             # Importing the theano graph. The methods of this object generate different parts of graph.
             # See theanograf doc
@@ -961,7 +961,7 @@ class InterpolatorInput:
             self.order_table()
 
             # Setting theano parameters
-            self.set_theano_shared_parameteres(range_var=range_var)
+            self.set_theano_shared_parameteres(**kwargs)
 
             # Extracting data from the pandas dataframe to numpy array in the required form for the theano function
             self.data_prep(u_grade=u_grade)
@@ -976,17 +976,18 @@ class InterpolatorInput:
 
         def set_formation_number(self):
             """
-                    Set a unique number to each formation. NOTE: this method is getting deprecated since the user does not need
-                    to know it and also now the numbers must be set in the order of the series as well. Therefore this method
-                    has been moved to the interpolator class as preprocessing
+            Set a unique number to each formation. NOTE: this method is getting deprecated since the user does not need
+            to know it and also now the numbers must be set in the order of the series as well. Therefore this method
+            has been moved to the interpolator class as preprocessing
 
-            Returns: Column in the interfaces and foliations dataframes
+            Returns:
+                Column in the interfaces and foliations dataframes
             """
             try:
-                ip_addresses = self._data_scaled.interfaces["formation"].unique()
+                ip_addresses = self.geo_data_res.interfaces["formation"].unique()
                 ip_dict = dict(zip(ip_addresses, range(1, len(ip_addresses) + 1)))
-                self._data_scaled.interfaces['formation number'] = self._data_scaled.interfaces['formation'].replace(ip_dict)
-                self._data_scaled.foliations['formation number'] = self._data_scaled.foliations['formation'].replace(ip_dict)
+                self.geo_data_res.interfaces['formation number'] = self.geo_data_res.interfaces['formation'].replace(ip_dict)
+                self.geo_data_res.foliations['formation number'] = self.geo_data_res.foliations['formation'].replace(ip_dict)
             except ValueError:
                 pass
 
@@ -997,31 +998,31 @@ class InterpolatorInput:
             """
 
             # We order the pandas table by series
-            self._data_scaled.interfaces.sort_values(by=['order_series'],  # , 'formation number'],
+            self.geo_data_res.interfaces.sort_values(by=['order_series'],  # , 'formation number'],
                                                      ascending=True, kind='mergesort',
                                                      inplace=True)
 
-            self._data_scaled.foliations.sort_values(by=['order_series'],  # , 'formation number'],
+            self.geo_data_res.foliations.sort_values(by=['order_series'],  # , 'formation number'],
                                                      ascending=True, kind='mergesort',
                                                      inplace=True)
 
             # Give formation number
-            if not 'formation number' in self._data_scaled.interfaces.columns:
+            if not 'formation number' in self.geo_data_res.interfaces.columns:
                 # print('I am here')
                 self.set_formation_number()
 
             # We order the pandas table by formation (also by series in case something weird happened)
-            self._data_scaled.interfaces.sort_values(by=['order_series', 'formation number'],
+            self.geo_data_res.interfaces.sort_values(by=['order_series', 'formation number'],
                                                      ascending=True, kind='mergesort',
                                                      inplace=True)
 
-            self._data_scaled.foliations.sort_values(by=['order_series', 'formation number'],
+            self.geo_data_res.foliations.sort_values(by=['order_series', 'formation number'],
                                                      ascending=True, kind='mergesort',
                                                      inplace=True)
 
             # Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset
             # the index. For some of the methods (pn.drop) we have to apply afterwards we need to reset these indeces
-            self._data_scaled.interfaces.reset_index(drop=True, inplace=True)
+            self.geo_data_res.interfaces.reset_index(drop=True, inplace=True)
 
         def data_prep(self, **kwargs):
             """
@@ -1044,8 +1045,8 @@ class InterpolatorInput:
             # ==================
             # Array containing the size of every formation. Interfaces
             len_interfaces = np.asarray(
-                [np.sum(self._data_scaled.interfaces['formation number'] == i)
-                 for i in self._data_scaled.interfaces['formation number'].unique()])
+                [np.sum(self.geo_data_res.interfaces['formation number'] == i)
+                 for i in self.geo_data_res.interfaces['formation number'].unique()])
 
             # Size of every layer in rests. SHARED (for theano)
             len_rest_form = (len_interfaces - 1)
@@ -1055,7 +1056,7 @@ class InterpolatorInput:
             ref_position = np.insert(len_interfaces[:-1], 0, 0).cumsum()
 
             # Drop the reference points using pandas indeces to get just the rest_layers array
-            pandas_rest_layer_points = self._data_scaled.interfaces.drop(ref_position)
+            pandas_rest_layer_points = self.geo_data_res.interfaces.drop(ref_position)
             self.pandas_rest_layer_points = pandas_rest_layer_points
             # TODO: do I need this? PYTHON
             # DEP- because per series the foliations do not belong to a formation but to the whole series
@@ -1076,8 +1077,8 @@ class InterpolatorInput:
 
             # Array containing the size of every series. Foliations.
             len_series_f = np.asarray(
-                [np.sum(self._data_scaled.foliations['order_series'] == i)
-                 for i in self._data_scaled.foliations['order_series'].unique()])
+                [np.sum(self.geo_data_res.foliations['order_series'] == i)
+                 for i in self.geo_data_res.foliations['order_series'].unique()])
 
             # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
             self.tg.len_series_f.set_value(np.insert(len_series_f, 0, 0).cumsum())
@@ -1104,10 +1105,11 @@ class InterpolatorInput:
             # -DEP- Again i was just a check point
             # self.rest_layer_points = rest_layer_points
 
+            # TODO: rethink how to do it for pymc
             # Ref layers matrix #VAR
             # Calculation of the ref matrix and tile. Iloc works with the row number
             # Here we extract the reference points
-            self.pandas_ref_layer_points = self._data_scaled.interfaces.iloc[ref_position]#.apply(
+            self.pandas_ref_layer_points = self.geo_data_res.interfaces.iloc[ref_position]#.apply(
               #  lambda x: np.repeat(x, len_interfaces - 1))
             self.len_interfaces = len_interfaces
 
@@ -1124,10 +1126,10 @@ class InterpolatorInput:
                 'not have duplicated values in your dataframes'
 
             # Foliations, this ones I tile them inside theano. PYTHON VAR
-            dips_position = self._data_scaled.foliations[['X', 'Y', 'Z']].as_matrix()
-            dip_angles = self._data_scaled.foliations["dip"].as_matrix()
-            azimuth = self._data_scaled.foliations["azimuth"].as_matrix()
-            polarity = self._data_scaled.foliations["polarity"].as_matrix()
+            dips_position = self.geo_data_res.foliations[['X', 'Y', 'Z']].as_matrix()
+            dip_angles = self.geo_data_res.foliations["dip"].as_matrix()
+            azimuth = self.geo_data_res.foliations["azimuth"].as_matrix()
+            polarity = self.geo_data_res.foliations["polarity"].as_matrix()
 
             # Set all in a list casting them in the chosen dtype
             idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity,
@@ -1141,9 +1143,7 @@ class InterpolatorInput:
             default values from the DataManagement info. The share variables are set in place. All the parameters here
             are independent of the input data so this function only has to be called if you change the extent or grid or
             if you want to change one the kriging parameters.
-            Args:
-                _data_rescaled: DataManagement object
-                _grid_rescaled: Grid object
+
             Keyword Args:
                 u_grade (int): Drift grade. Default to 2.
                 range_var (float): Range of the variogram. Default 3D diagonal of the extent
@@ -1152,7 +1152,7 @@ class InterpolatorInput:
             """
 
             # Kwargs
-            u_grade = kwargs.get('u_grade', 2)
+            # --This is DEP because is a condition not a shared-- u_grade = kwargs.get('u_grade', 2)
             range_var = kwargs.get('range_var', None)
             c_o = kwargs.get('c_o', None)
             nugget_effect = kwargs.get('nugget_effect', 0.01)
@@ -1164,9 +1164,9 @@ class InterpolatorInput:
 
             # Default range
             if not range_var:
-                range_var = np.sqrt((self._data_scaled.extent[0] - self._data_scaled.extent[1]) ** 2 +
-                                    (self._data_scaled.extent[2] - self._data_scaled.extent[3]) ** 2 +
-                                    (self._data_scaled.extent[4] - self._data_scaled.extent[5]) ** 2)
+                range_var = np.sqrt((self.geo_data_res.extent[0] - self.geo_data_res.extent[1]) ** 2 +
+                                    (self.geo_data_res.extent[2] - self.geo_data_res.extent[3]) ** 2 +
+                                    (self.geo_data_res.extent[4] - self.geo_data_res.extent[5]) ** 2)
 
 
             # Default covariance at 0
@@ -1177,11 +1177,11 @@ class InterpolatorInput:
            # assert (0 <= all(u_grade) <= 2)
 
             # Creating the drift matrix. TODO find the official name of this matrix?
-            _universal_matrix = np.vstack((self._grid_scaled.grid.T,
-                                           (self._grid_scaled.grid ** 2).T,
-                                           self._grid_scaled.grid[:, 0] * self._grid_scaled.grid[:, 1],
-                                           self._grid_scaled.grid[:, 0] * self._grid_scaled.grid[:, 2],
-                                           self._grid_scaled.grid[:, 1] * self._grid_scaled.grid[:, 2]))
+            _universal_matrix = np.vstack((self.grid_res.grid.T,
+                                           (self.grid_res.grid ** 2).T,
+                                           self.grid_res.grid[:, 0] * self.grid_res.grid[:, 1],
+                                           self.grid_res.grid[:, 0] * self.grid_res.grid[:, 2],
+                                           self.grid_res.grid[:, 1] * self.grid_res.grid[:, 2]))
 
             # Setting shared variables
             # Range
@@ -1202,12 +1202,12 @@ class InterpolatorInput:
                 # self.tg.c_resc.set_value(1)
 
             # Just grid. I add a small number to avoid problems with the origin point
-            self.tg.grid_val_T.set_value(np.cast[self.dtype](self._grid_scaled.grid + 10e-6))
+            self.tg.grid_val_T.set_value(np.cast[self.dtype](self.grid_res.grid + 10e-6))
             # Universal grid
             self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](_universal_matrix + 1e-10))
 
             # Initialization of the block model
-            self.tg.final_block.set_value(np.zeros((1, self._grid_scaled.grid.shape[0]), dtype='float32'))
+            self.tg.final_block.set_value(np.zeros((1, self.grid_res.grid.shape[0]), dtype='float32'))
 
             # Initialization of the boolean array that represent the areas of the block model to be computed in the
             # following series
@@ -1217,11 +1217,11 @@ class InterpolatorInput:
             #self.tg.n_formation.set_value(np.insert(_data_rescaled.interfaces['formation number'].unique(),
             #                                        0, 0)[::-1])
 
-            self.tg.n_formation.set_value(self._data_scaled.interfaces['formation number'].unique())
+            self.tg.n_formation.set_value(self.geo_data_res.interfaces['formation number'].unique())
 
             # Number of formations per series. The function is not pretty but the result is quite clear
             self.tg.n_formations_per_serie.set_value(
-                np.insert(self._data_scaled.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0))
+                np.insert(self.geo_data_res.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0))
 
             self.tg.final_potential_field_at_formations.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
                                                                            dtype=self.dtype))
@@ -1230,8 +1230,16 @@ class InterpolatorInput:
                          dtype=self.dtype))
 
         def get_kriging_parameters(self, verbose=0):
+            """
+            Print the kringing parameters
+            Args:
+                verbose (int): if > 0 print all the shape values as well.
+
+            Returns:
+                None
+            """
             # range
-            print('range', self.tg.a_T.get_value(), self.tg.a_T.get_value() * self._data_scaled.rescaling_factor)
+            print('range', self.tg.a_T.get_value(), self.tg.a_T.get_value() * self.geo_data_res.rescaling_factor)
             # Number of drift equations
             print('Number of drift equations', self.tg.u_grade_T.get_value())
             # Covariance at 0
