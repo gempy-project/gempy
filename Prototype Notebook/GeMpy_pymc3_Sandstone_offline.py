@@ -43,7 +43,7 @@ np.set_printoptions(precision = 6, linewidth= 130, suppress =  True)
 
 
 # Setting the extent
-geo_data = GeMpy.import_data([0,10,0,10,0,10], [50,50,50])
+geo_data = GeMpy.import_data_csv([0, 10, 0, 10, 0, 10], [50, 50, 50])
 
 
 # =========================

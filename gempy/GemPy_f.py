@@ -22,13 +22,10 @@ sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import numpy as _np
 
 # --DEP-- import pandas as _pn
-import warnings
 import copy
-from gempy.Visualization import PlotData
-try:
-    from gempy.visualization_vtk import visualize, export_vtk_rectilinear
-except:# ModuleNotFoundError:
-    warnings.warn('Vtk package is not installed. No vtk visualization available.')
+from gempy.Visualization import PlotData2D, steano3D, vtkVisualization
+#from gempy.visualization_vtk import vtkVisualization
+
 from gempy.DataManagement import InputData, InterpolatorInput
 from IPython.core.debugger import Tracer
 # from .Topology import Topology
@@ -199,14 +196,14 @@ def set_grid(geo_data, new_grid=None, extent=None, resolution=None, grid_type="r
 
 
 def plot_data(geo_data, direction="y", series="all", **kwargs):
-    plot = PlotData(geo_data)
+    plot = PlotData2D(geo_data)
     plot.plot_data(direction=direction, series=series, **kwargs)
     # TODO saving options
     return plot
 
 
 def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
-    plot = PlotData(geo_data)
+    plot = PlotData2D(geo_data)
     plot.plot_block_section(cell_number, block=block, direction=direction, **kwargs)
     # TODO saving options
     return plot
@@ -215,7 +212,7 @@ def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
 def plot_potential_field(geo_data, potential_field, cell_number, n_pf=0,
                          direction="y", plot_data=True, series="all", *args, **kwargs):
 
-    plot = PlotData(geo_data)
+    plot = PlotData2D(geo_data)
     plot.plot_potential_field(potential_field, cell_number, n_pf=n_pf,
                               direction=direction,  plot_data=plot_data, series=series,
                               *args, **kwargs)
@@ -276,13 +273,42 @@ def get_th_fn(interp_data, dtype=None, u_grade=None, **kwargs):
     #                         on_unused_input='ignore',
     #                         allow_input_downcast=True,
     #                         profile=False)
-    return interp_data.compile_th_fn(dtype=dtype, **kwargs)
+    return interp_data.compile_th_fn(u_grade=u_grade, dtype=dtype, **kwargs)
 
 
-def compute_model(interp_data, u_grade=None):
-    if getattr(interp_data, 'th_th', None):
+def compute_model(interp_data, u_grade=None, get_potential_at_interfaces=False):
+    if not getattr(interp_data, 'th_fn', None):
         interp_data.compile_th_fn()
 
     i = interp_data.get_input_data(u_grade=u_grade)
     sol, interp_data.potential_at_interfaces = interp_data.th_fn(*i)
-    return _np.squeeze(sol)
+    if get_potential_at_interfaces:
+        return _np.squeeze(sol), interp_data.potential_at_interfaces
+    else:
+        return _np.squeeze(sol)
+
+
+def get_surface(potential_block, interp_data, n_formation, step_size=1, original_scale=True):
+    assert getattr(interp_data, 'potential_at_interfaces', None).any(), 'You need to compute the model first'
+    assert n_formation > 0, 'Number of the formation has tobe positive'
+    # In case the values are separated by series I put all in a vector
+    pot_int = interp_data.potential_at_interfaces.sum(axis=0)
+
+    from skimage import measure
+
+    vertices, simplices, normals, values = measure.marching_cubes_lewiner(
+        potential_block.reshape(interp_data.resolution[0],
+                                interp_data.resolution[1],
+                                interp_data.resolution[2]),
+        pot_int[n_formation-1],
+        step_size=step_size,
+        spacing=((interp_data.extent[1] - interp_data.extent[0]) / interp_data.resolution[0],
+                 (interp_data.extent[3] - interp_data.extent[2]) / interp_data.resolution[1],
+                 (interp_data.extent[5] - interp_data.extent[4]) / interp_data.resolution[2]))
+
+    if original_scale:
+        vertices = interp_data.rescaling_factor * vertices + _np.array([0,
+                                                                         0,
+                                                                         -2000]).reshape(1, 3)
+
+    return vertices, simplices
