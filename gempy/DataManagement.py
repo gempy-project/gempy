@@ -15,7 +15,7 @@ import theano
 class InputData(object):
     """
     -DOCS NOT UPDATED- Class to import the raw data of the model and set data classifications into formations and series.
-    This objects will contain the main information of the model/
+    This objects will contain the main information of the model.
 
     Args:
         extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]
@@ -570,10 +570,11 @@ class InputData(object):
 
     def get_formation_number(self):
         """
-        Get a dictionary with the key the name of the formation and the value their number
-        :return:
-            dict: key the name of the formation and the value their number
-        """
+            Get a dictionary with the key the name of the formation and the value their number
+
+            Returns:
+                dict: key the name of the formation and the value their number
+            """
         pn_series = self.interfaces.groupby('formation number').formation.unique()
         ip_addresses = {}
         for e, i in enumerate(pn_series):
@@ -639,13 +640,46 @@ class GridClass(object):
 
 
 class InterpolatorInput:
+    """
+    InterpolatorInput is a class that contains all the preprocessing operations to prepare the data to compute the model.
+    Also is the object that has to be manipulated to vary the data without recompile the modeling function.
+
+    Args:
+        geo_data(gempy.DataManagement.InputData): All values of a DataManagement object
+        compile_theano (bool): select if the theano function is compiled during the initialization. Default: True
+        compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
+         the block model of faults. If False only return the block model of lithologies. This may be important to speed
+          up the computation. Default True
+        u_grade (list): grade of the polynomial for the universal part of the Kriging interpolations. The value has to
+        be either 0, 3 or 9 (number of equations) and the length has to be the number of series. By default the value
+        depends on the number of points given as input to try to avoid singular matrix. NOTE: if during the computation
+        of the model a singular matrix is returned try to reduce the u_grade of the series.
+        rescaling_factor (float): rescaling factor of the input data to improve the stability when float32 is used. By
+        defaut the rescaling factor is calculated to obtein values between 0 and 1.
+
+    Keyword Args:
+         dtype ('str'): Choosing if using float32 or float64. This is important if is intended to use the GPU
+         See Also InterpolatorClass kwargs
+
+    Attributes:
+        geo_data: Original gempy.DataManagement.InputData object
+        geo_data_res: Rescaled data. It has the same structure has gempy.InputData
+        interpolator: Instance of the gempy.DataManagement.InterpolaorInput.InterpolatorClass. See Also
+         gempy.DataManagement.InterpolaorInput.InterpolatorClass docs
+         th_fn: Theano function which compute the interpolation
+        dtype:  type of float
+
+    """
     def __init__(self, geo_data, compile_theano=True, compute_all=True, u_grade=None, rescaling_factor=None, **kwargs):
         # TODO add all options before compilation in here. Basically this is n_faults, n_layers, verbose, dtype, and \
         # only block or all
         assert isinstance(geo_data, InputData), 'You need to pass a InputData object'
+
+        # Store the original InputData object
+        self.geo_data = geo_data
+
         # Here we can change the dtype for stability and GPU vs CPU
         self.dtype = kwargs.get('dtype', 'float32')
-        self.geo_data_type = 'InterpolatorInput'
 
         #self.in_data = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
         # Set some parameters. TODO posibly this should go in kwargs
@@ -657,11 +691,11 @@ class InterpolatorInput:
         self.extent_rescaled = None
 
         # Rescaling
-        self.data = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
+        self.geo_data_res = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
 
         # # This are necessary parameters for the visualization package
-        self.resolution = self.data.resolution
-        self.extent = self.extent_rescaled.as_matrix()
+        #self.resolution = self.geo_data.resolution
+        #self.extent = self.extent_rescaled.as_matrix()
 
         # Creating interpolator class with all the precompilation options
         self.interpolator = self.set_interpolator(**kwargs)
@@ -669,37 +703,25 @@ class InterpolatorInput:
         if compile_theano:
             self.th_fn = self.compile_th_fn(compute_all=compute_all)
 
-    # DEP all options since it goes in set_interpolator
-    def compile_th_fn(self, compute_all=True, dtype=None, u_grade=None, **kwargs):
+    def compile_th_fn(self, compute_all=True):
         """
-
+        Compile the theano function given the input data.
         Args:
-            geo_data:
-            **kwargs:
+            compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
+             the block model of faults. If False only return the block model of lithologies. This may be important to speed
+              up the computation. Default True
 
         Returns:
-
+            theano.function: Compiled function if C or CUDA which computes the interpolation given the input data
+            (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
         """
 
-        # Choosing float precision for the computation
-
-        if not dtype:
-            if theano.config.device == 'gpu':
-                dtype = 'float32'
-            else:
-                dtype = 'float64'
-
-        # We make a rescaled version of geo_data for stability reasons
-        #data_interp = self.set_interpolator(geo_data, dtype=dtype)
 
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.interpolator.tg.input_parameters_list()
 
-        # This prepares the user data to the theano function
-        # input_data_P = data_interp.interpolator.data_prep(u_grade=u_grade)
-
         # then we compile we have to pass the number of formations that are faults!!
-        th_fn = theano.function(input_data_T, self.interpolator.tg.whole_block_model(self.data.n_faults,
+        th_fn = theano.function(input_data_T, self.interpolator.tg.whole_block_model(self.geo_data_res.n_faults,
                                                                                      compute_all=compute_all),
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
@@ -710,30 +732,38 @@ class InterpolatorInput:
         """
         Rescale the data of a DataManagement object between 0 and 1 due to stability problem of the float32.
         Args:
-            geo_data: DataManagement object with the real scale data
+            geo_data: Original gempy.DataManagement.InputData object
             rescaling_factor(float): factor of the rescaling. Default to maximum distance in one the axis
 
         Returns:
+            gempy.DataManagement.InputData: Rescaled data
 
         """
         # TODO split this function in compute rescaling factor and rescale z
+
+        # Check which axis is the largest
         max_coord = pn.concat(
             [geo_data.foliations, geo_data.interfaces]).max()[['X', 'Y', 'Z']]
         min_coord = pn.concat(
             [geo_data.foliations, geo_data.interfaces]).min()[['X', 'Y', 'Z']]
 
+        # Compute rescalin factor if not given
         if not rescaling_factor:
             rescaling_factor = 2 * np.max(max_coord - min_coord)
 
+        # Get the centers of every axis
         centers = (max_coord + min_coord) / 2
 
+        # Change the coordinates of interfaces
         new_coord_interfaces = (geo_data.interfaces[['X', 'Y', 'Z']] -
                                 centers) / rescaling_factor + 0.5001
 
+        # Change the coordinates of foliations
         new_coord_foliations = (geo_data.foliations[['X', 'Y', 'Z']] -
                                 centers) / rescaling_factor + 0.5001
+
+        # Rescaling the std in case of stochastic values
         try:
-            # print('I am here')
             geo_data.interfaces[['X_std', 'Y_std', 'Z_std']] = (geo_data.interfaces[
                                                                     ['X_std', 'Y_std', 'Z_std']]) / rescaling_factor
             geo_data.foliations[['X_std', 'Y_std', 'Z_std']] = (geo_data.foliations[
@@ -741,6 +771,7 @@ class InterpolatorInput:
         except KeyError:
             pass
 
+        # Updating properties
         new_coord_extent = (geo_data.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
 
         geo_data_rescaled = copy.deepcopy(geo_data)
@@ -750,6 +781,7 @@ class InterpolatorInput:
 
         geo_data_rescaled.grid.grid = (geo_data.grid.grid - centers.as_matrix()) / rescaling_factor + 0.5001
 
+        # Saving useful values for later
         self.rescaling_factor = rescaling_factor
         geo_data_rescaled.rescaling_factor = rescaling_factor
         self.centers = centers
@@ -758,7 +790,13 @@ class InterpolatorInput:
         return geo_data_rescaled
 
     def get_formation_number(self):
-        pn_series = self.data.interfaces.groupby('formation number').formation.unique()
+        """
+        Get a dictionary with the key the name of the formation and the value their number
+
+        Returns:
+            dict: key the name of the formation and the value their number
+        """
+        pn_series = self.geo_data_res.interfaces.groupby('formation number').formation.unique()
         ip_addresses = {}
         for e, i in enumerate(pn_series):
             ip_addresses[i[0]] = e + 1
@@ -819,9 +857,9 @@ class InterpolatorInput:
 
         if geo_data:
             geo_data_in = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
-            self.data = geo_data_in
+            self.geo_data_res = geo_data_in
         else:
-            geo_data_in = self.data
+            geo_data_in = self.geo_data_res
 
         # First creation
         if not getattr(self, 'interpolator', None):
@@ -860,9 +898,9 @@ class InterpolatorInput:
 
         if geo_data:
             geo_data_in = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
-            self.data = geo_data_in
+            self.geo_data_res = geo_data_in
         else:
-            geo_data_in = self.data
+            geo_data_in = self.geo_data_res
 
         print('I am in update')
         self.interpolator._data_scaled = geo_data_in

@@ -11,7 +11,7 @@ Created on 23/09/2016
 import warnings
 try:
     import vtk
-except ModuleNotFoundError:
+except ImportError:
     warnings.warn('Vtk package is not installed. No vtk visualization available.')
 import matplotlib.pyplot as plt
 import matplotlib
