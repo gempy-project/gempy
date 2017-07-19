@@ -291,7 +291,7 @@ def compute_model(interp_data, u_grade=None, get_potential_at_interfaces=False):
 
 
 def get_surface(potential_block, interp_data, n_formation, step_size=1, original_scale=True):
-    assert getattr(interp_data, 'potential_at_interfaces', None).any(), 'You need to compute the model first'
+    assert getattr(interp_data, 'potential_at_interfaces', False), 'You need to compute the model first'
     assert n_formation > 0, 'Number of the formation has tobe positive'
     # In case the values are separated by series I put all in a vector
     pot_int = interp_data.potential_at_interfaces.sum(axis=0)
@@ -299,18 +299,18 @@ def get_surface(potential_block, interp_data, n_formation, step_size=1, original
     from skimage import measure
 
     vertices, simplices, normals, values = measure.marching_cubes_lewiner(
-        potential_block.reshape(interp_data.resolution[0],
-                                interp_data.resolution[1],
-                                interp_data.resolution[2]),
+        potential_block.reshape(interp_data.geo_data_res.resolution[0],
+                                interp_data.geo_data_res.resolution[1],
+                                interp_data.geo_data_res.resolution[2]),
         pot_int[n_formation-1],
         step_size=step_size,
-        spacing=((interp_data.extent[1] - interp_data.extent[0]) / interp_data.resolution[0],
-                 (interp_data.extent[3] - interp_data.extent[2]) / interp_data.resolution[1],
-                 (interp_data.extent[5] - interp_data.extent[4]) / interp_data.resolution[2]))
+        spacing=((interp_data.geo_data_res.extent[1] - interp_data.geo_data_res.extent[0]) / interp_data.geo_data_res.resolution[0],
+                 (interp_data.geo_data_res.extent[3] - interp_data.geo_data_res.extent[2]) / interp_data.geo_data_res.resolution[1],
+                 (interp_data.geo_data_res.extent[5] - interp_data.geo_data_res.extent[4]) / interp_data.geo_data_res.resolution[2]))
 
     if original_scale:
-        vertices = interp_data.rescaling_factor * vertices + _np.array([0,
-                                                                         0,
-                                                                         -2000]).reshape(1, 3)
+        vertices = interp_data.rescaling_factor * vertices + _np.array([interp_data.geo_data.extent[0],
+                                                                        interp_data.geo_data.extent[2],
+                                                                        interp_data.geo_data.extent[4]]).reshape(1, 3)
 
     return vertices, simplices
