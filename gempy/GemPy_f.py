@@ -291,7 +291,11 @@ def compute_model(interp_data, u_grade=None, get_potential_at_interfaces=False):
 
 
 def get_surface(potential_block, interp_data, n_formation, step_size=1, original_scale=True):
-    assert getattr(interp_data, 'potential_at_interfaces', False), 'You need to compute the model first'
+    try:
+        getattr(interp_data, 'potential_at_interfaces')
+    except:
+        raise AttributeError('You need to compute the model first')
+
     assert n_formation > 0, 'Number of the formation has tobe positive'
     # In case the values are separated by series I put all in a vector
     pot_int = interp_data.potential_at_interfaces.sum(axis=0)
