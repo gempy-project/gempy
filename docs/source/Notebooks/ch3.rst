@@ -13,6 +13,8 @@ the example of the first chapter adding a fault in the middle;
     sys.path.append("../")
     
     # Importing gempy
+    
+    
     import gempy as gp
     
     # Embedding matplotlib figures into the notebooks
@@ -31,16 +33,34 @@ the example of the first chapter adding a fault in the middle;
     gp.plot_data(geo_data)
 
 
+::
 
 
-.. parsed-literal::
+    ---------------------------------------------------------------------------
 
-    <gempy.Visualization.PlotData at 0x7f6d340feeb8>
+    AttributeError                            Traceback (most recent call last)
+
+    <ipython-input-3-0ca462c1dd66> in <module>()
+    ----> 1 gp.plot_data(geo_data)
+    
+
+    ~/PycharmProjects/gempy/gempy/GemPy_f.py in plot_data(geo_data, direction, series, **kwargs)
+        193 
+        194 def plot_data(geo_data, direction="y", series="all", **kwargs):
+    --> 195     plot = PlotData(geo_data)
+        196     plot.plot_data(direction=direction, series=series, **kwargs)
+        197     # TODO saving options
 
 
+    ~/PycharmProjects/gempy/gempy/Visualization.py in __init__(self, _data, cd_rgb, cd_hex, **kwargs)
+         41     def __init__(self, _data, cd_rgb=color_dict_rgb, cd_hex=color_dict_hex, **kwargs):
+         42 
+    ---> 43         if _data.geo_data_type == 'InterpolatorInput':
+         44             self._data = _data.data
+         45         else:
 
 
-.. image:: ch3_files/ch3_3_1.png
+    AttributeError: 'InputData' object has no attribute 'geo_data_type'
 
 
 .. code:: ipython3
@@ -50,6 +70,10 @@ the example of the first chapter adding a fault in the middle;
                            order_series = ["fault",
                                            "Rest",
                                            ], verbose=0)
+
+.. code:: ipython3
+
+    geo_data = gp.select_series(geo_data, ['Rest'])
 
 .. code:: ipython3
 
@@ -97,84 +121,84 @@ the example of the first chapter adding a fault in the middle;
       <tbody>
         <tr>
           <th rowspan="5" valign="top">interfaces</th>
-          <th>0</th>
+          <th>5</th>
           <td>NaN</td>
           <td>NaN</td>
           <td>NaN</td>
-          <td>800.0</td>
+          <td>600.0</td>
           <td>1000.0</td>
-          <td>-1600.0</td>
+          <td>-650.0</td>
           <td>NaN</td>
           <td>NaN</td>
-          <td>MainFault</td>
-          <td>True</td>
-          <td>1</td>
+          <td>Seal</td>
+          <td>False</td>
+          <td>2</td>
           <td>NaN</td>
-          <td>fault</td>
+          <td>Rest</td>
         </tr>
         <tr>
-          <th>1</th>
+          <th>6</th>
           <td>NaN</td>
           <td>NaN</td>
           <td>NaN</td>
-          <td>1200.0</td>
-          <td>1000.0</td>
-          <td>-400.0</td>
-          <td>NaN</td>
-          <td>NaN</td>
-          <td>MainFault</td>
-          <td>True</td>
-          <td>1</td>
-          <td>NaN</td>
-          <td>fault</td>
-        </tr>
-        <tr>
-          <th>2</th>
-          <td>NaN</td>
-          <td>NaN</td>
-          <td>NaN</td>
-          <td>1100.0</td>
+          <td>1300.0</td>
           <td>1000.0</td>
           <td>-700.0</td>
           <td>NaN</td>
           <td>NaN</td>
-          <td>MainFault</td>
-          <td>True</td>
-          <td>1</td>
+          <td>Seal</td>
+          <td>False</td>
+          <td>2</td>
           <td>NaN</td>
-          <td>fault</td>
+          <td>Rest</td>
         </tr>
         <tr>
-          <th>3</th>
+          <th>7</th>
           <td>NaN</td>
           <td>NaN</td>
           <td>NaN</td>
-          <td>900.0</td>
+          <td>1600.0</td>
           <td>1000.0</td>
-          <td>-1300.0</td>
+          <td>-800.0</td>
           <td>NaN</td>
           <td>NaN</td>
-          <td>MainFault</td>
-          <td>True</td>
-          <td>1</td>
+          <td>Seal</td>
+          <td>False</td>
+          <td>2</td>
           <td>NaN</td>
-          <td>fault</td>
+          <td>Rest</td>
         </tr>
         <tr>
-          <th>4</th>
+          <th>8</th>
           <td>NaN</td>
           <td>NaN</td>
           <td>NaN</td>
+          <td>1900.0</td>
           <td>1000.0</td>
+          <td>-900.0</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Seal</td>
+          <td>False</td>
+          <td>2</td>
+          <td>NaN</td>
+          <td>Rest</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>2000.0</td>
           <td>1000.0</td>
-          <td>-1000.0</td>
+          <td>-875.0</td>
           <td>NaN</td>
           <td>NaN</td>
-          <td>MainFault</td>
-          <td>True</td>
-          <td>1</td>
+          <td>Seal</td>
+          <td>False</td>
+          <td>2</td>
           <td>NaN</td>
-          <td>fault</td>
+          <td>Rest</td>
         </tr>
       </tbody>
     </table>
@@ -189,6 +213,7 @@ the example of the first chapter adding a fault in the middle;
 
 .. parsed-literal::
 
+    I am here
     I am in the setting
     float32
     I am here
@@ -207,6 +232,33 @@ the example of the first chapter adding a fault in the middle;
 
 .. code:: ipython3
 
+    interp_data.potential_at_interfaces
+
+
+
+
+.. parsed-literal::
+
+    array([[ 0.        ,  0.41482359,  0.22084422,  0.43727845,  0.30110291],
+           [-0.55960631,  0.        ,  0.        ,  0.        ,  0.        ]], dtype=float32)
+
+
+
+.. code:: ipython3
+
+    geo_data.geo_data_type = 'a'
+
+.. code:: ipython3
+
+    gp.plot_potential_field(geo_data, sol[1,:], 25, plot_data = True)
+
+
+
+.. image:: ch3_files/ch3_11_0.png
+
+
+.. code:: ipython3
+
     gp.plot_section(geo_data, sol[0,:], 25, plot_data = True)
 
 
@@ -219,7 +271,7 @@ the example of the first chapter adding a fault in the middle;
 
 
 
-.. image:: ch3_files/ch3_8_1.png
+.. image:: ch3_files/ch3_12_1.png
 
 
 .. code:: ipython3
@@ -236,5 +288,5 @@ the example of the first chapter adding a fault in the middle;
 
 
 
-.. image:: ch3_files/ch3_9_1.png
+.. image:: ch3_files/ch3_13_1.png
 

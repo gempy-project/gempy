@@ -10,6 +10,31 @@ generate a model with several depositional series.
 
 .. code:: ipython3
 
+    import IPython.sphinxext
+    IPython.sphinxext.
+
+
+
+
+.. parsed-literal::
+
+    <module 'IPython.sphinxext' from '/home/miguel/anaconda3/lib/python3.6/site-packages/IPython/sphinxext/__init__.py'>
+
+
+
+.. code:: ipython3
+
+    from pygments.plugin import find_plugin_lexers
+    print(list(find_plugin_lexers()))
+
+
+.. parsed-literal::
+
+    [<class 'mako.ext.pygmentplugin.MakoLexer'>, <class 'mako.ext.pygmentplugin.MakoHtmlLexer'>, <class 'mako.ext.pygmentplugin.MakoXmlLexer'>, <class 'mako.ext.pygmentplugin.MakoJavascriptLexer'>, <class 'mako.ext.pygmentplugin.MakoCssLexer'>]
+
+
+.. code:: ipython3
+
     # These two lines are necessary only if gempy is not installed
     import sys, os
     sys.path.append("../")
@@ -126,7 +151,7 @@ You can visualize the points in 3D (work in progress)
 
 .. code:: ipython3
 
-    gp.visualize(geo_data)
+    #gp.visualize(geo_data)
 
 Or a projection in 2D:
 
@@ -139,12 +164,12 @@ Or a projection in 2D:
 
 .. parsed-literal::
 
-    <gempy.Visualization.PlotData at 0x7f8d04466ba8>
+    <gempy.Visualization.PlotData2D at 0x7f0b16e9be10>
 
 
 
 
-.. image:: ch2_files/ch2_7_1.png
+.. image:: ch2_files/ch2_9_1.png
 
 
 This model consist in 3 different depositional series. This mean that
@@ -288,9 +313,7 @@ object and compute the model.
 
 .. parsed-literal::
 
-    I am in the setting
     float32
-    I am here
     [2, 2]
 
 
@@ -312,6 +335,21 @@ object and compute the model.
       ' condition number: {}'.format(rcond), RuntimeWarning)
 
 
+.. code:: ipython3
+
+    interp_data.potential_at_interfaces
+
+
+
+
+.. parsed-literal::
+
+    array([[ 1.85553718,  0.        ,  0.        ,  0.        ],
+           [ 0.        ,  2.58398676,  2.57935548,  0.        ],
+           [ 0.        ,  0.        ,  0.        ,  3.48082161]], dtype=float32)
+
+
+
 Now if we analyse the results we have a 3D array where the axis 0
 represent the superposition of the series (potential fields). The color
 coding is working process yet.
@@ -328,15 +366,15 @@ coding is working process yet.
 
 
 
-.. image:: ch2_files/ch2_17_0.png
+.. image:: ch2_files/ch2_20_0.png
 
 
 
-.. image:: ch2_files/ch2_17_1.png
+.. image:: ch2_files/ch2_20_1.png
 
 
 
-.. image:: ch2_files/ch2_17_2.png
+.. image:: ch2_files/ch2_20_2.png
 
 
 The axis 1 keeps the potential field:
@@ -352,15 +390,15 @@ The axis 1 keeps the potential field:
 
 
 
-.. image:: ch2_files/ch2_19_0.png
+.. image:: ch2_files/ch2_22_0.png
 
 
 
-.. image:: ch2_files/ch2_19_1.png
+.. image:: ch2_files/ch2_22_1.png
 
 
 
-.. image:: ch2_files/ch2_19_2.png
+.. image:: ch2_files/ch2_22_2.png
 
 
 And the axis 2 keeps the faults network that in this model since there

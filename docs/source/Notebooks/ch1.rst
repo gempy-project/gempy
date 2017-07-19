@@ -5,7 +5,7 @@ Chapter 1: GemPy Basic
 In this first example, we will show how to construct a first basic model
 and the main objects and functions. First we import gempy:
 
-.. code:: 
+.. code:: ipython3
 
     # These two lines are necessary only if gempy is not installed
     import sys, os
@@ -25,22 +25,41 @@ python serialization to save the input of the models. In the next
 chapter we will see different ways to create data but for this example
 we will use a stored one
 
-.. code:: 
+.. code:: ipython3
 
     geo_data = gp.read_pickle('NoFault.pickle')
     geo_data.n_faults = 0
     print(geo_data)
 
 
-.. parsed-literal::
+::
 
-    <gempy.DataManagement.InputData object at 0x7f62ebb3ac88>
+
+    ---------------------------------------------------------------------------
+
+    AttributeError                            Traceback (most recent call last)
+
+    <ipython-input-2-10570d7499cd> in <module>()
+    ----> 1 geo_data = gp.read_pickle('NoFault.pickle')
+          2 geo_data.n_faults = 0
+          3 print(geo_data)
+
+
+    ~/PycharmProjects/gempy/gempy/GemPy_f.py in read_pickle(path)
+         42         # The protocol version used is detected automatically, so we do not
+         43         # have to specify it.
+    ---> 44         data = pickle.load(f)
+         45         return data
+         46 
+
+
+    AttributeError: Can't get attribute 'InputData.GridClass' on <module 'gempy.DataManagement' from '../gempy/DataManagement.py'>
 
 
 This geo\_data object contains essential information that we can access
 through the correspondent getters. Such a the coordinates of the grid.
 
-.. code:: 
+.. code:: ipython3
 
     print(gp.get_grid(geo_data))
 
@@ -63,7 +82,7 @@ can we access by the following methods:
 Interfaces Dataframe
 ^^^^^^^^^^^^^^^^^^^^
 
-.. code:: 
+.. code:: ipython3
 
     gp.get_raw_data(geo_data, 'interfaces').head()
 
@@ -159,7 +178,7 @@ Interfaces Dataframe
 Foliations Dataframe
 ^^^^^^^^^^^^^^^^^^^^
 
-.. code:: 
+.. code:: ipython3
 
     gp.get_raw_data(geo_data, 'foliations').head()
 
@@ -234,8 +253,9 @@ A projection of the aforementioned data can be visualized in to 2D by
 the following function. It is possible to choose the direction of
 visualization as well as the series:
 
-.. code:: 
+.. code:: ipython3
 
+    geo_data.geo_data_type= 3
     gp.plot_data(geo_data, direction='y')
 
 
@@ -243,7 +263,7 @@ visualization as well as the series:
 
 .. parsed-literal::
 
-    <gempy.Visualization.PlotData at 0x7f62ec76b898>
+    <gempy.Visualization.PlotData at 0x7fd8e729c828>
 
 
 
@@ -253,7 +273,7 @@ visualization as well as the series:
 
 GemPy supports visualization in 3D as well trough vtk.
 
-.. code:: 
+.. code:: ipython3
 
     gp.visualize(geo_data)
 
@@ -267,7 +287,7 @@ properties, measurements and geological relations stored.
 Once we have the data ready to generate a model, we will need to create
 the next object type towards the final geological model:
 
-.. code:: 
+.. code:: ipython3
 
     interp_data = gp.InterpolatorInput(geo_data, u_grade = [3])
     print(interp_data)
@@ -275,11 +295,11 @@ the next object type towards the final geological model:
 
 .. parsed-literal::
 
+    I am here
     I am in the setting
     float32
     I am here
     [2, 2]
-    <gempy.DataManagement.InterpolatorInput object at 0x7f62b2545c18>
 
 
 By default (there is a flag in case you do not need) when we create a
@@ -291,18 +311,9 @@ the tutorials) prepares the original data to the interpolation algorithm
 by scaling the coordinates for better and adding all the mathematical
 parametrization needed.
 
-.. code:: 
+.. code:: ipython3
 
     gp.get_kriging_parameters(interp_data)
-
-
-.. parsed-literal::
-
-    range 0.8882311582565308 3464.1015172
-    Number of drift equations [2 2]
-    Covariance at 0 0.01878463476896286
-    Foliations nugget effect 0.009999999776482582
-
 
 These later parameters have a default value computed from the original
 data or can be changed by the user (be careful of changing any of these
@@ -315,7 +326,7 @@ everytime we compute a model we obtain 3 results:
 -  The potential field
 -  Faults network block model
 
-.. code:: 
+.. code:: ipython3
 
     sol = gp.compute_model(interp_data)
 
@@ -328,7 +339,7 @@ everytime we compute a model we obtain 3 results:
 This solution can be plot with the correspondent plotting function.
 Blocks:
 
-.. code:: 
+.. code:: ipython3
 
     gp.plot_section(geo_data, sol[0], 25)
 
@@ -347,7 +358,7 @@ Blocks:
 
 Potential field:
 
-.. code:: 
+.. code:: ipython3
 
     gp.plot_potential_field(geo_data, sol[1], 25)
 

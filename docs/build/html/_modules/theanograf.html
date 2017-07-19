@@ -167,20 +167,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">len_i_0</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">len_i_1</span> <span class="o">=</span> <span class="mi">1</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">vector</span><span class="p">(</span><span class="s1">&#39;potential_field_at_interfaces_values&#39;</span><span class="p">)</span>
 
-
-
-    <span class="c1"># -DEP-</span>
-    <span class="c1">#def testing(self):</span>
-    <span class="c1">#    return self.rest_layer_points, self.ref_layer_points</span>
-
-    <span class="c1"># -DEP-</span>
-    <span class="c1"># def yet_simulated_func(self, block=None):</span>
-    <span class="c1">#     if not block:</span>
-    <span class="c1">#         self.yet_simulated = T.eq(self.final_block, 0)</span>
-    <span class="c1">#     else:</span>
-    <span class="c1">#         self.yet_simulated = T.eq(block, 0)</span>
-    <span class="c1">#     return self.yet_simulated</span>
+       <span class="c1"># TODO tidy up this initializations</span>
+      <span class="c1">#  self.pot_value = theano.shared(np.zeros(self.n_formations_per_serie.sum(), dtype=&#39;float64&#39;), &#39;average potential field&#39;)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_formations</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">))</span><span class="c1">#np.array([], ndmin=1, dtype=dtype)) #T.vector(&#39;Final value of potential fields at interfacse&#39;, dtype=dtype)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">))</span>
+        <span class="c1">#self.potential_field_at_interfaces_value   = theano.shared(np.cast[np.int64](np.zeros((2, 2))), &#39;Potential field value at each interface&#39;,)</span>
 
 <div class="viewcode-block" id="TheanoGraph_pro.input_parameters_list"><a class="viewcode-back" href="../code.html#theanograf.TheanoGraph_pro.input_parameters_list">[docs]</a>    <span class="k">def</span> <span class="nf">input_parameters_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -416,16 +410,6 @@
                                        <span class="n">var_with_name_simple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">C_GI</span></div>
 
-    <span class="c1"># -DEP-</span>
-    <span class="c1"># def cartesian_dist_reference_to_rest(self):</span>
-    <span class="c1">#     # Cartesian distances between reference points and rest</span>
-    <span class="c1">#     hx = T.stack(</span>
-    <span class="c1">#         (self.rest_layer_points[:, 0] - self.ref_layer_points[:, 0]),</span>
-    <span class="c1">#         (self.rest_layer_points[:, 1] - self.ref_layer_points[:, 1]),</span>
-    <span class="c1">#         (self.rest_layer_points[:, 2] - self.ref_layer_points[:, 2])</span>
-    <span class="c1">#     ).T</span>
-    <span class="c1">#</span>
-    <span class="c1">#     return hx</span>
 
 <div class="viewcode-block" id="TheanoGraph_pro.universal_matrix"><a class="viewcode-back" href="../code.html#theanograf.TheanoGraph_pro.universal_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">universal_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -954,6 +938,8 @@
             <span class="n">Z_x</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;Potential field at all points&#39;</span><span class="p">)(</span><span class="n">Z_x</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Z_x</span></div>
 
+
+
 <div class="viewcode-block" id="TheanoGraph_pro.potential_field_at_interfaces"><a class="viewcode-back" href="../code.html#theanograf.TheanoGraph_pro.potential_field_at_interfaces">[docs]</a>    <span class="k">def</span> <span class="nf">potential_field_at_interfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Potential field at interfaces. To avoid errors I take all the points of rest that belong to one interface</span>
@@ -984,14 +970,18 @@
 <span class="sd">                theano.tensor.vector: average of the potential per formation</span>
 <span class="sd">            &quot;&quot;&quot;</span>
             <span class="n">average</span> <span class="o">=</span> <span class="n">pfi</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">dim_a</span><span class="p">,</span> <span class="s2">&quot;int32&quot;</span><span class="p">):</span> <span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">dim_b</span><span class="p">,</span> <span class="s2">&quot;int32&quot;</span><span class="p">)]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">dim_b</span> <span class="o">-</span> <span class="n">dim_a</span><span class="p">)</span>
-            <span class="k">return</span> <span class="n">average</span>
 
-        <span class="n">potential_field_interfaces_unique</span><span class="p">,</span> <span class="n">updates1</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
+            <span class="k">return</span> <span class="n">average</span>  <span class="c1"># , {self.pot_value: T.stack([average])}</span>
+
+        <span class="n">potential_field_interfaces_unique</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">updates1</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
             <span class="n">fn</span><span class="o">=</span><span class="n">average_potential</span><span class="p">,</span>
             <span class="n">outputs_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">sequences</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">npf</span><span class="p">,</span>
                            <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
             <span class="n">non_sequences</span><span class="o">=</span><span class="n">potential_field_interfaces</span><span class="p">)</span>
+
+      <span class="c1">#  self.potential_field_at_interfaces_value = theano.shared(self.updates1)</span>
+      <span class="c1">#  self.potential_field_at_interfaces_value.set_value(updates1)</span>
 
         <span class="c1"># Add name to the theano node</span>
         <span class="n">potential_field_interfaces_unique</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Value of the potential field at the interfaces&#39;</span>
@@ -1017,21 +1007,28 @@
         <span class="n">min_pot</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Z_x</span><span class="p">)</span>   <span class="c1">#T.min(potential_field_unique) - 1</span>
 
         <span class="c1"># Value of the potential field at the interfaces of the computed series</span>
-        <span class="n">potential_field_at_interfaces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># self.pot_field_for_faults = potential_field_at_interfaces_values</span>
+        <span class="c1"># self.pot_field_for_formations = potential_field_at_interfaces_values</span>
+
+                                <span class="c1">#T.concatenate((self.final_potential_field_at_interfaces,</span>
+                                                   <span class="c1">#  potential_field_at_interfaces_values))</span>
+
 
         <span class="c1"># A tensor with the values to segment</span>
         <span class="n">potential_field_iter</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">T</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">max_pot</span><span class="p">]),</span>
-                                              <span class="n">T</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="n">potential_field_at_interfaces</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                              <span class="n">T</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
                                               <span class="n">T</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">min_pot</span><span class="p">])))</span>
 
         <span class="k">if</span> <span class="s2">&quot;potential_field_iter&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="n">potential_field_iter</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s2">&quot;potential_field_iter&quot;</span><span class="p">)(</span><span class="n">potential_field_iter</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">&quot;potential_field_at_interfaces&quot;</span><span class="p">:</span>
-            <span class="n">potential_field_at_interfaces</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;Potential field&#39;</span><span class="p">)(</span>
+        <span class="k">if</span> <span class="s2">&quot;potential_field_at_interfaces_values&quot;</span><span class="p">:</span>
+            <span class="n">potential_field_at_interfaces_values</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;Potential field&#39;</span><span class="p">)(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces</span><span class="p">())</span>
-            <span class="n">potential_field_at_interfaces</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;Selected pt&#39;</span><span class="p">)(</span>
-                <span class="n">potential_field_at_interfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+            <span class="n">potential_field_at_interfaces_values</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;Selected pt&#39;</span><span class="p">)(</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
 
         <span class="c1"># Loop to segment the distinct lithologies</span>
         <span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n_formation</span><span class="p">,</span> <span class="n">Zx</span><span class="p">):</span>
@@ -1124,6 +1121,8 @@
        <span class="c1"># self.fault_matrix_at_ref =</span>
 
 
+
+
         <span class="k">if</span> <span class="s1">&#39;n_formation&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;n_formation_fault&#39;</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span><span class="p">)</span>
 
@@ -1141,12 +1140,18 @@
                     <span class="n">faults_matrix</span><span class="p">)</span>
 
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                                               <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span><span class="p">)</span>
+        <span class="c1"># Save potential field at interfaces</span>
+        <span class="c1"># self.final_potential_field_at_interfaces = T.concatenate([self.final_potential_field_at_interfaces,</span>
+        <span class="c1">#                                                           self.potential_field_at_interfaces_values])</span>
+
         <span class="c1"># -DEP- Until I add network faults</span>
         <span class="c1">#final_block = T.set_subtensor(</span>
         <span class="c1">#    final_block[T.nonzero(T.cast(self.yet_simulated, &quot;int8&quot;))[0]],</span>
         <span class="c1">#    potential_field_contribution)</span>
 
-        <span class="k">return</span> <span class="n">block_matrix</span></div>
+        <span class="k">return</span> <span class="n">block_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span></div>
 
 <div class="viewcode-block" id="TheanoGraph_pro.compute_a_series"><a class="viewcode-back" href="../code.html#theanograf.TheanoGraph_pro.compute_a_series">[docs]</a>    <span class="k">def</span> <span class="nf">compute_a_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                          <span class="n">len_i_0</span><span class="p">,</span> <span class="n">len_i_1</span><span class="p">,</span>
@@ -1203,6 +1208,8 @@
         <span class="k">if</span> <span class="s1">&#39;n_formation&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;n_formation_series&#39;</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span><span class="p">)</span>
 
+
+
         <span class="c1"># ====================</span>
         <span class="c1"># Computing the series</span>
         <span class="c1"># ====================</span>
@@ -1211,6 +1218,10 @@
         <span class="n">final_block</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
             <span class="n">final_block</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span><span class="p">,</span> <span class="s2">&quot;int8&quot;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]],</span>
             <span class="n">potential_field_contribution</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_formations</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_formations</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span> <span class="n">potential_field_at_interfaces_values</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_all</span><span class="p">:</span>
             <span class="n">potential_field_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_all</span><span class="p">()[:</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">]</span>
@@ -1224,69 +1235,9 @@
                     <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">])</span>
 
             <span class="c1">#final_block_out = T.vertical_stack(final_block, pf)</span>
+                <span class="c1"># Save potential field at interfaces</span>
 
-        <span class="k">return</span> <span class="n">final_block</span></div>
-
-    <span class="c1"># def compute_a_series_pf(self,</span>
-    <span class="c1">#                      len_i_0, len_i_1,</span>
-    <span class="c1">#                      len_f_0, len_f_1,</span>
-    <span class="c1">#                      n_form_per_serie_0, n_form_per_serie_1,</span>
-    <span class="c1">#                      u_grade_iter,</span>
-    <span class="c1">#                     ):</span>
-    <span class="c1">#</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#     Function that loops each series, generating a potential field for each on them with the respective block model</span>
-    <span class="c1">#     Args:</span>
-    <span class="c1">#          len_i_0: Lenght of rest of previous series</span>
-    <span class="c1">#          len_i_1: Lenght of rest for the computed series</span>
-    <span class="c1">#          len_f_0: Lenght of dips of previous series</span>
-    <span class="c1">#          len_f_1: Length of dips of the computed series</span>
-    <span class="c1">#          n_form_per_serie_0: Number of formations of previous series</span>
-    <span class="c1">#          n_form_per_serie_1: Number of formations of the computed series</span>
-    <span class="c1">#</span>
-    <span class="c1">#     Returns:</span>
-    <span class="c1">#          theano.tensor.matrix: final block model</span>
-    <span class="c1">#     &quot;&quot;&quot;</span>
-    <span class="c1">#</span>
-    <span class="c1">#     # THIS IS THE FINAL BLOCK. (DO I NEED TO LOOP THE FAULTS FIRST? Yes you do)</span>
-    <span class="c1">#     # ==================</span>
-    <span class="c1">#     # Preparing the data</span>
-    <span class="c1">#     # ==================</span>
-    <span class="c1">#     # Vector that controls the points that have been simulated in previous iterations</span>
-    <span class="c1">#     #self.yet_simulated = T.eq(final_block, 0)</span>
-    <span class="c1">#     #self.yet_simulated.name = &#39;Yet simulated node&#39;</span>
-    <span class="c1">#</span>
-    <span class="c1">#     # Theano shared</span>
-    <span class="c1">#     self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T[n_form_per_serie_0: n_form_per_serie_1]</span>
-    <span class="c1">#     self.n_formation_op = self.n_formation[n_form_per_serie_0: n_form_per_serie_1]</span>
-    <span class="c1">#     self.u_grade_T_op = u_grade_iter</span>
-    <span class="c1">#</span>
-    <span class="c1">#     self.dips_position = self.dips_position_all[len_f_0: len_f_1, :]</span>
-    <span class="c1">#     self.dips_position_tiled = T.tile(self.dips_position, (self.n_dimensions, 1))</span>
-    <span class="c1">#</span>
-    <span class="c1">#     # Theano Var</span>
-    <span class="c1">#     self.dip_angles = self.dip_angles_all[len_f_0: len_f_1]</span>
-    <span class="c1">#     self.azimuth = self.azimuth_all[len_f_0: len_f_1]</span>
-    <span class="c1">#     self.polarity = self.polarity_all[len_f_0: len_f_1]</span>
-    <span class="c1">#</span>
-    <span class="c1">#     self.ref_layer_points = self.ref_layer_points_all[len_i_0: len_i_1, :]</span>
-    <span class="c1">#     self.rest_layer_points = self.rest_layer_points_all[len_i_0: len_i_1, :]</span>
-    <span class="c1">#</span>
-    <span class="c1">#     # Printing</span>
-    <span class="c1">#   #  if &#39;yet_simulated&#39; in self.verbose:</span>
-    <span class="c1">#   #      self.yet_simulated = theano.printing.Print(self.yet_simulated.name)(self.yet_simulated)</span>
-    <span class="c1">#     if &#39;n_formation&#39; in self.verbose:</span>
-    <span class="c1">#         self.n_formation_op = theano.printing.Print(&#39;n_formation&#39;)(self.n_formation_op)</span>
-    <span class="c1">#</span>
-    <span class="c1">#     # ====================</span>
-    <span class="c1">#     # Computing the series</span>
-    <span class="c1">#     # ====================</span>
-    <span class="c1">#     potential_field_contribution = self.potential_field_at_all()[:-2*self.rest_layer_points_all.shape[0]]</span>
-    <span class="c1">#     #final_block = T.set_subtensor(</span>
-    <span class="c1">#     #    final_block[T.nonzero(T.cast(self.yet_simulated, &quot;int8&quot;))[0]],</span>
-    <span class="c1">#     #    potential_field_contribution)</span>
-    <span class="c1">#</span>
-    <span class="c1">#     return potential_field_contribution</span>
+        <span class="k">return</span> <span class="n">final_block</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_formations</span></div>
 
 <div class="viewcode-block" id="TheanoGraph_pro.whole_block_model"><a class="viewcode-back" href="../code.html#theanograf.TheanoGraph_pro.whole_block_model">[docs]</a>    <span class="k">def</span> <span class="nf">whole_block_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_faults</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
 
@@ -1313,10 +1264,9 @@
             <span class="n">fault_block_init</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;final block of faults init&#39;</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">fault_block_init</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
 
-
-            <span class="n">fault_matrix</span><span class="p">,</span> <span class="n">updates3</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
+            <span class="n">fault_loop</span><span class="p">,</span> <span class="n">updates3</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
                  <span class="n">fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_a_fault</span><span class="p">,</span>
-                 <span class="n">outputs_info</span><span class="o">=</span><span class="n">fault_block_init</span><span class="p">,</span>  <span class="c1">#  This line may be used for the faults network</span>
+                 <span class="n">outputs_info</span><span class="o">=</span><span class="p">[</span><span class="n">fault_block_init</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>  <span class="c1">#  This line may be used for the faults network</span>
                  <span class="n">sequences</span><span class="o">=</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="p">[:</span><span class="n">n_faults</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
                             <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="p">[:</span><span class="n">n_faults</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
                             <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="p">[:</span><span class="n">n_faults</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
@@ -1331,11 +1281,14 @@
             <span class="c1">#                dict(input=self.u_grade_T[:n_faults + 1], taps=[0])]</span>
             <span class="c1">#     )</span>
 
+            <span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">fault_loop</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">pfai_fault</span> <span class="o">=</span> <span class="n">fault_loop</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">fault_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
             <span class="k">if</span> <span class="s1">&#39;faults block&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;I am outside the faults&#39;</span><span class="p">)(</span><span class="n">fault_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">pfai_fault</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>
        <span class="c1"># self.u_grade_T = theano.printing.Print(&#39;drift degree&#39;)(self.u_grade_T)</span>
        <span class="c1"># self.a_T = theano.printing.Print(&#39;range&#39;)(self.a_T)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">compute_all</span> <span class="o">=</span> <span class="n">compute_all</span>
@@ -1347,37 +1300,40 @@
             <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_all</span><span class="p">:</span>
                 <span class="n">final_block_init</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">vertical_stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_block</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_block</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_block</span><span class="p">)</span>
                 <span class="c1"># Loop the series to create the Final block</span>
-                <span class="n">all_series</span><span class="p">,</span> <span class="n">updates2</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
+                <span class="n">loop_results</span><span class="p">,</span> <span class="n">updates2</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
                     <span class="n">fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_a_series</span><span class="p">,</span>
-                    <span class="n">outputs_info</span><span class="o">=</span><span class="n">final_block_init</span><span class="p">,</span>
+                    <span class="n">outputs_info</span><span class="o">=</span><span class="p">[</span><span class="n">final_block_init</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
                     <span class="n">sequences</span><span class="o">=</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
                                <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
                                <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
                                <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">u_grade_T</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
-                <span class="c1"># all_series_pf, updates3 = theano.scan(</span>
-                <span class="c1">#      fn=self.compute_a_series,</span>
-                <span class="c1">#      outputs_info=final_block_init,</span>
-                <span class="c1">#      sequences=[dict(input=self.len_series_i[n_faults:], taps=[0, 1]),</span>
-                <span class="c1">#                 dict(input=self.len_series_f[n_faults:], taps=[0, 1]),</span>
-                <span class="c1">#                 dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),</span>
-                <span class="c1">#                 dict(input=self.u_grade_T[n_faults:], taps=[0])]</span>
                 <span class="p">)</span>
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="c1"># Loop the series to create the Final block</span>
-                <span class="n">all_series</span><span class="p">,</span> <span class="n">updates2</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
+                <span class="n">loop_results</span><span class="p">,</span> <span class="n">updates2</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
                     <span class="n">fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_a_series</span><span class="p">,</span>
-                    <span class="n">outputs_info</span><span class="o">=</span><span class="n">final_block_init</span><span class="p">,</span>
+                    <span class="n">outputs_info</span><span class="o">=</span><span class="p">[</span><span class="n">final_block_init</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
                     <span class="n">sequences</span><span class="o">=</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
                                <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
                                <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
                                <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">u_grade_T</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
                 <span class="p">)</span>
+
+            <span class="n">all_series</span> <span class="o">=</span> <span class="n">loop_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">pfai_for</span> <span class="o">=</span> <span class="n">loop_results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">n_faults</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">pfai</span> <span class="o">=</span> <span class="n">pfai_for</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">pfai</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">vertical_stack</span><span class="p">(</span><span class="n">pfai_fault</span><span class="p">,</span> <span class="n">pfai_for</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="c1"># We just pass the faults block</span>
             <span class="n">all_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span>
+            <span class="n">pfai</span> <span class="o">=</span> <span class="n">pfai_fault</span>
 
-        <span class="k">return</span> <span class="n">all_series</span></div>
+       <span class="c1"># pfai = T.vertical_stack(pfai_fault, pfai_for)</span>
+        <span class="c1">#self.pot_value.set_value(self.final_potential_field_at_interfaces)</span>
+        <span class="k">return</span> <span class="n">all_series</span><span class="p">,</span> <span class="n">pfai</span></div>
 
     <span class="c1"># ==================================</span>
     <span class="c1"># Geophysics</span>

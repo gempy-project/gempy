@@ -19,6 +19,8 @@
 #
 import os
 import sys
+import IPython.sphinxext
+from pygments.plugin import find_plugin_lexers
 sys.path.insert(0, os.path.abspath('../../gempy'))
 
 from unittest.mock import MagicMock
@@ -54,7 +56,9 @@ extensions = [
     'sphinx.ext.mathjax',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
-    'sphinx.ext.napoleon']
+    'sphinx.ext.napoleon',
+    'IPython.sphinxext.ipython_console_highlighting',
+    'IPython.sphinxext.ipython_directive']
 
 napoleon_google_docstring = True
 
@@ -112,7 +116,8 @@ todo_include_todos = True
 # a list of builtin themes.
 #
 html_theme = 'alabaster'
-
+#html_theme = 'bootstrap'
+#html_theme_path = sphinx_bootstrap_theme.get_html_theme_path()
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
 # documentation.
