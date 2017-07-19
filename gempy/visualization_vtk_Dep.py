@@ -1,4 +1,8 @@
-import vtk
+import warnings
+try:
+    import vtk
+except ModuleNotFoundError:
+    warnings.warn('Vtk package is not installed. No vtk visualization available.')
 import random
 import sys
 import numpy as np
@@ -10,7 +14,7 @@ class vtkVisualization():
                  ren_name='GemPy 3D-Editor',
                  interf_bool=True, fol_bool=True):
 
-        self.C_LOT = color_lot_create(geo_data)
+        self.C_LOT = self.color_lot_create(geo_data)
         self.geo_data = geo_data
         # Number of renders
         self.n_ren = 4
@@ -162,12 +166,12 @@ class vtkVisualization():
         :param simpleces (list):
         :return:
         '''
-        self.s_rend_1 = []
-        self.s_rend_2 = []
-        self.s_rend_3 = []
-        self.s_rend_4 = []
-        self.s_mapper = []
-        self.s_polydata = []
+        # self.s_rend_1 = []
+        # self.s_rend_2 = []
+        # self.s_rend_3 = []
+        # self.s_rend_4 = []
+        # self.s_mapper = []
+        # self.s_polydata = []
 
         assert type(vertices) is list, 'vertices and simpleces have to be a list of arrays even when only one formation' \
                                        'is passed'

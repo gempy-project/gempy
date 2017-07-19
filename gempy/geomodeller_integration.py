@@ -34,6 +34,26 @@ import string
 # - clear-up spaghetti code!!!!! Check dependencies and other modules
 #    to get a consistent lay-out
 
+# TODO think where this function should go
+def read_vox(geo_data, path):
+    """
+    read vox from geomodeller and transform it to gempy format
+    Returns:
+        numpy.array: block model
+    """
+    import pandas as pn
+    geo_res = pn.read_csv(path)
+
+    geo_res = geo_res.iloc[9:]
+
+    # ip_addresses = geo_res['nx 50'].unique()  # geo_data.interfaces["formation"].unique()
+    ip_dict = geo_data.get_formation_number()
+
+    geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
+    block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
+        self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
+    return block_geomodeller
+
 class GeomodellerClass:
     """Wrapper for GeoModeller XML-datafiles to perform all kinds of data
     manipulation and analysis on low level basis, e.g.:

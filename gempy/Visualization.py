@@ -8,6 +8,11 @@ Created on 23/09/2016
 @author: Miguel de la Varga
 """
 
+import warnings
+try:
+    import vtk
+except ModuleNotFoundError:
+    warnings.warn('Vtk package is not installed. No vtk visualization available.')
 import matplotlib.pyplot as plt
 import matplotlib
 import seaborn as sns
@@ -16,7 +21,6 @@ from os import path
 import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-
 from IPython.core.debugger import Pdb
 from gempy.colors import color_dict_rgb, color_dict_hex
 
@@ -24,7 +28,7 @@ from gempy.colors import color_dict_rgb, color_dict_hex
 # import sys, os
 
 
-class PlotData(object):
+class PlotData2D(object):
     """
     Class to make the different plot related with gempy
 
@@ -38,12 +42,9 @@ class PlotData(object):
         verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0
     """
 
-    def __init__(self, _data, cd_rgb=color_dict_rgb, cd_hex=color_dict_hex, **kwargs):
+    def __init__(self, geo_data, cd_rgb=color_dict_rgb, cd_hex=color_dict_hex, **kwargs):
 
-        # if _data.geo_data_type == 'InterpolatorInput':
-        #     self._data = _data.data
-        # else:
-        self._data = _data
+        self._data = geo_data
 
         if 'potential_field' in kwargs:
             self._potential_field_p = kwargs['potential_field']
@@ -281,6 +282,12 @@ class PlotData(object):
         for label, x, y in zip(frame[label_col], frame[x], frame[y]):
             plt.annotate(label, xy=(x + 0.2, y + 0.15), **kwargs)
 
+
+class steano3D():
+
+    def __init__(self, geo_data):
+        self._data = geo_data
+
     def plot3D_steno(self, block,  project, plot=True, **kwargs):
         import steno3d
         import numpy as np
@@ -292,10 +299,6 @@ class PlotData(object):
             description=description,
             public=True,
         )
-
-        # mesh = steno3d.Mesh3DGrid(h1=np.diff(np.linspace(self._data.extent[0], self._data.extent[1], self._data.resolution[0])),
-        #                           h2=np.diff(np.linspace(self._data.extent[2], self._data.extent[3], self._data.resolution[1])),
-        #                           h3=np.diff(np.linspace(self._data.extent[4], self._data.extent[5], self._data.resolution[2])))
 
         mesh = steno3d.Mesh3DGrid(h1=np.ones(self._data.resolution[0]) * (self._data.extent[0] - self._data.extent[1]) /
                                                                          (self._data.resolution[0] - 1),
@@ -314,163 +317,514 @@ class PlotData(object):
         if plot:
             return vol.plot()
 
-    # def plot3D_ipyvolume(block, geo_data, cm=plt.cm.viridis.colors):
-    #     import ipyvolume.pylab as p3
-    #     n_lith = np.unique(block).shape[0]
-    #     p3.figure()
-    #     for e, i in enumerate(np.unique(sol)):  # np.unique(block)):
-    #
-    #         bool_pos = block == i
-    #         p3.scatter(
-    #             geo_data.grid.grid[:, 0][bool_pos],
-    #             geo_data.grid.grid[:, 1][bool_pos],
-    #             geo_data.grid.grid[:, 2][bool_pos],
-    #             marker='box',
-    #             color=cm[np.linspace(0, 255, n_lith, dtype=int)[e]])
-    #
-    #     p3.xlim(np.min(geo_data.grid.grid[:, 0]), np.max(geo_data.grid.grid[:, 0]))
-    #     p3.ylim(np.min(geo_data.grid.grid[:, 1]), np.max(geo_data.grid.grid[:, 1]))
-    #     p3.zlim(np.min(geo_data.grid.grid[:, 2]), np.max(geo_data.grid.grid[:, 2]))
-    #
-    #     p3.show()
 
-    def export_vtk_structured(self):
+class vtkVisualization():
+    """
+
+    """
+    def __init__(self, geo_data, verbose=0, win_size=(1000, 800),
+                 ren_name='GemPy 3D-Editor',
+                 interf_bool=True, fol_bool=True):
+
+        self.C_LOT = self.color_lot_create(geo_data)
+        self.geo_data = geo_data
+        # Number of renders
+        self.n_ren = 4
+
+        # Extents
+        try:
+            self.extent = geo_data.extent
+            self._e_dx = geo_data.dx
+            self._e_dy = geo_data.dy
+            self._e_dz = geo_data.dz
+        except AttributeError:
+            _e = geo_data.extent  # array([ x, X,  y, Y,  z, Z])
+            self._e_dx = _e[1] - _e[0]
+            self._e_dy = _e[3] - _e[2]
+            self._e_dz = _e[5] - _e[4]
+
+        self._e_d_avrg = (self._e_dx + self._e_dy + self._e_dz) / 3
+
+        # Resolution
+        self.res = geo_data.resolution
+
+        # create render window, settings
+        self.renwin = vtk.vtkRenderWindow()
+        self.renwin.SetSize(win_size[0], win_size[1])
+        self.renwin.SetWindowName(ren_name)
+
+        # Set 4 renderers. ie 3D, X,Y,Z projections
+        self.ren_list = self.create_ren_list()
+
+        # create interactor and set interactor style, assign render window
+        self.interactor = vtk.vtkRenderWindowInteractor()
+        self.interactor.SetRenderWindow(self.renwin)
+        print(self.extent)
+        # 3d model camera for the 4 renders
+        self.camera_list = self._create_cameras(self.extent, verbose=verbose)
+        # Setting the camera and the background color to the renders
+        self.set_camera_backcolor()
+
+        # ///////////////////////////////////////////////////////////////////////////////////////////////////////
+        for e, r in enumerate(self.ren_list):
+            # add axes actor to all renderers
+            axe = self._create_axes(self.camera_list[e])
+
+            r.AddActor(axe)
+            r.ResetCamera()
+
+    def render_model(self, size=(1920, 1080), fullscreen=False):
+
+        # initialize and start the app
+
+        if fullscreen:
+            self.renwin.FullScreenOn()
+        self.renwin.SetSize(size)
+        self.interactor.Initialize()
+        self.interactor.Start()
+
+        # close_window(interactor)
+        del self.renwin, self.interactor
+
+    def create_surface_points(self, vertices):
+        Points = vtk.vtkPoints()
+        for v in vertices:
+            Points.InsertNextPoint(v)
+        return Points
+
+    def create_surface_triangles(self, simpleces):
+
+        Triangles = vtk.vtkCellArray()
+        Triangle = vtk.vtkTriangle()
+
+        for s in simpleces:
+            Triangle.GetPointIds().SetId(0, s[0])
+            Triangle.GetPointIds().SetId(1, s[1])
+            Triangle.GetPointIds().SetId(2, s[2])
+
+            Triangles.InsertNextCell(Triangle)
+        return Triangles
+
+    def create_surface(self, vertices, simpleces, f, alpha=0.8):
+        surf_polydata = vtk.vtkPolyData()
+
+        surf_polydata.SetPoints(self.create_surface_points(vertices))
+        surf_polydata.SetPolys(self.create_surface_triangles(simpleces))
+
+        surf_mapper = vtk.vtkPolyDataMapper()
+        surf_mapper.SetInputData(surf_polydata)
+
+        surf_actor = vtk.vtkActor()
+        surf_actor.SetMapper(surf_mapper)
+        surf_actor.GetProperty().SetColor(self.C_LOT[f])
+        surf_actor.GetProperty().SetOpacity(alpha)
+
+        return surf_actor, surf_mapper, surf_polydata
+
+    def create_sphere(self, X, Y, Z, f, n_sphere=0, n_render=0, n_index=0, r=0.03):
+        s = vtk.vtkSphereWidget()
+        s.SetInteractor(self.interactor)
+        s.SetRepresentationToSurface()
+
+        s.r_f = self._e_d_avrg * r
+        s.PlaceWidget(X - s.r_f, X + s.r_f, Y - s.r_f, Y + s.r_f, Z - s.r_f, Z + s.r_f)
+        s.GetSphereProperty().SetColor(self.C_LOT[f])
+
+        s.SetCurrentRenderer(self.ren_list[n_render])
+        s.n_sphere = n_sphere
+        s.n_render = n_render
+        s.index = n_index
+        s.AddObserver("InteractionEvent", self.sphereCallback)
+
+        s.On()
+
+        return s
+
+    def create_foliation(self, X, Y, Z, f,
+                         Gx, Gy, Gz,
+                         n_sphere=0, n_render=0, n_index=0, r=0.1, alpha=0.5):
+        d = vtk.vtkPlaneWidget()
+        d.SetInteractor(self.interactor)
+        d.SetRepresentationToSurface()
+
+        # Position
+        print(X, Y, Z)
+        source = vtk.vtkPlaneSource()
+        source.SetCenter(X, Y, Z)
+        source.SetNormal(Gx, Gy, Gz)
+        source.Update()
+        d.SetInputData(source.GetOutput())
+        d.SetHandleSize(0.05)
+        d.SetPlaceFactor(250)
+        d.PlaceWidget()
+        d.SetNormal(Gx, Gy, Gz)
+        d.GetPlaneProperty().SetColor(self.C_LOT[f])
+        d.GetHandleProperty().SetColor(self.C_LOT[f])
+        d.GetHandleProperty().SetOpacity(alpha)
+        d.SetCurrentRenderer(self.ren_list[n_render])
+        d.n_plane = n_sphere
+        d.n_render = n_render
+        d.index = n_index
+        d.AddObserver("InteractionEvent", self.planesCallback)
+
+        d.On()
+
+        return d
+
+    def set_surfaces(self, vertices, simpleces, formations):
+        '''
+
+        :param vertices (list):
+        :param simpleces (list):
+        :return:
+        '''
+        # self.s_rend_1 = []
+        # self.s_rend_2 = []
+        # self.s_rend_3 = []
+        # self.s_rend_4 = []
+        # self.s_mapper = []
+        # self.s_polydata = []
+
+        assert type(
+            vertices) is list, 'vertices and simpleces have to be a list of arrays even when only one formation' \
+                               'is passed'
+        assert 'DefaultBasement' not in formations, 'Remove DefaultBasement from the list of formations'
+
+        for v, s, f in zip(vertices, simpleces, formations):
+            act, map, pol = self.create_surface(v, s, f)
+            #  self.s_rend_1.append(act)
+            #  self.s_mapper.append(map)
+            #  self.s_polydata.append(pol)
+            print(self.s_rend_1)
+            self.ren_list[0].AddActor(act)
+            self.ren_list[1].AddActor(act)
+            self.ren_list[2].AddActor(act)
+            self.ren_list[3].AddActor(act)
+
+    def set_interfaces(self):
+        self.s_rend_1 = []
+        self.s_rend_2 = []
+        self.s_rend_3 = []
+        self.s_rend_4 = []
+        for e, val in enumerate(self.geo_data.interfaces.iterrows()):
+            index = val[0]
+            row = val[1]
+            self.s_rend_1.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation'],
+                                                    n_sphere=e, n_render=0, n_index=index))
+            self.s_rend_2.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation'],
+                                                    n_sphere=e, n_render=1, n_index=index))
+            self.s_rend_3.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation'],
+                                                    n_sphere=e, n_render=2, n_index=index))
+            self.s_rend_4.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation'],
+                                                    n_sphere=e, n_render=3, n_index=index))
+
+    def set_foliations(self):
+        self.f_rend_1 = []
+        self.f_rend_2 = []
+        self.f_rend_3 = []
+        self.f_rend_4 = []
+        for e, val in enumerate(self.geo_data.foliations.iterrows()):
+            index = val[0]
+            row = val[1]
+            self.f_rend_1.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation'],
+                                                       row['G_x'], row['G_y'], row['G_z'],
+                                                       n_sphere=e, n_render=0, n_index=index))
+            self.f_rend_2.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation'],
+                                                       row['G_x'], row['G_y'], row['G_z'],
+                                                       n_sphere=e, n_render=1, n_index=index))
+            self.f_rend_3.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation'],
+                                                       row['G_x'], row['G_y'], row['G_z'],
+                                                       n_sphere=e, n_render=2, n_index=index))
+            self.f_rend_4.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation'],
+                                                       row['G_x'], row['G_y'], row['G_z'],
+                                                       n_sphere=e, n_render=3, n_index=index))
+
+    def sphereCallback(self, obj, event):
+
+        fp = self.ren_list[1].GetActiveCamera().GetFocalPoint()
+        p = self.ren_list[1].GetActiveCamera().GetPosition()
+        dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
+        self.ren_list[1].GetActiveCamera().SetPosition(fp[0], fp[1], fp[2] + dist)
+        self.ren_list[1].GetActiveCamera().SetViewUp(0.0, 1.0, 0.0)
+
+        fp = self.ren_list[2].GetActiveCamera().GetFocalPoint()
+        p = self.ren_list[2].GetActiveCamera().GetPosition()
+        dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
+        self.ren_list[2].GetActiveCamera().SetPosition(fp[0] + dist, fp[1], fp[2])
+        self.ren_list[2].GetActiveCamera().SetViewUp(0.0, -1.0, 0.0)
+        self.ren_list[2].GetActiveCamera().Roll(90)
+
+        fp = self.ren_list[3].GetActiveCamera().GetFocalPoint()
+        p = self.ren_list[3].GetActiveCamera().GetPosition()
+        dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
+        self.ren_list[3].GetActiveCamera().SetPosition(fp[0], fp[1] - dist, fp[2])
+        self.ren_list[3].GetActiveCamera().SetViewUp(-1.0, 0.0, 0.0)
+        self.ren_list[3].GetActiveCamera().Roll(90)
+
+        new_center = obj.GetCenter()
+        index = obj.index
+
+        self.geo_data.interface_modify(index, X=new_center[0], Y=new_center[1], Z=new_center[2])
+        render = obj.n_render
+        r_f = obj.r_f
+        if render != 0:
+            self.s_rend_1[obj.n_sphere].PlaceWidget(new_center[0] - r_f, new_center[0] + r_f,
+                                                    new_center[1] - r_f, new_center[1] + r_f,
+                                                    new_center[2] - r_f, new_center[2] + r_f)
+
+        if render != 1:
+            self.s_rend_2[obj.n_sphere].PlaceWidget(new_center[0] - r_f, new_center[0] + r_f,
+                                                    new_center[1] - r_f, new_center[1] + r_f,
+                                                    new_center[2] - r_f, new_center[2] + r_f)
+        if render != 2:
+            self.s_rend_3[obj.n_sphere].PlaceWidget(new_center[0] - r_f, new_center[0] + r_f,
+                                                    new_center[1] - r_f, new_center[1] + r_f,
+                                                    new_center[2] - r_f, new_center[2] + r_f)
+        if render != 3:
+            self.s_rend_4[obj.n_sphere].PlaceWidget(new_center[0] - r_f, new_center[0] + r_f,
+                                                    new_center[1] - r_f, new_center[1] + r_f,
+                                                    new_center[2] - r_f, new_center[2] + r_f)
+
+    def planesCallback(self, obj, event):
+
+        fp = self.ren_list[1].GetActiveCamera().GetFocalPoint()
+        p = self.ren_list[1].GetActiveCamera().GetPosition()
+        dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
+        self.ren_list[1].GetActiveCamera().SetPosition(fp[0], fp[1], fp[2] + dist)
+        self.ren_list[1].GetActiveCamera().SetViewUp(0.0, 1.0, 0.0)
+
+        fp = self.ren_list[2].GetActiveCamera().GetFocalPoint()
+        p = self.ren_list[2].GetActiveCamera().GetPosition()
+        dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
+        self.ren_list[2].GetActiveCamera().SetPosition(fp[0] + dist, fp[1], fp[2])
+        self.ren_list[2].GetActiveCamera().SetViewUp(0.0, -1.0, 0.0)
+        self.ren_list[2].GetActiveCamera().Roll(90)
+
+        fp = self.ren_list[3].GetActiveCamera().GetFocalPoint()
+        p = self.ren_list[3].GetActiveCamera().GetPosition()
+        dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
+        self.ren_list[3].GetActiveCamera().SetPosition(fp[0], fp[1] - dist, fp[2])
+        self.ren_list[3].GetActiveCamera().SetViewUp(-1.0, 0.0, 0.0)
+        self.ren_list[3].GetActiveCamera().Roll(90)
+
+        new_center = obj.GetCenter()
+        new_normal = obj.GetNormal()
+        index = obj.index
+
+        new_source = vtk.vtkPlaneSource()
+        new_source.SetCenter(new_center)
+        new_source.SetNormal(new_normal)
+        new_source.Update()
+
+        self.geo_data.foliation_modify(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
+                                       G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
+        render = obj.n_render
+
+        if render != 0:
+            self.f_rend_1[obj.n_plane].SetInputData(new_source.GetOutput())
+            self.f_rend_1[obj.n_plane].SetNormal(new_normal)
+        if render != 1:
+            self.f_rend_2[obj.n_plane].SetInputData(new_source.GetOutput())
+            self.f_rend_2[obj.n_plane].SetNormal(new_normal)
+        if render != 2:
+            self.f_rend_3[obj.n_plane].SetInputData(new_source.GetOutput())
+            self.f_rend_3[obj.n_plane].SetNormal(new_normal)
+        if render != 3:
+            self.f_rend_4[obj.n_plane].SetInputData(new_source.GetOutput())
+            self.f_rend_4[obj.n_plane].SetNormal(new_normal)
+
+    def create_ren_list(self):
+
+        # viewport dimensions setup
+        xmins = [0, 0.6, 0.6, 0.6]
+        xmaxs = [0.6, 1, 1, 1]
+        ymins = [0, 0, 0.33, 0.66]
+        ymaxs = [1, 0.33, 0.66, 1]
+
+        # create list of renderers, set vieport values
+        ren_list = []
+        for i in range(self.n_ren):
+            # append each renderer to list of renderers
+            ren_list.append(vtk.vtkRenderer())
+            # add each renderer to window
+            self.renwin.AddRenderer(ren_list[-1])
+            # set viewport for each renderer
+            ren_list[-1].SetViewport(xmins[i], ymins[i], xmaxs[i], ymaxs[i])
+
+        return ren_list
+
+    def color_lot_create(geo_data, cd_rgb=color_dict_rgb, c_names=color_names, c_subname="400"):
         """
-        export vtk
+        Set the color for each layer
+        :param geo_data:
+        :param cd_rgb:
+        :param c_names:
+        :param c_subname:
         :return:
         """
+        c_lot = {}
+        for i, fmt in enumerate(geo_data.formations):
+            c_lot[fmt] = cd_rgb[c_names[i]][c_subname]
+        return c_lot
 
-        # from evtk.hl import gridToVTK
-        #
-        # import numpy as np
-        #
-        # import random as rnd
-        #
-        # # Dimensions
-        #
-        # nx, ny, nz = 50, 50, 50
-        #
-        # lx, ly, lz = 10., 10., -10.0
-        #
-        # dx, dy, dz = lx / nx, ly / ny, lz / nz
-        #
-        # ncells = nx * ny * nz
-        #
-        # npoints = (nx + 1) * (ny + 1) * (nz + 1)
-        #
-        # # Coordinates
-        #
-        # X = np.arange(0, lx + 0.1 * dx, dx, dtype='float64')
-        #
-        # Y = np.arange(0, ly + 0.1 * dy, dy, dtype='float64')
-        #
-        # Z = np.arange(0, lz + 0.1 * dz, dz, dtype='float64')
-        #
-        # x = np.zeros((nx + 1, ny + 1, nz + 1))
-        #
-        # y = np.zeros((nx + 1, ny + 1, nz + 1))
-        #
-        # z = np.zeros((nx + 1, ny + 1, nz + 1))
-        #
-        # # We add some random fluctuation to make the grid more interesting
-        #
-        # for k in range(nz + 1):
-        #
-        #     for j in range(ny + 1):
-        #         for i in range(nx + 1):
-        #             x[i, j, k] = X[i] + (0.5 - rnd.random()) * 0.2 * dx
-        #
-        #             y[i, j, k] = Y[j] + (0.5 - rnd.random()) * 0.2 * dy
-        #
-        #             z[i, j, k] = Z[k] + (0.5 - rnd.random()) * 0.2 * dz
-        #
-        #             # Variables
-        #
-        # pressure = sol[0, 0, :].reshape((nx, ny, nz))
-        #
-        # gridToVTK("./structured", x, y, z, cellData={"pressure": pressure})
+    def _create_cameras(self, extent, verbose=0):
+        _e = extent
+        _e_dx = _e[1] - _e[0]
+        _e_dy = _e[3] - _e[2]
+        _e_dz = _e[5] - _e[4]
+        _e_d_avrg = (_e_dx + _e_dy + _e_dz) / 3
+        _e_max = np.argmax(_e)
 
-    def export_vtk_rectilinear(self):
+        model_cam = vtk.vtkCamera()
+        model_cam.SetPosition(_e[_e_max] * 5, _e[_e_max] * 5, _e[_e_max] * 5)
+        model_cam.SetFocalPoint(np.min(_e[0:2]) + _e_dx / 2,
+                                np.min(_e[2:4]) + _e_dy / 2,
+                                np.min(_e[4:]) + _e_dz / 2)
+
+        model_cam.SetViewUp(-0.239, 0.155, 0.958)
+        # model_cam.Roll(-80.)
+
+        # XY camera RED
+        xy_cam = vtk.vtkCamera()
+        # if np.argmin(_e[4:]) == 0:
+        xy_cam.SetPosition(np.min(_e[0:2]) + _e_dx / 2,
+                           np.min(_e[2:4]) + _e_dy / 2,
+                           _e[_e_max] * 4)
+
+        xy_cam.SetFocalPoint(np.min(_e[0:2]) + _e_dx / 2,
+                             np.min(_e[2:4]) + _e_dy / 2,
+                             np.min(_e[4:]) + _e_dz / 2)
+
+        # YZ camera GREEN
+        yz_cam = vtk.vtkCamera()
+        yz_cam.SetPosition(_e[_e_max] * 4,
+                           np.min(_e[2:4]) + _e_dy / 2,
+                           np.min(_e[4:]) + _e_dz / 2)
+
+        yz_cam.SetFocalPoint(np.min(_e[0:2]) + _e_dx / 2,
+                             np.min(_e[2:4]) + _e_dy / 2,
+                             np.min(_e[4:]) + _e_dz / 2)
+        yz_cam.SetViewUp(0, -1, 0)
+        yz_cam.Roll(90)
+
+        # XZ camera BLUE
+        xz_cam = vtk.vtkCamera()
+        xz_cam.SetPosition(np.min(_e[0:2]) + _e_dx / 2,
+                           - _e[_e_max] * 4,
+                           np.min(_e[4:]) + _e_dz / 2)
+
+        xz_cam.SetFocalPoint(np.min(_e[0:2]) + _e_dx / 2,
+                             np.min(_e[2:4]) + _e_dy / 2,
+                             np.min(_e[4:]) + _e_dz / 2)
+        xz_cam.SetViewUp(0, 1, 0)
+        xz_cam.Roll(0)
+
+        # camera position debugging
+        if verbose == 1:
+            print("RED XY:", xy_cam.GetPosition())
+            print("RED FP:", xy_cam.GetFocalPoint())
+            print("GREEN YZ:", yz_cam.GetPosition())
+            print("GREEN FP:", yz_cam.GetFocalPoint())
+            print("BLUE XZ:", xz_cam.GetPosition())
+            print("BLUE FP:", xz_cam.GetFocalPoint())
+
+        return [model_cam, xy_cam, yz_cam, xz_cam]
+
+    def set_camera_backcolor(self):
+
+        # define background colors of the renderers
+        # TODO: Tune renderer colors
+        # TODO: Try to make renderer titles (floating text?!)
+        #  ren_color = [(66 / 250, 66 / 250, 66 / 250), (0.5, 0., 0.1), (0.1, 0.5, 0.1), (0.1, 0.1, 0.5)]
+        ren_color = [(66 / 250, 66 / 250, 66 / 250), (60 / 250, 60 / 250, 60 / 250), (60 / 250, 60 / 250, 60 / 250),
+                     (60 / 250, 60 / 250, 60 / 250)]
+        for i in range(self.n_ren):
+            # set active camera for each renderer
+            self.ren_list[i].SetActiveCamera(self.camera_list[i])
+            # set background color for each renderer
+            self.ren_list[i].SetBackground(ren_color[i][0], ren_color[i][1], ren_color[i][2])
+
+    def _create_axes(self, camera, verbose=0):
+        "Create and returnr cubeAxesActor, settings."
+        cube_axes_actor = vtk.vtkCubeAxesActor()
+        cube_axes_actor.SetBounds(self.geo_data.extent)
+        cube_axes_actor.SetCamera(camera)
+        if verbose == 1:
+            print(cube_axes_actor.GetAxisOrigin())
+
+        # set axes and label colors
+        cube_axes_actor.GetTitleTextProperty(0).SetColor(1.0, 0.0, 0.0)
+        cube_axes_actor.GetLabelTextProperty(0).SetColor(1.0, 0.0, 0.0)
+        # font size doesn't work seem to work - maybe some override in place?
+        # cubeAxesActor.GetLabelTextProperty(0).SetFontSize(10)
+        cube_axes_actor.GetTitleTextProperty(1).SetColor(0.0, 1.0, 0.0)
+        cube_axes_actor.GetLabelTextProperty(1).SetColor(0.0, 1.0, 0.0)
+        cube_axes_actor.GetTitleTextProperty(2).SetColor(0.0, 0.0, 1.0)
+        cube_axes_actor.GetLabelTextProperty(2).SetColor(0.0, 0.0, 1.0)
+
+        cube_axes_actor.DrawXGridlinesOn()
+        cube_axes_actor.DrawYGridlinesOn()
+        cube_axes_actor.DrawZGridlinesOn()
+
+        # cube_axes_actor.XAxisMinorTickVisibilityOff()
+        # cube_axes_actor.YAxisMinorTickVisibilityOff()
+        # cube_axes_actor.ZAxisMinorTickVisibilityOff()
+
+        cube_axes_actor.SetXTitle("X")
+        cube_axes_actor.SetYTitle("Y")
+        cube_axes_actor.SetZTitle("Z")
+
+        cube_axes_actor.SetXAxisLabelVisibility(1)
+        cube_axes_actor.SetYAxisLabelVisibility(1)
+        cube_axes_actor.SetZAxisLabelVisibility(1)
+
+        # only plot grid lines furthest from viewpoint
+        # ensure platform compatibility for the grid line options
+        if sys.platform == "win32":
+            cube_axes_actor.SetGridLineLocation(cube_axes_actor.VTK_GRID_LINES_FURTHEST)
+        else:  # rather use elif == "linux" ? but what about other platforms
+            cube_axes_actor.SetGridLineLocation(vtk.VTK_GRID_LINES_FURTHEST)
+
+        return cube_axes_actor
+
+    def export_vtk_rectilinear(geo_data, block_lith, path=None):
         """
-        ajapg
-        Returns:
+            export vtk
+            :return:
+            """
 
-        """
-        # from evtk.hl import gridToVTK
-        #
-        # import numpy as np
-        #
-        # # Dimensions
-        #
-        #
-        # nx, ny, nz = 50, 50, 50
-        #
-        # lx, ly, lz = 10., 10., -10.0
-        #
-        # dx, dy, dz = lx / nx, ly / ny, lz / nz
-        #
-        # ncells = nx * ny * nz
-        #
-        # npoints = (nx + 1) * (ny + 1) * (nz + 1)
-        #
-        # # Coordinates
-        #
-        # x = np.arange(0, lx + 0.1 * dx, dx, dtype='float64')
-        #
-        # y = np.arange(0, ly + 0.1 * dy, dy, dtype='float64')
-        #
-        # z = np.arange(0, lz + 0.1 * dz, dz, dtype='float64')
-        #
-        # # Variables
-        #
-        # pressure = sol[0, 0, :].reshape((nx, ny, nz))
-        #
-        # temp = np.random.rand(npoints).reshape((nx + 1, ny + 1, nz + 1))
-        #
-        # gridToVTK("./rectilinear", x, y, z, cellData={"lithology": pressure}, )
+        from evtk.hl import gridToVTK
 
-    def plot_layers(self):
-        """
-        plot layers
-        Returns:
+        import numpy as np
 
-        """
+        import random as rnd
 
-        # import vtk
-        # from vtk import *
-        #
-        # # setup points and vertices
-        # Points = vtk.vtkPoints()
-        # Triangles = vtk.vtkCellArray()
-        # Triangle = vtk.vtkTriangle()
-        #
-        # for p in vertices * 0.4:
-        #     Points.InsertNextPoint(p)
-        #
-        # # Unfortunately in this simple example the following lines are ambiguous.
-        # # The first 0 is the index of the triangle vertex which is ALWAYS 0-2.
-        # # The second 0 is the index into the point (geometry) array, so this can range from 0-(NumPoints-1)
-        # # i.e. a more general statement is triangle->GetPointIds()->SetId(0, PointId);
-        #
-        # for i in simplices:
-        #     Triangle.GetPointIds().SetId(0, i[0])
-        #     Triangle.GetPointIds().SetId(1, i[1])
-        #     Triangle.GetPointIds().SetId(2, i[2])
-        #
-        #     Triangles.InsertNextCell(Triangle)
-        #
-        # polydata = vtk.vtkPolyData()
-        # polydata.SetPoints(Points)
-        # polydata.SetPolys(Triangles)
-        #
-        # polydata.Modified()
-        # if vtk.VTK_MAJOR_VERSION <= 5:
-        #     polydata.Update()
-        #
-        # writer = vtk.vtkXMLPolyDataWriter();
-        # writer.SetFileName("Fabian_f.vtp");
-        # if vtk.VTK_MAJOR_VERSION <= 5:
-        #     writer.SetInput(polydata)
-        # else:
-        #     writer.SetInputData(polydata)
-        # writer.Write()
+        # Dimensions
+
+        nx, ny, nz = geo_data.resolution
+
+        lx = geo_data.extent[0] - geo_data.extent[1]
+        ly = geo_data.extent[2] - geo_data.extent[3]
+        lz = geo_data.extent[4] - geo_data.extent[5]
+
+        dx, dy, dz = lx / nx, ly / ny, lz / nz
+
+        ncells = nx * ny * nz
+
+        npoints = (nx + 1) * (ny + 1) * (nz + 1)
+
+        # Coordinates
+        x = np.arange(0, lx + 0.1 * dx, dx, dtype='float64')
+
+        y = np.arange(0, ly + 0.1 * dy, dy, dtype='float64')
+
+        z = np.arange(0, lz + 0.1 * dz, dz, dtype='float64')
+
+        # Variables
+
+        lith = block_lith.reshape((nx, ny, nz))
+        if not path:
+            path = "./Lithology_block"
+
+        gridToVTK(path, x, y, z, cellData={"Lithology": lith})
+
