@@ -27,33 +27,14 @@ we will use a stored one
 
 .. code:: ipython3
 
-    geo_data = gp.read_pickle('NoFault.pickle')
+    geo_data = gp.read_pickle('../input_data/NoFault.pickle')
     geo_data.n_faults = 0
     print(geo_data)
 
 
-::
+.. parsed-literal::
 
-
-    ---------------------------------------------------------------------------
-
-    AttributeError                            Traceback (most recent call last)
-
-    <ipython-input-2-10570d7499cd> in <module>()
-    ----> 1 geo_data = gp.read_pickle('NoFault.pickle')
-          2 geo_data.n_faults = 0
-          3 print(geo_data)
-
-
-    ~/PycharmProjects/gempy/gempy/GemPy_f.py in read_pickle(path)
-         42         # The protocol version used is detected automatically, so we do not
-         43         # have to specify it.
-    ---> 44         data = pickle.load(f)
-         45         return data
-         46 
-
-
-    AttributeError: Can't get attribute 'InputData.GridClass' on <module 'gempy.DataManagement' from '../gempy/DataManagement.py'>
+    <gempy.DataManagement.InputData object at 0x7f165846c208>
 
 
 This geo\_data object contains essential information that we can access
@@ -175,6 +156,389 @@ Interfaces Dataframe
 
 
 
+.. code:: ipython3
+
+    geo_data.interfaces
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style>
+        .dataframe thead tr:only-child th {
+            text-align: right;
+        }
+    
+        .dataframe thead th {
+            text-align: left;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>formation</th>
+          <th>series</th>
+          <th>order_series</th>
+          <th>isFault</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>5</th>
+          <td>300.0</td>
+          <td>1000.0</td>
+          <td>-950.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>2000.0</td>
+          <td>1000.0</td>
+          <td>-1275.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>1900.0</td>
+          <td>1000.0</td>
+          <td>-1300.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>8</th>
+          <td>1300.0</td>
+          <td>1000.0</td>
+          <td>-1100.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>600.0</td>
+          <td>1000.0</td>
+          <td>-1050.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>10</th>
+          <td>1600.0</td>
+          <td>1000.0</td>
+          <td>-1200.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>11</th>
+          <td>1750.0</td>
+          <td>1000.0</td>
+          <td>-1250.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>12</th>
+          <td>1000.0</td>
+          <td>25.0</td>
+          <td>-1050.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>13</th>
+          <td>1000.0</td>
+          <td>100.0</td>
+          <td>-1100.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>14</th>
+          <td>1000.0</td>
+          <td>1975.0</td>
+          <td>-1050.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>15</th>
+          <td>1000.0</td>
+          <td>1900.0</td>
+          <td>-1100.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>16</th>
+          <td>900.0</td>
+          <td>1000.0</td>
+          <td>-650.0</td>
+          <td>SecondaryReservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>17</th>
+          <td>600.0</td>
+          <td>1000.0</td>
+          <td>-550.0</td>
+          <td>SecondaryReservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>18</th>
+          <td>1300.0</td>
+          <td>1000.0</td>
+          <td>-600.0</td>
+          <td>SecondaryReservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>19</th>
+          <td>1900.0</td>
+          <td>1000.0</td>
+          <td>-800.0</td>
+          <td>SecondaryReservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>20</th>
+          <td>800.0</td>
+          <td>1800.0</td>
+          <td>-1400.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>21</th>
+          <td>800.0</td>
+          <td>200.0</td>
+          <td>-1400.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>22</th>
+          <td>1150.0</td>
+          <td>1000.0</td>
+          <td>-1050.0</td>
+          <td>Reservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>23</th>
+          <td>600.0</td>
+          <td>1000.0</td>
+          <td>-650.0</td>
+          <td>Seal</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>24</th>
+          <td>1300.0</td>
+          <td>1000.0</td>
+          <td>-700.0</td>
+          <td>Seal</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>25</th>
+          <td>1600.0</td>
+          <td>1000.0</td>
+          <td>-800.0</td>
+          <td>Seal</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>26</th>
+          <td>1900.0</td>
+          <td>1000.0</td>
+          <td>-900.0</td>
+          <td>Seal</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>27</th>
+          <td>2000.0</td>
+          <td>1000.0</td>
+          <td>-875.0</td>
+          <td>Seal</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>28</th>
+          <td>600.0</td>
+          <td>1000.0</td>
+          <td>-1350.0</td>
+          <td>NonReservoirDeep</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>29</th>
+          <td>1600.0</td>
+          <td>1000.0</td>
+          <td>-700.0</td>
+          <td>SecondaryReservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>30</th>
+          <td>300.0</td>
+          <td>1000.0</td>
+          <td>-1250.0</td>
+          <td>NonReservoirDeep</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>31</th>
+          <td>2000.0</td>
+          <td>1000.0</td>
+          <td>-1575.0</td>
+          <td>NonReservoirDeep</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>32</th>
+          <td>1300.0</td>
+          <td>1000.0</td>
+          <td>-1400.0</td>
+          <td>NonReservoirDeep</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>33</th>
+          <td>1600.0</td>
+          <td>1000.0</td>
+          <td>-1500.0</td>
+          <td>NonReservoirDeep</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>34</th>
+          <td>1750.0</td>
+          <td>1000.0</td>
+          <td>-1550.0</td>
+          <td>NonReservoirDeep</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>35</th>
+          <td>1000.0</td>
+          <td>1000.0</td>
+          <td>-1300.0</td>
+          <td>NonReservoirDeep</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>36</th>
+          <td>1900.0</td>
+          <td>1000.0</td>
+          <td>-1600.0</td>
+          <td>NonReservoirDeep</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>37</th>
+          <td>900.0</td>
+          <td>1000.0</td>
+          <td>-750.0</td>
+          <td>Seal</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+        <tr>
+          <th>38</th>
+          <td>2000.0</td>
+          <td>1000.0</td>
+          <td>-775.0</td>
+          <td>SecondaryReservoir</td>
+          <td>Rest</td>
+          <td>2</td>
+          <td>False</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
 Foliations Dataframe
 ^^^^^^^^^^^^^^^^^^^^
 
@@ -263,19 +627,28 @@ visualization as well as the series:
 
 .. parsed-literal::
 
-    <gempy.Visualization.PlotData at 0x7fd8e729c828>
+    <gempy.Visualization.PlotData2D at 0x7f1659329cf8>
 
 
 
 
-.. image:: ch1_files/ch1_11_1.png
+.. image:: ch1_files/ch1_12_1.png
 
 
 GemPy supports visualization in 3D as well trough vtk.
 
 .. code:: ipython3
 
-    gp.visualize(geo_data)
+    gp.plot_data_3D(geo_data)
+
+
+.. parsed-literal::
+
+    1450.0 1000.0 -1150.0
+    1450.0 1000.0 -1150.0
+    1450.0 1000.0 -1150.0
+    1450.0 1000.0 -1150.0
+
 
 The ins and outs of Input data objects
 --------------------------------------
@@ -295,11 +668,25 @@ the next object type towards the final geological model:
 
 .. parsed-literal::
 
-    I am here
-    I am in the setting
-    float32
-    I am here
     [2, 2]
+    <gempy.DataManagement.InterpolatorInput object at 0x7f16592aadd8>
+
+
+.. code:: ipython3
+
+    interp_data.get_formation_number()
+
+
+
+
+.. parsed-literal::
+
+    {'DefaultBasement': 0,
+     'NonReservoirDeep': 4,
+     'Reservoir': 1,
+     'Seal': 3,
+     'SecondaryReservoir': 2}
+
 
 
 By default (there is a flag in case you do not need) when we create a
@@ -314,6 +701,15 @@ parametrization needed.
 .. code:: ipython3
 
     gp.get_kriging_parameters(interp_data)
+
+
+.. parsed-literal::
+
+    range 0.8882311582565308 3464.1015172
+    Number of drift equations [2 2]
+    Covariance at 0 0.01878463476896286
+    Foliations nugget effect 0.009999999776482582
+
 
 These later parameters have a default value computed from the original
 data or can be changed by the user (be careful of changing any of these
@@ -341,19 +737,19 @@ Blocks:
 
 .. code:: ipython3
 
-    gp.plot_section(geo_data, sol[0], 25)
+    gp.plot_section(geo_data, sol[0], 25, plot_data=True)
 
 
 
 
 .. parsed-literal::
 
-    <gempy.Visualization.PlotData at 0x7f629ef6b9e8>
+    <gempy.Visualization.PlotData2D at 0x7f1651dbe048>
 
 
 
 
-.. image:: ch1_files/ch1_21_1.png
+.. image:: ch1_files/ch1_23_1.png
 
 
 Potential field:
@@ -364,5 +760,6 @@ Potential field:
 
 
 
-.. image:: ch1_files/ch1_23_0.png
+.. image:: ch1_files/ch1_25_0.png
+
 

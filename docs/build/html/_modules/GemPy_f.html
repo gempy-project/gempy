@@ -263,8 +263,10 @@
                               <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">plot_data_3D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">):</span>
-    <span class="n">r</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">visualize</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
-    <span class="k">del</span> <span class="n">r</span><span class="p">,</span> <span class="n">i</span>
+    <span class="n">vv</span> <span class="o">=</span> <span class="n">vtkVisualization</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+    <span class="n">vv</span><span class="o">.</span><span class="n">set_interfaces</span><span class="p">()</span>
+    <span class="n">vv</span><span class="o">.</span><span class="n">set_foliations</span><span class="p">()</span>
+    <span class="n">vv</span><span class="o">.</span><span class="n">render_model</span><span class="p">()</span>
     <span class="k">return</span> <span class="kc">None</span>
 
 
