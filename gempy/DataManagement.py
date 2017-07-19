@@ -11,6 +11,7 @@ import pandas as pn
 from gempy import theanograf
 import theano
 
+
 class InputData(object):
     """
     -DOCS NOT UPDATED- Class to import the raw data of the model and set data classifications into formations and series.

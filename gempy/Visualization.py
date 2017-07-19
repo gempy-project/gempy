@@ -16,13 +16,14 @@ except ModuleNotFoundError:
 import matplotlib.pyplot as plt
 import matplotlib
 import seaborn as sns
-
+import numpy as np
 from os import path
 import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from IPython.core.debugger import Pdb
-from gempy.colors import color_dict_rgb, color_dict_hex
+#from gempy.colors import color_dict_rgb, color_dict_hex
+from gempy.colors import *
 
 # TODO: inherit pygeomod classes
 # import sys, os
@@ -33,8 +34,8 @@ class PlotData2D(object):
     Class to make the different plot related with gempy
 
     Args:
-        _data(GeMpy_core.DataManagement): All values of a DataManagement object
-        block(theano shared): 3D array containing the lithology block
+        geo_data(gempy.InputData): All values of a DataManagement object
+        block(numpy.array): 3D array containing the lithology block
         **kwargs: Arbitrary keyword arguments.
 
     Keyword Args:
@@ -320,11 +321,20 @@ class steano3D():
 
 class vtkVisualization():
     """
+    Class to visualize data and results in 3D. Init will create all the render properties while the method render
+    model will lunch the window. Using set_interfaces, set_foliations and set_surfaces in between can be chosen what
+    will be displayed.
 
+    Args:
+        geo_data(gempy.InputData): All values of a DataManagement object
+        ren_name (str): Name of the renderer window
+        verbose (int): Verbosity for certain functions
+    Attributes:
+        renWin(vtk.vtkRenderWindow())
+        camera_list (list): list of cameras for the distinct renderers
+        ren_list (list): list containing the vtk renderers
     """
-    def __init__(self, geo_data, verbose=0, win_size=(1000, 800),
-                 ren_name='GemPy 3D-Editor',
-                 interf_bool=True, fol_bool=True):
+    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0,):
 
         self.C_LOT = self.color_lot_create(geo_data)
         self.geo_data = geo_data
@@ -350,7 +360,6 @@ class vtkVisualization():
 
         # create render window, settings
         self.renwin = vtk.vtkRenderWindow()
-        self.renwin.SetSize(win_size[0], win_size[1])
         self.renwin.SetWindowName(ren_name)
 
         # Set 4 renderers. ie 3D, X,Y,Z projections
@@ -359,13 +368,13 @@ class vtkVisualization():
         # create interactor and set interactor style, assign render window
         self.interactor = vtk.vtkRenderWindowInteractor()
         self.interactor.SetRenderWindow(self.renwin)
-        print(self.extent)
+
         # 3d model camera for the 4 renders
         self.camera_list = self._create_cameras(self.extent, verbose=verbose)
         # Setting the camera and the background color to the renders
         self.set_camera_backcolor()
 
-        # ///////////////////////////////////////////////////////////////////////////////////////////////////////
+        # Creating the axis
         for e, r in enumerate(self.ren_list):
             # add axes actor to all renderers
             axe = self._create_axes(self.camera_list[e])
@@ -374,7 +383,14 @@ class vtkVisualization():
             r.ResetCamera()
 
     def render_model(self, size=(1920, 1080), fullscreen=False):
+        """
+        Method to lunch the window
+        Args:
+            size (tuple): Resolution of the window
+            fullscreen (bool): Lunch window in full screen or not
+        Returns:
 
+        """
         # initialize and start the app
 
         if fullscreen:
@@ -387,12 +403,28 @@ class vtkVisualization():
         del self.renwin, self.interactor
 
     def create_surface_points(self, vertices):
+        """
+        Method to create the points that form the surfaces
+        Args:
+            vertices (numpy.array): 2D array (XYZ) with the coordinates of the points
+
+        Returns:
+            vtk.vtkPoints: with the coordinates of the points
+        """
         Points = vtk.vtkPoints()
         for v in vertices:
             Points.InsertNextPoint(v)
         return Points
 
     def create_surface_triangles(self, simpleces):
+        """
+        Method to create the Triangles that form the surfaces
+        Args:
+            simpleces (numpy.array): 2D array with the value of the vertices that form every single triangle
+
+        Returns:
+            vtk.vtkTriangle
+        """
 
         Triangles = vtk.vtkCellArray()
         Triangle = vtk.vtkTriangle()
@@ -405,7 +437,18 @@ class vtkVisualization():
             Triangles.InsertNextCell(Triangle)
         return Triangles
 
-    def create_surface(self, vertices, simpleces, f, alpha=0.8):
+    def create_surface(self, vertices, simpleces, f, alpha=1):
+        """
+        Method to create the polydata that define the surfaces
+        Args:
+            vertices (numpy.array): 2D array (XYZ) with the coordinates of the points
+            simpleces (numpy.array): 2D array with the value of the vertices that form every single triangle
+            f (str): Name of the formation of the surfaces
+            alpha (float): Opacity
+
+        Returns:
+            vtk.vtkActor, vtk.vtkPolyDataMapper, vtk.vtkPolyData
+        """
         surf_polydata = vtk.vtkPolyData()
 
         surf_polydata.SetPoints(self.create_surface_points(vertices))
@@ -422,6 +465,21 @@ class vtkVisualization():
         return surf_actor, surf_mapper, surf_polydata
 
     def create_sphere(self, X, Y, Z, f, n_sphere=0, n_render=0, n_index=0, r=0.03):
+        """
+        Method to create the sphere that represent the interfaces points
+        Args:
+            X: X coord
+            Y: Y coord
+            Z: Z corrd
+            f (str): Name of the formation of the surfaces
+            n_sphere (int): Number of the sphere
+            n_render (int): Number of the render where the sphere belongs
+            n_index (int): index value in the PandasDataframe of InupData.interfaces
+            r (float): radio of the sphere
+
+        Returns:
+            vtk.vtkSphereWidget
+        """
         s = vtk.vtkSphereWidget()
         s.SetInteractor(self.interactor)
         s.SetRepresentationToSurface()
@@ -442,7 +500,25 @@ class vtkVisualization():
 
     def create_foliation(self, X, Y, Z, f,
                          Gx, Gy, Gz,
-                         n_sphere=0, n_render=0, n_index=0, r=0.1, alpha=0.5):
+                         n_plane=0, n_render=0, n_index=0, alpha=0.5):
+        """
+        Method to create a plane given a foliation
+        Args:
+            X : X coord
+            Y: Y coord
+            Z: Z corrd
+            f (str): Name of the formation of the surfaces
+            Gx (str): Component of the gradient x
+            Gy (str): Component of the gradient y
+            Gz (str): Component of the gradient z
+            n_plane (int): Number of the plane
+            n_render (int): Number of the render where the plane belongs
+            n_index (int): index value in the PandasDataframe of InupData.interfaces
+            alpha: Opacity of the plane
+
+        Returns:
+            vtk.vtkPlaneWidget
+        """
         d = vtk.vtkPlaneWidget()
         d.SetInteractor(self.interactor)
         d.SetRepresentationToSurface()
@@ -462,7 +538,7 @@ class vtkVisualization():
         d.GetHandleProperty().SetColor(self.C_LOT[f])
         d.GetHandleProperty().SetOpacity(alpha)
         d.SetCurrentRenderer(self.ren_list[n_render])
-        d.n_plane = n_sphere
+        d.n_plane = n_plane
         d.n_render = n_render
         d.index = n_index
         d.AddObserver("InteractionEvent", self.planesCallback)
@@ -472,12 +548,17 @@ class vtkVisualization():
         return d
 
     def set_surfaces(self, vertices, simpleces, formations):
-        '''
+        """
+        Create all the surfaces and set them to the corresponding renders for their posterior visualization with
+        render_model
+        Args:
+            vertices (list): list of 3D numpy arrays containing the points that form each plane
+            simpleces (list): list of 3D numpy arrays containing the verticies that form every triangle
+            formations (list): ordered list of strings containing the name of the formations to represent
 
-        :param vertices (list):
-        :param simpleces (list):
-        :return:
-        '''
+        Returns:
+            None
+        """
         # self.s_rend_1 = []
         # self.s_rend_2 = []
         # self.s_rend_3 = []
@@ -502,6 +583,12 @@ class vtkVisualization():
             self.ren_list[3].AddActor(act)
 
     def set_interfaces(self):
+        """
+        Create all the interfaces points and set them to the corresponding renders for their posterior visualization
+         with render_model
+        Returns:
+            None
+        """
         self.s_rend_1 = []
         self.s_rend_2 = []
         self.s_rend_3 = []
@@ -519,6 +606,12 @@ class vtkVisualization():
                                                     n_sphere=e, n_render=3, n_index=index))
 
     def set_foliations(self):
+        """
+        Create all the foliations and set them to the corresponding renders for their posterior visualization with
+        render_model
+        Returns:
+            None
+        """
         self.f_rend_1 = []
         self.f_rend_2 = []
         self.f_rend_3 = []
@@ -528,25 +621,31 @@ class vtkVisualization():
             row = val[1]
             self.f_rend_1.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation'],
                                                        row['G_x'], row['G_y'], row['G_z'],
-                                                       n_sphere=e, n_render=0, n_index=index))
+                                                       n_plane=e, n_render=0, n_index=index))
             self.f_rend_2.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation'],
                                                        row['G_x'], row['G_y'], row['G_z'],
-                                                       n_sphere=e, n_render=1, n_index=index))
+                                                       n_plane=e, n_render=1, n_index=index))
             self.f_rend_3.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation'],
                                                        row['G_x'], row['G_y'], row['G_z'],
-                                                       n_sphere=e, n_render=2, n_index=index))
+                                                       n_plane=e, n_render=2, n_index=index))
             self.f_rend_4.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation'],
                                                        row['G_x'], row['G_y'], row['G_z'],
-                                                       n_sphere=e, n_render=3, n_index=index))
+                                                       n_plane=e, n_render=3, n_index=index))
 
     def sphereCallback(self, obj, event):
+        """
+        Function that rules what happend when we move an sphere. At the moment we update the other 3 renderers and
+        update the pandas data frame
+        """
 
+        # Resetting the xy camera when a sphere is moving to be able to change only 2D
         fp = self.ren_list[1].GetActiveCamera().GetFocalPoint()
         p = self.ren_list[1].GetActiveCamera().GetPosition()
         dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
         self.ren_list[1].GetActiveCamera().SetPosition(fp[0], fp[1], fp[2] + dist)
         self.ren_list[1].GetActiveCamera().SetViewUp(0.0, 1.0, 0.0)
 
+        # Resetting the yz camera when a sphere is moving to be able to change only 2D
         fp = self.ren_list[2].GetActiveCamera().GetFocalPoint()
         p = self.ren_list[2].GetActiveCamera().GetPosition()
         dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
@@ -554,6 +653,7 @@ class vtkVisualization():
         self.ren_list[2].GetActiveCamera().SetViewUp(0.0, -1.0, 0.0)
         self.ren_list[2].GetActiveCamera().Roll(90)
 
+        # Resetting the xz camera when a sphere is moving to be able to change only 2D
         fp = self.ren_list[3].GetActiveCamera().GetFocalPoint()
         p = self.ren_list[3].GetActiveCamera().GetPosition()
         dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
@@ -561,12 +661,20 @@ class vtkVisualization():
         self.ren_list[3].GetActiveCamera().SetViewUp(-1.0, 0.0, 0.0)
         self.ren_list[3].GetActiveCamera().Roll(90)
 
+        # Get new position of the sphere
         new_center = obj.GetCenter()
+
+        # Get which sphere we are moving
         index = obj.index
 
+        # Modify Pandas DataFrame
         self.geo_data.interface_modify(index, X=new_center[0], Y=new_center[1], Z=new_center[2])
+
+        # Check what render we are working with
         render = obj.n_render
         r_f = obj.r_f
+
+        # Update the other renderers
         if render != 0:
             self.s_rend_1[obj.n_sphere].PlaceWidget(new_center[0] - r_f, new_center[0] + r_f,
                                                     new_center[1] - r_f, new_center[1] + r_f,
@@ -586,13 +694,19 @@ class vtkVisualization():
                                                     new_center[2] - r_f, new_center[2] + r_f)
 
     def planesCallback(self, obj, event):
+        """
+        Function that rules what happend when we move a plane. At the moment we update the other 3 renderers and
+        update the pandas data frame
+        """
 
+        # Resetting the xy camera when a sphere is moving to be able to change only 2D
         fp = self.ren_list[1].GetActiveCamera().GetFocalPoint()
         p = self.ren_list[1].GetActiveCamera().GetPosition()
         dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
         self.ren_list[1].GetActiveCamera().SetPosition(fp[0], fp[1], fp[2] + dist)
         self.ren_list[1].GetActiveCamera().SetViewUp(0.0, 1.0, 0.0)
 
+        # Resetting the yz camera when a sphere is moving to be able to change only 2D
         fp = self.ren_list[2].GetActiveCamera().GetFocalPoint()
         p = self.ren_list[2].GetActiveCamera().GetPosition()
         dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
@@ -600,6 +714,7 @@ class vtkVisualization():
         self.ren_list[2].GetActiveCamera().SetViewUp(0.0, -1.0, 0.0)
         self.ren_list[2].GetActiveCamera().Roll(90)
 
+        # Resetting the xz camera when a sphere is moving to be able to change only 2D
         fp = self.ren_list[3].GetActiveCamera().GetFocalPoint()
         p = self.ren_list[3].GetActiveCamera().GetPosition()
         dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
@@ -607,8 +722,10 @@ class vtkVisualization():
         self.ren_list[3].GetActiveCamera().SetViewUp(-1.0, 0.0, 0.0)
         self.ren_list[3].GetActiveCamera().Roll(90)
 
+        # Get new position of the plane and GxGyGz
         new_center = obj.GetCenter()
         new_normal = obj.GetNormal()
+        # Get which plane we are moving
         index = obj.index
 
         new_source = vtk.vtkPlaneSource()
@@ -616,8 +733,11 @@ class vtkVisualization():
         new_source.SetNormal(new_normal)
         new_source.Update()
 
+        # Modify Pandas DataFrame
         self.geo_data.foliation_modify(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
                                        G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
+
+        # Update the other renderers
         render = obj.n_render
 
         if render != 0:
@@ -634,6 +754,11 @@ class vtkVisualization():
             self.f_rend_4[obj.n_plane].SetNormal(new_normal)
 
     def create_ren_list(self):
+        """
+        Create a list of the 4 renderers we use. One general view and 3 cartersian projections
+        Returns:
+            list: list of renderers
+        """
 
         # viewport dimensions setup
         xmins = [0, 0.6, 0.6, 0.6]
@@ -653,14 +778,9 @@ class vtkVisualization():
 
         return ren_list
 
-    def color_lot_create(geo_data, cd_rgb=color_dict_rgb, c_names=color_names, c_subname="400"):
+    def color_lot_create(self, geo_data, cd_rgb=color_dict_rgb, c_names=color_names, c_subname="400"):
         """
         Set the color for each layer
-        :param geo_data:
-        :param cd_rgb:
-        :param c_names:
-        :param c_subname:
-        :return:
         """
         c_lot = {}
         for i, fmt in enumerate(geo_data.formations):
@@ -668,6 +788,9 @@ class vtkVisualization():
         return c_lot
 
     def _create_cameras(self, extent, verbose=0):
+        """
+        Create the 4 cameras for each renderer
+        """
         _e = extent
         _e_dx = _e[1] - _e[0]
         _e_dy = _e[3] - _e[2]
@@ -675,6 +798,7 @@ class vtkVisualization():
         _e_d_avrg = (_e_dx + _e_dy + _e_dz) / 3
         _e_max = np.argmax(_e)
 
+        # General camera
         model_cam = vtk.vtkCamera()
         model_cam.SetPosition(_e[_e_max] * 5, _e[_e_max] * 5, _e[_e_max] * 5)
         model_cam.SetFocalPoint(np.min(_e[0:2]) + _e_dx / 2,
@@ -682,11 +806,11 @@ class vtkVisualization():
                                 np.min(_e[4:]) + _e_dz / 2)
 
         model_cam.SetViewUp(-0.239, 0.155, 0.958)
-        # model_cam.Roll(-80.)
+
 
         # XY camera RED
         xy_cam = vtk.vtkCamera()
-        # if np.argmin(_e[4:]) == 0:
+
         xy_cam.SetPosition(np.min(_e[0:2]) + _e_dx / 2,
                            np.min(_e[2:4]) + _e_dy / 2,
                            _e[_e_max] * 4)
@@ -731,11 +855,10 @@ class vtkVisualization():
         return [model_cam, xy_cam, yz_cam, xz_cam]
 
     def set_camera_backcolor(self):
+        """
+        define background colors of the renderers
+        """
 
-        # define background colors of the renderers
-        # TODO: Tune renderer colors
-        # TODO: Try to make renderer titles (floating text?!)
-        #  ren_color = [(66 / 250, 66 / 250, 66 / 250), (0.5, 0., 0.1), (0.1, 0.5, 0.1), (0.1, 0.1, 0.5)]
         ren_color = [(66 / 250, 66 / 250, 66 / 250), (60 / 250, 60 / 250, 60 / 250), (60 / 250, 60 / 250, 60 / 250),
                      (60 / 250, 60 / 250, 60 / 250)]
         for i in range(self.n_ren):
@@ -744,8 +867,10 @@ class vtkVisualization():
             # set background color for each renderer
             self.ren_list[i].SetBackground(ren_color[i][0], ren_color[i][1], ren_color[i][2])
 
-    def _create_axes(self, camera, verbose=0):
-        "Create and returnr cubeAxesActor, settings."
+    def _create_axes(self, camera, verbose=0, tick_vis=True):
+        """
+        Create the axes boxes
+        """
         cube_axes_actor = vtk.vtkCubeAxesActor()
         cube_axes_actor.SetBounds(self.geo_data.extent)
         cube_axes_actor.SetCamera(camera)
@@ -755,8 +880,7 @@ class vtkVisualization():
         # set axes and label colors
         cube_axes_actor.GetTitleTextProperty(0).SetColor(1.0, 0.0, 0.0)
         cube_axes_actor.GetLabelTextProperty(0).SetColor(1.0, 0.0, 0.0)
-        # font size doesn't work seem to work - maybe some override in place?
-        # cubeAxesActor.GetLabelTextProperty(0).SetFontSize(10)
+
         cube_axes_actor.GetTitleTextProperty(1).SetColor(0.0, 1.0, 0.0)
         cube_axes_actor.GetLabelTextProperty(1).SetColor(0.0, 1.0, 0.0)
         cube_axes_actor.GetTitleTextProperty(2).SetColor(0.0, 0.0, 1.0)
@@ -766,9 +890,10 @@ class vtkVisualization():
         cube_axes_actor.DrawYGridlinesOn()
         cube_axes_actor.DrawZGridlinesOn()
 
-        # cube_axes_actor.XAxisMinorTickVisibilityOff()
-        # cube_axes_actor.YAxisMinorTickVisibilityOff()
-        # cube_axes_actor.ZAxisMinorTickVisibilityOff()
+        if not tick_vis:
+            cube_axes_actor.XAxisMinorTickVisibilityOff()
+            cube_axes_actor.YAxisMinorTickVisibilityOff()
+            cube_axes_actor.ZAxisMinorTickVisibilityOff()
 
         cube_axes_actor.SetXTitle("X")
         cube_axes_actor.SetYTitle("Y")
@@ -787,11 +912,17 @@ class vtkVisualization():
 
         return cube_axes_actor
 
-    def export_vtk_rectilinear(geo_data, block_lith, path=None):
+    def export_vtk_rectilinear(self, geo_data, block, path=None):
         """
-            export vtk
-            :return:
-            """
+        Export data to a vtk file for posterior visualizations
+        Args:
+            geo_data(gempy.InputData): All values of a DataManagement object
+            block(numpy.array): 3D array containing the lithology block
+            path (str): path to the location of the vtk
+
+        Returns:
+            None
+        """
 
         from evtk.hl import gridToVTK
 
@@ -822,7 +953,7 @@ class vtkVisualization():
 
         # Variables
 
-        lith = block_lith.reshape((nx, ny, nz))
+        lith = block.reshape((nx, ny, nz))
         if not path:
             path = "./Lithology_block"
 
