@@ -49,10 +49,68 @@
 <p>Here we will see how we can interpolate faults networks and how we can
 use them to offset the lithological model. For this example we will use
 the example of the first chapter adding a fault in the middle;</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData</span> <span class="n">at</span> <span class="mh">0x7f6d340feeb8</span><span class="o">&gt;</span>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1"># These two lines are necessary only if gempy is not installed</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../&quot;</span><span class="p">)</span>
+
+<span class="c1"># Importing gempy</span>
+
+
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+
+<span class="c1"># Embedding matplotlib figures into the notebooks</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="c1"># Aux imports</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_3_1.png" src="../_images/ch3_3_1.png" />
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s1">&#39;BasicFault.pickle&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">---------------------------------------------------------------------------</span>
+
+<span class="ne">AttributeError</span>                            <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">)</span>
+
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">3</span><span class="o">-</span><span class="mi">0</span><span class="n">ca462c1dd66</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="o">----&gt;</span> <span class="mi">1</span> <span class="n">gp</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+
+
+<span class="o">~/</span><span class="n">PycharmProjects</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">GemPy_f</span><span class="o">.</span><span class="n">py</span> <span class="ow">in</span> <span class="n">plot_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">direction</span><span class="p">,</span> <span class="n">series</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="mi">193</span>
+    <span class="mi">194</span> <span class="k">def</span> <span class="nf">plot_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<span class="o">--&gt;</span> <span class="mi">195</span>     <span class="n">plot</span> <span class="o">=</span> <span class="n">PlotData</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+    <span class="mi">196</span>     <span class="n">plot</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="n">series</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="mi">197</span>     <span class="c1"># TODO saving options</span>
+
+
+<span class="o">~/</span><span class="n">PycharmProjects</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">Visualization</span><span class="o">.</span><span class="n">py</span> <span class="ow">in</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_data</span><span class="p">,</span> <span class="n">cd_rgb</span><span class="p">,</span> <span class="n">cd_hex</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+     <span class="mi">41</span>     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_data</span><span class="p">,</span> <span class="n">cd_rgb</span><span class="o">=</span><span class="n">color_dict_rgb</span><span class="p">,</span> <span class="n">cd_hex</span><span class="o">=</span><span class="n">color_dict_hex</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+     <span class="mi">42</span>
+<span class="o">---&gt;</span> <span class="mi">43</span>         <span class="k">if</span> <span class="n">_data</span><span class="o">.</span><span class="n">geo_data_type</span> <span class="o">==</span> <span class="s1">&#39;InterpolatorInput&#39;</span><span class="p">:</span>
+     <span class="mi">44</span>             <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">_data</span><span class="o">.</span><span class="n">data</span>
+     <span class="mi">45</span>         <span class="k">else</span><span class="p">:</span>
+
+
+<span class="ne">AttributeError</span><span class="p">:</span> <span class="s1">&#39;InputData&#39;</span> <span class="nb">object</span> <span class="n">has</span> <span class="n">no</span> <span class="n">attribute</span> <span class="s1">&#39;geo_data_type&#39;</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_data_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;fault&quot;</span><span class="p">:</span><span class="n">geo_data</span><span class="o">.</span><span class="n">formations</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span>
+                      <span class="s2">&quot;Rest&quot;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">formations</span><span class="p">,</span> <span class="mi">4</span><span class="p">)},</span>
+                       <span class="n">order_series</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fault&quot;</span><span class="p">,</span>
+                                       <span class="s2">&quot;Rest&quot;</span><span class="p">,</span>
+                                       <span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">select_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Rest&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_raw_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
 <div>
 <style>
     .dataframe thead tr:only-child th {
@@ -90,104 +148,131 @@ the example of the first chapter adding a fault in the middle;</p>
   <tbody>
     <tr>
       <th rowspan="5" valign="top">interfaces</th>
-      <th>0</th>
+      <th>5</th>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>800.0</td>
+      <td>600.0</td>
       <td>1000.0</td>
-      <td>-1600.0</td>
+      <td>-650.0</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>MainFault</td>
-      <td>True</td>
-      <td>1</td>
+      <td>Seal</td>
+      <td>False</td>
+      <td>2</td>
       <td>NaN</td>
-      <td>fault</td>
+      <td>Rest</td>
     </tr>
     <tr>
-      <th>1</th>
+      <th>6</th>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>1200.0</td>
-      <td>1000.0</td>
-      <td>-400.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>MainFault</td>
-      <td>True</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>fault</td>
-    </tr>
-    <tr>
-      <th>2</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1100.0</td>
+      <td>1300.0</td>
       <td>1000.0</td>
       <td>-700.0</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>MainFault</td>
-      <td>True</td>
-      <td>1</td>
+      <td>Seal</td>
+      <td>False</td>
+      <td>2</td>
       <td>NaN</td>
-      <td>fault</td>
+      <td>Rest</td>
     </tr>
     <tr>
-      <th>3</th>
+      <th>7</th>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>900.0</td>
+      <td>1600.0</td>
       <td>1000.0</td>
-      <td>-1300.0</td>
+      <td>-800.0</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>MainFault</td>
-      <td>True</td>
-      <td>1</td>
+      <td>Seal</td>
+      <td>False</td>
+      <td>2</td>
       <td>NaN</td>
-      <td>fault</td>
+      <td>Rest</td>
     </tr>
     <tr>
-      <th>4</th>
+      <th>8</th>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
+      <td>1900.0</td>
       <td>1000.0</td>
+      <td>-900.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Seal</td>
+      <td>False</td>
+      <td>2</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2000.0</td>
       <td>1000.0</td>
-      <td>-1000.0</td>
+      <td>-875.0</td>
       <td>NaN</td>
       <td>NaN</td>
-      <td>MainFault</td>
-      <td>True</td>
-      <td>1</td>
+      <td>Seal</td>
+      <td>False</td>
+      <td>2</td>
       <td>NaN</td>
-      <td>fault</td>
+      <td>Rest</td>
     </tr>
   </tbody>
 </table>
-</div><div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">I</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">setting</span>
+</div><div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">I</span> <span class="n">am</span> <span class="n">here</span>
+<span class="n">I</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">setting</span>
 <span class="n">float32</span>
 <span class="n">I</span> <span class="n">am</span> <span class="n">here</span>
 <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
 </pre></div>
 </div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([[</span> <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.41482359</span><span class="p">,</span>  <span class="mf">0.22084422</span><span class="p">,</span>  <span class="mf">0.43727845</span><span class="p">,</span>  <span class="mf">0.30110291</span><span class="p">],</span>
+       <span class="p">[</span><span class="o">-</span><span class="mf">0.55960631</span><span class="p">,</span>  <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.</span>        <span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">geo_data</span><span class="o">.</span><span class="n">geo_data_type</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_potential_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">1</span><span class="p">,:],</span> <span class="mi">25</span><span class="p">,</span> <span class="n">plot_data</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch3_11_0.png" src="../_images/ch3_11_0.png" />
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span> <span class="mi">25</span><span class="p">,</span> <span class="n">plot_data</span> <span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData</span> <span class="n">at</span> <span class="mh">0x7f6d213210f0</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_8_1.png" src="../_images/ch3_8_1.png" />
+<img alt="../_images/ch3_12_1.png" src="../_images/ch3_12_1.png" />
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">2</span><span class="p">,:],</span> <span class="mi">25</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData</span> <span class="n">at</span> <span class="mh">0x7f6d2164ab00</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_9_1.png" src="../_images/ch3_9_1.png" />
+<img alt="../_images/ch3_13_1.png" src="../_images/ch3_13_1.png" />
 </div>
 
 

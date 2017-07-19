@@ -50,11 +50,47 @@
 <h2>Data Management<a class="headerlink" href="#data-management" title="Permalink to this headline">¶</a></h2>
 <p>In this example we will show how we can import data from a csv and
 generate a model with several depositional series.</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">IPython.sphinxext</span>
+<span class="n">IPython</span><span class="o">.</span><span class="n">sphinxext</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">module</span> <span class="s1">&#39;IPython.sphinxext&#39;</span> <span class="kn">from</span> <span class="s1">&#39;/home/miguel/anaconda3/lib/python3.6/site-packages/IPython/sphinxext/__init__.py&#39;</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">pygments.plugin</span> <span class="k">import</span> <span class="n">find_plugin_lexers</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">find_plugin_lexers</span><span class="p">()))</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span>[&lt;class &#39;mako.ext.pygmentplugin.MakoLexer&#39;&gt;, &lt;class &#39;mako.ext.pygmentplugin.MakoHtmlLexer&#39;&gt;, &lt;class &#39;mako.ext.pygmentplugin.MakoXmlLexer&#39;&gt;, &lt;class &#39;mako.ext.pygmentplugin.MakoJavascriptLexer&#39;&gt;, &lt;class &#39;mako.ext.pygmentplugin.MakoCssLexer&#39;&gt;]
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1"># These two lines are necessary only if gempy is not installed</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../&quot;</span><span class="p">)</span>
+
+<span class="c1"># Importing gempy</span>
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+
+<span class="c1"># Embedding matplotlib figures into the notebooks</span>
+<span class="o">%</span><span class="n">matplotlib</span> <span class="n">inline</span>
+
+<span class="c1"># Aux imports</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
 <p>In this case instead loading a geo_data object directly, we will create
 one. The main atributes we need to pass are: - Extent: X min, X max, Y
 min, Y max, Z min, Z max - Resolution: X,Y,Z</p>
 <p>Additionaly we can pass the address to csv files (GeoModeller3D format)
 with the data.</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Importing the data from csv files and settign extent and resolution</span>
+<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">([</span><span class="mi">696000</span><span class="p">,</span><span class="mi">747000</span><span class="p">,</span><span class="mi">6863000</span><span class="p">,</span><span class="mi">6950000</span><span class="p">,</span><span class="o">-</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">200</span><span class="p">],[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+                         <span class="n">path_f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/a_Foliations.csv&quot;</span><span class="p">,</span>
+                         <span class="n">path_i</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/a_Points.csv&quot;</span><span class="p">)</span>
+
+<span class="n">gp</span><span class="o">.</span><span class="n">get_raw_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="s1">&#39;interfaces&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
 <div>
 <style>
     .dataframe thead tr:only-child th {
@@ -130,16 +166,25 @@ with the data.</p>
   </tbody>
 </table>
 </div><p>You can visualize the points in 3D (work in progress)</p>
-<p>Or a projection in 2D:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData</span> <span class="n">at</span> <span class="mh">0x7f8d04466ba8</span><span class="o">&gt;</span>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1">#gp.visualize(geo_data)</span>
 </pre></div>
 </div>
-<img alt="../_images/ch2_7_1.png" src="../_images/ch2_7_1.png" />
+<p>Or a projection in 2D:</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData2D</span> <span class="n">at</span> <span class="mh">0x7f0b16e9be10</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<img alt="../_images/ch2_9_1.png" src="../_images/ch2_9_1.png" />
 <p>This model consist in 3 different depositional series. This mean that
 only data in the same depositional series affect the interpolation. To
 select with formations belong to witch series we will use the
 <code class="docutils literal"><span class="pre">set_data_series</span></code> function which takes a python dictionary as input.</p>
 <p>We can see the unique formations with:</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
 <div>
 <style>
     .dataframe thead tr:only-child th {
@@ -188,6 +233,15 @@ not relevant for the result but in case of being wrong can lead to
 confusing color coding (work in progress).</p>
 <p>In the representation given by <code class="docutils literal"><span class="pre">get_series</span></code> the elements get repeated
 but is only how Pandas print tables.</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="c1"># Assigning series to formations as well as their order (timewise)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">set_data_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;EarlyGranite_Series&quot;</span><span class="p">:</span> <span class="s1">&#39;EarlyGranite&#39;</span><span class="p">,</span>
+                              <span class="s2">&quot;BIF_Series&quot;</span><span class="p">:(</span><span class="s1">&#39;SimpleMafic2&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpleBIF&#39;</span><span class="p">),</span>
+                              <span class="s2">&quot;SimpleMafic_Series&quot;</span><span class="p">:</span><span class="s1">&#39;SimpleMafic1&#39;</span><span class="p">},</span>
+                      <span class="n">order_series</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EarlyGranite_Series&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;BIF_Series&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;SimpleMafic_Series&quot;</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
 <div>
 <style>
     .dataframe thead tr:only-child th {
@@ -231,10 +285,14 @@ but is only how Pandas print tables.</p>
 <h2>Computing the model<a class="headerlink" href="#computing-the-model" title="Permalink to this headline">¶</a></h2>
 <p>Now as in the previous chapter we just need to create the interpolator
 object and compute the model.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">I</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">setting</span>
-<span class="n">float32</span>
-<span class="n">I</span> <span class="n">am</span> <span class="n">here</span>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">float32</span>
 <span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">9</span> <span class="mi">9</span> <span class="mi">9</span><span class="p">]</span>
@@ -246,20 +304,48 @@ object and compute the model.</p>
   <span class="s1">&#39; condition number: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rcond</span><span class="p">),</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
 </pre></div>
 </div>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([[</span> <span class="mf">1.85553718</span><span class="p">,</span>  <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.</span>        <span class="p">],</span>
+       <span class="p">[</span> <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">2.58398676</span><span class="p">,</span>  <span class="mf">2.57935548</span><span class="p">,</span>  <span class="mf">0.</span>        <span class="p">],</span>
+       <span class="p">[</span> <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">3.48082161</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
+</pre></div>
+</div>
 <p>Now if we analyse the results we have a 3D array where the axis 0
 represent the superposition of the series (potential fields). The color
 coding is working process yet.</p>
-<img alt="../_images/ch2_17_0.png" src="../_images/ch2_17_0.png" />
-<img alt="../_images/ch2_17_1.png" src="../_images/ch2_17_1.png" />
-<img alt="../_images/ch2_17_2.png" src="../_images/ch2_17_2.png" />
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,:],</span> <span class="mi">11</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,:],</span> <span class="mi">11</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,:],</span> <span class="mi">11</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/ch2_20_0.png" src="../_images/ch2_20_0.png" />
+<img alt="../_images/ch2_20_1.png" src="../_images/ch2_20_1.png" />
+<img alt="../_images/ch2_20_2.png" src="../_images/ch2_20_2.png" />
 <p>The axis 1 keeps the potential field:</p>
-<img alt="../_images/ch2_19_0.png" src="../_images/ch2_19_0.png" />
-<img alt="../_images/ch2_19_1.png" src="../_images/ch2_19_1.png" />
-<img alt="../_images/ch2_19_2.png" src="../_images/ch2_19_2.png" />
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_potential_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,:],</span> <span class="mi">11</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;inferno_r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_potential_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,:],</span> <span class="mi">11</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;inferno_r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_potential_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,:],</span> <span class="mi">11</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;inferno_r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/ch2_22_0.png" src="../_images/ch2_22_0.png" />
+<img alt="../_images/ch2_22_1.png" src="../_images/ch2_22_1.png" />
+<img alt="../_images/ch2_22_2.png" src="../_images/ch2_22_2.png" />
 <p>And the axis 2 keeps the faults network that in this model since there
 is not faults does not represent anything.</p>
 <p>Additionally with can export the blocks to vtk in order to visualize
 them in Paraview. We are working in visualization in place as well.</p>
+<div class="code ipython3 highlight-default"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">export_vtk_rectilinear</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 
