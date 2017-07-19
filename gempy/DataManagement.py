@@ -99,31 +99,13 @@ class InputData(object):
             assert set(['X', 'Y', 'Z', 'formation']).issubset(self.interfaces.columns), \
                 "One or more columns do not match with the expected values " + str(self.interfaces.columns)
 
-    # def _set_formations(self):
-    #     """
-    #     -DEPRECATED- Function to import the formations that will be used later on. By default all the formations in the tables are
-    #     chosen.
-    #
-    #     Returns:
-    #          pandas.core.frame.DataFrame: Data frame with the raw data
-    #
-    #     """
-    #
-    #     try:
-    #         # foliations may or may not be in all formations so we need to use interfaces
-    #         self.formations = self.interfaces["formation"].unique()
-    #
-    #         # TODO: Trying to make this more elegant?
-    #         # for el in self.formations:
-    #         #     for check in self.formations:
-    #         #         assert (el not in check or el == check), "One of the formations name contains other" \
-    #         #                                                  " string. Please rename." + str(el) + " in " + str(
-    #         #             check)
-    #
-    #                 # TODO: Add the possibility to change the name in pandas directly
-    #                 # (adding just a 1 in the contained string)
-    #     except AttributeError:
-    #         pass
+    def get_formations(self):
+        """
+        Returns:
+             pandas.core.frame.DataFrame: Returns a list of formations
+
+        """
+        return self.interfaces["formation"].unique()
 
     def calculate_gradient(self):
         """

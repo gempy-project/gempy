@@ -783,7 +783,7 @@ class vtkVisualization():
         Set the color for each layer
         """
         c_lot = {}
-        for i, fmt in enumerate(geo_data.formations):
+        for i, fmt in enumerate(geo_data.get_formations()):
             c_lot[fmt] = cd_rgb[c_names[i]][c_subname]
         return c_lot
 
