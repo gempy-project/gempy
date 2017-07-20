@@ -467,8 +467,11 @@ def get_surfaces(potential_block, interp_data, n_formation='all', step_size=1, o
 
         return vertices, simplices
 
-    if n_formation=='all':
+    if n_formation == 'all':
         for n in interp_data.get_formation_number().values():
+            if n == 0:
+                pass
+            else:
             vertices, simplices = get_surface(potential_block, interp_data, n,
                                               step_size=step_size, original_scale=original_scale)
     else:
@@ -501,10 +504,18 @@ def plot_surfaces_3D(geo_data, vertices_l, simpleces_l, formations_names_l, alph
     w.render_model(size=size, fullscreen=fullscreen)
 
 
+def export_vtk_rectilinear(geo_data, block, path=None):
+    """
+    Export data to a vtk file for posterior visualizations
+    Args:
+        geo_data(gempy.InputData): All values of a DataManagement object
+        block(numpy.array): 3D array containing the lithology block
+        path (str): path to the location of the vtk
 
-
-
-
+    Returns:
+        None
+    """
+    vtkVisualization.export_vtk_rectilinear(geo_data, block, path)
 
 
 

@@ -913,7 +913,8 @@ class vtkVisualization():
 
         return cube_axes_actor
 
-    def export_vtk_rectilinear(self, geo_data, block, path=None):
+    @staticmethod
+    def export_vtk_rectilinear(geo_data, block, path=None):
         """
         Export data to a vtk file for posterior visualizations
         Args:
