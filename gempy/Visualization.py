@@ -173,11 +173,11 @@ class PlotData2D(object):
         Args:
             cell_number(int): position of the array to plot
             direction(str): xyz. Caartesian direction to be plotted
-                interpolation(str): Type of interpolation of plt.imshow. Default 'none'.  Acceptable values are 'none'
-                ,'nearest', 'bilinear', 'bicubic',
-                'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser',
-                'quadric', 'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc',
-                'lanczos'
+            interpolation(str): Type of interpolation of plt.imshow. Default 'none'.  Acceptable values are 'none'
+            ,'nearest', 'bilinear', 'bicubic',
+            'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser',
+            'quadric', 'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc',
+            'lanczos'
             **kwargs: imshow keywargs
 
         Returns:
@@ -246,6 +246,7 @@ class PlotData2D(object):
         plt.title(self._data.interfaces['series'].unique()[n_pf])
         plt.xlabel(x)
         plt.ylabel(y)
+
 
     @staticmethod
     def annotate_plot(frame, label_col, x, y, **kwargs):
@@ -387,7 +388,7 @@ class vtkVisualization():
         Method to lunch the window
         Args:
             size (tuple): Resolution of the window
-            fullscreen (bool): Lunch window in full screen or not
+            fullscreen (bool): Launch window in full screen or not
         Returns:
 
         """
@@ -547,7 +548,7 @@ class vtkVisualization():
 
         return d
 
-    def set_surfaces(self, vertices, simpleces, formations):
+    def set_surfaces(self, vertices, simpleces, formations, alpha):
         """
         Create all the surfaces and set them to the corresponding renders for their posterior visualization with
         render_model
@@ -555,7 +556,7 @@ class vtkVisualization():
             vertices (list): list of 3D numpy arrays containing the points that form each plane
             simpleces (list): list of 3D numpy arrays containing the verticies that form every triangle
             formations (list): ordered list of strings containing the name of the formations to represent
-
+            alpha: Opacity of the plane
         Returns:
             None
         """
@@ -572,7 +573,7 @@ class vtkVisualization():
         assert 'DefaultBasement' not in formations, 'Remove DefaultBasement from the list of formations'
 
         for v, s, f in zip(vertices, simpleces, formations):
-            act, map, pol = self.create_surface(v, s, f)
+            act, map, pol = self.create_surface(v, s, f, alpha)
             #  self.s_rend_1.append(act)
             #  self.s_mapper.append(map)
             #  self.s_polydata.append(pol)

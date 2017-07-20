@@ -14,7 +14,7 @@ import theano
 
 class InputData(object):
     """
-    -DOCS NOT UPDATED- Class to import the raw data of the model and set data classifications into formations and series.
+    Class to import the raw data of the model and set data classifications into formations and series.
     This objects will contain the main information of the model.
 
     Args:
@@ -71,6 +71,7 @@ class InputData(object):
         # Create default grid object. TODO: (Is this necessary now?)
         self.grid = self.set_grid(extent=None, resolution=None, grid_type="regular_3D", **kwargs)
 
+        self.order_table()
         # DEP
         #self.geo_data_type = 'InputData'
 
@@ -171,10 +172,13 @@ class InputData(object):
         """
         Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
         versions used to export and import the pickle differ it may give problems
-        :param path (str): path where save the pickle
-        :return:
-          None
+        Args:
+            path (str): path where save the pickle
+
+        Returns:
+            None
         """
+
         if not path:
             path = './geo_data'
         import pickle
@@ -182,24 +186,33 @@ class InputData(object):
             # Pickle the 'data' dictionary using the highest protocol available.
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
-    def get_raw_data(self, itype='all'):
+    def get_raw_data(self, itype='all', verbosity=0):
         """
         Method that returns the interfaces and foliations pandas Dataframes. Can return both at the same time or only
         one of the two
         Args:
             itype: input data type, either 'foliations', 'interfaces' or 'all' for both.
-
+            verbosity (int): Number of properties shown
         Returns:
             pandas.core.frame.DataFrame: Data frame with the raw data
 
         """
         import pandas as pn
+        if verbosity == 0:
+            show_par_f = ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity','formation', 'series', ]
+            show_par_i = ['X', 'Y', 'Z', 'dip','formation', 'series']
+        else:
+            show_par_f = self.foliations.columns
+            show_par_i = self.interfaces.columns
+
         if itype == 'foliations':
-            raw_data = self.foliations
+            raw_data = self.foliations[show_par_f]
         elif itype == 'interfaces':
-            raw_data = self.interfaces
+            raw_data = self.interfaces[show_par_i]
         elif itype == 'all':
             raw_data = pn.concat([self.interfaces, self.foliations], keys=['interfaces', 'foliations'])
+        else:
+            raise AttributeError('itype has to be: \'foliations\', \'interfaces\', or \'all\'')
         return raw_data
 
     def i_open_set_data(self, itype="foliations"):
@@ -215,7 +228,7 @@ class InputData(object):
         """
         try:
             import qgrid
-        except ModuleNotFoundError:
+        except:
             raise ModuleNotFoundError('It is necessary to instal qgrid to have interactive tables')
 
         # if the data frame is empty the interactive table is bugged. Therefore I create a default raw when the method
@@ -260,6 +273,7 @@ class InputData(object):
         # Set parameters
         self.series = self.set_series()
         self.calculate_gradient()
+        self.order_table()
 
     @staticmethod
     def load_data_csv(data_type, path=os.getcwd(), **kwargs):
