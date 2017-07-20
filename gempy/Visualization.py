@@ -634,7 +634,7 @@ class vtkVisualization():
 
     def sphereCallback(self, obj, event):
         """
-        Function that rules what happend when we move an sphere. At the moment we update the other 3 renderers and
+        Function that rules what happens when we move a sphere. At the moment we update the other 3 renderers and
         update the pandas data frame
         """
 
