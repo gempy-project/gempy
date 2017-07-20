@@ -67,83 +67,13 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
 
 <span class="c1"># --DEP-- import pandas as _pn</span>
-<span class="kn">import</span> <span class="nn">warnings</span>
 <span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">gempy.Visualization</span> <span class="k">import</span> <span class="n">PlotData</span>
-<span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">gempy.visualization_vtk</span> <span class="k">import</span> <span class="n">visualize</span><span class="p">,</span> <span class="n">export_vtk_rectilinear</span>
-<span class="k">except</span> <span class="n">ModuleNotFoundError</span><span class="p">:</span>
-    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Vtk package is not installed. No vtk visualization available.&#39;</span><span class="p">)</span>
+<span class="kn">from</span> <span class="nn">gempy.Visualization</span> <span class="k">import</span> <span class="n">PlotData2D</span><span class="p">,</span> <span class="n">steano3D</span><span class="p">,</span> <span class="n">vtkVisualization</span>
+<span class="c1">#from gempy.visualization_vtk import vtkVisualization</span>
+
 <span class="kn">from</span> <span class="nn">gempy.DataManagement</span> <span class="k">import</span> <span class="n">InputData</span><span class="p">,</span> <span class="n">InterpolatorInput</span>
 <span class="kn">from</span> <span class="nn">IPython.core.debugger</span> <span class="k">import</span> <span class="n">Tracer</span>
-
-
-
-
-
-<span class="c1"># DEP?</span>
-<span class="c1"># def rescale_data(geo_data, rescaling_factor=None):</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     Rescale the data of a DataManagement object between 0 and 1 due to stability problem of the float32.</span>
-<span class="c1">#     Args:</span>
-<span class="c1">#         geo_data: DataManagement object with the real scale data</span>
-<span class="c1">#         rescaling_factor(float): factor of the rescaling. Default to maximum distance in one the axis</span>
-<span class="c1">#</span>
-<span class="c1">#     Returns:</span>
-<span class="c1">#</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     max_coord = _pn.concat(</span>
-<span class="c1">#         [geo_data.foliations, geo_data.interfaces]).max()[[&#39;X&#39;, &#39;Y&#39;, &#39;Z&#39;]]</span>
-<span class="c1">#     min_coord = _pn.concat(</span>
-<span class="c1">#         [geo_data.foliations, geo_data.interfaces]).min()[[&#39;X&#39;, &#39;Y&#39;, &#39;Z&#39;]]</span>
-<span class="c1">#</span>
-<span class="c1">#     if not rescaling_factor:</span>
-<span class="c1">#         rescaling_factor = 2*_np.max(max_coord - min_coord)</span>
-<span class="c1">#</span>
-<span class="c1">#     centers = (max_coord+min_coord)/2</span>
-<span class="c1">#</span>
-<span class="c1">#     new_coord_interfaces = (geo_data.interfaces[[&#39;X&#39;, &#39;Y&#39;, &#39;Z&#39;]] -</span>
-<span class="c1">#                            centers) / rescaling_factor + 0.5001</span>
-<span class="c1">#</span>
-<span class="c1">#     new_coord_foliations = (geo_data.foliations[[&#39;X&#39;, &#39;Y&#39;, &#39;Z&#39;]] -</span>
-<span class="c1">#                            centers) / rescaling_factor + 0.5001</span>
-<span class="c1">#</span>
-<span class="c1">#     new_coord_extent = (geo_data.extent - _np.repeat(centers, 2)) / rescaling_factor + 0.5001</span>
-<span class="c1">#</span>
-<span class="c1">#     geo_data_rescaled = copy.deepcopy(geo_data)</span>
-<span class="c1">#     geo_data_rescaled.interfaces[[&#39;X&#39;, &#39;Y&#39;, &#39;Z&#39;]] = new_coord_interfaces</span>
-<span class="c1">#     geo_data_rescaled.foliations[[&#39;X&#39;, &#39;Y&#39;, &#39;Z&#39;]] = new_coord_foliations</span>
-<span class="c1">#     geo_data_rescaled.extent = new_coord_extent.as_matrix()</span>
-<span class="c1">#</span>
-<span class="c1">#     geo_data_rescaled.grid.grid = (geo_data.grid.grid - centers.as_matrix()) /rescaling_factor + 0.5001</span>
-<span class="c1">#</span>
-<span class="c1">#     geo_data_rescaled.rescaling_factor = rescaling_factor</span>
-<span class="c1">#</span>
-<span class="c1">#     return geo_data_rescaled</span>
-
-<span class="c1"># TODO needs to be updated</span>
-<span class="c1"># def compute_block_model(geo_data, series_number=&quot;all&quot;,</span>
-<span class="c1">#                         series_distribution=None, order_series=None,</span>
-<span class="c1">#                         extent=None, resolution=None, grid_type=&quot;regular_3D&quot;,</span>
-<span class="c1">#                         verbose=0, **kwargs):</span>
-<span class="c1">#</span>
-<span class="c1">#     if extent or resolution:</span>
-<span class="c1">#         set_grid(geo_data, extent=extent, resolution=resolution, grid_type=grid_type, **kwargs)</span>
-<span class="c1">#</span>
-<span class="c1">#     if series_distribution:</span>
-<span class="c1">#         set_data_series(geo_data, series_distribution=series_distribution, order_series=order_series, verbose=0)</span>
-<span class="c1">#</span>
-<span class="c1">#     if not getattr(geo_data, &#39;interpolator&#39;, None):</span>
-<span class="c1">#         import warnings</span>
-<span class="c1">#</span>
-<span class="c1">#         warnings.warn(&#39;Using default interpolation values&#39;)</span>
-<span class="c1">#         set_interpolator(geo_data)</span>
-<span class="c1">#</span>
-<span class="c1">#     geo_data.interpolator.tg.final_block.set_value(_np.zeros_like(geo_data.grid.grid[:, 0]))</span>
-<span class="c1">#</span>
-<span class="c1">#     geo_data.interpolator.compute_block_model(series_number=series_number, verbose=verbose)</span>
-<span class="c1">#</span>
-<span class="c1">#     return geo_data.interpolator.tg.final_block</span>
+<span class="c1"># from .Topology import Topology</span>
 
 
 <span class="k">def</span> <span class="nf">data_to_pickle</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -239,6 +169,7 @@
         <span class="n">new_geo_data</span><span class="o">.</span><span class="n">foliations</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">series</span><span class="p">)]</span>
     <span class="k">return</span> <span class="n">new_geo_data</span></div>
 
+
 <span class="k">def</span> <span class="nf">set_data_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">series_distribution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order_series</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
                         <span class="n">update_p_field</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 
@@ -253,7 +184,13 @@
         <span class="k">return</span> <span class="n">get_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
 
 
-<span class="k">def</span> <span class="nf">set_interfaces</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">interf_Dataframe</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_p_field</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<div class="viewcode-block" id="set_interfaces"><a class="viewcode-back" href="../code.html#GemPy_f.set_interfaces">[docs]</a><span class="k">def</span> <span class="nf">set_interfaces</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">interf_Dataframe</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_p_field</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Method to change or append a Dataframe to interfaces in place.</span>
+<span class="sd">     Args:</span>
+<span class="sd">         interf_Dataframe: pandas.core.frame.DataFrame with the data</span>
+<span class="sd">         append: Bool: if you want to append the new data frame or substitute it</span>
+<span class="sd">     &quot;&quot;&quot;</span>
     <span class="n">geo_data</span><span class="o">.</span><span class="n">set_interfaces</span><span class="p">(</span><span class="n">interf_Dataframe</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="n">append</span><span class="p">)</span>
     <span class="c1"># To update the interpolator parameters without calling a new object</span>
     <span class="k">try</span><span class="p">:</span>
@@ -263,7 +200,7 @@
         <span class="k">if</span> <span class="n">update_p_field</span><span class="p">:</span>
             <span class="n">geo_data</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">compute_potential_fields</span><span class="p">()</span>
     <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-        <span class="k">pass</span>
+        <span class="k">pass</span></div>
 
 
 <span class="k">def</span> <span class="nf">set_foliations</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">foliat_Dataframe</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">update_p_field</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
@@ -302,59 +239,16 @@
 
         <span class="n">geo_data</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">GridClass</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="n">grid_type</span><span class="o">=</span><span class="n">grid_type</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-<span class="c1">#DEP?</span>
-<span class="c1"># def set_interpolator(geo_data,  *args, **kwargs):</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#     Method to initialize the class interpolator. All the constant parameters for the interpolation can be passed</span>
-<span class="c1">#     as args, otherwise they will take the default value (TODO: documentation of the dafault values)</span>
-<span class="c1">#</span>
-<span class="c1">#     Args:</span>
-<span class="c1">#         *args: Variable length argument list</span>
-<span class="c1">#         **kwargs: Arbitrary keyword arguments.</span>
-<span class="c1">#</span>
-<span class="c1">#     Keyword Args:</span>
-<span class="c1">#         range_var: Range of the variogram. Default None</span>
-<span class="c1">#         c_o: Covariance at 0. Default None</span>
-<span class="c1">#         nugget_effect: Nugget effect of the gradients. Default 0.01</span>
-<span class="c1">#         u_grade: Grade of the polynomial used in the universal part of the Kriging. Default 2</span>
-<span class="c1">#         rescaling_factor: Magic factor that multiplies the covariances). Default 2</span>
-<span class="c1">#</span>
-<span class="c1">#     Returns:</span>
-<span class="c1">#         self.Interpolator (GeMpy_core.Interpolator): Object to perform the potential field method</span>
-<span class="c1">#         self.Plot(GeMpy_core.PlotData): Object to visualize data and results. It gets updated.</span>
-<span class="c1">#     &quot;&quot;&quot;</span>
-<span class="c1">#</span>
-<span class="c1">#     rescaling_factor = kwargs.get(&#39;rescaling_factor&#39;, None)</span>
-<span class="c1">#</span>
-<span class="c1">#     if &#39;u_grade&#39; in kwargs:</span>
-<span class="c1">#         compile_theano = True</span>
-<span class="c1">#</span>
-<span class="c1">#     if not getattr(geo_data, &#39;grid&#39;, None):</span>
-<span class="c1">#         set_grid(geo_data)</span>
-<span class="c1">#</span>
-<span class="c1">#     geo_data_int = rescale_data(geo_data, rescaling_factor=rescaling_factor)</span>
-<span class="c1">#</span>
-<span class="c1">#     if not getattr(geo_data_int, &#39;interpolator&#39;, None) or compile_theano:</span>
-<span class="c1">#         print(&#39;I am in the setting&#39;)</span>
-<span class="c1">#         geo_data_int.interpolator = geo_data_int.InterpolatorClass(geo_data_int, geo_data_int.grid,</span>
-<span class="c1">#                                                                    *args, **kwargs)</span>
-<span class="c1">#     else:</span>
-<span class="c1">#         geo_data_int.interpolator._data = geo_data_int</span>
-<span class="c1">#         geo_data_int.interpolator._grid = geo_data_int.grid</span>
-<span class="c1">#         geo_data_int.interpolator.set_theano_shared_parameteres(geo_data_int, geo_data_int.interpolator._grid, **kwargs)</span>
-<span class="c1">#</span>
-<span class="c1">#     return geo_data_int</span>
-
 
 <span class="k">def</span> <span class="nf">plot_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="n">plot</span> <span class="o">=</span> <span class="n">PlotData</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">PlotData2D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
     <span class="n">plot</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="n">series</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="c1"># TODO saving options</span>
     <span class="k">return</span> <span class="n">plot</span>
 
 
 <span class="k">def</span> <span class="nf">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">cell_number</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-    <span class="n">plot</span> <span class="o">=</span> <span class="n">PlotData</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">PlotData2D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
     <span class="n">plot</span><span class="o">.</span><span class="n">plot_block_section</span><span class="p">(</span><span class="n">cell_number</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
     <span class="c1"># TODO saving options</span>
     <span class="k">return</span> <span class="n">plot</span>
@@ -363,20 +257,17 @@
 <span class="k">def</span> <span class="nf">plot_potential_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">potential_field</span><span class="p">,</span> <span class="n">cell_number</span><span class="p">,</span> <span class="n">n_pf</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                          <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
-    <span class="n">plot</span> <span class="o">=</span> <span class="n">PlotData</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">PlotData2D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
     <span class="n">plot</span><span class="o">.</span><span class="n">plot_potential_field</span><span class="p">(</span><span class="n">potential_field</span><span class="p">,</span> <span class="n">cell_number</span><span class="p">,</span> <span class="n">n_pf</span><span class="o">=</span><span class="n">n_pf</span><span class="p">,</span>
                               <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span>  <span class="n">plot_data</span><span class="o">=</span><span class="n">plot_data</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="n">series</span><span class="p">,</span>
                               <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">plot_data_3D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">):</span>
-    <span class="n">r</span><span class="p">,</span> <span class="n">i</span> <span class="o">=</span> <span class="n">visualize</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
-    <span class="k">del</span> <span class="n">r</span><span class="p">,</span> <span class="n">i</span>
+    <span class="n">vv</span> <span class="o">=</span> <span class="n">vtkVisualization</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+    <span class="n">vv</span><span class="o">.</span><span class="n">set_interfaces</span><span class="p">()</span>
+    <span class="n">vv</span><span class="o">.</span><span class="n">set_foliations</span><span class="p">()</span>
+    <span class="n">vv</span><span class="o">.</span><span class="n">render_model</span><span class="p">()</span>
     <span class="k">return</span> <span class="kc">None</span>
-
-
-<span class="c1"># DEP</span>
-<span class="c1"># def compute_potential_fields(geo_data, verbose=0):</span>
-<span class="c1">#     geo_data.interpolator.compute_potential_fields(verbose=verbose)</span>
 
 
 <span class="k">def</span> <span class="nf">set_interpolation_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -429,16 +320,45 @@
     <span class="c1">#                         on_unused_input=&#39;ignore&#39;,</span>
     <span class="c1">#                         allow_input_downcast=True,</span>
     <span class="c1">#                         profile=False)</span>
-    <span class="k">return</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">compile_th_fn</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="k">return</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">compile_th_fn</span><span class="p">(</span><span class="n">u_grade</span><span class="o">=</span><span class="n">u_grade</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 
-<span class="k">def</span> <span class="nf">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
-    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="s1">&#39;th_th&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">get_potential_at_interfaces</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="s1">&#39;th_fn&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
         <span class="n">interp_data</span><span class="o">.</span><span class="n">compile_th_fn</span><span class="p">()</span>
 
     <span class="n">i</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">get_input_data</span><span class="p">(</span><span class="n">u_grade</span><span class="o">=</span><span class="n">u_grade</span><span class="p">)</span>
-    <span class="n">sol</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">th_fn</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span>
-    <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
+    <span class="n">sol</span><span class="p">,</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">th_fn</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">get_potential_at_interfaces</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">sol</span><span class="p">),</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">_np</span><span class="o">.</span><span class="n">squeeze</span><span class="p">(</span><span class="n">sol</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">get_surface</span><span class="p">(</span><span class="n">potential_block</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">n_formation</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">original_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="s1">&#39;potential_at_interfaces&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span><span class="o">.</span><span class="n">any</span><span class="p">(),</span> <span class="s1">&#39;You need to compute the model first&#39;</span>
+    <span class="k">assert</span> <span class="n">n_formation</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Number of the formation has tobe positive&#39;</span>
+    <span class="c1"># In case the values are separated by series I put all in a vector</span>
+    <span class="n">pot_int</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="kn">from</span> <span class="nn">skimage</span> <span class="k">import</span> <span class="n">measure</span>
+
+    <span class="n">vertices</span><span class="p">,</span> <span class="n">simplices</span><span class="p">,</span> <span class="n">normals</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">measure</span><span class="o">.</span><span class="n">marching_cubes_lewiner</span><span class="p">(</span>
+        <span class="n">potential_block</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                <span class="n">interp_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                <span class="n">interp_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+        <span class="n">pot_int</span><span class="p">[</span><span class="n">n_formation</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+        <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span>
+        <span class="n">spacing</span><span class="o">=</span><span class="p">((</span><span class="n">interp_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                 <span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                 <span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="o">/</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+    <span class="k">if</span> <span class="n">original_scale</span><span class="p">:</span>
+        <span class="n">vertices</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">rescaling_factor</span> <span class="o">*</span> <span class="n">vertices</span> <span class="o">+</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span>
+                                                                         <span class="mi">0</span><span class="p">,</span>
+                                                                         <span class="o">-</span><span class="mi">2000</span><span class="p">])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">simplices</span>
 </pre></div>
 
           </div>

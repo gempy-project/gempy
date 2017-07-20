@@ -8,7 +8,7 @@ Welcome to GeMpy's documentation!
 A 3D Structural geologic implicit modelling in python. (v 0.9)
 **************************************************************
 
-GeMpy is an opensource project for the generation of 3D structural geological modelling. The algorithm is based on a especial type of Universal cokrigin interpolation created by Laujaunie et al (1997) and developed along the past year by (*add many more papers!!!*). This tool allows the generation of models with relative complex structures just from data. The repository can be found here, https://github.com/nre-aachen/GeMpy.
+GeMpy is an opensource project for the generation of 3D structural geological modelling. The algorithm is based on a especial type of Universal cokrigin interpolation created by Laujaunie et al (1997) and developed along the past year by (*add many more papers!!!*). This tool allows the generation of models with relative complex structures just from data. The repository can be found here, https://github.com/cgre-aachen/GeMpy.
 
 The results look like this:
 

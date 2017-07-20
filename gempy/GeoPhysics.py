@@ -196,3 +196,22 @@ class GeoPhysicsPreprocessing(object):
 
         return grav
 
+
+    # DEP?
+    def set_airbore_plane(self, z, res_grav):
+
+        # Rescale z
+        z_res = (z-self.centers[2])/self.rescaling_factor + 0.5001
+
+        # Create xy meshgrid
+        xy = np.meshgrid(np.linspace(self.extent_rescaled.iloc[0],
+                                     self.extent_rescaled.iloc[1], res_grav[0]),
+                         np.linspace(self.extent_rescaled.iloc[2],
+                                     self.extent_rescaled.iloc[3], res_grav[1]))
+        z = np.ones(res_grav[0]*res_grav[1])*z_res
+
+        # Transformation
+        xy_ravel = np.vstack(map(np.ravel, xy))
+        airborne_plane = np.vstack((xy_ravel, z)).T.astype(self.dtype)
+
+        return airborne_plane

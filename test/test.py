@@ -167,7 +167,7 @@ class TestFaults:
                                      path_f="./GeoModeller/test_d/test_d_Foliations.csv",
                                      path_i="./GeoModeller/test_d/test_d_Points.csv")
 
-        gempy.set_data_series(geo_data, {'series': ('A', 'B'),
+        gempy.set_series(geo_data, {'series': ('A', 'B'),
                                         'fault1': 'f1'}, order_series=['fault1', 'series'])
 
         # data_interp = gempy.set_interpolator(geo_data,
@@ -206,7 +206,7 @@ class TestFaults:
                                      path_f="./GeoModeller/test_d/test_d_Foliations.csv",
                                      path_i="./GeoModeller/test_d/test_d_Points.csv")
 
-        gempy.set_data_series(geo_data, {'series': ('A', 'B'),
+        gempy.set_series(geo_data, {'series': ('A', 'B'),
                                           'fault1': 'f1'}, order_series=['fault1', 'series'])
 
        #  rescaled_data = gempy.rescale_data(geo_data)
@@ -249,26 +249,8 @@ class TestFaults:
                                      path_f="./GeoModeller/test_e/test_e_Foliations.csv",
                                      path_i="./GeoModeller/test_e/test_e_Points.csv")
 
-        gempy.set_data_series(geo_data, {'series': ('A', 'B'),
+        gempy.set_series(geo_data, {'series': ('A', 'B'),
                                         'fault1': 'f1'}, order_series=['fault1', 'series'])
-
-       #  rescaled_data = gempy.rescale_data(geo_data)
-       # # data_interp = gempy.set_interpolator(geo_data, dtype="float64", )
-       #  data_interp.interpolator._data_scaled = rescaled_data
-       #  data_interp.interpolator._grid_scaled = rescaled_data.grid
-       #  data_interp.interpolator.order_table()
-       #  data_interp.interpolator.set_theano_shared_parameteres()
-       #
-       #  # Prepare the input data (interfaces, foliations data) to call the theano function.
-       #  # Also set a few theano shared variables with the len of formations series and so on
-       #  input_data_P = data_interp.interpolator.data_prep(u_grade=[3, 3])
-       #
-       #  data_interp.interpolator.get_kriging_parameters()
-       #
-       #
-       #
-       #  sol = compiled_f(input_data_P[0], input_data_P[1], input_data_P[2], input_data_P[3], input_data_P[4],
-       #                   input_data_P[5])
 
         geo_data.n_faults = 1
 
@@ -295,30 +277,15 @@ class TestFaults:
 
         geo_data.set_formation_number(geo_data.formations[[3, 2, 1, 0, 4]])
 
-        gempy.set_data_series(geo_data, {'series': ('Reservoir'
+        gempy.set_series(geo_data, {'series': ('Reservoir'
                                                     , 'Seal',
                                                     'SecondaryReservoir',
                                                     'NonReservoirDeep'
-                                                    ),
+                                               ),
                                          'fault1': 'MainFault'},
-                              order_series=['fault1', 'series'])
+                         order_series=['fault1', 'series'])
 
-       #  rescaled_data = gempy.rescale_data(geo_data)
-       # # data_interp = gempy.set_interpolator(geo_data, dtype="float64", )
-       #  data_interp.interpolator._data_scaled = rescaled_data
-       #  data_interp.interpolator._grid_scaled = rescaled_data.grid
-       #  data_interp.interpolator.order_table()
-       #  data_interp.interpolator.set_theano_shared_parameteres()
-       #
-       #  # Prepare the input data (interfaces, foliations data) to call the theano function.
-       #  # Also set a few theano shared variables with the len of formations series and so on
-       #  input_data_P = data_interp.interpolator.data_prep(u_grade=[3, 3])
-       #
-       #  data_interp.interpolator.get_kriging_parameters()
-       #
-       #  sol = compiled_f(input_data_P[0], input_data_P[1], input_data_P[2], input_data_P[3], input_data_P[4],
-       #                   input_data_P[5])
-       # # print(data_interp.rescale_factor, 'rescale')
+
 
         geo_data.n_faults = 1
 

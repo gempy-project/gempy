@@ -53,29 +53,34 @@
 <span class="sd">@author: Miguel de la Varga</span>
 <span class="sd">&quot;&quot;&quot;</span>
 
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">vtk</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Vtk package is not installed. No vtk visualization available.&#39;</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
 <span class="kn">import</span> <span class="nn">matplotlib</span>
 <span class="kn">import</span> <span class="nn">seaborn</span> <span class="k">as</span> <span class="nn">sns</span>
-
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">path</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 <span class="c1"># This is for sphenix to find the packages</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span> <span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span> <span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
-
 <span class="kn">from</span> <span class="nn">IPython.core.debugger</span> <span class="k">import</span> <span class="n">Pdb</span>
-<span class="kn">from</span> <span class="nn">gempy.colors</span> <span class="k">import</span> <span class="n">color_dict_rgb</span><span class="p">,</span> <span class="n">color_dict_hex</span>
+<span class="c1">#from gempy.colors import color_dict_rgb, color_dict_hex</span>
+<span class="kn">from</span> <span class="nn">gempy.colors</span> <span class="k">import</span> <span class="o">*</span>
 
 <span class="c1"># TODO: inherit pygeomod classes</span>
 <span class="c1"># import sys, os</span>
 
 
-<div class="viewcode-block" id="PlotData"><a class="viewcode-back" href="../code.html#Visualization.PlotData">[docs]</a><span class="k">class</span> <span class="nc">PlotData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<div class="viewcode-block" id="PlotData2D"><a class="viewcode-back" href="../code.html#Visualization.PlotData2D">[docs]</a><span class="k">class</span> <span class="nc">PlotData2D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to make the different plot related with gempy</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        _data(GeMpy_core.DataManagement): All values of a DataManagement object</span>
-<span class="sd">        block(theano shared): 3D array containing the lithology block</span>
+<span class="sd">        geo_data(gempy.InputData): All values of a DataManagement object</span>
+<span class="sd">        block(numpy.array): 3D array containing the lithology block</span>
 <span class="sd">        **kwargs: Arbitrary keyword arguments.</span>
 
 <span class="sd">    Keyword Args:</span>
@@ -83,9 +88,9 @@
 <span class="sd">        verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">_data</span><span class="p">,</span> <span class="n">cd_rgb</span><span class="o">=</span><span class="n">color_dict_rgb</span><span class="p">,</span> <span class="n">cd_hex</span><span class="o">=</span><span class="n">color_dict_hex</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">cd_rgb</span><span class="o">=</span><span class="n">color_dict_rgb</span><span class="p">,</span> <span class="n">cd_hex</span><span class="o">=</span><span class="n">color_dict_hex</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">geo_data</span>
 
         <span class="k">if</span> <span class="s1">&#39;potential_field&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_potential_field_p</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;potential_field&#39;</span><span class="p">]</span>
@@ -125,7 +130,7 @@
         <span class="c1"># sns.set_context(&quot;paper&quot;)</span>
         <span class="c1"># matplotlib.rc(&quot;font&quot;, family=&quot;Helvetica&quot;)</span>
 
-<div class="viewcode-block" id="PlotData.plot_data"><a class="viewcode-back" href="../code.html#Visualization.PlotData.plot_data">[docs]</a>    <span class="k">def</span> <span class="nf">plot_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="PlotData2D.plot_data"><a class="viewcode-back" href="../code.html#Visualization.PlotData2D.plot_data">[docs]</a>    <span class="k">def</span> <span class="nf">plot_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot the projecton of the raw data (interfaces and foliations) in 2D following a</span>
 <span class="sd">        specific directions</span>
@@ -205,7 +210,7 @@
             <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">direction</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;must be a cartesian direction, i.e. xyz&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">_a</span><span class="p">,</span> <span class="n">_b</span><span class="p">,</span> <span class="n">_c</span><span class="p">,</span> <span class="n">extent_val</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">Gx</span><span class="p">,</span> <span class="n">Gy</span>
 
-<div class="viewcode-block" id="PlotData.plot_block_section"><a class="viewcode-back" href="../code.html#Visualization.PlotData.plot_block_section">[docs]</a>    <span class="k">def</span> <span class="nf">plot_block_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span>
+<div class="viewcode-block" id="PlotData2D.plot_block_section"><a class="viewcode-back" href="../code.html#Visualization.PlotData2D.plot_block_section">[docs]</a>    <span class="k">def</span> <span class="nf">plot_block_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span>
                            <span class="n">plot_data</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot a section of the block model</span>
@@ -253,7 +258,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PlotData.plot_potential_field"><a class="viewcode-back" href="../code.html#Visualization.PlotData.plot_potential_field">[docs]</a>    <span class="k">def</span> <span class="nf">plot_potential_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">potential_field</span><span class="p">,</span> <span class="n">cell_number</span><span class="p">,</span> <span class="n">n_pf</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<div class="viewcode-block" id="PlotData2D.plot_potential_field"><a class="viewcode-back" href="../code.html#Visualization.PlotData2D.plot_potential_field">[docs]</a>    <span class="k">def</span> <span class="nf">plot_potential_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">potential_field</span><span class="p">,</span> <span class="n">cell_number</span><span class="p">,</span> <span class="n">n_pf</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
                              <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot a potential field in a given direction.</span>
@@ -287,7 +292,7 @@
         <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PlotData.annotate_plot"><a class="viewcode-back" href="../code.html#Visualization.PlotData.annotate_plot">[docs]</a>    <span class="nd">@staticmethod</span>
+<div class="viewcode-block" id="PlotData2D.annotate_plot"><a class="viewcode-back" href="../code.html#Visualization.PlotData2D.annotate_plot">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">annotate_plot</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">label_col</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Annotate the plot of a given DataFrame using one of its columns</span>
@@ -321,7 +326,13 @@
         <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>  <span class="c1"># Make sure we have pyplot as plt</span>
 
         <span class="k">for</span> <span class="n">label</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">frame</span><span class="p">[</span><span class="n">label_col</span><span class="p">],</span> <span class="n">frame</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">frame</span><span class="p">[</span><span class="n">y</span><span class="p">]):</span>
-            <span class="n">plt</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mf">0.15</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+            <span class="n">plt</span><span class="o">.</span><span class="n">annotate</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">xy</span><span class="o">=</span><span class="p">(</span><span class="n">x</span> <span class="o">+</span> <span class="mf">0.2</span><span class="p">,</span> <span class="n">y</span> <span class="o">+</span> <span class="mf">0.15</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div></div>
+
+
+<span class="k">class</span> <span class="nc">steano3D</span><span class="p">():</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">geo_data</span>
 
     <span class="k">def</span> <span class="nf">plot3D_steno</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span>  <span class="n">project</span><span class="p">,</span> <span class="n">plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="kn">import</span> <span class="nn">steno3d</span>
@@ -334,10 +345,6 @@
             <span class="n">description</span><span class="o">=</span><span class="n">description</span><span class="p">,</span>
             <span class="n">public</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)</span>
-
-        <span class="c1"># mesh = steno3d.Mesh3DGrid(h1=np.diff(np.linspace(self._data.extent[0], self._data.extent[1], self._data.resolution[0])),</span>
-        <span class="c1">#                           h2=np.diff(np.linspace(self._data.extent[2], self._data.extent[3], self._data.resolution[1])),</span>
-        <span class="c1">#                           h3=np.diff(np.linspace(self._data.extent[4], self._data.extent[5], self._data.resolution[2])))</span>
 
         <span class="n">mesh</span> <span class="o">=</span> <span class="n">steno3d</span><span class="o">.</span><span class="n">Mesh3DGrid</span><span class="p">(</span><span class="n">h1</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span>
                                                                          <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span><span class="p">),</span>
@@ -356,166 +363,647 @@
         <span class="k">if</span> <span class="n">plot</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">vol</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
-    <span class="c1"># def plot3D_ipyvolume(block, geo_data, cm=plt.cm.viridis.colors):</span>
-    <span class="c1">#     import ipyvolume.pylab as p3</span>
-    <span class="c1">#     n_lith = np.unique(block).shape[0]</span>
-    <span class="c1">#     p3.figure()</span>
-    <span class="c1">#     for e, i in enumerate(np.unique(sol)):  # np.unique(block)):</span>
-    <span class="c1">#</span>
-    <span class="c1">#         bool_pos = block == i</span>
-    <span class="c1">#         p3.scatter(</span>
-    <span class="c1">#             geo_data.grid.grid[:, 0][bool_pos],</span>
-    <span class="c1">#             geo_data.grid.grid[:, 1][bool_pos],</span>
-    <span class="c1">#             geo_data.grid.grid[:, 2][bool_pos],</span>
-    <span class="c1">#             marker=&#39;box&#39;,</span>
-    <span class="c1">#             color=cm[np.linspace(0, 255, n_lith, dtype=int)[e]])</span>
-    <span class="c1">#</span>
-    <span class="c1">#     p3.xlim(np.min(geo_data.grid.grid[:, 0]), np.max(geo_data.grid.grid[:, 0]))</span>
-    <span class="c1">#     p3.ylim(np.min(geo_data.grid.grid[:, 1]), np.max(geo_data.grid.grid[:, 1]))</span>
-    <span class="c1">#     p3.zlim(np.min(geo_data.grid.grid[:, 2]), np.max(geo_data.grid.grid[:, 2]))</span>
-    <span class="c1">#</span>
-    <span class="c1">#     p3.show()</span>
 
-<div class="viewcode-block" id="PlotData.export_vtk_structured"><a class="viewcode-back" href="../code.html#Visualization.PlotData.export_vtk_structured">[docs]</a>    <span class="k">def</span> <span class="nf">export_vtk_structured</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="vtkVisualization"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization">[docs]</a><span class="k">class</span> <span class="nc">vtkVisualization</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Class to visualize data and results in 3D. Init will create all the render properties while the method render</span>
+<span class="sd">    model will lunch the window. Using set_interfaces, set_foliations and set_surfaces in between can be chosen what</span>
+<span class="sd">    will be displayed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_data(gempy.InputData): All values of a DataManagement object</span>
+<span class="sd">        ren_name (str): Name of the renderer window</span>
+<span class="sd">        verbose (int): Verbosity for certain functions</span>
+<span class="sd">    Attributes:</span>
+<span class="sd">        renWin(vtk.vtkRenderWindow())</span>
+<span class="sd">        camera_list (list): list of cameras for the distinct renderers</span>
+<span class="sd">        ren_list (list): list containing the vtk renderers</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">ren_name</span><span class="o">=</span><span class="s1">&#39;GemPy 3D-Editor&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_lot_create</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span> <span class="o">=</span> <span class="n">geo_data</span>
+        <span class="c1"># Number of renders</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_ren</span> <span class="o">=</span> <span class="mi">4</span>
+
+        <span class="c1"># Extents</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">extent</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_e_dx</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">dx</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_e_dy</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">dy</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_e_dz</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">dz</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="n">_e</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span>  <span class="c1"># array([ x, X,  y, Y,  z, Z])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_e_dx</span> <span class="o">=</span> <span class="n">_e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">_e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_e_dy</span> <span class="o">=</span> <span class="n">_e</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">_e</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_e_dz</span> <span class="o">=</span> <span class="n">_e</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">_e</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_e_d_avrg</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_e_dx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_e_dy</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_e_dz</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span>
+
+        <span class="c1"># Resolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">res</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span>
+
+        <span class="c1"># create render window, settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">renwin</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkRenderWindow</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">renwin</span><span class="o">.</span><span class="n">SetWindowName</span><span class="p">(</span><span class="n">ren_name</span><span class="p">)</span>
+
+        <span class="c1"># Set 4 renderers. ie 3D, X,Y,Z projections</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_ren_list</span><span class="p">()</span>
+
+        <span class="c1"># create interactor and set interactor style, assign render window</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interactor</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkRenderWindowInteractor</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interactor</span><span class="o">.</span><span class="n">SetRenderWindow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">renwin</span><span class="p">)</span>
+
+        <span class="c1"># 3d model camera for the 4 renders</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">camera_list</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_cameras</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+        <span class="c1"># Setting the camera and the background color to the renders</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_camera_backcolor</span><span class="p">()</span>
+
+        <span class="c1"># Creating the axis</span>
+        <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">r</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">):</span>
+            <span class="c1"># add axes actor to all renderers</span>
+            <span class="n">axe</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_create_axes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_list</span><span class="p">[</span><span class="n">e</span><span class="p">])</span>
+
+            <span class="n">r</span><span class="o">.</span><span class="n">AddActor</span><span class="p">(</span><span class="n">axe</span><span class="p">)</span>
+            <span class="n">r</span><span class="o">.</span><span class="n">ResetCamera</span><span class="p">()</span>
+
+<div class="viewcode-block" id="vtkVisualization.render_model"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.render_model">[docs]</a>    <span class="k">def</span> <span class="nf">render_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1080</span><span class="p">),</span> <span class="n">fullscreen</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        export vtk</span>
-<span class="sd">        :return:</span>
-<span class="sd">        &quot;&quot;&quot;</span></div>
-
-        <span class="c1"># from evtk.hl import gridToVTK</span>
-        <span class="c1">#</span>
-        <span class="c1"># import numpy as np</span>
-        <span class="c1">#</span>
-        <span class="c1"># import random as rnd</span>
-        <span class="c1">#</span>
-        <span class="c1"># # Dimensions</span>
-        <span class="c1">#</span>
-        <span class="c1"># nx, ny, nz = 50, 50, 50</span>
-        <span class="c1">#</span>
-        <span class="c1"># lx, ly, lz = 10., 10., -10.0</span>
-        <span class="c1">#</span>
-        <span class="c1"># dx, dy, dz = lx / nx, ly / ny, lz / nz</span>
-        <span class="c1">#</span>
-        <span class="c1"># ncells = nx * ny * nz</span>
-        <span class="c1">#</span>
-        <span class="c1"># npoints = (nx + 1) * (ny + 1) * (nz + 1)</span>
-        <span class="c1">#</span>
-        <span class="c1"># # Coordinates</span>
-        <span class="c1">#</span>
-        <span class="c1"># X = np.arange(0, lx + 0.1 * dx, dx, dtype=&#39;float64&#39;)</span>
-        <span class="c1">#</span>
-        <span class="c1"># Y = np.arange(0, ly + 0.1 * dy, dy, dtype=&#39;float64&#39;)</span>
-        <span class="c1">#</span>
-        <span class="c1"># Z = np.arange(0, lz + 0.1 * dz, dz, dtype=&#39;float64&#39;)</span>
-        <span class="c1">#</span>
-        <span class="c1"># x = np.zeros((nx + 1, ny + 1, nz + 1))</span>
-        <span class="c1">#</span>
-        <span class="c1"># y = np.zeros((nx + 1, ny + 1, nz + 1))</span>
-        <span class="c1">#</span>
-        <span class="c1"># z = np.zeros((nx + 1, ny + 1, nz + 1))</span>
-        <span class="c1">#</span>
-        <span class="c1"># # We add some random fluctuation to make the grid more interesting</span>
-        <span class="c1">#</span>
-        <span class="c1"># for k in range(nz + 1):</span>
-        <span class="c1">#</span>
-        <span class="c1">#     for j in range(ny + 1):</span>
-        <span class="c1">#         for i in range(nx + 1):</span>
-        <span class="c1">#             x[i, j, k] = X[i] + (0.5 - rnd.random()) * 0.2 * dx</span>
-        <span class="c1">#</span>
-        <span class="c1">#             y[i, j, k] = Y[j] + (0.5 - rnd.random()) * 0.2 * dy</span>
-        <span class="c1">#</span>
-        <span class="c1">#             z[i, j, k] = Z[k] + (0.5 - rnd.random()) * 0.2 * dz</span>
-        <span class="c1">#</span>
-        <span class="c1">#             # Variables</span>
-        <span class="c1">#</span>
-        <span class="c1"># pressure = sol[0, 0, :].reshape((nx, ny, nz))</span>
-        <span class="c1">#</span>
-        <span class="c1"># gridToVTK(&quot;./structured&quot;, x, y, z, cellData={&quot;pressure&quot;: pressure})</span>
-
-<div class="viewcode-block" id="PlotData.export_vtk_rectilinear"><a class="viewcode-back" href="../code.html#Visualization.PlotData.export_vtk_rectilinear">[docs]</a>    <span class="k">def</span> <span class="nf">export_vtk_rectilinear</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        ajapg</span>
+<span class="sd">        Method to lunch the window</span>
+<span class="sd">        Args:</span>
+<span class="sd">            size (tuple): Resolution of the window</span>
+<span class="sd">            fullscreen (bool): Lunch window in full screen or not</span>
 <span class="sd">        Returns:</span>
 
-<span class="sd">        &quot;&quot;&quot;</span></div>
-        <span class="c1"># from evtk.hl import gridToVTK</span>
-        <span class="c1">#</span>
-        <span class="c1"># import numpy as np</span>
-        <span class="c1">#</span>
-        <span class="c1"># # Dimensions</span>
-        <span class="c1">#</span>
-        <span class="c1">#</span>
-        <span class="c1"># nx, ny, nz = 50, 50, 50</span>
-        <span class="c1">#</span>
-        <span class="c1"># lx, ly, lz = 10., 10., -10.0</span>
-        <span class="c1">#</span>
-        <span class="c1"># dx, dy, dz = lx / nx, ly / ny, lz / nz</span>
-        <span class="c1">#</span>
-        <span class="c1"># ncells = nx * ny * nz</span>
-        <span class="c1">#</span>
-        <span class="c1"># npoints = (nx + 1) * (ny + 1) * (nz + 1)</span>
-        <span class="c1">#</span>
-        <span class="c1"># # Coordinates</span>
-        <span class="c1">#</span>
-        <span class="c1"># x = np.arange(0, lx + 0.1 * dx, dx, dtype=&#39;float64&#39;)</span>
-        <span class="c1">#</span>
-        <span class="c1"># y = np.arange(0, ly + 0.1 * dy, dy, dtype=&#39;float64&#39;)</span>
-        <span class="c1">#</span>
-        <span class="c1"># z = np.arange(0, lz + 0.1 * dz, dz, dtype=&#39;float64&#39;)</span>
-        <span class="c1">#</span>
-        <span class="c1"># # Variables</span>
-        <span class="c1">#</span>
-        <span class="c1"># pressure = sol[0, 0, :].reshape((nx, ny, nz))</span>
-        <span class="c1">#</span>
-        <span class="c1"># temp = np.random.rand(npoints).reshape((nx + 1, ny + 1, nz + 1))</span>
-        <span class="c1">#</span>
-        <span class="c1"># gridToVTK(&quot;./rectilinear&quot;, x, y, z, cellData={&quot;lithology&quot;: pressure}, )</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># initialize and start the app</span>
 
-<div class="viewcode-block" id="PlotData.plot_layers"><a class="viewcode-back" href="../code.html#Visualization.PlotData.plot_layers">[docs]</a>    <span class="k">def</span> <span class="nf">plot_layers</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">fullscreen</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">renwin</span><span class="o">.</span><span class="n">FullScreenOn</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">renwin</span><span class="o">.</span><span class="n">SetSize</span><span class="p">(</span><span class="n">size</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interactor</span><span class="o">.</span><span class="n">Initialize</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interactor</span><span class="o">.</span><span class="n">Start</span><span class="p">()</span>
+
+        <span class="c1"># close_window(interactor)</span>
+        <span class="k">del</span> <span class="bp">self</span><span class="o">.</span><span class="n">renwin</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interactor</span></div>
+
+<div class="viewcode-block" id="vtkVisualization.create_surface_points"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_surface_points">[docs]</a>    <span class="k">def</span> <span class="nf">create_surface_points</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertices</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        plot layers</span>
+<span class="sd">        Method to create the points that form the surfaces</span>
+<span class="sd">        Args:</span>
+<span class="sd">            vertices (numpy.array): 2D array (XYZ) with the coordinates of the points</span>
+
 <span class="sd">        Returns:</span>
+<span class="sd">            vtk.vtkPoints: with the coordinates of the points</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">Points</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkPoints</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">vertices</span><span class="p">:</span>
+            <span class="n">Points</span><span class="o">.</span><span class="n">InsertNextPoint</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Points</span></div>
 
-<span class="sd">        &quot;&quot;&quot;</span></div></div>
+<div class="viewcode-block" id="vtkVisualization.create_surface_triangles"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_surface_triangles">[docs]</a>    <span class="k">def</span> <span class="nf">create_surface_triangles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simpleces</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to create the Triangles that form the surfaces</span>
+<span class="sd">        Args:</span>
+<span class="sd">            simpleces (numpy.array): 2D array with the value of the vertices that form every single triangle</span>
 
-        <span class="c1"># import vtk</span>
-        <span class="c1"># from vtk import *</span>
-        <span class="c1">#</span>
-        <span class="c1"># # setup points and vertices</span>
-        <span class="c1"># Points = vtk.vtkPoints()</span>
-        <span class="c1"># Triangles = vtk.vtkCellArray()</span>
-        <span class="c1"># Triangle = vtk.vtkTriangle()</span>
-        <span class="c1">#</span>
-        <span class="c1"># for p in vertices * 0.4:</span>
-        <span class="c1">#     Points.InsertNextPoint(p)</span>
-        <span class="c1">#</span>
-        <span class="c1"># # Unfortunately in this simple example the following lines are ambiguous.</span>
-        <span class="c1"># # The first 0 is the index of the triangle vertex which is ALWAYS 0-2.</span>
-        <span class="c1"># # The second 0 is the index into the point (geometry) array, so this can range from 0-(NumPoints-1)</span>
-        <span class="c1"># # i.e. a more general statement is triangle-&gt;GetPointIds()-&gt;SetId(0, PointId);</span>
-        <span class="c1">#</span>
-        <span class="c1"># for i in simplices:</span>
-        <span class="c1">#     Triangle.GetPointIds().SetId(0, i[0])</span>
-        <span class="c1">#     Triangle.GetPointIds().SetId(1, i[1])</span>
-        <span class="c1">#     Triangle.GetPointIds().SetId(2, i[2])</span>
-        <span class="c1">#</span>
-        <span class="c1">#     Triangles.InsertNextCell(Triangle)</span>
-        <span class="c1">#</span>
-        <span class="c1"># polydata = vtk.vtkPolyData()</span>
-        <span class="c1"># polydata.SetPoints(Points)</span>
-        <span class="c1"># polydata.SetPolys(Triangles)</span>
-        <span class="c1">#</span>
-        <span class="c1"># polydata.Modified()</span>
-        <span class="c1"># if vtk.VTK_MAJOR_VERSION &lt;= 5:</span>
-        <span class="c1">#     polydata.Update()</span>
-        <span class="c1">#</span>
-        <span class="c1"># writer = vtk.vtkXMLPolyDataWriter();</span>
-        <span class="c1"># writer.SetFileName(&quot;Fabian_f.vtp&quot;);</span>
-        <span class="c1"># if vtk.VTK_MAJOR_VERSION &lt;= 5:</span>
-        <span class="c1">#     writer.SetInput(polydata)</span>
-        <span class="c1"># else:</span>
-        <span class="c1">#     writer.SetInputData(polydata)</span>
-        <span class="c1"># writer.Write()</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            vtk.vtkTriangle</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">Triangles</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkCellArray</span><span class="p">()</span>
+        <span class="n">Triangle</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkTriangle</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">simpleces</span><span class="p">:</span>
+            <span class="n">Triangle</span><span class="o">.</span><span class="n">GetPointIds</span><span class="p">()</span><span class="o">.</span><span class="n">SetId</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">Triangle</span><span class="o">.</span><span class="n">GetPointIds</span><span class="p">()</span><span class="o">.</span><span class="n">SetId</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">Triangle</span><span class="o">.</span><span class="n">GetPointIds</span><span class="p">()</span><span class="o">.</span><span class="n">SetId</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+            <span class="n">Triangles</span><span class="o">.</span><span class="n">InsertNextCell</span><span class="p">(</span><span class="n">Triangle</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">Triangles</span></div>
+
+<div class="viewcode-block" id="vtkVisualization.create_surface"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_surface">[docs]</a>    <span class="k">def</span> <span class="nf">create_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">simpleces</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to create the polydata that define the surfaces</span>
+<span class="sd">        Args:</span>
+<span class="sd">            vertices (numpy.array): 2D array (XYZ) with the coordinates of the points</span>
+<span class="sd">            simpleces (numpy.array): 2D array with the value of the vertices that form every single triangle</span>
+<span class="sd">            f (str): Name of the formation of the surfaces</span>
+<span class="sd">            alpha (float): Opacity</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            vtk.vtkActor, vtk.vtkPolyDataMapper, vtk.vtkPolyData</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">surf_polydata</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkPolyData</span><span class="p">()</span>
+
+        <span class="n">surf_polydata</span><span class="o">.</span><span class="n">SetPoints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_surface_points</span><span class="p">(</span><span class="n">vertices</span><span class="p">))</span>
+        <span class="n">surf_polydata</span><span class="o">.</span><span class="n">SetPolys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_surface_triangles</span><span class="p">(</span><span class="n">simpleces</span><span class="p">))</span>
+
+        <span class="n">surf_mapper</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkPolyDataMapper</span><span class="p">()</span>
+        <span class="n">surf_mapper</span><span class="o">.</span><span class="n">SetInputData</span><span class="p">(</span><span class="n">surf_polydata</span><span class="p">)</span>
+
+        <span class="n">surf_actor</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkActor</span><span class="p">()</span>
+        <span class="n">surf_actor</span><span class="o">.</span><span class="n">SetMapper</span><span class="p">(</span><span class="n">surf_mapper</span><span class="p">)</span>
+        <span class="n">surf_actor</span><span class="o">.</span><span class="n">GetProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
+        <span class="n">surf_actor</span><span class="o">.</span><span class="n">GetProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetOpacity</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">surf_actor</span><span class="p">,</span> <span class="n">surf_mapper</span><span class="p">,</span> <span class="n">surf_polydata</span></div>
+
+<div class="viewcode-block" id="vtkVisualization.create_sphere"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_sphere">[docs]</a>    <span class="k">def</span> <span class="nf">create_sphere</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">n_sphere</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">0.03</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to create the sphere that represent the interfaces points</span>
+<span class="sd">        Args:</span>
+<span class="sd">            X: X coord</span>
+<span class="sd">            Y: Y coord</span>
+<span class="sd">            Z: Z corrd</span>
+<span class="sd">            f (str): Name of the formation of the surfaces</span>
+<span class="sd">            n_sphere (int): Number of the sphere</span>
+<span class="sd">            n_render (int): Number of the render where the sphere belongs</span>
+<span class="sd">            n_index (int): index value in the PandasDataframe of InupData.interfaces</span>
+<span class="sd">            r (float): radio of the sphere</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            vtk.vtkSphereWidget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">s</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkSphereWidget</span><span class="p">()</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">SetInteractor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interactor</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">SetRepresentationToSurface</span><span class="p">()</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">r_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_e_d_avrg</span> <span class="o">*</span> <span class="n">r</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">PlaceWidget</span><span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">X</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">Y</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">Y</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">Z</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">Z</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">r_f</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">GetSphereProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">SetCurrentRenderer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="n">n_render</span><span class="p">])</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">n_sphere</span> <span class="o">=</span> <span class="n">n_sphere</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">n_render</span> <span class="o">=</span> <span class="n">n_render</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">n_index</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">AddObserver</span><span class="p">(</span><span class="s2">&quot;InteractionEvent&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sphereCallback</span><span class="p">)</span>
+
+        <span class="n">s</span><span class="o">.</span><span class="n">On</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">s</span></div>
+
+<div class="viewcode-block" id="vtkVisualization.create_foliation"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_foliation">[docs]</a>    <span class="k">def</span> <span class="nf">create_foliation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>
+                         <span class="n">Gx</span><span class="p">,</span> <span class="n">Gy</span><span class="p">,</span> <span class="n">Gz</span><span class="p">,</span>
+                         <span class="n">n_plane</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Method to create a plane given a foliation</span>
+<span class="sd">        Args:</span>
+<span class="sd">            X : X coord</span>
+<span class="sd">            Y: Y coord</span>
+<span class="sd">            Z: Z corrd</span>
+<span class="sd">            f (str): Name of the formation of the surfaces</span>
+<span class="sd">            Gx (str): Component of the gradient x</span>
+<span class="sd">            Gy (str): Component of the gradient y</span>
+<span class="sd">            Gz (str): Component of the gradient z</span>
+<span class="sd">            n_plane (int): Number of the plane</span>
+<span class="sd">            n_render (int): Number of the render where the plane belongs</span>
+<span class="sd">            n_index (int): index value in the PandasDataframe of InupData.interfaces</span>
+<span class="sd">            alpha: Opacity of the plane</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            vtk.vtkPlaneWidget</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkPlaneWidget</span><span class="p">()</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">SetInteractor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interactor</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">SetRepresentationToSurface</span><span class="p">()</span>
+
+        <span class="c1"># Position</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+        <span class="n">source</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkPlaneSource</span><span class="p">()</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">SetCenter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">SetNormal</span><span class="p">(</span><span class="n">Gx</span><span class="p">,</span> <span class="n">Gy</span><span class="p">,</span> <span class="n">Gz</span><span class="p">)</span>
+        <span class="n">source</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">SetInputData</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">GetOutput</span><span class="p">())</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">SetHandleSize</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">SetPlaceFactor</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">PlaceWidget</span><span class="p">()</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">SetNormal</span><span class="p">(</span><span class="n">Gx</span><span class="p">,</span> <span class="n">Gy</span><span class="p">,</span> <span class="n">Gz</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">GetPlaneProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">GetHandleProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">GetHandleProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetOpacity</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">SetCurrentRenderer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="n">n_render</span><span class="p">])</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">n_plane</span> <span class="o">=</span> <span class="n">n_plane</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">n_render</span> <span class="o">=</span> <span class="n">n_render</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">n_index</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">AddObserver</span><span class="p">(</span><span class="s2">&quot;InteractionEvent&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">planesCallback</span><span class="p">)</span>
+
+        <span class="n">d</span><span class="o">.</span><span class="n">On</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="n">d</span></div>
+
+<div class="viewcode-block" id="vtkVisualization.set_surfaces"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.set_surfaces">[docs]</a>    <span class="k">def</span> <span class="nf">set_surfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">simpleces</span><span class="p">,</span> <span class="n">formations</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create all the surfaces and set them to the corresponding renders for their posterior visualization with</span>
+<span class="sd">        render_model</span>
+<span class="sd">        Args:</span>
+<span class="sd">            vertices (list): list of 3D numpy arrays containing the points that form each plane</span>
+<span class="sd">            simpleces (list): list of 3D numpy arrays containing the verticies that form every triangle</span>
+<span class="sd">            formations (list): ordered list of strings containing the name of the formations to represent</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># self.s_rend_1 = []</span>
+        <span class="c1"># self.s_rend_2 = []</span>
+        <span class="c1"># self.s_rend_3 = []</span>
+        <span class="c1"># self.s_rend_4 = []</span>
+        <span class="c1"># self.s_mapper = []</span>
+        <span class="c1"># self.s_polydata = []</span>
+
+        <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span>
+            <span class="n">vertices</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">,</span> <span class="s1">&#39;vertices and simpleces have to be a list of arrays even when only one formation&#39;</span> \
+                               <span class="s1">&#39;is passed&#39;</span>
+        <span class="k">assert</span> <span class="s1">&#39;DefaultBasement&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">formations</span><span class="p">,</span> <span class="s1">&#39;Remove DefaultBasement from the list of formations&#39;</span>
+
+        <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">simpleces</span><span class="p">,</span> <span class="n">formations</span><span class="p">):</span>
+            <span class="n">act</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="n">pol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_surface</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+            <span class="c1">#  self.s_rend_1.append(act)</span>
+            <span class="c1">#  self.s_mapper.append(map)</span>
+            <span class="c1">#  self.s_polydata.append(pol)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s_rend_1</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">AddActor</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">AddActor</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">AddActor</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">AddActor</span><span class="p">(</span><span class="n">act</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="vtkVisualization.set_interfaces"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.set_interfaces">[docs]</a>    <span class="k">def</span> <span class="nf">set_interfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create all the interfaces points and set them to the corresponding renders for their posterior visualization</span>
+<span class="sd">         with render_model</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_1</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_2</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_3</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_4</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()):</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_sphere</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+                                                    <span class="n">n_sphere</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_sphere</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+                                                    <span class="n">n_sphere</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_sphere</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+                                                    <span class="n">n_sphere</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_4</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_sphere</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+                                                    <span class="n">n_sphere</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="vtkVisualization.set_foliations"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.set_foliations">[docs]</a>    <span class="k">def</span> <span class="nf">set_foliations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create all the foliations and set them to the corresponding renders for their posterior visualization with</span>
+<span class="sd">        render_model</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_1</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_2</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_3</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_4</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()):</span>
+            <span class="n">index</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">row</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_foliation</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+                                                       <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">],</span>
+                                                       <span class="n">n_plane</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_foliation</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+                                                       <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">],</span>
+                                                       <span class="n">n_plane</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_foliation</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+                                                       <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">],</span>
+                                                       <span class="n">n_plane</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_4</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_foliation</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+                                                       <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">],</span>
+                                                       <span class="n">n_plane</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span></div>
+
+<div class="viewcode-block" id="vtkVisualization.sphereCallback"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.sphereCallback">[docs]</a>    <span class="k">def</span> <span class="nf">sphereCallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that rules what happend when we move an sphere. At the moment we update the other 3 renderers and</span>
+<span class="sd">        update the pandas data frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Resetting the xy camera when a sphere is moving to be able to change only 2D</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">GetFocalPoint</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">GetPosition</span><span class="p">()</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">SetPosition</span><span class="p">(</span><span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">fp</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">dist</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">SetViewUp</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+        <span class="c1"># Resetting the yz camera when a sphere is moving to be able to change only 2D</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">GetFocalPoint</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">GetPosition</span><span class="p">()</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">SetPosition</span><span class="p">(</span><span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">dist</span><span class="p">,</span> <span class="n">fp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">fp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">SetViewUp</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">Roll</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+
+        <span class="c1"># Resetting the xz camera when a sphere is moving to be able to change only 2D</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">GetFocalPoint</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">GetPosition</span><span class="p">()</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">SetPosition</span><span class="p">(</span><span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">dist</span><span class="p">,</span> <span class="n">fp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">SetViewUp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">Roll</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+
+        <span class="c1"># Get new position of the sphere</span>
+        <span class="n">new_center</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">GetCenter</span><span class="p">()</span>
+
+        <span class="c1"># Get which sphere we are moving</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">index</span>
+
+        <span class="c1"># Modify Pandas DataFrame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interface_modify</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="n">new_center</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Y</span><span class="o">=</span><span class="n">new_center</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Z</span><span class="o">=</span><span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="c1"># Check what render we are working with</span>
+        <span class="n">render</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">n_render</span>
+        <span class="n">r_f</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">r_f</span>
+
+        <span class="c1"># Update the other renderers</span>
+        <span class="k">if</span> <span class="n">render</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_1</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_sphere</span><span class="p">]</span><span class="o">.</span><span class="n">PlaceWidget</span><span class="p">(</span><span class="n">new_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">,</span>
+                                                    <span class="n">new_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">,</span>
+                                                    <span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">render</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_2</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_sphere</span><span class="p">]</span><span class="o">.</span><span class="n">PlaceWidget</span><span class="p">(</span><span class="n">new_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">,</span>
+                                                    <span class="n">new_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">,</span>
+                                                    <span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">render</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_3</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_sphere</span><span class="p">]</span><span class="o">.</span><span class="n">PlaceWidget</span><span class="p">(</span><span class="n">new_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">,</span>
+                                                    <span class="n">new_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">,</span>
+                                                    <span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">render</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_4</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_sphere</span><span class="p">]</span><span class="o">.</span><span class="n">PlaceWidget</span><span class="p">(</span><span class="n">new_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">,</span>
+                                                    <span class="n">new_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">,</span>
+                                                    <span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="vtkVisualization.planesCallback"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.planesCallback">[docs]</a>    <span class="k">def</span> <span class="nf">planesCallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Function that rules what happend when we move a plane. At the moment we update the other 3 renderers and</span>
+<span class="sd">        update the pandas data frame</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Resetting the xy camera when a sphere is moving to be able to change only 2D</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">GetFocalPoint</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">GetPosition</span><span class="p">()</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">SetPosition</span><span class="p">(</span><span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">fp</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">dist</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">SetViewUp</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+        <span class="c1"># Resetting the yz camera when a sphere is moving to be able to change only 2D</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">GetFocalPoint</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">GetPosition</span><span class="p">()</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">SetPosition</span><span class="p">(</span><span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">dist</span><span class="p">,</span> <span class="n">fp</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">fp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">SetViewUp</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">Roll</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+
+        <span class="c1"># Resetting the xz camera when a sphere is moving to be able to change only 2D</span>
+        <span class="n">fp</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">GetFocalPoint</span><span class="p">()</span>
+        <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">GetPosition</span><span class="p">()</span>
+        <span class="n">dist</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">p</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span> <span class="p">(</span><span class="n">p</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">fp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">SetPosition</span><span class="p">(</span><span class="n">fp</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fp</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">dist</span><span class="p">,</span> <span class="n">fp</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">SetViewUp</span><span class="p">(</span><span class="o">-</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">GetActiveCamera</span><span class="p">()</span><span class="o">.</span><span class="n">Roll</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+
+        <span class="c1"># Get new position of the plane and GxGyGz</span>
+        <span class="n">new_center</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">GetCenter</span><span class="p">()</span>
+        <span class="n">new_normal</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">GetNormal</span><span class="p">()</span>
+        <span class="c1"># Get which plane we are moving</span>
+        <span class="n">index</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">index</span>
+
+        <span class="n">new_source</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkPlaneSource</span><span class="p">()</span>
+        <span class="n">new_source</span><span class="o">.</span><span class="n">SetCenter</span><span class="p">(</span><span class="n">new_center</span><span class="p">)</span>
+        <span class="n">new_source</span><span class="o">.</span><span class="n">SetNormal</span><span class="p">(</span><span class="n">new_normal</span><span class="p">)</span>
+        <span class="n">new_source</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
+
+        <span class="c1"># Modify Pandas DataFrame</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliation_modify</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">X</span><span class="o">=</span><span class="n">new_center</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Y</span><span class="o">=</span><span class="n">new_center</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Z</span><span class="o">=</span><span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                                       <span class="n">G_x</span><span class="o">=</span><span class="n">new_normal</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">G_y</span><span class="o">=</span><span class="n">new_normal</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">G_z</span><span class="o">=</span><span class="n">new_normal</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+
+        <span class="c1"># Update the other renderers</span>
+        <span class="n">render</span> <span class="o">=</span> <span class="n">obj</span><span class="o">.</span><span class="n">n_render</span>
+
+        <span class="k">if</span> <span class="n">render</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_1</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_plane</span><span class="p">]</span><span class="o">.</span><span class="n">SetInputData</span><span class="p">(</span><span class="n">new_source</span><span class="o">.</span><span class="n">GetOutput</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_1</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_plane</span><span class="p">]</span><span class="o">.</span><span class="n">SetNormal</span><span class="p">(</span><span class="n">new_normal</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">render</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_2</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_plane</span><span class="p">]</span><span class="o">.</span><span class="n">SetInputData</span><span class="p">(</span><span class="n">new_source</span><span class="o">.</span><span class="n">GetOutput</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_2</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_plane</span><span class="p">]</span><span class="o">.</span><span class="n">SetNormal</span><span class="p">(</span><span class="n">new_normal</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">render</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_3</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_plane</span><span class="p">]</span><span class="o">.</span><span class="n">SetInputData</span><span class="p">(</span><span class="n">new_source</span><span class="o">.</span><span class="n">GetOutput</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_3</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_plane</span><span class="p">]</span><span class="o">.</span><span class="n">SetNormal</span><span class="p">(</span><span class="n">new_normal</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">render</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_4</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_plane</span><span class="p">]</span><span class="o">.</span><span class="n">SetInputData</span><span class="p">(</span><span class="n">new_source</span><span class="o">.</span><span class="n">GetOutput</span><span class="p">())</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_4</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_plane</span><span class="p">]</span><span class="o">.</span><span class="n">SetNormal</span><span class="p">(</span><span class="n">new_normal</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="vtkVisualization.create_ren_list"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_ren_list">[docs]</a>    <span class="k">def</span> <span class="nf">create_ren_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create a list of the 4 renderers we use. One general view and 3 cartersian projections</span>
+<span class="sd">        Returns:</span>
+<span class="sd">            list: list of renderers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># viewport dimensions setup</span>
+        <span class="n">xmins</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">,</span> <span class="mf">0.6</span><span class="p">]</span>
+        <span class="n">xmaxs</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.6</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">ymins</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.33</span><span class="p">,</span> <span class="mf">0.66</span><span class="p">]</span>
+        <span class="n">ymaxs</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.33</span><span class="p">,</span> <span class="mf">0.66</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="c1"># create list of renderers, set vieport values</span>
+        <span class="n">ren_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_ren</span><span class="p">):</span>
+            <span class="c1"># append each renderer to list of renderers</span>
+            <span class="n">ren_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">vtk</span><span class="o">.</span><span class="n">vtkRenderer</span><span class="p">())</span>
+            <span class="c1"># add each renderer to window</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">renwin</span><span class="o">.</span><span class="n">AddRenderer</span><span class="p">(</span><span class="n">ren_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="c1"># set viewport for each renderer</span>
+            <span class="n">ren_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">SetViewport</span><span class="p">(</span><span class="n">xmins</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ymins</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">xmaxs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ymaxs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+
+        <span class="k">return</span> <span class="n">ren_list</span></div>
+
+<div class="viewcode-block" id="vtkVisualization.color_lot_create"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.color_lot_create">[docs]</a>    <span class="k">def</span> <span class="nf">color_lot_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">cd_rgb</span><span class="o">=</span><span class="n">color_dict_rgb</span><span class="p">,</span> <span class="n">c_names</span><span class="o">=</span><span class="n">color_names</span><span class="p">,</span> <span class="n">c_subname</span><span class="o">=</span><span class="s2">&quot;400&quot;</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Set the color for each layer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">c_lot</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">get_formations</span><span class="p">()):</span>
+            <span class="n">c_lot</span><span class="p">[</span><span class="n">fmt</span><span class="p">]</span> <span class="o">=</span> <span class="n">cd_rgb</span><span class="p">[</span><span class="n">c_names</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="n">c_subname</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">c_lot</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_cameras</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the 4 cameras for each renderer</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">_e</span> <span class="o">=</span> <span class="n">extent</span>
+        <span class="n">_e_dx</span> <span class="o">=</span> <span class="n">_e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">_e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">_e_dy</span> <span class="o">=</span> <span class="n">_e</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">_e</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">_e_dz</span> <span class="o">=</span> <span class="n">_e</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">_e</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+        <span class="n">_e_d_avrg</span> <span class="o">=</span> <span class="p">(</span><span class="n">_e_dx</span> <span class="o">+</span> <span class="n">_e_dy</span> <span class="o">+</span> <span class="n">_e_dz</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span>
+        <span class="n">_e_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">_e</span><span class="p">)</span>
+
+        <span class="c1"># General camera</span>
+        <span class="n">model_cam</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkCamera</span><span class="p">()</span>
+        <span class="n">model_cam</span><span class="o">.</span><span class="n">SetPosition</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="n">_e_max</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_e</span><span class="p">[</span><span class="n">_e_max</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">,</span> <span class="n">_e</span><span class="p">[</span><span class="n">_e_max</span><span class="p">]</span> <span class="o">*</span> <span class="mi">5</span><span class="p">)</span>
+        <span class="n">model_cam</span><span class="o">.</span><span class="n">SetFocalPoint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">_e_dx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">+</span> <span class="n">_e_dy</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                                <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span> <span class="o">+</span> <span class="n">_e_dz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">model_cam</span><span class="o">.</span><span class="n">SetViewUp</span><span class="p">(</span><span class="o">-</span><span class="mf">0.239</span><span class="p">,</span> <span class="mf">0.155</span><span class="p">,</span> <span class="mf">0.958</span><span class="p">)</span>
+
+
+        <span class="c1"># XY camera RED</span>
+        <span class="n">xy_cam</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkCamera</span><span class="p">()</span>
+
+        <span class="n">xy_cam</span><span class="o">.</span><span class="n">SetPosition</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">_e_dx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                           <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">+</span> <span class="n">_e_dy</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                           <span class="n">_e</span><span class="p">[</span><span class="n">_e_max</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">)</span>
+
+        <span class="n">xy_cam</span><span class="o">.</span><span class="n">SetFocalPoint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">_e_dx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                             <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">+</span> <span class="n">_e_dy</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                             <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span> <span class="o">+</span> <span class="n">_e_dz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="c1"># YZ camera GREEN</span>
+        <span class="n">yz_cam</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkCamera</span><span class="p">()</span>
+        <span class="n">yz_cam</span><span class="o">.</span><span class="n">SetPosition</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="n">_e_max</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span>
+                           <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">+</span> <span class="n">_e_dy</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                           <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span> <span class="o">+</span> <span class="n">_e_dz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">yz_cam</span><span class="o">.</span><span class="n">SetFocalPoint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">_e_dx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                             <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">+</span> <span class="n">_e_dy</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                             <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span> <span class="o">+</span> <span class="n">_e_dz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">yz_cam</span><span class="o">.</span><span class="n">SetViewUp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">yz_cam</span><span class="o">.</span><span class="n">Roll</span><span class="p">(</span><span class="mi">90</span><span class="p">)</span>
+
+        <span class="c1"># XZ camera BLUE</span>
+        <span class="n">xz_cam</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkCamera</span><span class="p">()</span>
+        <span class="n">xz_cam</span><span class="o">.</span><span class="n">SetPosition</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">_e_dx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                           <span class="o">-</span> <span class="n">_e</span><span class="p">[</span><span class="n">_e_max</span><span class="p">]</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span>
+                           <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span> <span class="o">+</span> <span class="n">_e_dz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="n">xz_cam</span><span class="o">.</span><span class="n">SetFocalPoint</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">])</span> <span class="o">+</span> <span class="n">_e_dx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                             <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">2</span><span class="p">:</span><span class="mi">4</span><span class="p">])</span> <span class="o">+</span> <span class="n">_e_dy</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                             <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">_e</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span> <span class="o">+</span> <span class="n">_e_dz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">xz_cam</span><span class="o">.</span><span class="n">SetViewUp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">xz_cam</span><span class="o">.</span><span class="n">Roll</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># camera position debugging</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RED XY:&quot;</span><span class="p">,</span> <span class="n">xy_cam</span><span class="o">.</span><span class="n">GetPosition</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;RED FP:&quot;</span><span class="p">,</span> <span class="n">xy_cam</span><span class="o">.</span><span class="n">GetFocalPoint</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GREEN YZ:&quot;</span><span class="p">,</span> <span class="n">yz_cam</span><span class="o">.</span><span class="n">GetPosition</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;GREEN FP:&quot;</span><span class="p">,</span> <span class="n">yz_cam</span><span class="o">.</span><span class="n">GetFocalPoint</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;BLUE XZ:&quot;</span><span class="p">,</span> <span class="n">xz_cam</span><span class="o">.</span><span class="n">GetPosition</span><span class="p">())</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;BLUE FP:&quot;</span><span class="p">,</span> <span class="n">xz_cam</span><span class="o">.</span><span class="n">GetFocalPoint</span><span class="p">())</span>
+
+        <span class="k">return</span> <span class="p">[</span><span class="n">model_cam</span><span class="p">,</span> <span class="n">xy_cam</span><span class="p">,</span> <span class="n">yz_cam</span><span class="p">,</span> <span class="n">xz_cam</span><span class="p">]</span>
+
+<div class="viewcode-block" id="vtkVisualization.set_camera_backcolor"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.set_camera_backcolor">[docs]</a>    <span class="k">def</span> <span class="nf">set_camera_backcolor</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        define background colors of the renderers</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">ren_color</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">66</span> <span class="o">/</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">66</span> <span class="o">/</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">66</span> <span class="o">/</span> <span class="mi">250</span><span class="p">),</span> <span class="p">(</span><span class="mi">60</span> <span class="o">/</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">250</span><span class="p">),</span> <span class="p">(</span><span class="mi">60</span> <span class="o">/</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">250</span><span class="p">),</span>
+                     <span class="p">(</span><span class="mi">60</span> <span class="o">/</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">60</span> <span class="o">/</span> <span class="mi">250</span><span class="p">)]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_ren</span><span class="p">):</span>
+            <span class="c1"># set active camera for each renderer</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">SetActiveCamera</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">camera_list</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="c1"># set background color for each renderer</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">SetBackground</span><span class="p">(</span><span class="n">ren_color</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">ren_color</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">ren_color</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">2</span><span class="p">])</span></div>
+
+    <span class="k">def</span> <span class="nf">_create_axes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">camera</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">tick_vis</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Create the axes boxes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">cube_axes_actor</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkCubeAxesActor</span><span class="p">()</span>
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">SetBounds</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">)</span>
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">SetCamera</span><span class="p">(</span><span class="n">camera</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">GetAxisOrigin</span><span class="p">())</span>
+
+        <span class="c1"># set axes and label colors</span>
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">GetTitleTextProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">GetLabelTextProperty</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">GetTitleTextProperty</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">GetLabelTextProperty</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">)</span>
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">GetTitleTextProperty</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">GetLabelTextProperty</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">)</span>
+
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">DrawXGridlinesOn</span><span class="p">()</span>
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">DrawYGridlinesOn</span><span class="p">()</span>
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">DrawZGridlinesOn</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">tick_vis</span><span class="p">:</span>
+            <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">XAxisMinorTickVisibilityOff</span><span class="p">()</span>
+            <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">YAxisMinorTickVisibilityOff</span><span class="p">()</span>
+            <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">ZAxisMinorTickVisibilityOff</span><span class="p">()</span>
+
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">SetXTitle</span><span class="p">(</span><span class="s2">&quot;X&quot;</span><span class="p">)</span>
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">SetYTitle</span><span class="p">(</span><span class="s2">&quot;Y&quot;</span><span class="p">)</span>
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">SetZTitle</span><span class="p">(</span><span class="s2">&quot;Z&quot;</span><span class="p">)</span>
+
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">SetXAxisLabelVisibility</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">SetYAxisLabelVisibility</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">SetZAxisLabelVisibility</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># only plot grid lines furthest from viewpoint</span>
+        <span class="c1"># ensure platform compatibility for the grid line options</span>
+        <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
+            <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">SetGridLineLocation</span><span class="p">(</span><span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">VTK_GRID_LINES_FURTHEST</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># rather use elif == &quot;linux&quot; ? but what about other platforms</span>
+            <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">SetGridLineLocation</span><span class="p">(</span><span class="n">vtk</span><span class="o">.</span><span class="n">VTK_GRID_LINES_FURTHEST</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">cube_axes_actor</span>
+
+<div class="viewcode-block" id="vtkVisualization.export_vtk_rectilinear"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.export_vtk_rectilinear">[docs]</a>    <span class="k">def</span> <span class="nf">export_vtk_rectilinear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Export data to a vtk file for posterior visualizations</span>
+<span class="sd">        Args:</span>
+<span class="sd">            geo_data(gempy.InputData): All values of a DataManagement object</span>
+<span class="sd">            block(numpy.array): 3D array containing the lithology block</span>
+<span class="sd">            path (str): path to the location of the vtk</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="kn">from</span> <span class="nn">evtk.hl</span> <span class="k">import</span> <span class="n">gridToVTK</span>
+
+        <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+        <span class="kn">import</span> <span class="nn">random</span> <span class="k">as</span> <span class="nn">rnd</span>
+
+        <span class="c1"># Dimensions</span>
+
+        <span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span>
+
+        <span class="n">lx</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">ly</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">lz</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+
+        <span class="n">dx</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dz</span> <span class="o">=</span> <span class="n">lx</span> <span class="o">/</span> <span class="n">nx</span><span class="p">,</span> <span class="n">ly</span> <span class="o">/</span> <span class="n">ny</span><span class="p">,</span> <span class="n">lz</span> <span class="o">/</span> <span class="n">nz</span>
+
+        <span class="n">ncells</span> <span class="o">=</span> <span class="n">nx</span> <span class="o">*</span> <span class="n">ny</span> <span class="o">*</span> <span class="n">nz</span>
+
+        <span class="n">npoints</span> <span class="o">=</span> <span class="p">(</span><span class="n">nx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">ny</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">nz</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+
+        <span class="c1"># Coordinates</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">lx</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dx</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+
+        <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ly</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dy</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+
+        <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">lz</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">dz</span><span class="p">,</span> <span class="n">dz</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">)</span>
+
+        <span class="c1"># Variables</span>
+
+        <span class="n">lith</span> <span class="o">=</span> <span class="n">block</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">nx</span><span class="p">,</span> <span class="n">ny</span><span class="p">,</span> <span class="n">nz</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
+            <span class="n">path</span> <span class="o">=</span> <span class="s2">&quot;./Lithology_block&quot;</span>
+
+        <span class="n">gridToVTK</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">cellData</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Lithology&quot;</span><span class="p">:</span> <span class="n">lith</span><span class="p">})</span></div></div>
+
 </pre></div>
 
           </div>

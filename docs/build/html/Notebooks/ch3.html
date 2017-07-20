@@ -49,10 +49,40 @@
 <p>Here we will see how we can interpolate faults networks and how we can
 use them to offset the lithological model. For this example we will use
 the example of the first chapter adding a fault in the middle;</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData</span> <span class="n">at</span> <span class="mh">0x7f6d340feeb8</span><span class="o">&gt;</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># These two lines are necessary only if gempy is not installed</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../&quot;</span><span class="p">)</span>
+
+<span class="c1"># Importing gempy</span>
+
+
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="kn">as</span> <span class="nn">gp</span>
+
+<span class="c1"># Embedding matplotlib figures into the notebooks</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># Aux imports</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s1">&#39;../input_data/BasicFault.pickle&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData2D</span> <span class="n">at</span> <span class="mh">0x7fde5748a160</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <img alt="../_images/ch3_3_1.png" src="../_images/ch3_3_1.png" />
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_data_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;fault&quot;</span><span class="p">:</span><span class="s1">&#39;MainFault&#39;</span><span class="p">,</span>
+                              <span class="s2">&quot;Rest&quot;</span><span class="p">:(</span><span class="s1">&#39;SecondaryReservoir&#39;</span><span class="p">,</span><span class="s1">&#39;Seal&#39;</span><span class="p">,</span><span class="s1">&#39;Reservoir&#39;</span><span class="p">,</span> <span class="s1">&#39;NonReservoirDeep&#39;</span><span class="p">)},</span>
+                   <span class="n">order_series</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fault&quot;</span><span class="p">,</span><span class="s2">&quot;Rest&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_raw_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
 <div>
 <style>
     .dataframe thead tr:only-child th {
@@ -110,6 +140,22 @@ the example of the first chapter adding a fault in the middle;</p>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
+      <td>1000.0</td>
+      <td>1000.0</td>
+      <td>-1000.0</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>MainFault</td>
+      <td>True</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
       <td>1200.0</td>
       <td>1000.0</td>
       <td>-400.0</td>
@@ -122,7 +168,7 @@ the example of the first chapter adding a fault in the middle;</p>
       <td>fault</td>
     </tr>
     <tr>
-      <th>2</th>
+      <th>3</th>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -138,7 +184,7 @@ the example of the first chapter adding a fault in the middle;</p>
       <td>fault</td>
     </tr>
     <tr>
-      <th>3</th>
+      <th>4</th>
       <td>NaN</td>
       <td>NaN</td>
       <td>NaN</td>
@@ -153,41 +199,45 @@ the example of the first chapter adding a fault in the middle;</p>
       <td>NaN</td>
       <td>fault</td>
     </tr>
-    <tr>
-      <th>4</th>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>1000.0</td>
-      <td>1000.0</td>
-      <td>-1000.0</td>
-      <td>NaN</td>
-      <td>NaN</td>
-      <td>MainFault</td>
-      <td>True</td>
-      <td>1</td>
-      <td>NaN</td>
-      <td>fault</td>
-    </tr>
   </tbody>
 </table>
-</div><div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">I</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">setting</span>
-<span class="n">float32</span>
-<span class="n">I</span> <span class="n">am</span> <span class="n">here</span>
-<span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</div><div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData</span> <span class="n">at</span> <span class="mh">0x7f6d213210f0</span><span class="o">&gt;</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_8_1.png" src="../_images/ch3_8_1.png" />
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData</span> <span class="n">at</span> <span class="mh">0x7f6d2164ab00</span><span class="o">&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([[</span><span class="o">-</span><span class="mf">0.55960631</span><span class="p">,</span>  <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.</span>        <span class="p">],</span>
+       <span class="p">[</span> <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.22054681</span><span class="p">,</span>  <span class="mf">0.41454515</span><span class="p">,</span>  <span class="mf">0.30080083</span><span class="p">,</span>  <span class="mf">0.43699819</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_9_1.png" src="../_images/ch3_9_1.png" />
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_potential_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">1</span><span class="p">,:],</span> <span class="mi">25</span><span class="p">,</span> <span class="n">plot_data</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch3_9_0.png" src="../_images/ch3_9_0.png" />
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">0</span><span class="p">,:],</span> <span class="mi">25</span><span class="p">,</span> <span class="n">plot_data</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData2D</span> <span class="n">at</span> <span class="mh">0x7fddf1e44128</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<img alt="../_images/ch3_10_1.png" src="../_images/ch3_10_1.png" />
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">2</span><span class="p">,:],</span> <span class="mi">25</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData2D</span> <span class="n">at</span> <span class="mh">0x7fddf172e748</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<img alt="../_images/ch3_11_1.png" src="../_images/ch3_11_1.png" />
 </div>
 
 

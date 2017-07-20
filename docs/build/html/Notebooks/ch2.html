@@ -50,11 +50,33 @@
 <h2>Data Management<a class="headerlink" href="#data-management" title="Permalink to this headline">¶</a></h2>
 <p>In this example we will show how we can import data from a csv and
 generate a model with several depositional series.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># These two lines are necessary only if gempy is not installed</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../&quot;</span><span class="p">)</span>
+
+<span class="c1"># Importing gempy</span>
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="kn">as</span> <span class="nn">gp</span>
+
+<span class="c1"># Embedding matplotlib figures into the notebooks</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># Aux imports</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
 <p>In this case instead loading a geo_data object directly, we will create
 one. The main atributes we need to pass are: - Extent: X min, X max, Y
 min, Y max, Z min, Z max - Resolution: X,Y,Z</p>
 <p>Additionaly we can pass the address to csv files (GeoModeller3D format)
 with the data.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Importing the data from csv files and settign extent and resolution</span>
+<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">([</span><span class="mi">696000</span><span class="p">,</span><span class="mi">747000</span><span class="p">,</span><span class="mi">6863000</span><span class="p">,</span><span class="mi">6950000</span><span class="p">,</span><span class="o">-</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">200</span><span class="p">],[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+                         <span class="n">path_f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/a_Foliations.csv&quot;</span><span class="p">,</span>
+                         <span class="n">path_i</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/a_Points.csv&quot;</span><span class="p">)</span>
+
+<span class="n">gp</span><span class="o">.</span><span class="n">get_raw_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="s1">&#39;interfaces&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
 <div>
 <style>
     .dataframe thead tr:only-child th {
@@ -130,8 +152,180 @@ with the data.</p>
   </tbody>
 </table>
 </div><p>You can visualize the points in 3D (work in progress)</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_data_3D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mf">739426.6276840001</span> <span class="mf">6891935.451483999</span> <span class="mf">75.422691</span>
+<span class="mf">739426.6276840001</span> <span class="mf">6891935.451483999</span> <span class="mf">75.422691</span>
+<span class="mf">739426.6276840001</span> <span class="mf">6891935.451483999</span> <span class="mf">75.422691</span>
+<span class="mf">739426.6276840001</span> <span class="mf">6891935.451483999</span> <span class="mf">75.422691</span>
+<span class="mf">732683.469</span> <span class="mf">6882332.75</span> <span class="mf">481.71195199999994</span>
+<span class="mf">732683.469</span> <span class="mf">6882332.75</span> <span class="mf">481.71195199999994</span>
+<span class="mf">732683.469</span> <span class="mf">6882332.75</span> <span class="mf">481.71195199999994</span>
+<span class="mf">732683.469</span> <span class="mf">6882332.75</span> <span class="mf">481.71195199999994</span>
+<span class="mf">730627.5315</span> <span class="mf">6880472.5</span> <span class="mf">477.40265800000003</span>
+<span class="mf">730627.5315</span> <span class="mf">6880472.5</span> <span class="mf">477.40265800000003</span>
+<span class="mf">730627.5315</span> <span class="mf">6880472.5</span> <span class="mf">477.40265800000003</span>
+<span class="mf">730627.5315</span> <span class="mf">6880472.5</span> <span class="mf">477.40265800000003</span>
+<span class="mf">728767.4065</span> <span class="mf">6878759.25</span> <span class="mf">470.031623</span>
+<span class="mf">728767.4065</span> <span class="mf">6878759.25</span> <span class="mf">470.031623</span>
+<span class="mf">728767.4065</span> <span class="mf">6878759.25</span> <span class="mf">470.031623</span>
+<span class="mf">728767.4065</span> <span class="mf">6878759.25</span> <span class="mf">470.031623</span>
+<span class="mf">728571.594</span> <span class="mf">6879934.25</span> <span class="mf">472.536776</span>
+<span class="mf">728571.594</span> <span class="mf">6879934.25</span> <span class="mf">472.536776</span>
+<span class="mf">728571.594</span> <span class="mf">6879934.25</span> <span class="mf">472.536776</span>
+<span class="mf">728571.594</span> <span class="mf">6879934.25</span> <span class="mf">472.536776</span>
+<span class="mf">729256.9065</span> <span class="mf">6882724.5</span> <span class="mf">471.72292400000003</span>
+<span class="mf">729256.9065</span> <span class="mf">6882724.5</span> <span class="mf">471.72292400000003</span>
+<span class="mf">729256.9065</span> <span class="mf">6882724.5</span> <span class="mf">471.72292400000003</span>
+<span class="mf">729256.9065</span> <span class="mf">6882724.5</span> <span class="mf">471.72292400000003</span>
+<span class="mf">727739.4375</span> <span class="mf">6884242.0</span> <span class="mf">474.25872599999997</span>
+<span class="mf">727739.4375</span> <span class="mf">6884242.0</span> <span class="mf">474.25872599999997</span>
+<span class="mf">727739.4375</span> <span class="mf">6884242.0</span> <span class="mf">474.25872599999997</span>
+<span class="mf">727739.4375</span> <span class="mf">6884242.0</span> <span class="mf">474.25872599999997</span>
+<span class="mf">724802.4065</span> <span class="mf">6883312.0</span> <span class="mf">473.707869</span>
+<span class="mf">724802.4065</span> <span class="mf">6883312.0</span> <span class="mf">473.707869</span>
+<span class="mf">724802.4065</span> <span class="mf">6883312.0</span> <span class="mf">473.707869</span>
+<span class="mf">724802.4065</span> <span class="mf">6883312.0</span> <span class="mf">473.707869</span>
+<span class="mf">722403.813</span> <span class="mf">6880913.25</span> <span class="mf">470.70706500000006</span>
+<span class="mf">722403.813</span> <span class="mf">6880913.25</span> <span class="mf">470.70706500000006</span>
+<span class="mf">722403.813</span> <span class="mf">6880913.25</span> <span class="mf">470.70706500000006</span>
+<span class="mf">722403.813</span> <span class="mf">6880913.25</span> <span class="mf">470.70706500000006</span>
+<span class="mf">721229.0005</span> <span class="mf">6880766.25</span> <span class="mf">477.680894</span>
+<span class="mf">721229.0005</span> <span class="mf">6880766.25</span> <span class="mf">477.680894</span>
+<span class="mf">721229.0005</span> <span class="mf">6880766.25</span> <span class="mf">477.680894</span>
+<span class="mf">721229.0005</span> <span class="mf">6880766.25</span> <span class="mf">477.680894</span>
+<span class="mf">720690.563</span> <span class="mf">6882822.25</span> <span class="mf">489.90942300000006</span>
+<span class="mf">720690.563</span> <span class="mf">6882822.25</span> <span class="mf">489.90942300000006</span>
+<span class="mf">720690.563</span> <span class="mf">6882822.25</span> <span class="mf">489.90942300000006</span>
+<span class="mf">720690.563</span> <span class="mf">6882822.25</span> <span class="mf">489.90942300000006</span>
+<span class="mf">718928.344</span> <span class="mf">6883605.5</span> <span class="mf">509.462245</span>
+<span class="mf">718928.344</span> <span class="mf">6883605.5</span> <span class="mf">509.462245</span>
+<span class="mf">718928.344</span> <span class="mf">6883605.5</span> <span class="mf">509.462245</span>
+<span class="mf">718928.344</span> <span class="mf">6883605.5</span> <span class="mf">509.462245</span>
+<span class="mf">715991.2815</span> <span class="mf">6882773.25</span> <span class="mf">505.16586399999994</span>
+<span class="mf">715991.2815</span> <span class="mf">6882773.25</span> <span class="mf">505.16586399999994</span>
+<span class="mf">715991.2815</span> <span class="mf">6882773.25</span> <span class="mf">505.16586399999994</span>
+<span class="mf">715991.2815</span> <span class="mf">6882773.25</span> <span class="mf">505.16586399999994</span>
+<span class="mf">712907.3755</span> <span class="mf">6880766.25</span> <span class="mf">512.582136</span>
+<span class="mf">712907.3755</span> <span class="mf">6880766.25</span> <span class="mf">512.582136</span>
+<span class="mf">712907.3755</span> <span class="mf">6880766.25</span> <span class="mf">512.582136</span>
+<span class="mf">712907.3755</span> <span class="mf">6880766.25</span> <span class="mf">512.582136</span>
+<span class="mf">710459.844</span> <span class="mf">6880521.5</span> <span class="mf">511.839758</span>
+<span class="mf">710459.844</span> <span class="mf">6880521.5</span> <span class="mf">511.839758</span>
+<span class="mf">710459.844</span> <span class="mf">6880521.5</span> <span class="mf">511.839758</span>
+<span class="mf">710459.844</span> <span class="mf">6880521.5</span> <span class="mf">511.839758</span>
+<span class="mf">709970.344</span> <span class="mf">6882724.5</span> <span class="mf">532.9679150000001</span>
+<span class="mf">709970.344</span> <span class="mf">6882724.5</span> <span class="mf">532.9679150000001</span>
+<span class="mf">709970.344</span> <span class="mf">6882724.5</span> <span class="mf">532.9679150000001</span>
+<span class="mf">709970.344</span> <span class="mf">6882724.5</span> <span class="mf">532.9679150000001</span>
+<span class="mf">709089.2505</span> <span class="mf">6883312.0</span> <span class="mf">519.457428</span>
+<span class="mf">709089.2505</span> <span class="mf">6883312.0</span> <span class="mf">519.457428</span>
+<span class="mf">709089.2505</span> <span class="mf">6883312.0</span> <span class="mf">519.457428</span>
+<span class="mf">709089.2505</span> <span class="mf">6883312.0</span> <span class="mf">519.457428</span>
+<span class="mf">705858.5005</span> <span class="mf">6880032.25</span> <span class="mf">494.307044</span>
+<span class="mf">705858.5005</span> <span class="mf">6880032.25</span> <span class="mf">494.307044</span>
+<span class="mf">705858.5005</span> <span class="mf">6880032.25</span> <span class="mf">494.307044</span>
+<span class="mf">705858.5005</span> <span class="mf">6880032.25</span> <span class="mf">494.307044</span>
+<span class="mf">734592.563</span> <span class="mf">6882039.25</span> <span class="mf">487.287083</span>
+<span class="mf">734592.563</span> <span class="mf">6882039.25</span> <span class="mf">487.287083</span>
+<span class="mf">734592.563</span> <span class="mf">6882039.25</span> <span class="mf">487.287083</span>
+<span class="mf">734592.563</span> <span class="mf">6882039.25</span> <span class="mf">487.287083</span>
+<span class="mf">701844.5315</span> <span class="mf">6875137.25</span> <span class="mf">476.658525</span>
+<span class="mf">701844.5315</span> <span class="mf">6875137.25</span> <span class="mf">476.658525</span>
+<span class="mf">701844.5315</span> <span class="mf">6875137.25</span> <span class="mf">476.658525</span>
+<span class="mf">701844.5315</span> <span class="mf">6875137.25</span> <span class="mf">476.658525</span>
+<span class="mf">735082.063</span> <span class="mf">6879102.25</span> <span class="mf">480.551436</span>
+<span class="mf">735082.063</span> <span class="mf">6879102.25</span> <span class="mf">480.551436</span>
+<span class="mf">735082.063</span> <span class="mf">6879102.25</span> <span class="mf">480.551436</span>
+<span class="mf">735082.063</span> <span class="mf">6879102.25</span> <span class="mf">480.551436</span>
+<span class="mf">734151.969</span> <span class="mf">6874304.75</span> <span class="mf">448.179887</span>
+<span class="mf">734151.969</span> <span class="mf">6874304.75</span> <span class="mf">448.179887</span>
+<span class="mf">734151.969</span> <span class="mf">6874304.75</span> <span class="mf">448.179887</span>
+<span class="mf">734151.969</span> <span class="mf">6874304.75</span> <span class="mf">448.179887</span>
+<span class="mf">717311.112372</span> <span class="mf">6891940.971392999</span> <span class="o">-</span><span class="mf">1497.488309</span>
+<span class="mf">717311.112372</span> <span class="mf">6891940.971392999</span> <span class="o">-</span><span class="mf">1497.488309</span>
+<span class="mf">717311.112372</span> <span class="mf">6891940.971392999</span> <span class="o">-</span><span class="mf">1497.488309</span>
+<span class="mf">717311.112372</span> <span class="mf">6891940.971392999</span> <span class="o">-</span><span class="mf">1497.488309</span>
+<span class="mf">723415.321182</span> <span class="mf">6891939.447817</span> <span class="o">-</span><span class="mf">5298.1543090000005</span>
+<span class="mf">723415.321182</span> <span class="mf">6891939.447817</span> <span class="o">-</span><span class="mf">5298.1543090000005</span>
+<span class="mf">723415.321182</span> <span class="mf">6891939.447817</span> <span class="o">-</span><span class="mf">5298.1543090000005</span>
+<span class="mf">723415.321182</span> <span class="mf">6891939.447817</span> <span class="o">-</span><span class="mf">5298.1543090000005</span>
+<span class="mf">742907.686575</span> <span class="mf">6891934.582632001</span> <span class="o">-</span><span class="mf">2786.869309</span>
+<span class="mf">742907.686575</span> <span class="mf">6891934.582632001</span> <span class="o">-</span><span class="mf">2786.869309</span>
+<span class="mf">742907.686575</span> <span class="mf">6891934.582632001</span> <span class="o">-</span><span class="mf">2786.869309</span>
+<span class="mf">742907.686575</span> <span class="mf">6891934.582632001</span> <span class="o">-</span><span class="mf">2786.869309</span>
+<span class="mf">712584.536312</span> <span class="mf">6891942.15112</span> <span class="o">-</span><span class="mf">582.769334</span>
+<span class="mf">712584.536312</span> <span class="mf">6891942.15112</span> <span class="o">-</span><span class="mf">582.769334</span>
+<span class="mf">712584.536312</span> <span class="mf">6891942.15112</span> <span class="o">-</span><span class="mf">582.769334</span>
+<span class="mf">712584.536312</span> <span class="mf">6891942.15112</span> <span class="o">-</span><span class="mf">582.769334</span>
+<span class="mf">724309.279198</span> <span class="mf">6905712.031145</span> <span class="o">-</span><span class="mf">3763.8629950000004</span>
+<span class="mf">724309.279198</span> <span class="mf">6905712.031145</span> <span class="o">-</span><span class="mf">3763.8629950000004</span>
+<span class="mf">724309.279198</span> <span class="mf">6905712.031145</span> <span class="o">-</span><span class="mf">3763.8629950000004</span>
+<span class="mf">724309.279198</span> <span class="mf">6905712.031145</span> <span class="o">-</span><span class="mf">3763.8629950000004</span>
+<span class="mf">728653.9332569999</span> <span class="mf">6905714.891064</span> <span class="o">-</span><span class="mf">4196.807995</span>
+<span class="mf">728653.9332569999</span> <span class="mf">6905714.891064</span> <span class="o">-</span><span class="mf">4196.807995</span>
+<span class="mf">728653.9332569999</span> <span class="mf">6905714.891064</span> <span class="o">-</span><span class="mf">4196.807995</span>
+<span class="mf">728653.9332569999</span> <span class="mf">6905714.891064</span> <span class="o">-</span><span class="mf">4196.807995</span>
+<span class="mf">732788.182361</span> <span class="mf">6905717.612482001</span> <span class="o">-</span><span class="mf">1680.306995</span>
+<span class="mf">732788.182361</span> <span class="mf">6905717.612482001</span> <span class="o">-</span><span class="mf">1680.306995</span>
+<span class="mf">732788.182361</span> <span class="mf">6905717.612482001</span> <span class="o">-</span><span class="mf">1680.306995</span>
+<span class="mf">732788.182361</span> <span class="mf">6905717.612482001</span> <span class="o">-</span><span class="mf">1680.306995</span>
+<span class="mf">727261.874621</span> <span class="mf">6877214.496202</span> <span class="o">-</span><span class="mf">5666.992176</span>
+<span class="mf">727261.874621</span> <span class="mf">6877214.496202</span> <span class="o">-</span><span class="mf">5666.992176</span>
+<span class="mf">727261.874621</span> <span class="mf">6877214.496202</span> <span class="o">-</span><span class="mf">5666.992176</span>
+<span class="mf">727261.874621</span> <span class="mf">6877214.496202</span> <span class="o">-</span><span class="mf">5666.992176</span>
+<span class="mf">718902.5312979999</span> <span class="mf">6900478.748653</span> <span class="o">-</span><span class="mf">1882.8952969999998</span>
+<span class="mf">718902.5312979999</span> <span class="mf">6900478.748653</span> <span class="o">-</span><span class="mf">1882.8952969999998</span>
+<span class="mf">718902.5312979999</span> <span class="mf">6900478.748653</span> <span class="o">-</span><span class="mf">1882.8952969999998</span>
+<span class="mf">718902.5312979999</span> <span class="mf">6900478.748653</span> <span class="o">-</span><span class="mf">1882.8952969999998</span>
+<span class="mf">733335.732778</span> <span class="mf">6903150.931884</span> <span class="o">-</span><span class="mf">1538.6292970000002</span>
+<span class="mf">733335.732778</span> <span class="mf">6903150.931884</span> <span class="o">-</span><span class="mf">1538.6292970000002</span>
+<span class="mf">733335.732778</span> <span class="mf">6903150.931884</span> <span class="o">-</span><span class="mf">1538.6292970000002</span>
+<span class="mf">733335.732778</span> <span class="mf">6903150.931884</span> <span class="o">-</span><span class="mf">1538.6292970000002</span>
+<span class="mf">730820.452963</span> <span class="mf">6902599.428688001</span> <span class="o">-</span><span class="mf">3825.776297</span>
+<span class="mf">730820.452963</span> <span class="mf">6902599.428688001</span> <span class="o">-</span><span class="mf">3825.776297</span>
+<span class="mf">730820.452963</span> <span class="mf">6902599.428688001</span> <span class="o">-</span><span class="mf">3825.776297</span>
+<span class="mf">730820.452963</span> <span class="mf">6902599.428688001</span> <span class="o">-</span><span class="mf">3825.776297</span>
+<span class="mf">725461.656</span> <span class="mf">6915002.0</span> <span class="mf">510.686328</span>
+<span class="mf">725461.656</span> <span class="mf">6915002.0</span> <span class="mf">510.686328</span>
+<span class="mf">725461.656</span> <span class="mf">6915002.0</span> <span class="mf">510.686328</span>
+<span class="mf">725461.656</span> <span class="mf">6915002.0</span> <span class="mf">510.686328</span>
+<span class="mf">726102.312</span> <span class="mf">6917775.5</span> <span class="mf">499.040304</span>
+<span class="mf">726102.312</span> <span class="mf">6917775.5</span> <span class="mf">499.040304</span>
+<span class="mf">726102.312</span> <span class="mf">6917775.5</span> <span class="mf">499.040304</span>
+<span class="mf">726102.312</span> <span class="mf">6917775.5</span> <span class="mf">499.040304</span>
+<span class="mf">727390.156</span> <span class="mf">6913486.75</span> <span class="mf">517.5692429999999</span>
+<span class="mf">727390.156</span> <span class="mf">6913486.75</span> <span class="mf">517.5692429999999</span>
+<span class="mf">727390.156</span> <span class="mf">6913486.75</span> <span class="mf">517.5692429999999</span>
+<span class="mf">727390.156</span> <span class="mf">6913486.75</span> <span class="mf">517.5692429999999</span>
+<span class="mf">743403.6875</span> <span class="mf">6877878.25</span> <span class="mf">454.74995199999995</span>
+<span class="mf">743403.6875</span> <span class="mf">6877878.25</span> <span class="mf">454.74995199999995</span>
+<span class="mf">743403.6875</span> <span class="mf">6877878.25</span> <span class="mf">454.74995199999995</span>
+<span class="mf">743403.6875</span> <span class="mf">6877878.25</span> <span class="mf">454.74995199999995</span>
+<span class="mf">738704.4065</span> <span class="mf">6877046.0</span> <span class="mf">458.14874000000003</span>
+<span class="mf">738704.4065</span> <span class="mf">6877046.0</span> <span class="mf">458.14874000000003</span>
+<span class="mf">738704.4065</span> <span class="mf">6877046.0</span> <span class="mf">458.14874000000003</span>
+<span class="mf">738704.4065</span> <span class="mf">6877046.0</span> <span class="mf">458.14874000000003</span>
+<span class="mf">735326.7815</span> <span class="mf">6875283.75</span> <span class="mf">452.96645599999994</span>
+<span class="mf">735326.7815</span> <span class="mf">6875283.75</span> <span class="mf">452.96645599999994</span>
+<span class="mf">735326.7815</span> <span class="mf">6875283.75</span> <span class="mf">452.96645599999994</span>
+<span class="mf">735326.7815</span> <span class="mf">6875283.75</span> <span class="mf">452.96645599999994</span>
+<span class="mf">734200.938</span> <span class="mf">6875724.5</span> <span class="mf">461.98580400000003</span>
+<span class="mf">734200.938</span> <span class="mf">6875724.5</span> <span class="mf">461.98580400000003</span>
+<span class="mf">734200.938</span> <span class="mf">6875724.5</span> <span class="mf">461.98580400000003</span>
+<span class="mf">734200.938</span> <span class="mf">6875724.5</span> <span class="mf">461.98580400000003</span>
+<span class="mf">698466.9375</span> <span class="mf">6871074.25</span> <span class="mf">463.972201</span>
+<span class="mf">698466.9375</span> <span class="mf">6871074.25</span> <span class="mf">463.972201</span>
+<span class="mf">698466.9375</span> <span class="mf">6871074.25</span> <span class="mf">463.972201</span>
+<span class="mf">698466.9375</span> <span class="mf">6871074.25</span> <span class="mf">463.972201</span>
+</pre></div>
+</div>
 <p>Or a projection in 2D:</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData</span> <span class="n">at</span> <span class="mh">0x7f8d04466ba8</span><span class="o">&gt;</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">Visualization</span><span class="o">.</span><span class="n">PlotData2D</span> <span class="n">at</span> <span class="mh">0x7fce1b47be10</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <img alt="../_images/ch2_7_1.png" src="../_images/ch2_7_1.png" />
@@ -140,6 +334,9 @@ only data in the same depositional series affect the interpolation. To
 select with formations belong to witch series we will use the
 <code class="docutils literal"><span class="pre">set_data_series</span></code> function which takes a python dictionary as input.</p>
 <p>We can see the unique formations with:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
 <div>
 <style>
     .dataframe thead tr:only-child th {
@@ -188,6 +385,15 @@ not relevant for the result but in case of being wrong can lead to
 confusing color coding (work in progress).</p>
 <p>In the representation given by <code class="docutils literal"><span class="pre">get_series</span></code> the elements get repeated
 but is only how Pandas print tables.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Assigning series to formations as well as their order (timewise)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">set_data_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;EarlyGranite_Series&quot;</span><span class="p">:</span> <span class="s1">&#39;EarlyGranite&#39;</span><span class="p">,</span>
+                              <span class="s2">&quot;BIF_Series&quot;</span><span class="p">:(</span><span class="s1">&#39;SimpleMafic2&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpleBIF&#39;</span><span class="p">),</span>
+                              <span class="s2">&quot;SimpleMafic_Series&quot;</span><span class="p">:</span><span class="s1">&#39;SimpleMafic1&#39;</span><span class="p">},</span>
+                      <span class="n">order_series</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EarlyGranite_Series&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;BIF_Series&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;SimpleMafic_Series&quot;</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
 <div>
 <style>
     .dataframe thead tr:only-child th {
@@ -231,10 +437,13 @@ but is only how Pandas print tables.</p>
 <h2>Computing the model<a class="headerlink" href="#computing-the-model" title="Permalink to this headline">¶</a></h2>
 <p>Now as in the previous chapter we just need to create the interpolator
 object and compute the model.</p>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">I</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">setting</span>
-<span class="n">float32</span>
-<span class="n">I</span> <span class="n">am</span> <span class="n">here</span>
-<span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">sol</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">9</span> <span class="mi">9</span> <span class="mi">9</span><span class="p">]</span>
@@ -242,17 +451,34 @@ object and compute the model.</p>
 </div>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">miguel</span><span class="o">/</span><span class="n">anaconda3</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="o">.</span><span class="mi">6</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">scipy</span><span class="o">/</span><span class="n">linalg</span><span class="o">/</span><span class="n">basic</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">223</span><span class="p">:</span> <span class="ne">RuntimeWarning</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span>
 <span class="n">Ill</span><span class="o">-</span><span class="n">conditioned</span> <span class="n">matrix</span> <span class="n">detected</span><span class="o">.</span> <span class="n">Result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">guaranteed</span> <span class="n">to</span> <span class="n">be</span> <span class="n">accurate</span><span class="o">.</span>
-<span class="n">Reciprocal</span> <span class="n">condition</span> <span class="n">number</span><span class="p">:</span> <span class="mf">2.4606194415355276e-08</span>
+<span class="n">Reciprocal</span> <span class="n">condition</span> <span class="n">number</span><span class="p">:</span> <span class="mf">2.402444465587905e-08</span>
   <span class="s1">&#39; condition number: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rcond</span><span class="p">),</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Now if we analyse the results we have a 3D array where the axis 0
 represent the superposition of the series (potential fields). The color
 coding is working process yet.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,:],</span> <span class="mi">11</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,:],</span> <span class="mi">11</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">0</span><span class="p">,:],</span> <span class="mi">11</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
 <img alt="../_images/ch2_17_0.png" src="../_images/ch2_17_0.png" />
 <img alt="../_images/ch2_17_1.png" src="../_images/ch2_17_1.png" />
 <img alt="../_images/ch2_17_2.png" src="../_images/ch2_17_2.png" />
 <p>The axis 1 keeps the potential field:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_potential_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,:],</span> <span class="mi">11</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;inferno_r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_potential_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,:],</span> <span class="mi">11</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;inferno_r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_potential_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span><span class="mi">1</span><span class="p">,:],</span> <span class="mi">11</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;inferno_r&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
 <img alt="../_images/ch2_19_0.png" src="../_images/ch2_19_0.png" />
 <img alt="../_images/ch2_19_1.png" src="../_images/ch2_19_1.png" />
 <img alt="../_images/ch2_19_2.png" src="../_images/ch2_19_2.png" />
@@ -260,6 +486,9 @@ coding is working process yet.</p>
 is not faults does not represent anything.</p>
 <p>Additionally with can export the blocks to vtk in order to visualize
 them in Paraview. We are working in visualization in place as well.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">export_vtk_rectilinear</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">sol</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="n">path</span><span class="o">=</span><span class="bp">None</span><span class="p">)</span>
+</pre></div>
+</div>
 </div>
 </div>
 

@@ -13,6 +13,8 @@ the example of the first chapter adding a fault in the middle;
     sys.path.append("../")
     
     # Importing gempy
+    
+    
     import gempy as gp
     
     # Embedding matplotlib figures into the notebooks
@@ -23,7 +25,7 @@ the example of the first chapter adding a fault in the middle;
 
 .. code:: ipython3
 
-    geo_data = gp.read_pickle('BasicFault.pickle')
+    geo_data = gp.read_pickle('../input_data/BasicFault.pickle')
 
 
 .. code:: ipython3
@@ -35,7 +37,7 @@ the example of the first chapter adding a fault in the middle;
 
 .. parsed-literal::
 
-    <gempy.Visualization.PlotData at 0x7f6d340feeb8>
+    <gempy.Visualization.PlotData2D at 0x7fde5748a160>
 
 
 
@@ -45,11 +47,9 @@ the example of the first chapter adding a fault in the middle;
 
 .. code:: ipython3
 
-    gp.set_data_series(geo_data, {"fault":geo_data.formations[4], 
-                          "Rest":np.delete(geo_data.formations, 4)},
-                           order_series = ["fault",
-                                           "Rest",
-                                           ], verbose=0)
+    gp.set_data_series(geo_data, {"fault":'MainFault', 
+                                  "Rest":('SecondaryReservoir','Seal','Reservoir', 'NonReservoirDeep')},
+                       order_series = ["fault","Rest"])
 
 .. code:: ipython3
 
@@ -117,6 +117,22 @@ the example of the first chapter adding a fault in the middle;
           <td>NaN</td>
           <td>NaN</td>
           <td>NaN</td>
+          <td>1000.0</td>
+          <td>1000.0</td>
+          <td>-1000.0</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>MainFault</td>
+          <td>True</td>
+          <td>1</td>
+          <td>NaN</td>
+          <td>fault</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
           <td>1200.0</td>
           <td>1000.0</td>
           <td>-400.0</td>
@@ -129,7 +145,7 @@ the example of the first chapter adding a fault in the middle;
           <td>fault</td>
         </tr>
         <tr>
-          <th>2</th>
+          <th>3</th>
           <td>NaN</td>
           <td>NaN</td>
           <td>NaN</td>
@@ -145,29 +161,13 @@ the example of the first chapter adding a fault in the middle;
           <td>fault</td>
         </tr>
         <tr>
-          <th>3</th>
+          <th>4</th>
           <td>NaN</td>
           <td>NaN</td>
           <td>NaN</td>
           <td>900.0</td>
           <td>1000.0</td>
           <td>-1300.0</td>
-          <td>NaN</td>
-          <td>NaN</td>
-          <td>MainFault</td>
-          <td>True</td>
-          <td>1</td>
-          <td>NaN</td>
-          <td>fault</td>
-        </tr>
-        <tr>
-          <th>4</th>
-          <td>NaN</td>
-          <td>NaN</td>
-          <td>NaN</td>
-          <td>1000.0</td>
-          <td>1000.0</td>
-          <td>-1000.0</td>
           <td>NaN</td>
           <td>NaN</td>
           <td>MainFault</td>
@@ -189,9 +189,6 @@ the example of the first chapter adding a fault in the middle;
 
 .. parsed-literal::
 
-    I am in the setting
-    float32
-    I am here
     [2, 2]
 
 
@@ -207,6 +204,29 @@ the example of the first chapter adding a fault in the middle;
 
 .. code:: ipython3
 
+    interp_data.potential_at_interfaces
+
+
+
+
+.. parsed-literal::
+
+    array([[-0.55960631,  0.        ,  0.        ,  0.        ,  0.        ],
+           [ 0.        ,  0.22054681,  0.41454515,  0.30080083,  0.43699819]], dtype=float32)
+
+
+
+.. code:: ipython3
+
+    gp.plot_potential_field(geo_data, sol[1,:], 25, plot_data = True)
+
+
+
+.. image:: ch3_files/ch3_9_0.png
+
+
+.. code:: ipython3
+
     gp.plot_section(geo_data, sol[0,:], 25, plot_data = True)
 
 
@@ -214,12 +234,12 @@ the example of the first chapter adding a fault in the middle;
 
 .. parsed-literal::
 
-    <gempy.Visualization.PlotData at 0x7f6d213210f0>
+    <gempy.Visualization.PlotData2D at 0x7fddf1e44128>
 
 
 
 
-.. image:: ch3_files/ch3_8_1.png
+.. image:: ch3_files/ch3_10_1.png
 
 
 .. code:: ipython3
@@ -231,10 +251,11 @@ the example of the first chapter adding a fault in the middle;
 
 .. parsed-literal::
 
-    <gempy.Visualization.PlotData at 0x7f6d2164ab00>
+    <gempy.Visualization.PlotData2D at 0x7fddf172e748>
 
 
 
 
-.. image:: ch3_files/ch3_9_1.png
+.. image:: ch3_files/ch3_11_1.png
+
 
