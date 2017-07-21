@@ -472,8 +472,8 @@ def get_surfaces(potential_block, interp_data, n_formation='all', step_size=1, o
             if n == 0:
                 pass
             else:
-            vertices, simplices = get_surface(potential_block, interp_data, n,
-                                              step_size=step_size, original_scale=original_scale)
+                vertices, simplices = get_surface(potential_block, interp_data, n,
+                                                  step_size=step_size, original_scale=original_scale)
     else:
         vertices, simplices = get_surface(potential_block, interp_data, n_formation,
                                           step_size=step_size, original_scale=original_scale)

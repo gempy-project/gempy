@@ -86,10 +86,20 @@ class DraggableRectangle:
 
         # check if it is released past half of the above or below
         # get y of above and below
-        y_above = drs[self.i + 1].rect.get_y()
-        y_below = drs[self.i - 1].rect.get_y()
+        if self.i == 0:
+            y_below = None
+        else:
+            y_below = drs[self.i - 1].rect.get_y()
+
+        if self.i == len(drs) - 1:
+            y_above = None
+        else:
+            y_above = drs[self.i + 1].rect.get_y()
 
         # if the released rect is not above
+        if y_above is None or y_below is None:
+            self.rect.set_y(self.o_y)
+
         if self.rect.get_y() <= (y_above + self.rect.get_height() / 2):
             self.rect.set_y(self.o_y)
         elif self.rect.get_y() >= (y_below + self.rect.get_height() / 2):
