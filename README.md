@@ -1,8 +1,7 @@
 # GemPy
 
-[![PyPI](https://img.shields.io/badge/pypi-v0.9-yellow.svg)]() 
-[![MIT License](https://img.shields.io/badge/License-MIT-blue.svg)]() 
-
+[![PyPI](https://img.shields.io/badge/pypi-v0.9-yellow.svg)]()
+[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)]()
 
 GemPy is an open-source, Python-based 3-D structural geological modeling software, 
 which allows the implicit (i.e. automatic) creation of complex geological models from interface 
