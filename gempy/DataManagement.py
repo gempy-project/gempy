@@ -674,7 +674,7 @@ class InterpolatorInput:
         assert isinstance(geo_data, InputData), 'You need to pass a InputData object'
 
         # Store the original InputData object
-        self.geo_data = geo_data
+        self._geo_data = geo_data
 
         # Here we can change the dtype for stability and GPU vs CPU
         self.dtype = kwargs.get('dtype', 'float32')

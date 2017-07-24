@@ -8,6 +8,59 @@ import theano.tensor as T
 from scipy.constants import G
 
 
+class GeoPhysicsPreprocessing_pro(object):
+    def __init__(self, interp_data, ai_extent, ai_resolution, ai_z = None):
+
+        self.interp_data = interp_data
+        self.ai_extent = ai_extent
+        self.ai_resolution = ai_resolution
+        self.model_grid = interp_data.geo_data_res.grid.grid
+        if ai_z is None:
+            ai_z = self.model_grid[:, 2].max()
+        self.aiborne_plane = self.set_airborne_plane(ai_z, self.ai_resolution)
+        self.model_resolution = interp_data.resolution[0] * interp_data.resolution[1] * interp_data.resolution[2]
+
+
+
+        # Init boolean that select the voxels that affect a given measurement point
+
+
+        pass
+
+    def eu_f(self):
+        # Compile Theano function
+        x_1 = T.matrix()
+        x_2 = T.matrix()
+
+        sqd = T.sqrt(T.maximum(
+            (x_1 ** 2).sum(1).reshape((x_1.shape[0], 1)) +
+            (x_2 ** 2).sum(1).reshape((1, x_2.shape[0])) -
+            2 * x_1.dot(x_2.T), 0
+        ))
+        eu = theano.function([x_1, x_2], sqd, allow_input_downcast=True)
+        return eu
+
+    def set_airborne_plane(self, z, ai_resolution):
+
+        # Rescale z
+        z_res = (z-self.interp_data.centers[2])/self.interp_data.rescaling_factor + 0.5001
+        ai_extent_rescaled = (self.ai_extent - np.repeat(self.interp_data.centers, 2)) / \
+                              self.interp_data.rescaling_factor + 0.5001
+
+        # Create xy meshgrid
+        xy = np.meshgrid(np.linspace(ai_extent_rescaled.iloc[0], ai_extent_rescaled.iloc[1], res_grav[0]),
+                         np.linspace(ai_extent_rescaled.iloc[2], ai_extent_rescaled.iloc[3], res_grav[1]))
+        z = np.ones(res_grav[0]*res_grav[1])*z_res
+
+        # Transformation
+        xy_ravel = np.vstack(map(np.ravel, xy))
+        airborne_plane = np.vstack((xy_ravel, z)).T.astype(self.interp_data.dtype)
+
+        return airborne_plane
+
+
+
+
 class GeoPhysicsPreprocessing(object):
 
     # TODO geophysics grid different that modeling grid

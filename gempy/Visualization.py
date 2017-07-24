@@ -577,7 +577,7 @@ class vtkVisualization():
             #  self.s_rend_1.append(act)
             #  self.s_mapper.append(map)
             #  self.s_polydata.append(pol)
-            print(self.s_rend_1)
+            #print(self.s_rend_1)
             self.ren_list[0].AddActor(act)
             self.ren_list[1].AddActor(act)
             self.ren_list[2].AddActor(act)

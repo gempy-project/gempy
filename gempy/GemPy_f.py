@@ -461,19 +461,23 @@ def get_surfaces(potential_block, interp_data, n_formation='all', step_size=1, o
                      (interp_data.geo_data_res.extent[5] - interp_data.geo_data_res.extent[4]) / interp_data.geo_data_res.resolution[2]))
 
         if original_scale:
-            vertices = interp_data.rescaling_factor * vertices + _np.array([interp_data.geo_data.extent[0],
-                                                                            interp_data.geo_data.extent[2],
-                                                                            interp_data.geo_data.extent[4]]).reshape(1, 3)
+            vertices = interp_data.rescaling_factor * vertices + _np.array([interp_data._geo_data.extent[0],
+                                                                            interp_data._geo_data.extent[2],
+                                                                            interp_data._geo_data.extent[4]]).reshape(1, 3)
 
         return vertices, simplices
 
     if n_formation == 'all':
+        vertices = []
+        simplices = []
         for n in interp_data.get_formation_number().values():
             if n == 0:
-                pass
+                continue
             else:
-            vertices, simplices = get_surface(potential_block, interp_data, n,
-                                              step_size=step_size, original_scale=original_scale)
+                v, s = get_surface(potential_block, interp_data, n,
+                                   step_size=step_size, original_scale=original_scale)
+                vertices.append(v)
+                simplices.append(s)
     else:
         vertices, simplices = get_surface(potential_block, interp_data, n_formation,
                                           step_size=step_size, original_scale=original_scale)
