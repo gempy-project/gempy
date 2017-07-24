@@ -73,7 +73,6 @@ class PlotData2D(object):
 
         bounds = [i for i in range(len(c_names))]
         self._norm = matplotlib.colors.BoundaryNorm(bounds, self._cmap.N)
-        # TODO: Are colors correctly mapped between voxel plot and data plot?
 
     def _set_style(self):
         """
@@ -635,7 +634,7 @@ class vtkVisualization():
 
     def sphereCallback(self, obj, event):
         """
-        Function that rules what happend when we move an sphere. At the moment we update the other 3 renderers and
+        Function that rules what happens when we move a sphere. At the moment we update the other 3 renderers and
         update the pandas data frame
         """
 

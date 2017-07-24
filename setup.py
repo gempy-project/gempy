@@ -2,18 +2,18 @@ from setuptools import setup
 
 setup(
     name='gempy',
-    version='0.912',
+    version='0.911',
     packages=['gempy'],
     install_requires=[
         'numpy',
         'pandas',
         'matplotlib',
         'theano',
-        'skimage',
+        'scikit-image',
         'vtk'
     ],
     url='https://github.com/cgre-aachen/gempy',
-    download_url='https://github.com/cgre-aachen/gempy/archive/0.912.tar.gz',
+    download_url='https://github.com/cgre-aachen/gempy/archive/0.911.tar.gz',
     license='MIT',
     author='Miguel de la Varga, Alexander Schaaf',
     author_email='varga@aices.rwth-aachen.de',
