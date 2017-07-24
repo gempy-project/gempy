@@ -415,10 +415,12 @@ def compute_model(interp_data, u_grade=None, get_potential_at_interfaces=False):
 
     i = interp_data.get_input_data(u_grade=u_grade)
     sol, interp_data.potential_at_interfaces = interp_data.th_fn(*i)
+    if len(sol.shape) < 3:
+        _np.expand_dims(sol, 0)
     if get_potential_at_interfaces:
-        return _np.squeeze(sol), interp_data.potential_at_interfaces
+        return sol, interp_data.potential_at_interfaces
     else:
-        return _np.squeeze(sol)
+        return sol
 
 
 def get_surfaces(potential_block, interp_data, n_formation='all', step_size=1, original_scale=True):
