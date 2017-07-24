@@ -7,8 +7,9 @@ import matplotlib.pyplot as plt
 class DraggableRectangle:
     lock = None  # only one can be animated at a time
 
-    def __init__(self, rect):
+    def __init__(self, rect, parent=None):
         self.rect = rect
+        self.parent = parent
         self.press = None
         self.background = None
 
@@ -68,6 +69,18 @@ class DraggableRectangle:
         # self.rect.set_x(x0 + dx)
         self.rect.set_y(y0 + dy)
 
+        if self.rect.get_y() > self.parent.bars[self.i + 1].rect.get_y() + self.rect.get_height() / 2:
+            # reduce i for above
+            self.parent.bars[self.i + 1].i -= 1
+            y_bot = self.get_y()
+            self.rect.set_y(self.parent.bars[self.i + 1].rect.get_y())
+            self.parent.bars[self.i + 1].set_y(y_bot)
+            # swap positions
+            self.parent.bars[self.i], self.parent.bars[self.i + 1] = self.parent.bars[self.i + 1], self.parent.bars[self.i]
+            # increase i for self
+            self.i += 1
+
+
         canvas = self.rect.figure.canvas
         axes = self.rect.axes
         # restore the background region
@@ -89,12 +102,12 @@ class DraggableRectangle:
         if self.i == 0:
             y_below = None
         else:
-            y_below = drs[self.i - 1].rect.get_y()
+            y_below = self.parent.bars[self.i - 1].rect.get_y()
 
-        if self.i == len(drs) - 1:
+        if self.i == len(self.parent.bars) - 1:
             y_above = None
         else:
-            y_above = drs[self.i + 1].rect.get_y()
+            y_above = self.parent.bars[self.i + 1].rect.get_y()
 
         # if the released rect is not above
         if y_above is None or y_below is None:
@@ -122,17 +135,46 @@ class DraggableRectangle:
         self.rect.figure.canvas.mpl_disconnect(self.cidmotion)
 
 
-fig = plt.figure()
-ax = fig.add_subplot(111)
-rects = ax.barh(range(10), 20 * np.random.rand(10))
-# list of DraggableRectangle instances
-drs = []
+class DaPlot:
+    def __init__(self, formations, series):
+        self.formations = formations
+        self.series = series
 
-for i, rect in enumerate(rects):
-    # create draggable rectangle from all created bars
-    dr = DraggableRectangle(rect)
-    dr.i = i
-    dr.connect()
-    drs.append(dr)  # add instance to list of all rectangles
-print(drs)
-plt.show()
+        self.fig = plt.figure()
+        self.ax = self.fig.add_subplot(111)
+
+        self.barplot = self.ax.barh(range(len(self.formations)), [1 for i in range(len(self.formations))])
+        self.bars = []
+
+        self.ax.xaxis.set_visible(False)
+        self.ax.set_yticklabels(self.formations)
+
+        for i, entry in enumerate(self.barplot):
+            bar = DraggableRectangle(entry, parent=self)
+            bar.i = i
+            bar.connect()
+            self.bars.append(bar)
+
+        plt.show()
+
+    #fig = plt.figure()
+    #ax = fig.add_subplot(111)
+    #formations = ax.barh(range(10), 20 * np.random.rand(10))
+    # list of DraggableRectangle instances
+    #drs = []
+
+    #for i, fmt in enumerate(formations):
+    #    # create draggable rectangle from all created bars
+    #    dr = DraggableRectangle(fmt)
+    #    dr.i = i
+    #    dr.connect()
+    #    drs.append(dr)  # add instance to list of all rectangles
+    #print(drs)
+    #plt.show()
+
+import pandas as pn
+
+formations = np.array(['Layer 2', 'Layer 3', 'Layer 4', 'Layer 5', 'Layer 6', 'Fault'], dtype=object)
+series = pn.Index(['fault', 'Rest'], dtype='object')
+
+plot = DaPlot(formations, series)
