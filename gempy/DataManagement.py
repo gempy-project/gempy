@@ -1034,7 +1034,7 @@ class InterpolatorInput:
                     - numpy.array: ref_layer_points
                     - numpy.array: rest_layer_points
             """
-
+            verbose = kwargs.get('verbose', [])
             u_grade = kwargs.get('u_grade', None)
             # ==================
             # Extracting lengths
@@ -1087,7 +1087,8 @@ class InterpolatorInput:
                 u_grade = np.zeros_like(len_series_i)
                 u_grade[len_series_i > 12] = 9
                 u_grade[(len_series_i > 6) & (len_series_i < 12)] = 3
-            print(u_grade)
+            if 'u_grade' in verbose:
+                print(u_grade)
             # it seems I have to pass list instead array_like that is weird
             self.tg.u_grade_T.set_value(list(u_grade))
 
