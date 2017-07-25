@@ -57,23 +57,34 @@ class PlotData2D(object):
 
         self._cd_rgb = cd_rgb
         self._cd_hex = cd_hex
+        self.clot = self._create_fmt_n_cname_lot()
 
-        # TODO: Map colors to formations and integer values for plots
+    def _create_fmt_n_cname_lot(self):
+        if "formation number" not in self._data.interfaces or "formation number" not in self._data.foliations:
+            self._data.set_formation_number()  # if not, set formation numbers
 
-        c_names = ["indigo", "red", "yellow", "brown", "orange",
-                   "green", "blue", "amber", "pink", "light-blue",
-                   "lime", "blue-grey", "deep-orange", "grey", "cyan",
-                   "deep-purple", "purple", "teal", "light-green"]
+        self.c_names = ["indigo", "red", "yellow", "brown", "orange",
+                        "green", "blue", "amber", "pink", "light-blue",
+                        "lime", "blue-grey", "deep-orange", "grey", "cyan",
+                        "deep-purple", "purple", "teal", "light-green"]
 
-        # c_subnames = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900']
-        #               'a100','a200', 'a400', 'a700']
+        lot = {}
+        ci = 0  # use as an indendant running variable because of fault formations
+        # get unique formation numbers
+        fmt_numbers = np.unique(self._data.interfaces["formation number"])
+        # get unique fault formation numbers
+        fault_fmt_numbers = np.unique(self._data.interfaces[self._data.interfaces["isFault"] == True]["formation number"])
+        # iterate over all unique formation numbers
+        for i, n in enumerate(fmt_numbers):
+            # if its a fault formation set it to black by default
+            if n in fault_fmt_numbers:
+                lot[n] = self._cd_rgb["black"]["400"]
+            # if not, just go through
+            else:
+                lot[n] = self._cd_rgb[self.c_names[ci]]["400"]
+                ci += 1
 
-        self._cmap = matplotlib.colors.ListedColormap([self._cd_rgb[key]["400"] for key in c_names])
-        self._sns_palette = [self._cd_rgb[key]["400"] for key in c_names]
-
-        bounds = [i for i in range(len(c_names))]
-        self._norm = matplotlib.colors.BoundaryNorm(bounds, self._cmap.N)
-        # TODO: Are colors correctly mapped between voxel plot and data plot?
+        return lot
 
     def _set_style(self):
         """
@@ -116,12 +127,12 @@ class PlotData2D(object):
         sns.lmplot(x, y,
                    data=series_to_plot_i,
                    fit_reg=False,
-                   hue="formation",
+                   hue="formation number",  # use formation number as a hue id
                    scatter_kws={"marker": "D",
                                 "s": 100},
                    legend=True,
                    legend_out=True,
-                   palette=self._sns_palette,
+                   palette=self.clot,  # LOT that connects formation number to specific color
                    **kwargs)
 
         # Plotting orientations

@@ -22,6 +22,7 @@ import copy
 from gempy.Visualization import PlotData2D, steano3D, vtkVisualization
 from gempy.DataManagement import InputData, InterpolatorInput, GridClass
 
+
 def data_to_pickle(geo_data, path=False):
     """
      Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
@@ -259,7 +260,6 @@ def plot_data(geo_data, direction="y", series="all", **kwargs):
     plot = PlotData2D(geo_data)
     plot.plot_data(direction=direction, series=series, **kwargs)
     # TODO saving options
-
 
 
 def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
