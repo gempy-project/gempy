@@ -57,7 +57,16 @@ class PlotData2D(object):
 
         self._cd_rgb = cd_rgb
         self._cd_hex = cd_hex
-        self.clot = self._create_fmt_n_cname_lot()
+        self._clot = self._create_fmt_n_cname_lot()
+
+        # listed colormap for matplotlib
+        self._bounds = [key for key in self._clot.keys()]
+        self._c = []
+        for key in self._bounds:
+            self._c.append(self._clot[key])
+
+        self._cmap = matplotlib.colors.ListedColormap(self._c)
+        self._norm = matplotlib.colors.BoundaryNorm(self._bounds, self._cmap.N)
 
     def _create_fmt_n_cname_lot(self):
         if "formation number" not in self._data.interfaces or "formation number" not in self._data.foliations:
@@ -71,7 +80,7 @@ class PlotData2D(object):
         lot = {}
         ci = 0  # use as an indendant running variable because of fault formations
         # get unique formation numbers
-        fmt_numbers = np.unique(self._data.interfaces["formation number"])
+        fmt_numbers = np.unique([val for val in self._data.get_formation_number().values()])
         # get unique fault formation numbers
         fault_fmt_numbers = np.unique(self._data.interfaces[self._data.interfaces["isFault"] == True]["formation number"])
         # iterate over all unique formation numbers
@@ -132,7 +141,7 @@ class PlotData2D(object):
                                 "s": 100},
                    legend=True,
                    legend_out=True,
-                   palette=self.clot,  # LOT that connects formation number to specific color
+                   palette=self._clot,  # LOT that connects formation number to specific color
                    **kwargs)
 
         # Plotting orientations
@@ -213,13 +222,14 @@ class PlotData2D(object):
         plot_block = _block.reshape(self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
 
-
         if plot_data:
             self.plot_data(direction, 'all')
 
-        plt.imshow(plot_block[_a, _b, _c].T, origin="bottom", cmap=self._cmap, norm=self._norm,
+        # TODO: Formation numbers in block section do not appear to correspond to data???
+        plt.imshow(plot_block[_a, _b, _c].T, origin="bottom", cmap=self._cmap, #norm=self._norm,
                    extent=extent_val,
                    interpolation=interpolation, **kwargs)
+        plt.colorbar()
 
         plt.xlabel(x)
         plt.ylabel(y)
