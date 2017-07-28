@@ -202,7 +202,7 @@ class PlotData2D(object):
         plt.imshow(plot_block[_a, _b, _c].T, origin="bottom", cmap=self._cmap, #norm=self._norm,
                    extent=extent_val,
                    interpolation=interpolation, **kwargs)
-        plt.colorbar()
+        # plt.colorbar()
 
         plt.xlabel(x)
         plt.ylabel(y)
