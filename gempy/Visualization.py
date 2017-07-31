@@ -130,13 +130,12 @@ class PlotData2D(object):
             sns.lmplot(x, y,
                        data=series_to_plot_i,
                        fit_reg=False,
-                       hue="formation",
+                       hue="formation number",
                      #  scatter_kws=scatter_kws,
                        legend=True,
                        legend_out=True,
-                       palette=self._sns_palette,
+                       palette=self._clot,
                        **kwargs)
-
 
             # Plotting orientations
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
@@ -147,11 +146,11 @@ class PlotData2D(object):
             sns.lmplot(x, y,
                        data=series_to_plot_i,
                        fit_reg=False,
-                       hue="formation",
+                       hue="formation number",
                        #  scatter_kws=scatter_kws,
                        legend=True,
                        legend_out=True,
-                       palette=self._sns_palette,
+                       palette=self._clot,
                        **kwargs)
 
         if data_type == 'foliations':
