@@ -38,6 +38,7 @@ import copy
 from gempy.Visualization import PlotData2D, steano3D, vtkVisualization
 from gempy.DataManagement import InputData, InterpolatorInput, GridClass
 
+
 def data_to_pickle(geo_data, path=False):
     """
      Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
@@ -277,7 +278,6 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", **kwargs
     # TODO saving options
 
 
-
 def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
     """
     Plot a section of the block model
@@ -431,10 +431,12 @@ def compute_model(interp_data, u_grade=None, get_potential_at_interfaces=False):
 
     i = interp_data.get_input_data(u_grade=u_grade)
     sol, interp_data.potential_at_interfaces = interp_data.th_fn(*i)
+    if len(sol.shape) < 3:
+        _np.expand_dims(sol, 0)
     if get_potential_at_interfaces:
-        return _np.squeeze(sol), interp_data.potential_at_interfaces
+        return sol, interp_data.potential_at_interfaces
     else:
-        return _np.squeeze(sol)
+        return sol
 
 
 def get_surfaces(potential_block, interp_data, n_formation='all', step_size=1, original_scale=True):
@@ -500,14 +502,15 @@ def get_surfaces(potential_block, interp_data, n_formation='all', step_size=1, o
     return vertices, simplices
 
 
-def plot_surfaces_3D(geo_data, vertices_l, simpleces_l, formations_names_l, alpha=1, plot_data=True,
+def plot_surfaces_3D(geo_data, vertices_l, simplices_l, formations_names_l, formation_numbers_l, alpha=1, plot_data=True,
                      size=(1920, 1080), fullscreen=False):
     """
     Plot in vtk the surfaces
     Args:
         vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
-        simpleces_l (numpy.array): 2D array with the value of the vertices that form every single triangle
+        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
         formations_names_l (list): Name of the formation of the surfaces
+        formation_numbers_l (list): Formation numbers (int)
         alpha (float): Opacity
         plot_data (bool): Default True
         size (tuple): Resolution of the window
@@ -516,7 +519,7 @@ def plot_surfaces_3D(geo_data, vertices_l, simpleces_l, formations_names_l, alph
         None
     """
     w = vtkVisualization(geo_data)
-    w.set_surfaces(vertices_l, simpleces_l, formations_names_l, alpha)
+    w.set_surfaces(vertices_l, simplices_l, formations_names_l, formation_numbers_l, alpha)
 
     if plot_data:
         w.set_interfaces()

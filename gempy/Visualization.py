@@ -74,22 +74,16 @@ class PlotData2D(object):
 
         self._cd_rgb = cd_rgb
         self._cd_hex = cd_hex
+        self._clot = _create_color_lot(self._data, self._cd_rgb)
 
-        # TODO: Map colors to formations and integer values for plots
+        # listed colormap for matplotlib
+        self._bounds = [key for key in self._clot.keys()]
+        self._c = []
+        for key in self._bounds:
+            self._c.append(self._clot[key])
 
-        c_names = ["indigo", "red", "yellow", "brown", "orange",
-                   "green", "blue", "amber", "pink", "light-blue",
-                   "lime", "blue-grey", "deep-orange", "grey", "cyan",
-                   "deep-purple", "purple", "teal", "light-green"]
-
-        # c_subnames = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900']
-        #               'a100','a200', 'a400', 'a700']
-
-        self._cmap = matplotlib.colors.ListedColormap([self._cd_rgb[key]["400"] for key in c_names])
-        self._sns_palette = [self._cd_rgb[key]["400"] for key in c_names]
-
-        bounds = [i for i in range(len(c_names))]
-        self._norm = matplotlib.colors.BoundaryNorm(bounds, self._cmap.N)
+        self._cmap = matplotlib.colors.ListedColormap(self._c)
+        self._norm = matplotlib.colors.BoundaryNorm(self._bounds, self._cmap.N)
 
     def _set_style(self):
         """
@@ -238,13 +232,14 @@ class PlotData2D(object):
         plot_block = _block.reshape(self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
 
-
         if plot_data:
             self.plot_data(direction, 'all')
 
-        plt.imshow(plot_block[_a, _b, _c].T, origin="bottom", cmap=self._cmap, norm=self._norm,
+        # TODO: Formation numbers in block section do not appear to correspond to data???
+        plt.imshow(plot_block[_a, _b, _c].T, origin="bottom", cmap=self._cmap, #norm=self._norm,
                    extent=extent_val,
                    interpolation=interpolation, **kwargs)
+        # plt.colorbar()
 
         plt.xlabel(x)
         plt.ylabel(y)
@@ -371,10 +366,12 @@ class vtkVisualization():
         camera_list (list): list of cameras for the distinct renderers
         ren_list (list): list containing the vtk renderers
     """
-    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0,):
+    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, cd_rgb=color_dict_rgb):
 
-        self.C_LOT = self.color_lot_create(geo_data)
+        # self.C_LOT = self.color_lot_create(geo_data)
         self.geo_data = geo_data
+        self.cd_rgb = cd_rgb
+        self.C_LOT = _create_color_lot(self.geo_data, self.cd_rgb)
         # Number of renders
         self.n_ren = 4
 
@@ -421,7 +418,7 @@ class vtkVisualization():
 
     def render_model(self, size=(1920, 1080), fullscreen=False):
         """
-        Method to lunch the window
+        Method to launch the window
         Args:
             size (tuple): Resolution of the window
             fullscreen (bool): Launch window in full screen or not
@@ -453,11 +450,11 @@ class vtkVisualization():
             Points.InsertNextPoint(v)
         return Points
 
-    def create_surface_triangles(self, simpleces):
+    def create_surface_triangles(self, simplices):
         """
         Method to create the Triangles that form the surfaces
         Args:
-            simpleces (numpy.array): 2D array with the value of the vertices that form every single triangle
+            simplices (numpy.array): 2D array with the value of the vertices that form every single triangle
 
         Returns:
             vtk.vtkTriangle
@@ -466,7 +463,7 @@ class vtkVisualization():
         Triangles = vtk.vtkCellArray()
         Triangle = vtk.vtkTriangle()
 
-        for s in simpleces:
+        for s in simplices:
             Triangle.GetPointIds().SetId(0, s[0])
             Triangle.GetPointIds().SetId(1, s[1])
             Triangle.GetPointIds().SetId(2, s[2])
@@ -474,13 +471,13 @@ class vtkVisualization():
             Triangles.InsertNextCell(Triangle)
         return Triangles
 
-    def create_surface(self, vertices, simpleces, f, alpha=1):
+    def create_surface(self, vertices, simplices, fn, alpha=1):
         """
         Method to create the polydata that define the surfaces
         Args:
             vertices (numpy.array): 2D array (XYZ) with the coordinates of the points
-            simpleces (numpy.array): 2D array with the value of the vertices that form every single triangle
-            f (str): Name of the formation of the surfaces
+            simplices (numpy.array): 2D array with the value of the vertices that form every single triangle
+            fn (int): Formation number
             alpha (float): Opacity
 
         Returns:
@@ -489,26 +486,26 @@ class vtkVisualization():
         surf_polydata = vtk.vtkPolyData()
 
         surf_polydata.SetPoints(self.create_surface_points(vertices))
-        surf_polydata.SetPolys(self.create_surface_triangles(simpleces))
+        surf_polydata.SetPolys(self.create_surface_triangles(simplices))
 
         surf_mapper = vtk.vtkPolyDataMapper()
         surf_mapper.SetInputData(surf_polydata)
 
         surf_actor = vtk.vtkActor()
         surf_actor.SetMapper(surf_mapper)
-        surf_actor.GetProperty().SetColor(self.C_LOT[f])
+        surf_actor.GetProperty().SetColor(self.C_LOT[fn])
         surf_actor.GetProperty().SetOpacity(alpha)
 
         return surf_actor, surf_mapper, surf_polydata
 
-    def create_sphere(self, X, Y, Z, f, n_sphere=0, n_render=0, n_index=0, r=0.03):
+    def create_sphere(self, X, Y, Z, fn, n_sphere=0, n_render=0, n_index=0, r=0.03):
         """
         Method to create the sphere that represent the interfaces points
         Args:
             X: X coord
             Y: Y coord
             Z: Z corrd
-            f (str): Name of the formation of the surfaces
+            fn (int): Formation number
             n_sphere (int): Number of the sphere
             n_render (int): Number of the render where the sphere belongs
             n_index (int): index value in the PandasDataframe of InupData.interfaces
@@ -523,7 +520,7 @@ class vtkVisualization():
 
         s.r_f = self._e_d_avrg * r
         s.PlaceWidget(X - s.r_f, X + s.r_f, Y - s.r_f, Y + s.r_f, Z - s.r_f, Z + s.r_f)
-        s.GetSphereProperty().SetColor(self.C_LOT[f])
+        s.GetSphereProperty().SetColor(self.C_LOT[fn])
 
         s.SetCurrentRenderer(self.ren_list[n_render])
         s.n_sphere = n_sphere
@@ -535,7 +532,7 @@ class vtkVisualization():
 
         return s
 
-    def create_foliation(self, X, Y, Z, f,
+    def create_foliation(self, X, Y, Z, fn,
                          Gx, Gy, Gz,
                          n_plane=0, n_render=0, n_index=0, alpha=0.5):
         """
@@ -544,7 +541,7 @@ class vtkVisualization():
             X : X coord
             Y: Y coord
             Z: Z corrd
-            f (str): Name of the formation of the surfaces
+            fn (int): Formation number
             Gx (str): Component of the gradient x
             Gy (str): Component of the gradient y
             Gz (str): Component of the gradient z
@@ -571,8 +568,8 @@ class vtkVisualization():
         d.SetPlaceFactor(250)
         d.PlaceWidget()
         d.SetNormal(Gx, Gy, Gz)
-        d.GetPlaneProperty().SetColor(self.C_LOT[f])
-        d.GetHandleProperty().SetColor(self.C_LOT[f])
+        d.GetPlaneProperty().SetColor(self.C_LOT[fn])
+        d.GetHandleProperty().SetColor(self.C_LOT[fn])
         d.GetHandleProperty().SetOpacity(alpha)
         d.SetCurrentRenderer(self.ren_list[n_render])
         d.n_plane = n_plane
@@ -584,14 +581,15 @@ class vtkVisualization():
 
         return d
 
-    def set_surfaces(self, vertices, simpleces, formations, alpha):
+    def set_surfaces(self, vertices, simplices, formations, fns, alpha):
         """
         Create all the surfaces and set them to the corresponding renders for their posterior visualization with
         render_model
         Args:
             vertices (list): list of 3D numpy arrays containing the points that form each plane
-            simpleces (list): list of 3D numpy arrays containing the verticies that form every triangle
+            simplices (list): list of 3D numpy arrays containing the verticies that form every triangle
             formations (list): ordered list of strings containing the name of the formations to represent
+            fns (list): ordered list of formation numbers (int)
             alpha: Opacity of the plane
         Returns:
             None
@@ -608,8 +606,8 @@ class vtkVisualization():
                                'is passed'
         assert 'DefaultBasement' not in formations, 'Remove DefaultBasement from the list of formations'
 
-        for v, s, f in zip(vertices, simpleces, formations):
-            act, map, pol = self.create_surface(v, s, f, alpha)
+        for v, s, fn in zip(vertices, simplices, fns):
+            act, map, pol = self.create_surface(v, s, fn, alpha)
             #  self.s_rend_1.append(act)
             #  self.s_mapper.append(map)
             #  self.s_polydata.append(pol)
@@ -633,13 +631,13 @@ class vtkVisualization():
         for e, val in enumerate(self.geo_data.interfaces.iterrows()):
             index = val[0]
             row = val[1]
-            self.s_rend_1.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation'],
+            self.s_rend_1.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation number'],
                                                     n_sphere=e, n_render=0, n_index=index))
-            self.s_rend_2.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation'],
+            self.s_rend_2.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation number'],
                                                     n_sphere=e, n_render=1, n_index=index))
-            self.s_rend_3.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation'],
+            self.s_rend_3.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation number'],
                                                     n_sphere=e, n_render=2, n_index=index))
-            self.s_rend_4.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation'],
+            self.s_rend_4.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation number'],
                                                     n_sphere=e, n_render=3, n_index=index))
 
     def set_foliations(self):
@@ -656,16 +654,16 @@ class vtkVisualization():
         for e, val in enumerate(self.geo_data.foliations.iterrows()):
             index = val[0]
             row = val[1]
-            self.f_rend_1.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation'],
+            self.f_rend_1.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation number'],
                                                        row['G_x'], row['G_y'], row['G_z'],
                                                        n_plane=e, n_render=0, n_index=index))
-            self.f_rend_2.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation'],
+            self.f_rend_2.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation number'],
                                                        row['G_x'], row['G_y'], row['G_z'],
                                                        n_plane=e, n_render=1, n_index=index))
-            self.f_rend_3.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation'],
+            self.f_rend_3.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation number'],
                                                        row['G_x'], row['G_y'], row['G_z'],
                                                        n_plane=e, n_render=2, n_index=index))
-            self.f_rend_4.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation'],
+            self.f_rend_4.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation number'],
                                                        row['G_x'], row['G_y'], row['G_z'],
                                                        n_plane=e, n_render=3, n_index=index))
 
@@ -815,14 +813,14 @@ class vtkVisualization():
 
         return ren_list
 
-    def color_lot_create(self, geo_data, cd_rgb=color_dict_rgb, c_names=color_names, c_subname="400"):
-        """
-        Set the color for each layer
-        """
-        c_lot = {}
-        for i, fmt in enumerate(geo_data.get_formations()):
-            c_lot[fmt] = cd_rgb[c_names[i]][c_subname]
-        return c_lot
+    # def color_lot_create(self, geo_data, cd_rgb=color_dict_rgb, c_names=color_names, c_subname="400"):
+    #     """
+    #     Set the color for each layer
+    #     """
+    #     c_lot = {}
+    #     for i, fmt in enumerate(geo_data.get_formations()):
+    #         c_lot[fmt] = cd_rgb[c_names[i]][c_subname]
+    #     return c_lot
 
     def _create_cameras(self, extent, verbose=0):
         """
@@ -945,7 +943,10 @@ class vtkVisualization():
         if sys.platform == "win32":
             cube_axes_actor.SetGridLineLocation(cube_axes_actor.VTK_GRID_LINES_FURTHEST)
         else:  # rather use elif == "linux" ? but what about other platforms
-            cube_axes_actor.SetGridLineLocation(vtk.VTK_GRID_LINES_FURTHEST)
+            try:  # apparently this can also go wrong on linux, maybe depends on vtk version?
+                cube_axes_actor.SetGridLineLocation(vtk.VTK_GRID_LINES_FURTHEST)
+            except AttributeError:
+                pass
 
         return cube_axes_actor
 
@@ -997,3 +998,31 @@ class vtkVisualization():
 
         gridToVTK(path, x, y, z, cellData={"Lithology": lith})
 
+
+def _create_color_lot(geo_data, cd_rgb):
+    """Returns color [r,g,b] LOT for formation numbers."""
+    if "formation number" not in geo_data.interfaces or "formation number" not in geo_data.foliations:
+        geo_data.set_formation_number()  # if not, set formation numbers
+
+    c_names = ["indigo", "red", "yellow", "brown", "orange",
+                "green", "blue", "amber", "pink", "light-blue",
+                "lime", "blue-grey", "deep-orange", "grey", "cyan",
+                "deep-purple", "purple", "teal", "light-green"]
+
+    lot = {}
+    ci = 0  # use as an independent running variable because of fault formations
+    # get unique formation numbers
+    fmt_numbers = np.unique([val for val in geo_data.get_formation_number().values()])
+    # get unique fault formation numbers
+    fault_fmt_numbers = np.unique(geo_data.interfaces[geo_data.interfaces["isFault"] == True]["formation number"])
+    # iterate over all unique formation numbers
+    for i, n in enumerate(fmt_numbers):
+        # if its a fault formation set it to black by default
+        if n in fault_fmt_numbers:
+            lot[n] = cd_rgb["black"]["400"]
+        # if not, just go through
+        else:
+            lot[n] = cd_rgb[c_names[ci]]["400"]
+            ci += 1
+
+    return lot
