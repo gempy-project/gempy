@@ -139,12 +139,6 @@ class PlotData2D(object):
                            legend_out=True,
                            palette=self._clot,
                            **kwargs)
-            # code for moving legend outside of plot
-            box = p.ax.get_position()  # get figure position
-            # reduce width of box to make room for outside legend
-            p.ax.set_position([box.x0, box.y0, box.width *0.85, box.height])
-            # put legend outside
-            p.ax.legend(loc="center right", title="Formation", bbox_to_anchor=(1.25, 0.5), ncol=1)
 
             # Plotting orientations
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
@@ -161,17 +155,18 @@ class PlotData2D(object):
                            legend_out=True,
                            palette=self._clot,
                            **kwargs)
-            # code for moving legend outside of plot
-            box = p.ax.get_position()  # get figure position
-            # reduce width of box to make room for outside legend
-            p.ax.set_position([box.x0, box.y0, box.width * 0.85, box.height])
-            # put legend outside
-            p.ax.legend(loc="center right", title="Formation", bbox_to_anchor=(1.25, 0.5), ncol=1)
 
         if data_type == 'foliations':
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
                        pivot="tail")
+
+        # code for moving legend outside of plot
+        box = p.ax.get_position()  # get figure position
+        # reduce width of box to make room for outside legend
+        p.ax.set_position([box.x0, box.y0, box.width * 0.85, box.height])
+        # put legend outside
+        p.ax.legend(loc="center right", title="Formation", bbox_to_anchor=(1.25, 0.5), ncol=1)
 
         plt.xlabel(x)
         plt.ylabel(y)
