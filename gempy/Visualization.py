@@ -111,7 +111,10 @@ class PlotData2D(object):
 
         """
         if 'scatter_kws' not in kwargs:
-            kwargs['scatter_kws'] = {"marker": "D", "s": 100}
+            kwargs['scatter_kws'] = {"marker": "D",
+                                     "s": 100,
+                                     "edgecolors": "black",
+                                     "linewidths": 1}
 
         x, y, Gx, Gy = self._slice(direction)[4:]
 
@@ -131,7 +134,7 @@ class PlotData2D(object):
                        data=series_to_plot_i,
                        fit_reg=False,
                        hue="formation number",
-                     #  scatter_kws=scatter_kws,
+                       #scatter_kws=scatter_kws,
                        legend=True,
                        legend_out=True,
                        palette=self._clot,
@@ -147,7 +150,7 @@ class PlotData2D(object):
                        data=series_to_plot_i,
                        fit_reg=False,
                        hue="formation number",
-                       #  scatter_kws=scatter_kws,
+                       #scatter_kws=scatter_kws,
                        legend=True,
                        legend_out=True,
                        palette=self._clot,
