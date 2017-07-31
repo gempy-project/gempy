@@ -38,6 +38,7 @@ GemPy requires `Python 3.X` and makes use of numerous open-source libraries:
 * `numpy`
 * `pandas`
 * `matplotlib`
+* `seaborn`
 * `theano`
 
 Optional:
