@@ -22,7 +22,7 @@ from scipy.constants import G
 
 
 class GeoPhysicsPreprocessing_pro(object):
-    def __init__(self, interp_data, ai_extent, ai_resolution, ai_z = None):
+    def __init__(self, interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
 
         self.interp_data = interp_data
         self.ai_extent = ai_extent
@@ -30,17 +30,94 @@ class GeoPhysicsPreprocessing_pro(object):
         self.model_grid = interp_data.geo_data_res.grid.grid
         if ai_z is None:
             ai_z = self.model_grid[:, 2].max()
-        self.aiborne_plane = self.set_airborne_plane(ai_z, self.ai_resolution)
+
+        self.airborne_plane = self.set_airborne_plane(ai_z, self.ai_resolution)
+
         self.model_resolution = interp_data.resolution[0] * interp_data.resolution[1] * interp_data.resolution[2]
+        self.vox_size = self.set_vox_size()
 
 
+        if range_max is None:
+            self.range_max = self.default_range()
 
-        # Init boolean that select the voxels that affect a given measurement point
+        # Boolean array that select the voxels that affect each measurement. Size is measurement times resolution
+        self.b_all = np.zeros((0, self.model_resolution), dtype=bool)
 
+        self.eu = self.compile_eu_f()
 
-        pass
+    def compute_gravity(self, n_chunck=25):
+        # Init
+        i_0 = 0
 
-    def eu_f(self):
+        for i_1 in np.arange(n_chunck, self.airborne_plane.shape[0] + 1, n_chunck, dtype=int):
+
+            # Select the number of measurements to compute in this iteration
+            airborne_plane_s = self.airborne_plane[i_0, i_1]
+            dist = self.eu(airborne_plane_s, self.model_resolution)
+
+            # Boolean selection
+            b = dist < self.range_max
+
+            # Release memory
+            del dist
+
+            # Save selection
+            self.b_all = np.vstack((self.b_all, b))
+
+            # Compute cartesian distances from measurements to each voxel
+
+            model_grid_rep =  np.repeat(self.model_grid, n_chunck, axis=1)
+            s_gr_x = (
+                model_grid_rep[:, :n_chunck].T[b].reshape(n_chunck, -1) -
+                airborne_plane_s[:, 0].reshape(n_chunck, -1)).astype('float')
+            s_gr_y = (
+                model_grid_rep[:, n_chunck:2*n_chunck].T[b].reshape(n_chunck, -1) -
+                airborne_plane_s[:, 1].reshape(n_chunck, -1)).astype('float')
+            s_gr_z = (
+                model_grid_rep[:, -n_chunck:].T[b].reshape(n_chunck, -1) -
+                airborne_plane_s[:, 2].reshape(n_chunck, -1)).astype('float')
+
+            # getting the coordinates of the corners of the voxel...
+            x_cor = np.stack((s_gr_x - self.vox_size[0], s_gr_x + self.vox_size[0]), axis=2)
+            y_cor = np.stack((s_gr_y - self.vox_size[1], s_gr_y + self.vox_size[1]), axis=2)
+            z_cor = np.stack((s_gr_z - self.vox_size[2], s_gr_z + self.vox_size[2]), axis=2)
+
+            # ...and prepare them for a vectorial op
+            x_matrix = np.repeat(x_cor, 4, axis=2)
+            y_matrix = np.tile(np.repeat(y_cor, 2, axis=2), (1, 1, 2))
+            z_matrix = np.tile(z_cor, (1, 1, 4))
+
+            # Distances to each corner of the voxel
+            s_r = np.sqrt(x_matrix ** 2 + y_matrix ** 2 + z_matrix ** 2)
+
+            # This is the vector that determines the sign of the corner of the voxel
+            mu = np.array([1, -1, -1, 1, -1, 1, 1, -1])
+
+            # Component z of each voxel
+            tz = np.sum(- G * mu * (
+                x_matrix * np.log(y_matrix + s_r) +
+                y_matrix * np.log(x_matrix + s_r) -
+                z_matrix * np.arctan(x_matrix * y_matrix / (z_matrix * s_r))),
+                        axis=2)
+
+            # Stacking the precomputation
+            if i_0 == 0:
+                tz_all = tz
+
+            else:
+                tz_all = np.vstack((tz_all, tz))
+
+            i_0 = i_1
+
+        return tz_all, self.b_all
+
+    def default_range(self):
+        # Max range to select voxels
+        range_ = (self.model_grid[:, 2].max() - self.model_grid[:, 2].min()) * 0.9
+        return range_
+
+    @staticmethod
+    def compile_eu_f():
         # Compile Theano function
         x_1 = T.matrix()
         x_2 = T.matrix()
@@ -63,7 +140,7 @@ class GeoPhysicsPreprocessing_pro(object):
         # Create xy meshgrid
         xy = np.meshgrid(np.linspace(ai_extent_rescaled.iloc[0], ai_extent_rescaled.iloc[1], res_grav[0]),
                          np.linspace(ai_extent_rescaled.iloc[2], ai_extent_rescaled.iloc[3], res_grav[1]))
-        z = np.ones(res_grav[0]*res_grav[1])*z_res
+        z = np.ones(self.ai_resolution[0]*self.ai_resolution[1])*z_res
 
         # Transformation
         xy_ravel = np.vstack(map(np.ravel, xy))
@@ -71,6 +148,13 @@ class GeoPhysicsPreprocessing_pro(object):
 
         return airborne_plane
 
+    def set_vox_size(self):
+
+        x_extent = self.interp_data.extent_rescaled.iloc[1] - self.interp_data.extent_rescaled.iloc[0]
+        y_extent = self.interp_data.extent_rescaled.iloc[3] - self.interp_data.extent_rescaled.iloc[2]
+        z_extent = self.interp_data.extent_rescaled.iloc[5] - self.interp_data.extent_rescaled.iloc[4]
+        vox_size = np.array([x_extent, y_extent, z_extent]) / self.interp_data.data.resolution
+        return vox_size
 
 
 

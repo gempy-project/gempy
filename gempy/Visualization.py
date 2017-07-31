@@ -43,6 +43,7 @@ from gempy.colors import *
 
 # TODO: inherit pygeomod classes
 # import sys, os
+sns.set_context('talk')
 
 
 class PlotData2D(object):
@@ -96,17 +97,18 @@ class PlotData2D(object):
 
         """
 
-        plt.style.use(['seaborn-white', 'seaborn-paper'])
+        plt.style.use(['seaborn-white', 'seaborn-talk'])
         # sns.set_context("paper")
         # matplotlib.rc("font", family="Helvetica")
 
-    def plot_data(self, direction="y", series="all", **kwargs):
+    def plot_data(self, direction="y", data_type = 'all', series="all", **kwargs):
         """
         Plot the projecton of the raw data (interfaces and foliations) in 2D following a
         specific directions
 
         Args:
             direction(str): xyz. Caartesian direction to be plotted
+            data_type (str): type of data to plot. 'all', 'interfaces' or 'foliations'
             series(str): series to plot
             **kwargs: seaborn lmplot key arguments. (TODO: adding the link to them)
 
@@ -114,6 +116,8 @@ class PlotData2D(object):
             Data plot
 
         """
+        if 'scatter_kws' not in kwargs:
+            kwargs['scatter_kws'] = {"marker": "D", "s": 100}
 
         x, y, Gx, Gy = self._slice(direction)[4:]
 
@@ -128,21 +132,38 @@ class PlotData2D(object):
             series_to_plot_i = self._data.interfaces[self._data.interfaces["series"] == series]
             series_to_plot_f = self._data.foliations[self._data.foliations["series"] == series]
 
-        sns.lmplot(x, y,
-                   data=series_to_plot_i,
-                   fit_reg=False,
-                   hue="formation",
-                   scatter_kws={"marker": "D",
-                                "s": 100},
-                   legend=True,
-                   legend_out=True,
-                   palette=self._sns_palette,
-                   **kwargs)
+        if data_type == 'all':
+            sns.lmplot(x, y,
+                       data=series_to_plot_i,
+                       fit_reg=False,
+                       hue="formation",
+                     #  scatter_kws=scatter_kws,
+                       legend=True,
+                       legend_out=True,
+                       palette=self._sns_palette,
+                       **kwargs)
 
-        # Plotting orientations
-        plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
-                   series_to_plot_f[Gx], series_to_plot_f[Gy],
-                   pivot="tail")
+
+            # Plotting orientations
+            plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
+                       series_to_plot_f[Gx], series_to_plot_f[Gy],
+                       pivot="tail")
+
+        if data_type == 'interfaces':
+            sns.lmplot(x, y,
+                       data=series_to_plot_i,
+                       fit_reg=False,
+                       hue="formation",
+                       #  scatter_kws=scatter_kws,
+                       legend=True,
+                       legend_out=True,
+                       palette=self._sns_palette,
+                       **kwargs)
+
+        if data_type == 'foliations':
+            plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
+                       series_to_plot_f[Gx], series_to_plot_f[Gy],
+                       pivot="tail")
 
         plt.xlabel(x)
         plt.ylabel(y)

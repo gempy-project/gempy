@@ -10,7 +10,6 @@ setup(
         'matplotlib',
         'theano',
         'scikit-image',
-        'vtk'
     ],
     url='https://github.com/cgre-aachen/gempy',
     download_url='https://github.com/cgre-aachen/gempy/archive/0.911.tar.gz',

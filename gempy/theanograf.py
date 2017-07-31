@@ -382,7 +382,6 @@ class TheanoGraph_pro(object):
                                        var_with_name_simple=True)
         return C_GI
 
-
     def universal_matrix(self):
         """
         Create the drift matrices for the potential field and its gradient
@@ -910,8 +909,6 @@ class TheanoGraph_pro(object):
             Z_x = theano.printing.Print('Potential field at all points')(Z_x)
         return Z_x
 
-
-
     def potential_field_at_interfaces(self):
         """
         Potential field at interfaces. To avoid errors I take all the points of rest that belong to one interface
@@ -1311,17 +1308,6 @@ class TheanoGraph_pro(object):
     # Geophysics
     # ==================================
     #
-    def choose_cells(self, grid, measure_points):
-        """
-        Preprocessing to see which nearby cells we use for the gravity
-        Args:
-            grid:
-            measure_points:
-
-        Returns:
-
-        """
-        return bool
 
 
     # def slice_cells(self, selected_cells, block_lith):

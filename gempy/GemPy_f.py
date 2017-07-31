@@ -259,7 +259,7 @@ def set_foliations(geo_data, foliat_Dataframe, append=False, update_p_field=True
 #         geo_data.grid = geo_data.GridClass(extent, resolution, grid_type=grid_type, **kwargs)
 
 
-def plot_data(geo_data, direction="y", series="all", **kwargs):
+def plot_data(geo_data, direction="y", data_type = 'all', series="all", **kwargs):
     """
     Plot the projection of the raw data (interfaces and foliations) in 2D following a
     specific directions
@@ -273,7 +273,7 @@ def plot_data(geo_data, direction="y", series="all", **kwargs):
         None
     """
     plot = PlotData2D(geo_data)
-    plot.plot_data(direction=direction, series=series, **kwargs)
+    plot.plot_data(direction=direction, data_type=data_type, series=series, **kwargs)
     # TODO saving options
 
 

@@ -216,8 +216,8 @@ class InputData(object):
         """
         import pandas as pn
         if verbosity == 0:
-            show_par_f = ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity','formation', 'series', ]
-            show_par_i = ['X', 'Y', 'Z', 'formation', 'series']
+            show_par_f = ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series', 'annotations']
+            show_par_i = ['X', 'Y', 'Z', 'formation', 'series', 'annotations']
         else:
             show_par_f = self.foliations.columns
             show_par_i = self.interfaces.columns
@@ -453,7 +453,7 @@ class InputData(object):
                                                  inplace=True)
 
         # Give formation number
-        if not 'formation number' in self.interfaces.columns:
+        if not 'formation number' in self.interfaces.columns or not 'formation number' in self.foliations.columns:
             # print('I am here')
             self.set_formation_number()
 
@@ -469,6 +469,9 @@ class InputData(object):
         # Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset
         # the index. For some of the methods (pn.drop) we have to apply afterwards we need to reset these indeces
         self.interfaces.reset_index(drop=True, inplace=True)
+
+        # Update labels for anotations
+        self.set_annotations()
 
     def set_formation_number(self, formation_order=None):
         """
@@ -488,6 +491,19 @@ class InputData(object):
             self.foliations['formation number'] = self.foliations['formation'].replace(ip_dict)
         except ValueError:
             pass
+
+    def set_annotations(self):
+
+        point_num = self.interfaces.groupby('formation number').cumcount()
+        point_l = [r'${\bf{x}}_{\alpha \,{\bf{' + str(f) + '}},' + str(p) + '}$'
+                   for p, f in zip(point_num, self.interfaces['formation number'])]
+
+        foliation_num = self.foliations.groupby('formation number').cumcount()
+        foli_l = [r'${\bf{x}}_{\beta \,{\bf{' + str(f) + '}},' + str(p) + '}$'
+                   for p, f in zip(foliation_num, self.foliations['formation number'])]
+
+        self.interfaces['annotations'] = point_l
+        self.foliations['annotations'] = foli_l
 
     def reset_indices(self):
         """
