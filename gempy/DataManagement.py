@@ -663,8 +663,12 @@ class InputData(object):
                 _dip, _az = _get_dip(_normal)
                 # now get centroid of three points
                 _centroid = _get_centroid(_points[0], _points[1], _points[2])
+                # set polarity according to overturned or not
+                if _dip > 0:
+                    _pol = 1
+                elif _dip < 0:
+                    _pol = -1
 
-                _pol = 1  # TODO: make dynamic
                 _fmt = np.unique(self.interfaces[_filter]["formation"])[0]
                 # _series = np.unique(self.interfaces[_filter]["series"])[0]
 
