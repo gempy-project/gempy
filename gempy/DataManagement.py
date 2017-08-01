@@ -76,7 +76,7 @@ class InputData(object):
             self.import_data_csv(path_i=path_i, path_f=path_f)
 
         # DEP-
-       # self._set_formations()
+        # self._set_formations()
 
         # If not provided set default series
         self.series = self.set_series()
@@ -338,7 +338,7 @@ class InputData(object):
 
         self.set_series()
         self.order_table()
-       # self.interfaces.reset_index(drop=True, inplace=True)
+        # self.interfaces.reset_index(drop=True, inplace=True)
 
     def set_foliations(self, foliat_Dataframe, append=False):
         """
@@ -359,7 +359,7 @@ class InputData(object):
         self.set_series()
         self.order_table()
         self.calculate_gradient()
-      #  self.foliations.reset_index(drop=True, inplace=True)
+        #  self.foliations.reset_index(drop=True, inplace=True)
 
     def set_series(self, series_distribution=None, order=None):
         """
@@ -632,6 +632,98 @@ class InputData(object):
     #     block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
     #                                     self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
     #     return block_geomodeller
+
+    def set_triangle_foliations(self, verbose=False):
+        # next we need to iterate over every unique triangle id to create a foliation from each triplet
+        # of points and assign the same triange_id to it
+        tri_ids = np.unique(self.interfaces["triangle_id"])
+
+        # check if column in foliations too, else create it
+        if "triangle_id" not in self.foliations.columns:
+            self.foliations["triangle_id"] = "NaN"
+
+        # loop over all triangle_id's
+        for tri_id in tri_ids[tri_ids != "NaN"]:
+            # get the three points dataframe
+            _filter = self.interfaces["triangle_id"] == tri_id
+
+            # check if triangle foliation value already exists
+            if tri_id in np.unique(self.foliations["triangle_id"]):
+                continue  # if yes, continue with the next iteration not not double append
+
+            if len(self.interfaces[_filter]) == 3:
+                # get points as [x,y,z]
+                _points = []
+                for i, interf in self.interfaces[_filter].iterrows():
+                    _points.append([interf["X"], interf["Y"], interf["Z"]])
+
+                # get plane normal from three points
+                _normal = _get_plane_normal(_points[0], _points[1], _points[2])
+                # get dip and azimuth
+                _dip, _az = _get_dip(_normal)
+                # now get centroid of three points
+                _centroid = _get_centroid(_points[0], _points[1], _points[2])
+
+                _pol = 1  # TODO: make dynamic
+                _fmt = np.unique(self.interfaces[_filter]["formation"])[0]
+                # _series = np.unique(self.interfaces[_filter]["series"])[0]
+
+                if verbose:
+                    print("plane normal:", _normal)
+                    print("dip", _dip)
+                    print("az", _az)
+                    print("centroid x,y,z:", _centroid)
+
+                _f = [_centroid[0], _centroid[1], _centroid[2], _dip, _az, _pol, _fmt, tri_id]
+                _fs = pn.Series(_f, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'triangle_id'])
+                _df = _fs.to_frame().transpose()
+                self.set_foliations(_df, append=True)
+            elif len(self.interfaces[_filter]) > 3:
+                print("More than three points share the same triangle-id: " + str(
+                    tri_id) + ". Only exactly 3 points are supported.")
+            elif len(self.interfaces[_filter]) < 3:
+                print("Less than three points share the same triangle-id: " + str(
+                    tri_id) + ". Only exactly 3 points are supported.")
+
+
+def _get_plane_normal(A, B, C):
+    """Returns normal vector of plane defined by points A,B,C as [x,y,z]."""
+    A = np.array(A)
+    B = np.array(B)
+    C = np.array(C)
+
+    a = B - A
+    b = B - C
+
+    return np.cross(a, b)
+
+
+def _get_dip(normal):
+    """Returns dip angle against horizontal plane of a plane normal vector [x,y,z]."""
+    dip = np.arccos(normal[2] / np.linalg.norm(normal)) / np.pi * 180.
+
+    dip_direction = None
+    if normal[0] >= 0 and normal[1] > 0:
+        dip_direction = np.arctan(normal[0] / normal[1]) / np.pi * 180.
+    # border cases where arctan not defined:
+    elif normal[0] > 0 and normal[1] == 0:
+        dip_direction = 90
+    elif normal[0] < 0 and normal[1] == 0:
+        dip_direction = 270
+    elif normal[1] < 0:
+        dip_direction = 180 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
+    elif normal[0] < 0 and normal[1] >= 0:
+        dip_direction = 360 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
+
+    return dip, dip_direction
+
+
+def _get_centroid(A, B, C):
+    """Returns centroid (x,y,z) of three points 3x[x,y,z]."""
+    X = (A[0]+B[0]+C[0])/3
+    Y = (A[1]+B[1]+C[1])/3
+    Z = (A[2]+B[2]+C[2])/3
+    return X,Y,Z
 
 
 class GridClass(object):
