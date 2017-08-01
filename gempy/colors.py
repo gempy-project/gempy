@@ -8,22 +8,35 @@
 
     gempy is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
     GNU General Public License for more details.
 
     You should have received a copy of the GNU General Public License
-    along with Foobar.  If not, see <http://www.gnu.org/licenses/>.
+    along with gempy. If not, see <http://www.gnu.org/licenses/>.
 """
+
+import numpy as np
+import matplotlib
 
 # Google Material Design Colors as rgb or hex dictionaries
 
-color_names = ["indigo", "red", "yellow", "brown", "orange",
-           "green", "blue", "amber", "pink", "light-blue",
-           "lime", "blue-grey", "deep-orange", "grey", "cyan",
-           "deep-purple", "purple", "teal", "light-green"]
+color_names = ["indigo", "red", "yellow", "brown", "orange", "green", "blue", "amber", "pink", "light-blue",
+               "lime", "blue-grey", "deep-orange", "grey", "cyan", "deep-purple", "purple", "teal", "light-green"]
 
-color_subnames = ['50', '100', '200', '300', '400', '500', '600', '700', '800', '900']
-              # 'a100','a200', 'a400', 'a700']
+color_subnames = ['400', '700', '100', '200', '300', '500', '600', '50', '800', '900']  # 'a100','a200', 'a400', 'a700']
+
+
+def _create_color_lot(color_names, color_subnames, color_dict_rgb):
+    """Returns color [r,g,b] LOT for formation numbers."""
+    lot = {}
+    i = 0
+    for sn in np.arange(len(color_subnames)):
+        for n in np.arange(len(color_names)):
+            lot[i] = color_dict_rgb[color_names[n]][color_subnames[sn]]
+            i += 1
+
+    return lot
+
 
 color_dict_rgb = {'amber': {'100': [1.0, 0.9254901960784314, 0.7019607843137254],
                             '200': [1.0, 0.8784313725490196, 0.5098039215686274],
@@ -587,3 +600,14 @@ color_dict_hex = {
         "900": "#263238"
     }
 }
+
+# create dictionary color LOT, e.g. for seaborn use and basis for listed colormap in matplotlib
+color_lot = _create_color_lot(color_names, color_subnames, color_dict_rgb)
+# listed colormap for matplotlib
+bounds = [key for key in color_lot.keys()]
+c = []
+for key in bounds:
+    c.append(color_lot[key])
+
+cmap = matplotlib.colors.ListedColormap(c)
+norm = matplotlib.colors.BoundaryNorm(bounds, cmap.N)

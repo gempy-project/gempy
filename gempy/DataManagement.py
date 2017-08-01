@@ -641,6 +641,8 @@ class InputData(object):
         # check if column in foliations too, else create it
         if "triangle_id" not in self.foliations.columns:
             self.foliations["triangle_id"] = "NaN"
+            if verbose:
+                print("Setting triangle_id column in geo_data.foliations.")
 
         # loop over all triangle_id's
         for tri_id in tri_ids[tri_ids != "NaN"]:
@@ -649,16 +651,22 @@ class InputData(object):
 
             # check if triangle foliation value already exists
             if tri_id in np.unique(self.foliations["triangle_id"]):
+                if verbose:
+                    print("triangle_id already in geo_data.foliations - skipping it.")
                 continue  # if yes, continue with the next iteration not not double append
 
+            if verbose:
+                print("tri_id: "+tri_id)
             if len(self.interfaces[_filter]) == 3:
                 # get points as [x,y,z]
                 _points = []
                 for i, interf in self.interfaces[_filter].iterrows():
                     _points.append([interf["X"], interf["Y"], interf["Z"]])
+                if verbose:
+                    print("3 points xyz:",_points)
 
                 # get plane normal from three points
-                _normal = _get_plane_normal(_points[0], _points[1], _points[2])
+                _normal = _get_plane_normal(_points[0], _points[1], _points[2], verbose=verbose)
                 # get dip and azimuth
                 _dip, _az = _get_dip(_normal)
                 # now get centroid of three points
@@ -690,16 +698,19 @@ class InputData(object):
                     tri_id) + ". Only exactly 3 points are supported.")
 
 
-def _get_plane_normal(A, B, C):
+def _get_plane_normal(A, B, C, verbose=False):
     """Returns normal vector of plane defined by points A,B,C as [x,y,z]."""
     A = np.array(A)
     B = np.array(B)
     C = np.array(C)
 
-    a = B - A
-    b = B - C
+    v1 = C - A
+    v2 = B - A
+    if verbose:
+        print("vector C-A", v1)
+        print("vector B-A", v2)
 
-    return np.cross(a, b)
+    return np.cross(v1, v2)
 
 
 def _get_dip(normal):
