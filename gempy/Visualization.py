@@ -38,9 +38,7 @@ import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from IPython.core.debugger import Pdb
-#from gempy.colors import color_dict_rgb, color_dict_hex
-from gempy.colors import *
-
+from gempy.colors import color_lot, cmap, norm
 # TODO: inherit pygeomod classes
 # import sys, os
 sns.set_context('talk')
@@ -60,9 +58,12 @@ class PlotData2D(object):
         verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0
     """
 
-    def __init__(self, geo_data, cd_rgb=color_dict_rgb, cd_hex=color_dict_hex, **kwargs):
+    def __init__(self, geo_data, color_lot=color_lot, cmap=cmap, norm=norm, **kwargs):
 
         self._data = geo_data
+        self._color_lot = color_lot
+        self._cmap = cmap
+        self._norm = norm
 
         if 'potential_field' in kwargs:
             self._potential_field_p = kwargs['potential_field']
@@ -71,19 +72,6 @@ class PlotData2D(object):
             # and block. 2D 3D? Improving the iteration
             # with pandas framework
         self._set_style()
-
-        self._cd_rgb = cd_rgb
-        self._cd_hex = cd_hex
-        self._clot = _create_color_lot(self._data, self._cd_rgb)
-
-        # listed colormap for matplotlib
-        self._bounds = [key for key in self._clot.keys()]
-        self._c = []
-        for key in self._bounds:
-            self._c.append(self._clot[key])
-
-        self._cmap = matplotlib.colors.ListedColormap(self._c)
-        self._norm = matplotlib.colors.BoundaryNorm(self._bounds, self._cmap.N)
 
     def _set_style(self):
         """
@@ -111,7 +99,10 @@ class PlotData2D(object):
 
         """
         if 'scatter_kws' not in kwargs:
-            kwargs['scatter_kws'] = {"marker": "D", "s": 100}
+            kwargs['scatter_kws'] = {"marker": "D",
+                                     "s": 100,
+                                     "edgecolors": "black",
+                                     "linewidths": 1}
 
         x, y, Gx, Gy = self._slice(direction)[4:]
 
@@ -127,16 +118,15 @@ class PlotData2D(object):
             series_to_plot_f = self._data.foliations[self._data.foliations["series"] == series]
 
         if data_type == 'all':
-            sns.lmplot(x, y,
-                       data=series_to_plot_i,
-                       fit_reg=False,
-                       hue="formation",
-                     #  scatter_kws=scatter_kws,
-                       legend=True,
-                       legend_out=True,
-                       palette=self._sns_palette,
-                       **kwargs)
-
+            p = sns.lmplot(x, y,
+                           data=series_to_plot_i,
+                           fit_reg=False,
+                           hue="formation number",
+                           #scatter_kws=scatter_kws,
+                           legend=False,
+                           legend_out=True,
+                           palette=self._color_lot,
+                           **kwargs)
 
             # Plotting orientations
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
@@ -144,20 +134,27 @@ class PlotData2D(object):
                        pivot="tail")
 
         if data_type == 'interfaces':
-            sns.lmplot(x, y,
-                       data=series_to_plot_i,
-                       fit_reg=False,
-                       hue="formation",
-                       #  scatter_kws=scatter_kws,
-                       legend=True,
-                       legend_out=True,
-                       palette=self._sns_palette,
-                       **kwargs)
+            p = sns.lmplot(x, y,
+                           data=series_to_plot_i,
+                           fit_reg=False,
+                           hue="formation number",
+                           #scatter_kws=scatter_kws,
+                           legend=False,
+                           legend_out=True,
+                           palette=self._color_lot,
+                           **kwargs)
 
         if data_type == 'foliations':
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
                        pivot="tail")
+
+        # code for moving legend outside of plot
+        box = p.ax.get_position()  # get figure position
+        # reduce width of box to make room for outside legend
+        p.ax.set_position([box.x0, box.y0, box.width * 0.85, box.height])
+        # put legend outside
+        p.ax.legend(loc="center right", title="Formation", bbox_to_anchor=(1.25, 0.5), ncol=1)
 
         plt.xlabel(x)
         plt.ylabel(y)
@@ -236,7 +233,7 @@ class PlotData2D(object):
             self.plot_data(direction, 'all')
 
         # TODO: Formation numbers in block section do not appear to correspond to data???
-        plt.imshow(plot_block[_a, _b, _c].T, origin="bottom", cmap=self._cmap, #norm=self._norm,
+        plt.imshow(plot_block[_a, _b, _c].T, origin="bottom", cmap=self._cmap,  #norm=self._norm,
                    extent=extent_val,
                    interpolation=interpolation, **kwargs)
         # plt.colorbar()
@@ -351,7 +348,7 @@ class steano3D():
             return vol.plot()
 
 
-class vtkVisualization():
+class vtkVisualization:
     """
     Class to visualize data and results in 3D. Init will create all the render properties while the method render
     model will lunch the window. Using set_interfaces, set_foliations and set_surfaces in between can be chosen what
@@ -366,12 +363,11 @@ class vtkVisualization():
         camera_list (list): list of cameras for the distinct renderers
         ren_list (list): list containing the vtk renderers
     """
-    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, cd_rgb=color_dict_rgb):
+    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, color_lot=color_lot):
 
         # self.C_LOT = self.color_lot_create(geo_data)
         self.geo_data = geo_data
-        self.cd_rgb = cd_rgb
-        self.C_LOT = _create_color_lot(self.geo_data, self.cd_rgb)
+        self.C_LOT = color_lot
         # Number of renders
         self.n_ren = 4
 
