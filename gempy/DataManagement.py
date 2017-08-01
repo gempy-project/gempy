@@ -391,13 +391,14 @@ class InputData(object):
         # The order of the series is very important since it dictates which one is on top of the stratigraphic pile
         # If it is not given we take the dictionaries keys. NOTICE that until python 3.6 these keys are pretty much
         # random
-        if not order:
+        if order is None:
             order = _series.keys()
 
         # TODO assert len order is equal to len of the dictionary
 
         # We create a dataframe with the links
-        _series = pn.DataFrame(data=_series, columns=order)
+        #_series = pn.DataFrame(data=_series) #columns=order)
+        _series = pn.DataFrame(dict([ (k,pn.Series(v)) for k,v in _series.items() ]), columns=order)
 
         # Now we fill the column series in the interfaces and foliations tables with the correspondant series and
         # assigned number to the series
@@ -482,7 +483,7 @@ class InputData(object):
         Returns:
             Column in the interfaces and foliations dataframes
         """
-        if not formation_order:
+        if formation_order is None:
             formation_order = self.interfaces["formation"].unique()
         try:
             ip_addresses = formation_order
