@@ -46,7 +46,7 @@ class Topology:
         self.lith_to_labels_lot = self._lithology_labels_lot()
         self.labels_to_lith_lot = self._labels_lithology_lot()
 
-    def _get_labels(self, neighbors=4, background=999, return_num=True):
+    def _get_labels(self, neighbors=8, background=999, return_num=True):
         """Get label block."""
         return label(self.ublock, neighbors, return_num, background)
 
