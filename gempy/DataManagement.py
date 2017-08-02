@@ -672,9 +672,9 @@ class InputData(object):
                 # now get centroid of three points
                 _centroid = _get_centroid(_points[0], _points[1], _points[2])
                 # set polarity according to overturned or not
-                if _dip > 0:
+                if -90 < _dip < 90:
                     _pol = 1
-                elif _dip < 0:
+                else:
                     _pol = -1
 
                 _fmt = np.unique(self.interfaces[_filter]["formation"])[0]
