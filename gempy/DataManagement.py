@@ -698,6 +698,33 @@ class InputData(object):
                     tri_id) + ". Only exactly 3 points are supported.")
 
 
+class DataTriangle:
+    # TODO: Think about directly writing it into df except return?! would be cool
+    # TODO: dip, az, norm, etc
+    def __init__(self, geo_data, tri_id):
+        self.geo_data = geo_data
+        self.tri_id = tri_id
+
+        self._f = self.geo_data.interfaces["triangle_id"] == self.tri_id
+        self.i = self.geo_data.interfaces[self._f].index
+        self.A, self.B, self.C = self._get_points()
+
+    def _get_points(self):
+        A = [self.geo_data.interfaces.get_value(self.i[0], "X"),
+             self.geo_data.interfaces.get_value(self.i[0], "Y"),
+             self.geo_data.interfaces.get_value(self.i[0], "Z")]
+
+        B = [self.geo_data.interfaces.get_value(self.i[1], "X"),
+             self.geo_data.interfaces.get_value(self.i[1], "Y"),
+             self.geo_data.interfaces.get_value(self.i[1], "Z")]
+
+        C = [self.geo_data.interfaces.get_value(self.i[2], "X"),
+             self.geo_data.interfaces.get_value(self.i[2], "Y"),
+             self.geo_data.interfaces.get_value(self.i[2], "Z")]
+
+        return A, B, C
+
+
 def _get_plane_normal(A, B, C, verbose=False):
     """Returns normal vector of plane defined by points A,B,C as [x,y,z]."""
     A = np.array(A)
