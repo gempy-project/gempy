@@ -698,31 +698,63 @@ class InputData(object):
                     tri_id) + ". Only exactly 3 points are supported.")
 
 
-class DataTriangle:
+class DataPlane:
     # TODO: Think about directly writing it into df except return?! would be cool
     # TODO: dip, az, norm, etc
-    def __init__(self, geo_data, tri_id):
+    def __init__(self, geo_data, group_id, verbose=False):
         self.geo_data = geo_data
-        self.tri_id = tri_id
-
-        self._f = self.geo_data.interfaces["triangle_id"] == self.tri_id
+        self.group_id = group_id
+        # df bool filter
+        self._f = self.geo_data.interfaces["triangle_id"] == self.group_id
+        # df indices
         self.i = self.geo_data.interfaces[self._f].index
-        self.A, self.B, self.C = self._get_points()
+        # get point coordinates from dataframe
+        self.points = self._get_points()
+        # get point cloud centroid and normal vector of plane
+        self.centroid, self.normal = self._fit_plane_svd()
+        # get dip and azimuth of plane from normal vector
+        self.dip, self.azimuth = self._get_dip(verbose=verbose)
 
     def _get_points(self):
-        A = [self.geo_data.interfaces.get_value(self.i[0], "X"),
-             self.geo_data.interfaces.get_value(self.i[0], "Y"),
-             self.geo_data.interfaces.get_value(self.i[0], "Z")]
+        """Returns n points from geo_data.interfaces matching group_id in np.array shape (n, 3)."""
+        # TODO: zip
+        x = []
+        y = []
+        z = []
+        for i, row in self.geo_data.interfaces[self._f].iterrows():
+            x.append(row["X"])
+            y.append(row["Y"])
+            z.append(row["Z"])
+        return np.array([x, y, z])
 
-        B = [self.geo_data.interfaces.get_value(self.i[1], "X"),
-             self.geo_data.interfaces.get_value(self.i[1], "Y"),
-             self.geo_data.interfaces.get_value(self.i[1], "Z")]
+    def _fit_plane_svd(self):
+        """Fit plane to points using singular value decomposition (svd). Returns point cloud centroid [x,y,z] and
+        normal vector of plane [x,y,z]."""
+        from numpy.linalg import svd
+        # https://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points
+        ctr = self.points.mean(axis=1)  # calculate point cloud centroid [x,y,z]
+        x = self.points - ctr[:, np.newaxis]
+        m = np.dot(x, x.T)  # np.cov(x)
+        return ctr, svd(m)[0][:, -1]
 
-        C = [self.geo_data.interfaces.get_value(self.i[2], "X"),
-             self.geo_data.interfaces.get_value(self.i[2], "Y"),
-             self.geo_data.interfaces.get_value(self.i[2], "Z")]
+    def _get_dip(self, verbose=False):
+        """Returns dip angle and azimuth of normal vector [x,y,z]."""
+        dip = np.arccos(self.normal[2] / np.linalg.norm(self.normal)) / np.pi * 180.
 
-        return A, B, C
+        azimuth = None
+        if self.normal[0] >= 0 and self.normal[1] > 0:
+            azimuth = np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
+        # border cases where arctan not defined:
+        elif self.normal[0] > 0 and self.normal[1] == 0:
+            azimuth = 90
+        elif self.normal[0] < 0 and self.normal[1] == 0:
+            azimuth = 270
+        elif self.normal[1] < 0:
+            azimuth = 180 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
+        elif self.normal[1] >= 0 < self.normal[0]:
+            azimuth = 360 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
+
+        return dip, azimuth
 
 
 def _get_plane_normal(A, B, C, verbose=False):
@@ -738,26 +770,6 @@ def _get_plane_normal(A, B, C, verbose=False):
         print("vector B-A", v2)
 
     return np.cross(v1, v2)
-
-
-def _get_dip(normal):
-    """Returns dip angle against horizontal plane of a plane normal vector [x,y,z]."""
-    dip = np.arccos(normal[2] / np.linalg.norm(normal)) / np.pi * 180.
-
-    dip_direction = None
-    if normal[0] >= 0 and normal[1] > 0:
-        dip_direction = np.arctan(normal[0] / normal[1]) / np.pi * 180.
-    # border cases where arctan not defined:
-    elif normal[0] > 0 and normal[1] == 0:
-        dip_direction = 90
-    elif normal[0] < 0 and normal[1] == 0:
-        dip_direction = 270
-    elif normal[1] < 0:
-        dip_direction = 180 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
-    elif normal[0] < 0 and normal[1] >= 0:
-        dip_direction = 360 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
-
-    return dip, dip_direction
 
 
 def _get_centroid(A, B, C):
