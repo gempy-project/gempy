@@ -700,20 +700,58 @@ class InputData(object):
 
 class DataPlane:
     # TODO: Think about directly writing it into df except return?! would be cool
-    # TODO: dip, az, norm, etc
-    def __init__(self, geo_data, group_id, verbose=False):
+    def __init__(self, geo_data, group_id, mode, verbose=False):
+        """
+
+        :param geo_data: InputData object
+        :param group_id: (str) identifier for the data group
+        :param mode: (str), either interf_to_fol or fol_to_interf
+        :param verbose: (bool) adjusts verbosity, default False
+        """
         self.geo_data = geo_data
         self.group_id = group_id
-        # df bool filter
-        self._f = self.geo_data.interfaces["triangle_id"] == self.group_id
-        # df indices
-        self.i = self.geo_data.interfaces[self._f].index
-        # get point coordinates from dataframe
-        self.points = self._get_points()
-        # get point cloud centroid and normal vector of plane
-        self.centroid, self.normal = self._fit_plane_svd()
-        # get dip and azimuth of plane from normal vector
-        self.dip, self.azimuth = self._get_dip(verbose=verbose)
+
+        if mode is "interf_to_fol":
+            # df bool filter
+            self._f = self.geo_data.interfaces["group_id"] == self.group_id
+            # get formation string
+            self.formation = self.geo_data.interfaces[self._f]["formation"].values[0]
+            # df indices
+            self.interf_i = self.geo_data.interfaces[self._f].index
+            # get point coordinates from df
+            self.interf_p = self._get_points()
+            # get point cloud centroid and normal vector of plane
+            self.centroid, self.normal = self._fit_plane_svd()
+            # get dip and azimuth of plane from normal vector
+            self.dip, self.azimuth, self.polarity = self._get_dip(verbose=verbose)
+
+        elif mode == "fol_to_interf":
+            self._f = self.geo_data.set_foliations["group_id"] == self.group_id
+            self.formation = self.geo_data.foliations[self._f]["formation"].values[0]
+
+            # get interface indices
+            self.interf_i = self.geo_data.interfaces[self._f].index
+            # get interface point coordinates from df
+            self.interf_p = self._get_points()
+            self.normal = [self.geo_data.foliations[self._f]["G_x"],
+                           self.geo_data.foliations[self._f]["G_y"],
+                           self.geo_data.foliations[self._f]["G_z"]]
+            self.centroid = [self.geo_data.foliations[self._f]["X"],
+                             self.geo_data.foliations[self._f]["Y"],
+                             self.geo_data.foliations[self._f]["Z"]]
+            # modify all Z of interface points belonging to group_id to fit plane
+            self._fol_to_p()
+
+        else:
+            print("Mode must be either 'interf_to_fol' or 'fol_to_interf'.")
+
+    def _fol_to_p(self):
+        a, b, c = self.normal
+        for i, row in self.geo_data.interfaces[self._f].iterrows():
+            # iterate over each point and recalculate Z, set Z
+            # x, y, z = row["X"], row["Y"], row["Z"]
+            Z = (-1*(a*self.centroid[0]+b*self.centroid[0]+c*self.centroid[0])) / c
+            self.geo_data.interfaces.set_value(i, "Z", Z)
 
     def _get_points(self):
         """Returns n points from geo_data.interfaces matching group_id in np.array shape (n, 3)."""
@@ -732,8 +770,8 @@ class DataPlane:
         normal vector of plane [x,y,z]."""
         from numpy.linalg import svd
         # https://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points
-        ctr = self.points.mean(axis=1)  # calculate point cloud centroid [x,y,z]
-        x = self.points - ctr[:, np.newaxis]
+        ctr = self.interf_p.mean(axis=1)  # calculate point cloud centroid [x,y,z]
+        x = self.interf_p - ctr[:, np.newaxis]
         m = np.dot(x, x.T)  # np.cov(x)
         return ctr, svd(m)[0][:, -1]
 
@@ -754,7 +792,23 @@ class DataPlane:
         elif self.normal[1] >= 0 < self.normal[0]:
             azimuth = 360 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
 
-        return dip, azimuth
+        if -90 < dip < 90:
+            polarity = 1
+        else:
+            polarity = -1
+
+        return dip, azimuth, polarity
+
+    def set_fol(self):
+        """Appends foliation data point for group_id to geo_data.foliations."""
+        if "group_id" not in self.geo_data.foliations.columns:
+            self.geo_data.foliations["group_id"] = "NaN"
+        fol = [self.centroid[0], self.centroid[1], self.centroid[2],
+               self.dip, self.azimuth, self.polarity,
+               self.formation, self.group_id]
+        fol_series = pn.Series(fol, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'group_id'])
+        fol_df = fol_series.to_frame().transpose()
+        self.geo_data.set_foliations(fol_df, append=True)
 
 
 def _get_plane_normal(A, B, C, verbose=False):
