@@ -39,6 +39,8 @@ import sys
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from IPython.core.debugger import Pdb
 from gempy.colors import color_lot, cmap, norm
+#from gempy import compute_model, get_surfaces
+import gempy as gp
 # TODO: inherit pygeomod classes
 # import sys, os
 sns.set_context('talk')
@@ -363,14 +365,17 @@ class vtkVisualization:
         camera_list (list): list of cameras for the distinct renderers
         ren_list (list): list containing the vtk renderers
     """
-    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, color_lot=color_lot):
+    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, color_lot=color_lot, real_time=False):
 
+        self.real_time = real_time
         # self.C_LOT = self.color_lot_create(geo_data)
         self.geo_data = geo_data
+        self.interp_data = None
         self.C_LOT = color_lot
         # Number of renders
         self.n_ren = 4
-
+        self.formation_number = geo_data.interfaces['formation number'].unique()
+        self.formation_name = geo_data.interfaces['formation'].unique()
         # Extents
         try:
             self.extent = geo_data.extent
@@ -483,9 +488,11 @@ class vtkVisualization:
 
         surf_polydata.SetPoints(self.create_surface_points(vertices))
         surf_polydata.SetPolys(self.create_surface_triangles(simplices))
+        surf_polydata.Modified()
 
         surf_mapper = vtk.vtkPolyDataMapper()
         surf_mapper.SetInputData(surf_polydata)
+        surf_mapper.Update()
 
         surf_actor = vtk.vtkActor()
         surf_actor.SetMapper(surf_mapper)
@@ -561,7 +568,7 @@ class vtkVisualization:
         source.Update()
         d.SetInputData(source.GetOutput())
         d.SetHandleSize(0.05)
-        d.SetPlaceFactor(250)
+        d.SetPlaceFactor(self._e_dx/4)
         d.PlaceWidget()
         d.SetNormal(Gx, Gy, Gz)
         d.GetPlaneProperty().SetColor(self.C_LOT[fn])
@@ -577,7 +584,9 @@ class vtkVisualization:
 
         return d
 
-    def set_surfaces(self, vertices, simplices, formations, fns, alpha):
+    def set_surfaces(self, vertices, simplices,
+                      #formations, fns,
+                       alpha=1):
         """
         Create all the surfaces and set them to the corresponding renders for their posterior visualization with
         render_model
@@ -590,13 +599,14 @@ class vtkVisualization:
         Returns:
             None
         """
-        # self.s_rend_1 = []
+        self.surf_rend_1 = []
         # self.s_rend_2 = []
         # self.s_rend_3 = []
         # self.s_rend_4 = []
         # self.s_mapper = []
         # self.s_polydata = []
-
+        formations = self.formation_name
+        fns = self.formation_number
         assert type(
             vertices) is list, 'vertices and simpleces have to be a list of arrays even when only one formation' \
                                'is passed'
@@ -604,7 +614,7 @@ class vtkVisualization:
 
         for v, s, fn in zip(vertices, simplices, fns):
             act, map, pol = self.create_surface(v, s, fn, alpha)
-            #  self.s_rend_1.append(act)
+            self.surf_rend_1.append(act)
             #  self.s_mapper.append(map)
             #  self.s_polydata.append(pol)
             #print(self.s_rend_1)
@@ -723,6 +733,19 @@ class vtkVisualization:
             self.s_rend_4[obj.n_sphere].PlaceWidget(new_center[0] - r_f, new_center[0] + r_f,
                                                     new_center[1] - r_f, new_center[1] + r_f,
                                                     new_center[2] - r_f, new_center[2] + r_f)
+
+        if self.real_time:
+            for surf in self.surf_rend_1:
+                self.ren_list[0].RemoveActor(surf)
+                self.ren_list[1].RemoveActor(surf)
+                self.ren_list[2].RemoveActor(surf)
+                self.ren_list[3].RemoveActor(surf)
+
+            vertices, simpleces = self.update_surfaces_real_time(self.interp_data)
+            print(vertices[0][60])
+            self.set_surfaces(vertices, simpleces)
+
+           # self.renwin.Render()
 
     def planesCallback(self, obj, event):
         """
@@ -945,6 +968,13 @@ class vtkVisualization:
                 pass
 
         return cube_axes_actor
+
+    def update_surfaces_real_time(self, interp_data):
+
+        sol = gp.compute_model(interp_data)
+        v_l, s_l = gp.get_surfaces(sol[-1, 1, :], interp_data, original_scale=False)
+        return v_l, s_l
+
 
     @staticmethod
     def export_vtk_rectilinear(geo_data, block, path=None):

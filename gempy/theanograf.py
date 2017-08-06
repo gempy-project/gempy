@@ -28,7 +28,7 @@ import theano.tensor as T
 import numpy as np
 import sys
 
-theano.config.optimizer = 'fast_compile'
+theano.config.optimizer = 'fast_run'
 theano.config.exception_verbosity = 'high'
 theano.config.compute_test_value = 'off'
 theano.config.floatX = 'float32'
@@ -938,7 +938,7 @@ class TheanoGraph_pro(object):
             Return:
                 theano.tensor.vector: average of the potential per formation
             """
-            average = pfi[T.cast(dim_a, "int32"): T.cast(dim_b, "int32")].sum() / (dim_b - dim_a)
+            average = pfi[T.cast(dim_a, "int32"): T.cast(dim_b, "int32")].sum() / T.cast((dim_b - dim_a), 'float32')
 
             return average  # , {self.pot_value: T.stack([average])}
 
