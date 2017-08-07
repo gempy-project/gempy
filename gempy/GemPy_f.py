@@ -190,7 +190,7 @@ def set_series(geo_data, series_distribution=None, order_series=None,
         self.foliations: one extra column with the given series
     """
     geo_data.set_series(series_distribution=series_distribution, order=order_series)
-
+    geo_data.order_table()
     if verbose > 0:
         return get_series(geo_data)
 
@@ -260,7 +260,7 @@ def set_foliations(geo_data, foliat_Dataframe, append=False, update_p_field=True
 #         geo_data.grid = geo_data.GridClass(extent, resolution, grid_type=grid_type, **kwargs)
 
 
-def plot_data(geo_data, direction="y", data_type = 'all', series="all", **kwargs):
+def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
     """
     Plot the projection of the raw data (interfaces and foliations) in 2D following a
     specific directions
@@ -274,7 +274,7 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", **kwargs
         None
     """
     plot = PlotData2D(geo_data)
-    plot.plot_data(direction=direction, data_type=data_type, series=series, **kwargs)
+    plot.plot_data(direction=direction, data_type=data_type, series=series, legend_font_size=legend_font_size, **kwargs)
     # TODO saving options
 
 

@@ -20,6 +20,7 @@ import pandas as pn
 import matplotlib.pyplot as plt
 from gempy.colors import *
 import matplotlib.cm as cm
+from gempy.colors import color_lot, cmap, norm
 def _create_color_lot(geo_data, cd_rgb):
     """Returns color [r,g,b] LOT for formation numbers."""
     if "formation number" not in geo_data.interfaces or "formation number" not in geo_data.foliations:
@@ -137,7 +138,7 @@ class StratigraphicPile(object):
         series_rect = {}
 
 
-        print(self.anch_series.as_matrix())
+      #  print(self.anch_series.as_matrix())
 
         # Define the initial value of each rectangle
         pos_anch = np.squeeze(self.anch_series.as_matrix())
@@ -163,6 +164,7 @@ class StratigraphicPile(object):
         pos_anch = np.squeeze(self.anch_formations.as_matrix())
         rects = ax.barh(pos_anch, np.ones_like(pos_anch)*2, .5, left = 3.)
 
+        color = 1
         # We connect each rectangle
         for e, formation in enumerate(self.anch_formations.columns):
             # TODO Alex set the colors of the series accordingly
@@ -171,8 +173,10 @@ class StratigraphicPile(object):
                 rects[e].set_alpha(.1)
                 rects[e].set_color('gray')
             else:
-                rects[e].set_color(cm.Paired(e))
+
+                rects[e].set_color(cmap(color))
                 rects[e].set_label(formation)
+                color += 1
             # else:
             #     alpha = 1
             dr = DraggableRectangle(rects[e], geo_data, formation)
@@ -182,8 +186,12 @@ class StratigraphicPile(object):
 
             formation_rect[formation] = dr
         plt.legend(bbox_to_anchor=(1.1, 1.05))
-        plt.show()
-        print('finish', dr.anch_series)
+        #plt.show()
+        #print('finish', dr.anch_series)
+        plt.ion()
+        self.figure= plt.gcf()
+
+
 
 class DraggableRectangle:
     def __init__(self, rect, geo_data, s):
@@ -223,7 +231,7 @@ class DraggableRectangle:
 
         self.selected_rectangle_s = self.rect.s
         self.selected_rectangle_f = self.rect.f
-        print(self.rect.f)
+       # print(self.rect.f)
 
         # We pass all the important attributes through this property
         self.press = x0, y0, event.xdata, event.ydata, self.selected_rectangle_s, self.selected_rectangle_f
@@ -369,7 +377,7 @@ class DraggableRectangle:
         self.geo_data.set_series(series_dict, order=order_series)
         self.geo_data.set_formation_number(order_formations.columns.values)
         self.geo_data.order_table()
-        print(geo_data.interfaces[['series', 'order_series', 'formation', 'formation number']])
+
 
     def disconnect(self):
         'disconnect all the stored connection ids'
@@ -377,19 +385,19 @@ class DraggableRectangle:
         self.rect.figure.canvas.mpl_disconnect(self.cidrelease)
         self.rect.figure.canvas.mpl_disconnect(self.cidmotion)
 
-# These two lines are necessary only if gempy is not installed
-import sys, os
-sys.path.append("../")
-
-# Importing gempy
-import gempy as gp
-
-
-# Aux imports
-import numpy as np
-
-geo_data = gp.read_pickle('../input_data/test.pickle')
-
-StratigraphicPile(geo_data)
+# # These two lines are necessary only if gempy is not installed
+# import sys, os
+# sys.path.append("../")
+#
+# # Importing gempy
+# import gempy as gp
+#
+#
+# # Aux imports
+# import numpy as np
+#
+# geo_data = gp.read_pickle('../input_data/test.pickle')
+#
+# StratigraphicPile(geo_data)
 
 

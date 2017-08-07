@@ -425,6 +425,8 @@ class InputData(object):
         self.set_faults(faults_series)
         self.reset_indices()
 
+        self.set_formation_number()
+
         return _series
 
     def set_faults(self, series_name):
