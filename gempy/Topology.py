@@ -24,6 +24,9 @@ import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
 
+# TODO: Across-fault edge identification
+# TODO: Across-unconformity edge identification
+
 
 class Topology:
     """
@@ -31,9 +34,10 @@ class Topology:
     """
     # TODO: Implement Topology plotting
     def __init__(self, block, fault_block):
-        self.block = block.astype(int)
+        self.block = np.copy(block.astype(int))
         self.fault_block = fault_block.astype(int)
         self.ublock = (self.block.max() + 1) * self.fault_block + self.block
+
         self.lithologies = np.unique(self.block)
         self.labels, self.n_labels = self._get_labels()
         self.labels_unique = np.unique(self.labels)
@@ -42,10 +46,9 @@ class Topology:
         self.lith_to_labels_lot = self._lithology_labels_lot()
         self.labels_to_lith_lot = self._labels_lithology_lot()
 
-    def _get_labels(self, neighbors=4, background=999, return_num=True):
+    def _get_labels(self, neighbors=8, background=999, return_num=True):
         """Get label block."""
-        return label(self.ublock,
-                     neighbors, return_num, background)
+        return label(self.ublock, neighbors, return_num, background)
 
     def _get_centroids(self):
         """Get node centroids in 2d and 3d."""

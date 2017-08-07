@@ -116,7 +116,7 @@ GeMpy.set_interfaces(geo_data, pn.DataFrame(
             "labels" : [  r'${\bf{x}}_{\alpha \, 0}^3$',
                            r'${\bf{x}}_{\alpha \, 1}^3$',
                            r'${\bf{x}}_{\alpha \, 2}^3$'] }), append = True)
-GeMpy.get_raw_data(geo_data,"interfaces")
+GeMpy.get_data(geo_data, "interfaces")
 
 
 GeMpy.set_foliations(geo_data, pn.DataFrame(data = {

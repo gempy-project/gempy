@@ -203,7 +203,7 @@ class InputData(object):
             # Pickle the 'data' dictionary using the highest protocol available.
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
-    def get_raw_data(self, itype='all', verbosity=0):
+    def get_data(self, itype='all', verbosity=0):
         """
         Method that returns the interfaces and foliations pandas Dataframes. Can return both at the same time or only
         one of the two
@@ -270,7 +270,7 @@ class InputData(object):
         warnings.warn('Remember to call i_close_set_data after the editing.')
 
         # We kind of set the show grid to a variable so we can close it afterwards
-        self.pandas_frame = qgrid.show_grid(self.get_raw_data(itype=itype))
+        self.pandas_frame = qgrid.show_grid(self.get_data(itype=itype))
 
     def i_close_set_data(self):
 
@@ -414,20 +414,31 @@ class InputData(object):
         self.foliations.sort_values(by='order_series', inplace=True)
 
         # Save the dataframe in a property
-        self.series = _series
+      #  self.series = _series
 
         # Set default faults
-        faults_series = []
-        for i in self.series.columns:
-            if ('fault' in i or 'Fault' in i) and 'Default' not in i:
-                faults_series.append(i)
+        # faults_series = []
+        # for i in self.series.columns:
+        #     if ('fault' in i or 'Fault' in i) and 'Default' not in i:
+        #         faults_series.append(i)
+        faults_series = self.count_faults()
 
         self.set_faults(faults_series)
         self.reset_indices()
 
         self.set_formation_number()
 
+        self.order_table()
+
         return _series
+
+    def count_faults(self):
+        # Set default faults
+        faults_series = []
+        for i in self.interfaces['series'].unique():
+            if ('fault' in i or 'Fault' in i) and 'Default' not in i:
+                faults_series.append(i)
+        return faults_series
 
     def set_faults(self, series_name):
         """
@@ -436,9 +447,10 @@ class InputData(object):
             series_name(list or array_like): Name of the series which are faults
         """
         if not len(series_name) == 0:
-            self.interfaces['isFault'] = self.interfaces['series'].isin(series_name)
-            self.foliations['isFault'] = self.foliations['series'].isin(series_name)
-            self.n_faults = len(series_name)
+            self.interfaces.loc[:, 'isFault'] = self.interfaces['series'].isin(series_name)
+            self.foliations.loc[:, 'isFault'] = self.foliations['series'].isin(series_name)
+
+        self.n_faults = len(series_name)
 
     def order_table(self):
         """
@@ -494,6 +506,8 @@ class InputData(object):
             self.foliations['formation number'] = self.foliations['formation'].replace(ip_dict)
         except ValueError:
             pass
+
+        self.order_table()
 
     def set_annotations(self):
 
@@ -675,9 +689,9 @@ class InputData(object):
                 # now get centroid of three points
                 _centroid = _get_centroid(_points[0], _points[1], _points[2])
                 # set polarity according to overturned or not
-                if _dip > 0:
+                if -90 < _dip < 90:
                     _pol = 1
-                elif _dip < 0:
+                else:
                     _pol = -1
 
                 _fmt = np.unique(self.interfaces[_filter]["formation"])[0]
