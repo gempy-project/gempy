@@ -37,7 +37,7 @@ import numpy as _np
 import copy
 from gempy.Visualization import PlotData2D, steano3D, vtkVisualization
 from gempy.DataManagement import InputData, InterpolatorInput, GridClass
-
+from gempy.strat_pile import StratigraphicPile
 
 def data_to_pickle(geo_data, path=False):
     """
@@ -175,10 +175,13 @@ def select_series(geo_data, series):
     # Count faults
     new_geo_data.set_faults(new_geo_data.count_faults())
 
+    # Change the dataframe with the series
+    new_geo_data.series = new_geo_data.series[new_geo_data.interfaces['series'].unique()]
+    new_geo_data.set_formation_number()
     return new_geo_data
 
 
-def set_series(geo_data, series_distribution=None, order_series=None,
+def set_series(geo_data, series_distribution=None, order_series=None, order_formations=None,
                update_p_field=True, verbose=0):
     """
     Method to define the different series of the project.
@@ -195,9 +198,15 @@ def set_series(geo_data, series_distribution=None, order_series=None,
     """
     geo_data.set_series(series_distribution=series_distribution, order=order_series)
     geo_data.order_table()
-    if verbose > 0:
-        return get_series(geo_data)
+    if order_formations is not None:
+        geo_data.set_formation_number(order_formations)
+    # DEP
+    # if verbose > 0:
+    #     return get_series(geo_data)
+    return get_stratigraphic_pile(geo_data)
 
+def set_order_formations(geo_data, order_formations):
+    geo_data.set_formation_number(order_formations)
 
 def set_interfaces(geo_data, interf_Dataframe, append=False):
     """
@@ -340,6 +349,19 @@ def plot_data_3D(geo_data):
     vv.set_foliations()
     vv.render_model()
     return None
+
+def get_stratigraphic_pile(geo_data):
+    """
+    Visualize an interactive stratigraphic pile to move around the formations and the series. IMPORTANT NOTE:
+    To have the interactive properties it is necessary the use of qt as interactive backend. (In notebook use:
+    %matplotlib qt5)
+    Args:
+        geo_data: gempy.DataManagement.InputData object
+
+    Returns:
+        interactive Matplotlib figure
+    """
+    return StratigraphicPile(geo_data)
 
 
 def set_interpolation_data(geo_data, **kwargs):
@@ -495,7 +517,7 @@ def get_surfaces(potential_block, interp_data, n_formation='all', step_size=1, o
     if n_formation == 'all':
         vertices = []
         simplices = []
-        for n in interp_data.get_formation_number().values():
+        for n in interp_data.geo_data_res.interfaces['formation number'].unique():
             if n == 0:
                 continue
             else:

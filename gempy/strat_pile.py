@@ -21,6 +21,8 @@ import matplotlib.pyplot as plt
 from gempy.colors import *
 import matplotlib.cm as cm
 from gempy.colors import color_lot, cmap, norm
+
+
 def _create_color_lot(geo_data, cd_rgb):
     """Returns color [r,g,b] LOT for formation numbers."""
     if "formation number" not in geo_data.interfaces or "formation number" not in geo_data.foliations:
@@ -34,7 +36,7 @@ def _create_color_lot(geo_data, cd_rgb):
     lot = {}
     ci = 0  # use as an independent running variable because of fault formations
     # get unique formation numbers
-    fmt_numbers = np.unique([val for val in geo_data.get_formation_number().values()])
+    fmt_numbers = np.unique([val for val in geo_data.interfaces['formation number'].unique()])
     # get unique fault formation numbers
     fault_fmt_numbers = np.unique(geo_data.interfaces[geo_data.interfaces["isFault"] == True]["formation number"])
     # iterate over all unique formation numbers
@@ -49,20 +51,20 @@ def _create_color_lot(geo_data, cd_rgb):
 
     return lot
 
-
-def series_anchor_point(series):
-    """
-    Creates a dataframe where columns are the name of the series and the values the y position
-    Args:
-        series: name of the series
-
-    Returns:
-        DataFrame
-    """
-    n_series = series.columns.shape[0]
-    anch_series_pos = np.linspace(0, 10, n_series, endpoint=False)
-
-    return pn.DataFrame(anch_series_pos.reshape(1, -1), columns=series.columns)
+# DEP
+# def series_anchor_point(series):
+#     """
+#     Creates a dataframe where columns are the name of the series and the values the y position
+#     Args:
+#         series: name of the series
+#
+#     Returns:
+#         DataFrame
+#     """
+#     n_series = series.columns.shape[0]
+#     anch_series_pos = np.linspace(0, 10, n_series, endpoint=False)
+#
+#     return pn.DataFrame(anch_series_pos.reshape(1, -1), columns=series.columns)
 
 def set_anchor_points(geo_data):
 
@@ -76,7 +78,7 @@ def set_anchor_points(geo_data):
     anch_series_pos_aux = np.linspace(10, 0, n_series, endpoint=True)
     anch_series_pos = pn.DataFrame(anch_series_pos_aux.reshape(1, -1),
                                    columns=series_names)
-    # Thicknes of series. We just make sure we have wait space in between
+    # Thicknes of series. We just make sure we have white space in between
     thick_series = 11.5 / n_series
 
     # Setting formations anchor
@@ -125,7 +127,7 @@ class StratigraphicPile(object):
         # Set the values of matplotlib
         fig = plt.figure()
         ax = fig.add_subplot(111)
-        ax.set_ylim(-5,12.5)
+        #ax.set_ylim(-5,14.5)
         ax.set_xlim(0, 7)
         ax.get_yaxis().set_visible(False)
         ax.get_xaxis().set_visible(False)

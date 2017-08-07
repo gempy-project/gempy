@@ -34,26 +34,6 @@ import string
 # - clear-up spaghetti code!!!!! Check dependencies and other modules
 #    to get a consistent lay-out
 
-# TODO think where this function should go
-def read_vox(geo_data, path):
-    """
-    read vox from geomodeller and transform it to gempy format
-    Returns:
-        numpy.array: block model
-    """
-    import pandas as pn
-    geo_res = pn.read_csv(path)
-
-    geo_res = geo_res.iloc[9:]
-
-    # ip_addresses = geo_res['nx 50'].unique()  # geo_data.interfaces["formation"].unique()
-    ip_dict = geo_data.interfaces['formation number'].unique()
-
-    geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
-    block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
-        self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
-    return block_geomodeller
-
 class GeomodellerClass:
     """Wrapper for GeoModeller XML-datafiles to perform all kinds of data
     manipulation and analysis on low level basis, e.g.:
@@ -74,7 +54,7 @@ class GeomodellerClass:
         try:
             tree = ET.parse(xml_file)
         except IOError (nr, string_err):
-            print(("Can not open xml File " + xml_file + ": " + string_err))
+            print ("Can not open xml File " + xml_file + ": " + string_err)
             print ("Please check file name and directory and try again")
             raise IOError
         # safe tree on local varibale
@@ -147,7 +127,7 @@ class GeomodellerClass:
             for d in data:
                 series_list.append(d.get("Name"))
         # append "out" as uppermost formation for "out values
-        if 'out' in kwds:
+        if kwds.has_key('out'):
             series_list.append(kwds['out'])
         else:
             series_list.append("out")
@@ -235,7 +215,7 @@ class GeomodellerClass:
     def get_points_in_sections(self):
         """Create dictionary of all points (with obs-id) in all sections"""
         self.create_sections_dict()
-        for sec in list(self.section_dict.keys()):
+        for sec in self.section_dict.keys():
             forms = self.get_formation_point_data(self.section_dict[sec])
             if forms == None:
                 print ("\t\t\tNo Formation Points in this section")
@@ -244,44 +224,44 @@ class GeomodellerClass:
                     #print form.get("ObservationID")
                 #    if form.get("ObservationID") == None: continue
                     data = form.find("{"+self.xmlns+"}Data")
-                    print(("\nObsID = %s" % form.get("ObservationID")))
-                    print(("\tFormation name\t= %s" % data.get("Name")))
+                    print ("\nObsID = %s" % form.get("ObservationID"))
+                    print ("\tFormation name\t= %s" % data.get("Name"))
                     element_point = form.find("{"+self.gml+"}LineString")
                     element_coords = element_point.find("{"+self.gml+"}coordinates")
                     tmp = element_coords.text.split(" ")
                     for tmp1 in tmp:
                         if tmp1 == '': continue
                         tmp_cds = tmp1.split(",")
-                        print(("\tX = %.1f, Y = %.1f" % (float(tmp_cds[0]), float(tmp_cds[1]))))
+                        print("\tX = %.1f, Y = %.1f" % (float(tmp_cds[0]), float(tmp_cds[1])))
 
 
                     fol = form.find("{"+self.xmlns+"}FoliationObservation")
                     if fol is not None:
-                        print(("\tFoliation defined: azimuth = %.1f, dip = %.1f" % (float(fol.get("Azimuth")), float(fol.get("Dip")))))
+                        print("\tFoliation defined: azimuth = %.1f, dip = %.1f" % (float(fol.get("Azimuth")), float(fol.get("Dip"))))
                         # get position of foliation (yet another point)
                         pt = fol.find("{"+self.gml+"}Point")
                         c = pt.find("{"+self.gml+"}coordinates")
                         cds = c.text.split(",")
-                        print(("\t\tX = %.1f, Y = %.1f" % (float(cds[0]), float(cds[1]))))
+                        print("\t\tX = %.1f, Y = %.1f" % (float(cds[0]), float(cds[1])))
 
             print ("\n")
-            print((80*"-"))
-            print(("Foliations in section %s:" % sec))
-            print((80*"-"))
+            print (80*"-")
+            print ("Foliations in section %s:" % sec)
+            print (80*"-")
             foliations = self.get_foliations(self.section_dict[sec])
             if foliations == None:
                 print ("\t\t\tNo foliations in this section")
             else:
                 for fol1 in foliations:
-                    print(("\nObsID = %s" % fol1.get("ObservationID")))
+                    print ("\nObsID = %s" % fol1.get("ObservationID"))
                     data = fol1.find("{"+self.xmlns+"}Data")
                     fol = fol1.find("{"+self.xmlns+"}FoliationObservation")
-                    print(( "\tFormation name\t= %s" % data.get("Name")))
-                    print(("\tAzimuth = %.1f, dip = %.1f" % (float(fol.get("Azimuth")), float(fol.get("Dip")))))
+                    print( "\tFormation name\t= %s" % data.get("Name"))
+                    print("\tAzimuth = %.1f, dip = %.1f" % (float(fol.get("Azimuth")), float(fol.get("Dip"))))
                     pt = fol.find("{"+self.gml+"}Point")
                     c = pt.find("{"+self.gml+"}coordinates")
                     cds = c.text.split(",")
-                    print(("\tX = %.1f, Y = %.1f" % (float(cds[0]), float(cds[1]))))
+                    print("\tX = %.1f, Y = %.1f" % (float(cds[0]), float(cds[1])))
         return
 
     def get_formation_parameters(self):
@@ -599,30 +579,30 @@ class GeomodellerClass:
 
             - The dips and azimuth ObservationID must contain _d or _a respectively"""
 
-        if "info" in args:
+        if args.has_key("info"):
             section_dict = self.create_sections_dict()
             contact_points_dict = {}
             foliation_dict = {}
             for i in range(len(section_dict)):
-                print(("\n\n\n", list(section_dict.keys())[i], "\n"))
+                print ("\n\n\n", section_dict.keys()[i], "\n")
                 print ("Elements and their ID \n")
-                contact_points = self.get_formation_point_data(list(section_dict.values())[i])
+                contact_points = self.get_formation_point_data(section_dict.values()[i])
 
                 try:
                     for contact_point in contact_points:
                         contact_points_dict[contact_point.get("ObservationID")] = contact_point
-                        print((contact_point, contact_point.get("ObservationID")))
+                        print (contact_point, contact_point.get("ObservationID"))
                 except TypeError:
                     print ("No contact points in the section")
                 #ObsID = contact_points.get("ObservationID")
-                foliations = self.get_foliations(list(section_dict.values())[i])
+                foliations = self.get_foliations(section_dict.values()[i])
                 try:
                     for foliation in foliations:
                         # dictionary to access with azimth name
                         foliation_dict[foliation.get("ObservationID")+"_a"] = foliation
                         # dictionary to access with dip name
                         foliation_dict[foliation.get("ObservationID")+"_d"] = foliation
-                        print((foliation, foliation.get("ObservationID")))
+                        print (foliation, foliation.get("ObservationID"))
 
                 except TypeError:
                     print ("No foliation in the section")
@@ -631,16 +611,16 @@ class GeomodellerClass:
                 except TypeError:
                     print ("Element does not have iterable objects")
 
-                print(("\nDictionaries:\n ", contact_points_dict, "\n", foliation_dict))
+                print ("\nDictionaries:\n ", contact_points_dict, "\n", foliation_dict)
 
-                print(("\n Contact points", contact_points, "\n", coord_interface, "\n"))
+                print ("\n Contact points", contact_points, "\n", coord_interface, "\n")
 
-                print(("foliations" , foliations,  "\n"))
+                print ("foliations" , foliations,  "\n")
                 try:
                     for i in range(len(foliations)):
-                        print(("azimut:",self.get_foliation_azimuth(foliations[i])))
-                        print(("dip",self.get_foliation_dip(foliations[i])))
-                        print(("coordinates", self.get_foliation_coordinates(foliations[i])))
+                        print ("azimut:",self.get_foliation_azimuth(foliations[i]))
+                        print ("dip",self.get_foliation_dip(foliations[i]))
+                        print ("coordinates", self.get_foliation_coordinates(foliations[i]))
                 except TypeError:
                     print ("No foliation in the section")
             return None
@@ -655,14 +635,14 @@ class GeomodellerClass:
         for i in range(len(section_dict)):
             # Contact points:
             try:
-                contact_points = self.get_formation_point_data(list(section_dict.values())[i])
+                contact_points = self.get_formation_point_data(section_dict.values()[i])
                 for contact_point in contact_points:
                     contact_points_dict[contact_point.get("ObservationID")] = contact_point
             except TypeError:
                 continue
             # Foliation Points
             try:
-                foliations = self.get_foliations(list(section_dict.values())[i])
+                foliations = self.get_foliations(section_dict.values()[i])
                 for foliation in foliations:
                     # dictionary to access with azimth name
                     foliation_dict[foliation.get("ObservationID")+"_a"] = foliation
@@ -673,7 +653,7 @@ class GeomodellerClass:
 
         # Passing our chain values:
             # Contact_points
-        if "contact_points_mc" in args:
+        if args.has_key("contact_points_mc"):
             for contac_point_mc in args["contact_points_mc"]:
                 try:
 
@@ -692,24 +672,24 @@ class GeomodellerClass:
                     else:
                         print ("The lenght of the points to change does not fit with the number of changes in the input (>2)")
                 except KeyError:
-                    print(("The name of your PyMC variables (%s) does not agree with the ObservationID in the xml. Check misspellings." % str(contac_point_mc)))
+                    print ("The name of your PyMC variables (%s) does not agree with the ObservationID in the xml. Check misspellings." % str(contac_point_mc))
                     continue
             # Azimuths
-        if "azimuths_mc" in args:
+        if args.has_key("azimuths_mc"):
             for azimuth_mc in args["azimuths_mc"]:
                 #print azimuth_mc, type(azimuth_mc)
                 try:
                     self.change_foliation(foliation_dict[str(azimuth_mc)], azimuth = str(azimuth_mc.value))
                 except KeyError:
-                    print(("The name of your PyMC variables (%s) does not agree with the ObservationID in the xml. Check misspellings." % str(azimuth_mc)))
+                    print ("The name of your PyMC variables (%s) does not agree with the ObservationID in the xml. Check misspellings." % str(azimuth_mc))
                     continue
             # Dips
-        if "dips_mc" in args:
+        if args.has_key("dips_mc"):
             for dip_mc in args["dips_mc"]:
                 try:
                     self.change_foliation(foliation_dict[str(dip_mc)], dip = str(dip_mc.value))
                 except KeyError:
-                    print(("The name of your PyMC variables (%s) does not agree with the ObservationID in the xml. Check misspellings." % str(dip_mc)))
+                    print ("The name of your PyMC variables (%s) does not agree with the ObservationID in the xml. Check misspellings." % str(dip_mc))
                     continue
 
 
@@ -743,7 +723,7 @@ class GeomodellerClass:
         if len(point_list) > 1:
             x_coords = []
             y_coords = []
-            if "print_points" in args:
+            if args.has_key("print_points"):
                 print (point_list)
             for point in point_list:
                 # if point == '': continue
@@ -756,13 +736,13 @@ class GeomodellerClass:
             x_coords = array(x_coords)
             y_coords = array(y_coords)
             # Here  y_coord, and x_coord
-            if "x_coord" in args:
+            if args.has_key("x_coord"):
                 if shape(point_list) == shape(args["x_coord"]):
                 #except TypeError:
                     x_coords = array(args["x_coord"])
                 else:
                     print ("length of the points you want to change do not match with input dimensions")
-            if "y_coord" in args:
+            if args.has_key("y_coord"):
                 #print (args["y_coord"])
                 #print array(args["y_coord"])
                 if shape(point_list) == shape(args["y_coord"]):
@@ -772,9 +752,9 @@ class GeomodellerClass:
                     print ("length of the points you want to change do not match with input dimensions")
             #print "Coordenates", x_coords, y_coords
             # Here add coords
-            if "add_x_coord" in args:
+            if args.has_key("add_x_coord"):
                 x_coords = x_coords + float(args["add_x_coord"])
-            if "add_y_coord" in args:
+            if args.has_key("add_y_coord"):
                 y_coords = y_coords + float(args["add_y_coord"])
             #    print y_coords
             # now, reconstruct output format strings
@@ -786,13 +766,13 @@ class GeomodellerClass:
         else:
             [x_coord, y_coord] = point_list[0].split(",")
             [x_coord, y_coord] = [float(x_coord), float(y_coord)]
-            if "x_coord" in args:
+            if args.has_key("x_coord"):
                 x_coord = float(args["x_coord"])
-            if "y_coord" in args:
+            if args.has_key("y_coord"):
                 y_coord = float(args["y_coord"])
-            if "add_x_coord" in args:
+            if args.has_key("add_x_coord"):
                 x_coord = x_coord + float(args["add_x_coord"])
-            if "add_y_coord" in args:
+            if args.has_key("add_y_coord"):
                 y_coord = y_coord + float(args["add_y_coord"])
             element_coords.text = "%f,%f" % (x_coord, y_coord)
         return None
@@ -811,21 +791,21 @@ class GeomodellerClass:
         use if_name = and if_provenance = to add conditions!"""
         prov = element.get("Provenance")
         name = element.find("{"+self.xmlns+"}Data").get("Name")
-        if "if_name" in args:
+        if args.has_key("if_name"):
             if args["if_name"] != name: return
-        if "if_provenance" in args:
+        if args.has_key("if_provenance"):
             if args["if_provenance"] != prov: return
         element_fol = element.find("{"+self.xmlns+"}FoliationObservation")
-        if "dip" in args:
+        if args.has_key("dip"):
             element_fol.set("Dip", args["dip"])
-        if "azimuth" in args:
+        if args.has_key("azimuth"):
             element_fol.set("Azimuth", args["azimuth"])
-        if "nomalpolarity" in args:
+        if args.has_key("nomalpolarity"):
             element_fol.set("NormalPolarity", args["normalpolarity"])
         #
         # To Do: logfile, if dip >90, azi > 360, ...
         #
-        if "add_dip" in args:
+        if args.has_key("add_dip"):
             dip_org = float(element_fol.get("Dip"))
             dip_new = dip_org + float(args["add_dip"])
             if dip_new > 90:
@@ -837,7 +817,7 @@ class GeomodellerClass:
                 else:
                     element_fol.set("Azimuth", str(azi_org-180))
             element_fol.set("Dip", str(dip_new))
-        if "add_azimuth" in args:
+        if args.has_key("add_azimuth"):
             azi_org = float(element_fol.get("Azimuth"))
             azi_new = azi_org + float(args["add_azimuth"])
             if azi_new > 360.0: azi_new -= 360
@@ -846,13 +826,13 @@ class GeomodellerClass:
         element_coords = element_point.find("{"+self.gml+"}coordinates")
         [x_coord, y_coord] = element_coords.text.split(",")
         [x_coord, y_coord] = [float(x_coord), float(y_coord)]
-        if "x_coord" in args:
+        if args.has_key("x_coord"):
             x_coord = float(args["x_coord"])
-        if "y_coord" in args:
+        if args.has_key("y_coord"):
             y_coord = float(args["y_coord"])
-        if "add_x_coord" in args:
+        if args.has_key("add_x_coord"):
             x_coord = x_coord + float(args["add_x_coord"])
-        if "add_y_coord" in args:
+        if args.has_key("add_y_coord"):
             y_coord = y_coord + float(args["add_y_coord"])
         element_coords.text = "%f,%f" % (x_coord, y_coord)
         return None
@@ -905,11 +885,11 @@ class GeomodellerClass:
         # now change foliation position and dip angle! (check: given as argument?)
         # for dip angle: numerical determination of first derivative for
         # twt to depth conversion formula?
-        if "change_dip" in args and args["change_dip"]:
+        if args.has_key("change_dip") and args["change_dip"]:
             print ("change dip in seismic profile")
 
         # create check-plot
-        if "create_plot" in args and args["create_plot"]:
+        if args.has_key("create_plot") and args["create_plot"]:
             print ("Create plot with twt, converted depth pairs")
             plot(t_list,v_list,'.', label = formula)
             title("TWT to depth: Converted data points\nSection: " + sec_element.get("Name"))
@@ -946,8 +926,8 @@ class GeomodellerClass:
         # flo, 10/2008
         #file = "changed_model.xml"
         tree_new = ET.ElementTree(self.rootelement)
-        if "print_path" in args:
-            print(("Write tree to file " + save_dir))
+        if args.has_key("print_path"):
+            print ("Write tree to file " + save_dir)
         tree_new.write(save_dir)
         #self.tree.write("changed_model.xml")
         self.tree.write(save_dir)
