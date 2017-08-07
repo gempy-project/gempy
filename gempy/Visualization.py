@@ -44,7 +44,7 @@ import gempy as gp
 # TODO: inherit pygeomod classes
 # import sys, os
 #sns.set_context('talk')
-plt.style.use(['seaborn-white', 'seaborn-poster'])
+plt.style.use(['seaborn-white', 'seaborn-talk'])
 
 class PlotData2D(object):
     """
@@ -75,15 +75,15 @@ class PlotData2D(object):
             # with pandas framework
        # self._set_style()
 
-    def _set_style(self):
-        """
-        Private function to set some plotting options
-
-        """
-
-        plt.style.use(['seaborn-white', 'seaborn-talk'])
-        # sns.set_context("paper")
-        # matplotlib.rc("font", family="Helvetica")
+    # def _set_style(self):
+    #     """
+    #     Private function to set some plotting options
+    #
+    #     """
+    #
+    #     plt.style.use(['seaborn-white', 'seaborn-talk'])
+    #     # sns.set_context("paper")
+    #     # matplotlib.rc("font", family="Helvetica")
 
     def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=8, **kwargs):
         """
@@ -91,7 +91,7 @@ class PlotData2D(object):
         specific directions
 
         Args:
-            direction(str): xyz. Caartesian direction to be plotted
+            direction(str): xyz. Cartesian direction to be plotted
             data_type (str): type of data to plot. 'all', 'interfaces' or 'foliations'
             series(str): series to plot
             **kwargs: seaborn lmplot key arguments. (TODO: adding the link to them)
