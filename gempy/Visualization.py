@@ -44,7 +44,7 @@ import gempy as gp
 # TODO: inherit pygeomod classes
 # import sys, os
 #sns.set_context('talk')
-plt.style.use(['seaborn-white', 'seaborn-poster'])
+plt.style.use(['seaborn-white', 'seaborn-talk'])
 
 class PlotData2D(object):
     """
@@ -66,6 +66,8 @@ class PlotData2D(object):
         self._color_lot = color_lot
         self._cmap = cmap
         self._norm = norm
+        self.formation_names = self._data.interfaces['formation'].unique()
+        self.formation_numbers = self._data.interfaces['formation number'].unique()
 
         if 'potential_field' in kwargs:
             self._potential_field_p = kwargs['potential_field']
@@ -74,16 +76,16 @@ class PlotData2D(object):
             # and block. 2D 3D? Improving the iteration
             # with pandas framework
        # self._set_style()
-
-    def _set_style(self):
-        """
-        Private function to set some plotting options
-
-        """
-
-        plt.style.use(['seaborn-white', 'seaborn-talk'])
-        # sns.set_context("paper")
-        # matplotlib.rc("font", family="Helvetica")
+    #
+    # def _set_style(self):
+    #     """
+    #     Private function to set some plotting options
+    #
+    #     """
+    #
+    #     plt.style.use(['seaborn-white', 'seaborn-talk'])
+    #     # sns.set_context("paper")
+    #     # matplotlib.rc("font", family="Helvetica")
 
     def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=8, **kwargs):
         """
@@ -107,6 +109,8 @@ class PlotData2D(object):
                                      "linewidths": 1}
 
         x, y, Gx, Gy = self._slice(direction)[4:]
+        extent = self._slice(direction)[3]
+        aspect = (extent[1] - extent[0])/(extent[3] - extent[2])
 
         if series == "all":
             series_to_plot_i = self._data.interfaces[self._data.interfaces["series"].
@@ -120,13 +124,14 @@ class PlotData2D(object):
             series_to_plot_f = self._data.foliations[self._data.foliations["series"] == series]
 
         # Change dictionary keys numbers for formation names
-        for i in self._data.get_formation_number().items():
+        for i in zip(self.formation_names, self.formation_numbers):
             self._color_lot[i[0]] = self._color_lot[i[1]]
 
         if data_type == 'all':
             p = sns.lmplot(x, y,
                            data=series_to_plot_i,
                            fit_reg=False,
+                           aspect=aspect,
                            hue="formation",
                            #scatter_kws=scatter_kws,
                            legend=True,
@@ -143,6 +148,7 @@ class PlotData2D(object):
             p = sns.lmplot(x, y,
                            data=series_to_plot_i,
                            fit_reg=False,
+                           aspect=aspect,
                            hue="formation",
                            #scatter_kws=scatter_kws,
                            legend=True,
@@ -244,11 +250,14 @@ class PlotData2D(object):
         # DEP?
         selecting_colors = np.unique(plot_block)
 
-        plt.imshow(plot_block[_a, _b, _c].T, origin="bottom", cmap=self._cmap, norm=self._norm,
+        im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom", cmap=self._cmap, norm=self._norm,
                    extent=extent_val,
                    interpolation=interpolation, **kwargs)
-        # plt.colorbar()
 
+        import matplotlib.patches as mpatches
+        colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
+        patches  = [ mpatches.Patch(color=colors[i], label=self.formation_names[i]) for i in range(len(self.formation_names))]
+        plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.xlabel(x)
         plt.ylabel(y)
 
@@ -573,7 +582,8 @@ class vtkVisualization:
         source.Update()
         d.SetInputData(source.GetOutput())
         d.SetHandleSize(0.05)
-        d.SetPlaceFactor(self._e_dx/10)
+        min_extent = np.min([self._e_dx, self._e_dy, self._e_dz])
+        d.SetPlaceFactor(min_extent/10)
         d.PlaceWidget()
         d.SetNormal(Gx, Gy, Gz)
         d.GetPlaneProperty().SetColor(self.C_LOT[fn])
@@ -747,7 +757,7 @@ class vtkVisualization:
                 self.ren_list[3].RemoveActor(surf)
 
             vertices, simpleces = self.update_surfaces_real_time(self.interp_data)
-            print(vertices[0][60])
+          #  print(vertices[0][60])
             self.set_surfaces(vertices, simpleces)
 
            # self.renwin.Render()
@@ -811,6 +821,17 @@ class vtkVisualization:
         if render != 3:
             self.f_rend_4[obj.n_plane].SetInputData(new_source.GetOutput())
             self.f_rend_4[obj.n_plane].SetNormal(new_normal)
+
+        if self.real_time:
+            for surf in self.surf_rend_1:
+                self.ren_list[0].RemoveActor(surf)
+                self.ren_list[1].RemoveActor(surf)
+                self.ren_list[2].RemoveActor(surf)
+                self.ren_list[3].RemoveActor(surf)
+
+            vertices, simpleces = self.update_surfaces_real_time(self.interp_data)
+          #  print(vertices[0][60])
+            self.set_surfaces(vertices, simpleces)
 
     def create_ren_list(self):
         """
@@ -1043,7 +1064,7 @@ def _create_color_lot(geo_data, cd_rgb):
     lot = {}
     ci = 0  # use as an independent running variable because of fault formations
     # get unique formation numbers
-    fmt_numbers = np.unique([val for val in geo_data.get_formation_number().values()])
+    fmt_numbers = np.unique([val for val in geo_data.interfaces['formation number'].unique()])
     # get unique fault formation numbers
     fault_fmt_numbers = np.unique(geo_data.interfaces[geo_data.interfaces["isFault"] == True]["formation number"])
     # iterate over all unique formation numbers

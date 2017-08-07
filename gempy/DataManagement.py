@@ -413,8 +413,8 @@ class InputData(object):
         self.interfaces.sort_values(by='order_series', inplace=True)
         self.foliations.sort_values(by='order_series', inplace=True)
 
-        # Save the dataframe in a property
-      #  self.series = _series
+        # Save the dataframe in a property. This is used in the pile
+        self.series = _series
 
         # Set default faults
         # faults_series = []
@@ -972,6 +972,9 @@ class InterpolatorInput:
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
                                 profile=False)
+        print('Level of Optimization: ', theano.config.optimizer)
+        print('Device: ', theano.config.device)
+        print('Precision: ', self.dtype)
         return th_fn
 
     def rescale_data(self, geo_data, rescaling_factor=None):
@@ -1037,7 +1040,7 @@ class InterpolatorInput:
 
     def get_formation_number(self):
         """
-        Get a dictionary with the key the name of the formation and the value their number
+        DEP in next version. Get a dictionary with the key the name of the formation and the value their number
 
         Returns:
             dict: key the name of the formation and the value their number
@@ -1334,8 +1337,9 @@ class InterpolatorInput:
 
             if u_grade is None:
                 u_grade = np.zeros_like(len_series_i)
-                u_grade[len_series_i > 12] = 9
-                u_grade[(len_series_i > 6) & (len_series_i < 12)] = 3
+                # Force the user to choose drift degree 2
+                # u_grade[len_series_i > 12] = 9
+                u_grade[(len_series_i > 6)] = 3
             if 'u_grade' in verbose:
                 print(u_grade)
             # it seems I have to pass list instead array_like that is weird
