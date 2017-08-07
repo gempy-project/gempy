@@ -699,7 +699,6 @@ class InputData(object):
 
 
 class DataPlane:
-    # TODO: Think about directly writing it into df except return?! would be cool
     def __init__(self, geo_data, group_id, mode, verbose=False):
         """
 
@@ -726,11 +725,11 @@ class DataPlane:
             self.dip, self.azimuth, self.polarity = self._get_dip(verbose=verbose)
 
         elif mode == "fol_to_interf":
-            self._f = self.geo_data.set_foliations["group_id"] == self.group_id
+            self._f = self.geo_data.foliations["group_id"] == self.group_id
             self.formation = self.geo_data.foliations[self._f]["formation"].values[0]
 
             # get interface indices
-            self.interf_i = self.geo_data.interfaces[self._f].index
+            self.interf_i = self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].index
             # get interface point coordinates from df
             self.interf_p = self._get_points()
             self.normal = [self.geo_data.foliations[self._f]["G_x"],
@@ -747,7 +746,7 @@ class DataPlane:
 
     def _fol_to_p(self):
         a, b, c = self.normal
-        for i, row in self.geo_data.interfaces[self._f].iterrows():
+        for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].iterrows():
             # iterate over each point and recalculate Z, set Z
             # x, y, z = row["X"], row["Y"], row["Z"]
             Z = (-1*(a*self.centroid[0]+b*self.centroid[0]+c*self.centroid[0])) / c
@@ -759,7 +758,7 @@ class DataPlane:
         x = []
         y = []
         z = []
-        for i, row in self.geo_data.interfaces[self._f].iterrows():
+        for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].iterrows():
             x.append(row["X"])
             y.append(row["Y"])
             z.append(row["Z"])
