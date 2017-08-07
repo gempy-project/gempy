@@ -99,7 +99,7 @@ def get_extent(geo_data):
     return geo_data.extent
 
 
-def get_raw_data(geo_data, dtype='all', verbosity=0):
+def get_data(geo_data, dtype='all', verbosity=0):
     """
         Method that returns the interfaces and foliations pandas Dataframes. Can return both at the same time or only
         one of the two
@@ -110,7 +110,7 @@ def get_raw_data(geo_data, dtype='all', verbosity=0):
             pandas.core.frame.DataFrame: Data frame with the raw data
 
         """
-    return geo_data.get_raw_data(itype=dtype, verbosity=verbosity)
+    return geo_data.get_data(itype=dtype, verbosity=verbosity)
 
 
 def create_data(extent, resolution=[50, 50, 50], **kwargs):
@@ -171,6 +171,10 @@ def select_series(geo_data, series):
     elif type(series[0]) == str:
         new_geo_data.interfaces = geo_data.interfaces[geo_data.interfaces['series'].isin(series)]
         new_geo_data.foliations = geo_data.foliations[geo_data.foliations['series'].isin(series)]
+
+    # Count faults
+    new_geo_data.set_faults(new_geo_data.count_faults())
+
     return new_geo_data
 
 
@@ -190,7 +194,7 @@ def set_series(geo_data, series_distribution=None, order_series=None,
         self.foliations: one extra column with the given series
     """
     geo_data.set_series(series_distribution=series_distribution, order=order_series)
-
+    geo_data.order_table()
     if verbose > 0:
         return get_series(geo_data)
 
@@ -260,7 +264,7 @@ def set_foliations(geo_data, foliat_Dataframe, append=False, update_p_field=True
 #         geo_data.grid = geo_data.GridClass(extent, resolution, grid_type=grid_type, **kwargs)
 
 
-def plot_data(geo_data, direction="y", data_type = 'all', series="all", **kwargs):
+def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
     """
     Plot the projection of the raw data (interfaces and foliations) in 2D following a
     specific directions
@@ -274,7 +278,7 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", **kwargs
         None
     """
     plot = PlotData2D(geo_data)
-    plot.plot_data(direction=direction, data_type=data_type, series=series, **kwargs)
+    plot.plot_data(direction=direction, data_type=data_type, series=series, legend_font_size=legend_font_size, **kwargs)
     # TODO saving options
 
 
@@ -478,6 +482,9 @@ def get_surfaces(potential_block, interp_data, n_formation='all', step_size=1, o
                      (interp_data.geo_data_res.extent[3] - interp_data.geo_data_res.extent[2]) / interp_data.geo_data_res.resolution[1],
                      (interp_data.geo_data_res.extent[5] - interp_data.geo_data_res.extent[4]) / interp_data.geo_data_res.resolution[2]))
 
+        vertices += _np.array([interp_data.extent_rescaled.iloc[0],
+                               interp_data.extent_rescaled.iloc[2],
+                               interp_data.extent_rescaled.iloc[4]]).reshape(1, 3)
         if original_scale:
             vertices = interp_data.rescaling_factor * vertices + _np.array([interp_data._geo_data.extent[0],
                                                                             interp_data._geo_data.extent[2],
@@ -502,7 +509,9 @@ def get_surfaces(potential_block, interp_data, n_formation='all', step_size=1, o
     return vertices, simplices
 
 
-def plot_surfaces_3D(geo_data, vertices_l, simplices_l, formations_names_l, formation_numbers_l, alpha=1, plot_data=True,
+def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
+                     #formations_names_l, formation_numbers_l,
+                     alpha=1, plot_data=True,
                      size=(1920, 1080), fullscreen=False):
     """
     Plot in vtk the surfaces
@@ -519,7 +528,9 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l, formations_names_l, form
         None
     """
     w = vtkVisualization(geo_data)
-    w.set_surfaces(vertices_l, simplices_l, formations_names_l, formation_numbers_l, alpha)
+    w.set_surfaces(vertices_l, simplices_l,
+                   #formations_names_l, formation_numbers_l,
+                    alpha)
 
     if plot_data:
         w.set_interfaces()

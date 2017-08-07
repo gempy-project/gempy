@@ -39,10 +39,12 @@ import sys
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from IPython.core.debugger import Pdb
 from gempy.colors import color_lot, cmap, norm
+#from gempy import compute_model, get_surfaces
+import gempy as gp
 # TODO: inherit pygeomod classes
 # import sys, os
-sns.set_context('talk')
-
+#sns.set_context('talk')
+plt.style.use(['seaborn-white', 'seaborn-poster'])
 
 class PlotData2D(object):
     """
@@ -71,7 +73,7 @@ class PlotData2D(object):
             # TODO planning the whole visualization scheme. Only data, potential field
             # and block. 2D 3D? Improving the iteration
             # with pandas framework
-        self._set_style()
+       # self._set_style()
 
     def _set_style(self):
         """
@@ -83,7 +85,7 @@ class PlotData2D(object):
         # sns.set_context("paper")
         # matplotlib.rc("font", family="Helvetica")
 
-    def plot_data(self, direction="y", data_type = 'all', series="all", **kwargs):
+    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=8, **kwargs):
         """
         Plot the projecton of the raw data (interfaces and foliations) in 2D following a
         specific directions
@@ -117,13 +119,17 @@ class PlotData2D(object):
             series_to_plot_i = self._data.interfaces[self._data.interfaces["series"] == series]
             series_to_plot_f = self._data.foliations[self._data.foliations["series"] == series]
 
+        # Change dictionary keys numbers for formation names
+        for i in self._data.get_formation_number().items():
+            self._color_lot[i[0]] = self._color_lot[i[1]]
+
         if data_type == 'all':
             p = sns.lmplot(x, y,
                            data=series_to_plot_i,
                            fit_reg=False,
-                           hue="formation number",
+                           hue="formation",
                            #scatter_kws=scatter_kws,
-                           legend=False,
+                           legend=True,
                            legend_out=True,
                            palette=self._color_lot,
                            **kwargs)
@@ -137,9 +143,9 @@ class PlotData2D(object):
             p = sns.lmplot(x, y,
                            data=series_to_plot_i,
                            fit_reg=False,
-                           hue="formation number",
+                           hue="formation",
                            #scatter_kws=scatter_kws,
-                           legend=False,
+                           legend=True,
                            legend_out=True,
                            palette=self._color_lot,
                            **kwargs)
@@ -148,13 +154,15 @@ class PlotData2D(object):
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
                        pivot="tail")
-
-        # code for moving legend outside of plot
-        box = p.ax.get_position()  # get figure position
-        # reduce width of box to make room for outside legend
-        p.ax.set_position([box.x0, box.y0, box.width * 0.85, box.height])
-        # put legend outside
-        p.ax.legend(loc="center right", title="Formation", bbox_to_anchor=(1.25, 0.5), ncol=1)
+        #
+        # # code for moving legend outside of plot
+        # box = p.ax.get_position()  # get figure position
+        # # reduce width of box to make room for outside legend
+        # p.ax.set_position([box.x0, box.y0, box.width * 0.93, box.height])
+        # # put legend outside
+        # p.ax.legend(loc="center right", title="Formation",
+        #             bbox_to_anchor=(1.25, 0.5), ncol=1,
+        #             prop={'size': legend_font_size})
 
         plt.xlabel(x)
         plt.ylabel(y)
@@ -233,7 +241,10 @@ class PlotData2D(object):
             self.plot_data(direction, 'all')
 
         # TODO: Formation numbers in block section do not appear to correspond to data???
-        plt.imshow(plot_block[_a, _b, _c].T, origin="bottom", cmap=self._cmap,  #norm=self._norm,
+        # DEP?
+        selecting_colors = np.unique(plot_block)
+
+        plt.imshow(plot_block[_a, _b, _c].T, origin="bottom", cmap=self._cmap, norm=self._norm,
                    extent=extent_val,
                    interpolation=interpolation, **kwargs)
         # plt.colorbar()
@@ -363,25 +374,24 @@ class vtkVisualization:
         camera_list (list): list of cameras for the distinct renderers
         ren_list (list): list containing the vtk renderers
     """
-    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, color_lot=color_lot):
+    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, color_lot=color_lot, real_time=False):
 
+        self.real_time = real_time
         # self.C_LOT = self.color_lot_create(geo_data)
         self.geo_data = geo_data
+        self.interp_data = None
         self.C_LOT = color_lot
         # Number of renders
         self.n_ren = 4
-
+        self.formation_number = geo_data.interfaces['formation number'].unique()
+        self.formation_name = geo_data.interfaces['formation'].unique()
         # Extents
-        try:
-            self.extent = geo_data.extent
-            self._e_dx = geo_data.dx
-            self._e_dy = geo_data.dy
-            self._e_dz = geo_data.dz
-        except AttributeError:
-            _e = geo_data.extent  # array([ x, X,  y, Y,  z, Z])
-            self._e_dx = _e[1] - _e[0]
-            self._e_dy = _e[3] - _e[2]
-            self._e_dz = _e[5] - _e[4]
+
+        self.extent = geo_data.extent
+        _e = geo_data.extent
+        self._e_dx = _e[1] - _e[0]
+        self._e_dy = _e[3] - _e[2]
+        self._e_dz = _e[5] - _e[4]
 
         self._e_d_avrg = (self._e_dx + self._e_dy + self._e_dz) / 3
 
@@ -483,9 +493,11 @@ class vtkVisualization:
 
         surf_polydata.SetPoints(self.create_surface_points(vertices))
         surf_polydata.SetPolys(self.create_surface_triangles(simplices))
+        surf_polydata.Modified()
 
         surf_mapper = vtk.vtkPolyDataMapper()
         surf_mapper.SetInputData(surf_polydata)
+        surf_mapper.Update()
 
         surf_actor = vtk.vtkActor()
         surf_actor.SetMapper(surf_mapper)
@@ -554,14 +566,14 @@ class vtkVisualization:
         d.SetRepresentationToSurface()
 
         # Position
-        print(X, Y, Z)
+      #  print(X, Y, Z)
         source = vtk.vtkPlaneSource()
         source.SetCenter(X, Y, Z)
         source.SetNormal(Gx, Gy, Gz)
         source.Update()
         d.SetInputData(source.GetOutput())
         d.SetHandleSize(0.05)
-        d.SetPlaceFactor(250)
+        d.SetPlaceFactor(self._e_dx/10)
         d.PlaceWidget()
         d.SetNormal(Gx, Gy, Gz)
         d.GetPlaneProperty().SetColor(self.C_LOT[fn])
@@ -577,7 +589,9 @@ class vtkVisualization:
 
         return d
 
-    def set_surfaces(self, vertices, simplices, formations, fns, alpha):
+    def set_surfaces(self, vertices, simplices,
+                      #formations, fns,
+                       alpha=1):
         """
         Create all the surfaces and set them to the corresponding renders for their posterior visualization with
         render_model
@@ -590,13 +604,14 @@ class vtkVisualization:
         Returns:
             None
         """
-        # self.s_rend_1 = []
+        self.surf_rend_1 = []
         # self.s_rend_2 = []
         # self.s_rend_3 = []
         # self.s_rend_4 = []
         # self.s_mapper = []
         # self.s_polydata = []
-
+        formations = self.formation_name
+        fns = self.formation_number
         assert type(
             vertices) is list, 'vertices and simpleces have to be a list of arrays even when only one formation' \
                                'is passed'
@@ -604,7 +619,7 @@ class vtkVisualization:
 
         for v, s, fn in zip(vertices, simplices, fns):
             act, map, pol = self.create_surface(v, s, fn, alpha)
-            #  self.s_rend_1.append(act)
+            self.surf_rend_1.append(act)
             #  self.s_mapper.append(map)
             #  self.s_polydata.append(pol)
             #print(self.s_rend_1)
@@ -723,6 +738,19 @@ class vtkVisualization:
             self.s_rend_4[obj.n_sphere].PlaceWidget(new_center[0] - r_f, new_center[0] + r_f,
                                                     new_center[1] - r_f, new_center[1] + r_f,
                                                     new_center[2] - r_f, new_center[2] + r_f)
+
+        if self.real_time:
+            for surf in self.surf_rend_1:
+                self.ren_list[0].RemoveActor(surf)
+                self.ren_list[1].RemoveActor(surf)
+                self.ren_list[2].RemoveActor(surf)
+                self.ren_list[3].RemoveActor(surf)
+
+            vertices, simpleces = self.update_surfaces_real_time(self.interp_data)
+            print(vertices[0][60])
+            self.set_surfaces(vertices, simpleces)
+
+           # self.renwin.Render()
 
     def planesCallback(self, obj, event):
         """
@@ -945,6 +973,13 @@ class vtkVisualization:
                 pass
 
         return cube_axes_actor
+
+    def update_surfaces_real_time(self, interp_data):
+
+        sol = gp.compute_model(interp_data)
+        v_l, s_l = gp.get_surfaces(sol[-1, 1, :], interp_data, original_scale=False)
+        return v_l, s_l
+
 
     @staticmethod
     def export_vtk_rectilinear(geo_data, block, path=None):
