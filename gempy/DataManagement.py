@@ -763,10 +763,11 @@ class DataPlane:
 
     def _fol_to_p(self):
         a, b, c = self.normal
-        for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].iterrows():
+        d = -a * self.centroid[0] - b * self.centroid[1] - c * self.centroid[2]
+        for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"] == self.group_id].iterrows():
             # iterate over each point and recalculate Z, set Z
             # x, y, z = row["X"], row["Y"], row["Z"]
-            Z = (-1*(a*self.centroid[0]+b*self.centroid[0]+c*self.centroid[0])) / c
+            Z = (a*row["X"] + b*row["Y"] + d)/-c
             self.geo_data.interfaces.set_value(i, "Z", Z)
 
     def _get_points(self):
@@ -776,9 +777,9 @@ class DataPlane:
         y = []
         z = []
         for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].iterrows():
-            x.append(row["X"])
-            y.append(row["Y"])
-            z.append(row["Z"])
+            x.append(float(row["X"]))
+            y.append(float(row["Y"]))
+            z.append(float(row["Z"]))
         return np.array([x, y, z])
 
     def _fit_plane_svd(self):
