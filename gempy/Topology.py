@@ -46,9 +46,28 @@ class Topology:
         self.lith_to_labels_lot = self._lithology_labels_lot()
         self.labels_to_lith_lot = self._labels_lithology_lot()
 
+        self._classify_edges()
+
     def _get_labels(self, neighbors=8, background=999, return_num=True):
         """Get label block."""
         return label(self.ublock, neighbors, return_num, background)
+
+    def _classify_edges(self):
+        # loop over every node in adjacency dictionary
+        for n1 in self.G.adj:
+            # loop over every node that it is connected with
+            for n2 in self.G.adj[n1]:
+                # get centroid coordinates
+                n1_c = self.centroids_3d[n1]
+                n2_c = self.centroids_3d[n2]
+                # get fault block values at node positions
+                n1_fb_val = self.fault_block[int(n1_c[0]), int(n1_c[1]), int(n1_c[2])]
+                n2_fb_val = self.fault_block[int(n2_c[0]), int(n2_c[1]), int(n2_c[2])]
+                if n1_fb_val == n2_fb_val:
+                    # both are in the same fault entity
+                    self.G.adj[n1][n2] = {"edge_type": "stratigraphic"}
+                else:
+                    self.G.adj[n1][n2] = {"edge_type": "fault"}
 
     def _get_centroids(self):
         """Get node centroids in 2d and 3d."""
@@ -58,7 +77,7 @@ class Topology:
         for rp in _rprops:
             # centroid coordinates seem to be not x,y,z but rather x,z,y
             centroids_2d[rp.label] = [rp.centroid[0], rp.centroid[2]]
-            centroids_3d[rp.label] = [rp.centroid[0], rp.centroid[2], rp.centroid[1]]
+            centroids_3d[rp.label] = [rp.centroid[0], rp.centroid[1], rp.centroid[2]]
         return centroids_2d, centroids_3d
 
     def _lithology_labels_lot(self, verbose=0):

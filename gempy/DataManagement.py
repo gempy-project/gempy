@@ -930,7 +930,7 @@ class InterpolatorInput:
         self.dtype = kwargs.get('dtype', 'float32')
 
         #self.in_data = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
-        # Set some parameters. TODO posibly this should go in kwargs
+        # Set some parameters. TODO possibly this should go in kwargs
         self.u_grade = u_grade
 
         # This two properties get set calling rescale data
