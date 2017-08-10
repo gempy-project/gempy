@@ -76,7 +76,7 @@ class Topology:
         centroids_3d = {}
         for rp in _rprops:
             # centroid coordinates seem to be not x,y,z but rather x,z,y
-            centroids_2d[rp.label] = [rp.centroid[0], rp.centroid[2]]
+            centroids_2d[rp.label] = [rp.centroid[0], rp.centroid[1]]
             centroids_3d[rp.label] = [rp.centroid[0], rp.centroid[1], rp.centroid[2]]
         return centroids_2d, centroids_3d
 
