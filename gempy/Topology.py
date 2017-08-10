@@ -33,16 +33,28 @@ class Topology:
     3D-Topology analysis class.
     """
     # TODO: Implement Topology plotting
-    def __init__(self, block, fault_block):
-        self.block = np.copy(block.astype(int))
-        self.fault_block = fault_block.astype(int)
+    def __init__(self, block, fault_block, section=None):
+        """
+
+        :param block:
+        :param fault_block:
+        :param section: y-section (int)
+        """
+        self.section = section
+        if self.section is None:
+            self.block = np.copy(block.astype(int))
+            self.fault_block = fault_block.astype(int)
+        else:
+            self.block = np.copy(block.astype(int))[:,self.section,:]
+            self.fault_block = fault_block.astype(int)[:,self.section,:]
+
         self.ublock = (self.block.max() + 1) * self.fault_block + self.block
 
         self.lithologies = np.unique(self.block)
         self.labels, self.n_labels = self._get_labels()
         self.labels_unique = np.unique(self.labels)
         self.G = graph.RAG(self.labels)
-        self.centroids_2d, self.centroids_3d = self._get_centroids()
+        self.centroids = self._get_centroids()
         self.lith_to_labels_lot = self._lithology_labels_lot()
         self.labels_to_lith_lot = self._labels_lithology_lot()
 
@@ -58,11 +70,15 @@ class Topology:
             # loop over every node that it is connected with
             for n2 in self.G.adj[n1]:
                 # get centroid coordinates
-                n1_c = self.centroids_3d[n1]
-                n2_c = self.centroids_3d[n2]
+                n1_c = self.centroids[n1]
+                n2_c = self.centroids[n2]
                 # get fault block values at node positions
-                n1_fb_val = self.fault_block[int(n1_c[0]), int(n1_c[1]), int(n1_c[2])]
-                n2_fb_val = self.fault_block[int(n2_c[0]), int(n2_c[1]), int(n2_c[2])]
+                if self.section is None:
+                    n1_fb_val = self.fault_block[int(n1_c[0]), int(n1_c[1]), int(n1_c[2])]
+                    n2_fb_val = self.fault_block[int(n2_c[0]), int(n2_c[1]), int(n2_c[2])]
+                else:
+                    n1_fb_val = self.fault_block[int(n1_c[0]), int(n1_c[2])]
+                    n2_fb_val = self.fault_block[int(n2_c[0]), int(n2_c[2])]
                 if n1_fb_val == n2_fb_val:
                     # both are in the same fault entity
                     self.G.adj[n1][n2] = {"edge_type": "stratigraphic"}
@@ -72,16 +88,13 @@ class Topology:
     def _get_centroids(self):
         """Get node centroids in 2d and 3d."""
         _rprops = regionprops(self.labels)
-        centroids_2d = {}
-        centroids_3d = {}
+        centroids = {}
         for rp in _rprops:
-            # centroid coordinates seem to be not x,y,z but rather x,z,y
-            centroids_2d[rp.label] = [rp.centroid[0], rp.centroid[1]]
-            try:
-                centroids_3d[rp.label] = [rp.centroid[0], rp.centroid[1], rp.centroid[2]]
-            except IndexError:
-                continue
-        return centroids_2d, centroids_3d
+            if self.section is None:
+                centroids[rp.label] = [rp.centroid[0], rp.centroid[1], rp.centroid[2]]
+            else:
+                centroids[rp.label] = [rp.centroid[0], self.section, rp.centroid[1]]
+        return centroids
 
     def _lithology_labels_lot(self, verbose=0):
         """Create LOT from lithology id to label."""
@@ -89,8 +102,13 @@ class Topology:
         for lith in self.lithologies:
             lot[str(lith)] = {}
         for l in self.labels_unique:
-            _x, _y, _z = np.where(self.labels == l)
-            lith_id = np.unique(self.block[_x, _y, _z])[0]
+            if self.section is None:
+                _x, _y, _z = np.where(self.labels == l)
+                lith_id = np.unique(self.block[_x, _y, _z])[0]
+            else:
+                _x, _z = np.where(self.labels == l)
+                lith_id = np.unique(self.block[_x, _z])[0]
+
             if verbose:
                 print("label:", l)
                 print("lith:", lith_id)
@@ -101,8 +119,12 @@ class Topology:
         """Create LOT from label to lithology id."""
         lot = {}
         for l in self.labels_unique:
-            _x, _y, _z = np.where(self.labels == l)
-            lith_id = np.unique(self.block[_x, _y, _z])[0]
+            if self.section is None:
+                _x, _y, _z = np.where(self.labels == l)
+                lith_id = np.unique(self.block[_x, _y, _z])[0]
+            else:
+                _x, _z = np.where(self.labels == l)
+                lith_id = np.unique(self.block[_x, _z])[0]
             if verbose:
                 print(l)
             lot[l] = str(lith_id)
