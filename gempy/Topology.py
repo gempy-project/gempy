@@ -77,7 +77,10 @@ class Topology:
         for rp in _rprops:
             # centroid coordinates seem to be not x,y,z but rather x,z,y
             centroids_2d[rp.label] = [rp.centroid[0], rp.centroid[1]]
-            centroids_3d[rp.label] = [rp.centroid[0], rp.centroid[1], rp.centroid[2]]
+            try:
+                centroids_3d[rp.label] = [rp.centroid[0], rp.centroid[1], rp.centroid[2]]
+            except IndexError:
+                continue
         return centroids_2d, centroids_3d
 
     def _lithology_labels_lot(self, verbose=0):
