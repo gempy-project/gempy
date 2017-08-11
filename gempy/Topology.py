@@ -70,6 +70,8 @@ class Topology:
             # loop over every node that it is connected with
             for n2 in self.G.adj[n1]:
                 # get centroid coordinates
+                if n2 == 0 or n1 == 0:
+                    continue
                 n1_c = self.centroids[n1]
                 n2_c = self.centroids[n2]
                 # get fault block values at node positions
@@ -79,6 +81,7 @@ class Topology:
                 else:
                     n1_fb_val = self.fault_block[int(n1_c[0]), int(n1_c[2])]
                     n2_fb_val = self.fault_block[int(n2_c[0]), int(n2_c[2])]
+
                 if n1_fb_val == n2_fb_val:
                     # both are in the same fault entity
                     self.G.adj[n1][n2] = {"edge_type": "stratigraphic"}
@@ -131,16 +134,6 @@ class Topology:
         if verbose:
             print(lot)
         return lot
-
-    def draw_section(self, n, plane="y", labels=None):
-        """Rudimentary plotting function for debugging"""
-        if plane == "y":
-            nx.draw_networkx(self.G,
-                             pos=self.centroids_2d,
-                             labels=labels)
-            plt.imshow(self.block[:, n, :].T, origin="lower")
-        else:
-            pass
 
     def check_adjacency(self, n1, n2):
         """Check if n2 is adjacent/shares edge with n1."""
