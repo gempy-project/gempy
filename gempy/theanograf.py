@@ -930,8 +930,7 @@ class TheanoGraph_pro(object):
         # -DEP-
         #length_of_CGI = self.matrices_shapes()[1]
 
-        potential_field_interfaces = (sigma_0_grad + sigma_0_interf + f_0 + f_1)[-2*self.len_points:
-                                                                                 -self.len_points]
+        potential_field_interfaces = (sigma_0_grad + sigma_0_interf + f_0 + f_1)[-2*self.len_points: -self.len_points]
 
         npf = T.cumsum(T.concatenate((T.stack(0), self.number_of_points_per_formation_T)))
 
@@ -949,7 +948,7 @@ class TheanoGraph_pro(object):
 
             return average  # , {self.pot_value: T.stack([average])}
 
-        potential_field_interfaces_unique, self.updates1 = theano.scan(
+        potential_field_interfaces_unique, updates1 = theano.scan(
             fn=average_potential,
             outputs_info=None,
             sequences=dict(input=npf,
@@ -983,7 +982,7 @@ class TheanoGraph_pro(object):
         min_pot = T.min(Z_x)   #T.min(potential_field_unique) - 1
 
         # Value of the potential field at the interfaces of the computed series
-        self.potential_field_at_interfaces_values = self.potential_field_at_interfaces()[self.n_formation_op-1]
+        self.potential_field_at_interfaces_values = self.potential_field_at_interfaces()[self.n_formation_op-1][::-1]
         self.potential_field_at_interfaces_values += T.repeat(T.cast(self.n_formation_op[0], "float32"), self.potential_field_at_interfaces_values.shape[0])
 
         # self.pot_field_for_faults = potential_field_at_interfaces_values
@@ -1335,13 +1334,15 @@ class TheanoGraph_pro(object):
             fault_block_init.name = 'final block of faults init'
             fault_matrix = T.zeros((0, 0, self.grid_val_T.shape[0] + 2 * self.len_points))
             # Here we store the value of the potential field at interfaces
-            pfai_fault = T.zeros((0, len(self.len_series_f.get_value())))
+            #pfai_fault = T.zeros((0, len(self.len_series_f.get_value())))
+            pfai_fault = T.zeros((0, self.n_formations_per_serie[-1]))
 
             # Init lithology block. Here we store the block and potential field results
             lith_block_init = T.zeros((2, self.grid_val_T.shape[0] + 2 * self.len_points))
             lith_block_init.name = 'final block of lithologies init'
             lith_matrix = T.zeros((0, 0, self.grid_val_T.shape[0] + 2 * self.len_points))
-            pfai_lith = T.zeros((0, len(self.len_series_f.get_value()) ))
+            #pfai_lith = T.zeros((0, len(self.len_series_f.get_value()) ))
+            pfai_lith = T.zeros((0, self.n_formations_per_serie[-1]))
         else:
             # Change the flag to extend the graph in the compute fault and compute series function
             self.compute_all = False
@@ -1351,13 +1352,15 @@ class TheanoGraph_pro(object):
             fault_block_init.name = 'final block of faults init'
             fault_matrix = T.zeros((0, self.grid_val_T.shape[0] + 2 * self.len_points))
             # Here we store the value of the potential field at interfaces
-            pfai_fault = T.zeros((0, len(self.len_series_f.get_value())))
+           # pfai_fault = T.zeros((0, len(self.len_series_f.get_value())))
+            pfai_fault = T.zeros((0, self.n_formations_per_serie[-1]))
 
             # Init lithology block. Here we store the block and potential field results
             lith_block_init = T.zeros((1, self.grid_val_T.shape[0] + 2 * self.len_points))
             lith_block_init.name = 'final block of lithologies init'
             lith_matrix = T.zeros((0, self.grid_val_T.shape[0] + 2 * self.len_points))
-            pfai_lith = T.zeros((0, len(self.len_series_f.get_value()) ))
+           # pfai_lith = T.zeros((0, len(self.len_series_f.get_value()) ))
+            pfai_lith = T.zeros((0, self.n_formations_per_serie[-1]))
 
         # Compute Faults
         if n_faults != 0:
@@ -1404,6 +1407,9 @@ class TheanoGraph_pro(object):
         # extremes to correct float32 errors for the marchig cubes later on
         pfai_lith = T.set_subtensor(pfai_lith[0, 0], pfai_lith[0, 0] + pfai_lith[0, 0] * 0.001)
         pfai_lith = T.set_subtensor(pfai_lith[-1, -1], pfai_lith[-1, -1] - pfai_lith[0, 0] * 0.001)
+
+        # pfai_lith = T.set_subtensor(pfai_lith[0], pfai_lith[0] + pfai_lith[0] * 0.001)
+        # pfai_lith = T.set_subtensor(pfai_lith[-1], pfai_lith[-1] - pfai_lith[0] * 0.001)
 
         pfai = T.vertical_stack(pfai_fault, pfai_lith)
         # if n_faults == 0:
