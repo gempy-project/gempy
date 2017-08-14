@@ -191,7 +191,7 @@ class StratigraphicPile(object):
         #plt.show()
         #print('finish', dr.anch_series)
         plt.ion()
-        self.figure= plt.gcf()
+        self.figure = plt.gcf()
 
 
 

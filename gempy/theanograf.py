@@ -1351,7 +1351,7 @@ class TheanoGraph_pro(object):
             fault_block_init.name = 'final block of faults init'
             fault_matrix = T.zeros((0, self.grid_val_T.shape[0] + 2 * self.len_points))
             # Here we store the value of the potential field at interfaces
-            pfai_fault = T.zeros((0, len(self.len_series_f.get_value()) ))
+            pfai_fault = T.zeros((0, len(self.len_series_f.get_value())))
 
             # Init lithology block. Here we store the block and potential field results
             lith_block_init = T.zeros((1, self.grid_val_T.shape[0] + 2 * self.len_points))
