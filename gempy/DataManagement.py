@@ -28,6 +28,8 @@ import pandas as pn
 from gempy import theanograf
 import theano
 
+pn.options.mode.chained_assignment = None  #
+
 
 class InputData(object):
     """
@@ -92,6 +94,8 @@ class InputData(object):
         # DEP
         #self.geo_data_type = 'InputData'
 
+        self.potential_at_interfaces = 0
+
     def import_data_csv(self, path_i, path_f, **kwargs):
         """
         Method to import interfaces and foliations from csv. The format is the same as the export 3D model data of
@@ -141,6 +145,9 @@ class InputData(object):
                                  self.foliations["polarity"].astype('float')
         self.foliations['G_z'] = np.cos(np.deg2rad(self.foliations["dip"].astype('float'))) *\
                                  self.foliations["polarity"].astype('float')
+
+    def calculate_orientations(self):
+        pass
 
     # # DEP?
     # def create_grid(self, extent=None, resolution=None, grid_type="regular_3D", **kwargs):
@@ -446,9 +453,9 @@ class InputData(object):
         Args:
             series_name(list or array_like): Name of the series which are faults
         """
-        if not len(series_name) == 0:
-            self.interfaces.loc[:, 'isFault'] = self.interfaces['series'].isin(series_name)
-            self.foliations.loc[:, 'isFault'] = self.foliations['series'].isin(series_name)
+      #  if not len(series_name) == 0:
+        self.interfaces.loc[:, 'isFault'] = self.interfaces['series'].isin(series_name)
+        self.foliations.loc[:, 'isFault'] = self.foliations['series'].isin(series_name)
 
         self.n_faults = len(series_name)
 
@@ -502,8 +509,8 @@ class InputData(object):
         try:
             ip_addresses = formation_order
             ip_dict = dict(zip(ip_addresses, range(1, len(ip_addresses)+1)))
-            self.interfaces['formation number'] = self.interfaces['formation'].replace(ip_dict)
-            self.foliations['formation number'] = self.foliations['formation'].replace(ip_dict)
+            self.interfaces.loc[:, 'formation number'] = self.interfaces['formation'].replace(ip_dict)
+            self.foliations.loc[:, 'formation number'] = self.foliations['formation'].replace(ip_dict)
         except ValueError:
             pass
 
@@ -573,7 +580,7 @@ class InputData(object):
         """
         self.interfaces.drop(index, inplace=True)
 
-    def foliation_modify(self, index, **kwargs):
+    def foliation_modify(self, index, recalculate_gradient=False, recalculate_orientations=False, **kwargs):
         """
         Allows modification of foliation data at specified dataframe index.
         Args:
@@ -586,7 +593,10 @@ class InputData(object):
         for key in kwargs:
             self.foliations.ix[index, str(key)] = kwargs[key]
 
-        self.calculate_gradient()
+        if recalculate_gradient:
+            self.calculate_gradient()
+        if recalculate_orientations:
+            self.calculate_orientations()
 
     def foliation_add(self, **kwargs):
         """
@@ -930,7 +940,7 @@ class InterpolatorInput:
         self.dtype = kwargs.get('dtype', 'float32')
 
         #self.in_data = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
-        # Set some parameters. TODO posibly this should go in kwargs
+        # Set some parameters. TODO possibly this should go in kwargs
         self.u_grade = u_grade
 
         # This two properties get set calling rescale data
@@ -968,7 +978,7 @@ class InterpolatorInput:
         input_data_T = self.interpolator.tg.input_parameters_list()
 
         # then we compile we have to pass the number of formations that are faults!!
-        th_fn = theano.function(input_data_T, self.interpolator.tg.whole_block_model(self.geo_data_res.n_faults,
+        th_fn = theano.function(input_data_T, self.interpolator.tg.compute_geological_model(self.geo_data_res.n_faults,
                                                                                      compute_all=compute_all),
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
@@ -1128,7 +1138,7 @@ class InterpolatorInput:
         else:
             geo_data_in = self.geo_data_res
 
-        print('I am in update')
+        #  print('I am in update')
         # I update the data
         self.interpolator.geo_data_res = geo_data_in
         self.interpolator.grid_res = geo_data_in.grid
@@ -1475,10 +1485,9 @@ class InterpolatorInput:
                 np.insert(self.geo_data_res.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0))
 
             self.tg.final_potential_field_at_formations.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
-                                                                           dtype=self.dtype))
-            self.tg.final_potential_field_at_faults.set_value(
-                np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
-                         dtype=self.dtype))
+                                                                  dtype=self.dtype))
+            self.tg.final_potential_field_at_faults.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
+                                                              dtype=self.dtype))
 
         def get_kriging_parameters(self, verbose=0):
             """
