@@ -10,7 +10,7 @@ import networkx as nx
 class Posterior:
     """Posterior database analysis for pymc2."""
 
-    def __init__(self, db_name, topology=True, verbose=False):
+    def __init__(self, db_name, topology=False, verbose=False):
         # load db
         self.db = pymc.database.hdf5.load(db_name)
         # get trace names

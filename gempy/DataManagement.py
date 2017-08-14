@@ -1128,7 +1128,7 @@ class InterpolatorInput:
         else:
             geo_data_in = self.geo_data_res
 
-        print('I am in update')
+        #  print('I am in update')
         # I update the data
         self.interpolator.geo_data_res = geo_data_in
         self.interpolator.grid_res = geo_data_in.grid
