@@ -997,8 +997,8 @@ class vtkVisualization:
 
     def update_surfaces_real_time(self, interp_data):
 
-        sol = gp.compute_model(interp_data)
-        v_l, s_l = gp.get_surfaces(sol[-1, 1, :], interp_data, original_scale=False)
+        lith_block, fault_block = gp.compute_model(interp_data)
+        v_l, s_l = gp.get_surfaces(interp_data,lith_block[1], fault_block[1], original_scale=False)
         return v_l, s_l
 
 

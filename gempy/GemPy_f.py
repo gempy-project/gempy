@@ -398,6 +398,49 @@ def set_interpolation_data(geo_data, **kwargs):
     in_data = InterpolatorInput(geo_data, **kwargs)
     return in_data
 
+
+def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
+                     #formations_names_l, formation_numbers_l,
+                     alpha=1, plot_data=True,
+                     size=(1920, 1080), fullscreen=False):
+    """
+    Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
+    Args:
+        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
+        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
+        formations_names_l (list): Name of the formation of the surfaces
+        formation_numbers_l (list): Formation numbers (int)
+        alpha (float): Opacity
+        plot_data (bool): Default True
+        size (tuple): Resolution of the window
+        fullscreen (bool): Launch window in full screen or not
+    Returns:
+        None
+    """
+    w = vtkVisualization(geo_data)
+    w.set_surfaces(vertices_l, simplices_l,
+                   #formations_names_l, formation_numbers_l,
+                    alpha)
+
+    if plot_data:
+        w.set_interfaces()
+        w.set_foliations()
+    w.render_model(size=size, fullscreen=fullscreen)
+
+
+def export_vtk_rectilinear(geo_data, block, path=None):
+    """
+    Export data to a vtk file for posterior visualizations
+    Args:
+        geo_data(gempy.InputData): All values of a DataManagement object
+        block(numpy.array): 3D array containing the lithology block
+        path (str): path to the location of the vtk
+
+    Returns:
+        None
+    """
+    vtkVisualization.export_vtk_rectilinear(geo_data, block, path)
+
 # =====================================
 # Functions for the InterpolatorData
 # =====================================
@@ -456,21 +499,31 @@ def compute_model(interp_data, u_grade=None, get_potential_at_interfaces=False):
         interp_data.compile_th_fn()
 
     i = interp_data.get_input_data(u_grade=u_grade)
-    sol, interp_data.potential_at_interfaces = interp_data.th_fn(*i)
-    if len(sol.shape) < 3:
-        _np.expand_dims(sol, 0)
+    lith_matrix, fault_matrix, potential_at_interfaces = interp_data.th_fn(*i)
+    if len(lith_matrix.shape) < 3:
+        _np.expand_dims(lith_matrix, 0)
+        _np.expand_dims(fault_matrix, 0)
+
+    # Making the limit of the potential field a bit bigger to avoid float errors
+    # a_min = _np.argmin(potential_at_interfaces)
+    # a_max = _np.argmax(potential_at_interfaces)
+    # potential_at_interfaces[a_min] = potential_at_interfaces[a_min] - potential_at_interfaces[a_min] * 0.05
+    # potential_at_interfaces[a_max] = potential_at_interfaces[a_max] + potential_at_interfaces[a_max] * 0.05
+
+    interp_data.potential_at_interfaces = potential_at_interfaces
+
     if get_potential_at_interfaces:
-        return sol, interp_data.potential_at_interfaces
+        return lith_matrix, fault_matrix, interp_data.potential_at_interfaces
     else:
-        return sol
+        return lith_matrix, fault_matrix
 
 
-def get_surfaces(potential_block, interp_data, n_formation='all', step_size=1, original_scale=True):
+def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_formation='all', step_size=1, original_scale=True):
     """
     compute vertices and simplices of the interfaces for its vtk visualization or further
     analysis
     Args:
-        potential_block (numpy.array): 1D numpy array with the solution of the computation of the model
+        potential_lith (numpy.array): 1D numpy array with the solution of the computation of the model
          containing the scalar field of potentials (second row of solution)
         interp_data (gempy.DataManagement.InterpolatorInput): Interpolator object.
         n_formation (int or 'all'): Positive integer with the number of the formation of which the surface is returned.
@@ -487,7 +540,7 @@ def get_surfaces(potential_block, interp_data, n_formation='all', step_size=1, o
     except:
         raise AttributeError('You need to compute the model first')
 
-    def get_surface(potential_block, interp_data, n_formation, step_size, original_scale):
+    def get_surface(potential_block, interp_data, pot_int, n_formation, step_size, original_scale):
         assert n_formation > 0, 'Number of the formation has tobe positive'
         # In case the values are separated by series I put all in a vector
         pot_int = interp_data.potential_at_interfaces.sum(axis=0)
@@ -504,39 +557,62 @@ def get_surfaces(potential_block, interp_data, n_formation='all', step_size=1, o
                      (interp_data.geo_data_res.extent[3] - interp_data.geo_data_res.extent[2]) / interp_data.geo_data_res.resolution[1],
                      (interp_data.geo_data_res.extent[5] - interp_data.geo_data_res.extent[4]) / interp_data.geo_data_res.resolution[2]))
 
-        vertices += _np.array([interp_data.extent_rescaled.iloc[0],
-                               interp_data.extent_rescaled.iloc[2],
-                               interp_data.extent_rescaled.iloc[4]]).reshape(1, 3)
+
         if original_scale:
             vertices = interp_data.rescaling_factor * vertices + _np.array([interp_data._geo_data.extent[0],
                                                                             interp_data._geo_data.extent[2],
                                                                             interp_data._geo_data.extent[4]]).reshape(1, 3)
-
+        else:
+            vertices += _np.array([interp_data.extent_rescaled.iloc[0],
+                                   interp_data.extent_rescaled.iloc[2],
+                                   interp_data.extent_rescaled.iloc[4]]).reshape(1, 3)
         return vertices, simplices
 
-    if n_formation == 'all':
-        vertices = []
-        simplices = []
-        for n in interp_data.geo_data_res.interfaces['formation number'].unique():
+    vertices = []
+    simplices = []
+
+    if potential_fault is not None:
+        pot_int = interp_data.potential_at_interfaces[:interp_data.geo_data_res.n_faults + 1]
+        for n in interp_data.geo_data_res.interfaces['formation number'][
+            interp_data.geo_data_res.interfaces['isFault']].unique():
             if n == 0:
                 continue
             else:
-                v, s = get_surface(potential_block, interp_data, n,
+                v, s = get_surface(potential_fault, interp_data, pot_int, n,
                                    step_size=step_size, original_scale=original_scale)
                 vertices.append(v)
                 simplices.append(s)
-    else:
-        vertices, simplices = get_surface(potential_block, interp_data, n_formation,
-                                          step_size=step_size, original_scale=original_scale)
+
+    if potential_lith is not None:
+        pot_int = interp_data.potential_at_interfaces[interp_data.geo_data_res.n_faults:]
+
+        # Compute the vertices of the lithologies
+        if n_formation == 'all':
+
+            for n in interp_data.geo_data_res.interfaces['formation number'][~interp_data.geo_data_res.interfaces['isFault']].unique():
+                if n == 0:
+                    continue
+                else:
+                    v, s = get_surface(potential_lith, interp_data, pot_int, n,
+                                       step_size=step_size, original_scale=original_scale)
+                    vertices.append(v)
+                    simplices.append(s)
+        else:
+            vertices, simplices = get_surface(potential_lith, interp_data, pot_int, n_formation,
+                                              step_size=step_size, original_scale=original_scale)
+
     return vertices, simplices
 
 
-def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
+def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
                      #formations_names_l, formation_numbers_l,
                      alpha=1, plot_data=True,
                      size=(1920, 1080), fullscreen=False):
     """
-    Plot in vtk the surfaces
+    Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.
+    IMPORTANT NOTE it is highly recommended to have the flag fast_run in the theano optimization. Also note that the
+    time needed to compute each model increases linearly with every potential field (i.e. fault or discontinuity). It
+    may be better to just modify each potential field individually to increase the speed (See gempy.select_series).
     Args:
         vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
         simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
@@ -549,29 +625,18 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
     Returns:
         None
     """
-    w = vtkVisualization(geo_data)
+    assert isinstance(interp_data, InterpolatorInput), 'The object has to be instance of the InterpolatorInput'
+    w = vtkVisualization(interp_data.geo_data_res, real_time=True)
     w.set_surfaces(vertices_l, simplices_l,
                    #formations_names_l, formation_numbers_l,
                     alpha)
 
+    w.interp_data = interp_data
     if plot_data:
         w.set_interfaces()
         w.set_foliations()
     w.render_model(size=size, fullscreen=fullscreen)
 
-
-def export_vtk_rectilinear(geo_data, block, path=None):
-    """
-    Export data to a vtk file for posterior visualizations
-    Args:
-        geo_data(gempy.InputData): All values of a DataManagement object
-        block(numpy.array): 3D array containing the lithology block
-        path (str): path to the location of the vtk
-
-    Returns:
-        None
-    """
-    vtkVisualization.export_vtk_rectilinear(geo_data, block, path)
 
 
 
