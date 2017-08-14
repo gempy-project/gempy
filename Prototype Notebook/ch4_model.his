@@ -1,5 +1,5 @@
 #Filename = ch4_model.his 
-#Date Saved = 11/8/2017 13:52:28
+#Date Saved = 14/8/2017 14:6:53
 FileType = 111
 Version = 7.11
 
@@ -203,7 +203,7 @@ Event #2	= FOLD
     Origin Y    =   0.00
     Origin Z    =   2000.00
     Length X    =   3000.00
-    Length Y    =   3000.00
+    Length Y    =   200.00
     Length Z    =   2000.00
 	Geology Cube Size	=  25.00
 	Geophysics Cube Size	=  25.00
