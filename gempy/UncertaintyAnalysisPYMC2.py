@@ -8,11 +8,12 @@ import networkx as nx
 
 
 class Posterior:
-    """Posterior database analysis for pymc2."""
+    """Posterior database analysis for GemPy-pymc2 hdf5 databases."""
 
-    def __init__(self, db_name, topology=False, verbose=False):
+    def __init__(self, dbname, topology=False, verbose=False):
+        self.verbose = verbose
         # load db
-        self.db = pymc.database.hdf5.load(db_name)
+        self.db = pymc.database.hdf5.load(dbname)
         # get trace names
         self.trace_names = self.db.trace_names[0]
         # get gempy block models
@@ -29,20 +30,25 @@ class Posterior:
             # load centroids
             self.centroids = topo_trace[:, 1]
             del topo_trace
+
         # load input data
         self.input_data = self.db.input_data.gettrace()
-        # [self.dips_position_all, self.dip_angles_all, self.azimuth_all,
-        # self.polarity_all, self.ref_layer_points_all, self.rest_layer_points_all]
 
     def change_input_data(self, interp_data, i):
         """Changes input data in interp_data to posterior input data at iteration i."""
-        # TODO: accomodate for new input_data format
-        interp_data.geo_data_res = self.input_data[i]
+
+        # replace interface data
+        interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
+        # replace foliation data
+        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = self.input_data[i][1]
+        # do all the ugly updating stuff
         interp_data.interpolator.tg.final_potential_field_at_formations = theano.shared(np.zeros(
             interp_data.interpolator.tg.n_formations_per_serie.get_value().sum(), dtype='float32'))
         interp_data.interpolator.tg.final_potential_field_at_faults = theano.shared(np.zeros(
             interp_data.interpolator.tg.n_formations_per_serie.get_value().sum(), dtype='float32'))
         interp_data.update_interpolator()
+        if self.verbose:
+            print("interp_data parameters changed.")
 
     def plot_topology_graph(self, i):
         # get centroid values into list
