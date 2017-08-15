@@ -28,7 +28,7 @@ import theano.tensor as T
 import numpy as np
 import sys
 
-theano.config.optimizer = 'fast_compile'
+theano.config.optimizer = 'fast_run'
 theano.config.exception_verbosity = 'high'
 theano.config.compute_test_value = 'off'
 theano.config.floatX = 'float32'
@@ -982,7 +982,7 @@ class TheanoGraph_pro(object):
         min_pot = T.min(Z_x)   #T.min(potential_field_unique) - 1
 
         # Value of the potential field at the interfaces of the computed series
-        self.potential_field_at_interfaces_values = self.potential_field_at_interfaces()[self.n_formation_op-1][::-1]
+        self.potential_field_at_interfaces_values = T.sort(self.potential_field_at_interfaces()[self.n_formation_op-1])
         self.potential_field_at_interfaces_values += T.repeat(T.cast(self.n_formation_op[0], "float32"), self.potential_field_at_interfaces_values.shape[0])
 
         # self.pot_field_for_faults = potential_field_at_interfaces_values
@@ -994,7 +994,7 @@ class TheanoGraph_pro(object):
 
         # A tensor with the values to segment
         potential_field_iter = T.concatenate((T.stack([max_pot]),
-                                              T.sort(self.potential_field_at_interfaces_values)[::-1],
+                                              self.potential_field_at_interfaces_values[::-1],
                                               T.stack([min_pot])))
 
         if "potential_field_iter" in self.verbose:
@@ -1332,7 +1332,7 @@ class TheanoGraph_pro(object):
             # Init faults block. Here we store the block and potential field results
             fault_block_init = T.zeros((2, self.grid_val_T.shape[0] + 2 * self.len_points))
             fault_block_init.name = 'final block of faults init'
-            fault_matrix = T.zeros((0, 0, self.grid_val_T.shape[0] + 2 * self.len_points))
+            fault_matrix = T.zeros((1, 0, self.grid_val_T.shape[0] + 2 * self.len_points))
             # Here we store the value of the potential field at interfaces
             #pfai_fault = T.zeros((0, len(self.len_series_f.get_value())))
             pfai_fault = T.zeros((0, self.n_formations_per_serie[-1]))
@@ -1426,7 +1426,7 @@ class TheanoGraph_pro(object):
         # if n_faults != 0 and not len(self.len_series_f.get_value()) - 1 > n_faults:
         #     return None, fault_matrix[-1, :, :-2 * self.len_points], pfai
 
-        return lith_matrix[:, :, :-2 * self.len_points], fault_matrix[:, :, :-2 * self.len_points], pfai
+        return lith_matrix[-1, :, :-2 * self.len_points], fault_matrix[-1, :, :-2 * self.len_points], pfai
 
     # ==================================
     # Geophysics

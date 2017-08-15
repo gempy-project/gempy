@@ -223,8 +223,8 @@ class InputData(object):
         """
         import pandas as pn
         if verbosity == 0:
-            show_par_f = ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series', 'annotations']
-            show_par_i = ['X', 'Y', 'Z', 'formation', 'series', 'annotations']
+            show_par_f = ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series']
+            show_par_i = ['X', 'Y', 'Z', 'formation', 'series']
         else:
             show_par_f = self.foliations.columns
             show_par_i = self.interfaces.columns
