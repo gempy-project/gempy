@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>theanograf &#8212; GemPy 4 documentation</title>
+    <title>theanograf &#8212; GemPy beta documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '4',
+        VERSION:     'beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -44,6 +44,23 @@
             
   <h1>Source code for theanograf</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This file is part of gempy.</span>
+
+<span class="sd">    gempy is free software: you can redistribute it and/or modify</span>
+<span class="sd">    it under the terms of the GNU General Public License as published by</span>
+<span class="sd">    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">    (at your option) any later version.</span>
+
+<span class="sd">    gempy is distributed in the hope that it will be useful,</span>
+<span class="sd">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">    GNU General Public License for more details.</span>
+
+<span class="sd">    You should have received a copy of the GNU General Public License</span>
+<span class="sd">    along with gempy.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+
+<span class="sd">DEP-- I need to update this string</span>
 <span class="sd">Function that generates the symbolic code to perform the interpolation. Calling this function creates</span>
 <span class="sd"> both the theano functions for the potential field and the block.</span>
 
@@ -170,10 +187,14 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">vector</span><span class="p">(</span><span class="s1">&#39;potential_field_at_interfaces_values&#39;</span><span class="p">)</span>
 
        <span class="c1"># TODO tidy up this initializations</span>
+      <span class="c1">#  self.final_potential_field_at_formations = T.zeros(self.n_formations_per_serie.get_value()[-1])</span>
+
       <span class="c1">#  self.pot_value = theano.shared(np.zeros(self.n_formations_per_serie.sum(), dtype=&#39;float64&#39;), &#39;average potential field&#39;)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_formations</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">))</span><span class="c1">#np.array([], ndmin=1, dtype=dtype)) #T.vector(&#39;Final value of potential fields at interfacse&#39;, dtype=dtype)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_formations_op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_formations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults_op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span>
         <span class="c1">#self.potential_field_at_interfaces_value   = theano.shared(np.cast[np.int64](np.zeros((2, 2))), &#39;Potential field value at each interface&#39;,)</span>
 
 <div class="viewcode-block" id="TheanoGraph_pro.input_parameters_list"><a class="viewcode-back" href="../code.html#theanograf.TheanoGraph_pro.input_parameters_list">[docs]</a>    <span class="k">def</span> <span class="nf">input_parameters_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -409,7 +430,6 @@
             <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">pydotprint</span><span class="p">(</span><span class="n">C_GI</span><span class="p">,</span> <span class="n">outfile</span><span class="o">=</span><span class="s2">&quot;graphs/&quot;</span> <span class="o">+</span> <span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span> <span class="o">+</span> <span class="s2">&quot;.png&quot;</span><span class="p">,</span>
                                        <span class="n">var_with_name_simple</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">C_GI</span></div>
-
 
 <div class="viewcode-block" id="TheanoGraph_pro.universal_matrix"><a class="viewcode-back" href="../code.html#theanograf.TheanoGraph_pro.universal_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">universal_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -932,13 +952,14 @@
 
         <span class="n">Z_x</span> <span class="o">=</span> <span class="p">(</span><span class="n">sigma_0_grad</span> <span class="o">+</span> <span class="n">sigma_0_interf</span> <span class="o">+</span> <span class="n">f_0</span> <span class="o">+</span> <span class="n">f_1</span><span class="p">)</span><span class="c1">#[:-2*self.rest_layer_points_all.shape[0]]</span>
 
+
+        <span class="c1"># Add an arbitrary number at the potential field to get unique values for each of them</span>
+        <span class="n">Z_x</span> <span class="o">+=</span> <span class="n">T</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="mi">100</span> <span class="o">-</span> <span class="mi">5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;float32&quot;</span><span class="p">),</span> <span class="n">Z_x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
         <span class="n">Z_x</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Value of the potential field at every point&#39;</span>
 
         <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="n">Z_x</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;Potential field at all points&#39;</span><span class="p">)(</span><span class="n">Z_x</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Z_x</span></div>
-
-
 
 <div class="viewcode-block" id="TheanoGraph_pro.potential_field_at_interfaces"><a class="viewcode-back" href="../code.html#theanograf.TheanoGraph_pro.potential_field_at_interfaces">[docs]</a>    <span class="k">def</span> <span class="nf">potential_field_at_interfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -954,8 +975,7 @@
         <span class="c1"># -DEP-</span>
         <span class="c1">#length_of_CGI = self.matrices_shapes()[1]</span>
 
-        <span class="n">potential_field_interfaces</span> <span class="o">=</span> <span class="p">(</span><span class="n">sigma_0_grad</span> <span class="o">+</span> <span class="n">sigma_0_interf</span> <span class="o">+</span> <span class="n">f_0</span> <span class="o">+</span> <span class="n">f_1</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">:</span>
-                                                                                 <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">]</span>
+        <span class="n">potential_field_interfaces</span> <span class="o">=</span> <span class="p">(</span><span class="n">sigma_0_grad</span> <span class="o">+</span> <span class="n">sigma_0_interf</span> <span class="o">+</span> <span class="n">f_0</span> <span class="o">+</span> <span class="n">f_1</span><span class="p">)[</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">:</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">]</span>
 
         <span class="n">npf</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">T</span><span class="o">.</span><span class="n">stack</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_points_per_formation_T</span><span class="p">)))</span>
 
@@ -969,11 +989,11 @@
 <span class="sd">            Return:</span>
 <span class="sd">                theano.tensor.vector: average of the potential per formation</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-            <span class="n">average</span> <span class="o">=</span> <span class="n">pfi</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">dim_a</span><span class="p">,</span> <span class="s2">&quot;int32&quot;</span><span class="p">):</span> <span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">dim_b</span><span class="p">,</span> <span class="s2">&quot;int32&quot;</span><span class="p">)]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="p">(</span><span class="n">dim_b</span> <span class="o">-</span> <span class="n">dim_a</span><span class="p">)</span>
+            <span class="n">average</span> <span class="o">=</span> <span class="n">pfi</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">dim_a</span><span class="p">,</span> <span class="s2">&quot;int32&quot;</span><span class="p">):</span> <span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">dim_b</span><span class="p">,</span> <span class="s2">&quot;int32&quot;</span><span class="p">)]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">((</span><span class="n">dim_b</span> <span class="o">-</span> <span class="n">dim_a</span><span class="p">),</span> <span class="s1">&#39;float32&#39;</span><span class="p">)</span>
 
             <span class="k">return</span> <span class="n">average</span>  <span class="c1"># , {self.pot_value: T.stack([average])}</span>
 
-        <span class="n">potential_field_interfaces_unique</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">updates1</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
+        <span class="n">potential_field_interfaces_unique</span><span class="p">,</span> <span class="n">updates1</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
             <span class="n">fn</span><span class="o">=</span><span class="n">average_potential</span><span class="p">,</span>
             <span class="n">outputs_info</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
             <span class="n">sequences</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">npf</span><span class="p">,</span>
@@ -1007,7 +1027,8 @@
         <span class="n">min_pot</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Z_x</span><span class="p">)</span>   <span class="c1">#T.min(potential_field_unique) - 1</span>
 
         <span class="c1"># Value of the potential field at the interfaces of the computed series</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces</span><span class="p">()[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span><span class="o">-</span><span class="mi">1</span><span class="p">])[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span> <span class="o">+=</span> <span class="n">T</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="mi">100</span> <span class="o">-</span> <span class="mi">5</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;float32&quot;</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 
         <span class="c1"># self.pot_field_for_faults = potential_field_at_interfaces_values</span>
         <span class="c1"># self.pot_field_for_formations = potential_field_at_interfaces_values</span>
@@ -1018,17 +1039,18 @@
 
         <span class="c1"># A tensor with the values to segment</span>
         <span class="n">potential_field_iter</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">T</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">max_pot</span><span class="p">]),</span>
-                                              <span class="n">T</span><span class="o">.</span><span class="n">sort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                              <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span><span class="p">,</span>
                                               <span class="n">T</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">min_pot</span><span class="p">])))</span>
 
         <span class="k">if</span> <span class="s2">&quot;potential_field_iter&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="n">potential_field_iter</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s2">&quot;potential_field_iter&quot;</span><span class="p">)(</span><span class="n">potential_field_iter</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="s2">&quot;potential_field_at_interfaces_values&quot;</span><span class="p">:</span>
-            <span class="n">potential_field_at_interfaces_values</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;Potential field&#39;</span><span class="p">)(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces</span><span class="p">())</span>
-            <span class="n">potential_field_at_interfaces_values</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;Selected pt&#39;</span><span class="p">)(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span> <span class="o">-</span> <span class="mi">1</span><span class="p">])</span>
+        <span class="c1"># if &quot;potential_field_at_interfaces_values&quot;:</span>
+        <span class="c1">#     self.potential_field_at_interfaces_values = theano.printing.Print(&#39;Potential field&#39;)(</span>
+        <span class="c1">#         self.potential_field_at_interfaces())</span>
+        <span class="c1">#     self.potential_field_at_interfaces_values = theano.printing.Print(&#39;Selected pt&#39;)(</span>
+        <span class="c1">#         #self.potential_field_at_interfaces_values[self.n_formation_op - 1])</span>
+        <span class="c1">#         T.sort(self.potential_field_at_interfaces()[self.n_formation_op - 1])[::-1])</span>
 
         <span class="c1"># Loop to segment the distinct lithologies</span>
         <span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n_formation</span><span class="p">,</span> <span class="n">Zx</span><span class="p">):</span>
@@ -1135,12 +1157,21 @@
         <span class="n">aux_ones</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">])</span>
         <span class="n">faults_select</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span><span class="p">,</span> <span class="n">aux_ones</span><span class="p">))</span>
 
+        <span class="c1"># Update the block matrix</span>
         <span class="n">block_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
                     <span class="n">final_block</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">faults_select</span><span class="p">,</span> <span class="s2">&quot;int8&quot;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]],</span>
                     <span class="n">faults_matrix</span><span class="p">)</span>
 
+        <span class="c1"># Update the potential field matrix</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_all</span><span class="p">:</span>
+            <span class="n">potential_field_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_all</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">block_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
+                <span class="n">block_matrix</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">faults_select</span><span class="p">,</span> <span class="s2">&quot;int8&quot;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]],</span>
+                <span class="n">potential_field_values</span><span class="p">)</span>
+
+        <span class="c1"># Store the potential field at the interfaces</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults_op</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults_op</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
                                                                <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span><span class="p">)</span>
         <span class="c1"># Save potential field at interfaces</span>
         <span class="c1"># self.final_potential_field_at_interfaces = T.concatenate([self.final_potential_field_at_interfaces,</span>
@@ -1151,7 +1182,7 @@
         <span class="c1">#    final_block[T.nonzero(T.cast(self.yet_simulated, &quot;int8&quot;))[0]],</span>
         <span class="c1">#    potential_field_contribution)</span>
 
-        <span class="k">return</span> <span class="n">block_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span></div>
+        <span class="k">return</span> <span class="n">block_matrix</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults_op</span></div>
 
 <div class="viewcode-block" id="TheanoGraph_pro.compute_a_series"><a class="viewcode-back" href="../code.html#theanograf.TheanoGraph_pro.compute_a_series">[docs]</a>    <span class="k">def</span> <span class="nf">compute_a_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                          <span class="n">len_i_0</span><span class="p">,</span> <span class="n">len_i_1</span><span class="p">,</span>
@@ -1179,7 +1210,8 @@
         <span class="c1"># Preparing the data</span>
         <span class="c1"># ==================</span>
         <span class="c1"># Vector that controls the points that have been simulated in previous iterations</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">final_block</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="c1">#self.yet_simulated = T.eq(final_block[0, :], 0)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">final_block</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Yet simulated LITHOLOGY node&#39;</span>
 
         <span class="c1"># Theano shared</span>
@@ -1213,143 +1245,239 @@
         <span class="c1"># ====================</span>
         <span class="c1"># Computing the series</span>
         <span class="c1"># ====================</span>
-        <span class="n">potential_field_contribution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_series</span><span class="p">()[:</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">]</span>
 
+        <span class="n">aux_ones</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">ones</span><span class="p">([</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">])</span>
+        <span class="n">lith_select</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span><span class="p">,</span> <span class="n">aux_ones</span><span class="p">))</span>
+
+        <span class="n">potential_field_contribution</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">block_series</span><span class="p">()</span>  <span class="c1">#[:-2*self.len_points]</span>
+
+        <span class="c1"># Updating the block model with the lithology block</span>
         <span class="n">final_block</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
-            <span class="n">final_block</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span><span class="p">,</span> <span class="s2">&quot;int8&quot;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]],</span>
+            <span class="n">final_block</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">T</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">lith_select</span><span class="p">,</span> <span class="s2">&quot;int8&quot;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]],</span>
             <span class="n">potential_field_contribution</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_formations</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_formations</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span> <span class="n">potential_field_at_interfaces_values</span><span class="p">)</span>
+        <span class="c1"># Store the potential field at the interfaces</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_formations_op</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_formations_op</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_interfaces_values</span><span class="p">)</span>
 
+        <span class="c1"># Update the potential field matrix</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_all</span><span class="p">:</span>
-            <span class="n">potential_field_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_all</span><span class="p">()[:</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">]</span>
+            <span class="n">potential_field_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">potential_field_at_all</span><span class="p">()</span><span class="c1">#[:-2*self.len_points]</span>
 
             <span class="n">final_block</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
-            <span class="n">final_block</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span><span class="p">,</span> <span class="s2">&quot;int8&quot;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]],</span>
+            <span class="n">final_block</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="n">T</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="n">lith_select</span><span class="p">,</span> <span class="s2">&quot;int8&quot;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]],</span>
                 <span class="n">potential_field_values</span><span class="p">)</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">is_fault</span><span class="p">:</span>
-                <span class="n">final_block</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
-                    <span class="n">final_block</span><span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="p">:],</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">])</span>
 
-            <span class="c1">#final_block_out = T.vertical_stack(final_block, pf)</span>
-                <span class="c1"># Save potential field at interfaces</span>
+        <span class="k">return</span> <span class="n">final_block</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_formations_op</span></div>
 
-        <span class="k">return</span> <span class="n">final_block</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_formations</span></div>
+    <span class="c1"># def whole_block_model(self, n_faults=0, compute_all=True):</span>
+    <span class="c1">#</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Final function that loops first all the faults, then uses that result in the final block and loops again the</span>
+    <span class="c1">#     series</span>
+    <span class="c1">#     Args:</span>
+    <span class="c1">#         n_faults (int): Number of faults to extract the correct values from the big input matrices</span>
+    <span class="c1">#</span>
+    <span class="c1">#     Returns:</span>
+    <span class="c1">#         theano.tensor.vector: Final block model with the segmented lithologies</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     # TODO move this to init</span>
+    <span class="c1">#     self.compute_all = False</span>
+    <span class="c1">#</span>
+    <span class="c1">#     final_block_init = self.final_block</span>
+    <span class="c1">#     final_block_init.name = &#39;final block of lithologies init&#39;</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # Check if there are faults and loop them to create the Faults block</span>
+    <span class="c1">#     if n_faults != 0:</span>
+    <span class="c1">#         # we initialize the final block</span>
+    <span class="c1">#         fault_block_init = T.zeros((2, self.grid_val_T.shape[0]+2*self.len_points))  # self.final_block</span>
+    <span class="c1">#         fault_block_init.name = &#39;final block of faults init&#39;</span>
+    <span class="c1">#         self.yet_simulated = T.eq(fault_block_init[0, :-2*self.len_points], 0)</span>
+    <span class="c1">#</span>
+    <span class="c1">#         fault_loop, updates3 = theano.scan(</span>
+    <span class="c1">#              fn=self.compute_a_fault,</span>
+    <span class="c1">#              outputs_info=[fault_block_init, None],  #  This line may be used for the faults network</span>
+    <span class="c1">#              sequences=[dict(input=self.len_series_i[:n_faults+1], taps=[0, 1]),</span>
+    <span class="c1">#                         dict(input=self.len_series_f[:n_faults+1], taps=[0, 1]),</span>
+    <span class="c1">#                         dict(input=self.n_formations_per_serie[:n_faults+1], taps=[0, 1]),</span>
+    <span class="c1">#                         dict(input=self.u_grade_T[:n_faults + 1], taps=[0])]</span>
+    <span class="c1">#              )</span>
+    <span class="c1">#         # fault_matrix, updates3 = theano.scan(</span>
+    <span class="c1">#         #     fn=self.compute_a_series,</span>
+    <span class="c1">#         #     outputs_info=final_block_init,</span>
+    <span class="c1">#         #     sequences=[dict(input=self.len_series_i[:n_faults + 1], taps=[0, 1]),</span>
+    <span class="c1">#         #                dict(input=self.len_series_f[:n_faults+1], taps=[0, 1]),</span>
+    <span class="c1">#         #                dict(input=self.n_formations_per_serie[:n_faults+1], taps=[0, 1]),</span>
+    <span class="c1">#         #                dict(input=self.u_grade_T[:n_faults + 1], taps=[0])]</span>
+    <span class="c1">#         #     )</span>
+    <span class="c1">#</span>
+    <span class="c1">#         fault_matrix = fault_loop[0]</span>
+    <span class="c1">#         pfai_fault = fault_loop[1]</span>
+    <span class="c1">#         if n_faults == 1:</span>
+    <span class="c1">#             self.fault_matrix = fault_matrix[0]</span>
+    <span class="c1">#         if n_faults &gt; 1:</span>
+    <span class="c1">#             self.fault_matrix = fault_matrix[-1, 0]</span>
+    <span class="c1">#</span>
+    <span class="c1">#         if &#39;faults block&#39; in self.verbose:</span>
+    <span class="c1">#             self.fault_matrix = theano.printing.Print(&#39;I am outside the faults&#39;)(fault_matrix[-1])</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         pfai_fault = T.vector()</span>
+    <span class="c1">#    # self.u_grade_T = theano.printing.Print(&#39;drift degree&#39;)(self.u_grade_T)</span>
+    <span class="c1">#    # self.a_T = theano.printing.Print(&#39;range&#39;)(self.a_T)</span>
+    <span class="c1">#     self.compute_all = compute_all</span>
+    <span class="c1">#</span>
+    <span class="c1">#</span>
+    <span class="c1">#     # Checking there are more potential fields in the data that the faults.</span>
+    <span class="c1">#     if len(self.len_series_f.get_value())-1 &gt; n_faults:</span>
+    <span class="c1">#         if self.compute_all:</span>
+    <span class="c1">#             final_block_init = T.vertical_stack(self.final_block, self.final_block)#, self.final_block)</span>
+    <span class="c1">#             # Loop the series to create the Final block</span>
+    <span class="c1">#             loop_results, updates2 = theano.scan(</span>
+    <span class="c1">#                 fn=self.compute_a_series,</span>
+    <span class="c1">#                 outputs_info=[final_block_init, None],</span>
+    <span class="c1">#                 sequences=[dict(input=self.len_series_i[n_faults:], taps=[0, 1]),</span>
+    <span class="c1">#                            dict(input=self.len_series_f[n_faults:], taps=[0, 1]),</span>
+    <span class="c1">#                            dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),</span>
+    <span class="c1">#                            dict(input=self.u_grade_T[n_faults:], taps=[0])]</span>
+    <span class="c1">#             )</span>
+    <span class="c1">#</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             # Loop the series to create the Final block</span>
+    <span class="c1">#             loop_results, updates2 = theano.scan(</span>
+    <span class="c1">#                 fn=self.compute_a_series,</span>
+    <span class="c1">#                 outputs_info=[final_block_init, None],</span>
+    <span class="c1">#                 sequences=[dict(input=self.len_series_i[n_faults:], taps=[0, 1]),</span>
+    <span class="c1">#                            dict(input=self.len_series_f[n_faults:], taps=[0, 1]),</span>
+    <span class="c1">#                            dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),</span>
+    <span class="c1">#                            dict(input=self.u_grade_T[n_faults:], taps=[0])]</span>
+    <span class="c1">#             )</span>
+    <span class="c1">#</span>
+    <span class="c1">#         all_series = loop_results[0]</span>
+    <span class="c1">#         pfai_for = loop_results[1]</span>
+    <span class="c1">#         if n_faults == 0:</span>
+    <span class="c1">#             pfai = pfai_for</span>
+    <span class="c1">#         else:</span>
+    <span class="c1">#             pfai = T.vertical_stack(pfai_fault, pfai_for)</span>
+    <span class="c1">#           #  all_series = T.stack((fault_matrix[:, :-2 * self.len_points], all_series), axis=0)</span>
+    <span class="c1">#     else:</span>
+    <span class="c1">#         # We just pass the faults block</span>
+    <span class="c1">#         all_series = fault_matrix[:, :-2 * self.len_points]</span>
+    <span class="c1">#         pfai = pfai_fault</span>
+    <span class="c1">#</span>
+    <span class="c1">#    # pfai = T.vertical_stack(pfai_fault, pfai_for)</span>
+    <span class="c1">#     #self.pot_value.set_value(self.final_potential_field_at_interfaces)</span>
+    <span class="c1">#     return all_series, pfai</span>
 
-<div class="viewcode-block" id="TheanoGraph_pro.whole_block_model"><a class="viewcode-back" href="../code.html#theanograf.TheanoGraph_pro.whole_block_model">[docs]</a>    <span class="k">def</span> <span class="nf">whole_block_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_faults</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">compute_geological_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_faults</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="c1"># Init all</span>
+        <span class="k">if</span> <span class="n">compute_all</span><span class="p">:</span>
+            <span class="c1"># Change the flag to extend the graph in the compute fault and compute series function</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_all</span> <span class="o">=</span> <span class="kc">True</span>
 
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Final function that loops first all the faults, then uses that result in the final block and loops again the</span>
-<span class="sd">        series</span>
-<span class="sd">        Args:</span>
-<span class="sd">            n_faults (int): Number of faults to extract the correct values from the big input matrices</span>
-
-<span class="sd">        Returns:</span>
-<span class="sd">            theano.tensor.vector: Final block model with the segmented lithologies</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># TODO move this to init</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">compute_all</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">is_fault</span> <span class="o">=</span> <span class="kc">False</span>
-        <span class="k">if</span> <span class="n">n_faults</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">is_fault</span><span class="o">=</span><span class="kc">True</span>
-
-
-        <span class="c1"># Check if there are faults and loop them to create the Faults block</span>
-        <span class="k">if</span> <span class="n">n_faults</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># we initialize the final block</span>
-            <span class="n">fault_block_init</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_val_T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">))</span>  <span class="c1"># self.final_block</span>
+            <span class="c1"># Init faults block. Here we store the block and potential field results</span>
+            <span class="n">fault_block_init</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_val_T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">))</span>
             <span class="n">fault_block_init</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;final block of faults init&#39;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">fault_block_init</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_val_T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">))</span>
+            <span class="c1"># Here we store the value of the potential field at interfaces</span>
+            <span class="c1">#pfai_fault = T.zeros((0, len(self.len_series_f.get_value())))</span>
+            <span class="n">pfai_fault</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
 
+            <span class="c1"># Init lithology block. Here we store the block and potential field results</span>
+            <span class="n">lith_block_init</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_val_T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">))</span>
+            <span class="n">lith_block_init</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;final block of lithologies init&#39;</span>
+            <span class="n">lith_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_val_T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">))</span>
+            <span class="c1">#pfai_lith = T.zeros((0, len(self.len_series_f.get_value()) ))</span>
+            <span class="n">pfai_lith</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Change the flag to extend the graph in the compute fault and compute series function</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">compute_all</span> <span class="o">=</span> <span class="kc">False</span>
+
+            <span class="c1"># Init faults block. Here we store the block and potential field results</span>
+            <span class="n">fault_block_init</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_val_T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">))</span>
+            <span class="n">fault_block_init</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;final block of faults init&#39;</span>
+            <span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_val_T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">))</span>
+            <span class="c1"># Here we store the value of the potential field at interfaces</span>
+           <span class="c1"># pfai_fault = T.zeros((0, len(self.len_series_f.get_value())))</span>
+            <span class="n">pfai_fault</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+
+            <span class="c1"># Init lithology block. Here we store the block and potential field results</span>
+            <span class="n">lith_block_init</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_val_T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">))</span>
+            <span class="n">lith_block_init</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;final block of lithologies init&#39;</span>
+            <span class="n">lith_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_val_T</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">))</span>
+           <span class="c1"># pfai_lith = T.zeros((0, len(self.len_series_f.get_value()) ))</span>
+            <span class="n">pfai_lith</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">0</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]))</span>
+
+        <span class="c1"># Compute Faults</span>
+        <span class="k">if</span> <span class="n">n_faults</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="c1"># --DEP--? Initialize yet simulated</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">fault_block_init</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+
+            <span class="c1"># Looping</span>
             <span class="n">fault_loop</span><span class="p">,</span> <span class="n">updates3</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
-                 <span class="n">fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_a_fault</span><span class="p">,</span>
-                 <span class="n">outputs_info</span><span class="o">=</span><span class="p">[</span><span class="n">fault_block_init</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>  <span class="c1">#  This line may be used for the faults network</span>
-                 <span class="n">sequences</span><span class="o">=</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="p">[:</span><span class="n">n_faults</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
-                            <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="p">[:</span><span class="n">n_faults</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
-                            <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="p">[:</span><span class="n">n_faults</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
-                            <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">u_grade_T</span><span class="p">[:</span><span class="n">n_faults</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
-                 <span class="p">)</span>
-            <span class="c1"># fault_matrix, updates3 = theano.scan(</span>
-            <span class="c1">#     fn=self.compute_a_series,</span>
-            <span class="c1">#     outputs_info=final_block_init,</span>
-            <span class="c1">#     sequences=[dict(input=self.len_series_i[:n_faults + 1], taps=[0, 1]),</span>
-            <span class="c1">#                dict(input=self.len_series_f[:n_faults+1], taps=[0, 1]),</span>
-            <span class="c1">#                dict(input=self.n_formations_per_serie[:n_faults+1], taps=[0, 1]),</span>
-            <span class="c1">#                dict(input=self.u_grade_T[:n_faults + 1], taps=[0])]</span>
-            <span class="c1">#     )</span>
+                <span class="n">fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_a_fault</span><span class="p">,</span>
+                <span class="n">outputs_info</span><span class="o">=</span><span class="p">[</span><span class="n">fault_block_init</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>  <span class="c1"># This line may be used for the faults network</span>
+                <span class="n">sequences</span><span class="o">=</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="p">[:</span><span class="n">n_faults</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+                           <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="p">[:</span><span class="n">n_faults</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+                           <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="p">[:</span><span class="n">n_faults</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+                           <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">u_grade_T</span><span class="p">[:</span><span class="n">n_faults</span> <span class="o">+</span> <span class="mi">1</span><span class="p">],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+            <span class="p">)</span>
 
             <span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">fault_loop</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">pfai_fault</span> <span class="o">=</span> <span class="n">fault_loop</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">fault_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># pfai_fault = T.set_subtensor(pfai_fault[0, 0], pfai_fault[0, 0] + pfai_fault[0, 0] * 0.001)</span>
+            <span class="c1"># pfai_fault = T.set_subtensor(pfai_fault[-1, -1], pfai_fault[-1, -1] - pfai_fault[0, 0] * 0.001)</span>
 
-            <span class="k">if</span> <span class="s1">&#39;faults block&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;I am outside the faults&#39;</span><span class="p">)(</span><span class="n">fault_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">pfai_fault</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">vector</span><span class="p">()</span>
-       <span class="c1"># self.u_grade_T = theano.printing.Print(&#39;drift degree&#39;)(self.u_grade_T)</span>
-       <span class="c1"># self.a_T = theano.printing.Print(&#39;range&#39;)(self.a_T)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">compute_all</span> <span class="o">=</span> <span class="n">compute_all</span>
-        <span class="n">final_block_init</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_block</span>
-        <span class="n">final_block_init</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;final block of lithologies init&#39;</span>
+            <span class="c1"># Add the drift function</span>
+            <span class="k">if</span> <span class="n">n_faults</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">fault_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">n_faults</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">fault_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
 
-        <span class="c1"># Checking there are more potential fields in the data that the faults.</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span><span class="o">-</span><span class="mi">1</span> <span class="o">&gt;</span> <span class="n">n_faults</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_all</span><span class="p">:</span>
-                <span class="n">final_block_init</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">vertical_stack</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">final_block</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_block</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_block</span><span class="p">)</span>
-                <span class="c1"># Loop the series to create the Final block</span>
-                <span class="n">loop_results</span><span class="p">,</span> <span class="n">updates2</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
-                    <span class="n">fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_a_series</span><span class="p">,</span>
-                    <span class="n">outputs_info</span><span class="o">=</span><span class="p">[</span><span class="n">final_block_init</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
-                    <span class="n">sequences</span><span class="o">=</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
-                               <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
-                               <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
-                               <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">u_grade_T</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
-                <span class="p">)</span>
+        <span class="c1"># Check if there are lithologies to compute</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">n_faults</span><span class="p">:</span>
+             <span class="c1"># Compute Lithologies</span>
+             <span class="n">lith_loop</span><span class="p">,</span> <span class="n">updates2</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
+                 <span class="n">fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_a_series</span><span class="p">,</span>
+                 <span class="n">outputs_info</span><span class="o">=</span><span class="p">[</span><span class="n">lith_block_init</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+                 <span class="n">sequences</span><span class="o">=</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+                            <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+                            <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
+                            <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">u_grade_T</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
+             <span class="p">)</span>
 
-            <span class="k">else</span><span class="p">:</span>
-                <span class="c1"># Loop the series to create the Final block</span>
-                <span class="n">loop_results</span><span class="p">,</span> <span class="n">updates2</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
-                    <span class="n">fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_a_series</span><span class="p">,</span>
-                    <span class="n">outputs_info</span><span class="o">=</span><span class="p">[</span><span class="n">final_block_init</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
-                    <span class="n">sequences</span><span class="o">=</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
-                               <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
-                               <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
-                               <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">u_grade_T</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
-                <span class="p">)</span>
+             <span class="n">lith_matrix</span> <span class="o">=</span> <span class="n">lith_loop</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+             <span class="n">pfai_lith</span> <span class="o">=</span> <span class="n">lith_loop</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-            <span class="n">all_series</span> <span class="o">=</span> <span class="n">loop_results</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="n">pfai_for</span> <span class="o">=</span> <span class="n">loop_results</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="k">if</span> <span class="n">n_faults</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-                <span class="n">pfai</span> <span class="o">=</span> <span class="n">pfai_for</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">pfai</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">vertical_stack</span><span class="p">(</span><span class="n">pfai_fault</span><span class="p">,</span> <span class="n">pfai_for</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="c1"># We just pass the faults block</span>
-            <span class="n">all_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span>
-            <span class="n">pfai</span> <span class="o">=</span> <span class="n">pfai_fault</span>
+        <span class="c1"># Now we have to stack the potential fields at interfaces, but before we need to add a small margin to the</span>
+        <span class="c1"># extremes to correct float32 errors for the marchig cubes later on</span>
+        <span class="c1"># pfai_lith = T.set_subtensor(pfai_lith[0, 0], pfai_lith[0, 0] + pfai_lith[0, 0] * 0.001)</span>
+        <span class="c1"># pfai_lith = T.set_subtensor(pfai_lith[-1, -1], pfai_lith[-1, -1] - pfai_lith[0, 0] * 0.001)</span>
 
-       <span class="c1"># pfai = T.vertical_stack(pfai_fault, pfai_for)</span>
-        <span class="c1">#self.pot_value.set_value(self.final_potential_field_at_interfaces)</span>
-        <span class="k">return</span> <span class="n">all_series</span><span class="p">,</span> <span class="n">pfai</span></div>
+        <span class="c1"># pfai_lith = T.set_subtensor(pfai_lith[0], pfai_lith[0] + pfai_lith[0] * 0.001)</span>
+        <span class="c1"># pfai_lith = T.set_subtensor(pfai_lith[-1], pfai_lith[-1] - pfai_lith[0] * 0.001)</span>
+
+        <span class="n">pfai</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">vertical_stack</span><span class="p">(</span><span class="n">pfai_fault</span><span class="p">,</span> <span class="n">pfai_lith</span><span class="p">)</span>
+        <span class="c1"># if n_faults == 0:</span>
+        <span class="c1">#     pfai = pfai_lith</span>
+        <span class="c1">#     sol_block = lith_matrix</span>
+        <span class="c1">#</span>
+        <span class="c1"># else:</span>
+        <span class="c1">#</span>
+        <span class="c1">#     sol_block = T.stack((fault_matrix, lith_matrix), axis=0)</span>
+        <span class="c1"># if n_faults != 0 and len(self.len_series_f.get_value()) - 1 &gt; n_faults:</span>
+        <span class="c1">#     return lith_matrix[-1, :, :-2 * self.len_points], fault_matrix[-1, :, :-2 * self.len_points], pfai</span>
+        <span class="c1"># if n_faults == 0 and len(self.len_series_f.get_value()) - 1 &gt; n_faults:</span>
+        <span class="c1">#     return lith_matrix[-1, :, :-2 * self.len_points], None, pfai</span>
+        <span class="c1"># if n_faults != 0 and not len(self.len_series_f.get_value()) - 1 &gt; n_faults:</span>
+        <span class="c1">#     return None, fault_matrix[-1, :, :-2 * self.len_points], pfai</span>
+
+        <span class="k">return</span> <span class="n">lith_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">],</span> <span class="n">fault_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">],</span> <span class="n">pfai</span></div>
 
     <span class="c1"># ==================================</span>
     <span class="c1"># Geophysics</span>
     <span class="c1"># ==================================</span>
     <span class="c1">#</span>
-<div class="viewcode-block" id="TheanoGraph_pro.choose_cells"><a class="viewcode-back" href="../code.html#theanograf.TheanoGraph_pro.choose_cells">[docs]</a>    <span class="k">def</span> <span class="nf">choose_cells</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">grid</span><span class="p">,</span> <span class="n">measure_points</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Preprocessing to see which nearby cells we use for the gravity</span>
-<span class="sd">        Args:</span>
-<span class="sd">            grid:</span>
-<span class="sd">            measure_points:</span>
-
-<span class="sd">        Returns:</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">return</span> <span class="nb">bool</span></div></div>
 
 
     <span class="c1"># def slice_cells(self, selected_cells, block_lith):</span>
