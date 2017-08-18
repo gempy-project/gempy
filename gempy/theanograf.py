@@ -28,7 +28,7 @@ import theano.tensor as T
 import numpy as np
 import sys
 
-theano.config.optimizer = 'fast_run'
+theano.config.optimizer = 'fast_compile'
 theano.config.exception_verbosity = 'high'
 theano.config.compute_test_value = 'off'
 theano.config.floatX = 'float32'
@@ -909,7 +909,7 @@ class TheanoGraph_pro(object):
 
 
         # Add an arbitrary number at the potential field to get unique values for each of them
-        Z_x += T.repeat(T.cast(self.n_formation_op[0], "float32"), Z_x.shape[0])
+        Z_x += T.repeat(T.cast(100 - 5*self.n_formation_op[0], "float32"), Z_x.shape[0])
         Z_x.name = 'Value of the potential field at every point'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
@@ -982,8 +982,8 @@ class TheanoGraph_pro(object):
         min_pot = T.min(Z_x)   #T.min(potential_field_unique) - 1
 
         # Value of the potential field at the interfaces of the computed series
-        self.potential_field_at_interfaces_values = T.sort(self.potential_field_at_interfaces()[self.n_formation_op-1])
-        self.potential_field_at_interfaces_values += T.repeat(T.cast(self.n_formation_op[0], "float32"), self.potential_field_at_interfaces_values.shape[0])
+        self.potential_field_at_interfaces_values = T.sort(self.potential_field_at_interfaces()[self.n_formation_op-1])[::-1]
+        self.potential_field_at_interfaces_values += T.repeat(T.cast(100 - 5*self.n_formation_op[0], "float32"), self.potential_field_at_interfaces_values.shape[0])
 
         # self.pot_field_for_faults = potential_field_at_interfaces_values
         # self.pot_field_for_formations = potential_field_at_interfaces_values
@@ -994,17 +994,18 @@ class TheanoGraph_pro(object):
 
         # A tensor with the values to segment
         potential_field_iter = T.concatenate((T.stack([max_pot]),
-                                              self.potential_field_at_interfaces_values[::-1],
+                                              self.potential_field_at_interfaces_values,
                                               T.stack([min_pot])))
 
         if "potential_field_iter" in self.verbose:
             potential_field_iter = theano.printing.Print("potential_field_iter")(potential_field_iter)
 
-        if "potential_field_at_interfaces_values":
-            potential_field_at_interfaces_values = theano.printing.Print('Potential field')(
-                self.potential_field_at_interfaces())
-            potential_field_at_interfaces_values = theano.printing.Print('Selected pt')(
-                self.potential_field_at_interfaces_values[self.n_formation_op - 1])
+        # if "potential_field_at_interfaces_values":
+        #     self.potential_field_at_interfaces_values = theano.printing.Print('Potential field')(
+        #         self.potential_field_at_interfaces())
+        #     self.potential_field_at_interfaces_values = theano.printing.Print('Selected pt')(
+        #         #self.potential_field_at_interfaces_values[self.n_formation_op - 1])
+        #         T.sort(self.potential_field_at_interfaces()[self.n_formation_op - 1])[::-1])
 
         # Loop to segment the distinct lithologies
         def compare(a, b, n_formation, Zx):
@@ -1213,7 +1214,7 @@ class TheanoGraph_pro(object):
         # Store the potential field at the interfaces
         self.final_potential_field_at_formations_op = T.set_subtensor(
             self.final_potential_field_at_formations_op[self.n_formation_op - 1],
-            self. potential_field_at_interfaces_values)
+            self.potential_field_at_interfaces_values)
 
         # Update the potential field matrix
         if self.compute_all:
@@ -1379,8 +1380,8 @@ class TheanoGraph_pro(object):
 
             fault_matrix = fault_loop[0]
             pfai_fault = fault_loop[1]
-            pfai_fault = T.set_subtensor(pfai_fault[0, 0], pfai_fault[0, 0] + pfai_fault[0, 0] * 0.001)
-            pfai_fault = T.set_subtensor(pfai_fault[-1, -1], pfai_fault[-1, -1] - pfai_fault[0, 0] * 0.001)
+            # pfai_fault = T.set_subtensor(pfai_fault[0, 0], pfai_fault[0, 0] + pfai_fault[0, 0] * 0.001)
+            # pfai_fault = T.set_subtensor(pfai_fault[-1, -1], pfai_fault[-1, -1] - pfai_fault[0, 0] * 0.001)
 
             # Add the drift function
             if n_faults == 1:
@@ -1405,8 +1406,8 @@ class TheanoGraph_pro(object):
 
         # Now we have to stack the potential fields at interfaces, but before we need to add a small margin to the
         # extremes to correct float32 errors for the marchig cubes later on
-        pfai_lith = T.set_subtensor(pfai_lith[0, 0], pfai_lith[0, 0] + pfai_lith[0, 0] * 0.001)
-        pfai_lith = T.set_subtensor(pfai_lith[-1, -1], pfai_lith[-1, -1] - pfai_lith[0, 0] * 0.001)
+        # pfai_lith = T.set_subtensor(pfai_lith[0, 0], pfai_lith[0, 0] + pfai_lith[0, 0] * 0.001)
+        # pfai_lith = T.set_subtensor(pfai_lith[-1, -1], pfai_lith[-1, -1] - pfai_lith[0, 0] * 0.001)
 
         # pfai_lith = T.set_subtensor(pfai_lith[0], pfai_lith[0] + pfai_lith[0] * 0.001)
         # pfai_lith = T.set_subtensor(pfai_lith[-1], pfai_lith[-1] - pfai_lith[0] * 0.001)
