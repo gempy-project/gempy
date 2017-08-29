@@ -72,9 +72,9 @@ class Posterior:
     def plot_section(self, interp_data, i, dim, plot_data=False, plot_topo=False):
         self.change_input_data(interp_data, i)
         lith_block, fault_block = gp.compute_model(interp_data)
-        plt.imshow(lith_block[-1, 0,:].reshape(dim[0], dim[1], dim[2])[:, 0, :].T, origin="lower",
-                   cmap=gp.colors.cmap, norm=gp.colors.norm)
-        #gp.plot_section(interp_data.geo_data_res, lith_block[0, 0, :], 0)
+        #plt.imshow(lith_block[-1, 0,:].reshape(dim[0], dim[1], dim[2])[:, 0, :].T, origin="lower",
+        #           cmap=gp.colors.cmap, norm=gp.colors.norm)
+        gp.plot_section(interp_data.geo_data_res, lith_block[0, 0, :], 0, plot_data=plot_data)
 
         rs = interp_data.rescaling_factor
         #if plot_data:
