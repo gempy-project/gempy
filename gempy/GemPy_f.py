@@ -99,7 +99,7 @@ def get_extent(geo_data):
     return geo_data.extent
 
 
-def get_data(geo_data, dtype='all', verbosity=0):
+def get_data(geo_data, dtype='all', numeric=False, verbosity=0):
     """
         Method that returns the interfaces and foliations pandas Dataframes. Can return both at the same time or only
         one of the two
@@ -110,7 +110,7 @@ def get_data(geo_data, dtype='all', verbosity=0):
             pandas.core.frame.DataFrame: Data frame with the raw data
 
         """
-    return geo_data.get_data(itype=dtype, verbosity=verbosity)
+    return geo_data.get_data(itype=dtype, numeric=numeric, verbosity=verbosity)
 
 
 def create_data(extent, resolution=[50, 50, 50], **kwargs):
@@ -541,7 +541,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
         raise AttributeError('You need to compute the model first')
 
     def get_surface(potential_block, interp_data, pot_int, n_formation, step_size, original_scale):
-        assert n_formation > 0, 'Number of the formation has tobe positive'
+        assert n_formation > 0, 'Number of the formation has to be positive'
         # In case the values are separated by series I put all in a vector
         pot_int = interp_data.potential_at_interfaces.sum(axis=0)
 
@@ -600,6 +600,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
         else:
             vertices, simplices = get_surface(potential_lith, interp_data, pot_int, n_formation,
                                               step_size=step_size, original_scale=original_scale)
+
 
     return vertices, simplices
 

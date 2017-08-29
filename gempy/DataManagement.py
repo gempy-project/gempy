@@ -210,7 +210,7 @@ class InputData(object):
             # Pickle the 'data' dictionary using the highest protocol available.
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
-    def get_data(self, itype='all', verbosity=0):
+    def get_data(self, itype='all', numeric=False, verbosity=0):
         """
         Method that returns the interfaces and foliations pandas Dataframes. Can return both at the same time or only
         one of the two
@@ -222,19 +222,28 @@ class InputData(object):
 
         """
         import pandas as pn
+
+        dtype = 'object'
+
         if verbosity == 0:
-            show_par_f = ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series', 'annotations']
-            show_par_i = ['X', 'Y', 'Z', 'formation', 'series', 'annotations']
+            show_par_f = ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series']
+            show_par_i = ['X', 'Y', 'Z', 'formation', 'series']
         else:
             show_par_f = self.foliations.columns
             show_par_i = self.interfaces.columns
 
+        if numeric:
+            show_par_f = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']
+            show_par_i = ['X', 'Y', 'Z']
+            dtype = 'float'
         if itype == 'foliations':
-            raw_data = self.foliations[show_par_f]
+            raw_data = self.foliations[show_par_f].astype(dtype)
         elif itype == 'interfaces':
-            raw_data = self.interfaces[show_par_i]
+            raw_data = self.interfaces[show_par_i].astype(dtype)
         elif itype == 'all':
-            raw_data = pn.concat([self.interfaces, self.foliations], keys=['interfaces', 'foliations'])
+            raw_data = pn.concat([self.interfaces[show_par_i].astype(dtype),
+                                  self.foliations[show_par_f].astype(dtype)],
+                                 keys=['interfaces', 'foliations'])
         else:
             raise AttributeError('itype has to be: \'foliations\', \'interfaces\', or \'all\'')
         return raw_data
