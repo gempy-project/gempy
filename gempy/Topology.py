@@ -20,9 +20,7 @@
 from skimage.future import graph
 from skimage.measure import label
 from skimage.measure import regionprops
-import networkx as nx
 import numpy as np
-import matplotlib.pyplot as plt
 
 # TODO: Across-fault edge identification
 # TODO: Across-unconformity edge identification

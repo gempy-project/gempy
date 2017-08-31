@@ -233,7 +233,7 @@ class InputData(object):
             show_par_i = self.interfaces.columns
 
         if numeric:
-            show_par_f = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']
+            show_par_f = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
             show_par_i = ['X', 'Y', 'Z']
             dtype = 'float'
         if itype == 'foliations':
