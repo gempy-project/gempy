@@ -1,6 +1,6 @@
 
-Chapter 4: Bayesian Statistics (Working in progress proof of concept)
-=====================================================================
+Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)
+==============================================================================
 
 .. code:: ipython3
 
