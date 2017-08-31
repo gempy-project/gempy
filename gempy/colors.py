@@ -20,7 +20,7 @@ import matplotlib
 
 # Google Material Design Colors as rgb or hex dictionaries
 
-color_names = ["orange", "indigo", "yellow", "green", "red", "brown", "blue", "amber", "pink", "light-blue",
+color_names = ["orange", "indigo", "red", "yellow", "green", "brown", "blue", "amber", "pink", "light-blue",
                "lime", "blue-grey", "deep-orange", "grey", "cyan", "deep-purple", "purple", "teal", "light-green"]
 
 color_subnames = ['400', '700', '100', '200', '300', '500', '600', '50', '800', '900']  # 'a100','a200', 'a400', 'a700']

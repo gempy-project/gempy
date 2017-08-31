@@ -25,25 +25,31 @@ class GeoPhysicsPreprocessing_pro(object):
     def __init__(self, interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
 
         self.interp_data = interp_data
-        self.ai_extent = ai_extent
-        self.ai_resolution = ai_resolution
+        self.ai_extent = np.array(ai_extent)
+        self.ai_resolution = np.array(ai_resolution)
         self.model_grid = interp_data.geo_data_res.grid.grid
+
+        self.eu = self.compile_eu_f()
+
         if ai_z is None:
             ai_z = self.model_grid[:, 2].max()
 
         self.airborne_plane = self.set_airborne_plane(ai_z, self.ai_resolution)
 
-        self.model_resolution = interp_data.resolution[0] * interp_data.resolution[1] * interp_data.resolution[2]
+        self.model_resolution = interp_data.geo_data_res.resolution[0] * \
+                                interp_data.geo_data_res.resolution[1] * \
+                                interp_data.geo_data_res.resolution[2]
         self.vox_size = self.set_vox_size()
 
 
         if range_max is None:
             self.range_max = self.default_range()
+        else:
+            self.range_max = range_max
 
         # Boolean array that select the voxels that affect each measurement. Size is measurement times resolution
         self.b_all = np.zeros((0, self.model_resolution), dtype=bool)
 
-        self.eu = self.compile_eu_f()
 
     def compute_gravity(self, n_chunck=25):
         # Init
@@ -52,8 +58,8 @@ class GeoPhysicsPreprocessing_pro(object):
         for i_1 in np.arange(n_chunck, self.airborne_plane.shape[0] + 1, n_chunck, dtype=int):
 
             # Select the number of measurements to compute in this iteration
-            airborne_plane_s = self.airborne_plane[i_0, i_1]
-            dist = self.eu(airborne_plane_s, self.model_resolution)
+            airborne_plane_s = self.airborne_plane[i_0:i_1]
+            dist = self.eu(airborne_plane_s, self.model_grid)
 
             # Boolean selection
             b = dist < self.range_max
@@ -66,7 +72,7 @@ class GeoPhysicsPreprocessing_pro(object):
 
             # Compute cartesian distances from measurements to each voxel
 
-            model_grid_rep =  np.repeat(self.model_grid, n_chunck, axis=1)
+            model_grid_rep = np.repeat(self.model_grid, n_chunck, axis=1)
             s_gr_x = (
                 model_grid_rep[:, :n_chunck].T[b].reshape(n_chunck, -1) -
                 airborne_plane_s[:, 0].reshape(n_chunck, -1)).astype('float')
@@ -138,22 +144,29 @@ class GeoPhysicsPreprocessing_pro(object):
                               self.interp_data.rescaling_factor + 0.5001
 
         # Create xy meshgrid
-        xy = np.meshgrid(np.linspace(ai_extent_rescaled.iloc[0], ai_extent_rescaled.iloc[1], res_grav[0]),
-                         np.linspace(ai_extent_rescaled.iloc[2], ai_extent_rescaled.iloc[3], res_grav[1]))
+        xy = np.meshgrid(np.linspace(ai_extent_rescaled.iloc[0], ai_extent_rescaled.iloc[1], self.ai_resolution[0]),
+                         np.linspace(ai_extent_rescaled.iloc[2], ai_extent_rescaled.iloc[3], self.ai_resolution[1]))
         z = np.ones(self.ai_resolution[0]*self.ai_resolution[1])*z_res
 
         # Transformation
         xy_ravel = np.vstack(map(np.ravel, xy))
         airborne_plane = np.vstack((xy_ravel, z)).T.astype(self.interp_data.dtype)
 
-        return airborne_plane
+        # Now we need to find what point of the grid are the closest to this grid and choose them. This is important in
+        # order to obtain regular matrices when we set a maximum range of effect
+
+        # First we compute the distance between the airborne plane to the grid and choose those closer
+        d = self.eu(self.model_grid.astype('float'), airborne_plane)
+        ab_g = self.model_grid[np.argmin(d, axis=0)]
+
+        return ab_g
 
     def set_vox_size(self):
 
         x_extent = self.interp_data.extent_rescaled.iloc[1] - self.interp_data.extent_rescaled.iloc[0]
         y_extent = self.interp_data.extent_rescaled.iloc[3] - self.interp_data.extent_rescaled.iloc[2]
         z_extent = self.interp_data.extent_rescaled.iloc[5] - self.interp_data.extent_rescaled.iloc[4]
-        vox_size = np.array([x_extent, y_extent, z_extent]) / self.interp_data.data.resolution
+        vox_size = np.array([x_extent, y_extent, z_extent]) / self.interp_data.geo_data_res.resolution
         return vox_size
 
 
