@@ -93,10 +93,10 @@ class Posterior:
         if plot_topo:
             self.topo_plot_graph(i)
 
-    def topo_plot_graph(self, i):
+    def topo_plot_graph(self, i, ext ,res):
         pos_2d = {}
         for key in self.topo_centroids[i].keys():
-            pos_2d[key] = [self.topo_centroids[i][key][0], self.topo_centroids[i][key][2]]
+            pos_2d[key] = [self.topo_centroids[i][key][0] * ext[1]/res[0], self.topo_centroids[i][key][2] * ext[5]/res[2]]
         nx.draw_networkx(self.topo_graphs[i], pos=pos_2d)
 
     def compute_posterior_models_all(self, interp_data, n=None, calc_fb=True):

@@ -313,7 +313,7 @@ def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
     # TODO saving options
 
 
-def plot_potential_field(geo_data, potential_field, cell_number, n_pf=0,
+def plot_potential_field(geo_data, potential_field, cell_number, N=20,
                          direction="y", plot_data=True, series="all", *args, **kwargs):
     """
     Plot a potential field in a given direction.
@@ -330,7 +330,7 @@ def plot_potential_field(geo_data, potential_field, cell_number, n_pf=0,
         None
     """
     plot = PlotData2D(geo_data)
-    plot.plot_potential_field(potential_field, cell_number, n_pf=n_pf,
+    plot.plot_potential_field(potential_field, cell_number, N=N,
                               direction=direction,  plot_data=plot_data, series=series,
                               *args, **kwargs)
 

@@ -261,7 +261,7 @@ class PlotData2D(object):
         plt.xlabel(x)
         plt.ylabel(y)
 
-    def plot_potential_field(self, potential_field, cell_number, n_pf=0,
+    def plot_potential_field(self, potential_field, cell_number, N=20,
                              direction="y", plot_data=True, series="all", *args, **kwargs):
         """
         Plot a potential field in a given direction.
@@ -284,7 +284,7 @@ class PlotData2D(object):
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
         plt.contour(potential_field.reshape(
             self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[_a, _b, _c].T,
-                    cell_number,
+                    N,
                     extent=extent_val, *args,
                     **kwargs)
 

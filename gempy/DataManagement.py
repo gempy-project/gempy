@@ -519,7 +519,7 @@ class InputData(object):
             formation_order = self.interfaces["formation"].unique()
 
         else:
-            assert self.foliations['formation'].isin(formation_order).all(), 'Some of the formations given are not in '\
+            assert self.interfaces['formation'].isin(formation_order).all(), 'Some of the formations given are not in '\
                                                                              'the formations data frame. Check misspell'
         try:
             ip_addresses = formation_order
