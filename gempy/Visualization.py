@@ -291,7 +291,7 @@ class PlotData2D(object):
         if 'colorbar' in kwargs:
             plt.colorbar()
 
-        plt.title(self._data.interfaces['series'].unique()[n_pf])
+      #  plt.title(self._data.interfaces['series'].unique()[n_pf])
         plt.xlabel(x)
         plt.ylabel(y)
 

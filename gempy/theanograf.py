@@ -1385,7 +1385,7 @@ class TheanoGraph_pro(object):
 
             # Add the drift function
             if n_faults == 1:
-                self.fault_matrix = fault_matrix[0]
+                self.fault_matrix = fault_matrix
             if n_faults > 1:
                 self.fault_matrix = fault_matrix[-1, 0]
 
