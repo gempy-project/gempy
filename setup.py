@@ -18,5 +18,5 @@ setup(
     author='Miguel de la Varga, Alexander Schaaf',
     author_email='varga@aices.rwth-aachen.de',
     description='An Open-source, Python-based 3-D structural geological modeling software.',
-    keywords=['geology', '3-D modeling', 'structural geology']
+    keywords=['geology', '3-D modeling', 'structural geology', 'uncertainty']
 )

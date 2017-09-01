@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Code &#8212; GemPy 4 documentation</title>
+    <title>Code &#8212; GemPy beta documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     '4',
+        VERSION:     'beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,7 +27,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Chapter 4: Bayesian Statistics (Working in progress proof of concept)" href="Notebooks/ch4.html" />
+    <link rel="prev" title="Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)" href="Notebooks/ch4.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -47,16 +47,45 @@
 <h1>Code<a class="headerlink" href="#code" title="Permalink to this headline">¶</a></h1>
 <div class="toctree-wrapper compound">
 </div>
-<span class="target" id="module-GemPy_f"></span><p>Module with classes and methods to perform implicit regional modelling based on
+<p>Module with classes and methods to perform implicit regional modelling based on
 the potential field method.
 Tested on Ubuntu 14</p>
 <p>Created on 10/10 /2016</p>
 <p>&#64;author: Miguel de la Varga</p>
 <dl class="function">
+<dt id="GemPy_f.compute_model">
+<code class="descclassname">GemPy_f.</code><code class="descname">compute_model</code><span class="sig-paren">(</span><em>interp_data</em>, <em>u_grade=None</em>, <em>get_potential_at_interfaces=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#compute_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.compute_model" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the geological model
+:param interp_data: Rescaled data.
+:type interp_data: gempy.DataManagement.InterpolatorInput
+:param u_grade: grade of the polynomial for the universal part of the Kriging interpolations. The value has to
+:type u_grade: list
+:param be either 0, 3 or 9:
+:type be either 0, 3 or 9: number of equations
+:param depends on the number of points given as input to try to avoid singular matrix. NOTE: if during the computation
+:param of the model a singular matrix is returned try to reduce the u_grade of the series.:
+:param get_potential_at_interfaces: Get potential at interfaces
+:type get_potential_at_interfaces: bool</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">if compute_all was chosen in gempy.DataManagement.InterpolatorInput, the first
+row will be the lithology block model, the second the potential field and the third the fault
+network block. if compute_all was False only the lithology block model will be computed. In
+addition if get_potential_at_interfaces is True, the value of the potential field at each of
+the interfaces is given as well</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">numpy.array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="GemPy_f.create_data">
 <code class="descclassname">GemPy_f.</code><code class="descname">create_data</code><span class="sig-paren">(</span><em>extent, resolution=[50, 50, 50], **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#create_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.create_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to initialize the class data. Calling this function some of the data has to be provided (TODO give to
-everything a default).</p>
+<dd><p>Method to create a InputData object. It is analogous to gempy.InputData()</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -66,7 +95,6 @@ everything a default).</p>
 and default of for the grid class.</li>
 <li><strong>resolution</strong> (<em>list</em><em> or </em><a class="reference external" href="https://docs.python.org/2/library/array.html#module-array" title="(in Python v2.7)"><em>array</em></a>) – [nx, ny, nz]. Resolution for the visualization of data
 and default of for the grid class.</li>
-<li><strong>**kwargs</strong> – Arbitrary keyword arguments.</li>
 </ul>
 </td>
 </tr>
@@ -91,35 +119,378 @@ and default of for the grid class.</li>
 </dd></dl>
 
 <dl class="function">
+<dt id="GemPy_f.data_to_pickle">
+<code class="descclassname">GemPy_f.</code><code class="descname">data_to_pickle</code><span class="sig-paren">(</span><em>geo_data</em>, <em>path=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#data_to_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.data_to_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
+versions used to export and import the pickle differ it may give problems
+:param path: path where save the pickle
+:type path: str</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.export_vtk_rectilinear">
+<code class="descclassname">GemPy_f.</code><code class="descname">export_vtk_rectilinear</code><span class="sig-paren">(</span><em>geo_data</em>, <em>block</em>, <em>path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#export_vtk_rectilinear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.export_vtk_rectilinear" title="Permalink to this definition">¶</a></dt>
+<dd><p>Export data to a vtk file for posterior visualizations
+:param geo_data: All values of a DataManagement object
+:type geo_data: gempy.InputData
+:param block: 3D array containing the lithology block
+:type block: numpy.array
+:param path: path to the location of the vtk
+:type path: str</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.get_data">
+<code class="descclassname">GemPy_f.</code><code class="descname">get_data</code><span class="sig-paren">(</span><em>geo_data</em>, <em>dtype=’all’</em>, <em>numeric=False</em>, <em>verbosity=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method that returns the interfaces and foliations pandas Dataframes. Can return both at the same time or only
+one of the two
+:param itype: input data type, either ‘foliations’, ‘interfaces’ or ‘all’ for both.
+:param verbosity: Number of properties shown
+:type verbosity: int</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Data frame with the raw data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.get_grid">
+<code class="descclassname">GemPy_f.</code><code class="descname">get_grid</code><span class="sig-paren">(</span><em>geo_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#get_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.get_grid" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>geo_data</strong> (<em>gempy.DataManagement.InputData object</em>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Return series and formations relations</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.array</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.get_kriging_parameters">
+<code class="descclassname">GemPy_f.</code><code class="descname">get_kriging_parameters</code><span class="sig-paren">(</span><em>interp_data</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#get_kriging_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.get_kriging_parameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the kringing parameters
+:param interp_data:
+:type interp_data: gempy.DataManagement.InterpolatorInput
+:param verbose: if &gt; 0 print all the shape values as well.
+:type verbose: int</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="GemPy_f.get_series">
 <code class="descclassname">GemPy_f.</code><code class="descname">get_series</code><span class="sig-paren">(</span><em>geo_gata</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#get_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.get_series" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>geo_gata</strong> – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>geo_data</strong> (<em>gempy.DataManagement.InputData object</em>) – </td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Return series and formations relations</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Pandas.DataFrame</td>
 </tr>
 </tbody>
 </table>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="function">
-<dt id="GemPy_f.get_th_fn">
-<code class="descclassname">GemPy_f.</code><code class="descname">get_th_fn</code><span class="sig-paren">(</span><em>interp_data</em>, <em>dtype=None</em>, <em>u_grade=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#get_th_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.get_th_fn" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
+<dt id="GemPy_f.get_stratigraphic_pile">
+<code class="descclassname">GemPy_f.</code><code class="descname">get_stratigraphic_pile</code><span class="sig-paren">(</span><em>geo_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#get_stratigraphic_pile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.get_stratigraphic_pile" title="Permalink to this definition">¶</a></dt>
+<dd><p>Visualize an interactive stratigraphic pile to move around the formations and the series. IMPORTANT NOTE:
+To have the interactive properties it is necessary the use of qt as interactive backend. (In notebook use:
+%matplotlib qt5)
+:param geo_data: gempy.DataManagement.InputData object</p>
+<table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>geo_data</strong> – </li>
-<li><strong>**kwargs</strong> – </li>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">interactive Matplotlib figure</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.get_surfaces">
+<code class="descclassname">GemPy_f.</code><code class="descname">get_surfaces</code><span class="sig-paren">(</span><em>interp_data</em>, <em>potential_lith=None</em>, <em>potential_fault=None</em>, <em>n_formation=’all’</em>, <em>step_size=1</em>, <em>original_scale=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#get_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.get_surfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>compute vertices and simplices of the interfaces for its vtk visualization or further
+analysis
+:param potential_lith: 1D numpy array with the solution of the computation of the model</p>
+<blockquote>
+<div>containing the scalar field of potentials (second row of solution)</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>interp_data</strong> (<em>gempy.DataManagement.InterpolatorInput</em>) – Interpolator object.</li>
+<li><strong>n_formation</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em> or </em><em>'all'</em>) – Positive integer with the number of the formation of which the surface is returned.
+use method get_formation_number() to get a dictionary back with the values</li>
+<li><strong>step_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – resolution of the method. This is every how many voxels the marching cube method is applied</li>
+<li><strong>original_scale</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – choosing if the coordinates of the vertices are given in the original or the rescaled
+coordinates</li>
 </ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">vertices, simpleces</p>
 </td>
 </tr>
 </tbody>
 </table>
-<p>Returns:</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.get_th_fn">
+<code class="descclassname">GemPy_f.</code><code class="descname">get_th_fn</code><span class="sig-paren">(</span><em>interp_data</em>, <em>compute_all=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#get_th_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.get_th_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get theano function
+:param interp_data: Rescaled data.</p>
+<blockquote>
+<div><p>compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
+the block model of faults. If False only return the block model of lithologies. This may be important to speed</p>
+<blockquote>
+<div>up the computation. Default True</div></blockquote>
+</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>Compiled function if C or CUDA which computes the interpolation given the input data</dt>
+<dd>(XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)</dd>
+</dl>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.function</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.i_set_data">
+<code class="descclassname">GemPy_f.</code><code class="descname">i_set_data</code><span class="sig-paren">(</span><em>geo_data</em>, <em>dtype=’foliations’</em>, <em>action=’Open’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#i_set_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.i_set_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to have interactive pandas tables in jupyter notebooks. The idea is to use this method to interact with
+the table and i_close_set_data to recompute the parameters that depend on the changes made. I did not find a
+easier solution than calling two different methods. After editing a dataframe is recommended to call</p>
+<blockquote>
+<div>i_set_data(action= ‘close’) to recompute dependent variables</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>itype</strong> – input data type, either ‘foliations’ or ‘interfaces’</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Data frame with the changed data on real time</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.plot_data">
+<code class="descclassname">GemPy_f.</code><code class="descname">plot_data</code><span class="sig-paren">(</span><em>geo_data</em>, <em>direction=’y’</em>, <em>data_type=’all’</em>, <em>series=’all’</em>, <em>legend_font_size=6</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#plot_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.plot_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the projection of the raw data (interfaces and foliations) in 2D following a
+specific directions</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
+<li><strong>series</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – series to plot</li>
+<li><strong>**kwargs</strong> – seaborn lmplot key arguments. (TODO: adding the link to them)</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.plot_data_3D">
+<code class="descclassname">GemPy_f.</code><code class="descname">plot_data_3D</code><span class="sig-paren">(</span><em>geo_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#plot_data_3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.plot_data_3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot in vtk all the input data of a model
+:param geo_data: Input data of the model
+:type geo_data: gempy.DataManagement.InputData</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.plot_potential_field">
+<code class="descclassname">GemPy_f.</code><code class="descname">plot_potential_field</code><span class="sig-paren">(</span><em>geo_data</em>, <em>potential_field</em>, <em>cell_number</em>, <em>n_pf=0</em>, <em>direction=’y’</em>, <em>plot_data=True</em>, <em>series=’all’</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#plot_potential_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.plot_potential_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a potential field in a given direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – position of the array to plot</li>
+<li><strong>potential_field</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the potential field (or series) to plot</li>
+<li><strong>n_pf</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of the  potential field (or series) to plot</li>
+<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
+<li><strong>serie</strong> – <em>Deprecated</em></li>
+<li><strong>**kwargs</strong> – plt.contour kwargs</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.plot_section">
+<code class="descclassname">GemPy_f.</code><code class="descname">plot_section</code><span class="sig-paren">(</span><em>geo_data</em>, <em>block</em>, <em>cell_number</em>, <em>direction=’y’</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#plot_section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.plot_section" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot a section of the block model</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – position of the array to plot</li>
+<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
+<li><strong>interpolation</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Type of interpolation of plt.imshow. Default ‘none’.  Acceptable values are ‘none’</li>
+<li><strong>'bilinear'</strong><strong>, </strong><strong>'bicubic'</strong><strong>,</strong> (<em>,</em><em>'nearest'</em><em>,</em>) – </li>
+<li><strong>'spline36'</strong><strong>, </strong><strong>'hanning'</strong><strong>, </strong><strong>'hamming'</strong><strong>, </strong><strong>'hermite'</strong><strong>, </strong><strong>'kaiser'</strong><strong>,</strong> (<em>'spline16'</em><em>,</em>) – </li>
+<li><strong>'catrom'</strong><strong>, </strong><strong>'gaussian'</strong><strong>, </strong><strong>'bessel'</strong><strong>, </strong><strong>'mitchell'</strong><strong>, </strong><strong>'sinc'</strong><strong>,</strong> (<em>'quadric'</em><em>,</em>) – </li>
+<li><strong>'lanczos'</strong> – <a href="#id1"><span class="problematic" id="id2">**</span></a>kwargs: imshow keywargs</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.plot_surfaces_3D">
+<code class="descclassname">GemPy_f.</code><code class="descname">plot_surfaces_3D</code><span class="sig-paren">(</span><em>geo_data</em>, <em>vertices_l</em>, <em>simplices_l</em>, <em>alpha=1</em>, <em>plot_data=True</em>, <em>size=(1920</em>, <em>1080)</em>, <em>fullscreen=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#plot_surfaces_3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.plot_surfaces_3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
+:param vertices_l: 2D array (XYZ) with the coordinates of the points
+:type vertices_l: numpy.array
+:param simplices_l: 2D array with the value of the vertices that form every single triangle
+:type simplices_l: numpy.array
+:param formations_names_l: Name of the formation of the surfaces
+:type formations_names_l: list
+:param formation_numbers_l: Formation numbers (int)
+:type formation_numbers_l: list
+:param alpha: Opacity
+:type alpha: float
+:param plot_data: Default True
+:type plot_data: bool
+:param size: Resolution of the window
+:type size: tuple
+:param fullscreen: Launch window in full screen or not
+:type fullscreen: bool</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.plot_surfaces_3D_real_time">
+<code class="descclassname">GemPy_f.</code><code class="descname">plot_surfaces_3D_real_time</code><span class="sig-paren">(</span><em>interp_data</em>, <em>vertices_l</em>, <em>simplices_l</em>, <em>alpha=1</em>, <em>plot_data=True</em>, <em>size=(1920</em>, <em>1080)</em>, <em>fullscreen=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#plot_surfaces_3D_real_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.plot_surfaces_3D_real_time" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.
+IMPORTANT NOTE it is highly recommended to have the flag fast_run in the theano optimization. Also note that the
+time needed to compute each model increases linearly with every potential field (i.e. fault or discontinuity). It
+may be better to just modify each potential field individually to increase the speed (See gempy.select_series).
+:param vertices_l: 2D array (XYZ) with the coordinates of the points
+:type vertices_l: numpy.array
+:param simplices_l: 2D array with the value of the vertices that form every single triangle
+:type simplices_l: numpy.array
+:param formations_names_l: Name of the formation of the surfaces
+:type formations_names_l: list
+:param formation_numbers_l: Formation numbers (int)
+:type formation_numbers_l: list
+:param alpha: Opacity
+:type alpha: float
+:param plot_data: Default True
+:type plot_data: bool
+:param size: Resolution of the window
+:type size: tuple
+:param fullscreen: Launch window in full screen or not
+:type fullscreen: bool</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.read_pickle">
+<code class="descclassname">GemPy_f.</code><code class="descname">read_pickle</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#read_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.read_pickle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read InputData object from python pickle.
+:param path: path where save the pickle
+:type path: str</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Input Data object</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">gempy.DataManagement.InputData</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="function">
@@ -131,38 +502,124 @@ and default of for the grid class.</li>
 </dd></dl>
 
 <dl class="function">
-<dt id="GemPy_f.set_grid">
-<code class="descclassname">GemPy_f.</code><code class="descname">set_grid</code><span class="sig-paren">(</span><em>geo_data</em>, <em>new_grid=None</em>, <em>extent=None</em>, <em>resolution=None</em>, <em>grid_type=’regular_3D’</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#set_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.set_grid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to initialize the class new_grid. So far is really simple and only has the regular new_grid type</p>
+<dt id="GemPy_f.set_foliations">
+<code class="descclassname">GemPy_f.</code><code class="descname">set_foliations</code><span class="sig-paren">(</span><em>geo_data</em>, <em>foliat_Dataframe</em>, <em>append=False</em>, <em>update_p_field=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#set_foliations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.set_foliations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to change or append a Dataframe to foliations in place.  A equivalent Pandas Dataframe with
+[‘X’, ‘Y’, ‘Z’, ‘dip’, ‘azimuth’, ‘polarity’, ‘formation’] has to be passed.
+:param interf_Dataframe: pandas.core.frame.DataFrame with the data
+:param append: Bool: if you want to append the new data frame or substitute it</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.set_interfaces">
+<code class="descclassname">GemPy_f.</code><code class="descname">set_interfaces</code><span class="sig-paren">(</span><em>geo_data</em>, <em>interf_Dataframe</em>, <em>append=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#set_interfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.set_interfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to change or append a Dataframe to interfaces in place.
+:param interf_Dataframe: pandas.core.frame.DataFrame with the data
+:param append: Bool: if you want to append the new data frame or substitute it</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.set_interpolation_data">
+<code class="descclassname">GemPy_f.</code><code class="descname">set_interpolation_data</code><span class="sig-paren">(</span><em>geo_data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#set_interpolation_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.set_interpolation_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>InterpolatorInput is a class that contains all the preprocessing operations to prepare the data to compute the model.
+Also is the object that has to be manipulated to vary the data without recompile the modeling function.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>grid_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – regular_3D or regular_2D (I am not even sure if regular 2D still working)</li>
-<li><strong>**kwargs</strong> – Arbitrary keyword arguments.</li>
+<li><strong>geo_data</strong> (<em>gempy.DataManagement.InputData</em>) – All values of a DataManagement object</li>
+<li><strong>compile_theano</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – select if the theano function is compiled during the initialization. Default: True</li>
+<li><strong>compute_all</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – <p>If true the solution gives back the block model of lithologies, the potential field and
+the block model of faults. If False only return the block model of lithologies. This may be important to speed</p>
+<blockquote>
+<div>up the computation. Default True</div></blockquote>
+</li>
+<li><strong>u_grade</strong> (<em>list</em>) – grade of the polynomial for the universal part of the Kriging interpolations. The value has to</li>
+<li><strong>either 0</strong><strong>, </strong><strong>3</strong><strong> or </strong><strong>9</strong> (<em>be</em>) – </li>
+<li><strong>on the number of points given as input to try to avoid singular matrix. NOTE</strong> (<em>depends</em>) – if during the computation</li>
+<li><strong>the model a singular matrix is returned try to reduce the u_grade of the series.</strong> (<em>of</em>) – </li>
+<li><strong>rescaling_factor</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – rescaling factor of the input data to improve the stability when float32 is used. By</li>
+<li><strong>the rescaling factor is calculated to obtein values between 0 and 1.</strong> (<em>defaut</em>) – </li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Object that contain different grids</p>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>dtype</strong> (<em>'str'</em>) – Choosing if using float32 or float64. This is important if is intended to use the GPU</li>
+<li><strong>Also InterpolatorClass kwargs</strong> (<em>See</em>) – </li>
+</ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self.new_grid(GeMpy_core.new_grid)</p>
+</tbody>
+</table>
+<dl class="attribute">
+<dt id="geo_data">
+<code class="descname">geo_data</code><a class="headerlink" href="#geo_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Original gempy.DataManagement.InputData object</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="geo_data_res">
+<code class="descname">geo_data_res</code><a class="headerlink" href="#geo_data_res" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rescaled data. It has the same structure has gempy.InputData</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="interpolator">
+<code class="descname">interpolator</code><a class="headerlink" href="#interpolator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Instance of the gempy.DataManagement.InterpolaorInput.InterpolatorClass. See Also
+gempy.DataManagement.InterpolaorInput.InterpolatorClass docs
+th_fn: Theano function which compute the interpolation</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="dtype">
+<code class="descname">dtype</code><a class="headerlink" href="#dtype" title="Permalink to this definition">¶</a></dt>
+<dd><p>type of float</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.set_series">
+<code class="descclassname">GemPy_f.</code><code class="descname">set_series</code><span class="sig-paren">(</span><em>geo_data</em>, <em>series_distribution=None</em>, <em>order_series=None</em>, <em>order_formations=None</em>, <em>update_p_field=True</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#set_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.set_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to define the different series of the project.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>series_distribution</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – with the name of the serie as key and the name of the formations as values.</li>
+<li><strong>order</strong> (<em>Optional</em><em>[</em><em>list</em><em>]</em>) – order of the series by default takes the dictionary keys which until python 3.6 are
+random. This is important to set the erosion relations between the different series</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A pandas DataFrame with the series and formations relations
+self.interfaces: one extra column with the given series
+self.foliations: one extra column with the given series</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self.series</p>
 </td>
 </tr>
 </tbody>
 </table>
 </dd></dl>
 
-<dl class="function">
-<dt id="GemPy_f.set_interfaces">
-<code class="descclassname">GemPy_f.</code><code class="descname">set_interfaces</code><span class="sig-paren">(</span><em>geo_data</em>, <em>interf_Dataframe</em>, <em>append=False</em>, <em>update_p_field=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#set_interfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.set_interfaces" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to change or append a Dataframe to interfaces in place.
-:param interf_Dataframe: pandas.core.frame.DataFrame with the data
-:param append: Bool: if you want to append the new data frame or substitute it</p>
-</dd></dl>
-
-<span class="target" id="module-DataManagement"></span><dl class="class">
+<span class="target" id="module-DataManagement"></span><p>This file is part of gempy.</p>
+<p>gempy is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>gempy is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with gempy.  If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+<dl class="class">
 <dt id="DataManagement.GridClass">
 <em class="property">class </em><code class="descclassname">DataManagement.</code><code class="descname">GridClass</code><span class="sig-paren">(</span><em>extent</em>, <em>resolution</em>, <em>grid_type=’regular_3D’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#GridClass"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.GridClass" title="Permalink to this definition">¶</a></dt>
 <dd><p>-DOCS NOT UPDATED- Class with set of functions to generate grids</p>
@@ -200,7 +657,7 @@ and default of for the grid class.</li>
 <dl class="class">
 <dt id="DataManagement.InputData">
 <em class="property">class </em><code class="descclassname">DataManagement.</code><code class="descname">InputData</code><span class="sig-paren">(</span><em>extent, resolution=[50, 50, 50], path_i=None, path_f=None, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InputData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InputData" title="Permalink to this definition">¶</a></dt>
-<dd><p>-DOCS NOT UPDATED- Class to import the raw data of the model and set data classifications into formations and series.
+<dd><p>Class to import the raw data of the model and set data classifications into formations and series.
 This objects will contain the main information of the model.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -263,10 +720,16 @@ This objects will contain the main information of the model.</p>
 <code class="descname">data_to_pickle</code><span class="sig-paren">(</span><em>path=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InputData.data_to_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InputData.data_to_pickle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
 versions used to export and import the pickle differ it may give problems
-:param path (str): path where save the pickle
-:return:</p>
-<blockquote>
-<div>None</div></blockquote>
+:param path: path where save the pickle
+:type path: str</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -279,7 +742,7 @@ versions used to export and import the pickle differ it may give problems
 
 <dl class="method">
 <dt id="DataManagement.InputData.foliation_modify">
-<code class="descname">foliation_modify</code><span class="sig-paren">(</span><em>index</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InputData.foliation_modify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InputData.foliation_modify" title="Permalink to this definition">¶</a></dt>
+<code class="descname">foliation_modify</code><span class="sig-paren">(</span><em>index</em>, <em>recalculate_gradient=False</em>, <em>recalculate_orientations=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InputData.foliation_modify"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InputData.foliation_modify" title="Permalink to this definition">¶</a></dt>
 <dd><p>Allows modification of foliation data at specified dataframe index.
 :param index: dataframe index of the foliation point
 :param **kwargs: G_x, G_y, G_z, X, Y, Z, azimuth, dip, formation, labels, order_series, polarity</p>
@@ -309,6 +772,26 @@ versions used to export and import the pickle differ it may give problems
 </dd></dl>
 
 <dl class="method">
+<dt id="DataManagement.InputData.get_data">
+<code class="descname">get_data</code><span class="sig-paren">(</span><em>itype=’all’</em>, <em>numeric=False</em>, <em>verbosity=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InputData.get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InputData.get_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method that returns the interfaces and foliations pandas Dataframes. Can return both at the same time or only
+one of the two
+:param itype: input data type, either ‘foliations’, ‘interfaces’ or ‘all’ for both.
+:param verbosity: Number of properties shown
+:type verbosity: int</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Data frame with the raw data</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
 <dt id="DataManagement.InputData.get_formation_number">
 <code class="descname">get_formation_number</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InputData.get_formation_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InputData.get_formation_number" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a dictionary with the key the name of the formation and the value their number</p>
@@ -332,24 +815,6 @@ versions used to export and import the pickle differ it may give problems
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Returns a list of formations</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="DataManagement.InputData.get_raw_data">
-<code class="descname">get_raw_data</code><span class="sig-paren">(</span><em>itype=’all’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InputData.get_raw_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InputData.get_raw_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method that returns the interfaces and foliations pandas Dataframes. Can return both at the same time or only
-one of the two
-:param itype: input data type, either ‘foliations’, ‘interfaces’ or ‘all’ for both.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Data frame with the raw data</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">pandas.core.frame.DataFrame</td>
 </tr>
@@ -832,7 +1297,7 @@ if you want to change one the kriging parameters.</p>
 <dl class="method">
 <dt id="DataManagement.InterpolatorInput.get_formation_number">
 <code class="descname">get_formation_number</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.get_formation_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.get_formation_number" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a dictionary with the key the name of the formation and the value their number</p>
+<dd><p>DEP in next version. Get a dictionary with the key the name of the formation and the value their number</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -917,10 +1382,10 @@ of the model a singular matrix is returned try to reduce the u_grade of the seri
 
 </dd></dl>
 
-<span class="target" id="module-theanograf"></span><dl class="docutils">
-<dt>Function that generates the symbolic code to perform the interpolation. Calling this function creates</dt>
-<dd>both the theano functions for the potential field and the block.</dd>
-</dl>
+<p>DEP– I need to update this string
+Function that generates the symbolic code to perform the interpolation. Calling this function creates</p>
+<blockquote>
+<div>both the theano functions for the potential field and the block.</div></blockquote>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -961,15 +1426,6 @@ results of the branches above)</p>
 <dd><p>Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
 :returns: Value of lithology at every interpolated point
 :rtype: theano.tensor.vector</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="theanograf.TheanoGraph_pro.choose_cells">
-<code class="descname">choose_cells</code><span class="sig-paren">(</span><em>grid</em>, <em>measure_points</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theanograf.html#TheanoGraph_pro.choose_cells"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theanograf.TheanoGraph_pro.choose_cells" title="Permalink to this definition">¶</a></dt>
-<dd><p>Preprocessing to see which nearby cells we use for the gravity
-:param grid:
-:param measure_points:</p>
-<p>Returns:</p>
 </dd></dl>
 
 <dl class="method">
@@ -1238,25 +1694,6 @@ decomposition in all likelihood
 </dd></dl>
 
 <dl class="method">
-<dt id="theanograf.TheanoGraph_pro.whole_block_model">
-<code class="descname">whole_block_model</code><span class="sig-paren">(</span><em>n_faults=0</em>, <em>compute_all=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theanograf.html#TheanoGraph_pro.whole_block_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theanograf.TheanoGraph_pro.whole_block_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Final function that loops first all the faults, then uses that result in the final block and loops again the
-series
-:param n_faults: Number of faults to extract the correct values from the big input matrices
-:type n_faults: int</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Final block model with the segmented lithologies</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.tensor.vector</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="theanograf.TheanoGraph_pro.x_to_interpolate">
 <code class="descname">x_to_interpolate</code><span class="sig-paren">(</span><em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theanograf.html#TheanoGraph_pro.x_to_interpolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theanograf.TheanoGraph_pro.x_to_interpolate" title="Permalink to this definition">¶</a></dt>
 <dd><p>here I add to the grid points also the references points(to check the value of the potential field at the
@@ -1268,15 +1705,25 @@ to avoid to recompute.
 
 </dd></dl>
 
-<span class="target" id="module-GeoPhysics"></span><p>bkkbab</p>
-<span class="target" id="module-Visualization"></span><p>Module with classes and methods to visualized structural geology data and potential fields of the regional modelling based on
+<span class="target" id="module-GeoPhysics"></span><p>This file is part of gempy.</p>
+<p>gempy is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.</p>
+<p>gempy is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.</p>
+<p>You should have received a copy of the GNU General Public License
+along with gempy.  If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
+<p>Module with classes and methods to visualized structural geology data and potential fields of the regional modelling based on
 the potential field method.
 Tested on Ubuntu 14</p>
 <p>Created on 23/09/2016</p>
 <p>&#64;author: Miguel de la Varga</p>
 <dl class="class">
 <dt id="Visualization.PlotData2D">
-<em class="property">class </em><code class="descclassname">Visualization.</code><code class="descname">PlotData2D</code><span class="sig-paren">(</span><em>geo_data, cd_rgb={‘amber’: {‘100’: [1.0, 0.9254901960784314, 0.7019607843137254], ‘200’: [1.0, 0.8784313725490196, 0.5098039215686274], ‘300’: [1.0, 0.8352941176470589, 0.30980392156862746], ‘400’: [1.0, 0.792156862745098, 0.1568627450980392], ‘50’: [1.0, 0.9725490196078431, 0.8823529411764706], ‘500’: [1.0, 0.7568627450980392, 0.027450980392156862], ‘600’: [1.0, 0.7019607843137254, 0.0], ‘700’: [1.0, 0.6274509803921569, 0.0], ‘800’: [1.0, 0.5607843137254902, 0.0], ‘900’: [1.0, 0.43529411764705883, 0.0], ‘a100’: [1.0, 0.8980392156862745, 0.4980392156862745], ‘a200’: [1.0, 0.8431372549019608, 0.25098039215686274], ‘a400’: [1.0, 0.7686274509803922, 0.0], ‘a700’: [1.0, 0.6705882352941176, 0.0]}, ‘blue’: {‘100’: [0.7333333333333333, 0.8705882352941177, 0.984313725490196], ‘200’: [0.5647058823529412, 0.792156862745098, 0.9764705882352941], ‘300’: [0.39215686274509803, 0.7098039215686275, 0.9647058823529412], ‘400’: [0.25882352941176473, 0.6470588235294118, 0.9607843137254902], ‘50’: [0.8901960784313725, 0.9490196078431372, 0.9921568627450981], ‘500’: [0.12941176470588237, 0.5882352941176471, 0.9529411764705882], ‘600’: [0.11764705882352941, 0.5333333333333333, 0.8980392156862745], ‘700’: [0.09803921568627451, 0.4627450980392157, 0.8235294117647058], ‘800’: [0.08235294117647059, 0.396078431372549, 0.7529411764705882], ‘900’: [0.050980392156862744, 0.2784313725490196, 0.6313725490196078], ‘a100’: [0.5098039215686274, 0.6941176470588235, 1.0], ‘a200’: [0.26666666666666666, 0.5411764705882353, 1.0], ‘a400’: [0.1607843137254902, 0.4745098039215686, 1.0], ‘a700’: [0.1607843137254902, 0.3843137254901961, 1.0]}, ‘blue-grey’: {‘100’: [0.8117647058823529, 0.8470588235294118, 0.8627450980392157], ‘200’: [0.6901960784313725, 0.7450980392156863, 0.7725490196078432], ‘300’: [0.5647058823529412, 0.6431372549019608, 0.6823529411764706], ‘400’: [0.47058823529411764, 0.5647058823529412, 0.611764705882353], ‘50’: [0.9254901960784314, 0.9372549019607843, 0.9450980392156862], ‘500’: [0.3764705882352941, 0.49019607843137253, 0.5450980392156862], ‘600’: [0.32941176470588235, 0.43137254901960786, 0.47843137254901963], ‘700’: [0.27058823529411763, 0.35294117647058826, 0.39215686274509803], ‘800’: [0.21568627450980393, 0.2784313725490196, 0.30980392156862746], ‘900’: [0.14901960784313725, 0.19607843137254902, 0.2196078431372549]}, ‘brown’: {‘100’: [0.8431372549019608, 0.8, 0.7843137254901961], ‘200’: [0.7372549019607844, 0.6666666666666666, 0.6431372549019608], ‘300’: [0.6313725490196078, 0.5333333333333333, 0.4980392156862745], ‘400’: [0.5529411764705883, 0.43137254901960786, 0.38823529411764707], ‘50’: [0.9372549019607843, 0.9215686274509803, 0.9137254901960784], ‘500’: [0.4745098039215686, 0.3333333333333333, 0.2823529411764706], ‘600’: [0.42745098039215684, 0.2980392156862745, 0.2549019607843137], ‘700’: [0.36470588235294116, 0.25098039215686274, 0.21568627450980393], ‘800’: [0.3058823529411765, 0.20392156862745098, 0.1803921568627451], ‘900’: [0.24313725490196078, 0.15294117647058825, 0.13725490196078433]}, ‘cyan’: {‘100’: [0.6980392156862745, 0.9215686274509803, 0.9490196078431372], ‘200’: [0.5019607843137255, 0.8705882352941177, 0.9176470588235294], ‘300’: [0.30196078431372547, 0.8156862745098039, 0.8823529411764706], ‘400’: [0.14901960784313725, 0.7764705882352941, 0.8549019607843137], ‘50’: [0.8784313725490196, 0.9686274509803922, 0.9803921568627451], ‘500’: [0.0, 0.7372549019607844, 0.8313725490196079], ‘600’: [0.0, 0.6745098039215687, 0.7568627450980392], ‘700’: [0.0, 0.592156862745098, 0.6549019607843137], ‘800’: [0.0, 0.5137254901960784, 0.5607843137254902], ‘900’: [0.0, 0.3764705882352941, 0.39215686274509803], ‘a100’: [0.5176470588235295, 1.0, 1.0], ‘a200’: [0.09411764705882353, 1.0, 1.0], ‘a400’: [0.0, 0.8980392156862745, 1.0], ‘a700’: [0.0, 0.7215686274509804, 0.8313725490196079]}, ‘deep-orange’: {‘100’: [1.0, 0.8, 0.7372549019607844], ‘200’: [1.0, 0.6705882352941176, 0.5686274509803921], ‘300’: [1.0, 0.5411764705882353, 0.396078431372549], ‘400’: [1.0, 0.4392156862745098, 0.2627450980392157], ‘50’: [0.984313725490196, 0.9137254901960784, 0.9058823529411765], ‘500’: [1.0, 0.3411764705882353, 0.13333333333333333], ‘600’: [0.9568627450980393, 0.3176470588235294, 0.11764705882352941], ‘700’: [0.9019607843137255, 0.2901960784313726, 0.09803921568627451], ‘800’: [0.8470588235294118, 0.2627450980392157, 0.08235294117647059], ‘900’: [0.7490196078431373, 0.21176470588235294, 0.047058823529411764], ‘a100’: [1.0, 0.6196078431372549, 0.5019607843137255], ‘a200’: [1.0, 0.43137254901960786, 0.25098039215686274], ‘a400’: [1.0, 0.23921568627450981, 0.0], ‘a700’: [0.8666666666666667, 0.17254901960784313, 0.0]}, ‘deep-purple’: {‘100’: [0.8196078431372549, 0.7686274509803922, 0.9137254901960784], ‘200’: [0.7019607843137254, 0.615686274509804, 0.8588235294117647], ‘300’: [0.5843137254901961, 0.4588235294117647, 0.803921568627451], ‘400’: [0.49411764705882355, 0.3411764705882353, 0.7607843137254902], ‘50’: [0.9294117647058824, 0.9058823529411765, 0.9647058823529412], ‘500’: [0.403921568627451, 0.22745098039215686, 0.7176470588235294], ‘600’: [0.3686274509803922, 0.20784313725490197, 0.6941176470588235], ‘700’: [0.3176470588235294, 0.17647058823529413, 0.6588235294117647], ‘800’: [0.27058823529411763, 0.15294117647058825, 0.6274509803921569], ‘900’: [0.19215686274509805, 0.10588235294117647, 0.5725490196078431], ‘a100’: [0.7019607843137254, 0.5333333333333333, 1.0], ‘a200’: [0.48627450980392156, 0.30196078431372547, 1.0], ‘a400’: [0.396078431372549, 0.12156862745098039, 1.0], ‘a700’: [0.3843137254901961, 0.0, 0.9176470588235294]}, ‘green’: {‘100’: [0.7843137254901961, 0.9019607843137255, 0.788235294117647], ‘200’: [0.6470588235294118, 0.8392156862745098, 0.6549019607843137], ‘300’: [0.5058823529411764, 0.7803921568627451, 0.5176470588235295], ‘400’: [0.4, 0.7333333333333333, 0.41568627450980394], ‘50’: [0.9098039215686274, 0.9607843137254902, 0.9137254901960784], ‘500’: [0.2980392156862745, 0.6862745098039216, 0.3137254901960784], ‘600’: [0.2627450980392157, 0.6274509803921569, 0.2784313725490196], ‘700’: [0.2196078431372549, 0.5568627450980392, 0.23529411764705882], ‘800’: [0.1803921568627451, 0.49019607843137253, 0.19607843137254902], ‘900’: [0.10588235294117647, 0.3686274509803922, 0.12549019607843137], ‘a100’: [0.7254901960784313, 0.9647058823529412, 0.792156862745098], ‘a200’: [0.4117647058823529, 0.9411764705882353, 0.6823529411764706], ‘a400’: [0.0, 0.9019607843137255, 0.4627450980392157], ‘a700’: [0.0, 0.7843137254901961, 0.3254901960784314]}, ‘grey’: {‘100’: [0.9607843137254902, 0.9607843137254902, 0.9607843137254902], ‘200’: [0.9333333333333333, 0.9333333333333333, 0.9333333333333333], ‘300’: [0.8784313725490196, 0.8784313725490196, 0.8784313725490196], ‘400’: [0.7411764705882353, 0.7411764705882353, 0.7411764705882353], ‘50’: [0.9803921568627451, 0.9803921568627451, 0.9803921568627451], ‘500’: [0.6196078431372549, 0.6196078431372549, 0.6196078431372549], ‘600’: [0.4588235294117647, 0.4588235294117647, 0.4588235294117647], ‘700’: [0.3803921568627451, 0.3803921568627451, 0.3803921568627451], ‘800’: [0.25882352941176473, 0.25882352941176473, 0.25882352941176473], ‘900’: [0.12941176470588237, 0.12941176470588237, 0.12941176470588237]}, ‘indigo’: {‘100’: [0.7725490196078432, 0.792156862745098, 0.9137254901960784], ‘200’: [0.6235294117647059, 0.6588235294117647, 0.8549019607843137], ‘300’: [0.4745098039215686, 0.5254901960784314, 0.796078431372549], ‘400’: [0.3607843137254902, 0.4196078431372549, 0.7529411764705882], ‘50’: [0.9098039215686274, 0.9176470588235294, 0.9647058823529412], ‘500’: [0.24705882352941178, 0.3176470588235294, 0.7098039215686275], ‘600’: [0.2235294117647059, 0.28627450980392155, 0.6705882352941176], ‘700’: [0.18823529411764706, 0.24705882352941178, 0.6235294117647059], ‘800’: [0.1568627450980392, 0.20784313725490197, 0.5764705882352941], ‘900’: [0.10196078431372549, 0.13725490196078433, 0.49411764705882355], ‘a100’: [0.5490196078431373, 0.6196078431372549, 1.0], ‘a200’: [0.3254901960784314, 0.42745098039215684, 0.996078431372549], ‘a400’: [0.23921568627450981, 0.35294117647058826, 0.996078431372549], ‘a700’: [0.18823529411764706, 0.30980392156862746, 0.996078431372549]}, ‘light-blue’: {‘100’: [0.7019607843137254, 0.8980392156862745, 0.9882352941176471], ‘200’: [0.5058823529411764, 0.8313725490196079, 0.9803921568627451], ‘300’: [0.30980392156862746, 0.7647058823529411, 0.9686274509803922], ‘400’: [0.1607843137254902, 0.7137254901960784, 0.9647058823529412], ‘50’: [0.8823529411764706, 0.9607843137254902, 0.996078431372549], ‘500’: [0.011764705882352941, 0.6627450980392157, 0.9568627450980393], ‘600’: [0.011764705882352941, 0.6078431372549019, 0.8980392156862745], ‘700’: [0.00784313725490196, 0.5333333333333333, 0.8196078431372549], ‘800’: [0.00784313725490196, 0.4666666666666667, 0.7411764705882353], ‘900’: [0.00392156862745098, 0.3411764705882353, 0.6078431372549019], ‘a100’: [0.5019607843137255, 0.8470588235294118, 1.0], ‘a200’: [0.25098039215686274, 0.7686274509803922, 1.0], ‘a400’: [0.0, 0.6901960784313725, 1.0], ‘a700’: [0.0, 0.5686274509803921, 0.9176470588235294]}, ‘light-green’: {‘100’: [0.8627450980392157, 0.9294117647058824, 0.7843137254901961], ‘200’: [0.7725490196078432, 0.8823529411764706, 0.6470588235294118], ‘300’: [0.6823529411764706, 0.8352941176470589, 0.5058823529411764], ‘400’: [0.611764705882353, 0.8, 0.396078431372549], ‘50’: [0.9450980392156862, 0.9725490196078431, 0.9137254901960784], ‘500’: [0.5450980392156862, 0.7647058823529411, 0.2901960784313726], ‘600’: [0.48627450980392156, 0.7019607843137254, 0.25882352941176473], ‘700’: [0.40784313725490196, 0.6235294117647059, 0.2196078431372549], ‘800’: [0.3333333333333333, 0.5450980392156862, 0.1843137254901961], ‘900’: [0.2, 0.4117647058823529, 0.11764705882352941], ‘a100’: [0.8, 1.0, 0.5647058823529412], ‘a200’: [0.6980392156862745, 1.0, 0.34901960784313724], ‘a400’: [0.4627450980392157, 1.0, 0.011764705882352941], ‘a700’: [0.39215686274509803, 0.8666666666666667, 0.09019607843137255]}, ‘lime’: {‘100’: [0.9411764705882353, 0.9568627450980393, 0.7647058823529411], ‘200’: [0.9019607843137255, 0.9333333333333333, 0.611764705882353], ‘300’: [0.8627450980392157, 0.9058823529411765, 0.4588235294117647], ‘400’: [0.8313725490196079, 0.8823529411764706, 0.3411764705882353], ‘50’: [0.9764705882352941, 0.984313725490196, 0.9058823529411765], ‘500’: [0.803921568627451, 0.8627450980392157, 0.2235294117647059], ‘600’: [0.7529411764705882, 0.792156862745098, 0.2], ‘700’: [0.6862745098039216, 0.7058823529411765, 0.16862745098039217], ‘800’: [0.6196078431372549, 0.615686274509804, 0.1411764705882353], ‘900’: [0.5098039215686274, 0.4666666666666667, 0.09019607843137255], ‘a100’: [0.9568627450980393, 1.0, 0.5058823529411764], ‘a200’: [0.9333333333333333, 1.0, 0.2549019607843137], ‘a400’: [0.7764705882352941, 1.0, 0.0], ‘a700’: [0.6823529411764706, 0.9176470588235294, 0.0]}, ‘orange’: {‘100’: [1.0, 0.8784313725490196, 0.6980392156862745], ‘200’: [1.0, 0.8, 0.5019607843137255], ‘300’: [1.0, 0.7176470588235294, 0.30196078431372547], ‘400’: [1.0, 0.6549019607843137, 0.14901960784313725], ‘50’: [1.0, 0.9529411764705882, 0.8784313725490196], ‘500’: [1.0, 0.596078431372549, 0.0], ‘600’: [0.984313725490196, 0.5490196078431373, 0.0], ‘700’: [0.9607843137254902, 0.48627450980392156, 0.0], ‘800’: [0.9372549019607843, 0.4235294117647059, 0.0], ‘900’: [0.9019607843137255, 0.3176470588235294, 0.0], ‘a100’: [1.0, 0.8196078431372549, 0.5019607843137255], ‘a200’: [1.0, 0.6705882352941176, 0.25098039215686274], ‘a400’: [1.0, 0.5686274509803921, 0.0], ‘a700’: [1.0, 0.42745098039215684, 0.0]}, ‘pink’: {‘100’: [0.9725490196078431, 0.7333333333333333, 0.8156862745098039], ‘200’: [0.9568627450980393, 0.5607843137254902, 0.6941176470588235], ‘300’: [0.9411764705882353, 0.3843137254901961, 0.5725490196078431], ‘400’: [0.9254901960784314, 0.25098039215686274, 0.47843137254901963], ‘50’: [0.9882352941176471, 0.8941176470588236, 0.9254901960784314], ‘500’: [0.9137254901960784, 0.11764705882352941, 0.38823529411764707], ‘600’: [0.8470588235294118, 0.10588235294117647, 0.3764705882352941], ‘700’: [0.7607843137254902, 0.09411764705882353, 0.3568627450980392], ‘800’: [0.6784313725490196, 0.0784313725490196, 0.3411764705882353], ‘900’: [0.5333333333333333, 0.054901960784313725, 0.30980392156862746], ‘a100’: [1.0, 0.5019607843137255, 0.6705882352941176], ‘a200’: [1.0, 0.25098039215686274, 0.5058823529411764], ‘a400’: [0.9607843137254902, 0.0, 0.3411764705882353], ‘a700’: [0.7725490196078432, 0.06666666666666667, 0.3843137254901961]}, ‘purple’: {‘100’: [0.8823529411764706, 0.7450980392156863, 0.9058823529411765], ‘200’: [0.807843137254902, 0.5764705882352941, 0.8470588235294118], ‘300’: [0.7294117647058823, 0.40784313725490196, 0.7843137254901961], ‘400’: [0.6705882352941176, 0.2784313725490196, 0.7372549019607844], ‘50’: [0.9529411764705882, 0.8980392156862745, 0.9607843137254902], ‘500’: [0.611764705882353, 0.15294117647058825, 0.6901960784313725], ‘600’: [0.5568627450980392, 0.1411764705882353, 0.6666666666666666], ‘700’: [0.4823529411764706, 0.12156862745098039, 0.6352941176470588], ‘800’: [0.41568627450980394, 0.10588235294117647, 0.6039215686274509], ‘900’: [0.2901960784313726, 0.0784313725490196, 0.5490196078431373], ‘a100’: [0.9176470588235294, 0.5019607843137255, 0.9882352941176471], ‘a200’: [0.8784313725490196, 0.25098039215686274, 0.984313725490196], ‘a400’: [0.8352941176470589, 0.0, 0.9764705882352941], ‘a700’: [0.6666666666666666, 0.0, 1.0]}, ‘red’: {‘100’: [1.0, 0.803921568627451, 0.8235294117647058], ‘200’: [0.9372549019607843, 0.6039215686274509, 0.6039215686274509], ‘300’: [0.8980392156862745, 0.45098039215686275, 0.45098039215686275], ‘400’: [0.9372549019607843, 0.3254901960784314, 0.3137254901960784], ‘50’: [1.0, 0.9215686274509803, 0.9333333333333333], ‘500’: [0.9568627450980393, 0.2627450980392157, 0.21176470588235294], ‘600’: [0.8980392156862745, 0.2235294117647059, 0.20784313725490197], ‘700’: [0.8274509803921568, 0.1843137254901961, 0.1843137254901961], ‘800’: [0.7764705882352941, 0.1568627450980392, 0.1568627450980392], ‘900’: [0.7176470588235294, 0.10980392156862745, 0.10980392156862745], ‘a100’: [1.0, 0.5411764705882353, 0.5019607843137255], ‘a200’: [1.0, 0.3215686274509804, 0.3215686274509804], ‘a400’: [1.0, 0.09019607843137255, 0.26666666666666666], ‘a700’: [0.8352941176470589, 0.0, 0.0]}, ‘teal’: {‘100’: [0.6980392156862745, 0.8745098039215686, 0.8588235294117647], ‘200’: [0.5019607843137255, 0.796078431372549, 0.7686274509803922], ‘300’: [0.30196078431372547, 0.7137254901960784, 0.6745098039215687], ‘400’: [0.14901960784313725, 0.6509803921568628, 0.6039215686274509], ‘50’: [0.8784313725490196, 0.9490196078431372, 0.9450980392156862], ‘500’: [0.0, 0.5882352941176471, 0.5333333333333333], ‘600’: [0.0, 0.5372549019607843, 0.4823529411764706], ‘700’: [0.0, 0.4745098039215686, 0.4196078431372549], ‘800’: [0.0, 0.4117647058823529, 0.3607843137254902], ‘900’: [0.0, 0.30196078431372547, 0.25098039215686274], ‘a100’: [0.6549019607843137, 1.0, 0.9215686274509803], ‘a200’: [0.39215686274509803, 1.0, 0.8549019607843137], ‘a400’: [0.11372549019607843, 0.9137254901960784, 0.7137254901960784], ‘a700’: [0.0, 0.7490196078431373, 0.6470588235294118]}, ‘yellow’: {‘100’: [1.0, 0.9764705882352941, 0.7686274509803922], ‘200’: [1.0, 0.9607843137254902, 0.615686274509804], ‘300’: [1.0, 0.9450980392156862, 0.4627450980392157], ‘400’: [1.0, 0.9333333333333333, 0.34509803921568627], ‘50’: [1.0, 0.9921568627450981, 0.9058823529411765], ‘500’: [1.0, 0.9215686274509803, 0.23137254901960785], ‘600’: [0.9921568627450981, 0.8470588235294118, 0.20784313725490197], ‘700’: [0.984313725490196, 0.7529411764705882, 0.17647058823529413], ‘800’: [0.9764705882352941, 0.6588235294117647, 0.1450980392156863], ‘900’: [0.9607843137254902, 0.4980392156862745, 0.09019607843137255], ‘a100’: [1.0, 1.0, 0.5529411764705883], ‘a200’: [1.0, 1.0, 0.0], ‘a400’: [1.0, 0.9176470588235294, 0.0], ‘a700’: [1.0, 0.8392156862745098, 0.0]}}, cd_hex={‘red’: {‘50’: ‘#ffebee’, ‘100’: ‘#ffcdd2’, ‘200’: ‘#ef9a9a’, ‘300’: ‘#e57373’, ‘400’: ‘#ef5350’, ‘500’: ‘#f44336’, ‘600’: ‘#e53935’, ‘700’: ‘#d32f2f’, ‘800’: ‘#c62828’, ‘900’: ‘#b71c1c’, ‘a100’: ‘#ff8a80’, ‘a200’: ‘#ff5252’, ‘a400’: ‘#ff1744’, ‘a700’: ‘#d50000’}, ‘pink’: {‘50’: ‘#fce4ec’, ‘100’: ‘#f8bbd0’, ‘200’: ‘#f48fb1’, ‘300’: ‘#f06292’, ‘400’: ‘#ec407a’, ‘500’: ‘#e91e63’, ‘600’: ‘#d81b60’, ‘700’: ‘#c2185b’, ‘800’: ‘#ad1457’, ‘900’: ‘#880e4f’, ‘a100’: ‘#ff80ab’, ‘a200’: ‘#ff4081’, ‘a400’: ‘#f50057’, ‘a700’: ‘#c51162’}, ‘purple’: {‘50’: ‘#f3e5f5’, ‘100’: ‘#e1bee7’, ‘200’: ‘#ce93d8’, ‘300’: ‘#ba68c8’, ‘400’: ‘#ab47bc’, ‘500’: ‘#9c27b0’, ‘600’: ‘#8e24aa’, ‘700’: ‘#7b1fa2’, ‘800’: ‘#6a1b9a’, ‘900’: ‘#4a148c’, ‘a100’: ‘#ea80fc’, ‘a200’: ‘#e040fb’, ‘a400’: ‘#d500f9’, ‘a700’: ‘#aa00ff’}, ‘deep-purple’: {‘50’: ‘#ede7f6’, ‘100’: ‘#d1c4e9’, ‘200’: ‘#b39ddb’, ‘300’: ‘#9575cd’, ‘400’: ‘#7e57c2’, ‘500’: ‘#673ab7’, ‘600’: ‘#5e35b1’, ‘700’: ‘#512da8’, ‘800’: ‘#4527a0’, ‘900’: ‘#311b92’, ‘a100’: ‘#b388ff’, ‘a200’: ‘#7c4dff’, ‘a400’: ‘#651fff’, ‘a700’: ‘#6200ea’}, ‘indigo’: {‘50’: ‘#e8eaf6’, ‘100’: ‘#c5cae9’, ‘200’: ‘#9fa8da’, ‘300’: ‘#7986cb’, ‘400’: ‘#5c6bc0’, ‘500’: ‘#3f51b5’, ‘600’: ‘#3949ab’, ‘700’: ‘#303f9f’, ‘800’: ‘#283593’, ‘900’: ‘#1a237e’, ‘a100’: ‘#8c9eff’, ‘a200’: ‘#536dfe’, ‘a400’: ‘#3d5afe’, ‘a700’: ‘#304ffe’}, ‘blue’: {‘50’: ‘#e3f2fd’, ‘100’: ‘#bbdefb’, ‘200’: ‘#90caf9’, ‘300’: ‘#64b5f6’, ‘400’: ‘#42a5f5’, ‘500’: ‘#2196f3’, ‘600’: ‘#1e88e5’, ‘700’: ‘#1976d2’, ‘800’: ‘#1565c0’, ‘900’: ‘#0d47a1’, ‘a100’: ‘#82b1ff’, ‘a200’: ‘#448aff’, ‘a400’: ‘#2979ff’, ‘a700’: ‘#2962ff’}, ‘light-blue’: {‘50’: ‘#e1f5fe’, ‘100’: ‘#b3e5fc’, ‘200’: ‘#81d4fa’, ‘300’: ‘#4fc3f7’, ‘400’: ‘#29b6f6’, ‘500’: ‘#03a9f4’, ‘600’: ‘#039be5’, ‘700’: ‘#0288d1’, ‘800’: ‘#0277bd’, ‘900’: ‘#01579b’, ‘a100’: ‘#80d8ff’, ‘a200’: ‘#40c4ff’, ‘a400’: ‘#00b0ff’, ‘a700’: ‘#0091ea’}, ‘cyan’: {‘50’: ‘#e0f7fa’, ‘100’: ‘#b2ebf2’, ‘200’: ‘#80deea’, ‘300’: ‘#4dd0e1’, ‘400’: ‘#26c6da’, ‘500’: ‘#00bcd4’, ‘600’: ‘#00acc1’, ‘700’: ‘#0097a7’, ‘800’: ‘#00838f’, ‘900’: ‘#006064’, ‘a100’: ‘#84ffff’, ‘a200’: ‘#18ffff’, ‘a400’: ‘#00e5ff’, ‘a700’: ‘#00b8d4’}, ‘teal’: {‘50’: ‘#e0f2f1’, ‘100’: ‘#b2dfdb’, ‘200’: ‘#80cbc4’, ‘300’: ‘#4db6ac’, ‘400’: ‘#26a69a’, ‘500’: ‘#009688’, ‘600’: ‘#00897b’, ‘700’: ‘#00796b’, ‘800’: ‘#00695c’, ‘900’: ‘#004d40’, ‘a100’: ‘#a7ffeb’, ‘a200’: ‘#64ffda’, ‘a400’: ‘#1de9b6’, ‘a700’: ‘#00bfa5’}, ‘green’: {‘50’: ‘#e8f5e9’, ‘100’: ‘#c8e6c9’, ‘200’: ‘#a5d6a7’, ‘300’: ‘#81c784’, ‘400’: ‘#66bb6a’, ‘500’: ‘#4caf50’, ‘600’: ‘#43a047’, ‘700’: ‘#388e3c’, ‘800’: ‘#2e7d32’, ‘900’: ‘#1b5e20’, ‘a100’: ‘#b9f6ca’, ‘a200’: ‘#69f0ae’, ‘a400’: ‘#00e676’, ‘a700’: ‘#00c853’}, ‘light-green’: {‘50’: ‘#f1f8e9’, ‘100’: ‘#dcedc8’, ‘200’: ‘#c5e1a5’, ‘300’: ‘#aed581’, ‘400’: ‘#9ccc65’, ‘500’: ‘#8bc34a’, ‘600’: ‘#7cb342’, ‘700’: ‘#689f38’, ‘800’: ‘#558b2f’, ‘900’: ‘#33691e’, ‘a100’: ‘#ccff90’, ‘a200’: ‘#b2ff59’, ‘a400’: ‘#76ff03’, ‘a700’: ‘#64dd17’}, ‘lime’: {‘50’: ‘#f9fbe7’, ‘100’: ‘#f0f4c3’, ‘200’: ‘#e6ee9c’, ‘300’: ‘#dce775’, ‘400’: ‘#d4e157’, ‘500’: ‘#cddc39’, ‘600’: ‘#c0ca33’, ‘700’: ‘#afb42b’, ‘800’: ‘#9e9d24’, ‘900’: ‘#827717’, ‘a100’: ‘#f4ff81’, ‘a200’: ‘#eeff41’, ‘a400’: ‘#c6ff00’, ‘a700’: ‘#aeea00’}, ‘yellow’: {‘50’: ‘#fffde7’, ‘100’: ‘#fff9c4’, ‘200’: ‘#fff59d’, ‘300’: ‘#fff176’, ‘400’: ‘#ffee58’, ‘500’: ‘#ffeb3b’, ‘600’: ‘#fdd835’, ‘700’: ‘#fbc02d’, ‘800’: ‘#f9a825’, ‘900’: ‘#f57f17’, ‘a100’: ‘#ffff8d’, ‘a200’: ‘#ffff00’, ‘a400’: ‘#ffea00’, ‘a700’: ‘#ffd600’}, ‘amber’: {‘50’: ‘#fff8e1’, ‘100’: ‘#ffecb3’, ‘200’: ‘#ffe082’, ‘300’: ‘#ffd54f’, ‘400’: ‘#ffca28’, ‘500’: ‘#ffc107’, ‘600’: ‘#ffb300’, ‘700’: ‘#ffa000’, ‘800’: ‘#ff8f00’, ‘900’: ‘#ff6f00’, ‘a100’: ‘#ffe57f’, ‘a200’: ‘#ffd740’, ‘a400’: ‘#ffc400’, ‘a700’: ‘#ffab00’}, ‘orange’: {‘50’: ‘#fff3e0’, ‘100’: ‘#ffe0b2’, ‘200’: ‘#ffcc80’, ‘300’: ‘#ffb74d’, ‘400’: ‘#ffa726’, ‘500’: ‘#ff9800’, ‘600’: ‘#fb8c00’, ‘700’: ‘#f57c00’, ‘800’: ‘#ef6c00’, ‘900’: ‘#e65100’, ‘a100’: ‘#ffd180’, ‘a200’: ‘#ffab40’, ‘a400’: ‘#ff9100’, ‘a700’: ‘#ff6d00’}, ‘deep-orange’: {‘50’: ‘#fbe9e7’, ‘100’: ‘#ffccbc’, ‘200’: ‘#ffab91’, ‘300’: ‘#ff8a65’, ‘400’: ‘#ff7043’, ‘500’: ‘#ff5722’, ‘600’: ‘#f4511e’, ‘700’: ‘#e64a19’, ‘800’: ‘#d84315’, ‘900’: ‘#bf360c’, ‘a100’: ‘#ff9e80’, ‘a200’: ‘#ff6e40’, ‘a400’: ‘#ff3d00’, ‘a700’: ‘#dd2c00’}, ‘brown’: {‘50’: ‘#efebe9’, ‘100’: ‘#d7ccc8’, ‘200’: ‘#bcaaa4’, ‘300’: ‘#a1887f’, ‘400’: ‘#8d6e63’, ‘500’: ‘#795548’, ‘600’: ‘#6d4c41’, ‘700’: ‘#5d4037’, ‘800’: ‘#4e342e’, ‘900’: ‘#3e2723’}, ‘grey’: {‘50’: ‘#fafafa’, ‘100’: ‘#f5f5f5’, ‘200’: ‘#eeeeee’, ‘300’: ‘#e0e0e0’, ‘400’: ‘#bdbdbd’, ‘500’: ‘#9e9e9e’, ‘600’: ‘#757575’, ‘700’: ‘#616161’, ‘800’: ‘#424242’, ‘900’: ‘#212121’}, ‘blue-grey’: {‘50’: ‘#eceff1’, ‘100’: ‘#cfd8dc’, ‘200’: ‘#b0bec5’, ‘300’: ‘#90a4ae’, ‘400’: ‘#78909c’, ‘500’: ‘#607d8b’, ‘600’: ‘#546e7a’, ‘700’: ‘#455a64’, ‘800’: ‘#37474f’, ‘900’: ‘#263238’}}, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#PlotData2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.PlotData2D" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Visualization.</code><code class="descname">PlotData2D</code><span class="sig-paren">(</span><em>geo_data, color_lot={0: [1.0, 0.6549019607843137, 0.14901960784313725], 1: [0.3607843137254902, 0.4196078431372549, 0.7529411764705882], 2: [1.0, 0.9333333333333333, 0.34509803921568627], 3: [0.4, 0.7333333333333333, 0.41568627450980394], 4: [0.9372549019607843, 0.3254901960784314, 0.3137254901960784], 5: [0.5529411764705883, 0.43137254901960786, 0.38823529411764707], 6: [0.25882352941176473, 0.6470588235294118, 0.9607843137254902], 7: [1.0, 0.792156862745098, 0.1568627450980392], 8: [0.9254901960784314, 0.25098039215686274, 0.47843137254901963], 9: [0.1607843137254902, 0.7137254901960784, 0.9647058823529412], 10: [0.8313725490196079, 0.8823529411764706, 0.3411764705882353], 11: [0.47058823529411764, 0.5647058823529412, 0.611764705882353], 12: [1.0, 0.4392156862745098, 0.2627450980392157], 13: [0.7411764705882353, 0.7411764705882353, 0.7411764705882353], 14: [0.14901960784313725, 0.7764705882352941, 0.8549019607843137], 15: [0.49411764705882355, 0.3411764705882353, 0.7607843137254902], 16: [0.6705882352941176, 0.2784313725490196, 0.7372549019607844], 17: [0.14901960784313725, 0.6509803921568628, 0.6039215686274509], 18: [0.611764705882353, 0.8, 0.396078431372549], 19: [0.9607843137254902, 0.48627450980392156, 0.0], 20: [0.18823529411764706, 0.24705882352941178, 0.6235294117647059], 21: [0.984313725490196, 0.7529411764705882, 0.17647058823529413], 22: [0.2196078431372549, 0.5568627450980392, 0.23529411764705882], 23: [0.8274509803921568, 0.1843137254901961, 0.1843137254901961], 24: [0.36470588235294116, 0.25098039215686274, 0.21568627450980393], 25: [0.09803921568627451, 0.4627450980392157, 0.8235294117647058], 26: [1.0, 0.6274509803921569, 0.0], 27: [0.7607843137254902, 0.09411764705882353, 0.3568627450980392], 28: [0.00784313725490196, 0.5333333333333333, 0.8196078431372549], 29: [0.6862745098039216, 0.7058823529411765, 0.16862745098039217], 30: [0.27058823529411763, 0.35294117647058826, 0.39215686274509803], 31: [0.9019607843137255, 0.2901960784313726, 0.09803921568627451], 32: [0.3803921568627451, 0.3803921568627451, 0.3803921568627451], 33: [0.0, 0.592156862745098, 0.6549019607843137], 34: [0.3176470588235294, 0.17647058823529413, 0.6588235294117647], 35: [0.4823529411764706, 0.12156862745098039, 0.6352941176470588], 36: [0.0, 0.4745098039215686, 0.4196078431372549], 37: [0.40784313725490196, 0.6235294117647059, 0.2196078431372549], 38: [1.0, 0.8784313725490196, 0.6980392156862745], 39: [0.7725490196078432, 0.792156862745098, 0.9137254901960784], 40: [1.0, 0.9764705882352941, 0.7686274509803922], 41: [0.7843137254901961, 0.9019607843137255, 0.788235294117647], 42: [1.0, 0.803921568627451, 0.8235294117647058], 43: [0.8431372549019608, 0.8, 0.7843137254901961], 44: [0.7333333333333333, 0.8705882352941177, 0.984313725490196], 45: [1.0, 0.9254901960784314, 0.7019607843137254], 46: [0.9725490196078431, 0.7333333333333333, 0.8156862745098039], 47: [0.7019607843137254, 0.8980392156862745, 0.9882352941176471], 48: [0.9411764705882353, 0.9568627450980393, 0.7647058823529411], 49: [0.8117647058823529, 0.8470588235294118, 0.8627450980392157], 50: [1.0, 0.8, 0.7372549019607844], 51: [0.9607843137254902, 0.9607843137254902, 0.9607843137254902], 52: [0.6980392156862745, 0.9215686274509803, 0.9490196078431372], 53: [0.8196078431372549, 0.7686274509803922, 0.9137254901960784], 54: [0.8823529411764706, 0.7450980392156863, 0.9058823529411765], 55: [0.6980392156862745, 0.8745098039215686, 0.8588235294117647], 56: [0.8627450980392157, 0.9294117647058824, 0.7843137254901961], 57: [1.0, 0.8, 0.5019607843137255], 58: [0.6235294117647059, 0.6588235294117647, 0.8549019607843137], 59: [1.0, 0.9607843137254902, 0.615686274509804], 60: [0.6470588235294118, 0.8392156862745098, 0.6549019607843137], 61: [0.9372549019607843, 0.6039215686274509, 0.6039215686274509], 62: [0.7372549019607844, 0.6666666666666666, 0.6431372549019608], 63: [0.5647058823529412, 0.792156862745098, 0.9764705882352941], 64: [1.0, 0.8784313725490196, 0.5098039215686274], 65: [0.9568627450980393, 0.5607843137254902, 0.6941176470588235], 66: [0.5058823529411764, 0.8313725490196079, 0.9803921568627451], 67: [0.9019607843137255, 0.9333333333333333, 0.611764705882353], 68: [0.6901960784313725, 0.7450980392156863, 0.7725490196078432], 69: [1.0, 0.6705882352941176, 0.5686274509803921], 70: [0.9333333333333333, 0.9333333333333333, 0.9333333333333333], 71: [0.5019607843137255, 0.8705882352941177, 0.9176470588235294], 72: [0.7019607843137254, 0.615686274509804, 0.8588235294117647], 73: [0.807843137254902, 0.5764705882352941, 0.8470588235294118], 74: [0.5019607843137255, 0.796078431372549, 0.7686274509803922], 75: [0.7725490196078432, 0.8823529411764706, 0.6470588235294118], 76: [1.0, 0.7176470588235294, 0.30196078431372547], 77: [0.4745098039215686, 0.5254901960784314, 0.796078431372549], 78: [1.0, 0.9450980392156862, 0.4627450980392157], 79: [0.5058823529411764, 0.7803921568627451, 0.5176470588235295], 80: [0.8980392156862745, 0.45098039215686275, 0.45098039215686275], 81: [0.6313725490196078, 0.5333333333333333, 0.4980392156862745], 82: [0.39215686274509803, 0.7098039215686275, 0.9647058823529412], 83: [1.0, 0.8352941176470589, 0.30980392156862746], 84: [0.9411764705882353, 0.3843137254901961, 0.5725490196078431], 85: [0.30980392156862746, 0.7647058823529411, 0.9686274509803922], 86: [0.8627450980392157, 0.9058823529411765, 0.4588235294117647], 87: [0.5647058823529412, 0.6431372549019608, 0.6823529411764706], 88: [1.0, 0.5411764705882353, 0.396078431372549], 89: [0.8784313725490196, 0.8784313725490196, 0.8784313725490196], 90: [0.30196078431372547, 0.8156862745098039, 0.8823529411764706], 91: [0.5843137254901961, 0.4588235294117647, 0.803921568627451], 92: [0.7294117647058823, 0.40784313725490196, 0.7843137254901961], 93: [0.30196078431372547, 0.7137254901960784, 0.6745098039215687], 94: [0.6823529411764706, 0.8352941176470589, 0.5058823529411764], 95: [1.0, 0.596078431372549, 0.0], 96: [0.24705882352941178, 0.3176470588235294, 0.7098039215686275], 97: [1.0, 0.9215686274509803, 0.23137254901960785], 98: [0.2980392156862745, 0.6862745098039216, 0.3137254901960784], 99: [0.9568627450980393, 0.2627450980392157, 0.21176470588235294], 100: [0.4745098039215686, 0.3333333333333333, 0.2823529411764706], 101: [0.12941176470588237, 0.5882352941176471, 0.9529411764705882], 102: [1.0, 0.7568627450980392, 0.027450980392156862], 103: [0.9137254901960784, 0.11764705882352941, 0.38823529411764707], 104: [0.011764705882352941, 0.6627450980392157, 0.9568627450980393], 105: [0.803921568627451, 0.8627450980392157, 0.2235294117647059], 106: [0.3764705882352941, 0.49019607843137253, 0.5450980392156862], 107: [1.0, 0.3411764705882353, 0.13333333333333333], 108: [0.6196078431372549, 0.6196078431372549, 0.6196078431372549], 109: [0.0, 0.7372549019607844, 0.8313725490196079], 110: [0.403921568627451, 0.22745098039215686, 0.7176470588235294], 111: [0.611764705882353, 0.15294117647058825, 0.6901960784313725], 112: [0.0, 0.5882352941176471, 0.5333333333333333], 113: [0.5450980392156862, 0.7647058823529411, 0.2901960784313726], 114: [0.984313725490196, 0.5490196078431373, 0.0], 115: [0.2235294117647059, 0.28627450980392155, 0.6705882352941176], 116: [0.9921568627450981, 0.8470588235294118, 0.20784313725490197], 117: [0.2627450980392157, 0.6274509803921569, 0.2784313725490196], 118: [0.8980392156862745, 0.2235294117647059, 0.20784313725490197], 119: [0.42745098039215684, 0.2980392156862745, 0.2549019607843137], 120: [0.11764705882352941, 0.5333333333333333, 0.8980392156862745], 121: [1.0, 0.7019607843137254, 0.0], 122: [0.8470588235294118, 0.10588235294117647, 0.3764705882352941], 123: [0.011764705882352941, 0.6078431372549019, 0.8980392156862745], 124: [0.7529411764705882, 0.792156862745098, 0.2], 125: [0.32941176470588235, 0.43137254901960786, 0.47843137254901963], 126: [0.9568627450980393, 0.3176470588235294, 0.11764705882352941], 127: [0.4588235294117647, 0.4588235294117647, 0.4588235294117647], 128: [0.0, 0.6745098039215687, 0.7568627450980392], 129: [0.3686274509803922, 0.20784313725490197, 0.6941176470588235], 130: [0.5568627450980392, 0.1411764705882353, 0.6666666666666666], 131: [0.0, 0.5372549019607843, 0.4823529411764706], 132: [0.48627450980392156, 0.7019607843137254, 0.25882352941176473], 133: [1.0, 0.9529411764705882, 0.8784313725490196], 134: [0.9098039215686274, 0.9176470588235294, 0.9647058823529412], 135: [1.0, 0.9921568627450981, 0.9058823529411765], 136: [0.9098039215686274, 0.9607843137254902, 0.9137254901960784], 137: [1.0, 0.9215686274509803, 0.9333333333333333], 138: [0.9372549019607843, 0.9215686274509803, 0.9137254901960784], 139: [0.8901960784313725, 0.9490196078431372, 0.9921568627450981], 140: [1.0, 0.9725490196078431, 0.8823529411764706], 141: [0.9882352941176471, 0.8941176470588236, 0.9254901960784314], 142: [0.8823529411764706, 0.9607843137254902, 0.996078431372549], 143: [0.9764705882352941, 0.984313725490196, 0.9058823529411765], 144: [0.9254901960784314, 0.9372549019607843, 0.9450980392156862], 145: [0.984313725490196, 0.9137254901960784, 0.9058823529411765], 146: [0.9803921568627451, 0.9803921568627451, 0.9803921568627451], 147: [0.8784313725490196, 0.9686274509803922, 0.9803921568627451], 148: [0.9294117647058824, 0.9058823529411765, 0.9647058823529412], 149: [0.9529411764705882, 0.8980392156862745, 0.9607843137254902], 150: [0.8784313725490196, 0.9490196078431372, 0.9450980392156862], 151: [0.9450980392156862, 0.9725490196078431, 0.9137254901960784], 152: [0.9372549019607843, 0.4235294117647059, 0.0], 153: [0.1568627450980392, 0.20784313725490197, 0.5764705882352941], 154: [0.9764705882352941, 0.6588235294117647, 0.1450980392156863], 155: [0.1803921568627451, 0.49019607843137253, 0.19607843137254902], 156: [0.7764705882352941, 0.1568627450980392, 0.1568627450980392], 157: [0.3058823529411765, 0.20392156862745098, 0.1803921568627451], 158: [0.08235294117647059, 0.396078431372549, 0.7529411764705882], 159: [1.0, 0.5607843137254902, 0.0], 160: [0.6784313725490196, 0.0784313725490196, 0.3411764705882353], 161: [0.00784313725490196, 0.4666666666666667, 0.7411764705882353], 162: [0.6196078431372549, 0.615686274509804, 0.1411764705882353], 163: [0.21568627450980393, 0.2784313725490196, 0.30980392156862746], 164: [0.8470588235294118, 0.2627450980392157, 0.08235294117647059], 165: [0.25882352941176473, 0.25882352941176473, 0.25882352941176473], 166: [0.0, 0.5137254901960784, 0.5607843137254902], 167: [0.27058823529411763, 0.15294117647058825, 0.6274509803921569], 168: [0.41568627450980394, 0.10588235294117647, 0.6039215686274509], 169: [0.0, 0.4117647058823529, 0.3607843137254902], 170: [0.3333333333333333, 0.5450980392156862, 0.1843137254901961], 171: [0.9019607843137255, 0.3176470588235294, 0.0], 172: [0.10196078431372549, 0.13725490196078433, 0.49411764705882355], 173: [0.9607843137254902, 0.4980392156862745, 0.09019607843137255], 174: [0.10588235294117647, 0.3686274509803922, 0.12549019607843137], 175: [0.7176470588235294, 0.10980392156862745, 0.10980392156862745], 176: [0.24313725490196078, 0.15294117647058825, 0.13725490196078433], 177: [0.050980392156862744, 0.2784313725490196, 0.6313725490196078], 178: [1.0, 0.43529411764705883, 0.0], 179: [0.5333333333333333, 0.054901960784313725, 0.30980392156862746], 180: [0.00392156862745098, 0.3411764705882353, 0.6078431372549019], 181: [0.5098039215686274, 0.4666666666666667, 0.09019607843137255], 182: [0.14901960784313725, 0.19607843137254902, 0.2196078431372549], 183: [0.7490196078431373, 0.21176470588235294, 0.047058823529411764], 184: [0.12941176470588237, 0.12941176470588237, 0.12941176470588237], 185: [0.0, 0.3764705882352941, 0.39215686274509803], 186: [0.19215686274509805, 0.10588235294117647, 0.5725490196078431], 187: [0.2901960784313726, 0.0784313725490196, 0.5490196078431373], 188: [0.0, 0.30196078431372547, 0.25098039215686274], 189: [0.2, 0.4117647058823529, 0.11764705882352941]}, cmap=&lt;matplotlib.colors.ListedColormap object&gt;, norm=&lt;matplotlib.colors.BoundaryNorm object&gt;, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#PlotData2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.PlotData2D" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to make the different plot related with gempy</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1340,12 +1787,12 @@ them.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – position of the array to plot</li>
-<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – xyz. Caartesian direction to be plotted
-interpolation(str): Type of interpolation of plt.imshow. Default ‘none’.  Acceptable values are ‘none’
-,’nearest’, ‘bilinear’, ‘bicubic’,
-‘spline16’, ‘spline36’, ‘hanning’, ‘hamming’, ‘hermite’, ‘kaiser’,
-‘quadric’, ‘catrom’, ‘gaussian’, ‘bessel’, ‘mitchell’, ‘sinc’,
-‘lanczos’</li>
+<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
+<li><strong>interpolation</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Type of interpolation of plt.imshow. Default ‘none’.  Acceptable values are ‘none’</li>
+<li><strong>'bilinear'</strong><strong>, </strong><strong>'bicubic'</strong><strong>,</strong> (<em>,</em><em>'nearest'</em><em>,</em>) – </li>
+<li><strong>'spline36'</strong><strong>, </strong><strong>'hanning'</strong><strong>, </strong><strong>'hamming'</strong><strong>, </strong><strong>'hermite'</strong><strong>, </strong><strong>'kaiser'</strong><strong>,</strong> (<em>'spline16'</em><em>,</em>) – </li>
+<li><strong>'catrom'</strong><strong>, </strong><strong>'gaussian'</strong><strong>, </strong><strong>'bessel'</strong><strong>, </strong><strong>'mitchell'</strong><strong>, </strong><strong>'sinc'</strong><strong>,</strong> (<em>'quadric'</em><em>,</em>) – </li>
+<li><strong>'lanczos'</strong> – </li>
 <li><strong>**kwargs</strong> – imshow keywargs</li>
 </ul>
 </td>
@@ -1359,7 +1806,7 @@ interpolation(str): Type of interpolation of plt.imshow. Default ‘none’.  Ac
 
 <dl class="method">
 <dt id="Visualization.PlotData2D.plot_data">
-<code class="descname">plot_data</code><span class="sig-paren">(</span><em>direction=’y’</em>, <em>series=’all’</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#PlotData2D.plot_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.PlotData2D.plot_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot_data</code><span class="sig-paren">(</span><em>direction=’y’</em>, <em>data_type=’all’</em>, <em>series=’all’</em>, <em>legend_font_size=8</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#PlotData2D.plot_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.PlotData2D.plot_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot the projecton of the raw data (interfaces and foliations) in 2D following a
 specific directions</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1368,6 +1815,7 @@ specific directions</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
+<li><strong>data_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – type of data to plot. ‘all’, ‘interfaces’ or ‘foliations’</li>
 <li><strong>series</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – series to plot</li>
 <li><strong>**kwargs</strong> – seaborn lmplot key arguments. (TODO: adding the link to them)</li>
 </ul>
@@ -1409,7 +1857,7 @@ specific directions</p>
 
 <dl class="class">
 <dt id="Visualization.vtkVisualization">
-<em class="property">class </em><code class="descclassname">Visualization.</code><code class="descname">vtkVisualization</code><span class="sig-paren">(</span><em>geo_data</em>, <em>ren_name=’GemPy 3D-Editor’</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">Visualization.</code><code class="descname">vtkVisualization</code><span class="sig-paren">(</span><em>geo_data, ren_name=’GemPy 3D-Editor’, verbose=0, color_lot={0: [1.0, 0.6549019607843137, 0.14901960784313725], 1: [0.3607843137254902, 0.4196078431372549, 0.7529411764705882], 2: [1.0, 0.9333333333333333, 0.34509803921568627], 3: [0.4, 0.7333333333333333, 0.41568627450980394], 4: [0.9372549019607843, 0.3254901960784314, 0.3137254901960784], 5: [0.5529411764705883, 0.43137254901960786, 0.38823529411764707], 6: [0.25882352941176473, 0.6470588235294118, 0.9607843137254902], 7: [1.0, 0.792156862745098, 0.1568627450980392], 8: [0.9254901960784314, 0.25098039215686274, 0.47843137254901963], 9: [0.1607843137254902, 0.7137254901960784, 0.9647058823529412], 10: [0.8313725490196079, 0.8823529411764706, 0.3411764705882353], 11: [0.47058823529411764, 0.5647058823529412, 0.611764705882353], 12: [1.0, 0.4392156862745098, 0.2627450980392157], 13: [0.7411764705882353, 0.7411764705882353, 0.7411764705882353], 14: [0.14901960784313725, 0.7764705882352941, 0.8549019607843137], 15: [0.49411764705882355, 0.3411764705882353, 0.7607843137254902], 16: [0.6705882352941176, 0.2784313725490196, 0.7372549019607844], 17: [0.14901960784313725, 0.6509803921568628, 0.6039215686274509], 18: [0.611764705882353, 0.8, 0.396078431372549], 19: [0.9607843137254902, 0.48627450980392156, 0.0], 20: [0.18823529411764706, 0.24705882352941178, 0.6235294117647059], 21: [0.984313725490196, 0.7529411764705882, 0.17647058823529413], 22: [0.2196078431372549, 0.5568627450980392, 0.23529411764705882], 23: [0.8274509803921568, 0.1843137254901961, 0.1843137254901961], 24: [0.36470588235294116, 0.25098039215686274, 0.21568627450980393], 25: [0.09803921568627451, 0.4627450980392157, 0.8235294117647058], 26: [1.0, 0.6274509803921569, 0.0], 27: [0.7607843137254902, 0.09411764705882353, 0.3568627450980392], 28: [0.00784313725490196, 0.5333333333333333, 0.8196078431372549], 29: [0.6862745098039216, 0.7058823529411765, 0.16862745098039217], 30: [0.27058823529411763, 0.35294117647058826, 0.39215686274509803], 31: [0.9019607843137255, 0.2901960784313726, 0.09803921568627451], 32: [0.3803921568627451, 0.3803921568627451, 0.3803921568627451], 33: [0.0, 0.592156862745098, 0.6549019607843137], 34: [0.3176470588235294, 0.17647058823529413, 0.6588235294117647], 35: [0.4823529411764706, 0.12156862745098039, 0.6352941176470588], 36: [0.0, 0.4745098039215686, 0.4196078431372549], 37: [0.40784313725490196, 0.6235294117647059, 0.2196078431372549], 38: [1.0, 0.8784313725490196, 0.6980392156862745], 39: [0.7725490196078432, 0.792156862745098, 0.9137254901960784], 40: [1.0, 0.9764705882352941, 0.7686274509803922], 41: [0.7843137254901961, 0.9019607843137255, 0.788235294117647], 42: [1.0, 0.803921568627451, 0.8235294117647058], 43: [0.8431372549019608, 0.8, 0.7843137254901961], 44: [0.7333333333333333, 0.8705882352941177, 0.984313725490196], 45: [1.0, 0.9254901960784314, 0.7019607843137254], 46: [0.9725490196078431, 0.7333333333333333, 0.8156862745098039], 47: [0.7019607843137254, 0.8980392156862745, 0.9882352941176471], 48: [0.9411764705882353, 0.9568627450980393, 0.7647058823529411], 49: [0.8117647058823529, 0.8470588235294118, 0.8627450980392157], 50: [1.0, 0.8, 0.7372549019607844], 51: [0.9607843137254902, 0.9607843137254902, 0.9607843137254902], 52: [0.6980392156862745, 0.9215686274509803, 0.9490196078431372], 53: [0.8196078431372549, 0.7686274509803922, 0.9137254901960784], 54: [0.8823529411764706, 0.7450980392156863, 0.9058823529411765], 55: [0.6980392156862745, 0.8745098039215686, 0.8588235294117647], 56: [0.8627450980392157, 0.9294117647058824, 0.7843137254901961], 57: [1.0, 0.8, 0.5019607843137255], 58: [0.6235294117647059, 0.6588235294117647, 0.8549019607843137], 59: [1.0, 0.9607843137254902, 0.615686274509804], 60: [0.6470588235294118, 0.8392156862745098, 0.6549019607843137], 61: [0.9372549019607843, 0.6039215686274509, 0.6039215686274509], 62: [0.7372549019607844, 0.6666666666666666, 0.6431372549019608], 63: [0.5647058823529412, 0.792156862745098, 0.9764705882352941], 64: [1.0, 0.8784313725490196, 0.5098039215686274], 65: [0.9568627450980393, 0.5607843137254902, 0.6941176470588235], 66: [0.5058823529411764, 0.8313725490196079, 0.9803921568627451], 67: [0.9019607843137255, 0.9333333333333333, 0.611764705882353], 68: [0.6901960784313725, 0.7450980392156863, 0.7725490196078432], 69: [1.0, 0.6705882352941176, 0.5686274509803921], 70: [0.9333333333333333, 0.9333333333333333, 0.9333333333333333], 71: [0.5019607843137255, 0.8705882352941177, 0.9176470588235294], 72: [0.7019607843137254, 0.615686274509804, 0.8588235294117647], 73: [0.807843137254902, 0.5764705882352941, 0.8470588235294118], 74: [0.5019607843137255, 0.796078431372549, 0.7686274509803922], 75: [0.7725490196078432, 0.8823529411764706, 0.6470588235294118], 76: [1.0, 0.7176470588235294, 0.30196078431372547], 77: [0.4745098039215686, 0.5254901960784314, 0.796078431372549], 78: [1.0, 0.9450980392156862, 0.4627450980392157], 79: [0.5058823529411764, 0.7803921568627451, 0.5176470588235295], 80: [0.8980392156862745, 0.45098039215686275, 0.45098039215686275], 81: [0.6313725490196078, 0.5333333333333333, 0.4980392156862745], 82: [0.39215686274509803, 0.7098039215686275, 0.9647058823529412], 83: [1.0, 0.8352941176470589, 0.30980392156862746], 84: [0.9411764705882353, 0.3843137254901961, 0.5725490196078431], 85: [0.30980392156862746, 0.7647058823529411, 0.9686274509803922], 86: [0.8627450980392157, 0.9058823529411765, 0.4588235294117647], 87: [0.5647058823529412, 0.6431372549019608, 0.6823529411764706], 88: [1.0, 0.5411764705882353, 0.396078431372549], 89: [0.8784313725490196, 0.8784313725490196, 0.8784313725490196], 90: [0.30196078431372547, 0.8156862745098039, 0.8823529411764706], 91: [0.5843137254901961, 0.4588235294117647, 0.803921568627451], 92: [0.7294117647058823, 0.40784313725490196, 0.7843137254901961], 93: [0.30196078431372547, 0.7137254901960784, 0.6745098039215687], 94: [0.6823529411764706, 0.8352941176470589, 0.5058823529411764], 95: [1.0, 0.596078431372549, 0.0], 96: [0.24705882352941178, 0.3176470588235294, 0.7098039215686275], 97: [1.0, 0.9215686274509803, 0.23137254901960785], 98: [0.2980392156862745, 0.6862745098039216, 0.3137254901960784], 99: [0.9568627450980393, 0.2627450980392157, 0.21176470588235294], 100: [0.4745098039215686, 0.3333333333333333, 0.2823529411764706], 101: [0.12941176470588237, 0.5882352941176471, 0.9529411764705882], 102: [1.0, 0.7568627450980392, 0.027450980392156862], 103: [0.9137254901960784, 0.11764705882352941, 0.38823529411764707], 104: [0.011764705882352941, 0.6627450980392157, 0.9568627450980393], 105: [0.803921568627451, 0.8627450980392157, 0.2235294117647059], 106: [0.3764705882352941, 0.49019607843137253, 0.5450980392156862], 107: [1.0, 0.3411764705882353, 0.13333333333333333], 108: [0.6196078431372549, 0.6196078431372549, 0.6196078431372549], 109: [0.0, 0.7372549019607844, 0.8313725490196079], 110: [0.403921568627451, 0.22745098039215686, 0.7176470588235294], 111: [0.611764705882353, 0.15294117647058825, 0.6901960784313725], 112: [0.0, 0.5882352941176471, 0.5333333333333333], 113: [0.5450980392156862, 0.7647058823529411, 0.2901960784313726], 114: [0.984313725490196, 0.5490196078431373, 0.0], 115: [0.2235294117647059, 0.28627450980392155, 0.6705882352941176], 116: [0.9921568627450981, 0.8470588235294118, 0.20784313725490197], 117: [0.2627450980392157, 0.6274509803921569, 0.2784313725490196], 118: [0.8980392156862745, 0.2235294117647059, 0.20784313725490197], 119: [0.42745098039215684, 0.2980392156862745, 0.2549019607843137], 120: [0.11764705882352941, 0.5333333333333333, 0.8980392156862745], 121: [1.0, 0.7019607843137254, 0.0], 122: [0.8470588235294118, 0.10588235294117647, 0.3764705882352941], 123: [0.011764705882352941, 0.6078431372549019, 0.8980392156862745], 124: [0.7529411764705882, 0.792156862745098, 0.2], 125: [0.32941176470588235, 0.43137254901960786, 0.47843137254901963], 126: [0.9568627450980393, 0.3176470588235294, 0.11764705882352941], 127: [0.4588235294117647, 0.4588235294117647, 0.4588235294117647], 128: [0.0, 0.6745098039215687, 0.7568627450980392], 129: [0.3686274509803922, 0.20784313725490197, 0.6941176470588235], 130: [0.5568627450980392, 0.1411764705882353, 0.6666666666666666], 131: [0.0, 0.5372549019607843, 0.4823529411764706], 132: [0.48627450980392156, 0.7019607843137254, 0.25882352941176473], 133: [1.0, 0.9529411764705882, 0.8784313725490196], 134: [0.9098039215686274, 0.9176470588235294, 0.9647058823529412], 135: [1.0, 0.9921568627450981, 0.9058823529411765], 136: [0.9098039215686274, 0.9607843137254902, 0.9137254901960784], 137: [1.0, 0.9215686274509803, 0.9333333333333333], 138: [0.9372549019607843, 0.9215686274509803, 0.9137254901960784], 139: [0.8901960784313725, 0.9490196078431372, 0.9921568627450981], 140: [1.0, 0.9725490196078431, 0.8823529411764706], 141: [0.9882352941176471, 0.8941176470588236, 0.9254901960784314], 142: [0.8823529411764706, 0.9607843137254902, 0.996078431372549], 143: [0.9764705882352941, 0.984313725490196, 0.9058823529411765], 144: [0.9254901960784314, 0.9372549019607843, 0.9450980392156862], 145: [0.984313725490196, 0.9137254901960784, 0.9058823529411765], 146: [0.9803921568627451, 0.9803921568627451, 0.9803921568627451], 147: [0.8784313725490196, 0.9686274509803922, 0.9803921568627451], 148: [0.9294117647058824, 0.9058823529411765, 0.9647058823529412], 149: [0.9529411764705882, 0.8980392156862745, 0.9607843137254902], 150: [0.8784313725490196, 0.9490196078431372, 0.9450980392156862], 151: [0.9450980392156862, 0.9725490196078431, 0.9137254901960784], 152: [0.9372549019607843, 0.4235294117647059, 0.0], 153: [0.1568627450980392, 0.20784313725490197, 0.5764705882352941], 154: [0.9764705882352941, 0.6588235294117647, 0.1450980392156863], 155: [0.1803921568627451, 0.49019607843137253, 0.19607843137254902], 156: [0.7764705882352941, 0.1568627450980392, 0.1568627450980392], 157: [0.3058823529411765, 0.20392156862745098, 0.1803921568627451], 158: [0.08235294117647059, 0.396078431372549, 0.7529411764705882], 159: [1.0, 0.5607843137254902, 0.0], 160: [0.6784313725490196, 0.0784313725490196, 0.3411764705882353], 161: [0.00784313725490196, 0.4666666666666667, 0.7411764705882353], 162: [0.6196078431372549, 0.615686274509804, 0.1411764705882353], 163: [0.21568627450980393, 0.2784313725490196, 0.30980392156862746], 164: [0.8470588235294118, 0.2627450980392157, 0.08235294117647059], 165: [0.25882352941176473, 0.25882352941176473, 0.25882352941176473], 166: [0.0, 0.5137254901960784, 0.5607843137254902], 167: [0.27058823529411763, 0.15294117647058825, 0.6274509803921569], 168: [0.41568627450980394, 0.10588235294117647, 0.6039215686274509], 169: [0.0, 0.4117647058823529, 0.3607843137254902], 170: [0.3333333333333333, 0.5450980392156862, 0.1843137254901961], 171: [0.9019607843137255, 0.3176470588235294, 0.0], 172: [0.10196078431372549, 0.13725490196078433, 0.49411764705882355], 173: [0.9607843137254902, 0.4980392156862745, 0.09019607843137255], 174: [0.10588235294117647, 0.3686274509803922, 0.12549019607843137], 175: [0.7176470588235294, 0.10980392156862745, 0.10980392156862745], 176: [0.24313725490196078, 0.15294117647058825, 0.13725490196078433], 177: [0.050980392156862744, 0.2784313725490196, 0.6313725490196078], 178: [1.0, 0.43529411764705883, 0.0], 179: [0.5333333333333333, 0.054901960784313725, 0.30980392156862746], 180: [0.00392156862745098, 0.3411764705882353, 0.6078431372549019], 181: [0.5098039215686274, 0.4666666666666667, 0.09019607843137255], 182: [0.14901960784313725, 0.19607843137254902, 0.2196078431372549], 183: [0.7490196078431373, 0.21176470588235294, 0.047058823529411764], 184: [0.12941176470588237, 0.12941176470588237, 0.12941176470588237], 185: [0.0, 0.3764705882352941, 0.39215686274509803], 186: [0.19215686274509805, 0.10588235294117647, 0.5725490196078431], 187: [0.2901960784313726, 0.0784313725490196, 0.5490196078431373], 188: [0.0, 0.30196078431372547, 0.25098039215686274], 189: [0.2, 0.4117647058823529, 0.11764705882352941]}, real_time=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to visualize data and results in 3D. Init will create all the render properties while the method render
 model will lunch the window. Using set_interfaces, set_foliations and set_surfaces in between can be chosen what
 will be displayed.</p>
@@ -1427,38 +1875,32 @@ will be displayed.</p>
 </tbody>
 </table>
 <dl class="attribute">
-<dt id="Visualization.vtkVisualization.renWin">
-<code class="descname">renWin</code><a class="headerlink" href="#Visualization.vtkVisualization.renWin" title="Permalink to this definition">¶</a></dt>
+<dt id="GeoPhysics.vtkVisualization.renWin">
+<code class="descname">renWin</code><a class="headerlink" href="#GeoPhysics.vtkVisualization.renWin" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>vtk.vtkRenderWindow()</em></p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="Visualization.vtkVisualization.camera_list">
-<code class="descname">camera_list</code><a class="headerlink" href="#Visualization.vtkVisualization.camera_list" title="Permalink to this definition">¶</a></dt>
+<dt id="GeoPhysics.vtkVisualization.camera_list">
+<code class="descname">camera_list</code><a class="headerlink" href="#GeoPhysics.vtkVisualization.camera_list" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>list</em> – list of cameras for the distinct renderers</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt id="Visualization.vtkVisualization.ren_list">
-<code class="descname">ren_list</code><a class="headerlink" href="#Visualization.vtkVisualization.ren_list" title="Permalink to this definition">¶</a></dt>
+<dt id="GeoPhysics.vtkVisualization.ren_list">
+<code class="descname">ren_list</code><a class="headerlink" href="#GeoPhysics.vtkVisualization.ren_list" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>list</em> – list containing the vtk renderers</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="Visualization.vtkVisualization.color_lot_create">
-<code class="descname">color_lot_create</code><span class="sig-paren">(</span><em>geo_data, cd_rgb={‘amber’: {‘100’: [1.0, 0.9254901960784314, 0.7019607843137254], ‘200’: [1.0, 0.8784313725490196, 0.5098039215686274], ‘300’: [1.0, 0.8352941176470589, 0.30980392156862746], ‘400’: [1.0, 0.792156862745098, 0.1568627450980392], ‘50’: [1.0, 0.9725490196078431, 0.8823529411764706], ‘500’: [1.0, 0.7568627450980392, 0.027450980392156862], ‘600’: [1.0, 0.7019607843137254, 0.0], ‘700’: [1.0, 0.6274509803921569, 0.0], ‘800’: [1.0, 0.5607843137254902, 0.0], ‘900’: [1.0, 0.43529411764705883, 0.0], ‘a100’: [1.0, 0.8980392156862745, 0.4980392156862745], ‘a200’: [1.0, 0.8431372549019608, 0.25098039215686274], ‘a400’: [1.0, 0.7686274509803922, 0.0], ‘a700’: [1.0, 0.6705882352941176, 0.0]}, ‘blue’: {‘100’: [0.7333333333333333, 0.8705882352941177, 0.984313725490196], ‘200’: [0.5647058823529412, 0.792156862745098, 0.9764705882352941], ‘300’: [0.39215686274509803, 0.7098039215686275, 0.9647058823529412], ‘400’: [0.25882352941176473, 0.6470588235294118, 0.9607843137254902], ‘50’: [0.8901960784313725, 0.9490196078431372, 0.9921568627450981], ‘500’: [0.12941176470588237, 0.5882352941176471, 0.9529411764705882], ‘600’: [0.11764705882352941, 0.5333333333333333, 0.8980392156862745], ‘700’: [0.09803921568627451, 0.4627450980392157, 0.8235294117647058], ‘800’: [0.08235294117647059, 0.396078431372549, 0.7529411764705882], ‘900’: [0.050980392156862744, 0.2784313725490196, 0.6313725490196078], ‘a100’: [0.5098039215686274, 0.6941176470588235, 1.0], ‘a200’: [0.26666666666666666, 0.5411764705882353, 1.0], ‘a400’: [0.1607843137254902, 0.4745098039215686, 1.0], ‘a700’: [0.1607843137254902, 0.3843137254901961, 1.0]}, ‘blue-grey’: {‘100’: [0.8117647058823529, 0.8470588235294118, 0.8627450980392157], ‘200’: [0.6901960784313725, 0.7450980392156863, 0.7725490196078432], ‘300’: [0.5647058823529412, 0.6431372549019608, 0.6823529411764706], ‘400’: [0.47058823529411764, 0.5647058823529412, 0.611764705882353], ‘50’: [0.9254901960784314, 0.9372549019607843, 0.9450980392156862], ‘500’: [0.3764705882352941, 0.49019607843137253, 0.5450980392156862], ‘600’: [0.32941176470588235, 0.43137254901960786, 0.47843137254901963], ‘700’: [0.27058823529411763, 0.35294117647058826, 0.39215686274509803], ‘800’: [0.21568627450980393, 0.2784313725490196, 0.30980392156862746], ‘900’: [0.14901960784313725, 0.19607843137254902, 0.2196078431372549]}, ‘brown’: {‘100’: [0.8431372549019608, 0.8, 0.7843137254901961], ‘200’: [0.7372549019607844, 0.6666666666666666, 0.6431372549019608], ‘300’: [0.6313725490196078, 0.5333333333333333, 0.4980392156862745], ‘400’: [0.5529411764705883, 0.43137254901960786, 0.38823529411764707], ‘50’: [0.9372549019607843, 0.9215686274509803, 0.9137254901960784], ‘500’: [0.4745098039215686, 0.3333333333333333, 0.2823529411764706], ‘600’: [0.42745098039215684, 0.2980392156862745, 0.2549019607843137], ‘700’: [0.36470588235294116, 0.25098039215686274, 0.21568627450980393], ‘800’: [0.3058823529411765, 0.20392156862745098, 0.1803921568627451], ‘900’: [0.24313725490196078, 0.15294117647058825, 0.13725490196078433]}, ‘cyan’: {‘100’: [0.6980392156862745, 0.9215686274509803, 0.9490196078431372], ‘200’: [0.5019607843137255, 0.8705882352941177, 0.9176470588235294], ‘300’: [0.30196078431372547, 0.8156862745098039, 0.8823529411764706], ‘400’: [0.14901960784313725, 0.7764705882352941, 0.8549019607843137], ‘50’: [0.8784313725490196, 0.9686274509803922, 0.9803921568627451], ‘500’: [0.0, 0.7372549019607844, 0.8313725490196079], ‘600’: [0.0, 0.6745098039215687, 0.7568627450980392], ‘700’: [0.0, 0.592156862745098, 0.6549019607843137], ‘800’: [0.0, 0.5137254901960784, 0.5607843137254902], ‘900’: [0.0, 0.3764705882352941, 0.39215686274509803], ‘a100’: [0.5176470588235295, 1.0, 1.0], ‘a200’: [0.09411764705882353, 1.0, 1.0], ‘a400’: [0.0, 0.8980392156862745, 1.0], ‘a700’: [0.0, 0.7215686274509804, 0.8313725490196079]}, ‘deep-orange’: {‘100’: [1.0, 0.8, 0.7372549019607844], ‘200’: [1.0, 0.6705882352941176, 0.5686274509803921], ‘300’: [1.0, 0.5411764705882353, 0.396078431372549], ‘400’: [1.0, 0.4392156862745098, 0.2627450980392157], ‘50’: [0.984313725490196, 0.9137254901960784, 0.9058823529411765], ‘500’: [1.0, 0.3411764705882353, 0.13333333333333333], ‘600’: [0.9568627450980393, 0.3176470588235294, 0.11764705882352941], ‘700’: [0.9019607843137255, 0.2901960784313726, 0.09803921568627451], ‘800’: [0.8470588235294118, 0.2627450980392157, 0.08235294117647059], ‘900’: [0.7490196078431373, 0.21176470588235294, 0.047058823529411764], ‘a100’: [1.0, 0.6196078431372549, 0.5019607843137255], ‘a200’: [1.0, 0.43137254901960786, 0.25098039215686274], ‘a400’: [1.0, 0.23921568627450981, 0.0], ‘a700’: [0.8666666666666667, 0.17254901960784313, 0.0]}, ‘deep-purple’: {‘100’: [0.8196078431372549, 0.7686274509803922, 0.9137254901960784], ‘200’: [0.7019607843137254, 0.615686274509804, 0.8588235294117647], ‘300’: [0.5843137254901961, 0.4588235294117647, 0.803921568627451], ‘400’: [0.49411764705882355, 0.3411764705882353, 0.7607843137254902], ‘50’: [0.9294117647058824, 0.9058823529411765, 0.9647058823529412], ‘500’: [0.403921568627451, 0.22745098039215686, 0.7176470588235294], ‘600’: [0.3686274509803922, 0.20784313725490197, 0.6941176470588235], ‘700’: [0.3176470588235294, 0.17647058823529413, 0.6588235294117647], ‘800’: [0.27058823529411763, 0.15294117647058825, 0.6274509803921569], ‘900’: [0.19215686274509805, 0.10588235294117647, 0.5725490196078431], ‘a100’: [0.7019607843137254, 0.5333333333333333, 1.0], ‘a200’: [0.48627450980392156, 0.30196078431372547, 1.0], ‘a400’: [0.396078431372549, 0.12156862745098039, 1.0], ‘a700’: [0.3843137254901961, 0.0, 0.9176470588235294]}, ‘green’: {‘100’: [0.7843137254901961, 0.9019607843137255, 0.788235294117647], ‘200’: [0.6470588235294118, 0.8392156862745098, 0.6549019607843137], ‘300’: [0.5058823529411764, 0.7803921568627451, 0.5176470588235295], ‘400’: [0.4, 0.7333333333333333, 0.41568627450980394], ‘50’: [0.9098039215686274, 0.9607843137254902, 0.9137254901960784], ‘500’: [0.2980392156862745, 0.6862745098039216, 0.3137254901960784], ‘600’: [0.2627450980392157, 0.6274509803921569, 0.2784313725490196], ‘700’: [0.2196078431372549, 0.5568627450980392, 0.23529411764705882], ‘800’: [0.1803921568627451, 0.49019607843137253, 0.19607843137254902], ‘900’: [0.10588235294117647, 0.3686274509803922, 0.12549019607843137], ‘a100’: [0.7254901960784313, 0.9647058823529412, 0.792156862745098], ‘a200’: [0.4117647058823529, 0.9411764705882353, 0.6823529411764706], ‘a400’: [0.0, 0.9019607843137255, 0.4627450980392157], ‘a700’: [0.0, 0.7843137254901961, 0.3254901960784314]}, ‘grey’: {‘100’: [0.9607843137254902, 0.9607843137254902, 0.9607843137254902], ‘200’: [0.9333333333333333, 0.9333333333333333, 0.9333333333333333], ‘300’: [0.8784313725490196, 0.8784313725490196, 0.8784313725490196], ‘400’: [0.7411764705882353, 0.7411764705882353, 0.7411764705882353], ‘50’: [0.9803921568627451, 0.9803921568627451, 0.9803921568627451], ‘500’: [0.6196078431372549, 0.6196078431372549, 0.6196078431372549], ‘600’: [0.4588235294117647, 0.4588235294117647, 0.4588235294117647], ‘700’: [0.3803921568627451, 0.3803921568627451, 0.3803921568627451], ‘800’: [0.25882352941176473, 0.25882352941176473, 0.25882352941176473], ‘900’: [0.12941176470588237, 0.12941176470588237, 0.12941176470588237]}, ‘indigo’: {‘100’: [0.7725490196078432, 0.792156862745098, 0.9137254901960784], ‘200’: [0.6235294117647059, 0.6588235294117647, 0.8549019607843137], ‘300’: [0.4745098039215686, 0.5254901960784314, 0.796078431372549], ‘400’: [0.3607843137254902, 0.4196078431372549, 0.7529411764705882], ‘50’: [0.9098039215686274, 0.9176470588235294, 0.9647058823529412], ‘500’: [0.24705882352941178, 0.3176470588235294, 0.7098039215686275], ‘600’: [0.2235294117647059, 0.28627450980392155, 0.6705882352941176], ‘700’: [0.18823529411764706, 0.24705882352941178, 0.6235294117647059], ‘800’: [0.1568627450980392, 0.20784313725490197, 0.5764705882352941], ‘900’: [0.10196078431372549, 0.13725490196078433, 0.49411764705882355], ‘a100’: [0.5490196078431373, 0.6196078431372549, 1.0], ‘a200’: [0.3254901960784314, 0.42745098039215684, 0.996078431372549], ‘a400’: [0.23921568627450981, 0.35294117647058826, 0.996078431372549], ‘a700’: [0.18823529411764706, 0.30980392156862746, 0.996078431372549]}, ‘light-blue’: {‘100’: [0.7019607843137254, 0.8980392156862745, 0.9882352941176471], ‘200’: [0.5058823529411764, 0.8313725490196079, 0.9803921568627451], ‘300’: [0.30980392156862746, 0.7647058823529411, 0.9686274509803922], ‘400’: [0.1607843137254902, 0.7137254901960784, 0.9647058823529412], ‘50’: [0.8823529411764706, 0.9607843137254902, 0.996078431372549], ‘500’: [0.011764705882352941, 0.6627450980392157, 0.9568627450980393], ‘600’: [0.011764705882352941, 0.6078431372549019, 0.8980392156862745], ‘700’: [0.00784313725490196, 0.5333333333333333, 0.8196078431372549], ‘800’: [0.00784313725490196, 0.4666666666666667, 0.7411764705882353], ‘900’: [0.00392156862745098, 0.3411764705882353, 0.6078431372549019], ‘a100’: [0.5019607843137255, 0.8470588235294118, 1.0], ‘a200’: [0.25098039215686274, 0.7686274509803922, 1.0], ‘a400’: [0.0, 0.6901960784313725, 1.0], ‘a700’: [0.0, 0.5686274509803921, 0.9176470588235294]}, ‘light-green’: {‘100’: [0.8627450980392157, 0.9294117647058824, 0.7843137254901961], ‘200’: [0.7725490196078432, 0.8823529411764706, 0.6470588235294118], ‘300’: [0.6823529411764706, 0.8352941176470589, 0.5058823529411764], ‘400’: [0.611764705882353, 0.8, 0.396078431372549], ‘50’: [0.9450980392156862, 0.9725490196078431, 0.9137254901960784], ‘500’: [0.5450980392156862, 0.7647058823529411, 0.2901960784313726], ‘600’: [0.48627450980392156, 0.7019607843137254, 0.25882352941176473], ‘700’: [0.40784313725490196, 0.6235294117647059, 0.2196078431372549], ‘800’: [0.3333333333333333, 0.5450980392156862, 0.1843137254901961], ‘900’: [0.2, 0.4117647058823529, 0.11764705882352941], ‘a100’: [0.8, 1.0, 0.5647058823529412], ‘a200’: [0.6980392156862745, 1.0, 0.34901960784313724], ‘a400’: [0.4627450980392157, 1.0, 0.011764705882352941], ‘a700’: [0.39215686274509803, 0.8666666666666667, 0.09019607843137255]}, ‘lime’: {‘100’: [0.9411764705882353, 0.9568627450980393, 0.7647058823529411], ‘200’: [0.9019607843137255, 0.9333333333333333, 0.611764705882353], ‘300’: [0.8627450980392157, 0.9058823529411765, 0.4588235294117647], ‘400’: [0.8313725490196079, 0.8823529411764706, 0.3411764705882353], ‘50’: [0.9764705882352941, 0.984313725490196, 0.9058823529411765], ‘500’: [0.803921568627451, 0.8627450980392157, 0.2235294117647059], ‘600’: [0.7529411764705882, 0.792156862745098, 0.2], ‘700’: [0.6862745098039216, 0.7058823529411765, 0.16862745098039217], ‘800’: [0.6196078431372549, 0.615686274509804, 0.1411764705882353], ‘900’: [0.5098039215686274, 0.4666666666666667, 0.09019607843137255], ‘a100’: [0.9568627450980393, 1.0, 0.5058823529411764], ‘a200’: [0.9333333333333333, 1.0, 0.2549019607843137], ‘a400’: [0.7764705882352941, 1.0, 0.0], ‘a700’: [0.6823529411764706, 0.9176470588235294, 0.0]}, ‘orange’: {‘100’: [1.0, 0.8784313725490196, 0.6980392156862745], ‘200’: [1.0, 0.8, 0.5019607843137255], ‘300’: [1.0, 0.7176470588235294, 0.30196078431372547], ‘400’: [1.0, 0.6549019607843137, 0.14901960784313725], ‘50’: [1.0, 0.9529411764705882, 0.8784313725490196], ‘500’: [1.0, 0.596078431372549, 0.0], ‘600’: [0.984313725490196, 0.5490196078431373, 0.0], ‘700’: [0.9607843137254902, 0.48627450980392156, 0.0], ‘800’: [0.9372549019607843, 0.4235294117647059, 0.0], ‘900’: [0.9019607843137255, 0.3176470588235294, 0.0], ‘a100’: [1.0, 0.8196078431372549, 0.5019607843137255], ‘a200’: [1.0, 0.6705882352941176, 0.25098039215686274], ‘a400’: [1.0, 0.5686274509803921, 0.0], ‘a700’: [1.0, 0.42745098039215684, 0.0]}, ‘pink’: {‘100’: [0.9725490196078431, 0.7333333333333333, 0.8156862745098039], ‘200’: [0.9568627450980393, 0.5607843137254902, 0.6941176470588235], ‘300’: [0.9411764705882353, 0.3843137254901961, 0.5725490196078431], ‘400’: [0.9254901960784314, 0.25098039215686274, 0.47843137254901963], ‘50’: [0.9882352941176471, 0.8941176470588236, 0.9254901960784314], ‘500’: [0.9137254901960784, 0.11764705882352941, 0.38823529411764707], ‘600’: [0.8470588235294118, 0.10588235294117647, 0.3764705882352941], ‘700’: [0.7607843137254902, 0.09411764705882353, 0.3568627450980392], ‘800’: [0.6784313725490196, 0.0784313725490196, 0.3411764705882353], ‘900’: [0.5333333333333333, 0.054901960784313725, 0.30980392156862746], ‘a100’: [1.0, 0.5019607843137255, 0.6705882352941176], ‘a200’: [1.0, 0.25098039215686274, 0.5058823529411764], ‘a400’: [0.9607843137254902, 0.0, 0.3411764705882353], ‘a700’: [0.7725490196078432, 0.06666666666666667, 0.3843137254901961]}, ‘purple’: {‘100’: [0.8823529411764706, 0.7450980392156863, 0.9058823529411765], ‘200’: [0.807843137254902, 0.5764705882352941, 0.8470588235294118], ‘300’: [0.7294117647058823, 0.40784313725490196, 0.7843137254901961], ‘400’: [0.6705882352941176, 0.2784313725490196, 0.7372549019607844], ‘50’: [0.9529411764705882, 0.8980392156862745, 0.9607843137254902], ‘500’: [0.611764705882353, 0.15294117647058825, 0.6901960784313725], ‘600’: [0.5568627450980392, 0.1411764705882353, 0.6666666666666666], ‘700’: [0.4823529411764706, 0.12156862745098039, 0.6352941176470588], ‘800’: [0.41568627450980394, 0.10588235294117647, 0.6039215686274509], ‘900’: [0.2901960784313726, 0.0784313725490196, 0.5490196078431373], ‘a100’: [0.9176470588235294, 0.5019607843137255, 0.9882352941176471], ‘a200’: [0.8784313725490196, 0.25098039215686274, 0.984313725490196], ‘a400’: [0.8352941176470589, 0.0, 0.9764705882352941], ‘a700’: [0.6666666666666666, 0.0, 1.0]}, ‘red’: {‘100’: [1.0, 0.803921568627451, 0.8235294117647058], ‘200’: [0.9372549019607843, 0.6039215686274509, 0.6039215686274509], ‘300’: [0.8980392156862745, 0.45098039215686275, 0.45098039215686275], ‘400’: [0.9372549019607843, 0.3254901960784314, 0.3137254901960784], ‘50’: [1.0, 0.9215686274509803, 0.9333333333333333], ‘500’: [0.9568627450980393, 0.2627450980392157, 0.21176470588235294], ‘600’: [0.8980392156862745, 0.2235294117647059, 0.20784313725490197], ‘700’: [0.8274509803921568, 0.1843137254901961, 0.1843137254901961], ‘800’: [0.7764705882352941, 0.1568627450980392, 0.1568627450980392], ‘900’: [0.7176470588235294, 0.10980392156862745, 0.10980392156862745], ‘a100’: [1.0, 0.5411764705882353, 0.5019607843137255], ‘a200’: [1.0, 0.3215686274509804, 0.3215686274509804], ‘a400’: [1.0, 0.09019607843137255, 0.26666666666666666], ‘a700’: [0.8352941176470589, 0.0, 0.0]}, ‘teal’: {‘100’: [0.6980392156862745, 0.8745098039215686, 0.8588235294117647], ‘200’: [0.5019607843137255, 0.796078431372549, 0.7686274509803922], ‘300’: [0.30196078431372547, 0.7137254901960784, 0.6745098039215687], ‘400’: [0.14901960784313725, 0.6509803921568628, 0.6039215686274509], ‘50’: [0.8784313725490196, 0.9490196078431372, 0.9450980392156862], ‘500’: [0.0, 0.5882352941176471, 0.5333333333333333], ‘600’: [0.0, 0.5372549019607843, 0.4823529411764706], ‘700’: [0.0, 0.4745098039215686, 0.4196078431372549], ‘800’: [0.0, 0.4117647058823529, 0.3607843137254902], ‘900’: [0.0, 0.30196078431372547, 0.25098039215686274], ‘a100’: [0.6549019607843137, 1.0, 0.9215686274509803], ‘a200’: [0.39215686274509803, 1.0, 0.8549019607843137], ‘a400’: [0.11372549019607843, 0.9137254901960784, 0.7137254901960784], ‘a700’: [0.0, 0.7490196078431373, 0.6470588235294118]}, ‘yellow’: {‘100’: [1.0, 0.9764705882352941, 0.7686274509803922], ‘200’: [1.0, 0.9607843137254902, 0.615686274509804], ‘300’: [1.0, 0.9450980392156862, 0.4627450980392157], ‘400’: [1.0, 0.9333333333333333, 0.34509803921568627], ‘50’: [1.0, 0.9921568627450981, 0.9058823529411765], ‘500’: [1.0, 0.9215686274509803, 0.23137254901960785], ‘600’: [0.9921568627450981, 0.8470588235294118, 0.20784313725490197], ‘700’: [0.984313725490196, 0.7529411764705882, 0.17647058823529413], ‘800’: [0.9764705882352941, 0.6588235294117647, 0.1450980392156863], ‘900’: [0.9607843137254902, 0.4980392156862745, 0.09019607843137255], ‘a100’: [1.0, 1.0, 0.5529411764705883], ‘a200’: [1.0, 1.0, 0.0], ‘a400’: [1.0, 0.9176470588235294, 0.0], ‘a700’: [1.0, 0.8392156862745098, 0.0]}}, c_names=[‘indigo’, ‘red’, ‘yellow’, ‘brown’, ‘orange’, ‘green’, ‘blue’, ‘amber’, ‘pink’, ‘light-blue’, ‘lime’, ‘blue-grey’, ‘deep-orange’, ‘grey’, ‘cyan’, ‘deep-purple’, ‘purple’, ‘teal’, ‘light-green’], c_subname=‘400’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.color_lot_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.color_lot_create" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the color for each layer</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="Visualization.vtkVisualization.create_foliation">
-<code class="descname">create_foliation</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>Z</em>, <em>f</em>, <em>Gx</em>, <em>Gy</em>, <em>Gz</em>, <em>n_plane=0</em>, <em>n_render=0</em>, <em>n_index=0</em>, <em>alpha=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.create_foliation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.create_foliation" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_foliation</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>Z</em>, <em>fn</em>, <em>Gx</em>, <em>Gy</em>, <em>Gz</em>, <em>n_plane=0</em>, <em>n_render=0</em>, <em>n_index=0</em>, <em>alpha=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.create_foliation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.create_foliation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to create a plane given a foliation
 :param X: X coord
 :param Y: Y coord
 :param Z: Z corrd
-:param f: Name of the formation of the surfaces
-:type f: str
+:param fn: Formation number
+:type fn: int
 :param Gx: Component of the gradient x
 :type Gx: str
 :param Gy: Component of the gradient y
@@ -1492,13 +1934,13 @@ will be displayed.</p>
 
 <dl class="method">
 <dt id="Visualization.vtkVisualization.create_sphere">
-<code class="descname">create_sphere</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>Z</em>, <em>f</em>, <em>n_sphere=0</em>, <em>n_render=0</em>, <em>n_index=0</em>, <em>r=0.03</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.create_sphere"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.create_sphere" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_sphere</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>Z</em>, <em>fn</em>, <em>n_sphere=0</em>, <em>n_render=0</em>, <em>n_index=0</em>, <em>r=0.03</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.create_sphere"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.create_sphere" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to create the sphere that represent the interfaces points
 :param X: X coord
 :param Y: Y coord
 :param Z: Z corrd
-:param f: Name of the formation of the surfaces
-:type f: str
+:param fn: Formation number
+:type fn: int
 :param n_sphere: Number of the sphere
 :type n_sphere: int
 :param n_render: Number of the render where the sphere belongs
@@ -1519,14 +1961,14 @@ will be displayed.</p>
 
 <dl class="method">
 <dt id="Visualization.vtkVisualization.create_surface">
-<code class="descname">create_surface</code><span class="sig-paren">(</span><em>vertices</em>, <em>simpleces</em>, <em>f</em>, <em>alpha=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.create_surface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.create_surface" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_surface</code><span class="sig-paren">(</span><em>vertices</em>, <em>simplices</em>, <em>fn</em>, <em>alpha=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.create_surface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.create_surface" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to create the polydata that define the surfaces
 :param vertices: 2D array (XYZ) with the coordinates of the points
 :type vertices: numpy.array
-:param simpleces: 2D array with the value of the vertices that form every single triangle
-:type simpleces: numpy.array
-:param f: Name of the formation of the surfaces
-:type f: str
+:param simplices: 2D array with the value of the vertices that form every single triangle
+:type simplices: numpy.array
+:param fn: Formation number
+:type fn: int
 :param alpha: Opacity
 :type alpha: float</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1559,10 +2001,10 @@ will be displayed.</p>
 
 <dl class="method">
 <dt id="Visualization.vtkVisualization.create_surface_triangles">
-<code class="descname">create_surface_triangles</code><span class="sig-paren">(</span><em>simpleces</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.create_surface_triangles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.create_surface_triangles" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_surface_triangles</code><span class="sig-paren">(</span><em>simplices</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.create_surface_triangles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.create_surface_triangles" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to create the Triangles that form the surfaces
-:param simpleces: 2D array with the value of the vertices that form every single triangle
-:type simpleces: numpy.array</p>
+:param simplices: 2D array with the value of the vertices that form every single triangle
+:type simplices: numpy.array</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1573,9 +2015,9 @@ will be displayed.</p>
 </table>
 </dd></dl>
 
-<dl class="method">
+<dl class="staticmethod">
 <dt id="Visualization.vtkVisualization.export_vtk_rectilinear">
-<code class="descname">export_vtk_rectilinear</code><span class="sig-paren">(</span><em>geo_data</em>, <em>block</em>, <em>path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.export_vtk_rectilinear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.export_vtk_rectilinear" title="Permalink to this definition">¶</a></dt>
+<em class="property">static </em><code class="descname">export_vtk_rectilinear</code><span class="sig-paren">(</span><em>geo_data</em>, <em>block</em>, <em>path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.export_vtk_rectilinear"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.export_vtk_rectilinear" title="Permalink to this definition">¶</a></dt>
 <dd><p>Export data to a vtk file for posterior visualizations
 :param geo_data: All values of a DataManagement object
 :type geo_data: gempy.InputData
@@ -1603,10 +2045,10 @@ update the pandas data frame</p>
 <dl class="method">
 <dt id="Visualization.vtkVisualization.render_model">
 <code class="descname">render_model</code><span class="sig-paren">(</span><em>size=(1920</em>, <em>1080)</em>, <em>fullscreen=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.render_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.render_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to lunch the window
+<dd><p>Method to launch the window
 :param size: Resolution of the window
 :type size: tuple
-:param fullscreen: Lunch window in full screen or not
+:param fullscreen: Launch window in full screen or not
 :type fullscreen: bool</p>
 <p>Returns:</p>
 </dd></dl>
@@ -1644,15 +2086,18 @@ render_model
 
 <dl class="method">
 <dt id="Visualization.vtkVisualization.set_surfaces">
-<code class="descname">set_surfaces</code><span class="sig-paren">(</span><em>vertices</em>, <em>simpleces</em>, <em>formations</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.set_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.set_surfaces" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_surfaces</code><span class="sig-paren">(</span><em>vertices</em>, <em>simplices</em>, <em>alpha=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.set_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.set_surfaces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create all the surfaces and set them to the corresponding renders for their posterior visualization with
 render_model
 :param vertices: list of 3D numpy arrays containing the points that form each plane
 :type vertices: list
-:param simpleces: list of 3D numpy arrays containing the verticies that form every triangle
-:type simpleces: list
+:param simplices: list of 3D numpy arrays containing the verticies that form every triangle
+:type simplices: list
 :param formations: ordered list of strings containing the name of the formations to represent
-:type formations: list</p>
+:type formations: list
+:param fns: ordered list of formation numbers (int)
+:type fns: list
+:param alpha: Opacity of the plane</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1666,7 +2111,7 @@ render_model
 <dl class="method">
 <dt id="Visualization.vtkVisualization.sphereCallback">
 <code class="descname">sphereCallback</code><span class="sig-paren">(</span><em>obj</em>, <em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#vtkVisualization.sphereCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.vtkVisualization.sphereCallback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function that rules what happend when we move an sphere. At the moment we update the other 3 renderers and
+<dd><p>Function that rules what happens when we move a sphere. At the moment we update the other 3 renderers and
 update the pandas data frame</p>
 </dd></dl>
 
@@ -1693,7 +2138,7 @@ update the pandas data frame</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="Notebooks/ch4.html" title="previous chapter">Chapter 4: Bayesian Statistics (Working in progress proof of concept)</a></li>
+      <li>Previous: <a href="Notebooks/ch4.html" title="previous chapter">Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)</a></li>
   </ul></li>
 </ul>
 </div>

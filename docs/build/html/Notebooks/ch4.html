@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Chapter 4: Bayesian Statistics (Working in progress proof of concept) &#8212; GemPy 4 documentation</title>
+    <title>Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept) &#8212; GemPy beta documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '4',
+        VERSION:     'beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -28,7 +28,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="Code" href="../code.html" />
-    <link rel="prev" title="Chapter 3: Faults" href="ch3.html" />
+    <link rel="prev" title="Chapter 3: Stochastic Simulations in pymc2" href="ch3.html" />
    
   <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
   
@@ -44,8 +44,8 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="chapter-4-bayesian-statistics-working-in-progress-proof-of-concept">
-<h1>Chapter 4: Bayesian Statistics (Working in progress proof of concept)<a class="headerlink" href="#chapter-4-bayesian-statistics-working-in-progress-proof-of-concept" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="chapter-4-bayesian-statistics-in-pymc3-working-in-progress-proof-of-concept">
+<h1>Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)<a class="headerlink" href="#chapter-4-bayesian-statistics-in-pymc3-working-in-progress-proof-of-concept" title="Permalink to this headline">¶</a></h1>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># These two lines are necessary only if gempy is not installed</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../&quot;</span><span class="p">)</span>
@@ -482,8 +482,10 @@ Reciprocal condition number: 3.935079107009187e-08
 <li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="ch1.html">Chapter 1: GemPy Basic</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ch2.html">Chapter 2: A real example. Importing data and setting series</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ch3.html">Chapter 3: Faults</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Chapter 4: Bayesian Statistics (Working in progress proof of concept)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ch3.html">Chapter 3: Stochastic Simulations in pymc2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ch3.html#setting-up-the-pymc-functions">Setting up the pymc-Functions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ch3.html#analyzing-the-results">Analyzing the results</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
@@ -493,7 +495,7 @@ Reciprocal condition number: 3.935079107009187e-08
 <ul>
   <li><a href="../index.html">Documentation overview</a><ul>
   <li><a href="../tutorial.html">Tutorial</a><ul>
-      <li>Previous: <a href="ch3.html" title="previous chapter">Chapter 3: Faults</a></li>
+      <li>Previous: <a href="ch3.html" title="previous chapter">Chapter 3: Stochastic Simulations in pymc2</a></li>
       <li>Next: <a href="../code.html" title="next chapter">Code</a></li>
   </ul></li>
   </ul></li>
