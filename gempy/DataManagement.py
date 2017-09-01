@@ -513,8 +513,14 @@ class InputData(object):
         Returns:
             Column in the interfaces and foliations dataframes
         """
+
+
         if formation_order is None:
             formation_order = self.interfaces["formation"].unique()
+
+        else:
+            assert self.interfaces['formation'].isin(formation_order).all(), 'Some of the formations given are not in '\
+                                                                             'the formations data frame. Check misspell'
         try:
             ip_addresses = formation_order
             ip_dict = dict(zip(ip_addresses, range(1, len(ip_addresses)+1)))
