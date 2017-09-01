@@ -51,7 +51,7 @@ class Posterior:
         # replace interface data
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
         # replace foliation data
-        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = self.input_data[i][1]
+        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", "azimuth", "dip", "polarity"]] = self.input_data[i][1]
         # do all the ugly updating stuff
         interp_data.interpolator.tg.final_potential_field_at_formations = theano.shared(np.zeros(
             interp_data.interpolator.tg.n_formations_per_serie.get_value().sum(), dtype='float32'))
