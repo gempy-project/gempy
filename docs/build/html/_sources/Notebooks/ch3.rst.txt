@@ -55,8 +55,10 @@ Then we use pandas to load the example data stored as csv files:
 
 .. code:: ipython3
 
-    geo_data.set_interfaces(pn.read_csv("../input_data/tutorial_ch4_interfaces", index_col="Unnamed: 0"))
-    geo_data.set_foliations(pn.read_csv("../input_data/tutorial_ch4_foliations", index_col="Unnamed: 0"))
+    geo_data.set_interfaces(pn.read_csv("../input_data/tutorial_ch3_interfaces",
+                                        index_col="Unnamed: 0"))
+    geo_data.set_foliations(pn.read_csv("../input_data/tutorial_ch3_foliations",
+                                        index_col="Unnamed: 0"))
 
 .. code:: ipython3
 
@@ -202,7 +204,7 @@ by:
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7f6003c6df60>
+    <gempy.strat_pile.StratigraphicPile at 0x7fdfb1f38780>
 
 
 
@@ -221,7 +223,7 @@ by:
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7ff446e25fd0>
+    <gempy.strat_pile.StratigraphicPile at 0x7fdf810ca278>
 
 
 
@@ -332,10 +334,18 @@ interpolator function of GemPy with the imported model setup and data:
 
 .. parsed-literal::
 
-    Level of Optimization:  fast_compile
+    Level of Optimization:  fast_run
     Device:  cpu
     Precision:  float32
 
+
+For the stochastic simulation we need to modify data inside of the
+interp\_data object. To always have our initial input data as a
+reference, we create an additional interpolator data object:
+
+.. code:: ipython3
+
+    #interp_data_original = gp.InterpolatorInput(geo_data, u_grade=[3])
 
 Afterwards we can compute the geological model:
 
@@ -351,7 +361,7 @@ And plot a section:
 
 
 
-.. image:: ch3_files/ch3_21_0.png
+.. image:: ch3_files/ch3_23_0.png
 
 
 Setting up the pymc-Functions
@@ -537,11 +547,11 @@ created the rescaling happens under the hood.
     interface_Z_modifier = []
     
     # We rescale the standard deviation
-    std = 50./interp_data.rescaling_factor
+    std = 30./interp_data.rescaling_factor
     
     # loop over the unique group id's and create a pymc.Normal distribution for each
     for gID in group_ids:
-        stoch = pymc.Normal(gID+'_stoch', 0, 1./std)
+        stoch = pymc.Normal(gID+'_stoch', 0, 1./std**2)
         interface_Z_modifier.append(stoch)
 
 our list of parameter distribution:
@@ -555,14 +565,14 @@ our list of parameter distribution:
 
 .. parsed-literal::
 
-    [<pymc.distributions.new_dist_class.<locals>.new_class 'l2_a_stoch' at 0x7ff435632710>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l2_b_stoch' at 0x7ff42f461518>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l3_a_stoch' at 0x7ff435632b00>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l3_b_stoch' at 0x7ff442685908>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l4_a_stoch' at 0x7ff442685080>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l4_b_stoch' at 0x7ff442685710>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l5_a_stoch' at 0x7ff4426859b0>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l5_b_stoch' at 0x7ff442685128>]
+    [<pymc.distributions.new_dist_class.<locals>.new_class 'l2_a_stoch' at 0x7fdf80fc4f60>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l2_b_stoch' at 0x7fdf66f49128>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l3_a_stoch' at 0x7fdf66f49278>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l3_b_stoch' at 0x7fdf66f49da0>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l4_a_stoch' at 0x7fdf66f49b00>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l4_b_stoch' at 0x7fdf66f5a828>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l5_a_stoch' at 0x7fdf66f5a908>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l5_b_stoch' at 0x7fdf66f5a7b8>]
 
 
 
@@ -581,7 +591,7 @@ Let's have a look at one:
 
 
 
-.. image:: ch3_files/ch3_35_0.png
+.. image:: ch3_files/ch3_37_0.png
 
 
 Now we need to somehow sample from these distribution and put them into
@@ -602,14 +612,25 @@ Dataframes we are interested on:
 
 .. code:: ipython3
 
+    import copy
+    # First we extract from our original intep_data object the numerical data that is necessary for the interpolation.
+    # geo_data_stoch is a pandas Dataframe
+    
+    # This is the inital model so it has to be outside the stochastic frame
+    geo_data_stoch_init = copy.deepcopy(interp_data.geo_data_res)
+
+.. code:: ipython3
+
     @pymc.deterministic(trace=True)
     def input_data(value = 0, 
                    interface_Z_modifier = interface_Z_modifier,
-                   interp_data = interp_data, 
+                   geo_data_stoch_init = geo_data_stoch_init,
                    verbose=0):
         # First we extract from our original intep_data object the numerical data that is necessary for the interpolation.
         # geo_data_stoch is a pandas Dataframe
-        geo_data_stoch = gp.get_data(interp_data.geo_data_res, numeric=True)
+     #   geo_data_stoch = gp.get_data(interp_data_original.geo_data_res, numeric=True)
+    
+        geo_data_stoch = gp.get_data(geo_data_stoch_init, numeric=True)
         # Now we loop each id which share the same uncertainty variable. In this case, each layer.
         for e, gID in enumerate(group_ids):
             # First we obtain a boolean array with trues where the id coincide
@@ -644,17 +665,20 @@ operation is deterministic).
         
         # modify input data values accordingly
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = input_data[0]
-        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z"]] = input_data[1]
-    
+        
+        # Gx, Gy, Gz are just used for visualization. The theano function gets azimuth dip and polarity!!!
+        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", 'azimuth', 'dip', 'polarity']] = input_data[1]
+        
         try:
             # try to compute model
             lb, fb = gp.compute_model(interp_data)
-            if verbose:
-                gp.plot_section(geo_data, lb[0], 0 )
+            if True:
+                gp.plot_section(interp_data.geo_data_res, lb[0], 0, plot_data=True)
+               # gp.plot_data(interp_data.geo_data_res, direction='y')
     
             return lb, fb
         
-        except numpy.linalg.linalg.LinAlgError as err:
+        except np.linalg.linalg.LinAlgError as err:
             # if it fails (e.g. some input data combinations could lead to 
             # a singular matrix and thus break the chain) return an empty model
             # with same dimensions (just zeros)
@@ -663,16 +687,8 @@ operation is deterministic).
             return np.zeros_like(lith_block), np.zeros_like(fault_block)
 
 
-.. parsed-literal::
 
-    /home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 2.5356938770926263e-09
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-
-
-
-.. image:: ch3_files/ch3_40_1.png
+.. image:: ch3_files/ch3_43_0.png
 
 
 We then create a pymc model with the two deterministic functions
@@ -702,16 +718,12 @@ and we are finally able to run the simulation:
 
 .. code:: ipython3
 
-    RUN.sample(iter=100, verbose=2)
+    RUN.sample(iter=100, verbose=0)
 
 
 .. parsed-literal::
 
-    
-    Burn-in interval complete
-    
-    Sampling finished normally.
-
+     [-----------------100%-----------------] 100 of 100 complete in 7.9 sec
 
 Analyzing the results
 =====================
@@ -736,12 +748,12 @@ Check the stratigraphic pile for correctness:
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7ff442837b00>
+    <gempy.strat_pile.StratigraphicPile at 0x7fdf6e238160>
 
 
 
 
-.. image:: ch3_files/ch3_52_1.png
+.. image:: ch3_files/ch3_55_1.png
 
 
 Then we can then compile the GemPy modeling function:
@@ -753,7 +765,7 @@ Then we can then compile the GemPy modeling function:
 
 .. parsed-literal::
 
-    Level of Optimization:  fast_compile
+    Level of Optimization:  fast_run
     Device:  cpu
     Precision:  float32
 
@@ -767,7 +779,7 @@ Now we can reproduce the original model:
 
 
 
-.. image:: ch3_files/ch3_56_0.png
+.. image:: ch3_files/ch3_59_0.png
 
 
 But of course we want to look at the perturbation results. We have a
@@ -801,7 +813,7 @@ Which allows us to load the stored pymc2 database
 
 .. parsed-literal::
 
-    No GemPy models tallied.
+    No GemPy model trace tallied.
 
 
 Alright, it tells us that we did not tally any GemPy models (we set the
@@ -811,18 +823,18 @@ plot the model result of the 85th iteration:
 
 .. code:: ipython3
 
-    post.change_input_data(interp_data, 5)
+    post.change_input_data(interp_data, 0)
 
 Then we compute the model and plot it:
 
 .. code:: ipython3
 
     lith_block, fault_block = gp.compute_model(interp_data)
-    gp.plot_section(geo_data, lith_block[0,:], 2)
+    gp.plot_section(geo_data, lith_block[0], 2, plot_data=True)
 
 
 
-.. image:: ch3_files/ch3_64_0.png
+.. image:: ch3_files/ch3_67_0.png
 
 
 or the 34th:
@@ -835,7 +847,7 @@ or the 34th:
 
 
 
-.. image:: ch3_files/ch3_66_0.png
+.. image:: ch3_files/ch3_69_0.png
 
 
 or the 95th:
@@ -848,7 +860,7 @@ or the 95th:
 
 
 
-.. image:: ch3_files/ch3_68_0.png
+.. image:: ch3_files/ch3_71_0.png
 
 
 As you can see, we have successfully perturbated the vertical layer
