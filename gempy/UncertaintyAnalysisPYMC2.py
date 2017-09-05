@@ -13,7 +13,7 @@ import seaborn as sns
 class Posterior:
     """Posterior database analysis for GemPy-pymc2 hdf5 databases."""
 
-    def __init__(self, dbname, topology=False, verbose=False):
+    def __init__(self, dbname, pymc_model_f="gempy_model", topology=False, verbose=False):
         self.verbose = verbose
         # load db
         self.db = pymc.database.hdf5.load(dbname)
@@ -21,8 +21,8 @@ class Posterior:
         self.trace_names = self.db.trace_names[0]
         # get gempy block models
         try:
-            self.lb, self.fb = self.db.gempy_model.gettrace()
-        except AttributeError:
+            self.lb, self.fb = self.db.trace(pymc_model_f)[:]
+        except KeyError:
             print("No GemPy model trace tallied.")
             self.lb = None
             self.fb = None
