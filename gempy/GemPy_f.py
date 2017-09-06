@@ -547,6 +547,14 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
 
         from skimage import measure
 
+        if not potential_block.max() > pot_int[n_formation-1]:
+            pot_int[n_formation - 1] = potential_block.max()
+            print('Potential field of the surface is outside the block. Probably is due to float errors')
+
+        if not potential_block.min() < pot_int[n_formation - 1]:
+            pot_int[n_formation - 1] = potential_block.min()
+            print('Potential field of the surface is outside the block. Probably is due to float errors')
+
         vertices, simplices, normals, values = measure.marching_cubes_lewiner(
             potential_block.reshape(interp_data.geo_data_res.resolution[0],
                                     interp_data.geo_data_res.resolution[1],

@@ -152,6 +152,11 @@ class TheanoGraph_pro(object):
         self.final_potential_field_at_faults_op = self.final_potential_field_at_faults
         #self.potential_field_at_interfaces_value   = theano.shared(np.cast[np.int64](np.zeros((2, 2))), 'Potential field value at each interface',)
 
+        if True:
+            self.densities = theano.shared(np.cast['float32'](np.zeros((1, 3))), "List with the densities")
+            self.tz = theano.shared(np.cast['float32'](np.zeros((1, 3))), "Component z")
+            self.select = theano.shared(np.cast['float32'](np.zeros((1, 3))), "Component z")
+
     def input_parameters_list(self):
         """
         Create a list with the symbolic variables to use when we compile the theano function
@@ -198,7 +203,10 @@ class TheanoGraph_pro(object):
         # else:
         #     length_of_U_I = 3**self.u_grade_T
         length_of_U_I = self.u_grade_T_op
-        length_of_faults = self.fault_matrix.shape[0]
+
+        # Self fault matrix contains the block and the potential field (I am not able to split them). Therefore we need
+        # to divide it by 2
+        length_of_faults = T.cast(self.fault_matrix.shape[0]/2, 'int64')
         length_of_C = length_of_CG + length_of_CGI + length_of_U_I + length_of_faults
 
         if 'matrices_shapes' in self.verbose:
@@ -511,15 +519,15 @@ class TheanoGraph_pro(object):
             discrete values this matrix will be null since the derivative of a constant is 0
         """
 
-        lenght_of_CG, lenght_of_CGI = self.matrices_shapes()[:2]
+        length_of_CG, length_of_CGI, length_of_U_I, length_of_faults = self.matrices_shapes()[:4]
 
         # self.fault_matrix contains the faults volume of the grid and the rest and ref points. For the drift we need
         # to make it relative to the reference point
       #  self.len_points = self.rest_layer_points_all.shape[0]
         interface_loc = self.fault_matrix.shape[1] - 2*self.len_points
 
-        fault_matrix_at_interfaces_rest = self.fault_matrix[:, interface_loc+self.len_i_0: interface_loc+self.len_i_1]
-        fault_matrix_at_interfaces_ref =  self.fault_matrix[:, interface_loc+self.len_points+self.len_i_0:
+        fault_matrix_at_interfaces_rest = self.fault_matrix[::2, interface_loc+self.len_i_0: interface_loc+self.len_i_1]
+        fault_matrix_at_interfaces_ref =  self.fault_matrix[::2, interface_loc+self.len_points+self.len_i_0:
                                                                interface_loc+self.len_points+self.len_i_1]
 
        # len_points_i = 2*self.rest_layer_points_all.shape[0] + self.n_formation_op[0]-1
@@ -527,13 +535,14 @@ class TheanoGraph_pro(object):
 
      #   F_I = (self.fault_matrix[:, -2*len_points:-len_points] - self.fault_matrix[:, -len_points:])[self.n_formation_op-1]
 
-        F_I = fault_matrix_at_interfaces_ref - fault_matrix_at_interfaces_rest
+        F_I = (fault_matrix_at_interfaces_ref - fault_matrix_at_interfaces_rest)+0.01
 
         # As long as the drift is a constant F_G is null
-        F_G = T.zeros((self.fault_matrix.shape[0], lenght_of_CG))
+        F_G = T.zeros((length_of_faults, length_of_CG))
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
             F_I = theano.printing.Print('Faults interfaces matrix')(F_I)
+            F_G = theano.printing.Print('Faults gradients matrix')(F_G)
 
         return F_I, F_G
 
@@ -881,7 +890,7 @@ class TheanoGraph_pro(object):
         grid_val = self.x_to_interpolate()
 
         # Contribution
-        f_1 = T.sum(weights[length_of_CG+length_of_CGI+length_of_U_I:, :] * self.fault_matrix[:, :grid_val.shape[0]], axis=0)
+        f_1 = T.sum(weights[length_of_CG+length_of_CGI+length_of_U_I:, :] * self.fault_matrix[::2, :grid_val.shape[0]], axis=0)
 
         # Add name to the theano node
         f_1.name = 'Faults contribution'
@@ -1385,9 +1394,12 @@ class TheanoGraph_pro(object):
 
             # Add the drift function
             if n_faults == 1:
-                self.fault_matrix = fault_matrix
+                # It seems that there is not human way of extract the block at this step so I will do it when I
+                # create the fault matrix
+
+                self.fault_matrix = fault_matrix[0] #This -1 refers the loop
             if n_faults > 1:
-                self.fault_matrix = fault_matrix[-1, 0]
+                self.fault_matrix = fault_matrix[-1]
 
         # Check if there are lithologies to compute
         if len(self.len_series_f.get_value()) - 1 > n_faults:
@@ -1404,35 +1416,43 @@ class TheanoGraph_pro(object):
              lith_matrix = lith_loop[0]
              pfai_lith = lith_loop[1]
 
-        # Now we have to stack the potential fields at interfaces, but before we need to add a small margin to the
-        # extremes to correct float32 errors for the marchig cubes later on
-        # pfai_lith = T.set_subtensor(pfai_lith[0, 0], pfai_lith[0, 0] + pfai_lith[0, 0] * 0.001)
-        # pfai_lith = T.set_subtensor(pfai_lith[-1, -1], pfai_lith[-1, -1] - pfai_lith[0, 0] * 0.001)
-
-        # pfai_lith = T.set_subtensor(pfai_lith[0], pfai_lith[0] + pfai_lith[0] * 0.001)
-        # pfai_lith = T.set_subtensor(pfai_lith[-1], pfai_lith[-1] - pfai_lith[0] * 0.001)
-
         pfai = T.vertical_stack(pfai_fault, pfai_lith)
-        # if n_faults == 0:
-        #     pfai = pfai_lith
-        #     sol_block = lith_matrix
-        #
-        # else:
-        #
-        #     sol_block = T.stack((fault_matrix, lith_matrix), axis=0)
-        # if n_faults != 0 and len(self.len_series_f.get_value()) - 1 > n_faults:
-        #     return lith_matrix[-1, :, :-2 * self.len_points], fault_matrix[-1, :, :-2 * self.len_points], pfai
-        # if n_faults == 0 and len(self.len_series_f.get_value()) - 1 > n_faults:
-        #     return lith_matrix[-1, :, :-2 * self.len_points], None, pfai
-        # if n_faults != 0 and not len(self.len_series_f.get_value()) - 1 > n_faults:
-        #     return None, fault_matrix[-1, :, :-2 * self.len_points], pfai
 
         return lith_matrix[-1, :, :-2 * self.len_points], fault_matrix[-1, :, :-2 * self.len_points], pfai
 
     # ==================================
     # Geophysics
     # ==================================
-    #
+
+    def switch_densities(self, n_formation, density, density_block):
+
+        density_block = T.switch(T.eq(density_block, n_formation), density, density_block)
+        return density_block
+
+    def compute_forward_gravity(self, n_faults=0, compute_all=True): # densities, tz, select,
+
+
+
+        # TODO: Assert outside that densities is the same size as formations (minus faults)
+        # Compute the geological model
+        lith_matrix, fault_matri, pfai = self.compute_geological_model(n_faults=n_faults, compute_all=compute_all)
+
+        # Substitue lithologies by its density
+        density_block_loop, updates4 = theano.scan(self.switch_densities,
+                                    outputs_info=[lith_matrix],
+                                     sequences=[self.n_formation, self.densities]
+                                    )
+
+        n_measurements = self.tz.shape[0]
+        # Tiling the density block for each measurent and picking just the closer to them. This has to be possible to
+        # optimize
+        densities_selected = T.tile(density_block_loop, n_measurements)[T.nonzero(T.cast(self.select, "int8"))[0]].reshape(n_measurements, -1)
+
+        # density times the component z of gravity
+        grav = densities_selected * self.tz
+
+        return grav
+
 
 
     # def slice_cells(self, selected_cells, block_lith):
