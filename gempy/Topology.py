@@ -50,7 +50,7 @@ class Topology:
 
         self.lithologies = np.unique(self.block)
         self.labels, self.n_labels = self._get_labels()
-        if 1 in np.unique(self.labels):
+        if 0 in np.unique(self.labels):
             self.labels += 1
 
         self.labels_unique = np.unique(self.labels)
