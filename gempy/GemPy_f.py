@@ -38,6 +38,7 @@ import copy
 from gempy.Visualization import PlotData2D, steano3D, vtkVisualization
 from gempy.DataManagement import InputData, InterpolatorInput, GridClass
 from gempy.strat_pile import StratigraphicPile
+from .Topology import Topology
 
 def data_to_pickle(geo_data, path=False):
     """
@@ -639,9 +640,33 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
     w.render_model(size=size, fullscreen=fullscreen)
 
 
+def topology_compute(lith_block, fault_block, res, n_faults,
+                     cell_number=None, direction=None):
+    """
+    Computes model topology and returns graph, centroids and look-up-tables.
+    :param lb: lithology block
+    :param fb: fault block
+    :param cell_number: (int) the slice position
+    :param direction: (str) "x", "y", or "z" - the slice direction
+    :return: (adjacency Graph object, centroid dict, labels-to-lith LOT dict, lith-to_labels LOT dict)
+    """
+
+    if cell_number is None or direction is None:  # topology of entire block
+        lb = lith_block.reshape(res)
+        fb = fault_block.reshape(res)
+    elif direction == "x":
+        lb = lith_block.reshape(res)[cell_number, :, :]
+        fb = fault_block.reshape(res)[cell_number, :, :]
+    elif direction == "y":
+        lb = lith_block.reshape(res)[:, cell_number, :]
+        fb = fault_block.reshape(res)[:, cell_number, :]
+    elif direction == "z":
+        lb = lith_block.reshape(res)[:, :, cell_number]
+        fb = fault_block.reshape(res)[:, :, cell_number]
+
+    topo = Topology(lb, fb, n_faults)
+    return topo.G, topo.centroids, topo.labels_unique, topo.labels_to_lith_lot, topo.lith_to_labels_lot
 
 
-
-
-
-
+def topology_plot(geo_data, G, centroids, direction="y"):
+    PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)

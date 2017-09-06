@@ -746,7 +746,7 @@ class DataPlane:
 
         :param geo_data: InputData object
         :param group_id: (str) identifier for the data group
-        :param mode: (str), either interf_to_fol or fol_to_interf
+        :param mode: (str), either 'interf_to_fol' or 'fol_to_interf'
         :param verbose: (bool) adjusts verbosity, default False
         """
         self.geo_data = geo_data
