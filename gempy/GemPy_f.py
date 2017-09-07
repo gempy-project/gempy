@@ -38,6 +38,7 @@ import copy
 from gempy.Visualization import PlotData2D, steano3D, vtkVisualization
 from gempy.DataManagement import InputData, InterpolatorInput, GridClass
 from gempy.strat_pile import StratigraphicPile
+from gempy.Topology import topology_analyze
 
 def data_to_pickle(geo_data, path=False):
     """
@@ -506,11 +507,11 @@ def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_
             _np.expand_dims(lith_matrix, 0)
             _np.expand_dims(fault_matrix, 0)
 
-        # Making the limit of the potential field a bit bigger to avoid float errors
-        # a_min = _np.argmin(potential_at_interfaces)
-        # a_max = _np.argmax(potential_at_interfaces)
-        # potential_at_interfaces[a_min] = potential_at_interfaces[a_min] - potential_at_interfaces[a_min] * 0.05
-        # potential_at_interfaces[a_max] = potential_at_interfaces[a_max] + potential_at_interfaces[a_max] * 0.05
+    # Making the limit of the potential field a bit bigger to avoid float errors
+    # a_min = _np.argmin(potential_at_interfaces)
+    # a_max = _np.argmax(potential_at_interfaces)
+    # potential_at_interfaces[a_min] = potential_at_interfaces[a_min] - potential_at_interfaces[a_min] * 0.05
+    # potential_at_interfaces[a_max] = potential_at_interfaces[a_max] + potential_at_interfaces[a_max] * 0.05
 
         interp_data.potential_at_interfaces = potential_at_interfaces
 
@@ -652,18 +653,43 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
         w.set_foliations()
     w.render_model(size=size, fullscreen=fullscreen)
 
+
+def topology_compute(geo_data, lith_block, fault_block,
+                     cell_number=None, direction=None):
+    """
+    Computes model topology and returns graph, centroids and look-up-tables.
+    :param geo_data: geo_data object
+    :param lith_block: lithology block
+    :param fault_block: fault block
+    :param cell_number: (int) the slice position
+    :param direction: (str) "x", "y", or "z" - the slice direction
+    :return: (adjacency Graph object, centroid dict, labels-to-lith LOT dict, lith-to_labels LOT dict)
+    """
+
+    if cell_number is None or direction is None:  # topology of entire block
+        lb = lith_block.reshape(geo_data.resolution)
+        fb = fault_block.reshape(geo_data.resolution)
+    elif direction == "x":
+        lb = lith_block.reshape(geo_data.resolution)[cell_number, :, :]
+        fb = fault_block.reshape(geo_data.resolution)[cell_number, :, :]
+    elif direction == "y":
+        lb = lith_block.reshape(geo_data.resolution)[:, cell_number, :]
+        fb = fault_block.reshape(geo_data.resolution)[:, cell_number, :]
+    elif direction == "z":
+        lb = lith_block.reshape(geo_data.resolution)[:, :, cell_number]
+        fb = fault_block.reshape(geo_data.resolution)[:, :, cell_number]
+
+    return topology_analyze(lb, fb, geo_data.n_faults)
+
+
+def topology_plot(geo_data, G, centroids, direction="y"):
+    "Plot topology graph."
+    PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)
+
+
 # =====================================
 # Functions for Geophysics
 # =====================================
-
-
-def set_geophysics_obj(interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
-
-    assert isinstance(interp_data, InterpolatorInput), 'The object has to be instance of the InterpolatorInput'
-    interp_data.set_geophysics_obj(ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
-    return interp_data.geophy
-
-
 def precomputations_gravity(interp_data, n_chunck=25, densities=None):
     try:
         getattr(interp_data, 'geophy')
@@ -675,8 +701,16 @@ def precomputations_gravity(interp_data, n_chunck=25, densities=None):
 
     if densities is not None:
         set_densities(interp_data, densities)
-
     return tz, select
+
+
+def set_geophysics_obj(interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
+
+    return topology_analyze(lb, fb, geo_data.n_faults)
+    assert isinstance(interp_data, InterpolatorInput), 'The object has to be instance of the InterpolatorInput'
+    interp_data.set_geophysics_obj(ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
+    return interp_data.geophy
+
 
 def set_densities(interp_data, densities):
 

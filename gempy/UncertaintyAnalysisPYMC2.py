@@ -38,6 +38,8 @@ class Posterior:
             self.topo_labels_to_lith_lot = topo_trace[:, 4]
             del topo_trace
 
+        self.topo_unique, self.topo_unique_freq, self.topo_unique_ids, self.topo_unique_prob = (None, None, None, None)
+
         # load input data
         self.input_data = self.db.input_data.gettrace()
 
@@ -77,7 +79,7 @@ class Posterior:
         self.change_input_data(interp_data, i)
         return gp.compute_model(interp_data)
 
-    def plot_section(self, interp_data, i, dim, plot_data=False, plot_topo=False):
+    def plot_section(self, interp_data, i, ext, res, plot_data=False, plot_topo=False):
         """Deprecated."""
         self.change_input_data(interp_data, i)
         lith_block, fault_block = gp.compute_model(interp_data)
@@ -91,12 +93,12 @@ class Posterior:
         #                interp_data.geo_data_res.interfaces["Z"].values)
 
         if plot_topo:
-            self.topo_plot_graph(i)
+            self.topo_plot_graph(interp_data, i, ext, res)
 
-    def topo_plot_graph(self, i, ext ,res):
+    def topo_plot_graph(self, interp_data, i, ext, res):
         pos_2d = {}
         for key in self.topo_centroids[i].keys():
-            pos_2d[key] = [self.topo_centroids[i][key][0] * ext[1]/res[0], self.topo_centroids[i][key][2] * ext[5]/res[2]]
+            pos_2d[key] = [self.topo_centroids[i][key][0] * ext[1]/res[0] / interp_data.rescaling_factor, self.topo_centroids[i][key][2] * ext[5]/res[2] / interp_data.rescaling_factor]
         nx.draw_networkx(self.topo_graphs[i], pos=pos_2d)
 
     def compute_posterior_models_all(self, interp_data, n=None, calc_fb=True):
@@ -136,6 +138,56 @@ class Posterior:
         self.ie = calcualte_ie_masked(self.lith_prob)
         self.ie_total = calculate_ie_total(self.ie)
         print("Information Entropy successfully calculated. Stored in self.ie and self.ie_total")
+
+    def check_adjacency_freq(self, n1, n2):
+        count = 0
+        for G in self.topo_graphs:
+            count += check_adjacency(G, n1, n2)
+        return count
+
+    def topo_analyze(self):
+        if self.verbose:
+            print("Starting topology analysis. This could take a while (depending on # iterations).")
+        self.topo_unique, self.topo_unique_freq, self.topo_unique_ids = get_unique_topo(self.topo_graphs)
+        self.topo_unique_prob = self.topo_unique_freq / np.sum(self.topo_unique_freq)
+        if self.verbose:
+            print("Topology analysis completed.")
+
+
+def find_first_match(t, topo_u):
+    index = 0
+    for t2 in topo_u:
+        if compare_graphs(t, t2) == 1:
+            return index  # the models match
+        index += 1
+
+    return -1
+
+
+def get_unique_topo(topo_l):
+    # create list for our unique topologies
+    topo_u = []
+    topo_u_freq = []
+    topo_u_ids = np.empty_like(topo_l)
+
+    for n, t in enumerate(topo_l):
+        i = find_first_match(t, topo_u)
+        if i == -1:  # is a yet unobserved topology, so append it and initiate frequency
+            topo_u.append(t)
+            topo_u_freq.append(1)
+            topo_u_ids[n] = len(topo_u) - 1
+        else:  # is a known topology
+            topo_u_freq[i] += 1  # 1-up the corresponding frequency
+            topo_u_ids[n] = i
+
+    return topo_u, topo_u_freq, topo_u_ids
+
+def check_adjacency(G, n1, n2):
+    """Check if n2 is adjacent/shares edge with n1."""
+    if n2 in G.adj[n1]:
+        return True
+    else:
+        return False
 
 
 def compute_prob_lith(lith_blocks):

@@ -207,7 +207,7 @@ class PlotData2D(object):
         return _a, _b, _c, extent_val, x, y, Gx, Gy
 
     def plot_block_section(self, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data = False, **kwargs):
+                           plot_data=False, **kwargs):
         """
         Plot a section of the block model
 
@@ -245,8 +245,8 @@ class PlotData2D(object):
 
         if plot_data:
             self.plot_data(direction, 'all')
+        # TODO: plot_topo option - need fault_block for that
 
-        # TODO: Formation numbers in block section do not appear to correspond to data???
         # DEP?
         selecting_colors = np.unique(plot_block)
 
@@ -295,6 +295,47 @@ class PlotData2D(object):
         plt.xlabel(x)
         plt.ylabel(y)
 
+    def plot_topo_g(geo_data, G, centroids, direction="y"):
+        if direction == "y":
+            c1, c2 = (0, 2)
+            e1 = geo_data.extent[1] - geo_data.extent[0]
+            e2 = geo_data.extent[5] - geo_data.extent[4]
+            if len(list(centroids.items())[0][1]) == 2:
+                c1, c2 = (0, 1)
+            r1 = geo_data.resolution[0]
+            r2 = geo_data.resolution[2]
+        elif direction == "x":
+            c1, c2 = (1, 2)
+            e1 = geo_data.extent[3] - geo_data.extent[2]
+            e2 = geo_data.extent[5] - geo_data.extent[4]
+            if len(list(centroids.items())[0][1]) == 2:
+                c1, c2 = (0, 1)
+            r1 = geo_data.resolution[1]
+            r2 = geo_data.resolution[2]
+        elif direction == "z":
+            c1, c2 = (0, 1)
+            e1 = geo_data.extent[1] - geo_data.extent[0]
+            e2 = geo_data.extent[3] - geo_data.extent[2]
+            if len(list(centroids.items())[0][1]) == 2:
+                c1, c2 = (0, 1)
+            r1 = geo_data.resolution[0]
+            r2 = geo_data.resolution[1]
+
+        for edge in G.edges_iter():
+            a, b = edge
+
+            if G.adj[a][b]["edge_type"] == "stratigraphic":
+                plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1,
+                         np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2, "gray", linewidth=2)
+            elif G.adj[a][b]["edge_type"] == "fault":
+                plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1,
+                         np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2, "black", linewidth=2)
+
+            for node in G.nodes_iter():
+                plt.plot(centroids[node][c1] * e1 / r1, centroids[node][c2] * e2 / r2,
+                         marker="o", color="black", markersize=20)
+                plt.text(centroids[node][c1] * e1 / r1 * 0.99,
+                         centroids[node][c2] * e2 / r2 * 0.99, str(node), color="white", size=10)
 
     @staticmethod
     def annotate_plot(frame, label_col, x, y, **kwargs):
