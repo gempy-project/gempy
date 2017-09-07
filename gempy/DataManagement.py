@@ -943,7 +943,8 @@ class InterpolatorInput:
         dtype:  type of float
 
     """
-    def __init__(self, geo_data, compile_theano=True, compute_all=True, u_grade=None, rescaling_factor=None, **kwargs):
+    def __init__(self, geo_data, output='geology', compile_theano=True, compute_all=True,
+                 u_grade=None, rescaling_factor=None, **kwargs):
         # TODO add all options before compilation in here. Basically this is n_faults, n_layers, verbose, dtype, and \
         # only block or all
         assert isinstance(geo_data, InputData), 'You need to pass a InputData object'
@@ -972,11 +973,14 @@ class InterpolatorInput:
 
         # Creating interpolator class with all the precompilation options
         # --DEP-- self.interpolator = self.set_interpolator(**kwargs)
-        self.interpolator = self.InterpolatorClass(self.geo_data_res, self.geo_data_res.grid, **kwargs)
+        self.interpolator = self.InterpolatorClass(self.geo_data_res, self.geo_data_res.grid, output=output, **kwargs)
         if compile_theano:
-            self.th_fn = self.compile_th_fn(compute_all=compute_all)
+            self.th_fn = self.compile_th_fn(output, compute_all=compute_all)
 
-    def compile_th_fn(self, compute_all=True):
+        self.geophy = None
+
+
+    def compile_th_fn(self, output, compute_all=True):
         """
         Compile the theano function given the input data.
         Args:
@@ -992,12 +996,24 @@ class InterpolatorInput:
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.interpolator.tg.input_parameters_list()
 
-        # then we compile we have to pass the number of formations that are faults!!
-        th_fn = theano.function(input_data_T, self.interpolator.tg.compute_geological_model(self.geo_data_res.n_faults,
-                                                                                     compute_all=compute_all),
-                                on_unused_input='ignore',
-                                allow_input_downcast=False,
-                                profile=False)
+        if output is 'geology':
+            # then we compile we have to pass the number of formations that are faults!!
+            th_fn = theano.function(input_data_T,
+                                    self.interpolator.tg.compute_geological_model(self.geo_data_res.n_faults,
+                                                                                  compute_all=compute_all),
+                                    on_unused_input='ignore',
+                                    allow_input_downcast=False,
+                                    profile=False)
+
+        if output is 'gravity':
+            # then we compile we have to pass the number of formations that are faults!!
+            th_fn = theano.function(input_data_T,
+                                    self.interpolator.tg.compute_forward_gravity(self.geo_data_res.n_faults,
+                                                                                 compute_all=compute_all),
+                                    on_unused_input='ignore',
+                                    allow_input_downcast=False,
+                                    profile=False)
+
         print('Level of Optimization: ', theano.config.optimizer)
         print('Device: ', theano.config.device)
         print('Precision: ', self.dtype)
@@ -1179,6 +1195,12 @@ class InterpolatorInput:
             u_grade = self.u_grade
         return self.interpolator.data_prep(u_grade=u_grade)
 
+    ## =======
+    ## Gravity
+    def set_geophysics_obj(self, ai_extent, ai_resolution, ai_z=None, range_max=None):
+        from .GeoPhysics import GeoPhysicsPreprocessing_pro
+        self.geophy = GeoPhysicsPreprocessing_pro(self, ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
+
     class InterpolatorClass(object):
         """
         -DOCS NOT UPDATED-
@@ -1208,6 +1230,9 @@ class InterpolatorInput:
             # Here we can change the dtype for stability and GPU vs CPU
             dtype = kwargs.get('dtype', 'float32')
             self.dtype = dtype
+            # Here we change the graph type
+            output = kwargs.get('output', 'geology')
+            self.output = output
 
             if dtype in verbose:
                 print(self.dtype)
@@ -1229,7 +1254,7 @@ class InterpolatorInput:
 
             # Importing the theano graph. The methods of this object generate different parts of graph.
             # See theanograf doc
-            self.tg = theanograf.TheanoGraph_pro(dtype=dtype, verbose=verbose,)
+            self.tg = theanograf.TheanoGraph_pro(output=output, dtype=dtype, verbose=verbose,)
 
             # Sorting data in case the user provides it unordered
             self.order_table()
@@ -1503,6 +1528,14 @@ class InterpolatorInput:
                                                                   dtype=self.dtype))
             self.tg.final_potential_field_at_faults.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
                                                               dtype=self.dtype))
+
+        def set_densities(self, densities):
+            self.tg.densities.set_value(np.array(densities, dtype=self.dtype))
+
+        def set_z_comp(self, tz, selected_cells):
+
+            self.tg.tz.set_value(tz.astype(self.dtype))
+            self.tg.select.set_value(selected_cells)
 
         def get_kriging_parameters(self, verbose=0):
             """

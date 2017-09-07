@@ -477,7 +477,7 @@ def get_th_fn(interp_data, compute_all=True):
     return interp_data.compile_th_fn(compute_all=compute_all)
 
 
-def compute_model(interp_data, u_grade=None, get_potential_at_interfaces=False):
+def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_interfaces=False):
     """
     Compute the geological model
     Args:
@@ -499,23 +499,29 @@ def compute_model(interp_data, u_grade=None, get_potential_at_interfaces=False):
         interp_data.compile_th_fn()
 
     i = interp_data.get_input_data(u_grade=u_grade)
-    lith_matrix, fault_matrix, potential_at_interfaces = interp_data.th_fn(*i)
-    if len(lith_matrix.shape) < 3:
-        _np.expand_dims(lith_matrix, 0)
-        _np.expand_dims(fault_matrix, 0)
 
-    # Making the limit of the potential field a bit bigger to avoid float errors
-    # a_min = _np.argmin(potential_at_interfaces)
-    # a_max = _np.argmax(potential_at_interfaces)
-    # potential_at_interfaces[a_min] = potential_at_interfaces[a_min] - potential_at_interfaces[a_min] * 0.05
-    # potential_at_interfaces[a_max] = potential_at_interfaces[a_max] + potential_at_interfaces[a_max] * 0.05
+    if output is 'geology':
+        lith_matrix, fault_matrix, potential_at_interfaces = interp_data.th_fn(*i)
+        if len(lith_matrix.shape) < 3:
+            _np.expand_dims(lith_matrix, 0)
+            _np.expand_dims(fault_matrix, 0)
 
-    interp_data.potential_at_interfaces = potential_at_interfaces
+        # Making the limit of the potential field a bit bigger to avoid float errors
+        # a_min = _np.argmin(potential_at_interfaces)
+        # a_max = _np.argmax(potential_at_interfaces)
+        # potential_at_interfaces[a_min] = potential_at_interfaces[a_min] - potential_at_interfaces[a_min] * 0.05
+        # potential_at_interfaces[a_max] = potential_at_interfaces[a_max] + potential_at_interfaces[a_max] * 0.05
 
-    if get_potential_at_interfaces:
-        return lith_matrix, fault_matrix, interp_data.potential_at_interfaces
-    else:
-        return lith_matrix, fault_matrix
+        interp_data.potential_at_interfaces = potential_at_interfaces
+
+        if get_potential_at_interfaces:
+            return lith_matrix, fault_matrix, interp_data.potential_at_interfaces
+        else:
+            return lith_matrix, fault_matrix
+
+    if output is 'gravity':
+        grav = interp_data.th_fn(*i)
+        return grav
 
 
 def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_formation='all', step_size=1, original_scale=True):
@@ -646,10 +652,32 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
         w.set_foliations()
     w.render_model(size=size, fullscreen=fullscreen)
 
+# =====================================
+# Functions for Geophysics
+# =====================================
 
 
+def set_geophysics_obj(interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
+
+    assert isinstance(interp_data, InterpolatorInput), 'The object has to be instance of the InterpolatorInput'
+    interp_data.set_geophysics_obj(ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
+    return interp_data.geophy
 
 
+def precomputations_gravity(interp_data, n_chunck=25, densities=None):
+    try:
+        getattr(interp_data, 'geophy')
+    except:
+        raise AttributeError('You need to set a geophysical object first. See set_geophysics_obj')
 
+    tz, select = interp_data.geophy.compute_gravity(n_chunck)
+    interp_data.interpolator.set_z_comp(tz, select)
 
+    if densities is not None:
+        set_densities(interp_data, densities)
 
+    return tz, select
+
+def set_densities(interp_data, densities):
+
+    interp_data.interpolator.set_densities(densities)

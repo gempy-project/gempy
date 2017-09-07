@@ -43,7 +43,7 @@ class TheanoGraph_pro(object):
     of these methods is more and more difficult to provide (if you are in a branch close to the trunk you need all the
     results of the branches above)
     """
-    def __init__(self, verbose=[0], dtype='float32'):
+    def __init__(self, output='geology', verbose=[0], dtype='float32'):
         """
         In the init we need to create all the symbolic parameters that are used in the process. Most of the variables
         are shared parameters initialized with random values. At this stage we only care about the type and shape of the
@@ -152,10 +152,10 @@ class TheanoGraph_pro(object):
         self.final_potential_field_at_faults_op = self.final_potential_field_at_faults
         #self.potential_field_at_interfaces_value   = theano.shared(np.cast[np.int64](np.zeros((2, 2))), 'Potential field value at each interface',)
 
-        if True:
-            self.densities = theano.shared(np.cast['float32'](np.zeros((1, 3))), "List with the densities")
+        if output is 'gravity':
+            self.densities = theano.shared(np.cast['float32'](np.zeros(3)), "List with the densities")
             self.tz = theano.shared(np.cast['float32'](np.zeros((1, 3))), "Component z")
-            self.select = theano.shared(np.cast['float32'](np.zeros((1, 3))), "Component z")
+            self.select = theano.shared(np.cast['float32'](np.zeros(3)), "Select nearby cells")
 
     def input_parameters_list(self):
         """
@@ -527,7 +527,7 @@ class TheanoGraph_pro(object):
         interface_loc = self.fault_matrix.shape[1] - 2*self.len_points
 
         fault_matrix_at_interfaces_rest = self.fault_matrix[::2, interface_loc+self.len_i_0: interface_loc+self.len_i_1]
-        fault_matrix_at_interfaces_ref =  self.fault_matrix[::2, interface_loc+self.len_points+self.len_i_0:
+        fault_matrix_at_interfaces_ref  = self.fault_matrix[::2, interface_loc+self.len_points+self.len_i_0:
                                                                interface_loc+self.len_points+self.len_i_1]
 
        # len_points_i = 2*self.rest_layer_points_all.shape[0] + self.n_formation_op[0]-1
@@ -1334,6 +1334,8 @@ class TheanoGraph_pro(object):
     #     return all_series, pfai
 
     def compute_geological_model(self, n_faults=0, compute_all=True):
+
+
         # Init all
         if compute_all:
             # Change the flag to extend the graph in the compute fault and compute series function
@@ -1435,23 +1437,30 @@ class TheanoGraph_pro(object):
 
         # TODO: Assert outside that densities is the same size as formations (minus faults)
         # Compute the geological model
-        lith_matrix, fault_matri, pfai = self.compute_geological_model(n_faults=n_faults, compute_all=compute_all)
+        lith_matrix, fault_matrix, pfai = self.compute_geological_model(n_faults=n_faults, compute_all=compute_all)
 
+        if n_faults == 0:
+            formations = T.concatenate([self.n_formation[::-1], T.stack([0])])
+        else:
+            formations = T.concatenate([self.n_formation[:n_faults-1:-1], T.stack([0])])
         # Substitue lithologies by its density
         density_block_loop, updates4 = theano.scan(self.switch_densities,
-                                    outputs_info=[lith_matrix],
-                                     sequences=[self.n_formation, self.densities]
+                                    outputs_info=[lith_matrix[0]],
+                                     sequences=[formations, self.densities]
                                     )
 
         n_measurements = self.tz.shape[0]
         # Tiling the density block for each measurent and picking just the closer to them. This has to be possible to
         # optimize
-        densities_selected = T.tile(density_block_loop, n_measurements)[T.nonzero(T.cast(self.select, "int8"))[0]].reshape(n_measurements, -1)
 
-        # density times the component z of gravity
-        grav = densities_selected * self.tz
+        densities_rep = T.tile(density_block_loop[-1], n_measurements)
+        densities_selected = densities_rep[T.nonzero(T.cast(self.select, "int8"))[0]]
+        densities_selected_reshaped = densities_selected.reshape((n_measurements, -1))
+        #
+        # # density times the component z of gravity
+        grav = densities_selected_reshaped * self.tz
 
-        return grav
+        return grav.sum(axis=1)
 
 
 
