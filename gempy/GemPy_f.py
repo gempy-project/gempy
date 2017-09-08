@@ -38,7 +38,8 @@ import copy
 from gempy.Visualization import PlotData2D, steano3D, vtkVisualization
 from gempy.DataManagement import InputData, InterpolatorInput, GridClass
 from gempy.strat_pile import StratigraphicPile
-from gempy.Topology import topology_analyze
+from gempy.Topology import topology_analyze, topology_check_adjacency
+
 
 def data_to_pickle(geo_data, path=False):
     """

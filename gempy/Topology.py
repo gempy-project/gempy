@@ -142,7 +142,7 @@ def labels_lithology_lot(labels_unique, labels, block_original, verbose=0):
     return lot
 
 
-def check_adjacency(G, n1, n2):
+def topology_check_adjacency(G, n1, n2):
     """Check if n2 is adjacent/shares edge with n1."""
     if n2 in G.adj[n1]:
         return True
