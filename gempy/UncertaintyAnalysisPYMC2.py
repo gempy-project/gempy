@@ -17,6 +17,9 @@ class Posterior:
         self.verbose = verbose
         # load db
         self.db = pymc.database.hdf5.load(dbname)
+
+        # number iter
+        self.n_iter = self.db.getstate()['sampler']['_iter']
         # get trace names
         self.trace_names = self.db.trace_names[0]
         # get gempy block models
@@ -50,6 +53,7 @@ class Posterior:
     def change_input_data(self, interp_data, i):
         """Changes input data in interp_data to posterior input data at iteration i."""
 
+        i = int(i)
         # replace interface data
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
         # replace foliation data
@@ -62,6 +66,7 @@ class Posterior:
         interp_data.update_interpolator()
         if self.verbose:
             print("interp_data parameters changed.")
+        return interp_data
 
     def plot_topology_graph(self, i):
         # get centroid values into list

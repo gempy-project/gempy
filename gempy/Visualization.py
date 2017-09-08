@@ -584,7 +584,7 @@ class vtkVisualization:
         s.n_sphere = n_sphere
         s.n_render = n_render
         s.index = n_index
-        s.AddObserver("InteractionEvent", self.sphereCallback) # EndInteractionEvent
+        s.AddObserver("EndInteractionEvent", self.sphereCallback) # EndInteractionEvent
 
         s.On()
 
@@ -616,7 +616,7 @@ class vtkVisualization:
         d.SetRepresentationToSurface()
 
         # Position
-      #  print(X, Y, Z)
+
         source = vtk.vtkPlaneSource()
         source.SetCenter(X, Y, Z)
         source.SetNormal(Gx, Gy, Gz)
@@ -634,7 +634,7 @@ class vtkVisualization:
         d.n_plane = n_plane
         d.n_render = n_render
         d.index = n_index
-        d.AddObserver("InteractionEvent", self.planesCallback)
+        d.AddObserver("EndInteractionEvent", self.planesCallback)
 
         d.On()
 
@@ -759,27 +759,44 @@ class vtkVisualization:
                 self.ren_list[2].RemoveActor(surf)
                 self.ren_list[3].RemoveActor(surf)
 
-                ver, sim = self.update_surfaces_real_time(self.interp_data)
-                self.set_surfaces(ver, sim)
+            ver, sim = self.update_surfaces_real_time(self.interp_data)
+            self.set_surfaces(ver, sim)
         except AttributeError:
             print('no surf')
             pass
         try:
-            for sph in zip(self.s_rend_1, self.s_rend_2, self.s_rend_3, self.s_rend_4):
-                self.ren_list[0].RemoveActor(sph[0])
-                self.ren_list[1].RemoveActor(sph[1])
-                self.ren_list[2].RemoveActor(sph[2])
-                self.ren_list[3].RemoveActor(sph[3])
-                self.set_interfaces()
+            for sph in zip(self.s_rend_1, self.s_rend_2, self.s_rend_3, self.s_rend_4, self.geo_data.interfaces.iterrows()):
+
+                row_i = sph[4][1]
+                sph[0].PlaceWidget(row_i['X'] - sph[0].r_f, row_i['X'] + sph[0].r_f,
+                                   row_i['Y'] - sph[0].r_f, row_i['Y'] + sph[0].r_f,
+                                   row_i['Z'] - sph[0].r_f, row_i['Z'] + sph[0].r_f)
+
+                sph[1].PlaceWidget(row_i['X'] - sph[1].r_f, row_i['X'] + sph[1].r_f,
+                                   row_i['Y'] - sph[1].r_f, row_i['Y'] + sph[1].r_f,
+                                   row_i['Z'] - sph[1].r_f, row_i['Z'] + sph[1].r_f)
+
+                sph[2].PlaceWidget(row_i['X'] - sph[2].r_f, row_i['X'] + sph[2].r_f,
+                                   row_i['Y'] - sph[2].r_f, row_i['Y'] + sph[2].r_f,
+                                   row_i['Z'] - sph[2].r_f, row_i['Z'] + sph[2].r_f)
+
+                sph[3].PlaceWidget(row_i['X'] - sph[3].r_f, row_i['X'] + sph[3].r_f,
+                                   row_i['Y'] - sph[3].r_f, row_i['Y'] + sph[3].r_f,
+                                   row_i['Z'] - sph[3].r_f, row_i['Z'] + sph[3].r_f)
         except AttributeError:
             pass
         try:
-            for fol in zip(self.f_rend_1, self.f_rend_2, self.f_rend_3, self.f_rend_4):
-                self.ren_list[0].RemoveActor(fol[0])
-                self.ren_list[1].RemoveActor(fol[1])
-                self.ren_list[2].RemoveActor(fol[2])
-                self.ren_list[3].RemoveActor(fol[3])
-                self.set_foliations()
+            for fol in (zip(self.f_rend_1, self.f_rend_2, self.f_rend_3, self.f_rend_4, self.geo_data.foliations.iterrows())):
+                row_f = fol[4][1]
+
+                fol[0].SetCenter(row_f['X'], row_f['Y'], row_f['Z'])
+                fol[0].SetNormal(row_f['G_x'], row_f['G_y'], row_f['G_z'])
+
+                # self.ren_list[0].RemoveActor(fol[0])
+                # self.ren_list[1].RemoveActor(fol[1])
+                # self.ren_list[2].RemoveActor(fol[2])
+                # self.ren_list[3].RemoveActor(fol[3])
+                # self.set_foliations()
         except AttributeError:
             pass
 
@@ -1090,9 +1107,9 @@ class vtkVisualization:
             v_l, s_l = gp.get_surfaces(interp_data, lith_block[1], None, original_scale=False)
         return v_l, s_l
 
-    def load_posteriors(self, dbname):
-        import gempy.UncertaintyAnalysisPYMC2
-        self.post = gempy.UncertaintyAnalysisPYMC2.Posterior(dbname)
+    # def load_posteriors(self, dbname):
+    #     import gempy.UncertaintyAnalysisPYMC2
+    #     self.post = gempy.UncertaintyAnalysisPYMC2.Posterior(dbname)
 
 
     @staticmethod

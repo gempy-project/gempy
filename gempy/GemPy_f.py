@@ -39,6 +39,7 @@ from gempy.Visualization import PlotData2D, steano3D, vtkVisualization
 from gempy.DataManagement import InputData, InterpolatorInput, GridClass
 from gempy.strat_pile import StratigraphicPile
 from gempy.Topology import topology_analyze, topology_check_adjacency
+import gempy.UncertaintyAnalysisPYMC2 # So far we use this type of import because the other one makes a copy and blows up some asserts
 
 
 def data_to_pickle(geo_data, path=False):
@@ -623,7 +624,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
 
 def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
                      #formations_names_l, formation_numbers_l,
-                     alpha=1, plot_data=True,
+                     alpha=1, plot_data=True, posterior=None, samples=None,
                      size=(1920, 1080), fullscreen=False):
     """
     Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.
@@ -647,6 +648,18 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
     w.set_surfaces(vertices_l, simplices_l,
                    #formations_names_l, formation_numbers_l,
                     alpha)
+
+    if posterior is not None:
+        assert isinstance(posterior, gempy.UncertaintyAnalysisPYMC2.Posterior), 'The object has to be instance of the Posterior class'
+        w.post = posterior
+        if samples is not None:
+            samp_i = samples[0]
+            samp_f = samples[1]
+        else:
+            samp_i = 0
+            samp_f = posterior.n_iter
+
+        w.create_slider_rep(samp_i, samp_f, samp_f)
 
     w.interp_data = interp_data
     if plot_data:
