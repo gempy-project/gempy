@@ -584,7 +584,7 @@ class vtkVisualization:
         s.n_sphere = n_sphere
         s.n_render = n_render
         s.index = n_index
-        s.AddObserver("InteractionEvent", self.sphereCallback)
+        s.AddObserver("InteractionEvent", self.sphereCallback) # EndInteractionEvent
 
         s.On()
 
@@ -728,6 +728,60 @@ class vtkVisualization:
             self.f_rend_4.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation number'],
                                                        row['G_x'], row['G_y'], row['G_z'],
                                                        n_plane=e, n_render=3, n_index=index))
+
+    def create_slider_rep(self, min=0, max=10, val=0):
+
+        slider_rep = vtk.vtkSliderRepresentation2D()
+        slider_rep.SetMinimumValue(min)
+        slider_rep.SetMaximumValue(max)
+        slider_rep.SetValue(val)
+        slider_rep.GetPoint1Coordinate().SetCoordinateSystemToDisplay()
+        slider_rep.GetPoint1Coordinate().SetValue(0, 40)
+        slider_rep.GetPoint2Coordinate().SetCoordinateSystemToDisplay()
+        slider_rep.GetPoint2Coordinate().SetValue(300, 40)
+
+        self.slider_w = vtk.vtkSliderWidget()
+        self.slider_w.SetInteractor(self.interactor)
+        self.slider_w.SetRepresentation(slider_rep)
+        self.slider_w.SetCurrentRenderer(self.ren_list[0])
+        self.slider_w.SetAnimationModeToAnimate()
+        self.slider_w.On()
+        self.slider_w.AddObserver('EndInteractionEvent', self.slideCallback)
+
+    def slideCallback(self, obj, event):
+
+        self.post.change_input_data(self.interp_data, obj.GetRepresentation().GetValue())
+        # lith_block, fault_block = gp.compute_model(self.interp_data)
+        try:
+            for surf in self.surf_rend_1:
+                self.ren_list[0].RemoveActor(surf)
+                self.ren_list[1].RemoveActor(surf)
+                self.ren_list[2].RemoveActor(surf)
+                self.ren_list[3].RemoveActor(surf)
+
+                ver, sim = self.update_surfaces_real_time(self.interp_data)
+                self.set_surfaces(ver, sim)
+        except AttributeError:
+            print('no surf')
+            pass
+        try:
+            for sph in zip(self.s_rend_1, self.s_rend_2, self.s_rend_3, self.s_rend_4):
+                self.ren_list[0].RemoveActor(sph[0])
+                self.ren_list[1].RemoveActor(sph[1])
+                self.ren_list[2].RemoveActor(sph[2])
+                self.ren_list[3].RemoveActor(sph[3])
+                self.set_interfaces()
+        except AttributeError:
+            pass
+        try:
+            for fol in zip(self.f_rend_1, self.f_rend_2, self.f_rend_3, self.f_rend_4):
+                self.ren_list[0].RemoveActor(fol[0])
+                self.ren_list[1].RemoveActor(fol[1])
+                self.ren_list[2].RemoveActor(fol[2])
+                self.ren_list[3].RemoveActor(fol[3])
+                self.set_foliations()
+        except AttributeError:
+            pass
 
     def sphereCallback(self, obj, event):
         """
@@ -899,15 +953,6 @@ class vtkVisualization:
 
         return ren_list
 
-    # def color_lot_create(self, geo_data, cd_rgb=color_dict_rgb, c_names=color_names, c_subname="400"):
-    #     """
-    #     Set the color for each layer
-    #     """
-    #     c_lot = {}
-    #     for i, fmt in enumerate(geo_data.get_formations()):
-    #         c_lot[fmt] = cd_rgb[c_names[i]][c_subname]
-    #     return c_lot
-
     def _create_cameras(self, extent, verbose=0):
         """
         Create the 4 cameras for each renderer
@@ -1044,6 +1089,10 @@ class vtkVisualization:
         except IndexError:
             v_l, s_l = gp.get_surfaces(interp_data, lith_block[1], None, original_scale=False)
         return v_l, s_l
+
+    def load_posteriors(self, dbname):
+        import gempy.UncertaintyAnalysisPYMC2
+        self.post = gempy.UncertaintyAnalysisPYMC2.Posterior(dbname)
 
 
     @staticmethod

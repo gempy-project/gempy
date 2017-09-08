@@ -706,7 +706,6 @@ def precomputations_gravity(interp_data, n_chunck=25, densities=None):
 
 def set_geophysics_obj(interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
 
-    return topology_analyze(lb, fb, geo_data.n_faults)
     assert isinstance(interp_data, InterpolatorInput), 'The object has to be instance of the InterpolatorInput'
     interp_data.set_geophysics_obj(ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
     return interp_data.geophy
