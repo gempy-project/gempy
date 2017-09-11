@@ -54,7 +54,7 @@ Tested on Ubuntu 14</p>
 <p>&#64;author: Miguel de la Varga</p>
 <dl class="function">
 <dt id="GemPy_f.compute_model">
-<code class="descclassname">GemPy_f.</code><code class="descname">compute_model</code><span class="sig-paren">(</span><em>interp_data</em>, <em>u_grade=None</em>, <em>get_potential_at_interfaces=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#compute_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.compute_model" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">GemPy_f.</code><code class="descname">compute_model</code><span class="sig-paren">(</span><em>interp_data</em>, <em>output=’geology’</em>, <em>u_grade=None</em>, <em>get_potential_at_interfaces=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#compute_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.compute_model" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the geological model
 :param interp_data: Rescaled data.
 :type interp_data: gempy.DataManagement.InterpolatorInput
@@ -363,7 +363,7 @@ specific directions</p>
 
 <dl class="function">
 <dt id="GemPy_f.plot_potential_field">
-<code class="descclassname">GemPy_f.</code><code class="descname">plot_potential_field</code><span class="sig-paren">(</span><em>geo_data</em>, <em>potential_field</em>, <em>cell_number</em>, <em>n_pf=0</em>, <em>direction=’y’</em>, <em>plot_data=True</em>, <em>series=’all’</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#plot_potential_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.plot_potential_field" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">GemPy_f.</code><code class="descname">plot_potential_field</code><span class="sig-paren">(</span><em>geo_data</em>, <em>potential_field</em>, <em>cell_number</em>, <em>N=20</em>, <em>direction=’y’</em>, <em>plot_data=True</em>, <em>series=’all’</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#plot_potential_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.plot_potential_field" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a potential field in a given direction.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -444,7 +444,7 @@ specific directions</p>
 
 <dl class="function">
 <dt id="GemPy_f.plot_surfaces_3D_real_time">
-<code class="descclassname">GemPy_f.</code><code class="descname">plot_surfaces_3D_real_time</code><span class="sig-paren">(</span><em>interp_data</em>, <em>vertices_l</em>, <em>simplices_l</em>, <em>alpha=1</em>, <em>plot_data=True</em>, <em>size=(1920</em>, <em>1080)</em>, <em>fullscreen=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#plot_surfaces_3D_real_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.plot_surfaces_3D_real_time" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">GemPy_f.</code><code class="descname">plot_surfaces_3D_real_time</code><span class="sig-paren">(</span><em>interp_data</em>, <em>vertices_l</em>, <em>simplices_l</em>, <em>alpha=1</em>, <em>plot_data=True</em>, <em>posterior=None</em>, <em>samples=None</em>, <em>size=(1920</em>, <em>1080)</em>, <em>fullscreen=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#plot_surfaces_3D_real_time"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.plot_surfaces_3D_real_time" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.
 IMPORTANT NOTE it is highly recommended to have the flag fast_run in the theano optimization. Also note that the
 time needed to compute each model increases linearly with every potential field (i.e. fault or discontinuity). It
@@ -606,6 +606,24 @@ self.foliations: one extra column with the given series</p>
 </tr>
 </tbody>
 </table>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.topology_compute">
+<code class="descclassname">GemPy_f.</code><code class="descname">topology_compute</code><span class="sig-paren">(</span><em>geo_data</em>, <em>lith_block</em>, <em>fault_block</em>, <em>cell_number=None</em>, <em>direction=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#topology_compute"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.topology_compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes model topology and returns graph, centroids and look-up-tables.
+:param geo_data: geo_data object
+:param lith_block: lithology block
+:param fault_block: fault block
+:param cell_number: (int) the slice position
+:param direction: (str) “x”, “y”, or “z” - the slice direction
+:return: (adjacency Graph object, centroid dict, labels-to-lith LOT dict, lith-to_labels LOT dict)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="GemPy_f.topology_plot">
+<code class="descclassname">GemPy_f.</code><code class="descname">topology_plot</code><span class="sig-paren">(</span><em>geo_data</em>, <em>G</em>, <em>centroids</em>, <em>direction=’y’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/GemPy_f.html#topology_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#GemPy_f.topology_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot topology graph.</p>
 </dd></dl>
 
 <span class="target" id="module-DataManagement"></span><p>This file is part of gempy.</p>
@@ -1086,7 +1104,7 @@ self.foliations: one extra column with the given series</p>
 
 <dl class="class">
 <dt id="DataManagement.InterpolatorInput">
-<em class="property">class </em><code class="descclassname">DataManagement.</code><code class="descname">InterpolatorInput</code><span class="sig-paren">(</span><em>geo_data</em>, <em>compile_theano=True</em>, <em>compute_all=True</em>, <em>u_grade=None</em>, <em>rescaling_factor=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">DataManagement.</code><code class="descname">InterpolatorInput</code><span class="sig-paren">(</span><em>geo_data</em>, <em>output=’geology’</em>, <em>compile_theano=True</em>, <em>compute_all=True</em>, <em>u_grade=None</em>, <em>rescaling_factor=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput" title="Permalink to this definition">¶</a></dt>
 <dd><p>InterpolatorInput is a class that contains all the preprocessing operations to prepare the data to compute the model.
 Also is the object that has to be manipulated to vary the data without recompile the modeling function.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1272,7 +1290,7 @@ if you want to change one the kriging parameters.</p>
 
 <dl class="method">
 <dt id="DataManagement.InterpolatorInput.compile_th_fn">
-<code class="descname">compile_th_fn</code><span class="sig-paren">(</span><em>compute_all=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.compile_th_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.compile_th_fn" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compile_th_fn</code><span class="sig-paren">(</span><em>output</em>, <em>compute_all=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/DataManagement.html#InterpolatorInput.compile_th_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#DataManagement.InterpolatorInput.compile_th_fn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compile the theano function given the input data.
 :param compute_all: If true the solution gives back the block model of lithologies, the potential field and</p>
 <blockquote>
@@ -1397,7 +1415,7 @@ theano function for the block</td>
 </table>
 <dl class="class">
 <dt id="theanograf.TheanoGraph_pro">
-<em class="property">class </em><code class="descclassname">theanograf.</code><code class="descname">TheanoGraph_pro</code><span class="sig-paren">(</span><em>verbose=[0], dtype=’float32’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theanograf.html#TheanoGraph_pro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theanograf.TheanoGraph_pro" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">theanograf.</code><code class="descname">TheanoGraph_pro</code><span class="sig-paren">(</span><em>output=’geology’, verbose=[0], dtype=’float32’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theanograf.html#TheanoGraph_pro"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theanograf.TheanoGraph_pro" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class is used to help to divide the construction of the graph into sensical parts. All its methods build a part
 of the graph. Every method can be seen as a branch and collection of branches until the last method that will be the
 whole tree. Every part of the graph could be compiled separately but as we increase the complexity the input of each
@@ -1830,7 +1848,7 @@ specific directions</p>
 
 <dl class="method">
 <dt id="Visualization.PlotData2D.plot_potential_field">
-<code class="descname">plot_potential_field</code><span class="sig-paren">(</span><em>potential_field</em>, <em>cell_number</em>, <em>n_pf=0</em>, <em>direction=’y’</em>, <em>plot_data=True</em>, <em>series=’all’</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#PlotData2D.plot_potential_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.PlotData2D.plot_potential_field" title="Permalink to this definition">¶</a></dt>
+<code class="descname">plot_potential_field</code><span class="sig-paren">(</span><em>potential_field</em>, <em>cell_number</em>, <em>N=20</em>, <em>direction=’y’</em>, <em>plot_data=True</em>, <em>series=’all’</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/Visualization.html#PlotData2D.plot_potential_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#Visualization.PlotData2D.plot_potential_field" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot a potential field in a given direction.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />

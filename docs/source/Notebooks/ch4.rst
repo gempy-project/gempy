@@ -19,63 +19,34 @@ Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)
 
 .. code:: ipython3
 
-    geo_data = gp.read_pickle('../input_data/sandstone.pickle')
+    # Importing the data from csv files and settign extent and resolution
+    geo_data = gp.create_data([696000-10000,747000 + 20600,6863000 - 20600,6950000 + 20600,-20000, 600],[50, 50, 50],
+                             path_f = os.pardir+"/input_data/a_Foliations.csv",
+                             path_i = os.pardir+"/input_data/a_Points.csv")
 
 .. code:: ipython3
 
     # Assigning series to formations as well as their order (timewise)
-    gp.set_data_series(geo_data, {"EarlyGranite_Series": 'EarlyGranite', 
+    gp.set_series(geo_data, {"EarlyGranite_Series": 'EarlyGranite', 
                                   "BIF_Series":('SimpleMafic2', 'SimpleBIF'),
                                   "SimpleMafic_Series":'SimpleMafic1'}, 
                           order_series = ["EarlyGranite_Series",
                                           "BIF_Series",
-                                          "SimpleMafic_Series"], verbose=1)
+                                          "SimpleMafic_Series"],
+                          order_formations= ['EarlyGranite', 'SimpleMafic2', 'SimpleBIF', 'SimpleMafic1'],
+                  verbose=1)
 
 
 
 
-.. raw:: html
+.. parsed-literal::
 
-    <div>
-    <style>
-        .dataframe thead tr:only-child th {
-            text-align: right;
-        }
-    
-        .dataframe thead th {
-            text-align: left;
-        }
-    
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>EarlyGranite_Series</th>
-          <th>BIF_Series</th>
-          <th>SimpleMafic_Series</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>0</th>
-          <td>EarlyGranite</td>
-          <td>SimpleMafic2</td>
-          <td>SimpleMafic1</td>
-        </tr>
-        <tr>
-          <th>1</th>
-          <td>EarlyGranite</td>
-          <td>SimpleBIF</td>
-          <td>SimpleMafic1</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
+    <gempy.strat_pile.StratigraphicPile at 0x7f76e43129e8>
 
+
+
+
+.. image:: ch4_files/ch4_3_1.png
 
 
 Setting uncertainties adding the values to the Dataframe.
@@ -84,7 +55,7 @@ Setting uncertainties adding the values to the Dataframe.
 
     geo_data.interfaces['X_std'] = None
     geo_data.interfaces['Y_std'] = 0
-    geo_data.interfaces['Z_std'] = 100
+    geo_data.interfaces['Z_std'] = 800
     
     geo_data.foliations['X_std'] = None
     geo_data.foliations['Y_std'] = 0
@@ -126,6 +97,9 @@ Setting uncertainties adding the values to the Dataframe.
           <th>formation</th>
           <th>series</th>
           <th>order_series</th>
+          <th>isFault</th>
+          <th>formation number</th>
+          <th>annotations</th>
           <th>G_x</th>
           <th>G_y</th>
           <th>G_z</th>
@@ -139,17 +113,20 @@ Setting uncertainties adding the values to the Dataframe.
       <tbody>
         <tr>
           <th>0</th>
-          <td>735082.0630</td>
-          <td>6879102.25</td>
-          <td>480.551436</td>
-          <td>276.153239</td>
+          <td>722403.8130</td>
+          <td>6880913.25</td>
+          <td>470.707065</td>
+          <td>123.702047</td>
           <td>80.0</td>
           <td>1</td>
           <td>EarlyGranite</td>
           <td>EarlyGranite_Series</td>
           <td>1</td>
-          <td>-0.979134</td>
-          <td>0.105560</td>
+          <td>False</td>
+          <td>1</td>
+          <td>${\bf{x}}_{\beta \,{\bf{1}},0}$</td>
+          <td>0.819295</td>
+          <td>-0.546444</td>
           <td>0.173648</td>
           <td>None</td>
           <td>0</td>
@@ -159,17 +136,20 @@ Setting uncertainties adding the values to the Dataframe.
         </tr>
         <tr>
           <th>1</th>
-          <td>715991.2815</td>
-          <td>6882773.25</td>
-          <td>505.165864</td>
-          <td>152.654159</td>
+          <td>718928.3440</td>
+          <td>6883605.50</td>
+          <td>509.462245</td>
+          <td>176.274084</td>
           <td>80.0</td>
           <td>1</td>
           <td>EarlyGranite</td>
           <td>EarlyGranite_Series</td>
           <td>1</td>
-          <td>0.452382</td>
-          <td>-0.874755</td>
+          <td>False</td>
+          <td>1</td>
+          <td>${\bf{x}}_{\beta \,{\bf{1}},1}$</td>
+          <td>0.063996</td>
+          <td>-0.982726</td>
           <td>0.173648</td>
           <td>None</td>
           <td>0</td>
@@ -179,17 +159,20 @@ Setting uncertainties adding the values to the Dataframe.
         </tr>
         <tr>
           <th>2</th>
-          <td>728767.4065</td>
-          <td>6878759.25</td>
-          <td>470.031623</td>
-          <td>165.980598</td>
+          <td>720690.5630</td>
+          <td>6882822.25</td>
+          <td>489.909423</td>
+          <td>254.444427</td>
           <td>80.0</td>
           <td>1</td>
           <td>EarlyGranite</td>
           <td>EarlyGranite_Series</td>
           <td>1</td>
-          <td>0.238570</td>
-          <td>-0.955474</td>
+          <td>False</td>
+          <td>1</td>
+          <td>${\bf{x}}_{\beta \,{\bf{1}},2}$</td>
+          <td>-0.948735</td>
+          <td>-0.264099</td>
           <td>0.173648</td>
           <td>None</td>
           <td>0</td>
@@ -199,17 +182,20 @@ Setting uncertainties adding the values to the Dataframe.
         </tr>
         <tr>
           <th>3</th>
-          <td>730627.5315</td>
-          <td>6880472.50</td>
-          <td>477.402658</td>
-          <td>120.986348</td>
+          <td>721229.0005</td>
+          <td>6880766.25</td>
+          <td>477.680894</td>
+          <td>255.876557</td>
           <td>80.0</td>
           <td>1</td>
           <td>EarlyGranite</td>
           <td>EarlyGranite_Series</td>
           <td>1</td>
-          <td>0.844266</td>
-          <td>-0.507012</td>
+          <td>False</td>
+          <td>1</td>
+          <td>${\bf{x}}_{\beta \,{\bf{1}},3}$</td>
+          <td>-0.955039</td>
+          <td>-0.240305</td>
           <td>0.173648</td>
           <td>None</td>
           <td>0</td>
@@ -219,17 +205,20 @@ Setting uncertainties adding the values to the Dataframe.
         </tr>
         <tr>
           <th>4</th>
-          <td>732683.4690</td>
-          <td>6882332.75</td>
-          <td>481.711952</td>
-          <td>161.600709</td>
+          <td>710459.8440</td>
+          <td>6880521.50</td>
+          <td>511.839758</td>
+          <td>232.658556</td>
           <td>80.0</td>
           <td>1</td>
           <td>EarlyGranite</td>
           <td>EarlyGranite_Series</td>
           <td>1</td>
-          <td>0.310842</td>
-          <td>-0.934464</td>
+          <td>False</td>
+          <td>1</td>
+          <td>${\bf{x}}_{\beta \,{\bf{1}},4}$</td>
+          <td>-0.782957</td>
+          <td>-0.597349</td>
           <td>0.173648</td>
           <td>None</td>
           <td>0</td>
@@ -251,16 +240,47 @@ Setting uncertainties adding the values to the Dataframe.
 
 .. code:: ipython3
 
-    interp_data = gp.InterpolatorInput(geo_data, compile_theano=False,
-                                       u_grade=[9,9,9])
+    interp_data_grav = gp.InterpolatorInput(geo_data, output='gravity', compile_theano=False,
+                                       u_grade=[3, 3, 3])
+
+.. code:: ipython3
+
+    gp.set_geophysics_obj(interp_data_grav,  [7.050000e+05,747000,6863000,6925000,-20000, 200],
+                                                 [50,50], )
+
+
 
 
 .. parsed-literal::
 
-    I am in the setting
-    float32
-    I am here
-    [2, 2]
+    <gempy.GeoPhysics.GeoPhysicsPreprocessing_pro at 0x7f7651566b70>
+
+
+
+.. code:: ipython3
+
+    gp.precomputations_gravity(interp_data_grav, 25, [2.92, 3.1, 2.92, 2.61, 2.61])
+
+
+
+
+.. parsed-literal::
+
+    (array([[  2.32206772e-05,   1.38317570e-05,   4.37779836e-06, ...,
+               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
+            [  2.32206772e-05,   1.38317570e-05,   4.37779837e-06, ...,
+               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
+            [  2.32206772e-05,   1.38317570e-05,   4.37779837e-06, ...,
+               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
+            ..., 
+            [  2.32204160e-05,   1.38316011e-05,   4.37774898e-06, ...,
+               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
+            [  2.32204160e-05,   1.38316011e-05,   4.37774898e-06, ...,
+               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
+            [  2.32204160e-05,   1.38316011e-05,   4.37774898e-06, ...,
+               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06]]),
+     array([False, False, False, ..., False, False, False], dtype=bool))
+
 
 
 Now the generation of the geomodel will be an operation embedded in a
@@ -270,8 +290,17 @@ larger tree.
 
     import theano
     import theano.tensor as T
-    geomodel = theano.OpFromGraph(interp_data.interpolator.tg.input_parameters_list(),
-                                  [interp_data.interpolator.tg.whole_block_model(0)],
+    geomodel = theano.OpFromGraph(interp_data_grav.interpolator.tg.input_parameters_list(),
+                                  interp_data_grav.interpolator.tg.compute_geological_model(n_faults=0, compute_all=True),
+                                  on_unused_input='ignore',
+                                )
+
+.. code:: ipython3
+
+    import theano
+    import theano.tensor as T
+    geomodel = theano.OpFromGraph(interp_data_grav.interpolator.tg.input_parameters_list(),
+                                  [interp_data_grav.interpolator.tg.compute_forward_gravity(n_faults=0, compute_all=True)],
                                   on_unused_input='ignore',
                                 )
 
@@ -298,17 +327,22 @@ we just have to call the theano operation and pymc will do the rest
         # We create the Stochastic parameters. In this case only the Z position
         # of the interfaces
         Z_rest = pm.Normal('Z_unc_rest',
-           interp_data.interpolator.pandas_rest_layer_points['Z'].as_matrix().astype('float32'),
-           interp_data.interpolator.pandas_rest_layer_points['Z_std'].as_matrix().astype('float32'),
+           interp_data_grav.interpolator.pandas_rest_layer_points['Z'].as_matrix().astype('float32'),
+           interp_data_grav.interpolator.pandas_rest_layer_points['Z_std'].as_matrix().astype('float32'),
                       dtype='float32', shape = (66))
         
-        Z_ref = pm.Normal('Z_unc_ref', interp_data.interpolator.ref_layer_points[:, 2].astype('float32'),
-                  interp_data.interpolator.ref_layer_points[:, 2].astype('float32'),
+        Z_ref = pm.Normal('Z_unc_ref', interp_data_grav.interpolator.pandas_ref_layer_points_rep['Z'].astype('float32'),
+                  interp_data_grav.interpolator.pandas_ref_layer_points_rep['Z_std'].astype('float32'),
                   dtype='float32', shape = (66))
-    
+        
+    #     Z_unc = pm.Normal('Z_unc', interp_data_grav.geo_data_res.interfaces['Z'].astype('float32'),
+    #                       interp_data_grav.geo_data_res.interfaces['Z_std'].astype('float32'), dtype='float32', shape= (70))
+        
+    #     interp_data_grav.geo_data_res.interfaces['Z'] = Z_unc
+        
         # We convert a python variable to theano.shared
         input_sh = []
-        for i in interp_data.get_input_data():
+        for i in interp_data_grav.get_input_data():
             input_sh.append(theano.shared(i))
         
         # We add the stochastic value to the correspondant array. rest array is
@@ -322,20 +356,6 @@ we just have to call the theano operation and pymc will do the rest
         # With the stochastic parameters we create the geomodel result:
         geo_model = pm.Deterministic('GemPy', geomodel(input_sh[0], input_sh[1], input_sh[2],
                                                        input_sh[3], input_sh[4], input_sh[5]))
-
-
-.. parsed-literal::
-
-    [9, 9, 9]
-
-
-.. parsed-literal::
-
-    /home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 2.4215285776563178e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-
 
 .. code:: ipython3
 
@@ -351,196 +371,173 @@ we just have to call the theano operation and pymc will do the rest
 
 .. parsed-literal::
 
-      0%|          | 0/40 [00:00<?, ?it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 2.4215285776563178e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-      8%|▊         | 3/40 [00:04<01:18,  2.13s/it]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 3.6804916447863434e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-     10%|█         | 4/40 [00:05<01:00,  1.69s/it]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 4.177091028623181e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-     12%|█▎        | 5/40 [00:06<00:48,  1.38s/it]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 2.817358790707658e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-     15%|█▌        | 6/40 [00:06<00:39,  1.16s/it]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 5.478779740997197e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-     18%|█▊        | 7/40 [00:07<00:33,  1.01s/it]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 4.4421348377454706e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-     20%|██        | 8/40 [00:08<00:28,  1.11it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 5.4531707149862996e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-     28%|██▊       | 11/40 [00:10<00:21,  1.36it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 4.235039341438096e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-     40%|████      | 16/40 [00:13<00:15,  1.51it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 5.433537708654512e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-     42%|████▎     | 17/40 [00:14<00:15,  1.52it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 4.1121396066046145e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-     45%|████▌     | 18/40 [00:14<00:14,  1.52it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 4.794599561819268e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-     85%|████████▌ | 34/40 [00:25<00:03,  1.53it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 3.8119761569532784e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-     92%|█████████▎| 37/40 [00:27<00:01,  1.51it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 4.07877926988931e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-     98%|█████████▊| 39/40 [00:28<00:00,  1.47it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 3.935079107009187e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-    100%|██████████| 40/40 [00:29<00:00,  1.47it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/pymc3/step_methods/hmc/nuts.py:418: UserWarning: Chain 0 contains only 30 samples.
+    100%|██████████| 40/40 [01:36<00:00,  2.25s/it]/home/miguel/anaconda3/lib/python3.6/site-packages/pymc3/step_methods/hmc/nuts.py:418: UserWarning: Chain 0 contains only 30 samples.
       % (self._chain_id, n))
-    /home/miguel/anaconda3/lib/python3.6/site-packages/pymc3/step_methods/hmc/nuts.py:448: UserWarning: Chain 0 reached the maximum tree depth. Increase max_treedepth, increase target_accept or reparameterize.
-      'reparameterize.' % self._chain_id)
+    /home/miguel/anaconda3/lib/python3.6/site-packages/pymc3/step_methods/hmc/nuts.py:440: UserWarning: The acceptance probability in chain 0 does not match the target. It is 0.955144655704, but should be close to 0.8. Try to increase the number of tuning steps.
+      % (self._chain_id, mean_accept, target_accept))
     
+
+
+.. code:: ipython3
+
+    trace.get_values('GemPy')[5] -  trace.get_values('GemPy')[15]
+
+
+
+
+.. parsed-literal::
+
+    array([-0.00171852, -0.00116444, -0.00116444, ...,  0.        ,
+            0.        ,  0.        ], dtype=float32)
+
+
+
+.. code:: ipython3
+
+    import matplotlib.pyplot as plt
+    plt.imshow(trace.get_values('GemPy')[-10].reshape(50,50), cmap='viridis', origin='lower', extent=[7.050000e+05,747000,6863000,6950000] )
+    plt.colorbar()
+
+
+
+
+.. parsed-literal::
+
+    <matplotlib.colorbar.Colorbar at 0x7f75f9def2e8>
+
+
+
+
+.. image:: ch4_files/ch4_17_1.png
 
 
 .. code:: ipython3
 
     import matplotlib.pyplot as plt
     for i in range(100):
-        gp.plot_section(geo_data, trace.get_values('GemPy')[i][-1, 0, :], 13,
+        gp.plot_section(geo_data, trace.get_values('GemPy')[i][0, :], 18,
                            direction='y', plot_data=False)
         plt.show()
 
 
 
-.. image:: ch4_files/ch4_13_0.png
+.. image:: ch4_files/ch4_18_0.png
 
 
 
-.. image:: ch4_files/ch4_13_1.png
+.. image:: ch4_files/ch4_18_1.png
 
 
 
-.. image:: ch4_files/ch4_13_2.png
+.. image:: ch4_files/ch4_18_2.png
 
 
 
-.. image:: ch4_files/ch4_13_3.png
+.. image:: ch4_files/ch4_18_3.png
 
 
 
-.. image:: ch4_files/ch4_13_4.png
+.. image:: ch4_files/ch4_18_4.png
 
 
 
-.. image:: ch4_files/ch4_13_5.png
+.. image:: ch4_files/ch4_18_5.png
 
 
 
-.. image:: ch4_files/ch4_13_6.png
+.. image:: ch4_files/ch4_18_6.png
 
 
 
-.. image:: ch4_files/ch4_13_7.png
+.. image:: ch4_files/ch4_18_7.png
 
 
 
-.. image:: ch4_files/ch4_13_8.png
+.. image:: ch4_files/ch4_18_8.png
 
 
 
-.. image:: ch4_files/ch4_13_9.png
+.. image:: ch4_files/ch4_18_9.png
 
 
 
-.. image:: ch4_files/ch4_13_10.png
+.. image:: ch4_files/ch4_18_10.png
 
 
 
-.. image:: ch4_files/ch4_13_11.png
+.. image:: ch4_files/ch4_18_11.png
 
 
 
-.. image:: ch4_files/ch4_13_12.png
+.. image:: ch4_files/ch4_18_12.png
 
 
 
-.. image:: ch4_files/ch4_13_13.png
+.. image:: ch4_files/ch4_18_13.png
 
 
 
-.. image:: ch4_files/ch4_13_14.png
+.. image:: ch4_files/ch4_18_14.png
 
 
 
-.. image:: ch4_files/ch4_13_15.png
+.. image:: ch4_files/ch4_18_15.png
 
 
 
-.. image:: ch4_files/ch4_13_16.png
+.. image:: ch4_files/ch4_18_16.png
 
 
 
-.. image:: ch4_files/ch4_13_17.png
+.. image:: ch4_files/ch4_18_17.png
 
 
 
-.. image:: ch4_files/ch4_13_18.png
+.. image:: ch4_files/ch4_18_18.png
 
 
 
-.. image:: ch4_files/ch4_13_19.png
+.. image:: ch4_files/ch4_18_19.png
 
 
 
-.. image:: ch4_files/ch4_13_20.png
+.. image:: ch4_files/ch4_18_20.png
 
 
 
-.. image:: ch4_files/ch4_13_21.png
+.. image:: ch4_files/ch4_18_21.png
 
 
 
-.. image:: ch4_files/ch4_13_22.png
+.. image:: ch4_files/ch4_18_22.png
 
 
 
-.. image:: ch4_files/ch4_13_23.png
+.. image:: ch4_files/ch4_18_23.png
 
 
 
-.. image:: ch4_files/ch4_13_24.png
+.. image:: ch4_files/ch4_18_24.png
 
 
 
-.. image:: ch4_files/ch4_13_25.png
+.. image:: ch4_files/ch4_18_25.png
 
 
 
-.. image:: ch4_files/ch4_13_26.png
+.. image:: ch4_files/ch4_18_26.png
 
 
 
-.. image:: ch4_files/ch4_13_27.png
+.. image:: ch4_files/ch4_18_27.png
 
 
 
-.. image:: ch4_files/ch4_13_28.png
+.. image:: ch4_files/ch4_18_28.png
 
 
 
-.. image:: ch4_files/ch4_13_29.png
+.. image:: ch4_files/ch4_18_29.png
 
 
 ::
@@ -550,14 +547,26 @@ we just have to call the theano operation and pymc will do the rest
 
     IndexError                                Traceback (most recent call last)
 
-    <ipython-input-10-bb562bc0d205> in <module>()
+    <ipython-input-13-2e039459f740> in <module>()
           1 import matplotlib.pyplot as plt
           2 for i in range(100):
-    ----> 3     gp.plot_section(geo_data, trace.get_values('GemPy')[i][-1, 0, :], 13,
+    ----> 3     gp.plot_section(geo_data, trace.get_values('GemPy')[i][0, :], 18,
           4                        direction='y', plot_data=False)
           5     plt.show()
 
 
     IndexError: index 30 is out of bounds for axis 0 with size 30
+
+
+.. code:: ipython3
+
+    from theano.printing import pydotprint
+    
+    pydotprint(model.logpt)
+
+
+.. parsed-literal::
+
+    The output file is available at /home/miguel/.theano/compiledir_Linux-4.10--generic-x86_64-with-debian-stretch-sid-x86_64-3.6.1-64/theano.pydotprint.cpu.png
 
 

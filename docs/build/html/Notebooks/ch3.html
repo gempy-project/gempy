@@ -80,7 +80,9 @@ initialize the GemPy data object:</p>
 <span class="n">cs</span> <span class="o">=</span> <span class="mi">50</span>
 <span class="n">extent</span> <span class="o">=</span> <span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="mi">200</span><span class="p">,</span> <span class="mi">2000</span><span class="p">)</span>  <span class="c1"># (x, y, z)</span>
 <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="mi">120</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
-<span class="c1"># initialize geo_data object</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># initialize geo_data object</span>
 <span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                            <span class="mi">0</span><span class="p">,</span> <span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
                            <span class="mi">0</span><span class="p">,</span> <span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]],</span>
@@ -223,19 +225,19 @@ by:</p>
 <span class="n">gp</span><span class="o">.</span><span class="n">get_stratigraphic_pile</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">strat_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7fdfb1f38780</span><span class="o">&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">strat_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7f053b6ccb70</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_9_1.png" src="../_images/ch3_9_1.png" />
+<img alt="../_images/ch3_10_1.png" src="../_images/ch3_10_1.png" />
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Ordered pile</span>
 <span class="n">gp</span><span class="o">.</span><span class="n">set_order_formations</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;Layer 2&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer 3&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer 4&#39;</span><span class="p">,</span><span class="s1">&#39;Layer 5&#39;</span><span class="p">])</span>
 <span class="n">gp</span><span class="o">.</span><span class="n">get_stratigraphic_pile</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">strat_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7fdf810ca278</span><span class="o">&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">strat_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7f04c4685438</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_10_1.png" src="../_images/ch3_10_1.png" />
+<img alt="../_images/ch3_11_1.png" src="../_images/ch3_11_1.png" />
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># and at all of the foliation data</span>
 <span class="n">gp</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="s1">&#39;foliations&#39;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
@@ -302,7 +304,7 @@ by:</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2000</span><span class="p">);</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_13_0.png" src="../_images/ch3_13_0.png" />
+<img alt="../_images/ch3_14_0.png" src="../_images/ch3_14_0.png" />
 <p>At this point we should store the input data object as a pickle, for
 future reference:</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">data_to_pickle</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="s2">&quot;pymc2_tutorial_geo_data&quot;</span><span class="p">)</span>
@@ -316,15 +318,9 @@ interpolator function of GemPy with the imported model setup and data:</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Level</span> <span class="n">of</span> <span class="n">Optimization</span><span class="p">:</span>  <span class="n">fast_run</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Level</span> <span class="n">of</span> <span class="n">Optimization</span><span class="p">:</span>  <span class="n">fast_compile</span>
 <span class="n">Device</span><span class="p">:</span>  <span class="n">cpu</span>
 <span class="n">Precision</span><span class="p">:</span>  <span class="n">float32</span>
-</pre></div>
-</div>
-<p>For the stochastic simulation we need to modify data inside of the
-interp_data object. To always have our initial input data as a
-reference, we create an additional interpolator data object:</p>
-<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1">#interp_data_original = gp.InterpolatorInput(geo_data, u_grade=[3])</span>
 </pre></div>
 </div>
 <p>Afterwards we can compute the geological model:</p>
@@ -335,11 +331,10 @@ reference, we create an additional interpolator data object:</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="n">plot_data</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_23_0.png" src="../_images/ch3_23_0.png" />
-</div>
+<img alt="../_images/ch3_22_0.png" src="../_images/ch3_22_0.png" />
 </div>
 <div class="section" id="setting-up-the-pymc-functions">
-<h1>Setting up the pymc-Functions<a class="headerlink" href="#setting-up-the-pymc-functions" title="Permalink to this headline">¶</a></h1>
+<h2>Setting up the pymc-Functions<a class="headerlink" href="#setting-up-the-pymc-functions" title="Permalink to this headline">¶</a></h2>
 <p>pymc has two distinct types of objects: <strong>deterministic</strong> and
 <strong>stochastic</strong> objects. As the <a class="reference external" href="https://pymc-devs.github.io/pymc/modelbuilding.html">pymc
 documentation</a>
@@ -355,11 +350,16 @@ always creates the same model from those parameters.</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pymc</span>
 </pre></div>
 </div>
+</div>
 <div class="section" id="setting-up-the-parameter-distributions">
 <h2>Setting up the parameter distributions<a class="headerlink" href="#setting-up-the-parameter-distributions" title="Permalink to this headline">¶</a></h2>
 <p>For conducting a stochastic simulation of the geological model, we need
 to consider our input data (dips and layer interfaces) as uncertain -
 i.e. as distributions.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Checkpoint in case you did not execute the cells above</span>
+<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;./pymc2_tutorial_geo_data.pickle&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="s1">&#39;foliations&#39;</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
 </pre></div>
 </div>
@@ -474,10 +474,6 @@ a/b the side of the anticline.</p>
 <div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="s1">&#39;l2_a&#39;</span> <span class="s1">&#39;l2_b&#39;</span> <span class="s1">&#39;l3_a&#39;</span> <span class="s1">&#39;l3_b&#39;</span> <span class="s1">&#39;l4_a&#39;</span> <span class="s1">&#39;l4_b&#39;</span> <span class="s1">&#39;l5_a&#39;</span> <span class="s1">&#39;l5_b&#39;</span><span class="p">]</span>
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Checkpoint in case you did not execute the cells above</span>
-<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s2">&quot;./pymc2_tutorial_geo_data.pickle&quot;</span><span class="p">)</span>
-</pre></div>
-</div>
 <p>As a reminder, GemPy stores data in two main objects, an InputData
 object (called geo_data in the tutorials) and a InpterpolatorInput
 object (interp_data) in tutorials. geo_data contains the original data
@@ -495,7 +491,7 @@ created the rescaling happens under the hood.</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interface_Z_modifier</span> <span class="o">=</span> <span class="p">[]</span>
 
 <span class="c1"># We rescale the standard deviation</span>
-<span class="n">std</span> <span class="o">=</span> <span class="mf">30.</span><span class="o">/</span><span class="n">interp_data</span><span class="o">.</span><span class="n">rescaling_factor</span>
+<span class="n">std</span> <span class="o">=</span> <span class="mf">100.</span><span class="o">/</span><span class="n">interp_data</span><span class="o">.</span><span class="n">rescaling_factor</span>
 
 <span class="c1"># loop over the unique group id&#39;s and create a pymc.Normal distribution for each</span>
 <span class="k">for</span> <span class="n">gID</span> <span class="ow">in</span> <span class="n">group_ids</span><span class="p">:</span>
@@ -507,14 +503,14 @@ created the rescaling happens under the hood.</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interface_Z_modifier</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l2_a_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7fdf80fc4f60</span><span class="o">&gt;</span><span class="p">,</span>
- <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l2_b_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7fdf66f49128</span><span class="o">&gt;</span><span class="p">,</span>
- <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l3_a_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7fdf66f49278</span><span class="o">&gt;</span><span class="p">,</span>
- <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l3_b_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7fdf66f49da0</span><span class="o">&gt;</span><span class="p">,</span>
- <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l4_a_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7fdf66f49b00</span><span class="o">&gt;</span><span class="p">,</span>
- <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l4_b_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7fdf66f5a828</span><span class="o">&gt;</span><span class="p">,</span>
- <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l5_a_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7fdf66f5a908</span><span class="o">&gt;</span><span class="p">,</span>
- <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l5_b_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7fdf66f5a7b8</span><span class="o">&gt;</span><span class="p">]</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l2_a_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7f04b0261be0</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l2_b_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7f04c4685fd0</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l3_a_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7f04c454e780</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l3_b_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7f04b023d1d0</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l4_a_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7f04b02611d0</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l4_b_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7f04b0261240</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l5_a_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7f04b0261320</span><span class="o">&gt;</span><span class="p">,</span>
+ <span class="o">&lt;</span><span class="n">pymc</span><span class="o">.</span><span class="n">distributions</span><span class="o">.</span><span class="n">new_dist_class</span><span class="o">.&lt;</span><span class="nb">locals</span><span class="o">&gt;.</span><span class="n">new_class</span> <span class="s1">&#39;l5_b_stoch&#39;</span> <span class="n">at</span> <span class="mh">0x7f04b0261b38</span><span class="o">&gt;</span><span class="p">]</span>
 </pre></div>
 </div>
 <p>Let’s have a look at one:</p>
@@ -528,7 +524,7 @@ created the rescaling happens under the hood.</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s2">&quot;n&quot;</span><span class="p">);</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_37_0.png" src="../_images/ch3_37_0.png" />
+<img alt="../_images/ch3_36_0.png" src="../_images/ch3_36_0.png" />
 <p>Now we need to somehow sample from these distribution and put them into
 GemPy</p>
 </div>
@@ -614,7 +610,7 @@ operation is deterministic).</p>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">lith_block</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">fault_block</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_43_0.png" src="../_images/ch3_43_0.png" />
+<img alt="../_images/ch3_42_0.png" src="../_images/ch3_42_0.png" />
 <p>We then create a pymc model with the two deterministic functions
 (<em>input_data</em> and <em>gempy_model</em>), as well as all the prior parameter
 distributions stored in the list <em>interface_Z_modifier</em>:</p>
@@ -636,13 +632,12 @@ hdf5 database to store the results in:</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">RUN</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">iter</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">-----------------</span><span class="mi">100</span><span class="o">%-----------------</span><span class="p">]</span> <span class="mi">100</span> <span class="n">of</span> <span class="mi">100</span> <span class="n">complete</span> <span class="ow">in</span> <span class="mf">7.9</span> <span class="n">sec</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="o">-----------------</span><span class="mi">100</span><span class="o">%-----------------</span><span class="p">]</span> <span class="mi">100</span> <span class="n">of</span> <span class="mi">100</span> <span class="n">complete</span> <span class="ow">in</span> <span class="mf">7.6</span> <span class="n">sec</span>
 </pre></div>
 </div>
 </div>
-</div>
 <div class="section" id="analyzing-the-results">
-<h1>Analyzing the results<a class="headerlink" href="#analyzing-the-results" title="Permalink to this headline">¶</a></h1>
+<h2>Analyzing the results<a class="headerlink" href="#analyzing-the-results" title="Permalink to this headline">¶</a></h2>
 <p>When we want to analyze the results, we first have to load the stored
 geo_data object:</p>
 <p>(this part is only necessary if the notebook above is not executed)</p>
@@ -653,15 +648,15 @@ geo_data object:</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_stratigraphic_pile</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">strat_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7fdf6e238160</span><span class="o">&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">strat_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7f04c4523be0</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_55_1.png" src="../_images/ch3_55_1.png" />
+<img alt="../_images/ch3_54_1.png" src="../_images/ch3_54_1.png" />
 <p>Then we can then compile the GemPy modeling function:</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Level</span> <span class="n">of</span> <span class="n">Optimization</span><span class="p">:</span>  <span class="n">fast_run</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Level</span> <span class="n">of</span> <span class="n">Optimization</span><span class="p">:</span>  <span class="n">fast_compile</span>
 <span class="n">Device</span><span class="p">:</span>  <span class="n">cpu</span>
 <span class="n">Precision</span><span class="p">:</span>  <span class="n">float32</span>
 </pre></div>
@@ -671,7 +666,7 @@ geo_data object:</p>
 <span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_59_0.png" src="../_images/ch3_59_0.png" />
+<img alt="../_images/ch3_58_0.png" src="../_images/ch3_58_0.png" />
 <p>But of course we want to look at the perturbation results. We have a
 class for that:</p>
 <p>(in the mid term the most important methods of this class will be moved
@@ -696,29 +691,32 @@ to the gempy main framework—i.e. gp)</p>
 trace flag for the gempy_model function to False!). But we can just
 replace the input data with the ones stored at each iteration. So let’s
 plot the model result of the 85th iteration:</p>
-<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">post</span><span class="o">.</span><span class="n">change_input_data</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">post</span><span class="o">.</span><span class="n">change_input_data</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="mi">80</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">DataManagement</span><span class="o">.</span><span class="n">InterpolatorInput</span> <span class="n">at</span> <span class="mh">0x7f04ae8ffb70</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <p>Then we compute the model and plot it:</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">lith_block</span><span class="p">,</span> <span class="n">fault_block</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
-<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_67_0.png" src="../_images/ch3_67_0.png" />
+<img alt="../_images/ch3_66_0.png" src="../_images/ch3_66_0.png" />
 <p>or the 34th:</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">post</span><span class="o">.</span><span class="n">change_input_data</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="mi">34</span><span class="p">)</span>
 <span class="n">lith_block</span><span class="p">,</span> <span class="n">fault_block</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
-<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_69_0.png" src="../_images/ch3_69_0.png" />
+<img alt="../_images/ch3_68_0.png" src="../_images/ch3_68_0.png" />
 <p>or the 95th:</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">post</span><span class="o">.</span><span class="n">change_input_data</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="mi">95</span><span class="p">)</span>
 <span class="n">lith_block</span><span class="p">,</span> <span class="n">fault_block</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
 <span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/ch3_71_0.png" src="../_images/ch3_71_0.png" />
+<img alt="../_images/ch3_70_0.png" src="../_images/ch3_70_0.png" />
 <p>As you can see, we have successfully perturbated the vertical layer
 interface positions - although only like a 100 times. While some models
 represent reasonable, geologically meaningful systems, some may not.
@@ -728,6 +726,17 @@ results do not get validated in any sense. This where Bayesian inference
 comes into play, as a method to constrain modeling outcomes by the use
 of geological likelihood functions. We will introduce you to the
 approach and how to use it with GemPy and pymc in the following chapter.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">ver</span><span class="p">,</span> <span class="n">sim</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span><span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">None</span><span class="p">,</span> <span class="n">original_scale</span><span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_surfaces_3D_real_time</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">ver</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">posterior</span><span class="o">=</span><span class="n">post</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">miguel</span><span class="o">/</span><span class="n">anaconda3</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="o">.</span><span class="mi">6</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">scipy</span><span class="o">/</span><span class="n">linalg</span><span class="o">/</span><span class="n">basic</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">223</span><span class="p">:</span> <span class="ne">RuntimeWarning</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span>
+<span class="n">Ill</span><span class="o">-</span><span class="n">conditioned</span> <span class="n">matrix</span> <span class="n">detected</span><span class="o">.</span> <span class="n">Result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">guaranteed</span> <span class="n">to</span> <span class="n">be</span> <span class="n">accurate</span><span class="o">.</span>
+<span class="n">Reciprocal</span> <span class="n">condition</span> <span class="n">number</span><span class="p">:</span> <span class="mf">5.822892035212135e-08</span>
+  <span class="s1">&#39; condition number: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rcond</span><span class="p">),</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </div>
 
 
@@ -748,15 +757,13 @@ approach and how to use it with GemPy and pymc in the following chapter.</p>
 <li class="toctree-l3"><a class="reference internal" href="#initialize-an-example-model">Initialize an example model</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#visualize-the-input-data">Visualize the input data</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#compile-the-interpolator-function">Compile the interpolator function</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#setting-up-the-pymc-functions">Setting up the pymc-Functions</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#setting-up-the-pymc-functions">Setting up the pymc-Functions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#setting-up-the-parameter-distributions">Setting up the parameter distributions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#input-data-handling">Input data handling</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#modeling-function">Modeling function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analyzing-the-results">Analyzing the results</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#analyzing-the-results">Analyzing the results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ch4.html">Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)</a></li>
 </ul>
 </li>
