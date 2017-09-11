@@ -28,7 +28,7 @@ import theano.tensor as T
 import numpy as np
 import sys
 
-theano.config.optimizer = 'fast_compile'
+theano.config.optimizer = 'fast_run'
 theano.config.exception_verbosity = 'high'
 theano.config.compute_test_value = 'off'
 theano.config.floatX = 'float32'
@@ -1420,7 +1420,7 @@ class TheanoGraph_pro(object):
 
         pfai = T.vertical_stack(pfai_fault, pfai_lith)
 
-        return lith_matrix[-1, :, :-2 * self.len_points], fault_matrix[-1, :, :-2 * self.len_points], pfai
+        return [lith_matrix[-1, :, :-2 * self.len_points], fault_matrix[-1, :, :-2 * self.len_points], pfai]
 
     # ==================================
     # Geophysics

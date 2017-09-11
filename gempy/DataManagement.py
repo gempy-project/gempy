@@ -1364,7 +1364,7 @@ class InterpolatorInput:
             #      for i in self._data_scaled.foliations['formation number'].unique()])
 
             # -DEP- I think this was just a kind of print to know what was going on
-            #self.pandas_rest = pandas_rest_layer_points
+        #    self.pandas_rest = pandas_rest_layer_points
 
             # Array containing the size of every series. Interfaces.
             len_series_i = np.asarray(
@@ -1401,7 +1401,7 @@ class InterpolatorInput:
             # ================
             # Rest layers matrix # PYTHON VAR
             rest_layer_points = pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix()
-
+          #  self.rest_layer_points = rest_layer_points
             # TODO delete
             # -DEP- Again i was just a check point
             # self.rest_layer_points = rest_layer_points
@@ -1419,8 +1419,8 @@ class InterpolatorInput:
             ref_layer_points = pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()
 
             # -DEP- was just a check point
-            # self.ref_layer_points = ref_layer_points
-
+            self.ref_layer_points = ref_layer_points
+            self.pandas_ref_layer_points_rep = pandas_ref_layer_points_rep
             # Check no reference points in rest points (at least in coor x)
             assert not any(ref_layer_points[:, 0]) in rest_layer_points[:, 0], \
                 'A reference point is in the rest list point. Check you do ' \
