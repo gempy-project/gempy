@@ -142,7 +142,7 @@ but is only how Pandas print tables.
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7fc851df16a0>
+    <gempy.strat_pile.StratigraphicPile at 0x7fa8f69f0588>
 
 
 
@@ -172,7 +172,7 @@ object and compute the model.
 
 .. parsed-literal::
 
-    Level of Optimization:  fast_compile
+    Level of Optimization:  fast_run
     Device:  cpu
     Precision:  float32
 
@@ -200,6 +200,19 @@ coding is working process yet.
 
 .. code:: ipython3
 
+    import matplotlib.pyplot as plt
+    
+    gp.plot_section(geo_data, lith_block[0], -1, plot_data=True, direction='z')
+    fig = plt.gcf()
+    fig.set_size_inches(18.5, 10.5)
+
+
+
+.. image:: ch2_files/ch2_19_0.png
+
+
+.. code:: ipython3
+
     %matplotlib inline
     gp.plot_section(geo_data, lith_block[0],25, plot_data=True, direction='x')
     fig = plt.gcf()
@@ -207,7 +220,7 @@ coding is working process yet.
 
 
 
-.. image:: ch2_files/ch2_19_0.png
+.. image:: ch2_files/ch2_20_0.png
 
 
 The second row keeps the potential field:
@@ -223,12 +236,12 @@ The second row keeps the potential field:
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x7f2f98338ef0>
+    <matplotlib.colorbar.Colorbar at 0x7fa8e40e4a90>
 
 
 
 
-.. image:: ch2_files/ch2_21_1.png
+.. image:: ch2_files/ch2_22_1.png
 
 
 And the axis 2 keeps the faults network that in this model since there

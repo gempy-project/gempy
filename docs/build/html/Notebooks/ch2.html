@@ -151,7 +151,7 @@ but is only how Pandas print tables.</p>
               <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">strat_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7fc851df16a0</span><span class="o">&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">strat_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7fa8f69f0588</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <img alt="../_images/ch2_11_1.png" src="../_images/ch2_11_1.png" />
@@ -167,7 +167,7 @@ object and compute the model.</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Level</span> <span class="n">of</span> <span class="n">Optimization</span><span class="p">:</span>  <span class="n">fast_compile</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Level</span> <span class="n">of</span> <span class="n">Optimization</span><span class="p">:</span>  <span class="n">fast_run</span>
 <span class="n">Device</span><span class="p">:</span>  <span class="n">cpu</span>
 <span class="n">Precision</span><span class="p">:</span>  <span class="n">float32</span>
 </pre></div>
@@ -186,23 +186,31 @@ coding is working process yet.</p>
 </pre></div>
 </div>
 <img alt="../_images/ch2_18_0.png" src="../_images/ch2_18_0.png" />
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mf">18.5</span><span class="p">,</span> <span class="mf">10.5</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch2_19_0.png" src="../_images/ch2_19_0.png" />
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
 <span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="mi">25</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;x&#39;</span><span class="p">)</span>
 <span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
 <span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mf">18.5</span><span class="p">,</span> <span class="mf">10.5</span><span class="p">)</span>
 </pre></div>
 </div>
-<img alt="../_images/ch2_19_0.png" src="../_images/ch2_19_0.png" />
+<img alt="../_images/ch2_20_0.png" src="../_images/ch2_20_0.png" />
 <p>The second row keeps the potential field:</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_potential_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">11</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;inferno_r&#39;</span><span class="p">)</span>
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">colorbar</span><span class="o">.</span><span class="n">Colorbar</span> <span class="n">at</span> <span class="mh">0x7f2f98338ef0</span><span class="o">&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">colorbar</span><span class="o">.</span><span class="n">Colorbar</span> <span class="n">at</span> <span class="mh">0x7fa8e40e4a90</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<img alt="../_images/ch2_21_1.png" src="../_images/ch2_21_1.png" />
+<img alt="../_images/ch2_22_1.png" src="../_images/ch2_22_1.png" />
 <p>And the axis 2 keeps the faults network that in this model since there
 is not faults does not represent anything.</p>
 <p>Additionally with can export the blocks to vtk in order to visualize
@@ -237,8 +245,6 @@ them in Paraview. We are working in visualization in place as well.</p>
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="ch3.html">Chapter 3: Stochastic Simulations in pymc2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ch3.html#setting-up-the-pymc-functions">Setting up the pymc-Functions</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ch3.html#analyzing-the-results">Analyzing the results</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ch4.html">Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)</a></li>
 </ul>
 </li>

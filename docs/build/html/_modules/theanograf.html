@@ -73,7 +73,7 @@
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
-<span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="s1">&#39;fast_run&#39;</span>
+<span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimizer</span> <span class="o">=</span> <span class="s1">&#39;fast_compile&#39;</span>
 <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">exception_verbosity</span> <span class="o">=</span> <span class="s1">&#39;high&#39;</span>
 <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">compute_test_value</span> <span class="o">=</span> <span class="s1">&#39;off&#39;</span>
 <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">floatX</span> <span class="o">=</span> <span class="s1">&#39;float32&#39;</span>
@@ -88,7 +88,7 @@
 <span class="sd">    of these methods is more and more difficult to provide (if you are in a branch close to the trunk you need all the</span>
 <span class="sd">    results of the branches above)</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;geology&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        In the init we need to create all the symbolic parameters that are used in the process. Most of the variables</span>
 <span class="sd">        are shared parameters initialized with random values. At this stage we only care about the type and shape of the</span>
@@ -197,6 +197,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults_op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span>
         <span class="c1">#self.potential_field_at_interfaces_value   = theano.shared(np.cast[np.int64](np.zeros((2, 2))), &#39;Potential field value at each interface&#39;,)</span>
 
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="s1">&#39;gravity&#39;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">densities</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="s1">&#39;float32&#39;</span><span class="p">](</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)),</span> <span class="s2">&quot;List with the densities&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tz</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="s1">&#39;float32&#39;</span><span class="p">](</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">))),</span> <span class="s2">&quot;Component z&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">select</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">cast</span><span class="p">[</span><span class="s1">&#39;float32&#39;</span><span class="p">](</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">)),</span> <span class="s2">&quot;Select nearby cells&quot;</span><span class="p">)</span>
+
 <div class="viewcode-block" id="TheanoGraph_pro.input_parameters_list"><a class="viewcode-back" href="../code.html#theanograf.TheanoGraph_pro.input_parameters_list">[docs]</a>    <span class="k">def</span> <span class="nf">input_parameters_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create a list with the symbolic variables to use when we compile the theano function</span>
@@ -243,7 +248,10 @@
         <span class="c1"># else:</span>
         <span class="c1">#     length_of_U_I = 3**self.u_grade_T</span>
         <span class="n">length_of_U_I</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_grade_T_op</span>
-        <span class="n">length_of_faults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># Self fault matrix contains the block and the potential field (I am not able to split them). Therefore we need</span>
+        <span class="c1"># to divide it by 2</span>
+        <span class="n">length_of_faults</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="s1">&#39;int64&#39;</span><span class="p">)</span>
         <span class="n">length_of_C</span> <span class="o">=</span> <span class="n">length_of_CG</span> <span class="o">+</span> <span class="n">length_of_CGI</span> <span class="o">+</span> <span class="n">length_of_U_I</span> <span class="o">+</span> <span class="n">length_of_faults</span>
 
         <span class="k">if</span> <span class="s1">&#39;matrices_shapes&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
@@ -556,15 +564,15 @@
 <span class="sd">            discrete values this matrix will be null since the derivative of a constant is 0</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
-        <span class="n">lenght_of_CG</span><span class="p">,</span> <span class="n">lenght_of_CGI</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrices_shapes</span><span class="p">()[:</span><span class="mi">2</span><span class="p">]</span>
+        <span class="n">length_of_CG</span><span class="p">,</span> <span class="n">length_of_CGI</span><span class="p">,</span> <span class="n">length_of_U_I</span><span class="p">,</span> <span class="n">length_of_faults</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">matrices_shapes</span><span class="p">()[:</span><span class="mi">4</span><span class="p">]</span>
 
         <span class="c1"># self.fault_matrix contains the faults volume of the grid and the rest and ref points. For the drift we need</span>
         <span class="c1"># to make it relative to the reference point</span>
       <span class="c1">#  self.len_points = self.rest_layer_points_all.shape[0]</span>
         <span class="n">interface_loc</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span>
 
-        <span class="n">fault_matrix_at_interfaces_rest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span><span class="p">[:,</span> <span class="n">interface_loc</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">len_i_0</span><span class="p">:</span> <span class="n">interface_loc</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">len_i_1</span><span class="p">]</span>
-        <span class="n">fault_matrix_at_interfaces_ref</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span><span class="p">[:,</span> <span class="n">interface_loc</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">len_i_0</span><span class="p">:</span>
+        <span class="n">fault_matrix_at_interfaces_rest</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span><span class="p">[::</span><span class="mi">2</span><span class="p">,</span> <span class="n">interface_loc</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">len_i_0</span><span class="p">:</span> <span class="n">interface_loc</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">len_i_1</span><span class="p">]</span>
+        <span class="n">fault_matrix_at_interfaces_ref</span>  <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span><span class="p">[::</span><span class="mi">2</span><span class="p">,</span> <span class="n">interface_loc</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">len_i_0</span><span class="p">:</span>
                                                                <span class="n">interface_loc</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="o">+</span><span class="bp">self</span><span class="o">.</span><span class="n">len_i_1</span><span class="p">]</span>
 
        <span class="c1"># len_points_i = 2*self.rest_layer_points_all.shape[0] + self.n_formation_op[0]-1</span>
@@ -572,13 +580,14 @@
 
      <span class="c1">#   F_I = (self.fault_matrix[:, -2*len_points:-len_points] - self.fault_matrix[:, -len_points:])[self.n_formation_op-1]</span>
 
-        <span class="n">F_I</span> <span class="o">=</span> <span class="n">fault_matrix_at_interfaces_ref</span> <span class="o">-</span> <span class="n">fault_matrix_at_interfaces_rest</span>
+        <span class="n">F_I</span> <span class="o">=</span> <span class="p">(</span><span class="n">fault_matrix_at_interfaces_ref</span> <span class="o">-</span> <span class="n">fault_matrix_at_interfaces_rest</span><span class="p">)</span><span class="o">+</span><span class="mf">0.01</span>
 
         <span class="c1"># As long as the drift is a constant F_G is null</span>
-        <span class="n">F_G</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">lenght_of_CG</span><span class="p">))</span>
+        <span class="n">F_G</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">length_of_faults</span><span class="p">,</span> <span class="n">length_of_CG</span><span class="p">))</span>
 
         <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="n">F_I</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;Faults interfaces matrix&#39;</span><span class="p">)(</span><span class="n">F_I</span><span class="p">)</span>
+            <span class="n">F_G</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;Faults gradients matrix&#39;</span><span class="p">)(</span><span class="n">F_G</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">F_I</span><span class="p">,</span> <span class="n">F_G</span></div>
 
@@ -926,7 +935,7 @@
         <span class="n">grid_val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">x_to_interpolate</span><span class="p">()</span>
 
         <span class="c1"># Contribution</span>
-        <span class="n">f_1</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="o">+</span><span class="n">length_of_U_I</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span><span class="p">[:,</span> <span class="p">:</span><span class="n">grid_val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">f_1</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">weights</span><span class="p">[</span><span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="o">+</span><span class="n">length_of_U_I</span><span class="p">:,</span> <span class="p">:]</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span><span class="p">[::</span><span class="mi">2</span><span class="p">,</span> <span class="p">:</span><span class="n">grid_val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 
         <span class="c1"># Add name to the theano node</span>
         <span class="n">f_1</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Faults contribution&#39;</span>
@@ -1370,6 +1379,8 @@
     <span class="c1">#     return all_series, pfai</span>
 
     <span class="k">def</span> <span class="nf">compute_geological_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_faults</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+
+
         <span class="c1"># Init all</span>
         <span class="k">if</span> <span class="n">compute_all</span><span class="p">:</span>
             <span class="c1"># Change the flag to extend the graph in the compute fault and compute series function</span>
@@ -1430,9 +1441,12 @@
 
             <span class="c1"># Add the drift function</span>
             <span class="k">if</span> <span class="n">n_faults</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">fault_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c1"># It seems that there is not human way of extract the block at this step so I will do it when I</span>
+                <span class="c1"># create the fault matrix</span>
+
+                <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">fault_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1">#This -1 refers the loop</span>
             <span class="k">if</span> <span class="n">n_faults</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">fault_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">fault_matrix</span> <span class="o">=</span> <span class="n">fault_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
 
         <span class="c1"># Check if there are lithologies to compute</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">n_faults</span><span class="p">:</span>
@@ -1449,35 +1463,50 @@
              <span class="n">lith_matrix</span> <span class="o">=</span> <span class="n">lith_loop</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
              <span class="n">pfai_lith</span> <span class="o">=</span> <span class="n">lith_loop</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
 
-        <span class="c1"># Now we have to stack the potential fields at interfaces, but before we need to add a small margin to the</span>
-        <span class="c1"># extremes to correct float32 errors for the marchig cubes later on</span>
-        <span class="c1"># pfai_lith = T.set_subtensor(pfai_lith[0, 0], pfai_lith[0, 0] + pfai_lith[0, 0] * 0.001)</span>
-        <span class="c1"># pfai_lith = T.set_subtensor(pfai_lith[-1, -1], pfai_lith[-1, -1] - pfai_lith[0, 0] * 0.001)</span>
-
-        <span class="c1"># pfai_lith = T.set_subtensor(pfai_lith[0], pfai_lith[0] + pfai_lith[0] * 0.001)</span>
-        <span class="c1"># pfai_lith = T.set_subtensor(pfai_lith[-1], pfai_lith[-1] - pfai_lith[0] * 0.001)</span>
-
         <span class="n">pfai</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">vertical_stack</span><span class="p">(</span><span class="n">pfai_fault</span><span class="p">,</span> <span class="n">pfai_lith</span><span class="p">)</span>
-        <span class="c1"># if n_faults == 0:</span>
-        <span class="c1">#     pfai = pfai_lith</span>
-        <span class="c1">#     sol_block = lith_matrix</span>
-        <span class="c1">#</span>
-        <span class="c1"># else:</span>
-        <span class="c1">#</span>
-        <span class="c1">#     sol_block = T.stack((fault_matrix, lith_matrix), axis=0)</span>
-        <span class="c1"># if n_faults != 0 and len(self.len_series_f.get_value()) - 1 &gt; n_faults:</span>
-        <span class="c1">#     return lith_matrix[-1, :, :-2 * self.len_points], fault_matrix[-1, :, :-2 * self.len_points], pfai</span>
-        <span class="c1"># if n_faults == 0 and len(self.len_series_f.get_value()) - 1 &gt; n_faults:</span>
-        <span class="c1">#     return lith_matrix[-1, :, :-2 * self.len_points], None, pfai</span>
-        <span class="c1"># if n_faults != 0 and not len(self.len_series_f.get_value()) - 1 &gt; n_faults:</span>
-        <span class="c1">#     return None, fault_matrix[-1, :, :-2 * self.len_points], pfai</span>
 
-        <span class="k">return</span> <span class="n">lith_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">],</span> <span class="n">fault_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">],</span> <span class="n">pfai</span></div>
+        <span class="k">return</span> <span class="p">[</span><span class="n">lith_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">],</span> <span class="n">fault_matrix</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">],</span> <span class="n">pfai</span><span class="p">]</span>
 
     <span class="c1"># ==================================</span>
     <span class="c1"># Geophysics</span>
     <span class="c1"># ==================================</span>
-    <span class="c1">#</span>
+
+    <span class="k">def</span> <span class="nf">switch_densities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_formation</span><span class="p">,</span> <span class="n">density</span><span class="p">,</span> <span class="n">density_block</span><span class="p">):</span>
+
+        <span class="n">density_block</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">density_block</span><span class="p">,</span> <span class="n">n_formation</span><span class="p">),</span> <span class="n">density</span><span class="p">,</span> <span class="n">density_block</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">density_block</span>
+
+    <span class="k">def</span> <span class="nf">compute_forward_gravity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_faults</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span> <span class="c1"># densities, tz, select,</span>
+
+
+
+        <span class="c1"># TODO: Assert outside that densities is the same size as formations (minus faults)</span>
+        <span class="c1"># Compute the geological model</span>
+        <span class="n">lith_matrix</span><span class="p">,</span> <span class="n">fault_matrix</span><span class="p">,</span> <span class="n">pfai</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_geological_model</span><span class="p">(</span><span class="n">n_faults</span><span class="o">=</span><span class="n">n_faults</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="n">compute_all</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">n_faults</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">formations</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">T</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="mi">0</span><span class="p">])])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">formations</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">concatenate</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation</span><span class="p">[:</span><span class="n">n_faults</span><span class="o">-</span><span class="mi">1</span><span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">T</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="mi">0</span><span class="p">])])</span>
+        <span class="c1"># Substitue lithologies by its density</span>
+        <span class="n">density_block_loop</span><span class="p">,</span> <span class="n">updates4</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">switch_densities</span><span class="p">,</span>
+                                    <span class="n">outputs_info</span><span class="o">=</span><span class="p">[</span><span class="n">lith_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span>
+                                     <span class="n">sequences</span><span class="o">=</span><span class="p">[</span><span class="n">formations</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">densities</span><span class="p">]</span>
+                                    <span class="p">)</span>
+
+        <span class="n">n_measurements</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tz</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Tiling the density block for each measurent and picking just the closer to them. This has to be possible to</span>
+        <span class="c1"># optimize</span>
+
+        <span class="n">densities_rep</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">density_block_loop</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_measurements</span><span class="p">)</span>
+        <span class="n">densities_selected</span> <span class="o">=</span> <span class="n">densities_rep</span><span class="p">[</span><span class="n">T</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">select</span><span class="p">,</span> <span class="s2">&quot;int8&quot;</span><span class="p">))[</span><span class="mi">0</span><span class="p">]]</span>
+        <span class="n">densities_selected_reshaped</span> <span class="o">=</span> <span class="n">densities_selected</span><span class="o">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">n_measurements</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">))</span>
+        <span class="c1">#</span>
+        <span class="c1"># # density times the component z of gravity</span>
+        <span class="n">grav</span> <span class="o">=</span> <span class="n">densities_selected_reshaped</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tz</span>
+
+        <span class="k">return</span> <span class="n">grav</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span></div>
+
 
 
     <span class="c1"># def slice_cells(self, selected_cells, block_lith):</span>

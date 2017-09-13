@@ -43,6 +43,9 @@ initialize the GemPy data object:
     cs = 50
     extent = (3000, 200, 2000)  # (x, y, z)
     res = (120, 4, 80)
+
+.. code:: ipython3
+
     # initialize geo_data object
     geo_data = gp.create_data([0, extent[0],
                                0, extent[1], 
@@ -204,12 +207,12 @@ by:
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7fdfb1f38780>
+    <gempy.strat_pile.StratigraphicPile at 0x7f053b6ccb70>
 
 
 
 
-.. image:: ch3_files/ch3_9_1.png
+.. image:: ch3_files/ch3_10_1.png
 
 
 .. code:: ipython3
@@ -223,12 +226,12 @@ by:
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7fdf810ca278>
+    <gempy.strat_pile.StratigraphicPile at 0x7f04c4685438>
 
 
 
 
-.. image:: ch3_files/ch3_10_1.png
+.. image:: ch3_files/ch3_11_1.png
 
 
 .. code:: ipython3
@@ -311,7 +314,7 @@ Now let's have a look at the data in the xz-plane:
 
 
 
-.. image:: ch3_files/ch3_13_0.png
+.. image:: ch3_files/ch3_14_0.png
 
 
 At this point we should store the input data object as a pickle, for
@@ -334,18 +337,10 @@ interpolator function of GemPy with the imported model setup and data:
 
 .. parsed-literal::
 
-    Level of Optimization:  fast_run
+    Level of Optimization:  fast_compile
     Device:  cpu
     Precision:  float32
 
-
-For the stochastic simulation we need to modify data inside of the
-interp\_data object. To always have our initial input data as a
-reference, we create an additional interpolator data object:
-
-.. code:: ipython3
-
-    #interp_data_original = gp.InterpolatorInput(geo_data, u_grade=[3])
 
 Afterwards we can compute the geological model:
 
@@ -361,11 +356,11 @@ And plot a section:
 
 
 
-.. image:: ch3_files/ch3_23_0.png
+.. image:: ch3_files/ch3_22_0.png
 
 
 Setting up the pymc-Functions
-=============================
+-----------------------------
 
 pymc has two distinct types of objects: **deterministic** and
 **stochastic** objects. As the `pymc
@@ -390,6 +385,11 @@ Setting up the parameter distributions
 For conducting a stochastic simulation of the geological model, we need
 to consider our input data (dips and layer interfaces) as uncertain -
 i.e. as distributions.
+
+.. code:: ipython3
+
+    # Checkpoint in case you did not execute the cells above
+    geo_data = gp.read_pickle("./pymc2_tutorial_geo_data.pickle")
 
 .. code:: ipython3
 
@@ -521,11 +521,6 @@ a/b the side of the anticline.
     ['l2_a' 'l2_b' 'l3_a' 'l3_b' 'l4_a' 'l4_b' 'l5_a' 'l5_b']
 
 
-.. code:: ipython3
-
-    # Checkpoint in case you did not execute the cells above
-    geo_data = gp.read_pickle("./pymc2_tutorial_geo_data.pickle")
-
 As a reminder, GemPy stores data in two main objects, an InputData
 object (called geo\_data in the tutorials) and a InpterpolatorInput
 object (interp\_data) in tutorials. geo\_data contains the original data
@@ -547,7 +542,7 @@ created the rescaling happens under the hood.
     interface_Z_modifier = []
     
     # We rescale the standard deviation
-    std = 30./interp_data.rescaling_factor
+    std = 100./interp_data.rescaling_factor
     
     # loop over the unique group id's and create a pymc.Normal distribution for each
     for gID in group_ids:
@@ -565,14 +560,14 @@ our list of parameter distribution:
 
 .. parsed-literal::
 
-    [<pymc.distributions.new_dist_class.<locals>.new_class 'l2_a_stoch' at 0x7fdf80fc4f60>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l2_b_stoch' at 0x7fdf66f49128>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l3_a_stoch' at 0x7fdf66f49278>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l3_b_stoch' at 0x7fdf66f49da0>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l4_a_stoch' at 0x7fdf66f49b00>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l4_b_stoch' at 0x7fdf66f5a828>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l5_a_stoch' at 0x7fdf66f5a908>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l5_b_stoch' at 0x7fdf66f5a7b8>]
+    [<pymc.distributions.new_dist_class.<locals>.new_class 'l2_a_stoch' at 0x7f04b0261be0>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l2_b_stoch' at 0x7f04c4685fd0>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l3_a_stoch' at 0x7f04c454e780>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l3_b_stoch' at 0x7f04b023d1d0>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l4_a_stoch' at 0x7f04b02611d0>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l4_b_stoch' at 0x7f04b0261240>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l5_a_stoch' at 0x7f04b0261320>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l5_b_stoch' at 0x7f04b0261b38>]
 
 
 
@@ -591,7 +586,7 @@ Let's have a look at one:
 
 
 
-.. image:: ch3_files/ch3_37_0.png
+.. image:: ch3_files/ch3_36_0.png
 
 
 Now we need to somehow sample from these distribution and put them into
@@ -688,7 +683,7 @@ operation is deterministic).
 
 
 
-.. image:: ch3_files/ch3_43_0.png
+.. image:: ch3_files/ch3_42_0.png
 
 
 We then create a pymc model with the two deterministic functions
@@ -723,10 +718,10 @@ and we are finally able to run the simulation:
 
 .. parsed-literal::
 
-     [-----------------100%-----------------] 100 of 100 complete in 7.9 sec
+     [-----------------100%-----------------] 100 of 100 complete in 7.6 sec
 
 Analyzing the results
-=====================
+---------------------
 
 When we want to analyze the results, we first have to load the stored
 geo\_data object:
@@ -748,12 +743,12 @@ Check the stratigraphic pile for correctness:
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7fdf6e238160>
+    <gempy.strat_pile.StratigraphicPile at 0x7f04c4523be0>
 
 
 
 
-.. image:: ch3_files/ch3_55_1.png
+.. image:: ch3_files/ch3_54_1.png
 
 
 Then we can then compile the GemPy modeling function:
@@ -765,7 +760,7 @@ Then we can then compile the GemPy modeling function:
 
 .. parsed-literal::
 
-    Level of Optimization:  fast_run
+    Level of Optimization:  fast_compile
     Device:  cpu
     Precision:  float32
 
@@ -779,7 +774,7 @@ Now we can reproduce the original model:
 
 
 
-.. image:: ch3_files/ch3_59_0.png
+.. image:: ch3_files/ch3_58_0.png
 
 
 But of course we want to look at the perturbation results. We have a
@@ -823,18 +818,27 @@ plot the model result of the 85th iteration:
 
 .. code:: ipython3
 
-    post.change_input_data(interp_data, 0)
+    post.change_input_data(interp_data, 80)
+
+
+
+
+.. parsed-literal::
+
+    <gempy.DataManagement.InterpolatorInput at 0x7f04ae8ffb70>
+
+
 
 Then we compute the model and plot it:
 
 .. code:: ipython3
 
     lith_block, fault_block = gp.compute_model(interp_data)
-    gp.plot_section(geo_data, lith_block[0], 2, plot_data=True)
+    gp.plot_section(interp_data.geo_data_res, lith_block[0], 2, plot_data=True)
 
 
 
-.. image:: ch3_files/ch3_67_0.png
+.. image:: ch3_files/ch3_66_0.png
 
 
 or the 34th:
@@ -843,11 +847,11 @@ or the 34th:
 
     post.change_input_data(interp_data, 34)
     lith_block, fault_block = gp.compute_model(interp_data)
-    gp.plot_section(geo_data, lith_block[0], 2)
+    gp.plot_section(interp_data.geo_data_res, lith_block[0], 2, plot_data=True)
 
 
 
-.. image:: ch3_files/ch3_69_0.png
+.. image:: ch3_files/ch3_68_0.png
 
 
 or the 95th:
@@ -860,7 +864,7 @@ or the 95th:
 
 
 
-.. image:: ch3_files/ch3_71_0.png
+.. image:: ch3_files/ch3_70_0.png
 
 
 As you can see, we have successfully perturbated the vertical layer
@@ -872,3 +876,18 @@ results do not get validated in any sense. This where Bayesian inference
 comes into play, as a method to constrain modeling outcomes by the use
 of geological likelihood functions. We will introduce you to the
 approach and how to use it with GemPy and pymc in the following chapter.
+
+.. code:: ipython3
+
+    ver, sim = gp.get_surfaces(interp_data,lith_block[1], None, original_scale= False)
+    gp.plot_surfaces_3D_real_time(interp_data, ver, sim, posterior=post, alpha=1)
+
+
+.. parsed-literal::
+
+    /home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+    Reciprocal condition number: 5.822892035212135e-08
+      ' condition number: {}'.format(rcond), RuntimeWarning)
+
+

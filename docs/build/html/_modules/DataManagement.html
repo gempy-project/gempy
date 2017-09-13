@@ -564,7 +564,7 @@
             <span class="n">formation_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;formation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
 
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">formation_order</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="s1">&#39;Some of the formations given are not in &#39;</span>\
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">formation_order</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="s1">&#39;Some of the formations given are not in &#39;</span>\
                                                                              <span class="s1">&#39;the formations data frame. Check misspell&#39;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ip_addresses</span> <span class="o">=</span> <span class="n">formation_order</span>
@@ -791,7 +791,7 @@
 
 <span class="sd">        :param geo_data: InputData object</span>
 <span class="sd">        :param group_id: (str) identifier for the data group</span>
-<span class="sd">        :param mode: (str), either interf_to_fol or fol_to_interf</span>
+<span class="sd">        :param mode: (str), either &#39;interf_to_fol&#39; or &#39;fol_to_interf&#39;</span>
 <span class="sd">        :param verbose: (bool) adjusts verbosity, default False</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span> <span class="o">=</span> <span class="n">geo_data</span>
@@ -988,7 +988,8 @@
 <span class="sd">        dtype:  type of float</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">compile_theano</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rescaling_factor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;geology&#39;</span><span class="p">,</span> <span class="n">compile_theano</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">u_grade</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rescaling_factor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># TODO add all options before compilation in here. Basically this is n_faults, n_layers, verbose, dtype, and \</span>
         <span class="c1"># only block or all</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">InputData</span><span class="p">),</span> <span class="s1">&#39;You need to pass a InputData object&#39;</span>
@@ -1017,11 +1018,14 @@
 
         <span class="c1"># Creating interpolator class with all the precompilation options</span>
         <span class="c1"># --DEP-- self.interpolator = self.set_interpolator(**kwargs)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">InterpolatorClass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">InterpolatorClass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">compile_theano</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">th_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_th_fn</span><span class="p">(</span><span class="n">compute_all</span><span class="o">=</span><span class="n">compute_all</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">th_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_th_fn</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="n">compute_all</span><span class="p">)</span>
 
-<div class="viewcode-block" id="InterpolatorInput.compile_th_fn"><a class="viewcode-back" href="../code.html#DataManagement.InterpolatorInput.compile_th_fn">[docs]</a>    <span class="k">def</span> <span class="nf">compile_th_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geophy</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="InterpolatorInput.compile_th_fn"><a class="viewcode-back" href="../code.html#DataManagement.InterpolatorInput.compile_th_fn">[docs]</a>    <span class="k">def</span> <span class="nf">compile_th_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compile the theano function given the input data.</span>
 <span class="sd">        Args:</span>
@@ -1037,12 +1041,24 @@
         <span class="c1"># This are the shared parameters and the compilation of the function. This will be hidden as well at some point</span>
         <span class="n">input_data_T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">input_parameters_list</span><span class="p">()</span>
 
-        <span class="c1"># then we compile we have to pass the number of formations that are faults!!</span>
-        <span class="n">th_fn</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">input_data_T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">compute_geological_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">n_faults</span><span class="p">,</span>
-                                                                                     <span class="n">compute_all</span><span class="o">=</span><span class="n">compute_all</span><span class="p">),</span>
-                                <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
-                                <span class="n">allow_input_downcast</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="s1">&#39;geology&#39;</span><span class="p">:</span>
+            <span class="c1"># then we compile we have to pass the number of formations that are faults!!</span>
+            <span class="n">th_fn</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">input_data_T</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">compute_geological_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">n_faults</span><span class="p">,</span>
+                                                                                  <span class="n">compute_all</span><span class="o">=</span><span class="n">compute_all</span><span class="p">),</span>
+                                    <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+                                    <span class="n">allow_input_downcast</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                    <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="s1">&#39;gravity&#39;</span><span class="p">:</span>
+            <span class="c1"># then we compile we have to pass the number of formations that are faults!!</span>
+            <span class="n">th_fn</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">input_data_T</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">compute_forward_gravity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">n_faults</span><span class="p">,</span>
+                                                                                 <span class="n">compute_all</span><span class="o">=</span><span class="n">compute_all</span><span class="p">),</span>
+                                    <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+                                    <span class="n">allow_input_downcast</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                    <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Level of Optimization: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Device: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Precision: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
@@ -1224,6 +1240,12 @@
             <span class="n">u_grade</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_grade</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">data_prep</span><span class="p">(</span><span class="n">u_grade</span><span class="o">=</span><span class="n">u_grade</span><span class="p">)</span></div>
 
+    <span class="c1">## =======</span>
+    <span class="c1">## Gravity</span>
+    <span class="k">def</span> <span class="nf">set_geophysics_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_extent</span><span class="p">,</span> <span class="n">ai_resolution</span><span class="p">,</span> <span class="n">ai_z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">range_max</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">.GeoPhysics</span> <span class="k">import</span> <span class="n">GeoPhysicsPreprocessing_pro</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geophy</span> <span class="o">=</span> <span class="n">GeoPhysicsPreprocessing_pro</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_extent</span><span class="p">,</span> <span class="n">ai_resolution</span><span class="p">,</span> <span class="n">ai_z</span><span class="o">=</span><span class="n">ai_z</span><span class="p">,</span> <span class="n">range_max</span><span class="o">=</span><span class="n">range_max</span><span class="p">)</span>
+
 <div class="viewcode-block" id="InterpolatorInput.InterpolatorClass"><a class="viewcode-back" href="../code.html#DataManagement.InterpolatorInput.InterpolatorClass">[docs]</a>    <span class="k">class</span> <span class="nc">InterpolatorClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        -DOCS NOT UPDATED-</span>
@@ -1253,6 +1275,9 @@
             <span class="c1"># Here we can change the dtype for stability and GPU vs CPU</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dtype&#39;</span><span class="p">,</span> <span class="s1">&#39;float32&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
+            <span class="c1"># Here we change the graph type</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;geology&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
 
             <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
@@ -1274,7 +1299,7 @@
 
             <span class="c1"># Importing the theano graph. The methods of this object generate different parts of graph.</span>
             <span class="c1"># See theanograf doc</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tg</span> <span class="o">=</span> <span class="n">theanograf</span><span class="o">.</span><span class="n">TheanoGraph_pro</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tg</span> <span class="o">=</span> <span class="n">theanograf</span><span class="o">.</span><span class="n">TheanoGraph_pro</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,)</span>
 
             <span class="c1"># Sorting data in case the user provides it unordered</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span>
@@ -1384,7 +1409,7 @@
             <span class="c1">#      for i in self._data_scaled.foliations[&#39;formation number&#39;].unique()])</span>
 
             <span class="c1"># -DEP- I think this was just a kind of print to know what was going on</span>
-            <span class="c1">#self.pandas_rest = pandas_rest_layer_points</span>
+        <span class="c1">#    self.pandas_rest = pandas_rest_layer_points</span>
 
             <span class="c1"># Array containing the size of every series. Interfaces.</span>
             <span class="n">len_series_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
@@ -1421,7 +1446,7 @@
             <span class="c1"># ================</span>
             <span class="c1"># Rest layers matrix # PYTHON VAR</span>
             <span class="n">rest_layer_points</span> <span class="o">=</span> <span class="n">pandas_rest_layer_points</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span>
-
+          <span class="c1">#  self.rest_layer_points = rest_layer_points</span>
             <span class="c1"># TODO delete</span>
             <span class="c1"># -DEP- Again i was just a check point</span>
             <span class="c1"># self.rest_layer_points = rest_layer_points</span>
@@ -1439,8 +1464,8 @@
             <span class="n">ref_layer_points</span> <span class="o">=</span> <span class="n">pandas_ref_layer_points_rep</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span>
 
             <span class="c1"># -DEP- was just a check point</span>
-            <span class="c1"># self.ref_layer_points = ref_layer_points</span>
-
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref_layer_points</span> <span class="o">=</span> <span class="n">ref_layer_points</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pandas_ref_layer_points_rep</span> <span class="o">=</span> <span class="n">pandas_ref_layer_points_rep</span>
             <span class="c1"># Check no reference points in rest points (at least in coor x)</span>
             <span class="k">assert</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">ref_layer_points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="ow">in</span> <span class="n">rest_layer_points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> \
                 <span class="s1">&#39;A reference point is in the rest list point. Check you do &#39;</span> \
@@ -1548,6 +1573,14 @@
                                                                   <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="o">.</span><span class="n">get_value</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
                                                               <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span></div>
+
+        <span class="k">def</span> <span class="nf">set_densities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">densities</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">densities</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">densities</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">set_z_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tz</span><span class="p">,</span> <span class="n">selected_cells</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">tz</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">selected_cells</span><span class="p">)</span>
 
 <div class="viewcode-block" id="InterpolatorInput.InterpolatorClass.get_kriging_parameters"><a class="viewcode-back" href="../code.html#DataManagement.InterpolatorInput.InterpolatorClass.get_kriging_parameters">[docs]</a>        <span class="k">def</span> <span class="nf">get_kriging_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
