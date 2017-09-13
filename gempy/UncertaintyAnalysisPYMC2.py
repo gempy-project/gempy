@@ -16,9 +16,18 @@ import gempy as gp
 
 
 class Posterior:
-    """Posterior database analysis for GemPy-pymc2 hdf5 databases."""
+    def __init__(self, dbname, pymc_model_f="gempy_model", pymc_topo_f="gempy_topo",
+                 topology=False, verbose=False):
+        """
+        Posterior database analysis for GemPy-pymc2 hdf5 databases.
+        :param dbname: (str) path and/or name of the hdf5 database
 
-    def __init__(self, dbname, pymc_model_f="gempy_model", topology=False, verbose=False):
+        # optional
+        :param pymc_model_f: (str) name of the model output function used (default: "gempy_model)
+        :param pymc_topo_f: (str) name of the topology output function used (default: "gempy_topo)
+        :param topology: (bool) if topology trace should be loaded
+        :param verbose: (bool) activate/deactivate verbosity
+        """
         self.verbose = verbose
         # load db
         self.db = pymc.database.hdf5.load(dbname)
@@ -36,17 +45,20 @@ class Posterior:
             self.fb = None
 
         if topology:
+            topo_trace = self.db.trace(pymc_topo_f)[:]
             # load graphs
-            topo_trace = self.db.gempy_topo.gettrace()
             self.topo_graphs = topo_trace[:, 0]
             # load centroids
             self.topo_centroids = topo_trace[:, 1]
+            # unique labels
             self.topo_labels_unique = topo_trace[:, 2]
+            # get the look-up-tables
             self.topo_lith_to_labels_lot = topo_trace[:, 3]
             self.topo_labels_to_lith_lot = topo_trace[:, 4]
             del topo_trace
 
-        self.topo_unique, self.topo_unique_freq, self.topo_unique_ids, self.topo_unique_prob = (None, None, None, None)
+            self.topo_unique, self.topo_unique_freq, self.topo_unique_ids, self.topo_unique_prob = (None, None, None, None)
+            self.topo_count_dict = None
 
         # load input data
         self.input_data = self.db.input_data.gettrace()
@@ -73,43 +85,10 @@ class Posterior:
             print("interp_data parameters changed.")
         return interp_data
 
-    # def plot_topology_graph(self, i):
-    #     # get centroid values into list
-    #     centroid_values = [triplet for triplet in self.topo_centroids[i].values()]
-    #     # unzip them into seperate lists of x,y,z coordinates
-    #     centroids_x, centroids_y, centroids_z = list(zip(*centroid_values))
-    #     # create new 2d pos dict for plot
-    #     pos_dict = {}
-    #     for j in range(len(centroids_x)):
-    #         pos_dict[j + 1] = [centroids_x[j], centroids_y[j]]
-    #     # draw
-    #     nx.draw_networkx(self.topo_graphs[i], pos=pos_dict)
-
     def compute_posterior_model(self, interp_data, i):
+        """Computes the model with the respective posterior input data. Returns lith block, fault block."""
         self.change_input_data(interp_data, i)
         return gp.compute_model(interp_data)
-
-    def plot_section(self, interp_data, i, ext, res, plot_data=False, plot_topo=False):
-        """Deprecated."""
-        self.change_input_data(interp_data, i)
-        lith_block, fault_block = gp.compute_model(interp_data)
-        #plt.imshow(lith_block[-1, 0,:].reshape(dim[0], dim[1], dim[2])[:, 0, :].T, origin="lower",
-        #           cmap=gp.colors.cmap, norm=gp.colors.norm)
-        gp.plot_section(interp_data.geo_data_res, lith_block[0], 0, plot_data=plot_data)
-
-        rs = interp_data.rescaling_factor
-        #if plot_data:
-        #    plt.scatter(interp_data.geo_data_res.interfaces["X"].values,
-        #                interp_data.geo_data_res.interfaces["Z"].values)
-
-        if plot_topo:
-            self.topo_plot_graph(interp_data, i, ext, res)
-
-    # def topo_plot_graph(self, interp_data, i, ext, res):
-    #     pos_2d = {}
-    #     for key in self.topo_centroids[i].keys():
-    #         pos_2d[key] = [self.topo_centroids[i][key][0] * ext[1]/res[0] / interp_data.rescaling_factor, self.topo_centroids[i][key][2] * ext[5]/res[2] / interp_data.rescaling_factor]
-    #     nx.draw_networkx(self.topo_graphs[i], pos=pos_2d)
 
     def compute_posterior_models_all(self, interp_data, n=None, calc_fb=True):
         """Computes block models from stored input parameters for all iterations."""
@@ -136,7 +115,7 @@ class Posterior:
                     if calc_fb:
                         self.fb = np.vstack((self.fb, fb[0]))
         else:
-            print("self.lb already filled with something.")
+            print("self.lb already filled with something. If you want to override, set self.lb to 'None'")
 
     def compute_entropy(self, interp_data):
         """Computes the voxel information entropy of stored block models."""
@@ -149,17 +128,30 @@ class Posterior:
         self.ie_total = calculate_ie_total(self.ie)
         print("Information Entropy successfully calculated. Stored in self.ie and self.ie_total")
 
-    def check_adjacency_freq(self, n1, n2):
+    def topo_count_connection(self, n1, n2):
+        """Counts the amount of times connection between nodes n1 and n2 in all of the topology graphs."""
         count = 0
         for G in self.topo_graphs:
             count += check_adjacency(G, n1, n2)
         return count
+
+    def topo_count_total_number_of_nodes(self):
+        """Counts the amount of topology graphs with a certain amount of total nodes."""
+        self.topo_count_dict = {}
+        for g in self.topo_graphs:
+            c = len(g.adj.keys())
+            if c in self.topo_count_dict.keys():
+                self.topo_count_dict[c] += 1
+            else:
+                self.topo_count_dict[c] = 1
 
     def topo_analyze(self):
         if self.verbose:
             print("Starting topology analysis. This could take a while (depending on # iterations).")
         self.topo_unique, self.topo_unique_freq, self.topo_unique_ids = get_unique_topo(self.topo_graphs)
         self.topo_unique_prob = self.topo_unique_freq / np.sum(self.topo_unique_freq)
+        # count unique node numbers
+        self.topo_count_total_number_of_nodes()
         if self.verbose:
             print("Topology analysis completed.")
 
@@ -191,6 +183,7 @@ def get_unique_topo(topo_l):
             topo_u_ids[n] = i
 
     return topo_u, topo_u_freq, topo_u_ids
+
 
 def check_adjacency(G, n1, n2):
     """Check if n2 is adjacent/shares edge with n1."""
