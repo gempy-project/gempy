@@ -3,7 +3,7 @@ This version includes drillholes
 Specific methods are defined for the uncertainty analysis (in combination
 with Uncertainty_Obj module)
 
-(c) J. Florian Wellmann, 2009-2013
+(c) J. Florian Wellmann, 2009-2113
 """
 
 try:
@@ -73,7 +73,7 @@ class GeomodellerClass:
         self.xml_file_name = xml_file
         try:
             tree = ET.parse(xml_file)
-        except IOError (nr, string_err):
+        except IOError:
             print(("Can not open xml File " + xml_file + ": " + string_err))
             print ("Please check file name and directory and try again")
             raise IOError
