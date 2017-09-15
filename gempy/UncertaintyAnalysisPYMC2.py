@@ -1,13 +1,18 @@
 """
 @author: Alexander Schaaf, Miguel de la Varga
 """
-import pymc
+import warnings
+try:
+    import pymc
+except ImportError:
+    warnings.warn("pymc (v2) package is not installed. No support for stochastic simulation posterior analysis.")
 import theano
 import numpy as np
-import networkx as nx
+# try:
+#     import networkx as nx
+# except ImportError:
+#     warnings.warn("networkx package is not installed. No topology graph visualization possible.")
 import gempy as gp
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 
 class Posterior:
@@ -68,17 +73,17 @@ class Posterior:
             print("interp_data parameters changed.")
         return interp_data
 
-    def plot_topology_graph(self, i):
-        # get centroid values into list
-        centroid_values = [triplet for triplet in self.topo_centroids[i].values()]
-        # unzip them into seperate lists of x,y,z coordinates
-        centroids_x, centroids_y, centroids_z = list(zip(*centroid_values))
-        # create new 2d pos dict for plot
-        pos_dict = {}
-        for j in range(len(centroids_x)):  # TODO: Change this directly to use zip?
-            pos_dict[j + 1] = [centroids_x[j], centroids_y[j]]
-        # draw
-        nx.draw_networkx(self.topo_graphs[i], pos=pos_dict)
+    # def plot_topology_graph(self, i):
+    #     # get centroid values into list
+    #     centroid_values = [triplet for triplet in self.topo_centroids[i].values()]
+    #     # unzip them into seperate lists of x,y,z coordinates
+    #     centroids_x, centroids_y, centroids_z = list(zip(*centroid_values))
+    #     # create new 2d pos dict for plot
+    #     pos_dict = {}
+    #     for j in range(len(centroids_x)):
+    #         pos_dict[j + 1] = [centroids_x[j], centroids_y[j]]
+    #     # draw
+    #     nx.draw_networkx(self.topo_graphs[i], pos=pos_dict)
 
     def compute_posterior_model(self, interp_data, i):
         self.change_input_data(interp_data, i)
@@ -100,11 +105,11 @@ class Posterior:
         if plot_topo:
             self.topo_plot_graph(interp_data, i, ext, res)
 
-    def topo_plot_graph(self, interp_data, i, ext, res):
-        pos_2d = {}
-        for key in self.topo_centroids[i].keys():
-            pos_2d[key] = [self.topo_centroids[i][key][0] * ext[1]/res[0] / interp_data.rescaling_factor, self.topo_centroids[i][key][2] * ext[5]/res[2] / interp_data.rescaling_factor]
-        nx.draw_networkx(self.topo_graphs[i], pos=pos_2d)
+    # def topo_plot_graph(self, interp_data, i, ext, res):
+    #     pos_2d = {}
+    #     for key in self.topo_centroids[i].keys():
+    #         pos_2d[key] = [self.topo_centroids[i][key][0] * ext[1]/res[0] / interp_data.rescaling_factor, self.topo_centroids[i][key][2] * ext[5]/res[2] / interp_data.rescaling_factor]
+    #     nx.draw_networkx(self.topo_graphs[i], pos=pos_2d)
 
     def compute_posterior_models_all(self, interp_data, n=None, calc_fb=True):
         """Computes block models from stored input parameters for all iterations."""
