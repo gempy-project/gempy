@@ -1510,7 +1510,7 @@ class InterpolatorInput:
             self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](_universal_matrix + 1e-10))
 
             # Initialization of the block model
-            self.tg.final_block.set_value(np.zeros((1, self.grid_res.grid.shape[0]), dtype='float32'))
+            self.tg.final_block.set_value(np.zeros((1, self.grid_res.grid.shape[0]), dtype=self.dtype))
 
             # Initialization of the boolean array that represent the areas of the block model to be computed in the
             # following series
