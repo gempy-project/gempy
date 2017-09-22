@@ -31,7 +31,7 @@ import sys
 theano.config.optimizer = 'fast_compile'
 theano.config.exception_verbosity = 'high'
 theano.config.compute_test_value = 'off'
-theano.config.floatX = 'float32'
+theano.config.floatX = 'float64'
 theano.config.profile_memory = True
 
 
