@@ -60,6 +60,8 @@ class Posterior:
             self.topo_unique, self.topo_unique_freq, self.topo_unique_ids, self.topo_unique_prob = (None, None, None, None)
             self.topo_count_dict = None
 
+            self.topo_analyze()
+
         # load input data
         self.input_data = self.db.input_data.gettrace()
 
@@ -74,8 +76,8 @@ class Posterior:
         # replace interface data
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
         # replace foliation data
-        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = self.input_data[i][1]
-        # do all the ugly updating stuff
+        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", "azimuth", "dip", "polarity"]] = self.input_data[i][1]
+        # update interpolator
         interp_data.update_interpolator()
         if self.verbose:
             print("interp_data parameters changed.")
