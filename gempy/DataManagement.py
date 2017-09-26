@@ -115,6 +115,7 @@ class InputData(object):
             self.foliations = self.load_data_csv(data_type="foliations", path=path_f, **kwargs)
             assert set(['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']).issubset(self.foliations.columns), \
                 "One or more columns do not match with the expected values " + str(self.foliations.columns)
+            self.foliations = self.foliations[['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']]
 
         if path_i:
             self.interfaces = self.load_data_csv(data_type="interfaces", path=path_i, **kwargs)
@@ -520,7 +521,8 @@ class InputData(object):
 
         else:
             assert self.interfaces['formation'].isin(formation_order).all(), 'Some of the formations given are not in '\
-                                                                             'the formations data frame. Check misspell'
+                                                                             'the formations data frame. Check misspells'\
+                                                                             'and that you include the name of the faults!!!'
         try:
             ip_addresses = formation_order
             ip_dict = dict(zip(ip_addresses, range(1, len(ip_addresses)+1)))
@@ -1508,7 +1510,7 @@ class InterpolatorInput:
             self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](_universal_matrix + 1e-10))
 
             # Initialization of the block model
-            self.tg.final_block.set_value(np.zeros((1, self.grid_res.grid.shape[0]), dtype='float32'))
+            self.tg.final_block.set_value(np.zeros((1, self.grid_res.grid.shape[0]), dtype=self.dtype))
 
             # Initialization of the boolean array that represent the areas of the block model to be computed in the
             # following series

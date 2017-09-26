@@ -74,12 +74,8 @@ class Posterior:
         # replace interface data
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
         # replace foliation data
-        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", "azimuth", "dip", "polarity"]] = self.input_data[i][1]
+        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = self.input_data[i][1]
         # do all the ugly updating stuff
-        interp_data.interpolator.tg.final_potential_field_at_formations = theano.shared(np.zeros(
-            interp_data.interpolator.tg.n_formations_per_serie.get_value().sum(), dtype='float32'))
-        interp_data.interpolator.tg.final_potential_field_at_faults = theano.shared(np.zeros(
-            interp_data.interpolator.tg.n_formations_per_serie.get_value().sum(), dtype='float32'))
         interp_data.update_interpolator()
         if self.verbose:
             print("interp_data parameters changed.")
@@ -251,17 +247,20 @@ class Plane:
         self.refresh()
 
     # method: give dip, change interfaces accordingly
-    def interf_recalc(self, dip):
+    def interf_recalc_Z(self, dip):
         """Changes the dip of plane and recalculates Z coordinates for the points belonging to it."""
         # modify the foliation
         self.data_obj.foliations.set_value(self.fol_i, "dip", dip)
+
         # get azimuth
         az = float(self.data_obj.foliations.iloc[self.fol_i]["azimuth"])
+
         # set polarity according to dip
         if -90 < dip < 90:
             polarity = 1
         else:
             polarity = -1
+
         self.data_obj.foliations.set_value(self.fol_i, "polarity", polarity)
         # modify gradient
         self.data_obj.foliations.set_value(self.fol_i, "G_x",
@@ -272,12 +271,12 @@ class Plane:
 
         # update normal
         self.normal = self.get_normal()
+
         # modify points (Z only so far)
         a, b, c = self.normal
         d = -a * self.centroid[0] - b * self.centroid[1] - c * self.centroid[2]
         for i, row in self.data_obj.interfaces[self.interf_f].iterrows():
             # iterate over each point and recalculate Z, set Z
-            # x, y, z = row["X"], row["Y"], row["Z"]
             Z = (a * row["X"] + b * row["Y"] + d) / -c
             self.data_obj.interfaces.set_value(i, "Z", Z)
 

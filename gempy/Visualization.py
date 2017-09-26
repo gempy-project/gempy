@@ -915,6 +915,7 @@ class vtkVisualization:
         new_source.Update()
 
         # Modify Pandas DataFrame
+        # TODO WE NEED TO GET THE DIP FROM THE GRADIENTS SOOON
         self.geo_data.foliation_modify(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
                                        G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
 
