@@ -23,7 +23,7 @@ from skimage.measure import regionprops
 import numpy as np
 
 
-def topology_analyze(lith_block, fault_block, n_faults, areas_bool=True, return_block=False):
+def topology_analyze(lith_block, fault_block, n_faults, areas_bool=True, return_block=False, res=None):
     """
     Function to analyze the geological model topology.
     :param lith_block:
@@ -68,7 +68,7 @@ def topology_analyze(lith_block, fault_block, n_faults, areas_bool=True, return_
     classify_edges(G, centroids, block_original, fault_block)
     # compute the adjacency areas for each edge
     if areas_bool:
-        compute_areas(G, labels_block)
+        compute_areas(G, labels_block, res=res)
 
     if not return_block:
         return G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot
@@ -76,18 +76,24 @@ def topology_analyze(lith_block, fault_block, n_faults, areas_bool=True, return_
         return G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot, labels_block
 
 
-def compute_areas(G, labels_block):
+def compute_areas(G, labels_block, res=None):
+    """Computes adjacency areas and stores them in G.adj[n1][n2]["area"]."""
     labels_bools = np.array([(labels_block == l).astype("bool") for l in np.unique(labels_block)])
-    for n1, n2 in G.edges_iter:
+    for n1, n2 in G.edges_iter():
         b = np.square(labels_block * (labels_bools[n1 - 1] + labels_bools[n2 - 1]))
         d = np.absolute(b[0:-1, 0:-1, 0:-1] - b[1:, 1:, 1:])
         d = (d == np.absolute(n1 ** 2 - n2 ** 2))
-        area = np.count_nonzero(d)
-        G.adj[n1][n2]["area_voxel"] = area
-        G.adj[n2][n1]["area_voxel"] = area
+        if res is None:
+            area = np.count_nonzero(d)
+        else:
+            area = np.count_nonzero(d) * res[0] * res[1] * res[2]
+
+        G.adj[n1][n2]["area"] = area
+        G.adj[n2][n1]["area"] = area
 
 
 def classify_edges(G, centroids, block, fault_block):
+    """Classifies edges into stratigraphic or fault in G.adj"""
     # loop over every node in adjacency dictionary
     for n1 in G.adj:
         # loop over every node that it is connected with
