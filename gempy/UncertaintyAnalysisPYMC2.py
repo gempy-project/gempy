@@ -133,6 +133,12 @@ class Posterior:
             count += check_adjacency(G, n1, n2)
         return count
 
+    def topo_count_connection_array(self, n1, n2):
+        count = []
+        for G in self.topo_graphs:
+            count.append(check_adjacency(G, n1, n2))
+        return count
+
     def topo_count_total_number_of_nodes(self):
         """Counts the amount of topology graphs with a certain amount of total nodes."""
         self.topo_count_dict = {}
