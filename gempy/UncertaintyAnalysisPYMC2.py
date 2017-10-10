@@ -32,8 +32,8 @@ class Posterior:
         # load db
         self.db = pymc.database.hdf5.load(dbname)
 
-        # number iter
-        self.n_iter = self.db.getstate()['sampler']['_iter']
+        # number iter n = self.db.getstate()["sampler"]["_iter"]
+        self.n_iter = self.db.getstate()['sampler']['_iter'] - self.db.getstate()["sampler"]["_burn"]
         # get trace names
         self.trace_names = self.db.trace_names[0]
         # get gempy block models
@@ -88,7 +88,7 @@ class Posterior:
         self.change_input_data(interp_data, i)
         return gp.compute_model(interp_data)
 
-    def compute_posterior_models_all(self, interp_data, n=None, calc_fb=True):
+    def compute_posterior_models_all(self, interp_data, r=None, calc_fb=True):
         """Computes block models from stored input parameters for all iterations."""
         if self.lb is None:
             # create the storage array
@@ -100,9 +100,11 @@ class Posterior:
                 self.fb = np.empty_like(lb)
 
             # compute model for every iteration
-            if n is None:
-                n = self.db.getstate()["sampler"]["_iter"]
-            for i in range(n):
+            if r is None:
+                r = self.n_iter
+            else:
+                r = range(r[0], r[1])
+            for i in range(r):
                 if i == 0:
                     lb, fb = self.compute_posterior_model(interp_data, i)
                     self.lb = lb[0]
@@ -257,19 +259,21 @@ class Plane:
     # method: give dip, change interfaces accordingly
     def interf_recalc_Z(self, dip):
         """Changes the dip of plane and recalculates Z coordinates for the points belonging to it."""
-        # modify the foliation
+        # set the foliation dip in df
         self.data_obj.foliations.set_value(self.fol_i, "dip", dip)
-
         # get azimuth
         az = float(self.data_obj.foliations.iloc[self.fol_i]["azimuth"])
 
+        # TODO: polarity calculation
         # set polarity according to dip
-        if -90 < dip < 90:
-            polarity = 1
-        else:
-            polarity = -1
+        #if -90 < dip < 90:
+        #    polarity = 1
+        #else:
+        #    polarity = -1
 
-        self.data_obj.foliations.set_value(self.fol_i, "polarity", polarity)
+        #self.data_obj.foliations.set_value(self.fol_i, "polarity", polarity)
+        polarity = self.data_obj.foliations.iloc[self.fol_i]["polarity"]
+
         # modify gradient
         self.data_obj.foliations.set_value(self.fol_i, "G_x",
                                            np.sin(np.deg2rad(dip)) * np.sin(np.deg2rad(az)) * polarity)

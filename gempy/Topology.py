@@ -23,13 +23,13 @@ from skimage.measure import regionprops
 import numpy as np
 
 
-def topology_analyze(lith_block, fault_block, n_faults, areas_bool=True, return_block=False):
+def topology_analyze(lith_block, fault_block, n_faults, areas_bool=False, return_block=False):
     """
     Function to analyze the geological model topology.
     :param lith_block:
     :param fault_block:
-    :param section: y-section (int)
-    Return:
+    :param n_faults:
+    Return: G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot
     """
 
     lith_block = lith_block.astype(int)
@@ -68,6 +68,7 @@ def topology_analyze(lith_block, fault_block, n_faults, areas_bool=True, return_
     classify_edges(G, centroids, block_original, fault_block)
     # compute the adjacency areas for each edge
     if areas_bool:
+        # TODO: 2d option (if slice only), right now it only works for 3d
         compute_areas(G, labels_block)
 
     if not return_block:
