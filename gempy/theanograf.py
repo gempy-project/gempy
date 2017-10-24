@@ -28,12 +28,17 @@ import theano.tensor as T
 import numpy as np
 import sys
 
-theano.config.optimizer = 'fast_compile'
+theano.config.openmp_elemwise_minsize = 50000
+theano.config.openmp = True
+
+theano.config.optimizer = 'None'
+theano.config.floatX = 'float64'
+
 theano.config.exception_verbosity = 'high'
 theano.config.compute_test_value = 'off'
-theano.config.floatX = 'float32'
-theano.config.profile_memory = True
-
+theano.config.profile_memory = False
+theano.config.scan.debug = False
+theano.config.profile = False
 
 class TheanoGraph_pro(object):
     """
@@ -60,8 +65,7 @@ class TheanoGraph_pro(object):
         self.verbose = verbose
         self.compute_all = False
 
-
-
+        theano.config.floatX = dtype
 
         # Creation of symbolic parameters
         # =============
@@ -69,7 +73,7 @@ class TheanoGraph_pro(object):
         # =============
 
         # Arbitrary values to get the same results that GeoModeller. These parameters are a mystery for me yet. I have
-        # to ask Gabi and Simon. In my humble opinion they weight the contribution of the interfaces against the
+        # to ask. In my humble opinion they weight the contribution of the interfaces against the
         # foliations.
         self.i_reescale = theano.shared(np.cast[dtype](4.))
         self.gi_reescale = theano.shared(np.cast[dtype](2.))
@@ -153,9 +157,9 @@ class TheanoGraph_pro(object):
         #self.potential_field_at_interfaces_value   = theano.shared(np.cast[np.int64](np.zeros((2, 2))), 'Potential field value at each interface',)
 
         if output is 'gravity':
-            self.densities = theano.shared(np.cast['float32'](np.zeros(3)), "List with the densities")
-            self.tz = theano.shared(np.cast['float32'](np.zeros((1, 3))), "Component z")
-            self.select = theano.shared(np.cast['float32'](np.zeros(3)), "Select nearby cells")
+            self.densities = theano.shared(np.cast[dtype](np.zeros(3)), "List with the densities")
+            self.tz = theano.shared(np.cast[dtype](np.zeros((1, 3))), "Component z")
+            self.select = theano.shared(np.cast[dtype](np.zeros(3)), "Select nearby cells")
 
     def input_parameters_list(self):
         """
@@ -731,6 +735,7 @@ class TheanoGraph_pro(object):
 
         # Creation of a matrix of dimensions equal to the grid with the weights for every point (big 4D matrix in
         # ravel form)
+        # TODO IMP: Change the tile by a simple dot op
         DK_weights = T.tile(DK_parameters, (grid_val.shape[0], 1)).T
 
         return DK_weights
@@ -890,7 +895,16 @@ class TheanoGraph_pro(object):
         grid_val = self.x_to_interpolate()
 
         # Contribution
-        f_1 = T.sum(weights[length_of_CG+length_of_CGI+length_of_U_I:, :] * self.fault_matrix[::2, :grid_val.shape[0]], axis=0)
+        # selecting the voxels that are not computed in the previous pot. field
+
+        aux_ones = T.ones([2 * self.len_points])
+        faults_select = T.concatenate((self.yet_simulated, aux_ones))
+
+        fault_matrix_selection = (self.fault_matrix * faults_select)
+        fault_matrix_selection_non_zero = fault_matrix_selection[::2, :].nonzero_values().reshape((length_of_faults,
+                                                                                                   grid_val.shape[0]))
+        f_1 = T.sum(
+            weights[length_of_CG + length_of_CGI + length_of_U_I:, :] * fault_matrix_selection_non_zero, axis=0)
 
         # Add name to the theano node
         f_1.name = 'Faults contribution'
@@ -918,7 +932,7 @@ class TheanoGraph_pro(object):
 
 
         # Add an arbitrary number at the potential field to get unique values for each of them
-        Z_x += T.repeat(T.cast(100 - 5*self.n_formation_op[0], "float32"), Z_x.shape[0])
+        Z_x += T.repeat(T.cast(100000 - 50*self.n_formation_op[0], "float32"), Z_x.shape[0])
         Z_x.name = 'Value of the potential field at every point'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
@@ -992,7 +1006,8 @@ class TheanoGraph_pro(object):
 
         # Value of the potential field at the interfaces of the computed series
         self.potential_field_at_interfaces_values = T.sort(self.potential_field_at_interfaces()[self.n_formation_op-1])[::-1]
-        self.potential_field_at_interfaces_values += T.repeat(T.cast(100 - 5*self.n_formation_op[0], "float32"), self.potential_field_at_interfaces_values.shape[0])
+        self.potential_field_at_interfaces_values += T.repeat(T.cast(100000 - 50*self.n_formation_op[0], "float32"),
+                                                              self.potential_field_at_interfaces_values.shape[0])
 
         # self.pot_field_for_faults = potential_field_at_interfaces_values
         # self.pot_field_for_formations = potential_field_at_interfaces_values
@@ -1124,7 +1139,7 @@ class TheanoGraph_pro(object):
         # Update the block matrix
         block_matrix = T.set_subtensor(
                     final_block[0, T.nonzero(T.cast(faults_select, "int8"))[0]],
-                    faults_matrix)
+                    faults_matrix+10)
 
         # Update the potential field matrix
         if self.compute_all:
@@ -1412,7 +1427,9 @@ class TheanoGraph_pro(object):
                  sequences=[dict(input=self.len_series_i[n_faults:], taps=[0, 1]),
                             dict(input=self.len_series_f[n_faults:], taps=[0, 1]),
                             dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),
-                            dict(input=self.u_grade_T[n_faults:], taps=[0])]
+                            dict(input=self.u_grade_T[n_faults:], taps=[0])],
+                 name='Looping interfaces',
+                 profile=False
              )
 
              lith_matrix = lith_loop[0]
@@ -1420,7 +1437,7 @@ class TheanoGraph_pro(object):
 
         pfai = T.vertical_stack(pfai_fault, pfai_lith)
 
-        return [lith_matrix[-1, :, :-2 * self.len_points], fault_matrix[-1, :, :-2 * self.len_points], pfai]
+        return [lith_matrix[:, :, :-2 * self.len_points], fault_matrix[-1, :, :-2 * self.len_points], pfai]
 
     # ==================================
     # Geophysics

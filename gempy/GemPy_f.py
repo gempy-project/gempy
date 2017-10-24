@@ -37,7 +37,7 @@ import numpy as _np
 import copy
 from gempy.Visualization import PlotData2D, steano3D, vtkVisualization
 from gempy.DataManagement import InputData, InterpolatorInput, GridClass
-from gempy.strat_pile import StratigraphicPile
+from gempy.sequential_pile import StratigraphicPile
 from gempy.Topology import topology_analyze, topology_check_adjacency
 import gempy.UncertaintyAnalysisPYMC2 # So far we use this type of import because the other one makes a copy and blows up some asserts
 

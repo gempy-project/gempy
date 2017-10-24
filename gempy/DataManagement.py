@@ -742,7 +742,7 @@ class InputData(object):
                     tri_id) + ". Only exactly 3 points are supported.")
 
 
-class DataPlane:
+class FoliaitionsFromInterfaces:
     def __init__(self, geo_data, group_id, mode, verbose=False):
         """
 
