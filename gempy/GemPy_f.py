@@ -669,7 +669,8 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
 
 
 def topology_compute(geo_data, lith_block, fault_block,
-                     cell_number=None, direction=None):
+                     cell_number=None, direction=None,
+                     compute_areas=False, return_label_block=False):
     """
     Computes model topology and returns graph, centroids and look-up-tables.
     :param geo_data: geo_data object
@@ -693,7 +694,7 @@ def topology_compute(geo_data, lith_block, fault_block,
         lb = lith_block.reshape(geo_data.resolution)[:, :, cell_number]
         fb = fault_block.reshape(geo_data.resolution)[:, :, cell_number]
 
-    return topology_analyze(lb, fb, geo_data.n_faults)
+    return topology_analyze(lb, fb, geo_data.n_faults, areas_bool=compute_areas, return_block=return_label_block)
 
 
 def topology_plot(geo_data, G, centroids, direction="y"):
