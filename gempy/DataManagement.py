@@ -148,7 +148,12 @@ class InputData(object):
                                  self.foliations["polarity"].astype('float')
 
     def calculate_orientations(self):
-        pass
+        """
+        Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.
+        :return: automatically updates data frame
+        """
+        self.foliations["dip"] = np.arccos(self.foliations["G_z"] / self.foliations["polarity"])
+        self.foliations["azimuth"] = np.arcsin(self.foliations["G_x"]) / (np.sin(np.arccos(self.foliations["G_z"] / self.foliations["polarity"])) * self.foliations["polarity"])
 
     # # DEP?
     # def create_grid(self, extent=None, resolution=None, grid_type="regular_3D", **kwargs):

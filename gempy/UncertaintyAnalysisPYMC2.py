@@ -8,6 +8,7 @@ except ImportError:
     warnings.warn("pymc (v2) package is not installed. No support for stochastic simulation posterior analysis.")
 import theano
 import numpy as np
+import pandas as pn
 # try:
 #     import networkx as nx
 # except ImportError:
@@ -117,6 +118,22 @@ class Posterior:
         else:
             print("self.lb already filled with something. If you want to override, set self.lb to 'None'")
 
+    def compute_posterior_model_avrg(self, interp_data):
+        """Computes average posterior model."""
+        list_interf = []
+        list_fol = []
+        for i in range(self.n_iter):
+            list_interf.append(self.input_data[i][0])
+            list_fol.append(self.input_data[i][1])
+
+        interf_avrg = pn.concat(list_interf).groupby(level=0).mean()
+        fol_avrg = pn.concat(list_fol).groupby(level=0).mean()
+
+        interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = interf_avrg
+        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", "azimuth", "dip", "polarity"]] = fol_avrg
+        interp_data.update_interpolator()
+        return gp.compute_model(interp_data)
+
     def compute_entropy(self, interp_data):
         """Computes the voxel information entropy of stored block models."""
         if self.lb is None:
@@ -158,6 +175,9 @@ class Posterior:
         self.topo_unique_prob = self.topo_unique_freq / np.sum(self.topo_unique_freq)
         # count unique node numbers
         self.topo_count_total_number_of_nodes()
+
+        self.topo_sort = np.argsort(self.topo_unique_freq)[::-1]
+
         if self.verbose:
             print("Topology analysis completed.")
 

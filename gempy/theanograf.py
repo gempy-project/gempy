@@ -28,7 +28,7 @@ import theano.tensor as T
 import numpy as np
 import sys
 
-theano.config.optimizer = 'fast_run'
+theano.config.optimizer = 'fast_compile'
 theano.config.exception_verbosity = 'high'
 theano.config.compute_test_value = 'off'
 theano.config.openmp_elemwise_minsize = 50000
@@ -530,7 +530,7 @@ class TheanoGraph_pro(object):
 
         fault_matrix_at_interfaces_rest = self.fault_matrix[::2, interface_loc+self.len_i_0: interface_loc+self.len_i_1]
         fault_matrix_at_interfaces_ref  = self.fault_matrix[::2, interface_loc+self.len_points+self.len_i_0:
-                                                               interface_loc+self.len_points+self.len_i_1]
+                                                                 interface_loc+self.len_points+self.len_i_1]
 
        # len_points_i = 2*self.rest_layer_points_all.shape[0] + self.n_formation_op[0]-1
        # len_points_e = 2*self.rest_layer_points_all.shape[0] + self.n_formation_op[-1]-1
