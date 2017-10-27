@@ -28,12 +28,17 @@ import theano.tensor as T
 import numpy as np
 import sys
 
-theano.config.optimizer = 'fast_compile'
+theano.config.openmp_elemwise_minsize = 50000
+theano.config.openmp = True
+
+theano.config.optimizer = 'None'
+theano.config.floatX = 'float64'
+
 theano.config.exception_verbosity = 'high'
 theano.config.compute_test_value = 'off'
-theano.config.floatX = 'float64'
-theano.config.profile_memory = True
-
+theano.config.profile_memory = False
+theano.config.scan.debug = False
+theano.config.profile = False
 
 class TheanoGraph_pro(object):
     """
@@ -60,8 +65,7 @@ class TheanoGraph_pro(object):
         self.verbose = verbose
         self.compute_all = False
 
-
-
+        theano.config.floatX = dtype
 
         # Creation of symbolic parameters
         # =============
@@ -69,7 +73,7 @@ class TheanoGraph_pro(object):
         # =============
 
         # Arbitrary values to get the same results that GeoModeller. These parameters are a mystery for me yet. I have
-        # to ask Gabi and Simon. In my humble opinion they weight the contribution of the interfaces against the
+        # to ask. In my humble opinion they weight the contribution of the interfaces against the
         # foliations.
         self.i_reescale = theano.shared(np.cast[dtype](4.))
         self.gi_reescale = theano.shared(np.cast[dtype](2.))
@@ -108,22 +112,15 @@ class TheanoGraph_pro(object):
         # ======================
         # VAR
         #=======================
-        self.dips_position_all = T.matrix("Position of the dips", dtype=dtype)
-        self.dip_angles_all = T.vector("Angle of every dip", dtype=dtype)
-        self.azimuth_all = T.vector("Azimuth", dtype=dtype)
-        self.polarity_all = T.vector("Polarity", dtype=dtype)
-        self.ref_layer_points_all = T.matrix("Reference points for every layer", dtype=dtype)
-        self.rest_layer_points_all = T.matrix("Rest of the points of the layers", dtype=dtype)
-
-
+        self.dips_position_all = T.matrix("Position of the dips")
+        self.dip_angles_all = T.vector("Angle of every dip")
+        self.azimuth_all = T.vector("Azimuth")
+        self.polarity_all = T.vector("Polarity")
+        self.ref_layer_points_all = T.matrix("Reference points for every layer")
+        self.rest_layer_points_all = T.matrix("Rest of the points of the layers")
 
         # Tiling dips to the 3 spatial coordinations
         self.dips_position = self.dips_position_all
-
-
-       # self.Val = theano.shared(0.8)
-       # self.dips_position = T.set_subtensor(self.dips_position[0, 2], self.Val)
-
         self.dips_position_tiled = T.tile(self.dips_position, (self.n_dimensions, 1))
 
         # These are subsets of the data for each series. I initialized them as the whole arrays but then they will take
@@ -191,7 +188,7 @@ class TheanoGraph_pro(object):
         sqd = T.sqrt(T.maximum(
             (x_1**2).sum(1).reshape((x_1.shape[0], 1)) +
             (x_2**2).sum(1).reshape((1, x_2.shape[0])) -
-            2 * x_1.dot(x_2.T), 0.0001
+            2 * x_1.dot(x_2.T), 0
         ))
 
         return sqd
@@ -535,7 +532,7 @@ class TheanoGraph_pro(object):
 
         fault_matrix_at_interfaces_rest = self.fault_matrix[::2, interface_loc+self.len_i_0: interface_loc+self.len_i_1]
         fault_matrix_at_interfaces_ref  = self.fault_matrix[::2, interface_loc+self.len_points+self.len_i_0:
-                                                               interface_loc+self.len_points+self.len_i_1]
+                                                                 interface_loc+self.len_points+self.len_i_1]
 
        # len_points_i = 2*self.rest_layer_points_all.shape[0] + self.n_formation_op[0]-1
        # len_points_e = 2*self.rest_layer_points_all.shape[0] + self.n_formation_op[-1]-1
@@ -738,6 +735,7 @@ class TheanoGraph_pro(object):
 
         # Creation of a matrix of dimensions equal to the grid with the weights for every point (big 4D matrix in
         # ravel form)
+        # TODO IMP: Change the tile by a simple dot op
         DK_weights = T.tile(DK_parameters, (grid_val.shape[0], 1)).T
 
         return DK_weights
@@ -897,7 +895,16 @@ class TheanoGraph_pro(object):
         grid_val = self.x_to_interpolate()
 
         # Contribution
-        f_1 = T.sum(weights[length_of_CG+length_of_CGI+length_of_U_I:, :] * self.fault_matrix[::2, :grid_val.shape[0]], axis=0)
+        # selecting the voxels that are not computed in the previous pot. field
+
+        aux_ones = T.ones([2 * self.len_points])
+        faults_select = T.concatenate((self.yet_simulated, aux_ones))
+
+        fault_matrix_selection = (self.fault_matrix * faults_select)
+        fault_matrix_selection_non_zero = fault_matrix_selection[::2, :].nonzero_values().reshape((length_of_faults,
+                                                                                                   grid_val.shape[0]))
+        f_1 = T.sum(
+            weights[length_of_CG + length_of_CGI + length_of_U_I:, :] * fault_matrix_selection_non_zero, axis=0)
 
         # Add name to the theano node
         f_1.name = 'Faults contribution'
@@ -925,7 +932,7 @@ class TheanoGraph_pro(object):
 
 
         # Add an arbitrary number at the potential field to get unique values for each of them
-        Z_x += T.repeat(T.cast(100 - 5*self.n_formation_op[0], "float32"), Z_x.shape[0])
+        Z_x += T.repeat(T.cast(1000 - 50*self.n_formation_op[0], "float32"), Z_x.shape[0])
         Z_x.name = 'Value of the potential field at every point'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
@@ -999,7 +1006,8 @@ class TheanoGraph_pro(object):
 
         # Value of the potential field at the interfaces of the computed series
         self.potential_field_at_interfaces_values = T.sort(self.potential_field_at_interfaces()[self.n_formation_op-1])[::-1]
-        self.potential_field_at_interfaces_values += T.repeat(T.cast(100 - 5*self.n_formation_op[0], "float32"), self.potential_field_at_interfaces_values.shape[0])
+        self.potential_field_at_interfaces_values += T.repeat(T.cast(1000 - 50*self.n_formation_op[0], "float32"),
+                                                              self.potential_field_at_interfaces_values.shape[0])
 
         # self.pot_field_for_faults = potential_field_at_interfaces_values
         # self.pot_field_for_formations = potential_field_at_interfaces_values
@@ -1037,11 +1045,8 @@ class TheanoGraph_pro(object):
             Returns:
                 theano.tensor.vector: segmented values
             """
-            mid_pot = (a-b)/2+b
-            # The 5 rules the slope of the function
-            segm = 1./(1+T.exp(-20*(Z_x-mid_pot)))
 
-            return T.switch(T.le(Zx, a) * T.ge(Zx, b), segm + n_formation, 0)
+            return T.le(Zx, a) * T.ge(Zx, b) * n_formation
 
         partial_block, updates2 = theano.scan(
             fn=compare,
@@ -1134,7 +1139,7 @@ class TheanoGraph_pro(object):
         # Update the block matrix
         block_matrix = T.set_subtensor(
                     final_block[0, T.nonzero(T.cast(faults_select, "int8"))[0]],
-                    faults_matrix)
+                    faults_matrix+1)
 
         # Update the potential field matrix
         if self.compute_all:
@@ -1185,7 +1190,6 @@ class TheanoGraph_pro(object):
         # ==================
         # Vector that controls the points that have been simulated in previous iterations
         #self.yet_simulated = T.eq(final_block[0, :], 0)
-
         self.yet_simulated = T.eq(final_block[0, :-2 * self.len_points], 0)
         self.yet_simulated.name = 'Yet simulated LITHOLOGY node'
 
@@ -1245,7 +1249,6 @@ class TheanoGraph_pro(object):
                 potential_field_values)
 
         return final_block, self.final_potential_field_at_formations_op
-
 
     def compute_geological_model(self, n_faults=0, compute_all=True):
 
@@ -1326,7 +1329,9 @@ class TheanoGraph_pro(object):
                  sequences=[dict(input=self.len_series_i[n_faults:], taps=[0, 1]),
                             dict(input=self.len_series_f[n_faults:], taps=[0, 1]),
                             dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),
-                            dict(input=self.u_grade_T[n_faults:], taps=[0])]
+                            dict(input=self.u_grade_T[n_faults:], taps=[0])],
+                 name='Looping interfaces',
+                 profile=False
              )
 
              lith_matrix = lith_loop[0]
@@ -1335,10 +1340,6 @@ class TheanoGraph_pro(object):
         pfai = T.vertical_stack(pfai_fault, pfai_lith)
 
         return [lith_matrix[-1, :, :-2 * self.len_points], fault_matrix[-1, :, :-2 * self.len_points], pfai]
-
-    def compute_grad(self, n_faults=0, compute_all=True):
-        lith_matrix, fault_matrix, pfai = self.compute_geological_model(n_faults=n_faults, compute_all=compute_all)
-        return T.grad(lith_matrix[0][5], self.rest_layer_points_all)
 
     # ==================================
     # Geophysics
@@ -1357,65 +1358,28 @@ class TheanoGraph_pro(object):
         # Compute the geological model
         lith_matrix, fault_matrix, pfai = self.compute_geological_model(n_faults=n_faults, compute_all=compute_all)
 
-        # if n_faults == 0:
-        #     formations = T.concatenate([self.n_formation[::-1], T.stack([0])])
-        # else:
-        #     formations = T.concatenate([self.n_formation[:n_faults-1:-1], T.stack([0])])
-        # # Substitue lithologies by its density
-        # density_block_loop, updates4 = theano.scan(self.switch_densities,
-        #                             outputs_info=[lith_matrix[0]],
-        #                              sequences=[formations, self.densities]
-        #                             )
+        if n_faults == 0:
+            formations = T.concatenate([self.n_formation[::-1], T.stack([0])])
+        else:
+            formations = T.concatenate([self.n_formation[:n_faults-1:-1], T.stack([0])])
+        # Substitue lithologies by its density
+        density_block_loop, updates4 = theano.scan(self.switch_densities,
+                                    outputs_info=[lith_matrix[0]],
+                                     sequences=[formations, self.densities]
+                                    )
 
         n_measurements = self.tz.shape[0]
         # Tiling the density block for each measurent and picking just the closer to them. This has to be possible to
         # optimize
 
-        # densities_rep = T.tile(density_block_loop[-1], n_measurements)
-        densities_rep = T.tile(lith_matrix[-1], n_measurements)
+        densities_rep = T.tile(density_block_loop[-1], n_measurements)
         densities_selected = densities_rep[T.nonzero(T.cast(self.select, "int8"))[0]]
         densities_selected_reshaped = densities_selected.reshape((n_measurements, -1))
         #
         # # density times the component z of gravity
         grav = densities_selected_reshaped * self.tz
 
-        return T.grad(grav.sum(axis=1).sum(), self.rest_layer_points_all)
+        return grav.sum(axis=1)
 
-
-
-    # def slice_cells(self, selected_cells, block_lith):
-    #
-    #     # First change the bedrock to arbitrary value
-    #     new_block = block-lith + 1
-    #
-    #     (new_block * selected_cells[:. T.newaxis?]).nonzero_values()
-    #
-    #
-    # def set_densities(self, block_lith):
-    #
-    #     def switch_densities(lith, block):
-    #         """
-    #
-    #         Args:
-    #             lith:
-    #             block:
-    #
-    #         Returns:
-    #
-    #         """
-    #         densities = T.switch(
-    #             T.eq(sed_dips_dips, 0),  # This is the condition
-    #             0,  # If true it is equal to 0. This is how a direction affect another
-    #             (  # else, following Chiles book
-    #
-    #         return
-    #
-    #     partial_block, updates2 = theano.scan(
-    #         fn=compare,
-    #         outputs_info=None,
-    #         sequences=[dict(input=self.n_formation)],
-    #         non_sequences=block_lith)
-
-#class ForwardGravity(TheanoGraph_pro):
 
 

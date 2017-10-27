@@ -148,7 +148,12 @@ class InputData(object):
                                  self.foliations["polarity"].astype('float')
 
     def calculate_orientations(self):
-        pass
+        """
+        Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.
+        :return: automatically updates data frame
+        """
+        self.foliations["dip"] = np.arccos(self.foliations["G_z"] / self.foliations["polarity"])
+        self.foliations["azimuth"] = np.arcsin(self.foliations["G_x"]) / (np.sin(np.arccos(self.foliations["G_z"] / self.foliations["polarity"])) * self.foliations["polarity"])
 
     # # DEP?
     # def create_grid(self, extent=None, resolution=None, grid_type="regular_3D", **kwargs):
@@ -742,7 +747,7 @@ class InputData(object):
                     tri_id) + ". Only exactly 3 points are supported.")
 
 
-class DataPlane:
+class FoliaitionsFromInterfaces:
     def __init__(self, geo_data, group_id, mode, verbose=False):
         """
 
@@ -1510,7 +1515,7 @@ class InterpolatorInput:
             self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](_universal_matrix + 1e-10))
 
             # Initialization of the block model
-            self.tg.final_block.set_value(np.zeros((1, self.grid_res.grid.shape[0]), dtype='float32'))
+            self.tg.final_block.set_value(np.zeros((1, self.grid_res.grid.shape[0]), dtype=self.dtype))
 
             # Initialization of the boolean array that represent the areas of the block model to be computed in the
             # following series
