@@ -115,6 +115,7 @@ class InputData(object):
             self.foliations = self.load_data_csv(data_type="foliations", path=path_f, **kwargs)
             assert set(['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']).issubset(self.foliations.columns), \
                 "One or more columns do not match with the expected values " + str(self.foliations.columns)
+            self.foliations = self.foliations[['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']]
 
         if path_i:
             self.interfaces = self.load_data_csv(data_type="interfaces", path=path_i, **kwargs)
@@ -147,7 +148,12 @@ class InputData(object):
                                  self.foliations["polarity"].astype('float')
 
     def calculate_orientations(self):
-        pass
+        """
+        Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.
+        :return: automatically updates data frame
+        """
+        self.foliations["dip"] = np.arccos(self.foliations["G_z"] / self.foliations["polarity"])
+        self.foliations["azimuth"] = np.arcsin(self.foliations["G_x"]) / (np.sin(np.arccos(self.foliations["G_z"] / self.foliations["polarity"])) * self.foliations["polarity"])
 
     # # DEP?
     # def create_grid(self, extent=None, resolution=None, grid_type="regular_3D", **kwargs):
@@ -210,7 +216,7 @@ class InputData(object):
             # Pickle the 'data' dictionary using the highest protocol available.
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
-    def get_data(self, itype='all', verbosity=0):
+    def get_data(self, itype='all', numeric=False, verbosity=0):
         """
         Method that returns the interfaces and foliations pandas Dataframes. Can return both at the same time or only
         one of the two
@@ -222,19 +228,28 @@ class InputData(object):
 
         """
         import pandas as pn
+
+        dtype = 'object'
+
         if verbosity == 0:
-            show_par_f = ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series', 'annotations']
-            show_par_i = ['X', 'Y', 'Z', 'formation', 'series', 'annotations']
+            show_par_f = ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series']
+            show_par_i = ['X', 'Y', 'Z', 'formation', 'series']
         else:
             show_par_f = self.foliations.columns
             show_par_i = self.interfaces.columns
 
+        if numeric:
+            show_par_f = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
+            show_par_i = ['X', 'Y', 'Z']
+            dtype = 'float'
         if itype == 'foliations':
-            raw_data = self.foliations[show_par_f]
+            raw_data = self.foliations[show_par_f].astype(dtype)
         elif itype == 'interfaces':
-            raw_data = self.interfaces[show_par_i]
+            raw_data = self.interfaces[show_par_i].astype(dtype)
         elif itype == 'all':
-            raw_data = pn.concat([self.interfaces, self.foliations], keys=['interfaces', 'foliations'])
+            raw_data = pn.concat([self.interfaces[show_par_i].astype(dtype),
+                                  self.foliations[show_par_f].astype(dtype)],
+                                 keys=['interfaces', 'foliations'])
         else:
             raise AttributeError('itype has to be: \'foliations\', \'interfaces\', or \'all\'')
         return raw_data
@@ -504,8 +519,15 @@ class InputData(object):
         Returns:
             Column in the interfaces and foliations dataframes
         """
+
+
         if formation_order is None:
             formation_order = self.interfaces["formation"].unique()
+
+        else:
+            assert self.interfaces['formation'].isin(formation_order).all(), 'Some of the formations given are not in '\
+                                                                             'the formations data frame. Check misspells'\
+                                                                             'and that you include the name of the faults!!!'
         try:
             ip_addresses = formation_order
             ip_dict = dict(zip(ip_addresses, range(1, len(ip_addresses)+1)))
@@ -725,13 +747,13 @@ class InputData(object):
                     tri_id) + ". Only exactly 3 points are supported.")
 
 
-class DataPlane:
+class FoliaitionsFromInterfaces:
     def __init__(self, geo_data, group_id, mode, verbose=False):
         """
 
         :param geo_data: InputData object
         :param group_id: (str) identifier for the data group
-        :param mode: (str), either interf_to_fol or fol_to_interf
+        :param mode: (str), either 'interf_to_fol' or 'fol_to_interf'
         :param verbose: (bool) adjusts verbosity, default False
         """
         self.geo_data = geo_data
@@ -928,7 +950,8 @@ class InterpolatorInput:
         dtype:  type of float
 
     """
-    def __init__(self, geo_data, compile_theano=True, compute_all=True, u_grade=None, rescaling_factor=None, **kwargs):
+    def __init__(self, geo_data, output='geology', compile_theano=True, compute_all=True,
+                 u_grade=None, rescaling_factor=None, **kwargs):
         # TODO add all options before compilation in here. Basically this is n_faults, n_layers, verbose, dtype, and \
         # only block or all
         assert isinstance(geo_data, InputData), 'You need to pass a InputData object'
@@ -957,11 +980,14 @@ class InterpolatorInput:
 
         # Creating interpolator class with all the precompilation options
         # --DEP-- self.interpolator = self.set_interpolator(**kwargs)
-        self.interpolator = self.InterpolatorClass(self.geo_data_res, self.geo_data_res.grid, **kwargs)
+        self.interpolator = self.InterpolatorClass(self.geo_data_res, self.geo_data_res.grid, output=output, **kwargs)
         if compile_theano:
-            self.th_fn = self.compile_th_fn(compute_all=compute_all)
+            self.th_fn = self.compile_th_fn(output, compute_all=compute_all)
 
-    def compile_th_fn(self, compute_all=True):
+        self.geophy = None
+
+
+    def compile_th_fn(self, output, compute_all=True):
         """
         Compile the theano function given the input data.
         Args:
@@ -977,12 +1003,24 @@ class InterpolatorInput:
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.interpolator.tg.input_parameters_list()
 
-        # then we compile we have to pass the number of formations that are faults!!
-        th_fn = theano.function(input_data_T, self.interpolator.tg.compute_geological_model(self.geo_data_res.n_faults,
-                                                                                     compute_all=compute_all),
-                                on_unused_input='ignore',
-                                allow_input_downcast=False,
-                                profile=False)
+        if output is 'geology':
+            # then we compile we have to pass the number of formations that are faults!!
+            th_fn = theano.function(input_data_T,
+                                    self.interpolator.tg.compute_geological_model(self.geo_data_res.n_faults,
+                                                                                  compute_all=compute_all),
+                                    on_unused_input='ignore',
+                                    allow_input_downcast=False,
+                                    profile=False)
+
+        if output is 'gravity':
+            # then we compile we have to pass the number of formations that are faults!!
+            th_fn = theano.function(input_data_T,
+                                    self.interpolator.tg.compute_forward_gravity(self.geo_data_res.n_faults,
+                                                                                 compute_all=compute_all),
+                                    on_unused_input='ignore',
+                                    allow_input_downcast=False,
+                                    profile=False)
+
         print('Level of Optimization: ', theano.config.optimizer)
         print('Device: ', theano.config.device)
         print('Precision: ', self.dtype)
@@ -1164,6 +1202,12 @@ class InterpolatorInput:
             u_grade = self.u_grade
         return self.interpolator.data_prep(u_grade=u_grade)
 
+    ## =======
+    ## Gravity
+    def set_geophysics_obj(self, ai_extent, ai_resolution, ai_z=None, range_max=None):
+        from .GeoPhysics import GeoPhysicsPreprocessing_pro
+        self.geophy = GeoPhysicsPreprocessing_pro(self, ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
+
     class InterpolatorClass(object):
         """
         -DOCS NOT UPDATED-
@@ -1193,6 +1237,9 @@ class InterpolatorInput:
             # Here we can change the dtype for stability and GPU vs CPU
             dtype = kwargs.get('dtype', 'float32')
             self.dtype = dtype
+            # Here we change the graph type
+            output = kwargs.get('output', 'geology')
+            self.output = output
 
             if dtype in verbose:
                 print(self.dtype)
@@ -1214,7 +1261,7 @@ class InterpolatorInput:
 
             # Importing the theano graph. The methods of this object generate different parts of graph.
             # See theanograf doc
-            self.tg = theanograf.TheanoGraph_pro(dtype=dtype, verbose=verbose,)
+            self.tg = theanograf.TheanoGraph_pro(output=output, dtype=dtype, verbose=verbose,)
 
             # Sorting data in case the user provides it unordered
             self.order_table()
@@ -1324,7 +1371,7 @@ class InterpolatorInput:
             #      for i in self._data_scaled.foliations['formation number'].unique()])
 
             # -DEP- I think this was just a kind of print to know what was going on
-            #self.pandas_rest = pandas_rest_layer_points
+        #    self.pandas_rest = pandas_rest_layer_points
 
             # Array containing the size of every series. Interfaces.
             len_series_i = np.asarray(
@@ -1361,7 +1408,7 @@ class InterpolatorInput:
             # ================
             # Rest layers matrix # PYTHON VAR
             rest_layer_points = pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix()
-
+          #  self.rest_layer_points = rest_layer_points
             # TODO delete
             # -DEP- Again i was just a check point
             # self.rest_layer_points = rest_layer_points
@@ -1379,8 +1426,8 @@ class InterpolatorInput:
             ref_layer_points = pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()
 
             # -DEP- was just a check point
-            # self.ref_layer_points = ref_layer_points
-
+            self.ref_layer_points = ref_layer_points
+            self.pandas_ref_layer_points_rep = pandas_ref_layer_points_rep
             # Check no reference points in rest points (at least in coor x)
             assert not any(ref_layer_points[:, 0]) in rest_layer_points[:, 0], \
                 'A reference point is in the rest list point. Check you do ' \
@@ -1468,7 +1515,7 @@ class InterpolatorInput:
             self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](_universal_matrix + 1e-10))
 
             # Initialization of the block model
-            self.tg.final_block.set_value(np.zeros((1, self.grid_res.grid.shape[0]), dtype='float32'))
+            self.tg.final_block.set_value(np.zeros((1, self.grid_res.grid.shape[0]), dtype=self.dtype))
 
             # Initialization of the boolean array that represent the areas of the block model to be computed in the
             # following series
@@ -1488,6 +1535,14 @@ class InterpolatorInput:
                                                                   dtype=self.dtype))
             self.tg.final_potential_field_at_faults.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
                                                               dtype=self.dtype))
+
+        def set_densities(self, densities):
+            self.tg.densities.set_value(np.array(densities, dtype=self.dtype))
+
+        def set_z_comp(self, tz, selected_cells):
+
+            self.tg.tz.set_value(tz.astype(self.dtype))
+            self.tg.select.set_value(selected_cells)
 
         def get_kriging_parameters(self, verbose=0):
             """

@@ -207,7 +207,7 @@ class PlotData2D(object):
         return _a, _b, _c, extent_val, x, y, Gx, Gy
 
     def plot_block_section(self, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data = False, **kwargs):
+                           plot_data=False, **kwargs):
         """
         Plot a section of the block model
 
@@ -245,8 +245,8 @@ class PlotData2D(object):
 
         if plot_data:
             self.plot_data(direction, 'all')
+        # TODO: plot_topo option - need fault_block for that
 
-        # TODO: Formation numbers in block section do not appear to correspond to data???
         # DEP?
         selecting_colors = np.unique(plot_block)
 
@@ -261,7 +261,7 @@ class PlotData2D(object):
         plt.xlabel(x)
         plt.ylabel(y)
 
-    def plot_potential_field(self, potential_field, cell_number, n_pf=0,
+    def plot_potential_field(self, potential_field, cell_number, N=20,
                              direction="y", plot_data=True, series="all", *args, **kwargs):
         """
         Plot a potential field in a given direction.
@@ -284,17 +284,58 @@ class PlotData2D(object):
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
         plt.contour(potential_field.reshape(
             self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[_a, _b, _c].T,
-                    cell_number,
+                    N,
                     extent=extent_val, *args,
                     **kwargs)
 
         if 'colorbar' in kwargs:
             plt.colorbar()
 
-        plt.title(self._data.interfaces['series'].unique()[n_pf])
+      #  plt.title(self._data.interfaces['series'].unique()[n_pf])
         plt.xlabel(x)
         plt.ylabel(y)
 
+    def plot_topo_g(geo_data, G, centroids, direction="y"):
+        if direction == "y":
+            c1, c2 = (0, 2)
+            e1 = geo_data.extent[1] - geo_data.extent[0]
+            e2 = geo_data.extent[5] - geo_data.extent[4]
+            if len(list(centroids.items())[0][1]) == 2:
+                c1, c2 = (0, 1)
+            r1 = geo_data.resolution[0]
+            r2 = geo_data.resolution[2]
+        elif direction == "x":
+            c1, c2 = (1, 2)
+            e1 = geo_data.extent[3] - geo_data.extent[2]
+            e2 = geo_data.extent[5] - geo_data.extent[4]
+            if len(list(centroids.items())[0][1]) == 2:
+                c1, c2 = (0, 1)
+            r1 = geo_data.resolution[1]
+            r2 = geo_data.resolution[2]
+        elif direction == "z":
+            c1, c2 = (0, 1)
+            e1 = geo_data.extent[1] - geo_data.extent[0]
+            e2 = geo_data.extent[3] - geo_data.extent[2]
+            if len(list(centroids.items())[0][1]) == 2:
+                c1, c2 = (0, 1)
+            r1 = geo_data.resolution[0]
+            r2 = geo_data.resolution[1]
+
+        for edge in G.edges_iter():
+            a, b = edge
+
+            if G.adj[a][b]["edge_type"] == "stratigraphic":
+                plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1,
+                         np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2, "gray", linewidth=2)
+            elif G.adj[a][b]["edge_type"] == "fault":
+                plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1,
+                         np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2, "black", linewidth=2)
+
+            for node in G.nodes_iter():
+                plt.plot(centroids[node][c1] * e1 / r1, centroids[node][c2] * e2 / r2,
+                         marker="o", color="black", markersize=20)
+                plt.text(centroids[node][c1] * e1 / r1 * 0.99,
+                         centroids[node][c2] * e2 / r2 * 0.99, str(node), color="white", size=10)
 
     @staticmethod
     def annotate_plot(frame, label_col, x, y, **kwargs):
@@ -543,7 +584,7 @@ class vtkVisualization:
         s.n_sphere = n_sphere
         s.n_render = n_render
         s.index = n_index
-        s.AddObserver("InteractionEvent", self.sphereCallback)
+        s.AddObserver("EndInteractionEvent", self.sphereCallback) # EndInteractionEvent
 
         s.On()
 
@@ -575,7 +616,7 @@ class vtkVisualization:
         d.SetRepresentationToSurface()
 
         # Position
-      #  print(X, Y, Z)
+
         source = vtk.vtkPlaneSource()
         source.SetCenter(X, Y, Z)
         source.SetNormal(Gx, Gy, Gz)
@@ -593,7 +634,7 @@ class vtkVisualization:
         d.n_plane = n_plane
         d.n_render = n_render
         d.index = n_index
-        d.AddObserver("InteractionEvent", self.planesCallback)
+        d.AddObserver("EndInteractionEvent", self.planesCallback)
 
         d.On()
 
@@ -688,6 +729,77 @@ class vtkVisualization:
                                                        row['G_x'], row['G_y'], row['G_z'],
                                                        n_plane=e, n_render=3, n_index=index))
 
+    def create_slider_rep(self, min=0, max=10, val=0):
+
+        slider_rep = vtk.vtkSliderRepresentation2D()
+        slider_rep.SetMinimumValue(min)
+        slider_rep.SetMaximumValue(max)
+        slider_rep.SetValue(val)
+        slider_rep.GetPoint1Coordinate().SetCoordinateSystemToDisplay()
+        slider_rep.GetPoint1Coordinate().SetValue(0, 40)
+        slider_rep.GetPoint2Coordinate().SetCoordinateSystemToDisplay()
+        slider_rep.GetPoint2Coordinate().SetValue(300, 40)
+
+        self.slider_w = vtk.vtkSliderWidget()
+        self.slider_w.SetInteractor(self.interactor)
+        self.slider_w.SetRepresentation(slider_rep)
+        self.slider_w.SetCurrentRenderer(self.ren_list[0])
+        self.slider_w.SetAnimationModeToAnimate()
+        self.slider_w.On()
+        self.slider_w.AddObserver('EndInteractionEvent', self.slideCallback)
+
+    def slideCallback(self, obj, event):
+
+        self.post.change_input_data(self.interp_data, obj.GetRepresentation().GetValue())
+        # lith_block, fault_block = gp.compute_model(self.interp_data)
+        try:
+            for surf in self.surf_rend_1:
+                self.ren_list[0].RemoveActor(surf)
+                self.ren_list[1].RemoveActor(surf)
+                self.ren_list[2].RemoveActor(surf)
+                self.ren_list[3].RemoveActor(surf)
+
+            ver, sim = self.update_surfaces_real_time(self.interp_data)
+            self.set_surfaces(ver, sim)
+        except AttributeError:
+            print('no surf')
+            pass
+        try:
+            for sph in zip(self.s_rend_1, self.s_rend_2, self.s_rend_3, self.s_rend_4, self.geo_data.interfaces.iterrows()):
+
+                row_i = sph[4][1]
+                sph[0].PlaceWidget(row_i['X'] - sph[0].r_f, row_i['X'] + sph[0].r_f,
+                                   row_i['Y'] - sph[0].r_f, row_i['Y'] + sph[0].r_f,
+                                   row_i['Z'] - sph[0].r_f, row_i['Z'] + sph[0].r_f)
+
+                sph[1].PlaceWidget(row_i['X'] - sph[1].r_f, row_i['X'] + sph[1].r_f,
+                                   row_i['Y'] - sph[1].r_f, row_i['Y'] + sph[1].r_f,
+                                   row_i['Z'] - sph[1].r_f, row_i['Z'] + sph[1].r_f)
+
+                sph[2].PlaceWidget(row_i['X'] - sph[2].r_f, row_i['X'] + sph[2].r_f,
+                                   row_i['Y'] - sph[2].r_f, row_i['Y'] + sph[2].r_f,
+                                   row_i['Z'] - sph[2].r_f, row_i['Z'] + sph[2].r_f)
+
+                sph[3].PlaceWidget(row_i['X'] - sph[3].r_f, row_i['X'] + sph[3].r_f,
+                                   row_i['Y'] - sph[3].r_f, row_i['Y'] + sph[3].r_f,
+                                   row_i['Z'] - sph[3].r_f, row_i['Z'] + sph[3].r_f)
+        except AttributeError:
+            pass
+        try:
+            for fol in (zip(self.f_rend_1, self.f_rend_2, self.f_rend_3, self.f_rend_4, self.geo_data.foliations.iterrows())):
+                row_f = fol[4][1]
+
+                fol[0].SetCenter(row_f['X'], row_f['Y'], row_f['Z'])
+                fol[0].SetNormal(row_f['G_x'], row_f['G_y'], row_f['G_z'])
+
+                # self.ren_list[0].RemoveActor(fol[0])
+                # self.ren_list[1].RemoveActor(fol[1])
+                # self.ren_list[2].RemoveActor(fol[2])
+                # self.ren_list[3].RemoveActor(fol[3])
+                # self.set_foliations()
+        except AttributeError:
+            pass
+
     def sphereCallback(self, obj, event):
         """
         Function that rules what happens when we move a sphere. At the moment we update the other 3 renderers and
@@ -757,14 +869,14 @@ class vtkVisualization:
                 self.ren_list[3].RemoveActor(surf)
 
             vertices, simpleces = self.update_surfaces_real_time(self.interp_data)
-          #  print(vertices[0][60])
+            #  print(vertices[0][60])
             self.set_surfaces(vertices, simpleces)
 
-           # self.renwin.Render()
+            # self.renwin.Render()
 
     def planesCallback(self, obj, event):
         """
-        Function that rules what happend when we move a plane. At the moment we update the other 3 renderers and
+        Function that rules what happens when we move a plane. At the moment we update the other 3 renderers and
         update the pandas data frame
         """
 
@@ -803,24 +915,32 @@ class vtkVisualization:
         new_source.Update()
 
         # Modify Pandas DataFrame
+        # update the gradient vector components and its location
         self.geo_data.foliation_modify(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
                                        G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
+        # update the dip and azimuth values according to the new gradient
+        self.geo_data.calculate_orientations()
 
         # Update the other renderers
         render = obj.n_render
 
+        # TODO: get the plane source, change the stuff there, and then update the widget accordingly?
         if render != 0:
             self.f_rend_1[obj.n_plane].SetInputData(new_source.GetOutput())
             self.f_rend_1[obj.n_plane].SetNormal(new_normal)
+            self.f_rend_1[obj.n_plane].SetCenter(new_center[0], new_center[1], new_center[2])
         if render != 1:
             self.f_rend_2[obj.n_plane].SetInputData(new_source.GetOutput())
             self.f_rend_2[obj.n_plane].SetNormal(new_normal)
+            self.f_rend_2[obj.n_plane].SetCenter(new_center[0], new_center[1], new_center[2])
         if render != 2:
             self.f_rend_3[obj.n_plane].SetInputData(new_source.GetOutput())
             self.f_rend_3[obj.n_plane].SetNormal(new_normal)
+            self.f_rend_3[obj.n_plane].SetCenter(new_center[0], new_center[1], new_center[2])
         if render != 3:
             self.f_rend_4[obj.n_plane].SetInputData(new_source.GetOutput())
             self.f_rend_4[obj.n_plane].SetNormal(new_normal)
+            self.f_rend_4[obj.n_plane].SetCenter(new_center[0], new_center[1], new_center[2])
 
         if self.real_time:
             for surf in self.surf_rend_1:
@@ -830,7 +950,7 @@ class vtkVisualization:
                 self.ren_list[3].RemoveActor(surf)
 
             vertices, simpleces = self.update_surfaces_real_time(self.interp_data)
-          #  print(vertices[0][60])
+            #  print(vertices[0][60])
             self.set_surfaces(vertices, simpleces)
 
     def create_ren_list(self):
@@ -857,15 +977,6 @@ class vtkVisualization:
             ren_list[-1].SetViewport(xmins[i], ymins[i], xmaxs[i], ymaxs[i])
 
         return ren_list
-
-    # def color_lot_create(self, geo_data, cd_rgb=color_dict_rgb, c_names=color_names, c_subname="400"):
-    #     """
-    #     Set the color for each layer
-    #     """
-    #     c_lot = {}
-    #     for i, fmt in enumerate(geo_data.get_formations()):
-    #         c_lot[fmt] = cd_rgb[c_names[i]][c_subname]
-    #     return c_lot
 
     def _create_cameras(self, extent, verbose=0):
         """
@@ -998,8 +1109,15 @@ class vtkVisualization:
     def update_surfaces_real_time(self, interp_data):
 
         lith_block, fault_block = gp.compute_model(interp_data)
-        v_l, s_l = gp.get_surfaces(interp_data,lith_block[1], fault_block[1], original_scale=False)
+        try:
+            v_l, s_l = gp.get_surfaces(interp_data, lith_block[1], fault_block[1], original_scale=False)
+        except IndexError:
+            v_l, s_l = gp.get_surfaces(interp_data, lith_block[1], None, original_scale=False)
         return v_l, s_l
+
+    # def load_posteriors(self, dbname):
+    #     import gempy.UncertaintyAnalysisPYMC2
+    #     self.post = gempy.UncertaintyAnalysisPYMC2.Posterior(dbname)
 
 
     @staticmethod

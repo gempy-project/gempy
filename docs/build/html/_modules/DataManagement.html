@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>DataManagement &#8212; GemPy 4 documentation</title>
+    <title>DataManagement &#8212; GemPy beta documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '4',
+        VERSION:     'beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -43,7 +43,24 @@
           <div class="body" role="main">
             
   <h1>Source code for DataManagement</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This file is part of gempy.</span>
+
+<span class="sd">    gempy is free software: you can redistribute it and/or modify</span>
+<span class="sd">    it under the terms of the GNU General Public License as published by</span>
+<span class="sd">    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">    (at your option) any later version.</span>
+
+<span class="sd">    gempy is distributed in the hope that it will be useful,</span>
+<span class="sd">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">    GNU General Public License for more details.</span>
+
+<span class="sd">    You should have received a copy of the GNU General Public License</span>
+<span class="sd">    along with gempy.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">path</span>
 <span class="kn">import</span> <span class="nn">sys</span>
 
@@ -56,10 +73,12 @@
 <span class="kn">from</span> <span class="nn">gempy</span> <span class="k">import</span> <span class="n">theanograf</span>
 <span class="kn">import</span> <span class="nn">theano</span>
 
+<span class="n">pn</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">chained_assignment</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#</span>
+
 
 <div class="viewcode-block" id="InputData"><a class="viewcode-back" href="../code.html#DataManagement.InputData">[docs]</a><span class="k">class</span> <span class="nc">InputData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    -DOCS NOT UPDATED- Class to import the raw data of the model and set data classifications into formations and series.</span>
+<span class="sd">    Class to import the raw data of the model and set data classifications into formations and series.</span>
 <span class="sd">    This objects will contain the main information of the model.</span>
 
 <span class="sd">    Args:</span>
@@ -104,7 +123,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">import_data_csv</span><span class="p">(</span><span class="n">path_i</span><span class="o">=</span><span class="n">path_i</span><span class="p">,</span> <span class="n">path_f</span><span class="o">=</span><span class="n">path_f</span><span class="p">)</span>
 
         <span class="c1"># DEP-</span>
-       <span class="c1"># self._set_formations()</span>
+        <span class="c1"># self._set_formations()</span>
 
         <span class="c1"># If not provided set default series</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_series</span><span class="p">()</span>
@@ -116,8 +135,11 @@
         <span class="c1"># Create default grid object. TODO: (Is this necessary now?)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_grid</span><span class="p">(</span><span class="n">extent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grid_type</span><span class="o">=</span><span class="s2">&quot;regular_3D&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span>
         <span class="c1"># DEP</span>
         <span class="c1">#self.geo_data_type = &#39;InputData&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">potential_at_interfaces</span> <span class="o">=</span> <span class="mi">0</span>
 
 <div class="viewcode-block" id="InputData.import_data_csv"><a class="viewcode-back" href="../code.html#DataManagement.InputData.import_data_csv">[docs]</a>    <span class="k">def</span> <span class="nf">import_data_csv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path_i</span><span class="p">,</span> <span class="n">path_f</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -169,6 +191,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s2">&quot;dip&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)))</span> <span class="o">*</span>\
                                  <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span></div>
 
+    <span class="k">def</span> <span class="nf">calculate_orientations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">pass</span>
+
     <span class="c1"># # DEP?</span>
     <span class="c1"># def create_grid(self, extent=None, resolution=None, grid_type=&quot;regular_3D&quot;, **kwargs):</span>
     <span class="c1">#     &quot;&quot;&quot;</span>
@@ -216,10 +241,13 @@
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies</span>
 <span class="sd">        versions used to export and import the pickle differ it may give problems</span>
-<span class="sd">        :param path (str): path where save the pickle</span>
-<span class="sd">        :return:</span>
-<span class="sd">          None</span>
+<span class="sd">        Args:</span>
+<span class="sd">            path (str): path where save the pickle</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">path</span><span class="p">:</span>
             <span class="n">path</span> <span class="o">=</span> <span class="s1">&#39;./geo_data&#39;</span>
         <span class="kn">import</span> <span class="nn">pickle</span>
@@ -227,24 +255,42 @@
             <span class="c1"># Pickle the &#39;data&#39; dictionary using the highest protocol available.</span>
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="InputData.get_raw_data"><a class="viewcode-back" href="../code.html#DataManagement.InputData.get_raw_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_raw_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">itype</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">):</span>
+<div class="viewcode-block" id="InputData.get_data"><a class="viewcode-back" href="../code.html#DataManagement.InputData.get_data">[docs]</a>    <span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">itype</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">numeric</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method that returns the interfaces and foliations pandas Dataframes. Can return both at the same time or only</span>
 <span class="sd">        one of the two</span>
 <span class="sd">        Args:</span>
 <span class="sd">            itype: input data type, either &#39;foliations&#39;, &#39;interfaces&#39; or &#39;all&#39; for both.</span>
-
+<span class="sd">            verbosity (int): Number of properties shown</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            pandas.core.frame.DataFrame: Data frame with the raw data</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pn</span>
+
+        <span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;object&#39;</span>
+
+        <span class="k">if</span> <span class="n">verbosity</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">show_par_f</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;dip&#39;</span><span class="p">,</span> <span class="s1">&#39;azimuth&#39;</span><span class="p">,</span> <span class="s1">&#39;polarity&#39;</span><span class="p">,</span> <span class="s1">&#39;formation&#39;</span><span class="p">,</span> <span class="s1">&#39;series&#39;</span><span class="p">]</span>
+            <span class="n">show_par_i</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;formation&#39;</span><span class="p">,</span> <span class="s1">&#39;series&#39;</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">show_par_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="o">.</span><span class="n">columns</span>
+            <span class="n">show_par_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">columns</span>
+
+        <span class="k">if</span> <span class="n">numeric</span><span class="p">:</span>
+            <span class="n">show_par_f</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;G_z&#39;</span><span class="p">,</span> <span class="s1">&#39;dip&#39;</span><span class="p">,</span> <span class="s1">&#39;azimuth&#39;</span><span class="p">,</span> <span class="s1">&#39;polarity&#39;</span><span class="p">]</span>
+            <span class="n">show_par_i</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]</span>
+            <span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
         <span class="k">if</span> <span class="n">itype</span> <span class="o">==</span> <span class="s1">&#39;foliations&#39;</span><span class="p">:</span>
-            <span class="n">raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span>
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="n">show_par_f</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">itype</span> <span class="o">==</span> <span class="s1">&#39;interfaces&#39;</span><span class="p">:</span>
-            <span class="n">raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span>
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">show_par_i</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">elif</span> <span class="n">itype</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
-            <span class="n">raw_data</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">],</span> <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;interfaces&#39;</span><span class="p">,</span> <span class="s1">&#39;foliations&#39;</span><span class="p">])</span>
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">show_par_i</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">),</span>
+                                  <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="n">show_par_f</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">)],</span>
+                                 <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;interfaces&#39;</span><span class="p">,</span> <span class="s1">&#39;foliations&#39;</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;itype has to be: </span><span class="se">\&#39;</span><span class="s1">foliations</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">interfaces</span><span class="se">\&#39;</span><span class="s1">, or </span><span class="se">\&#39;</span><span class="s1">all</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">raw_data</span></div>
 
 <div class="viewcode-block" id="InputData.i_open_set_data"><a class="viewcode-back" href="../code.html#DataManagement.InputData.i_open_set_data">[docs]</a>    <span class="k">def</span> <span class="nf">i_open_set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">itype</span><span class="o">=</span><span class="s2">&quot;foliations&quot;</span><span class="p">):</span>
@@ -260,7 +306,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="kn">import</span> <span class="nn">qgrid</span>
-        <span class="k">except</span> <span class="n">ModuleNotFoundError</span><span class="p">:</span>
+        <span class="k">except</span><span class="p">:</span>
             <span class="k">raise</span> <span class="n">ModuleNotFoundError</span><span class="p">(</span><span class="s1">&#39;It is necessary to instal qgrid to have interactive tables&#39;</span><span class="p">)</span>
 
         <span class="c1"># if the data frame is empty the interactive table is bugged. Therefore I create a default raw when the method</span>
@@ -285,7 +331,7 @@
         <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Remember to call i_close_set_data after the editing.&#39;</span><span class="p">)</span>
 
         <span class="c1"># We kind of set the show grid to a variable so we can close it afterwards</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pandas_frame</span> <span class="o">=</span> <span class="n">qgrid</span><span class="o">.</span><span class="n">show_grid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_raw_data</span><span class="p">(</span><span class="n">itype</span><span class="o">=</span><span class="n">itype</span><span class="p">))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">pandas_frame</span> <span class="o">=</span> <span class="n">qgrid</span><span class="o">.</span><span class="n">show_grid</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">itype</span><span class="o">=</span><span class="n">itype</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="InputData.i_close_set_data"><a class="viewcode-back" href="../code.html#DataManagement.InputData.i_close_set_data">[docs]</a>    <span class="k">def</span> <span class="nf">i_close_set_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -304,7 +350,8 @@
 
         <span class="c1"># Set parameters</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_series</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_gradient</span><span class="p">()</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_gradient</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="InputData.load_data_csv"><a class="viewcode-back" href="../code.html#DataManagement.InputData.load_data_csv">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">load_data_csv</span><span class="p">(</span><span class="n">data_type</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -352,7 +399,7 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_series</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span></div>
-       <span class="c1"># self.interfaces.reset_index(drop=True, inplace=True)</span>
+        <span class="c1"># self.interfaces.reset_index(drop=True, inplace=True)</span>
 
 <div class="viewcode-block" id="InputData.set_foliations"><a class="viewcode-back" href="../code.html#DataManagement.InputData.set_foliations">[docs]</a>    <span class="k">def</span> <span class="nf">set_foliations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">foliat_Dataframe</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -373,7 +420,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">set_series</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calculate_gradient</span><span class="p">()</span></div>
-      <span class="c1">#  self.foliations.reset_index(drop=True, inplace=True)</span>
+        <span class="c1">#  self.foliations.reset_index(drop=True, inplace=True)</span>
 
 <div class="viewcode-block" id="InputData.set_series"><a class="viewcode-back" href="../code.html#DataManagement.InputData.set_series">[docs]</a>    <span class="k">def</span> <span class="nf">set_series</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series_distribution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -405,13 +452,14 @@
         <span class="c1"># The order of the series is very important since it dictates which one is on top of the stratigraphic pile</span>
         <span class="c1"># If it is not given we take the dictionaries keys. NOTICE that until python 3.6 these keys are pretty much</span>
         <span class="c1"># random</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">order</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">order</span> <span class="o">=</span> <span class="n">_series</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
 
         <span class="c1"># TODO assert len order is equal to len of the dictionary</span>
 
         <span class="c1"># We create a dataframe with the links</span>
-        <span class="n">_series</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">_series</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
+        <span class="c1">#_series = pn.DataFrame(data=_series) #columns=order)</span>
+        <span class="n">_series</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">dict</span><span class="p">([</span> <span class="p">(</span><span class="n">k</span><span class="p">,</span><span class="n">pn</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span><span class="n">v</span> <span class="ow">in</span> <span class="n">_series</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="p">]),</span> <span class="n">columns</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
 
         <span class="c1"># Now we fill the column series in the interfaces and foliations tables with the correspondant series and</span>
         <span class="c1"># assigned number to the series</span>
@@ -426,19 +474,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;order_series&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;order_series&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="c1"># Save the dataframe in a property</span>
+        <span class="c1"># Save the dataframe in a property. This is used in the pile</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="n">_series</span>
 
         <span class="c1"># Set default faults</span>
-        <span class="n">faults_series</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;fault&#39;</span> <span class="ow">in</span> <span class="n">i</span> <span class="ow">or</span> <span class="s1">&#39;Fault&#39;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;Default&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
-                <span class="n">faults_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="c1"># faults_series = []</span>
+        <span class="c1"># for i in self.series.columns:</span>
+        <span class="c1">#     if (&#39;fault&#39; in i or &#39;Fault&#39; in i) and &#39;Default&#39; not in i:</span>
+        <span class="c1">#         faults_series.append(i)</span>
+        <span class="n">faults_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_faults</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_faults</span><span class="p">(</span><span class="n">faults_series</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">reset_indices</span><span class="p">()</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_formation_number</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span>
+
         <span class="k">return</span> <span class="n">_series</span></div>
+
+    <span class="k">def</span> <span class="nf">count_faults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1"># Set default faults</span>
+        <span class="n">faults_series</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span><span class="s1">&#39;fault&#39;</span> <span class="ow">in</span> <span class="n">i</span> <span class="ow">or</span> <span class="s1">&#39;Fault&#39;</span> <span class="ow">in</span> <span class="n">i</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;Default&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">faults_series</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">faults_series</span>
 
 <div class="viewcode-block" id="InputData.set_faults"><a class="viewcode-back" href="../code.html#DataManagement.InputData.set_faults">[docs]</a>    <span class="k">def</span> <span class="nf">set_faults</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">series_name</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -446,10 +507,11 @@
 <span class="sd">        Args:</span>
 <span class="sd">            series_name(list or array_like): Name of the series which are faults</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">series_name</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">series_name</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">series_name</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">n_faults</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">series_name</span><span class="p">)</span></div>
+      <span class="c1">#  if not len(series_name) == 0:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;isFault&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">series_name</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;isFault&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">series_name</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_faults</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">series_name</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="InputData.order_table"><a class="viewcode-back" href="../code.html#DataManagement.InputData.order_table">[docs]</a>    <span class="k">def</span> <span class="nf">order_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -467,7 +529,7 @@
                                                  <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="c1"># Give formation number</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;formation number&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;formation number&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">columns</span> <span class="ow">or</span> <span class="ow">not</span> <span class="s1">&#39;formation number&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
             <span class="c1"># print(&#39;I am here&#39;)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_formation_number</span><span class="p">()</span>
 
@@ -482,7 +544,10 @@
 
         <span class="c1"># Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset</span>
         <span class="c1"># the index. For some of the methods (pn.drop) we have to apply afterwards we need to reset these indeces</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># Update labels for anotations</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_annotations</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="InputData.set_formation_number"><a class="viewcode-back" href="../code.html#DataManagement.InputData.set_formation_number">[docs]</a>    <span class="k">def</span> <span class="nf">set_formation_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formation_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -493,15 +558,36 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            Column in the interfaces and foliations dataframes</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">formation_order</span><span class="p">:</span>
+
+
+        <span class="k">if</span> <span class="n">formation_order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">formation_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;formation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">formation_order</span><span class="p">)</span><span class="o">.</span><span class="n">all</span><span class="p">(),</span> <span class="s1">&#39;Some of the formations given are not in &#39;</span>\
+                                                                             <span class="s1">&#39;the formations data frame. Check misspell&#39;</span>
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ip_addresses</span> <span class="o">=</span> <span class="n">formation_order</span>
             <span class="n">ip_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ip_addresses</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ip_addresses</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;formation number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;formation number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
-            <span class="k">pass</span></div>
+            <span class="k">pass</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span></div>
+
+    <span class="k">def</span> <span class="nf">set_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">point_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;formation number&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">cumcount</span><span class="p">()</span>
+        <span class="n">point_l</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;${\bf</span><span class="si">{x}</span><span class="s1">}_{\alpha \,{\bf{&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;}},&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;}$&#39;</span>
+                   <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">point_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">])]</span>
+
+        <span class="n">foliation_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;formation number&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">cumcount</span><span class="p">()</span>
+        <span class="n">foli_l</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;${\bf</span><span class="si">{x}</span><span class="s1">}_{\beta \,{\bf{&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;}},&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;}$&#39;</span>
+                   <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">foliation_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">])]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">point_l</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">foli_l</span>
 
 <div class="viewcode-block" id="InputData.reset_indices"><a class="viewcode-back" href="../code.html#DataManagement.InputData.reset_indices">[docs]</a>    <span class="k">def</span> <span class="nf">reset_indices</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -554,7 +640,7 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">index</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="InputData.foliation_modify"><a class="viewcode-back" href="../code.html#DataManagement.InputData.foliation_modify">[docs]</a>    <span class="k">def</span> <span class="nf">foliation_modify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="InputData.foliation_modify"><a class="viewcode-back" href="../code.html#DataManagement.InputData.foliation_modify">[docs]</a>    <span class="k">def</span> <span class="nf">foliation_modify</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">recalculate_gradient</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">recalculate_orientations</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Allows modification of foliation data at specified dataframe index.</span>
 <span class="sd">        Args:</span>
@@ -567,7 +653,10 @@
         <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">index</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">calculate_gradient</span><span class="p">()</span></div>
+        <span class="k">if</span> <span class="n">recalculate_gradient</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_gradient</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">recalculate_orientations</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">calculate_orientations</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="InputData.foliation_add"><a class="viewcode-back" href="../code.html#DataManagement.InputData.foliation_add">[docs]</a>    <span class="k">def</span> <span class="nf">foliation_add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -609,7 +698,7 @@
         <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pn_series</span><span class="p">):</span>
             <span class="n">ip_addresses</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">e</span> <span class="o">+</span> <span class="mi">1</span>
         <span class="n">ip_addresses</span><span class="p">[</span><span class="s1">&#39;DefaultBasement&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-        <span class="k">return</span> <span class="n">ip_addresses</span></div></div>
+        <span class="k">return</span> <span class="n">ip_addresses</span></div>
 
     <span class="c1"># # TODO think where this function should go</span>
     <span class="c1"># def read_vox(self, path):</span>
@@ -630,6 +719,206 @@
     <span class="c1">#     block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(</span>
     <span class="c1">#                                     self.resolution[0], self.resolution[1], self.resolution[2], order=&#39;C&#39;).T)</span>
     <span class="c1">#     return block_geomodeller</span>
+
+    <span class="k">def</span> <span class="nf">set_triangle_foliations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="c1"># next we need to iterate over every unique triangle id to create a foliation from each triplet</span>
+        <span class="c1"># of points and assign the same triange_id to it</span>
+        <span class="n">tri_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;triangle_id&quot;</span><span class="p">])</span>
+
+        <span class="c1"># check if column in foliations too, else create it</span>
+        <span class="k">if</span> <span class="s2">&quot;triangle_id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s2">&quot;triangle_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;NaN&quot;</span>
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Setting triangle_id column in geo_data.foliations.&quot;</span><span class="p">)</span>
+
+        <span class="c1"># loop over all triangle_id&#39;s</span>
+        <span class="k">for</span> <span class="n">tri_id</span> <span class="ow">in</span> <span class="n">tri_ids</span><span class="p">[</span><span class="n">tri_ids</span> <span class="o">!=</span> <span class="s2">&quot;NaN&quot;</span><span class="p">]:</span>
+            <span class="c1"># get the three points dataframe</span>
+            <span class="n">_filter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;triangle_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">tri_id</span>
+
+            <span class="c1"># check if triangle foliation value already exists</span>
+            <span class="k">if</span> <span class="n">tri_id</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s2">&quot;triangle_id&quot;</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;triangle_id already in geo_data.foliations - skipping it.&quot;</span><span class="p">)</span>
+                <span class="k">continue</span>  <span class="c1"># if yes, continue with the next iteration not not double append</span>
+
+            <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;tri_id: &quot;</span><span class="o">+</span><span class="n">tri_id</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">_filter</span><span class="p">])</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="c1"># get points as [x,y,z]</span>
+                <span class="n">_points</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">interf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">_filter</span><span class="p">]</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+                    <span class="n">_points</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">interf</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">],</span> <span class="n">interf</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span> <span class="n">interf</span><span class="p">[</span><span class="s2">&quot;Z&quot;</span><span class="p">]])</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;3 points xyz:&quot;</span><span class="p">,</span><span class="n">_points</span><span class="p">)</span>
+
+                <span class="c1"># get plane normal from three points</span>
+                <span class="n">_normal</span> <span class="o">=</span> <span class="n">_get_plane_normal</span><span class="p">(</span><span class="n">_points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">_points</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">_points</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+                <span class="c1"># get dip and azimuth</span>
+                <span class="n">_dip</span><span class="p">,</span> <span class="n">_az</span> <span class="o">=</span> <span class="n">_get_dip</span><span class="p">(</span><span class="n">_normal</span><span class="p">)</span>
+                <span class="c1"># now get centroid of three points</span>
+                <span class="n">_centroid</span> <span class="o">=</span> <span class="n">_get_centroid</span><span class="p">(</span><span class="n">_points</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">_points</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">_points</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="c1"># set polarity according to overturned or not</span>
+                <span class="k">if</span> <span class="o">-</span><span class="mi">90</span> <span class="o">&lt;</span> <span class="n">_dip</span> <span class="o">&lt;</span> <span class="mi">90</span><span class="p">:</span>
+                    <span class="n">_pol</span> <span class="o">=</span> <span class="mi">1</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">_pol</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+                <span class="n">_fmt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">_filter</span><span class="p">][</span><span class="s2">&quot;formation&quot;</span><span class="p">])[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="c1"># _series = np.unique(self.interfaces[_filter][&quot;series&quot;])[0]</span>
+
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;plane normal:&quot;</span><span class="p">,</span> <span class="n">_normal</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;dip&quot;</span><span class="p">,</span> <span class="n">_dip</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;az&quot;</span><span class="p">,</span> <span class="n">_az</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;centroid x,y,z:&quot;</span><span class="p">,</span> <span class="n">_centroid</span><span class="p">)</span>
+
+                <span class="n">_f</span> <span class="o">=</span> <span class="p">[</span><span class="n">_centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">_centroid</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">_centroid</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">_dip</span><span class="p">,</span> <span class="n">_az</span><span class="p">,</span> <span class="n">_pol</span><span class="p">,</span> <span class="n">_fmt</span><span class="p">,</span> <span class="n">tri_id</span><span class="p">]</span>
+                <span class="n">_fs</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">_f</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;dip&#39;</span><span class="p">,</span> <span class="s1">&#39;azimuth&#39;</span><span class="p">,</span> <span class="s1">&#39;polarity&#39;</span><span class="p">,</span> <span class="s1">&#39;formation&#39;</span><span class="p">,</span> <span class="s1">&#39;triangle_id&#39;</span><span class="p">])</span>
+                <span class="n">_df</span> <span class="o">=</span> <span class="n">_fs</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">set_foliations</span><span class="p">(</span><span class="n">_df</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">_filter</span><span class="p">])</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;More than three points share the same triangle-id: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+                    <span class="n">tri_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;. Only exactly 3 points are supported.&quot;</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">_filter</span><span class="p">])</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Less than three points share the same triangle-id: &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span>
+                    <span class="n">tri_id</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;. Only exactly 3 points are supported.&quot;</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">DataPlane</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+
+<span class="sd">        :param geo_data: InputData object</span>
+<span class="sd">        :param group_id: (str) identifier for the data group</span>
+<span class="sd">        :param mode: (str), either &#39;interf_to_fol&#39; or &#39;fol_to_interf&#39;</span>
+<span class="sd">        :param verbose: (bool) adjusts verbosity, default False</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span> <span class="o">=</span> <span class="n">geo_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">group_id</span> <span class="o">=</span> <span class="n">group_id</span>
+
+        <span class="k">if</span> <span class="n">mode</span> <span class="ow">is</span> <span class="s2">&quot;interf_to_fol&quot;</span><span class="p">:</span>
+            <span class="c1"># df bool filter</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;group_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_id</span>
+            <span class="c1"># get formation string</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">formation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="p">][</span><span class="s2">&quot;formation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># df indices</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interf_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+            <span class="c1"># get point coordinates from df</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interf_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_points</span><span class="p">()</span>
+            <span class="c1"># get point cloud centroid and normal vector of plane</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">centroid</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_fit_plane_svd</span><span class="p">()</span>
+            <span class="c1"># get dip and azimuth of plane from normal vector</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">azimuth</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">polarity</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_dip</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span>
+
+        <span class="k">elif</span> <span class="n">mode</span> <span class="o">==</span> <span class="s2">&quot;fol_to_interf&quot;</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s2">&quot;group_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_id</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">formation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="p">][</span><span class="s2">&quot;formation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+            <span class="c1"># get interface indices</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interf_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;group_id&quot;</span><span class="p">]</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">group_id</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+            <span class="c1"># get interface point coordinates from df</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interf_p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_get_points</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">normal</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="p">][</span><span class="s2">&quot;G_x&quot;</span><span class="p">],</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="p">][</span><span class="s2">&quot;G_y&quot;</span><span class="p">],</span>
+                           <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="p">][</span><span class="s2">&quot;G_z&quot;</span><span class="p">]]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">centroid</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="p">][</span><span class="s2">&quot;X&quot;</span><span class="p">],</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="p">][</span><span class="s2">&quot;Y&quot;</span><span class="p">],</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_f</span><span class="p">][</span><span class="s2">&quot;Z&quot;</span><span class="p">]]</span>
+            <span class="c1"># modify all Z of interface points belonging to group_id to fit plane</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_fol_to_p</span><span class="p">()</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Mode must be either &#39;interf_to_fol&#39; or &#39;fol_to_interf&#39;.&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_fol_to_p</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="n">a</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;group_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_id</span><span class="p">]</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="c1"># iterate over each point and recalculate Z, set Z</span>
+            <span class="c1"># x, y, z = row[&quot;X&quot;], row[&quot;Y&quot;], row[&quot;Z&quot;]</span>
+            <span class="n">Z</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span><span class="o">*</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">b</span><span class="o">*</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span><span class="o">/-</span><span class="n">c</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_get_points</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns n points from geo_data.interfaces matching group_id in np.array shape (n, 3).&quot;&quot;&quot;</span>
+        <span class="c1"># TODO: zip</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">y</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">z</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;group_id&quot;</span><span class="p">]</span><span class="o">==</span><span class="bp">self</span><span class="o">.</span><span class="n">group_id</span><span class="p">]</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+            <span class="n">x</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]))</span>
+            <span class="n">y</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]))</span>
+            <span class="n">z</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s2">&quot;Z&quot;</span><span class="p">]))</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_fit_plane_svd</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Fit plane to points using singular value decomposition (svd). Returns point cloud centroid [x,y,z] and</span>
+<span class="sd">        normal vector of plane [x,y,z].&quot;&quot;&quot;</span>
+        <span class="kn">from</span> <span class="nn">numpy.linalg</span> <span class="k">import</span> <span class="n">svd</span>
+        <span class="c1"># https://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points</span>
+        <span class="n">ctr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interf_p</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># calculate point cloud centroid [x,y,z]</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interf_p</span> <span class="o">-</span> <span class="n">ctr</span><span class="p">[:,</span> <span class="n">np</span><span class="o">.</span><span class="n">newaxis</span><span class="p">]</span>
+        <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">x</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>  <span class="c1"># np.cov(x)</span>
+        <span class="k">return</span> <span class="n">ctr</span><span class="p">,</span> <span class="n">svd</span><span class="p">(</span><span class="n">m</span><span class="p">)[</span><span class="mi">0</span><span class="p">][:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="k">def</span> <span class="nf">_get_dip</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Returns dip angle and azimuth of normal vector [x,y,z].&quot;&quot;&quot;</span>
+        <span class="n">dip</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">))</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">180.</span>
+
+        <span class="n">azimuth</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">azimuth</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">180.</span>
+        <span class="c1"># border cases where arctan not defined:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">azimuth</span> <span class="o">=</span> <span class="mi">90</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">azimuth</span> <span class="o">=</span> <span class="mi">270</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">azimuth</span> <span class="o">=</span> <span class="mi">180</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">180.</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="mi">0</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">azimuth</span> <span class="o">=</span> <span class="mi">360</span> <span class="o">+</span> <span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">normal</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span> <span class="o">*</span> <span class="mf">180.</span>
+
+        <span class="k">if</span> <span class="o">-</span><span class="mi">90</span> <span class="o">&lt;</span> <span class="n">dip</span> <span class="o">&lt;</span> <span class="mi">90</span><span class="p">:</span>
+            <span class="n">polarity</span> <span class="o">=</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">polarity</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+
+        <span class="k">return</span> <span class="n">dip</span><span class="p">,</span> <span class="n">azimuth</span><span class="p">,</span> <span class="n">polarity</span>
+
+    <span class="k">def</span> <span class="nf">set_fol</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Appends foliation data point for group_id to geo_data.foliations.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s2">&quot;group_id&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s2">&quot;group_id&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;NaN&quot;</span>
+        <span class="n">fol</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">centroid</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+               <span class="bp">self</span><span class="o">.</span><span class="n">dip</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">azimuth</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">polarity</span><span class="p">,</span>
+               <span class="bp">self</span><span class="o">.</span><span class="n">formation</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">group_id</span><span class="p">]</span>
+        <span class="n">fol_series</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">fol</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;dip&#39;</span><span class="p">,</span> <span class="s1">&#39;azimuth&#39;</span><span class="p">,</span> <span class="s1">&#39;polarity&#39;</span><span class="p">,</span> <span class="s1">&#39;formation&#39;</span><span class="p">,</span> <span class="s1">&#39;group_id&#39;</span><span class="p">])</span>
+        <span class="n">fol_df</span> <span class="o">=</span> <span class="n">fol_series</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">set_foliations</span><span class="p">(</span><span class="n">fol_df</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_plane_normal</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns normal vector of plane defined by points A,B,C as [x,y,z].&quot;&quot;&quot;</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
+    <span class="n">B</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">B</span><span class="p">)</span>
+    <span class="n">C</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">C</span><span class="p">)</span>
+
+    <span class="n">v1</span> <span class="o">=</span> <span class="n">C</span> <span class="o">-</span> <span class="n">A</span>
+    <span class="n">v2</span> <span class="o">=</span> <span class="n">B</span> <span class="o">-</span> <span class="n">A</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;vector C-A&quot;</span><span class="p">,</span> <span class="n">v1</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;vector B-A&quot;</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">cross</span><span class="p">(</span><span class="n">v1</span><span class="p">,</span> <span class="n">v2</span><span class="p">)</span>
+
+
+<span class="k">def</span> <span class="nf">_get_centroid</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="n">B</span><span class="p">,</span> <span class="n">C</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns centroid (x,y,z) of three points 3x[x,y,z].&quot;&quot;&quot;</span>
+    <span class="n">X</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">B</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="n">C</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="mi">3</span>
+    <span class="n">Y</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">B</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="n">C</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">/</span><span class="mi">3</span>
+    <span class="n">Z</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">B</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">+</span><span class="n">C</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">/</span><span class="mi">3</span>
+    <span class="k">return</span> <span class="n">X</span><span class="p">,</span><span class="n">Y</span><span class="p">,</span><span class="n">Z</span>
 
 
 <div class="viewcode-block" id="GridClass"><a class="viewcode-back" href="../code.html#DataManagement.GridClass">[docs]</a><span class="k">class</span> <span class="nc">GridClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -699,19 +988,20 @@
 <span class="sd">        dtype:  type of float</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">compile_theano</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rescaling_factor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;geology&#39;</span><span class="p">,</span> <span class="n">compile_theano</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                 <span class="n">u_grade</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">rescaling_factor</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="c1"># TODO add all options before compilation in here. Basically this is n_faults, n_layers, verbose, dtype, and \</span>
         <span class="c1"># only block or all</span>
         <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">InputData</span><span class="p">),</span> <span class="s1">&#39;You need to pass a InputData object&#39;</span>
 
         <span class="c1"># Store the original InputData object</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span> <span class="o">=</span> <span class="n">geo_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_geo_data</span> <span class="o">=</span> <span class="n">geo_data</span>
 
         <span class="c1"># Here we can change the dtype for stability and GPU vs CPU</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dtype&#39;</span><span class="p">,</span> <span class="s1">&#39;float32&#39;</span><span class="p">)</span>
 
         <span class="c1">#self.in_data = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)</span>
-        <span class="c1"># Set some parameters. TODO posibly this should go in kwargs</span>
+        <span class="c1"># Set some parameters. TODO possibly this should go in kwargs</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">u_grade</span> <span class="o">=</span> <span class="n">u_grade</span>
 
         <span class="c1"># This two properties get set calling rescale data</span>
@@ -728,11 +1018,14 @@
 
         <span class="c1"># Creating interpolator class with all the precompilation options</span>
         <span class="c1"># --DEP-- self.interpolator = self.set_interpolator(**kwargs)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">InterpolatorClass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">InterpolatorClass</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">grid</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">compile_theano</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">th_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_th_fn</span><span class="p">(</span><span class="n">compute_all</span><span class="o">=</span><span class="n">compute_all</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">th_fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compile_th_fn</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="n">compute_all</span><span class="p">)</span>
 
-<div class="viewcode-block" id="InterpolatorInput.compile_th_fn"><a class="viewcode-back" href="../code.html#DataManagement.InterpolatorInput.compile_th_fn">[docs]</a>    <span class="k">def</span> <span class="nf">compile_th_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geophy</span> <span class="o">=</span> <span class="kc">None</span>
+
+
+<div class="viewcode-block" id="InterpolatorInput.compile_th_fn"><a class="viewcode-back" href="../code.html#DataManagement.InterpolatorInput.compile_th_fn">[docs]</a>    <span class="k">def</span> <span class="nf">compile_th_fn</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Compile the theano function given the input data.</span>
 <span class="sd">        Args:</span>
@@ -748,12 +1041,27 @@
         <span class="c1"># This are the shared parameters and the compilation of the function. This will be hidden as well at some point</span>
         <span class="n">input_data_T</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">input_parameters_list</span><span class="p">()</span>
 
-        <span class="c1"># then we compile we have to pass the number of formations that are faults!!</span>
-        <span class="n">th_fn</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">input_data_T</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">whole_block_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">n_faults</span><span class="p">,</span>
-                                                                                     <span class="n">compute_all</span><span class="o">=</span><span class="n">compute_all</span><span class="p">),</span>
-                                <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
-                                <span class="n">allow_input_downcast</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                                <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="s1">&#39;geology&#39;</span><span class="p">:</span>
+            <span class="c1"># then we compile we have to pass the number of formations that are faults!!</span>
+            <span class="n">th_fn</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">input_data_T</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">compute_geological_model</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">n_faults</span><span class="p">,</span>
+                                                                                  <span class="n">compute_all</span><span class="o">=</span><span class="n">compute_all</span><span class="p">),</span>
+                                    <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+                                    <span class="n">allow_input_downcast</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                    <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="s1">&#39;gravity&#39;</span><span class="p">:</span>
+            <span class="c1"># then we compile we have to pass the number of formations that are faults!!</span>
+            <span class="n">th_fn</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">function</span><span class="p">(</span><span class="n">input_data_T</span><span class="p">,</span>
+                                    <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">compute_forward_gravity</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">n_faults</span><span class="p">,</span>
+                                                                                 <span class="n">compute_all</span><span class="o">=</span><span class="n">compute_all</span><span class="p">),</span>
+                                    <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+                                    <span class="n">allow_input_downcast</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                                    <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Level of Optimization: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">optimizer</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Device: &#39;</span><span class="p">,</span> <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Precision: &#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">th_fn</span></div>
 
 <div class="viewcode-block" id="InterpolatorInput.rescale_data"><a class="viewcode-back" href="../code.html#DataManagement.InterpolatorInput.rescale_data">[docs]</a>    <span class="k">def</span> <span class="nf">rescale_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">rescaling_factor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -819,7 +1127,7 @@
 
 <div class="viewcode-block" id="InterpolatorInput.get_formation_number"><a class="viewcode-back" href="../code.html#DataManagement.InterpolatorInput.get_formation_number">[docs]</a>    <span class="k">def</span> <span class="nf">get_formation_number</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Get a dictionary with the key the name of the formation and the value their number</span>
+<span class="sd">        DEP in next version. Get a dictionary with the key the name of the formation and the value their number</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            dict: key the name of the formation and the value their number</span>
@@ -906,7 +1214,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="n">geo_data_in</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;I am in update&#39;</span><span class="p">)</span>
+        <span class="c1">#  print(&#39;I am in update&#39;)</span>
         <span class="c1"># I update the data</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">geo_data_res</span> <span class="o">=</span> <span class="n">geo_data_in</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">grid_res</span> <span class="o">=</span> <span class="n">geo_data_in</span><span class="o">.</span><span class="n">grid</span>
@@ -931,6 +1239,12 @@
         <span class="k">if</span> <span class="ow">not</span> <span class="n">u_grade</span><span class="p">:</span>
             <span class="n">u_grade</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">u_grade</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">data_prep</span><span class="p">(</span><span class="n">u_grade</span><span class="o">=</span><span class="n">u_grade</span><span class="p">)</span></div>
+
+    <span class="c1">## =======</span>
+    <span class="c1">## Gravity</span>
+    <span class="k">def</span> <span class="nf">set_geophysics_obj</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_extent</span><span class="p">,</span> <span class="n">ai_resolution</span><span class="p">,</span> <span class="n">ai_z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">range_max</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">.GeoPhysics</span> <span class="k">import</span> <span class="n">GeoPhysicsPreprocessing_pro</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">geophy</span> <span class="o">=</span> <span class="n">GeoPhysicsPreprocessing_pro</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ai_extent</span><span class="p">,</span> <span class="n">ai_resolution</span><span class="p">,</span> <span class="n">ai_z</span><span class="o">=</span><span class="n">ai_z</span><span class="p">,</span> <span class="n">range_max</span><span class="o">=</span><span class="n">range_max</span><span class="p">)</span>
 
 <div class="viewcode-block" id="InterpolatorInput.InterpolatorClass"><a class="viewcode-back" href="../code.html#DataManagement.InterpolatorInput.InterpolatorClass">[docs]</a>    <span class="k">class</span> <span class="nc">InterpolatorClass</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -961,6 +1275,9 @@
             <span class="c1"># Here we can change the dtype for stability and GPU vs CPU</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;dtype&#39;</span><span class="p">,</span> <span class="s1">&#39;float32&#39;</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span>
+            <span class="c1"># Here we change the graph type</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;output&#39;</span><span class="p">,</span> <span class="s1">&#39;geology&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output</span> <span class="o">=</span> <span class="n">output</span>
 
             <span class="k">if</span> <span class="n">dtype</span> <span class="ow">in</span> <span class="n">verbose</span><span class="p">:</span>
                 <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">)</span>
@@ -982,7 +1299,7 @@
 
             <span class="c1"># Importing the theano graph. The methods of this object generate different parts of graph.</span>
             <span class="c1"># See theanograf doc</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tg</span> <span class="o">=</span> <span class="n">theanograf</span><span class="o">.</span><span class="n">TheanoGraph_pro</span><span class="p">(</span><span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tg</span> <span class="o">=</span> <span class="n">theanograf</span><span class="o">.</span><span class="n">TheanoGraph_pro</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">,)</span>
 
             <span class="c1"># Sorting data in case the user provides it unordered</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span>
@@ -1065,7 +1382,7 @@
 <span class="sd">                    - numpy.array: ref_layer_points</span>
 <span class="sd">                    - numpy.array: rest_layer_points</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-
+            <span class="n">verbose</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;verbose&#39;</span><span class="p">,</span> <span class="p">[])</span>
             <span class="n">u_grade</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;u_grade&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
             <span class="c1"># ==================</span>
             <span class="c1"># Extracting lengths</span>
@@ -1092,7 +1409,7 @@
             <span class="c1">#      for i in self._data_scaled.foliations[&#39;formation number&#39;].unique()])</span>
 
             <span class="c1"># -DEP- I think this was just a kind of print to know what was going on</span>
-            <span class="c1">#self.pandas_rest = pandas_rest_layer_points</span>
+        <span class="c1">#    self.pandas_rest = pandas_rest_layer_points</span>
 
             <span class="c1"># Array containing the size of every series. Interfaces.</span>
             <span class="n">len_series_i</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span>
@@ -1116,9 +1433,11 @@
 
             <span class="k">if</span> <span class="n">u_grade</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">u_grade</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">len_series_i</span><span class="p">)</span>
-                <span class="n">u_grade</span><span class="p">[</span><span class="n">len_series_i</span> <span class="o">&gt;</span> <span class="mi">12</span><span class="p">]</span> <span class="o">=</span> <span class="mi">9</span>
-                <span class="n">u_grade</span><span class="p">[(</span><span class="n">len_series_i</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">len_series_i</span> <span class="o">&lt;</span> <span class="mi">12</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">3</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">u_grade</span><span class="p">)</span>
+                <span class="c1"># Force the user to choose drift degree 2</span>
+                <span class="c1"># u_grade[len_series_i &gt; 12] = 9</span>
+                <span class="n">u_grade</span><span class="p">[(</span><span class="n">len_series_i</span> <span class="o">&gt;</span> <span class="mi">6</span><span class="p">)]</span> <span class="o">=</span> <span class="mi">3</span>
+            <span class="k">if</span> <span class="s1">&#39;u_grade&#39;</span> <span class="ow">in</span> <span class="n">verbose</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">u_grade</span><span class="p">)</span>
             <span class="c1"># it seems I have to pass list instead array_like that is weird</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">u_grade_T</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">u_grade</span><span class="p">))</span>
 
@@ -1127,7 +1446,7 @@
             <span class="c1"># ================</span>
             <span class="c1"># Rest layers matrix # PYTHON VAR</span>
             <span class="n">rest_layer_points</span> <span class="o">=</span> <span class="n">pandas_rest_layer_points</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span>
-
+          <span class="c1">#  self.rest_layer_points = rest_layer_points</span>
             <span class="c1"># TODO delete</span>
             <span class="c1"># -DEP- Again i was just a check point</span>
             <span class="c1"># self.rest_layer_points = rest_layer_points</span>
@@ -1145,8 +1464,8 @@
             <span class="n">ref_layer_points</span> <span class="o">=</span> <span class="n">pandas_ref_layer_points_rep</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span>
 
             <span class="c1"># -DEP- was just a check point</span>
-            <span class="c1"># self.ref_layer_points = ref_layer_points</span>
-
+            <span class="bp">self</span><span class="o">.</span><span class="n">ref_layer_points</span> <span class="o">=</span> <span class="n">ref_layer_points</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pandas_ref_layer_points_rep</span> <span class="o">=</span> <span class="n">pandas_ref_layer_points_rep</span>
             <span class="c1"># Check no reference points in rest points (at least in coor x)</span>
             <span class="k">assert</span> <span class="ow">not</span> <span class="nb">any</span><span class="p">(</span><span class="n">ref_layer_points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span> <span class="ow">in</span> <span class="n">rest_layer_points</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> \
                 <span class="s1">&#39;A reference point is in the rest list point. Check you do &#39;</span> \
@@ -1251,10 +1570,17 @@
                 <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;order_series&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">formation</span><span class="o">.</span><span class="n">nunique</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">cumsum</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">final_potential_field_at_formations</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="o">.</span><span class="n">get_value</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                                                                           <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span>
-                <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="o">.</span><span class="n">get_value</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
-                         <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span></div>
+                                                                  <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">final_potential_field_at_faults</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="o">.</span><span class="n">get_value</span><span class="p">()[</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+                                                              <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span></div>
+
+        <span class="k">def</span> <span class="nf">set_densities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">densities</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">densities</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">densities</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+
+        <span class="k">def</span> <span class="nf">set_z_comp</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">tz</span><span class="p">,</span> <span class="n">selected_cells</span><span class="p">):</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">tz</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">tz</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dtype</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">select</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">selected_cells</span><span class="p">)</span>
 
 <div class="viewcode-block" id="InterpolatorInput.InterpolatorClass.get_kriging_parameters"><a class="viewcode-back" href="../code.html#DataManagement.InterpolatorInput.InterpolatorClass.get_kriging_parameters">[docs]</a>        <span class="k">def</span> <span class="nf">get_kriging_parameters</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>

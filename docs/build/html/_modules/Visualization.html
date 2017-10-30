@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Visualization &#8212; GemPy 4 documentation</title>
+    <title>Visualization &#8212; GemPy beta documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     '4',
+        VERSION:     'beta',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -44,6 +44,22 @@
             
   <h1>Source code for Visualization</h1><div class="highlight"><pre>
 <span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This file is part of gempy.</span>
+
+<span class="sd">    gempy is free software: you can redistribute it and/or modify</span>
+<span class="sd">    it under the terms of the GNU General Public License as published by</span>
+<span class="sd">    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">    (at your option) any later version.</span>
+
+<span class="sd">    gempy is distributed in the hope that it will be useful,</span>
+<span class="sd">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">    GNU General Public License for more details.</span>
+
+<span class="sd">    You should have received a copy of the GNU General Public License</span>
+<span class="sd">    along with gempy.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+
 <span class="sd">Module with classes and methods to visualized structural geology data and potential fields of the regional modelling based on</span>
 <span class="sd">the potential field method.</span>
 <span class="sd">Tested on Ubuntu 14</span>
@@ -67,12 +83,13 @@
 <span class="c1"># This is for sphenix to find the packages</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span> <span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span> <span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
 <span class="kn">from</span> <span class="nn">IPython.core.debugger</span> <span class="k">import</span> <span class="n">Pdb</span>
-<span class="c1">#from gempy.colors import color_dict_rgb, color_dict_hex</span>
-<span class="kn">from</span> <span class="nn">gempy.colors</span> <span class="k">import</span> <span class="o">*</span>
-
+<span class="kn">from</span> <span class="nn">gempy.colors</span> <span class="k">import</span> <span class="n">color_lot</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span>
+<span class="c1">#from gempy import compute_model, get_surfaces</span>
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
 <span class="c1"># TODO: inherit pygeomod classes</span>
 <span class="c1"># import sys, os</span>
-
+<span class="c1">#sns.set_context(&#39;talk&#39;)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">([</span><span class="s1">&#39;seaborn-white&#39;</span><span class="p">,</span> <span class="s1">&#39;seaborn-talk&#39;</span><span class="p">])</span>
 
 <div class="viewcode-block" id="PlotData2D"><a class="viewcode-back" href="../code.html#Visualization.PlotData2D">[docs]</a><span class="k">class</span> <span class="nc">PlotData2D</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -88,9 +105,14 @@
 <span class="sd">        verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">cd_rgb</span><span class="o">=</span><span class="n">color_dict_rgb</span><span class="p">,</span> <span class="n">cd_hex</span><span class="o">=</span><span class="n">color_dict_hex</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">color_lot</span><span class="o">=</span><span class="n">color_lot</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">norm</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_data</span> <span class="o">=</span> <span class="n">geo_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_color_lot</span> <span class="o">=</span> <span class="n">color_lot</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_cmap</span> <span class="o">=</span> <span class="n">cmap</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_norm</span> <span class="o">=</span> <span class="n">norm</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formation_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formation_numbers</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
 
         <span class="k">if</span> <span class="s1">&#39;potential_field&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_potential_field_p</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;potential_field&#39;</span><span class="p">]</span>
@@ -98,45 +120,26 @@
             <span class="c1"># TODO planning the whole visualization scheme. Only data, potential field</span>
             <span class="c1"># and block. 2D 3D? Improving the iteration</span>
             <span class="c1"># with pandas framework</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_set_style</span><span class="p">()</span>
+       <span class="c1"># self._set_style()</span>
+    <span class="c1">#</span>
+    <span class="c1"># def _set_style(self):</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#     Private function to set some plotting options</span>
+    <span class="c1">#</span>
+    <span class="c1">#     &quot;&quot;&quot;</span>
+    <span class="c1">#</span>
+    <span class="c1">#     plt.style.use([&#39;seaborn-white&#39;, &#39;seaborn-talk&#39;])</span>
+    <span class="c1">#     # sns.set_context(&quot;paper&quot;)</span>
+    <span class="c1">#     # matplotlib.rc(&quot;font&quot;, family=&quot;Helvetica&quot;)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cd_rgb</span> <span class="o">=</span> <span class="n">cd_rgb</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cd_hex</span> <span class="o">=</span> <span class="n">cd_hex</span>
-
-        <span class="c1"># TODO: Map colors to formations and integer values for plots</span>
-
-        <span class="n">c_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;indigo&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="s2">&quot;brown&quot;</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span>
-                   <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;amber&quot;</span><span class="p">,</span> <span class="s2">&quot;pink&quot;</span><span class="p">,</span> <span class="s2">&quot;light-blue&quot;</span><span class="p">,</span>
-                   <span class="s2">&quot;lime&quot;</span><span class="p">,</span> <span class="s2">&quot;blue-grey&quot;</span><span class="p">,</span> <span class="s2">&quot;deep-orange&quot;</span><span class="p">,</span> <span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">,</span>
-                   <span class="s2">&quot;deep-purple&quot;</span><span class="p">,</span> <span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="s2">&quot;teal&quot;</span><span class="p">,</span> <span class="s2">&quot;light-green&quot;</span><span class="p">]</span>
-
-        <span class="c1"># c_subnames = [&#39;50&#39;, &#39;100&#39;, &#39;200&#39;, &#39;300&#39;, &#39;400&#39;, &#39;500&#39;, &#39;600&#39;, &#39;700&#39;, &#39;800&#39;, &#39;900&#39;]</span>
-        <span class="c1">#               &#39;a100&#39;,&#39;a200&#39;, &#39;a400&#39;, &#39;a700&#39;]</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_cmap</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">ListedColormap</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_cd_rgb</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;400&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">c_names</span><span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_sns_palette</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_cd_rgb</span><span class="p">[</span><span class="n">key</span><span class="p">][</span><span class="s2">&quot;400&quot;</span><span class="p">]</span> <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">c_names</span><span class="p">]</span>
-
-        <span class="n">bounds</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">c_names</span><span class="p">))]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_norm</span> <span class="o">=</span> <span class="n">matplotlib</span><span class="o">.</span><span class="n">colors</span><span class="o">.</span><span class="n">BoundaryNorm</span><span class="p">(</span><span class="n">bounds</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_cmap</span><span class="o">.</span><span class="n">N</span><span class="p">)</span>
-        <span class="c1"># TODO: Are colors correctly mapped between voxel plot and data plot?</span>
-
-    <span class="k">def</span> <span class="nf">_set_style</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Private function to set some plotting options</span>
-
-<span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">plt</span><span class="o">.</span><span class="n">style</span><span class="o">.</span><span class="n">use</span><span class="p">([</span><span class="s1">&#39;seaborn-white&#39;</span><span class="p">,</span> <span class="s1">&#39;seaborn-paper&#39;</span><span class="p">])</span>
-        <span class="c1"># sns.set_context(&quot;paper&quot;)</span>
-        <span class="c1"># matplotlib.rc(&quot;font&quot;, family=&quot;Helvetica&quot;)</span>
-
-<div class="viewcode-block" id="PlotData2D.plot_data"><a class="viewcode-back" href="../code.html#Visualization.PlotData2D.plot_data">[docs]</a>    <span class="k">def</span> <span class="nf">plot_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="PlotData2D.plot_data"><a class="viewcode-back" href="../code.html#Visualization.PlotData2D.plot_data">[docs]</a>    <span class="k">def</span> <span class="nf">plot_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">legend_font_size</span><span class="o">=</span><span class="mi">8</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot the projecton of the raw data (interfaces and foliations) in 2D following a</span>
 <span class="sd">        specific directions</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            direction(str): xyz. Caartesian direction to be plotted</span>
+<span class="sd">            data_type (str): type of data to plot. &#39;all&#39;, &#39;interfaces&#39; or &#39;foliations&#39;</span>
 <span class="sd">            series(str): series to plot</span>
 <span class="sd">            **kwargs: seaborn lmplot key arguments. (TODO: adding the link to them)</span>
 
@@ -144,8 +147,15 @@
 <span class="sd">            Data plot</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="s1">&#39;scatter_kws&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
+            <span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;scatter_kws&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;marker&quot;</span><span class="p">:</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span>
+                                     <span class="s2">&quot;edgecolors&quot;</span><span class="p">:</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span>
+                                     <span class="s2">&quot;linewidths&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">}</span>
 
         <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">Gx</span><span class="p">,</span> <span class="n">Gy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slice</span><span class="p">(</span><span class="n">direction</span><span class="p">)[</span><span class="mi">4</span><span class="p">:]</span>
+        <span class="n">extent</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slice</span><span class="p">(</span><span class="n">direction</span><span class="p">)[</span><span class="mi">3</span><span class="p">]</span>
+        <span class="n">aspect</span> <span class="o">=</span> <span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
 
         <span class="k">if</span> <span class="n">series</span> <span class="o">==</span> <span class="s2">&quot;all&quot;</span><span class="p">:</span>
             <span class="n">series_to_plot_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;series&quot;</span><span class="p">]</span><span class="o">.</span>
@@ -158,21 +168,52 @@
             <span class="n">series_to_plot_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;series&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">series</span><span class="p">]</span>
             <span class="n">series_to_plot_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s2">&quot;series&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">series</span><span class="p">]</span>
 
-        <span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span>
-                   <span class="n">data</span><span class="o">=</span><span class="n">series_to_plot_i</span><span class="p">,</span>
-                   <span class="n">fit_reg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
-                   <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;formation&quot;</span><span class="p">,</span>
-                   <span class="n">scatter_kws</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;marker&quot;</span><span class="p">:</span> <span class="s2">&quot;D&quot;</span><span class="p">,</span>
-                                <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="mi">100</span><span class="p">},</span>
-                   <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                   <span class="n">legend_out</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                   <span class="n">palette</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_sns_palette</span><span class="p">,</span>
-                   <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="c1"># Change dictionary keys numbers for formation names</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formation_names</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">formation_numbers</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_color_lot</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_color_lot</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span>
 
-        <span class="c1"># Plotting orientations</span>
-        <span class="n">plt</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">series_to_plot_f</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">series_to_plot_f</span><span class="p">[</span><span class="n">y</span><span class="p">],</span>
-                   <span class="n">series_to_plot_f</span><span class="p">[</span><span class="n">Gx</span><span class="p">],</span> <span class="n">series_to_plot_f</span><span class="p">[</span><span class="n">Gy</span><span class="p">],</span>
-                   <span class="n">pivot</span><span class="o">=</span><span class="s2">&quot;tail&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span>
+                           <span class="n">data</span><span class="o">=</span><span class="n">series_to_plot_i</span><span class="p">,</span>
+                           <span class="n">fit_reg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                           <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">,</span>
+                           <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;formation&quot;</span><span class="p">,</span>
+                           <span class="c1">#scatter_kws=scatter_kws,</span>
+                           <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                           <span class="n">legend_out</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                           <span class="n">palette</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_lot</span><span class="p">,</span>
+                           <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+            <span class="c1"># Plotting orientations</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">series_to_plot_f</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">series_to_plot_f</span><span class="p">[</span><span class="n">y</span><span class="p">],</span>
+                       <span class="n">series_to_plot_f</span><span class="p">[</span><span class="n">Gx</span><span class="p">],</span> <span class="n">series_to_plot_f</span><span class="p">[</span><span class="n">Gy</span><span class="p">],</span>
+                       <span class="n">pivot</span><span class="o">=</span><span class="s2">&quot;tail&quot;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s1">&#39;interfaces&#39;</span><span class="p">:</span>
+            <span class="n">p</span> <span class="o">=</span> <span class="n">sns</span><span class="o">.</span><span class="n">lmplot</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span>
+                           <span class="n">data</span><span class="o">=</span><span class="n">series_to_plot_i</span><span class="p">,</span>
+                           <span class="n">fit_reg</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                           <span class="n">aspect</span><span class="o">=</span><span class="n">aspect</span><span class="p">,</span>
+                           <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;formation&quot;</span><span class="p">,</span>
+                           <span class="c1">#scatter_kws=scatter_kws,</span>
+                           <span class="n">legend</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                           <span class="n">legend_out</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                           <span class="n">palette</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_color_lot</span><span class="p">,</span>
+                           <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">data_type</span> <span class="o">==</span> <span class="s1">&#39;foliations&#39;</span><span class="p">:</span>
+            <span class="n">plt</span><span class="o">.</span><span class="n">quiver</span><span class="p">(</span><span class="n">series_to_plot_f</span><span class="p">[</span><span class="n">x</span><span class="p">],</span> <span class="n">series_to_plot_f</span><span class="p">[</span><span class="n">y</span><span class="p">],</span>
+                       <span class="n">series_to_plot_f</span><span class="p">[</span><span class="n">Gx</span><span class="p">],</span> <span class="n">series_to_plot_f</span><span class="p">[</span><span class="n">Gy</span><span class="p">],</span>
+                       <span class="n">pivot</span><span class="o">=</span><span class="s2">&quot;tail&quot;</span><span class="p">)</span>
+        <span class="c1">#</span>
+        <span class="c1"># # code for moving legend outside of plot</span>
+        <span class="c1"># box = p.ax.get_position()  # get figure position</span>
+        <span class="c1"># # reduce width of box to make room for outside legend</span>
+        <span class="c1"># p.ax.set_position([box.x0, box.y0, box.width * 0.93, box.height])</span>
+        <span class="c1"># # put legend outside</span>
+        <span class="c1"># p.ax.legend(loc=&quot;center right&quot;, title=&quot;Formation&quot;,</span>
+        <span class="c1">#             bbox_to_anchor=(1.25, 0.5), ncol=1,</span>
+        <span class="c1">#             prop={&#39;size&#39;: legend_font_size})</span>
 
         <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></div>
@@ -211,18 +252,18 @@
         <span class="k">return</span> <span class="n">_a</span><span class="p">,</span> <span class="n">_b</span><span class="p">,</span> <span class="n">_c</span><span class="p">,</span> <span class="n">extent_val</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">Gx</span><span class="p">,</span> <span class="n">Gy</span>
 
 <div class="viewcode-block" id="PlotData2D.plot_block_section"><a class="viewcode-back" href="../code.html#Visualization.PlotData2D.plot_block_section">[docs]</a>    <span class="k">def</span> <span class="nf">plot_block_section</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">cell_number</span><span class="o">=</span><span class="mi">13</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">interpolation</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span>
-                           <span class="n">plot_data</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+                           <span class="n">plot_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot a section of the block model</span>
 
 <span class="sd">        Args:</span>
 <span class="sd">            cell_number(int): position of the array to plot</span>
 <span class="sd">            direction(str): xyz. Caartesian direction to be plotted</span>
-<span class="sd">                interpolation(str): Type of interpolation of plt.imshow. Default &#39;none&#39;.  Acceptable values are &#39;none&#39;</span>
-<span class="sd">                ,&#39;nearest&#39;, &#39;bilinear&#39;, &#39;bicubic&#39;,</span>
-<span class="sd">                &#39;spline16&#39;, &#39;spline36&#39;, &#39;hanning&#39;, &#39;hamming&#39;, &#39;hermite&#39;, &#39;kaiser&#39;,</span>
-<span class="sd">                &#39;quadric&#39;, &#39;catrom&#39;, &#39;gaussian&#39;, &#39;bessel&#39;, &#39;mitchell&#39;, &#39;sinc&#39;,</span>
-<span class="sd">                &#39;lanczos&#39;</span>
+<span class="sd">            interpolation(str): Type of interpolation of plt.imshow. Default &#39;none&#39;.  Acceptable values are &#39;none&#39;</span>
+<span class="sd">            ,&#39;nearest&#39;, &#39;bilinear&#39;, &#39;bicubic&#39;,</span>
+<span class="sd">            &#39;spline16&#39;, &#39;spline36&#39;, &#39;hanning&#39;, &#39;hamming&#39;, &#39;hermite&#39;, &#39;kaiser&#39;,</span>
+<span class="sd">            &#39;quadric&#39;, &#39;catrom&#39;, &#39;gaussian&#39;, &#39;bessel&#39;, &#39;mitchell&#39;, &#39;sinc&#39;,</span>
+<span class="sd">            &#39;lanczos&#39;</span>
 <span class="sd">            **kwargs: imshow keywargs</span>
 
 <span class="sd">        Returns:</span>
@@ -247,18 +288,25 @@
         <span class="n">plot_block</span> <span class="o">=</span> <span class="n">_block</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
         <span class="n">_a</span><span class="p">,</span> <span class="n">_b</span><span class="p">,</span> <span class="n">_c</span><span class="p">,</span> <span class="n">extent_val</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slice</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="n">cell_number</span><span class="p">)[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
 
-
         <span class="k">if</span> <span class="n">plot_data</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="s1">&#39;all&#39;</span><span class="p">)</span>
+        <span class="c1"># TODO: plot_topo option - need fault_block for that</span>
 
-        <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">plot_block</span><span class="p">[</span><span class="n">_a</span><span class="p">,</span> <span class="n">_b</span><span class="p">,</span> <span class="n">_c</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_norm</span><span class="p">,</span>
+        <span class="c1"># DEP?</span>
+        <span class="n">selecting_colors</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">plot_block</span><span class="p">)</span>
+
+        <span class="n">im</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">plot_block</span><span class="p">[</span><span class="n">_a</span><span class="p">,</span> <span class="n">_b</span><span class="p">,</span> <span class="n">_c</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s2">&quot;bottom&quot;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_cmap</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_norm</span><span class="p">,</span>
                    <span class="n">extent</span><span class="o">=</span><span class="n">extent_val</span><span class="p">,</span>
                    <span class="n">interpolation</span><span class="o">=</span><span class="n">interpolation</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
+        <span class="kn">import</span> <span class="nn">matplotlib.patches</span> <span class="k">as</span> <span class="nn">mpatches</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="p">[</span><span class="n">im</span><span class="o">.</span><span class="n">cmap</span><span class="p">(</span><span class="n">im</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">value</span><span class="p">))</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">formation_numbers</span><span class="p">]</span>
+        <span class="n">patches</span>  <span class="o">=</span> <span class="p">[</span> <span class="n">mpatches</span><span class="o">.</span><span class="n">Patch</span><span class="p">(</span><span class="n">color</span><span class="o">=</span><span class="n">colors</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">label</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">formation_names</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formation_names</span><span class="p">))]</span>
+        <span class="n">plt</span><span class="o">.</span><span class="n">legend</span><span class="p">(</span><span class="n">handles</span><span class="o">=</span><span class="n">patches</span><span class="p">,</span> <span class="n">bbox_to_anchor</span><span class="o">=</span><span class="p">(</span><span class="mf">1.05</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="n">loc</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">borderaxespad</span><span class="o">=</span><span class="mf">0.</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></div>
 
-<div class="viewcode-block" id="PlotData2D.plot_potential_field"><a class="viewcode-back" href="../code.html#Visualization.PlotData2D.plot_potential_field">[docs]</a>    <span class="k">def</span> <span class="nf">plot_potential_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">potential_field</span><span class="p">,</span> <span class="n">cell_number</span><span class="p">,</span> <span class="n">n_pf</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span>
+<div class="viewcode-block" id="PlotData2D.plot_potential_field"><a class="viewcode-back" href="../code.html#Visualization.PlotData2D.plot_potential_field">[docs]</a>    <span class="k">def</span> <span class="nf">plot_potential_field</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">potential_field</span><span class="p">,</span> <span class="n">cell_number</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
                              <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Plot a potential field in a given direction.</span>
@@ -281,16 +329,58 @@
         <span class="n">_a</span><span class="p">,</span> <span class="n">_b</span><span class="p">,</span> <span class="n">_c</span><span class="p">,</span> <span class="n">extent_val</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_slice</span><span class="p">(</span><span class="n">direction</span><span class="p">,</span> <span class="n">cell_number</span><span class="p">)[:</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">contour</span><span class="p">(</span><span class="n">potential_field</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">])[</span><span class="n">_a</span><span class="p">,</span> <span class="n">_b</span><span class="p">,</span> <span class="n">_c</span><span class="p">]</span><span class="o">.</span><span class="n">T</span><span class="p">,</span>
-                    <span class="n">cell_number</span><span class="p">,</span>
+                    <span class="n">N</span><span class="p">,</span>
                     <span class="n">extent</span><span class="o">=</span><span class="n">extent_val</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span>
                     <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s1">&#39;colorbar&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
 
-        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()[</span><span class="n">n_pf</span><span class="p">])</span>
+      <span class="c1">#  plt.title(self._data.interfaces[&#39;series&#39;].unique()[n_pf])</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="n">y</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">plot_topo_g</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">centroids</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+            <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">e1</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">e2</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">centroids</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">r1</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">r2</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+            <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">e1</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="n">e2</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">centroids</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">r1</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">r2</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+            <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">e1</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">e2</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">centroids</span><span class="o">.</span><span class="n">items</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+                <span class="n">c1</span><span class="p">,</span> <span class="n">c2</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">r1</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">r2</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">for</span> <span class="n">edge</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">edges_iter</span><span class="p">():</span>
+            <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">edge</span>
+
+            <span class="k">if</span> <span class="n">G</span><span class="o">.</span><span class="n">adj</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">b</span><span class="p">][</span><span class="s2">&quot;edge_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;stratigraphic&quot;</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">centroids</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">c1</span><span class="p">],</span> <span class="n">centroids</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="n">c1</span><span class="p">]])</span> <span class="o">*</span> <span class="n">e1</span> <span class="o">/</span> <span class="n">r1</span><span class="p">,</span>
+                         <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">centroids</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">c2</span><span class="p">],</span> <span class="n">centroids</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="n">c2</span><span class="p">]])</span> <span class="o">*</span> <span class="n">e2</span> <span class="o">/</span> <span class="n">r2</span><span class="p">,</span> <span class="s2">&quot;gray&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">G</span><span class="o">.</span><span class="n">adj</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">b</span><span class="p">][</span><span class="s2">&quot;edge_type&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;fault&quot;</span><span class="p">:</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">centroids</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">c1</span><span class="p">],</span> <span class="n">centroids</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="n">c1</span><span class="p">]])</span> <span class="o">*</span> <span class="n">e1</span> <span class="o">/</span> <span class="n">r1</span><span class="p">,</span>
+                         <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">centroids</span><span class="p">[</span><span class="n">a</span><span class="p">][</span><span class="n">c2</span><span class="p">],</span> <span class="n">centroids</span><span class="p">[</span><span class="n">b</span><span class="p">][</span><span class="n">c2</span><span class="p">]])</span> <span class="o">*</span> <span class="n">e2</span> <span class="o">/</span> <span class="n">r2</span><span class="p">,</span> <span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">linewidth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+            <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">G</span><span class="o">.</span><span class="n">nodes_iter</span><span class="p">():</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">centroids</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">c1</span><span class="p">]</span> <span class="o">*</span> <span class="n">e1</span> <span class="o">/</span> <span class="n">r1</span><span class="p">,</span> <span class="n">centroids</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">c2</span><span class="p">]</span> <span class="o">*</span> <span class="n">e2</span> <span class="o">/</span> <span class="n">r2</span><span class="p">,</span>
+                         <span class="n">marker</span><span class="o">=</span><span class="s2">&quot;o&quot;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;black&quot;</span><span class="p">,</span> <span class="n">markersize</span><span class="o">=</span><span class="mi">20</span><span class="p">)</span>
+                <span class="n">plt</span><span class="o">.</span><span class="n">text</span><span class="p">(</span><span class="n">centroids</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">c1</span><span class="p">]</span> <span class="o">*</span> <span class="n">e1</span> <span class="o">/</span> <span class="n">r1</span> <span class="o">*</span> <span class="mf">0.99</span><span class="p">,</span>
+                         <span class="n">centroids</span><span class="p">[</span><span class="n">node</span><span class="p">][</span><span class="n">c2</span><span class="p">]</span> <span class="o">*</span> <span class="n">e2</span> <span class="o">/</span> <span class="n">r2</span> <span class="o">*</span> <span class="mf">0.99</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">node</span><span class="p">),</span> <span class="n">color</span><span class="o">=</span><span class="s2">&quot;white&quot;</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
 
 <div class="viewcode-block" id="PlotData2D.annotate_plot"><a class="viewcode-back" href="../code.html#Visualization.PlotData2D.annotate_plot">[docs]</a>    <span class="nd">@staticmethod</span>
     <span class="k">def</span> <span class="nf">annotate_plot</span><span class="p">(</span><span class="n">frame</span><span class="p">,</span> <span class="n">label_col</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
@@ -364,7 +454,7 @@
             <span class="k">return</span> <span class="n">vol</span><span class="o">.</span><span class="n">plot</span><span class="p">()</span>
 
 
-<div class="viewcode-block" id="vtkVisualization"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization">[docs]</a><span class="k">class</span> <span class="nc">vtkVisualization</span><span class="p">():</span>
+<div class="viewcode-block" id="vtkVisualization"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization">[docs]</a><span class="k">class</span> <span class="nc">vtkVisualization</span><span class="p">:</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class to visualize data and results in 3D. Init will create all the render properties while the method render</span>
 <span class="sd">    model will lunch the window. Using set_interfaces, set_foliations and set_surfaces in between can be chosen what</span>
@@ -379,24 +469,24 @@
 <span class="sd">        camera_list (list): list of cameras for the distinct renderers</span>
 <span class="sd">        ren_list (list): list containing the vtk renderers</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">ren_name</span><span class="o">=</span><span class="s1">&#39;GemPy 3D-Editor&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,):</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">ren_name</span><span class="o">=</span><span class="s1">&#39;GemPy 3D-Editor&#39;</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">color_lot</span><span class="o">=</span><span class="n">color_lot</span><span class="p">,</span> <span class="n">real_time</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">color_lot_create</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">real_time</span> <span class="o">=</span> <span class="n">real_time</span>
+        <span class="c1"># self.C_LOT = self.color_lot_create(geo_data)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span> <span class="o">=</span> <span class="n">geo_data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interp_data</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span> <span class="o">=</span> <span class="n">color_lot</span>
         <span class="c1"># Number of renders</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_ren</span> <span class="o">=</span> <span class="mi">4</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">formation_number</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formation_name</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
         <span class="c1"># Extents</span>
-        <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">extent</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_e_dx</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">dx</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_e_dy</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">dy</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_e_dz</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">dz</span>
-        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-            <span class="n">_e</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span>  <span class="c1"># array([ x, X,  y, Y,  z, Z])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_e_dx</span> <span class="o">=</span> <span class="n">_e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">_e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_e_dy</span> <span class="o">=</span> <span class="n">_e</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">_e</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_e_dz</span> <span class="o">=</span> <span class="n">_e</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">_e</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">extent</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span>
+        <span class="n">_e</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_e_dx</span> <span class="o">=</span> <span class="n">_e</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">_e</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_e_dy</span> <span class="o">=</span> <span class="n">_e</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">_e</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_e_dz</span> <span class="o">=</span> <span class="n">_e</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">_e</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_e_d_avrg</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_e_dx</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_e_dy</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">_e_dz</span><span class="p">)</span> <span class="o">/</span> <span class="mi">3</span>
 
@@ -429,10 +519,10 @@
 
 <div class="viewcode-block" id="vtkVisualization.render_model"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.render_model">[docs]</a>    <span class="k">def</span> <span class="nf">render_model</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1080</span><span class="p">),</span> <span class="n">fullscreen</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Method to lunch the window</span>
+<span class="sd">        Method to launch the window</span>
 <span class="sd">        Args:</span>
 <span class="sd">            size (tuple): Resolution of the window</span>
-<span class="sd">            fullscreen (bool): Lunch window in full screen or not</span>
+<span class="sd">            fullscreen (bool): Launch window in full screen or not</span>
 <span class="sd">        Returns:</span>
 
 <span class="sd">        &quot;&quot;&quot;</span>
@@ -461,11 +551,11 @@
             <span class="n">Points</span><span class="o">.</span><span class="n">InsertNextPoint</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Points</span></div>
 
-<div class="viewcode-block" id="vtkVisualization.create_surface_triangles"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_surface_triangles">[docs]</a>    <span class="k">def</span> <span class="nf">create_surface_triangles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simpleces</span><span class="p">):</span>
+<div class="viewcode-block" id="vtkVisualization.create_surface_triangles"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_surface_triangles">[docs]</a>    <span class="k">def</span> <span class="nf">create_surface_triangles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">simplices</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to create the Triangles that form the surfaces</span>
 <span class="sd">        Args:</span>
-<span class="sd">            simpleces (numpy.array): 2D array with the value of the vertices that form every single triangle</span>
+<span class="sd">            simplices (numpy.array): 2D array with the value of the vertices that form every single triangle</span>
 
 <span class="sd">        Returns:</span>
 <span class="sd">            vtk.vtkTriangle</span>
@@ -474,7 +564,7 @@
         <span class="n">Triangles</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkCellArray</span><span class="p">()</span>
         <span class="n">Triangle</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkTriangle</span><span class="p">()</span>
 
-        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">simpleces</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">simplices</span><span class="p">:</span>
             <span class="n">Triangle</span><span class="o">.</span><span class="n">GetPointIds</span><span class="p">()</span><span class="o">.</span><span class="n">SetId</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
             <span class="n">Triangle</span><span class="o">.</span><span class="n">GetPointIds</span><span class="p">()</span><span class="o">.</span><span class="n">SetId</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
             <span class="n">Triangle</span><span class="o">.</span><span class="n">GetPointIds</span><span class="p">()</span><span class="o">.</span><span class="n">SetId</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">s</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
@@ -482,13 +572,13 @@
             <span class="n">Triangles</span><span class="o">.</span><span class="n">InsertNextCell</span><span class="p">(</span><span class="n">Triangle</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">Triangles</span></div>
 
-<div class="viewcode-block" id="vtkVisualization.create_surface"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_surface">[docs]</a>    <span class="k">def</span> <span class="nf">create_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">simpleces</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
+<div class="viewcode-block" id="vtkVisualization.create_surface"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_surface">[docs]</a>    <span class="k">def</span> <span class="nf">create_surface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">simplices</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to create the polydata that define the surfaces</span>
 <span class="sd">        Args:</span>
 <span class="sd">            vertices (numpy.array): 2D array (XYZ) with the coordinates of the points</span>
-<span class="sd">            simpleces (numpy.array): 2D array with the value of the vertices that form every single triangle</span>
-<span class="sd">            f (str): Name of the formation of the surfaces</span>
+<span class="sd">            simplices (numpy.array): 2D array with the value of the vertices that form every single triangle</span>
+<span class="sd">            fn (int): Formation number</span>
 <span class="sd">            alpha (float): Opacity</span>
 
 <span class="sd">        Returns:</span>
@@ -497,26 +587,28 @@
         <span class="n">surf_polydata</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkPolyData</span><span class="p">()</span>
 
         <span class="n">surf_polydata</span><span class="o">.</span><span class="n">SetPoints</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_surface_points</span><span class="p">(</span><span class="n">vertices</span><span class="p">))</span>
-        <span class="n">surf_polydata</span><span class="o">.</span><span class="n">SetPolys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_surface_triangles</span><span class="p">(</span><span class="n">simpleces</span><span class="p">))</span>
+        <span class="n">surf_polydata</span><span class="o">.</span><span class="n">SetPolys</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_surface_triangles</span><span class="p">(</span><span class="n">simplices</span><span class="p">))</span>
+        <span class="n">surf_polydata</span><span class="o">.</span><span class="n">Modified</span><span class="p">()</span>
 
         <span class="n">surf_mapper</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkPolyDataMapper</span><span class="p">()</span>
         <span class="n">surf_mapper</span><span class="o">.</span><span class="n">SetInputData</span><span class="p">(</span><span class="n">surf_polydata</span><span class="p">)</span>
+        <span class="n">surf_mapper</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
 
         <span class="n">surf_actor</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkActor</span><span class="p">()</span>
         <span class="n">surf_actor</span><span class="o">.</span><span class="n">SetMapper</span><span class="p">(</span><span class="n">surf_mapper</span><span class="p">)</span>
-        <span class="n">surf_actor</span><span class="o">.</span><span class="n">GetProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
+        <span class="n">surf_actor</span><span class="o">.</span><span class="n">GetProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span><span class="p">[</span><span class="n">fn</span><span class="p">])</span>
         <span class="n">surf_actor</span><span class="o">.</span><span class="n">GetProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetOpacity</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">surf_actor</span><span class="p">,</span> <span class="n">surf_mapper</span><span class="p">,</span> <span class="n">surf_polydata</span></div>
 
-<div class="viewcode-block" id="vtkVisualization.create_sphere"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_sphere">[docs]</a>    <span class="k">def</span> <span class="nf">create_sphere</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">n_sphere</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">0.03</span><span class="p">):</span>
+<div class="viewcode-block" id="vtkVisualization.create_sphere"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_sphere">[docs]</a>    <span class="k">def</span> <span class="nf">create_sphere</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">n_sphere</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">r</span><span class="o">=</span><span class="mf">0.03</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Method to create the sphere that represent the interfaces points</span>
 <span class="sd">        Args:</span>
 <span class="sd">            X: X coord</span>
 <span class="sd">            Y: Y coord</span>
 <span class="sd">            Z: Z corrd</span>
-<span class="sd">            f (str): Name of the formation of the surfaces</span>
+<span class="sd">            fn (int): Formation number</span>
 <span class="sd">            n_sphere (int): Number of the sphere</span>
 <span class="sd">            n_render (int): Number of the render where the sphere belongs</span>
 <span class="sd">            n_index (int): index value in the PandasDataframe of InupData.interfaces</span>
@@ -531,19 +623,19 @@
 
         <span class="n">s</span><span class="o">.</span><span class="n">r_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_e_d_avrg</span> <span class="o">*</span> <span class="n">r</span>
         <span class="n">s</span><span class="o">.</span><span class="n">PlaceWidget</span><span class="p">(</span><span class="n">X</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">X</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">Y</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">Y</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">Z</span> <span class="o">-</span> <span class="n">s</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">Z</span> <span class="o">+</span> <span class="n">s</span><span class="o">.</span><span class="n">r_f</span><span class="p">)</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">GetSphereProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">GetSphereProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span><span class="p">[</span><span class="n">fn</span><span class="p">])</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">SetCurrentRenderer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="n">n_render</span><span class="p">])</span>
         <span class="n">s</span><span class="o">.</span><span class="n">n_sphere</span> <span class="o">=</span> <span class="n">n_sphere</span>
         <span class="n">s</span><span class="o">.</span><span class="n">n_render</span> <span class="o">=</span> <span class="n">n_render</span>
         <span class="n">s</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">n_index</span>
-        <span class="n">s</span><span class="o">.</span><span class="n">AddObserver</span><span class="p">(</span><span class="s2">&quot;InteractionEvent&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sphereCallback</span><span class="p">)</span>
+        <span class="n">s</span><span class="o">.</span><span class="n">AddObserver</span><span class="p">(</span><span class="s2">&quot;EndInteractionEvent&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">sphereCallback</span><span class="p">)</span> <span class="c1"># EndInteractionEvent</span>
 
         <span class="n">s</span><span class="o">.</span><span class="n">On</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">s</span></div>
 
-<div class="viewcode-block" id="vtkVisualization.create_foliation"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_foliation">[docs]</a>    <span class="k">def</span> <span class="nf">create_foliation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span>
+<div class="viewcode-block" id="vtkVisualization.create_foliation"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_foliation">[docs]</a>    <span class="k">def</span> <span class="nf">create_foliation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span>
                          <span class="n">Gx</span><span class="p">,</span> <span class="n">Gy</span><span class="p">,</span> <span class="n">Gz</span><span class="p">,</span>
                          <span class="n">n_plane</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -552,7 +644,7 @@
 <span class="sd">            X : X coord</span>
 <span class="sd">            Y: Y coord</span>
 <span class="sd">            Z: Z corrd</span>
-<span class="sd">            f (str): Name of the formation of the surfaces</span>
+<span class="sd">            fn (int): Formation number</span>
 <span class="sd">            Gx (str): Component of the gradient x</span>
 <span class="sd">            Gy (str): Component of the gradient y</span>
 <span class="sd">            Gz (str): Component of the gradient z</span>
@@ -569,59 +661,64 @@
         <span class="n">d</span><span class="o">.</span><span class="n">SetRepresentationToSurface</span><span class="p">()</span>
 
         <span class="c1"># Position</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
+
         <span class="n">source</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkPlaneSource</span><span class="p">()</span>
         <span class="n">source</span><span class="o">.</span><span class="n">SetCenter</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span>
         <span class="n">source</span><span class="o">.</span><span class="n">SetNormal</span><span class="p">(</span><span class="n">Gx</span><span class="p">,</span> <span class="n">Gy</span><span class="p">,</span> <span class="n">Gz</span><span class="p">)</span>
         <span class="n">source</span><span class="o">.</span><span class="n">Update</span><span class="p">()</span>
         <span class="n">d</span><span class="o">.</span><span class="n">SetInputData</span><span class="p">(</span><span class="n">source</span><span class="o">.</span><span class="n">GetOutput</span><span class="p">())</span>
         <span class="n">d</span><span class="o">.</span><span class="n">SetHandleSize</span><span class="p">(</span><span class="mf">0.05</span><span class="p">)</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">SetPlaceFactor</span><span class="p">(</span><span class="mi">250</span><span class="p">)</span>
+        <span class="n">min_extent</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">_e_dx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_e_dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_e_dz</span><span class="p">])</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">SetPlaceFactor</span><span class="p">(</span><span class="n">min_extent</span><span class="o">/</span><span class="mi">10</span><span class="p">)</span>
         <span class="n">d</span><span class="o">.</span><span class="n">PlaceWidget</span><span class="p">()</span>
         <span class="n">d</span><span class="o">.</span><span class="n">SetNormal</span><span class="p">(</span><span class="n">Gx</span><span class="p">,</span> <span class="n">Gy</span><span class="p">,</span> <span class="n">Gz</span><span class="p">)</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">GetPlaneProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">GetHandleProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span><span class="p">[</span><span class="n">f</span><span class="p">])</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">GetPlaneProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span><span class="p">[</span><span class="n">fn</span><span class="p">])</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">GetHandleProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetColor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">C_LOT</span><span class="p">[</span><span class="n">fn</span><span class="p">])</span>
         <span class="n">d</span><span class="o">.</span><span class="n">GetHandleProperty</span><span class="p">()</span><span class="o">.</span><span class="n">SetOpacity</span><span class="p">(</span><span class="n">alpha</span><span class="p">)</span>
         <span class="n">d</span><span class="o">.</span><span class="n">SetCurrentRenderer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="n">n_render</span><span class="p">])</span>
         <span class="n">d</span><span class="o">.</span><span class="n">n_plane</span> <span class="o">=</span> <span class="n">n_plane</span>
         <span class="n">d</span><span class="o">.</span><span class="n">n_render</span> <span class="o">=</span> <span class="n">n_render</span>
         <span class="n">d</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">n_index</span>
-        <span class="n">d</span><span class="o">.</span><span class="n">AddObserver</span><span class="p">(</span><span class="s2">&quot;InteractionEvent&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">planesCallback</span><span class="p">)</span>
+        <span class="n">d</span><span class="o">.</span><span class="n">AddObserver</span><span class="p">(</span><span class="s2">&quot;EndInteractionEvent&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">planesCallback</span><span class="p">)</span>
 
         <span class="n">d</span><span class="o">.</span><span class="n">On</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="n">d</span></div>
 
-<div class="viewcode-block" id="vtkVisualization.set_surfaces"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.set_surfaces">[docs]</a>    <span class="k">def</span> <span class="nf">set_surfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">simpleces</span><span class="p">,</span> <span class="n">formations</span><span class="p">):</span>
+<div class="viewcode-block" id="vtkVisualization.set_surfaces"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.set_surfaces">[docs]</a>    <span class="k">def</span> <span class="nf">set_surfaces</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">simplices</span><span class="p">,</span>
+                      <span class="c1">#formations, fns,</span>
+                       <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Create all the surfaces and set them to the corresponding renders for their posterior visualization with</span>
 <span class="sd">        render_model</span>
 <span class="sd">        Args:</span>
 <span class="sd">            vertices (list): list of 3D numpy arrays containing the points that form each plane</span>
-<span class="sd">            simpleces (list): list of 3D numpy arrays containing the verticies that form every triangle</span>
+<span class="sd">            simplices (list): list of 3D numpy arrays containing the verticies that form every triangle</span>
 <span class="sd">            formations (list): ordered list of strings containing the name of the formations to represent</span>
-
+<span class="sd">            fns (list): ordered list of formation numbers (int)</span>
+<span class="sd">            alpha: Opacity of the plane</span>
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="c1"># self.s_rend_1 = []</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">surf_rend_1</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="c1"># self.s_rend_2 = []</span>
         <span class="c1"># self.s_rend_3 = []</span>
         <span class="c1"># self.s_rend_4 = []</span>
         <span class="c1"># self.s_mapper = []</span>
         <span class="c1"># self.s_polydata = []</span>
-
+        <span class="n">formations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">formation_name</span>
+        <span class="n">fns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">formation_number</span>
         <span class="k">assert</span> <span class="nb">type</span><span class="p">(</span>
             <span class="n">vertices</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">,</span> <span class="s1">&#39;vertices and simpleces have to be a list of arrays even when only one formation&#39;</span> \
                                <span class="s1">&#39;is passed&#39;</span>
         <span class="k">assert</span> <span class="s1">&#39;DefaultBasement&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">formations</span><span class="p">,</span> <span class="s1">&#39;Remove DefaultBasement from the list of formations&#39;</span>
 
-        <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">simpleces</span><span class="p">,</span> <span class="n">formations</span><span class="p">):</span>
-            <span class="n">act</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="n">pol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_surface</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
-            <span class="c1">#  self.s_rend_1.append(act)</span>
+        <span class="k">for</span> <span class="n">v</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">fn</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">simplices</span><span class="p">,</span> <span class="n">fns</span><span class="p">):</span>
+            <span class="n">act</span><span class="p">,</span> <span class="nb">map</span><span class="p">,</span> <span class="n">pol</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_surface</span><span class="p">(</span><span class="n">v</span><span class="p">,</span> <span class="n">s</span><span class="p">,</span> <span class="n">fn</span><span class="p">,</span> <span class="n">alpha</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">surf_rend_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
             <span class="c1">#  self.s_mapper.append(map)</span>
             <span class="c1">#  self.s_polydata.append(pol)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s_rend_1</span><span class="p">)</span>
+            <span class="c1">#print(self.s_rend_1)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">AddActor</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">AddActor</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">AddActor</span><span class="p">(</span><span class="n">act</span><span class="p">)</span>
@@ -641,13 +738,13 @@
         <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()):</span>
             <span class="n">index</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">row</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_sphere</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_sphere</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">],</span>
                                                     <span class="n">n_sphere</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_sphere</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_sphere</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">],</span>
                                                     <span class="n">n_sphere</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_sphere</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_sphere</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">],</span>
                                                     <span class="n">n_sphere</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_4</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_sphere</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_4</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_sphere</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">],</span>
                                                     <span class="n">n_sphere</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span></div>
 
 <div class="viewcode-block" id="vtkVisualization.set_foliations"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.set_foliations">[docs]</a>    <span class="k">def</span> <span class="nf">set_foliations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -664,22 +761,93 @@
         <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()):</span>
             <span class="n">index</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">row</span> <span class="o">=</span> <span class="n">val</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_foliation</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_1</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_foliation</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">],</span>
                                                        <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">],</span>
                                                        <span class="n">n_plane</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_foliation</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_2</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_foliation</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">],</span>
                                                        <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">],</span>
                                                        <span class="n">n_plane</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_foliation</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_3</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_foliation</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">],</span>
                                                        <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">],</span>
                                                        <span class="n">n_plane</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_4</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_foliation</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_4</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">create_foliation</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">],</span>
                                                        <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">],</span> <span class="n">row</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">],</span>
                                                        <span class="n">n_plane</span><span class="o">=</span><span class="n">e</span><span class="p">,</span> <span class="n">n_render</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">n_index</span><span class="o">=</span><span class="n">index</span><span class="p">))</span></div>
 
+    <span class="k">def</span> <span class="nf">create_slider_rep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">val</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+        <span class="n">slider_rep</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkSliderRepresentation2D</span><span class="p">()</span>
+        <span class="n">slider_rep</span><span class="o">.</span><span class="n">SetMinimumValue</span><span class="p">(</span><span class="nb">min</span><span class="p">)</span>
+        <span class="n">slider_rep</span><span class="o">.</span><span class="n">SetMaximumValue</span><span class="p">(</span><span class="nb">max</span><span class="p">)</span>
+        <span class="n">slider_rep</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="n">val</span><span class="p">)</span>
+        <span class="n">slider_rep</span><span class="o">.</span><span class="n">GetPoint1Coordinate</span><span class="p">()</span><span class="o">.</span><span class="n">SetCoordinateSystemToDisplay</span><span class="p">()</span>
+        <span class="n">slider_rep</span><span class="o">.</span><span class="n">GetPoint1Coordinate</span><span class="p">()</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+        <span class="n">slider_rep</span><span class="o">.</span><span class="n">GetPoint2Coordinate</span><span class="p">()</span><span class="o">.</span><span class="n">SetCoordinateSystemToDisplay</span><span class="p">()</span>
+        <span class="n">slider_rep</span><span class="o">.</span><span class="n">GetPoint2Coordinate</span><span class="p">()</span><span class="o">.</span><span class="n">SetValue</span><span class="p">(</span><span class="mi">300</span><span class="p">,</span> <span class="mi">40</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_w</span> <span class="o">=</span> <span class="n">vtk</span><span class="o">.</span><span class="n">vtkSliderWidget</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_w</span><span class="o">.</span><span class="n">SetInteractor</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interactor</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_w</span><span class="o">.</span><span class="n">SetRepresentation</span><span class="p">(</span><span class="n">slider_rep</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_w</span><span class="o">.</span><span class="n">SetCurrentRenderer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_w</span><span class="o">.</span><span class="n">SetAnimationModeToAnimate</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_w</span><span class="o">.</span><span class="n">On</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider_w</span><span class="o">.</span><span class="n">AddObserver</span><span class="p">(</span><span class="s1">&#39;EndInteractionEvent&#39;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">slideCallback</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">slideCallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">post</span><span class="o">.</span><span class="n">change_input_data</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">obj</span><span class="o">.</span><span class="n">GetRepresentation</span><span class="p">()</span><span class="o">.</span><span class="n">GetValue</span><span class="p">())</span>
+        <span class="c1"># lith_block, fault_block = gp.compute_model(self.interp_data)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">surf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">surf_rend_1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">RemoveActor</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">RemoveActor</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">RemoveActor</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">RemoveActor</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+
+            <span class="n">ver</span><span class="p">,</span> <span class="n">sim</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_surfaces_real_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interp_data</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_surfaces</span><span class="p">(</span><span class="n">ver</span><span class="p">,</span> <span class="n">sim</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;no surf&#39;</span><span class="p">)</span>
+            <span class="k">pass</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">sph</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">s_rend_1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_4</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">iterrows</span><span class="p">()):</span>
+
+                <span class="n">row_i</span> <span class="o">=</span> <span class="n">sph</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">sph</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">PlaceWidget</span><span class="p">(</span><span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sph</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sph</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span>
+                                   <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sph</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sph</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span>
+                                   <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sph</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sph</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">)</span>
+
+                <span class="n">sph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">PlaceWidget</span><span class="p">(</span><span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span>
+                                   <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span>
+                                   <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sph</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">)</span>
+
+                <span class="n">sph</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">PlaceWidget</span><span class="p">(</span><span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sph</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sph</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span>
+                                   <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sph</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sph</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span>
+                                   <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sph</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sph</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">)</span>
+
+                <span class="n">sph</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">PlaceWidget</span><span class="p">(</span><span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sph</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sph</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span>
+                                   <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sph</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sph</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span>
+                                   <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="n">sph</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">,</span> <span class="n">row_i</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span> <span class="o">+</span> <span class="n">sph</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">r_f</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">fol</span> <span class="ow">in</span> <span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">f_rend_1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_3</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_4</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="o">.</span><span class="n">iterrows</span><span class="p">())):</span>
+                <span class="n">row_f</span> <span class="o">=</span> <span class="n">fol</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+                <span class="n">fol</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">SetCenter</span><span class="p">(</span><span class="n">row_f</span><span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">],</span> <span class="n">row_f</span><span class="p">[</span><span class="s1">&#39;Y&#39;</span><span class="p">],</span> <span class="n">row_f</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">])</span>
+                <span class="n">fol</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">SetNormal</span><span class="p">(</span><span class="n">row_f</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">],</span> <span class="n">row_f</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">],</span> <span class="n">row_f</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">])</span>
+
+                <span class="c1"># self.ren_list[0].RemoveActor(fol[0])</span>
+                <span class="c1"># self.ren_list[1].RemoveActor(fol[1])</span>
+                <span class="c1"># self.ren_list[2].RemoveActor(fol[2])</span>
+                <span class="c1"># self.ren_list[3].RemoveActor(fol[3])</span>
+                <span class="c1"># self.set_foliations()</span>
+        <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+            <span class="k">pass</span>
+
 <div class="viewcode-block" id="vtkVisualization.sphereCallback"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.sphereCallback">[docs]</a>    <span class="k">def</span> <span class="nf">sphereCallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Function that rules what happend when we move an sphere. At the moment we update the other 3 renderers and</span>
+<span class="sd">        Function that rules what happens when we move a sphere. At the moment we update the other 3 renderers and</span>
 <span class="sd">        update the pandas data frame</span>
 <span class="sd">        &quot;&quot;&quot;</span>
 
@@ -736,7 +904,20 @@
         <span class="k">if</span> <span class="n">render</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">s_rend_4</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_sphere</span><span class="p">]</span><span class="o">.</span><span class="n">PlaceWidget</span><span class="p">(</span><span class="n">new_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">,</span>
                                                     <span class="n">new_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">,</span>
-                                                    <span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">)</span></div>
+                                                    <span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">-</span> <span class="n">r_f</span><span class="p">,</span> <span class="n">new_center</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="n">r_f</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">real_time</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">surf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">surf_rend_1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">RemoveActor</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">RemoveActor</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">RemoveActor</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">RemoveActor</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+
+            <span class="n">vertices</span><span class="p">,</span> <span class="n">simpleces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_surfaces_real_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interp_data</span><span class="p">)</span>
+          <span class="c1">#  print(vertices[0][60])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_surfaces</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">simpleces</span><span class="p">)</span></div>
+
+           <span class="c1"># self.renwin.Render()</span>
 
 <div class="viewcode-block" id="vtkVisualization.planesCallback"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.planesCallback">[docs]</a>    <span class="k">def</span> <span class="nf">planesCallback</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">obj</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -796,7 +977,18 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_3</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_plane</span><span class="p">]</span><span class="o">.</span><span class="n">SetNormal</span><span class="p">(</span><span class="n">new_normal</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">render</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_4</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_plane</span><span class="p">]</span><span class="o">.</span><span class="n">SetInputData</span><span class="p">(</span><span class="n">new_source</span><span class="o">.</span><span class="n">GetOutput</span><span class="p">())</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_4</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_plane</span><span class="p">]</span><span class="o">.</span><span class="n">SetNormal</span><span class="p">(</span><span class="n">new_normal</span><span class="p">)</span></div>
+            <span class="bp">self</span><span class="o">.</span><span class="n">f_rend_4</span><span class="p">[</span><span class="n">obj</span><span class="o">.</span><span class="n">n_plane</span><span class="p">]</span><span class="o">.</span><span class="n">SetNormal</span><span class="p">(</span><span class="n">new_normal</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">real_time</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">surf</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">surf_rend_1</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">RemoveActor</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">RemoveActor</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">RemoveActor</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">ren_list</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="o">.</span><span class="n">RemoveActor</span><span class="p">(</span><span class="n">surf</span><span class="p">)</span>
+
+            <span class="n">vertices</span><span class="p">,</span> <span class="n">simpleces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">update_surfaces_real_time</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interp_data</span><span class="p">)</span>
+          <span class="c1">#  print(vertices[0][60])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_surfaces</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">simpleces</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="vtkVisualization.create_ren_list"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.create_ren_list">[docs]</a>    <span class="k">def</span> <span class="nf">create_ren_list</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -822,15 +1014,6 @@
             <span class="n">ren_list</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">SetViewport</span><span class="p">(</span><span class="n">xmins</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ymins</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">xmaxs</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">ymaxs</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
 
         <span class="k">return</span> <span class="n">ren_list</span></div>
-
-<div class="viewcode-block" id="vtkVisualization.color_lot_create"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.color_lot_create">[docs]</a>    <span class="k">def</span> <span class="nf">color_lot_create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">cd_rgb</span><span class="o">=</span><span class="n">color_dict_rgb</span><span class="p">,</span> <span class="n">c_names</span><span class="o">=</span><span class="n">color_names</span><span class="p">,</span> <span class="n">c_subname</span><span class="o">=</span><span class="s2">&quot;400&quot;</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">        Set the color for each layer</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">c_lot</span> <span class="o">=</span> <span class="p">{}</span>
-        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">fmt</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">get_formations</span><span class="p">()):</span>
-            <span class="n">c_lot</span><span class="p">[</span><span class="n">fmt</span><span class="p">]</span> <span class="o">=</span> <span class="n">cd_rgb</span><span class="p">[</span><span class="n">c_names</span><span class="p">[</span><span class="n">i</span><span class="p">]][</span><span class="n">c_subname</span><span class="p">]</span>
-        <span class="k">return</span> <span class="n">c_lot</span></div>
 
     <span class="k">def</span> <span class="nf">_create_cameras</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">extent</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -953,11 +1136,29 @@
         <span class="k">if</span> <span class="n">sys</span><span class="o">.</span><span class="n">platform</span> <span class="o">==</span> <span class="s2">&quot;win32&quot;</span><span class="p">:</span>
             <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">SetGridLineLocation</span><span class="p">(</span><span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">VTK_GRID_LINES_FURTHEST</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>  <span class="c1"># rather use elif == &quot;linux&quot; ? but what about other platforms</span>
-            <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">SetGridLineLocation</span><span class="p">(</span><span class="n">vtk</span><span class="o">.</span><span class="n">VTK_GRID_LINES_FURTHEST</span><span class="p">)</span>
+            <span class="k">try</span><span class="p">:</span>  <span class="c1"># apparently this can also go wrong on linux, maybe depends on vtk version?</span>
+                <span class="n">cube_axes_actor</span><span class="o">.</span><span class="n">SetGridLineLocation</span><span class="p">(</span><span class="n">vtk</span><span class="o">.</span><span class="n">VTK_GRID_LINES_FURTHEST</span><span class="p">)</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">pass</span>
 
         <span class="k">return</span> <span class="n">cube_axes_actor</span>
 
-<div class="viewcode-block" id="vtkVisualization.export_vtk_rectilinear"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.export_vtk_rectilinear">[docs]</a>    <span class="k">def</span> <span class="nf">export_vtk_rectilinear</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">update_surfaces_real_time</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">):</span>
+
+        <span class="n">lith_block</span><span class="p">,</span> <span class="n">fault_block</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">v_l</span><span class="p">,</span> <span class="n">s_l</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">fault_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">original_scale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span>
+            <span class="n">v_l</span><span class="p">,</span> <span class="n">s_l</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="kc">None</span><span class="p">,</span> <span class="n">original_scale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">v_l</span><span class="p">,</span> <span class="n">s_l</span>
+
+    <span class="c1"># def load_posteriors(self, dbname):</span>
+    <span class="c1">#     import gempy.UncertaintyAnalysisPYMC2</span>
+    <span class="c1">#     self.post = gempy.UncertaintyAnalysisPYMC2.Posterior(dbname)</span>
+
+
+<div class="viewcode-block" id="vtkVisualization.export_vtk_rectilinear"><a class="viewcode-back" href="../code.html#Visualization.vtkVisualization.export_vtk_rectilinear">[docs]</a>    <span class="nd">@staticmethod</span>
+    <span class="k">def</span> <span class="nf">export_vtk_rectilinear</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Export data to a vtk file for posterior visualizations</span>
 <span class="sd">        Args:</span>
@@ -1004,6 +1205,34 @@
 
         <span class="n">gridToVTK</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">z</span><span class="p">,</span> <span class="n">cellData</span><span class="o">=</span><span class="p">{</span><span class="s2">&quot;Lithology&quot;</span><span class="p">:</span> <span class="n">lith</span><span class="p">})</span></div></div>
 
+
+<span class="k">def</span> <span class="nf">_create_color_lot</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">cd_rgb</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Returns color [r,g,b] LOT for formation numbers.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="s2">&quot;formation number&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span> <span class="ow">or</span> <span class="s2">&quot;formation number&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">:</span>
+        <span class="n">geo_data</span><span class="o">.</span><span class="n">set_formation_number</span><span class="p">()</span>  <span class="c1"># if not, set formation numbers</span>
+
+    <span class="n">c_names</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;indigo&quot;</span><span class="p">,</span> <span class="s2">&quot;red&quot;</span><span class="p">,</span> <span class="s2">&quot;yellow&quot;</span><span class="p">,</span> <span class="s2">&quot;brown&quot;</span><span class="p">,</span> <span class="s2">&quot;orange&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;green&quot;</span><span class="p">,</span> <span class="s2">&quot;blue&quot;</span><span class="p">,</span> <span class="s2">&quot;amber&quot;</span><span class="p">,</span> <span class="s2">&quot;pink&quot;</span><span class="p">,</span> <span class="s2">&quot;light-blue&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;lime&quot;</span><span class="p">,</span> <span class="s2">&quot;blue-grey&quot;</span><span class="p">,</span> <span class="s2">&quot;deep-orange&quot;</span><span class="p">,</span> <span class="s2">&quot;grey&quot;</span><span class="p">,</span> <span class="s2">&quot;cyan&quot;</span><span class="p">,</span>
+                <span class="s2">&quot;deep-purple&quot;</span><span class="p">,</span> <span class="s2">&quot;purple&quot;</span><span class="p">,</span> <span class="s2">&quot;teal&quot;</span><span class="p">,</span> <span class="s2">&quot;light-green&quot;</span><span class="p">]</span>
+
+    <span class="n">lot</span> <span class="o">=</span> <span class="p">{}</span>
+    <span class="n">ci</span> <span class="o">=</span> <span class="mi">0</span>  <span class="c1"># use as an independent running variable because of fault formations</span>
+    <span class="c1"># get unique formation numbers</span>
+    <span class="n">fmt_numbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">([</span><span class="n">val</span> <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()])</span>
+    <span class="c1"># get unique fault formation numbers</span>
+    <span class="n">fault_fmt_numbers</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;isFault&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="kc">True</span><span class="p">][</span><span class="s2">&quot;formation number&quot;</span><span class="p">])</span>
+    <span class="c1"># iterate over all unique formation numbers</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">fmt_numbers</span><span class="p">):</span>
+        <span class="c1"># if its a fault formation set it to black by default</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">fault_fmt_numbers</span><span class="p">:</span>
+            <span class="n">lot</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">cd_rgb</span><span class="p">[</span><span class="s2">&quot;black&quot;</span><span class="p">][</span><span class="s2">&quot;400&quot;</span><span class="p">]</span>
+        <span class="c1"># if not, just go through</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lot</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">cd_rgb</span><span class="p">[</span><span class="n">c_names</span><span class="p">[</span><span class="n">ci</span><span class="p">]][</span><span class="s2">&quot;400&quot;</span><span class="p">]</span>
+            <span class="n">ci</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">lot</span>
 </pre></div>
 
           </div>

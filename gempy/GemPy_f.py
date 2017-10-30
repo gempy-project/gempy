@@ -37,7 +37,10 @@ import numpy as _np
 import copy
 from gempy.Visualization import PlotData2D, steano3D, vtkVisualization
 from gempy.DataManagement import InputData, InterpolatorInput, GridClass
-from gempy.strat_pile import StratigraphicPile
+from gempy.sequential_pile import StratigraphicPile
+from gempy.Topology import topology_analyze, topology_check_adjacency
+import gempy.UncertaintyAnalysisPYMC2 # So far we use this type of import because the other one makes a copy and blows up some asserts
+
 
 def data_to_pickle(geo_data, path=False):
     """
@@ -99,7 +102,7 @@ def get_extent(geo_data):
     return geo_data.extent
 
 
-def get_data(geo_data, dtype='all', verbosity=0):
+def get_data(geo_data, dtype='all', numeric=False, verbosity=0):
     """
         Method that returns the interfaces and foliations pandas Dataframes. Can return both at the same time or only
         one of the two
@@ -110,7 +113,7 @@ def get_data(geo_data, dtype='all', verbosity=0):
             pandas.core.frame.DataFrame: Data frame with the raw data
 
         """
-    return geo_data.get_data(itype=dtype, verbosity=verbosity)
+    return geo_data.get_data(itype=dtype, numeric=numeric, verbosity=verbosity)
 
 
 def create_data(extent, resolution=[50, 50, 50], **kwargs):
@@ -313,7 +316,7 @@ def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
     # TODO saving options
 
 
-def plot_potential_field(geo_data, potential_field, cell_number, n_pf=0,
+def plot_potential_field(geo_data, potential_field, cell_number, N=20,
                          direction="y", plot_data=True, series="all", *args, **kwargs):
     """
     Plot a potential field in a given direction.
@@ -330,7 +333,7 @@ def plot_potential_field(geo_data, potential_field, cell_number, n_pf=0,
         None
     """
     plot = PlotData2D(geo_data)
-    plot.plot_potential_field(potential_field, cell_number, n_pf=n_pf,
+    plot.plot_potential_field(potential_field, cell_number, N=N,
                               direction=direction,  plot_data=plot_data, series=series,
                               *args, **kwargs)
 
@@ -477,7 +480,7 @@ def get_th_fn(interp_data, compute_all=True):
     return interp_data.compile_th_fn(compute_all=compute_all)
 
 
-def compute_model(interp_data, u_grade=None, get_potential_at_interfaces=False):
+def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_interfaces=False):
     """
     Compute the geological model
     Args:
@@ -499,10 +502,12 @@ def compute_model(interp_data, u_grade=None, get_potential_at_interfaces=False):
         interp_data.compile_th_fn()
 
     i = interp_data.get_input_data(u_grade=u_grade)
-    lith_matrix, fault_matrix, potential_at_interfaces = interp_data.th_fn(*i)
-    if len(lith_matrix.shape) < 3:
-        _np.expand_dims(lith_matrix, 0)
-        _np.expand_dims(fault_matrix, 0)
+
+    if output is 'geology':
+        lith_matrix, fault_matrix, potential_at_interfaces = interp_data.th_fn(*i)
+        if len(lith_matrix.shape) < 3:
+            _np.expand_dims(lith_matrix, 0)
+            _np.expand_dims(fault_matrix, 0)
 
     # Making the limit of the potential field a bit bigger to avoid float errors
     # a_min = _np.argmin(potential_at_interfaces)
@@ -510,12 +515,16 @@ def compute_model(interp_data, u_grade=None, get_potential_at_interfaces=False):
     # potential_at_interfaces[a_min] = potential_at_interfaces[a_min] - potential_at_interfaces[a_min] * 0.05
     # potential_at_interfaces[a_max] = potential_at_interfaces[a_max] + potential_at_interfaces[a_max] * 0.05
 
-    interp_data.potential_at_interfaces = potential_at_interfaces
+        interp_data.potential_at_interfaces = potential_at_interfaces
 
-    if get_potential_at_interfaces:
-        return lith_matrix, fault_matrix, interp_data.potential_at_interfaces
-    else:
-        return lith_matrix, fault_matrix
+        if get_potential_at_interfaces:
+            return lith_matrix, fault_matrix, interp_data.potential_at_interfaces
+        else:
+            return lith_matrix, fault_matrix
+
+    if output is 'gravity':
+        grav = interp_data.th_fn(*i)
+        return grav
 
 
 def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_formation='all', step_size=1, original_scale=True):
@@ -541,11 +550,19 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
         raise AttributeError('You need to compute the model first')
 
     def get_surface(potential_block, interp_data, pot_int, n_formation, step_size, original_scale):
-        assert n_formation > 0, 'Number of the formation has tobe positive'
+        assert n_formation > 0, 'Number of the formation has to be positive'
         # In case the values are separated by series I put all in a vector
         pot_int = interp_data.potential_at_interfaces.sum(axis=0)
 
         from skimage import measure
+
+        if not potential_block.max() > pot_int[n_formation-1]:
+            pot_int[n_formation - 1] = potential_block.max()
+            print('Potential field of the surface is outside the block. Probably is due to float errors')
+
+        if not potential_block.min() < pot_int[n_formation - 1]:
+            pot_int[n_formation - 1] = potential_block.min()
+            print('Potential field of the surface is outside the block. Probably is due to float errors')
 
         vertices, simplices, normals, values = measure.marching_cubes_lewiner(
             potential_block.reshape(interp_data.geo_data_res.resolution[0],
@@ -601,12 +618,13 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
             vertices, simplices = get_surface(potential_lith, interp_data, pot_int, n_formation,
                                               step_size=step_size, original_scale=original_scale)
 
+
     return vertices, simplices
 
 
 def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
                      #formations_names_l, formation_numbers_l,
-                     alpha=1, plot_data=True,
+                     alpha=1, plot_data=True, posterior=None, samples=None,
                      size=(1920, 1080), fullscreen=False):
     """
     Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.
@@ -631,6 +649,18 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
                    #formations_names_l, formation_numbers_l,
                     alpha)
 
+    if posterior is not None:
+        assert isinstance(posterior, gempy.UncertaintyAnalysisPYMC2.Posterior), 'The object has to be instance of the Posterior class'
+        w.post = posterior
+        if samples is not None:
+            samp_i = samples[0]
+            samp_f = samples[1]
+        else:
+            samp_i = 0
+            samp_f = posterior.n_iter
+
+        w.create_slider_rep(samp_i, samp_f, samp_f)
+
     w.interp_data = interp_data
     if plot_data:
         w.set_interfaces()
@@ -638,9 +668,64 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
     w.render_model(size=size, fullscreen=fullscreen)
 
 
+def topology_compute(geo_data, lith_block, fault_block,
+                     cell_number=None, direction=None,
+                     compute_areas=False, return_label_block=False):
+    """
+    Computes model topology and returns graph, centroids and look-up-tables.
+    :param geo_data: geo_data object
+    :param lith_block: lithology block
+    :param fault_block: fault block
+    :param cell_number: (int) the slice position
+    :param direction: (str) "x", "y", or "z" - the slice direction
+    :return: (adjacency Graph object, centroid dict, labels-to-lith LOT dict, lith-to_labels LOT dict)
+    """
+
+    if cell_number is None or direction is None:  # topology of entire block
+        lb = lith_block.reshape(geo_data.resolution)
+        fb = fault_block.reshape(geo_data.resolution)
+    elif direction == "x":
+        lb = lith_block.reshape(geo_data.resolution)[cell_number, :, :]
+        fb = fault_block.reshape(geo_data.resolution)[cell_number, :, :]
+    elif direction == "y":
+        lb = lith_block.reshape(geo_data.resolution)[:, cell_number, :]
+        fb = fault_block.reshape(geo_data.resolution)[:, cell_number, :]
+    elif direction == "z":
+        lb = lith_block.reshape(geo_data.resolution)[:, :, cell_number]
+        fb = fault_block.reshape(geo_data.resolution)[:, :, cell_number]
+
+    return topology_analyze(lb, fb, geo_data.n_faults, areas_bool=compute_areas, return_block=return_label_block)
 
 
+def topology_plot(geo_data, G, centroids, direction="y"):
+    "Plot topology graph."
+    PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)
 
 
+# =====================================
+# Functions for Geophysics
+# =====================================
+def precomputations_gravity(interp_data, n_chunck=25, densities=None):
+    try:
+        getattr(interp_data, 'geophy')
+    except:
+        raise AttributeError('You need to set a geophysical object first. See set_geophysics_obj')
+
+    tz, select = interp_data.geophy.compute_gravity(n_chunck)
+    interp_data.interpolator.set_z_comp(tz, select)
+
+    if densities is not None:
+        set_densities(interp_data, densities)
+    return tz, select
 
 
+def set_geophysics_obj(interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
+
+    assert isinstance(interp_data, InterpolatorInput), 'The object has to be instance of the InterpolatorInput'
+    interp_data.set_geophysics_obj(ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
+    return interp_data.geophy
+
+
+def set_densities(interp_data, densities):
+
+    interp_data.interpolator.set_densities(densities)
