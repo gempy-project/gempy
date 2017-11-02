@@ -31,7 +31,7 @@ import sys
 theano.config.openmp_elemwise_minsize = 50000
 theano.config.openmp = True
 
-theano.config.optimizer = 'None'
+theano.config.optimizer = 'fast_run'
 theano.config.floatX = 'float64'
 
 theano.config.exception_verbosity = 'high'
@@ -258,10 +258,14 @@ class TheanoGraph_pro(object):
              (1 - 7 * (sed_ref_ref / self.a_T) ** 2 +
               35 / 4 * (sed_ref_ref / self.a_T) ** 3 -
               7 / 2 * (sed_ref_ref / self.a_T) ** 5 +
-              3 / 4 * (sed_ref_ref / self.a_T) ** 7)))) + 1e-6
+              3 / 4 * (sed_ref_ref / self.a_T) ** 7)))) + 10
 
         # Add name to the theano node
         C_I.name = 'Covariance Interfaces'
+
+        if str(sys._getframe().f_code.co_name) in self.verbose:
+            C_I = theano.printing.Print('Cov interfaces')(C_I)
+
         return C_I
 
     def cov_gradients(self, verbose=0):
