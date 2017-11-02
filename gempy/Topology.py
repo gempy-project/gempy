@@ -79,13 +79,20 @@ def topology_analyze(lith_block, fault_block, n_faults, areas_bool=False, return
 
 def compute_areas(G, labels_block, ext=None):
     """Computes adjacency areas and stores them in G.adj[n1][n2]["area"]."""
+    # TODO: AS: make area computation function more modular to support additional functionality (e.g. fault throw)
+    # get all bool arrays for each label, for filtering
     labels_bools = np.array([(labels_block == l).astype("bool") for l in np.unique(labels_block)])
-    for n1, n2 in G.edges_iter():
+    for n1, n2 in G.edges_iter():  # iterate over every edge in the graph
+        # modify labels block to avoid non-unique values when doing later comparison
         b = np.square(labels_block * (labels_bools[n1 - 1] + labels_bools[n2 - 1]))
+        # translate block by 1 voxel in each dimension and substract, take absolute of results; this gets you
+        # the boundary voxels of the regions of n1 and n2, including the shared one
         d = np.absolute(b[0:-1, 0:-1, 0:-1] - b[1:, 1:, 1:])
+        # filter out the shared boundary
         d = (d == np.absolute(n1 ** 2 - n2 ** 2))
+        # count the shared boundary, which is the shared area voxel count of n1 and n2
         area = np.count_nonzero(d)
-
+        # store in adjacency dict of graph for access
         G.adj[n1][n2]["area"] = area
         G.adj[n2][n1]["area"] = area
 
