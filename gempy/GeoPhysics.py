@@ -62,7 +62,7 @@ class GeoPhysicsPreprocessing_pro(object):
         for e, i_1 in enumerate(loop_list[1:]):
 
             n_chunck = n_chunck_l[e]
-            print(i_0, i_1)
+            # print(i_0, i_1)
             # Select the number of measurements to compute in this iteration
             airborne_plane_s = self.airborne_plane[i_0:i_1]
             airborne_plane_s[:, 2] += 0.002

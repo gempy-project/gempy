@@ -37,7 +37,7 @@ import numpy as _np
 import copy
 from gempy.Visualization import PlotData2D, steano3D, vtkVisualization
 from gempy.DataManagement import InputData, InterpolatorInput, GridClass
-from gempy.strat_pile import StratigraphicPile
+from gempy.sequential_pile import StratigraphicPile
 from gempy.Topology import topology_analyze, topology_check_adjacency
 import gempy.UncertaintyAnalysisPYMC2 # So far we use this type of import because the other one makes a copy and blows up some asserts
 
@@ -185,7 +185,7 @@ def select_series(geo_data, series):
 
 
 def set_series(geo_data, series_distribution=None, order_series=None, order_formations=None,
-               update_p_field=True, verbose=0):
+               update_p_field=True, verbose=1):
     """
     Method to define the different series of the project.
 
@@ -204,9 +204,10 @@ def set_series(geo_data, series_distribution=None, order_series=None, order_form
     if order_formations is not None:
         geo_data.set_formation_number(order_formations)
     # DEP
-    # if verbose > 0:
-    #     return get_series(geo_data)
-    return get_stratigraphic_pile(geo_data)
+    if verbose > 0:
+         return get_sequential_pile(geo_data)
+    else:
+        return None
 
 def set_order_formations(geo_data, order_formations):
     geo_data.set_formation_number(order_formations)
@@ -353,7 +354,7 @@ def plot_data_3D(geo_data):
     vv.render_model()
     return None
 
-def get_stratigraphic_pile(geo_data):
+def get_sequential_pile(geo_data):
     """
     Visualize an interactive stratigraphic pile to move around the formations and the series. IMPORTANT NOTE:
     To have the interactive properties it is necessary the use of qt as interactive backend. (In notebook use:
@@ -509,12 +510,6 @@ def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_
             _np.expand_dims(lith_matrix, 0)
             _np.expand_dims(fault_matrix, 0)
 
-    # Making the limit of the potential field a bit bigger to avoid float errors
-    # a_min = _np.argmin(potential_at_interfaces)
-    # a_max = _np.argmax(potential_at_interfaces)
-    # potential_at_interfaces[a_min] = potential_at_interfaces[a_min] - potential_at_interfaces[a_min] * 0.05
-    # potential_at_interfaces[a_max] = potential_at_interfaces[a_max] + potential_at_interfaces[a_max] * 0.05
-
         interp_data.potential_at_interfaces = potential_at_interfaces
 
         if get_potential_at_interfaces:
@@ -580,9 +575,9 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
                                                                             interp_data._geo_data.extent[2],
                                                                             interp_data._geo_data.extent[4]]).reshape(1, 3)
         else:
-            vertices += _np.array([interp_data.extent_rescaled.iloc[0],
-                                   interp_data.extent_rescaled.iloc[2],
-                                   interp_data.extent_rescaled.iloc[4]]).reshape(1, 3)
+            vertices += _np.array([interp_data.geo_data_res.extent[0],
+                                   interp_data.geo_data_res.extent[2],
+                                   interp_data.geo_data_res.extent[4]]).reshape(1, 3)
         return vertices, simplices
 
     vertices = []

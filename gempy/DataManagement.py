@@ -663,24 +663,24 @@ class InputData(object):
         return ip_addresses
 
     # # TODO think where this function should go
-    # def read_vox(self, path):
-    #     """
-    #     read vox from geomodeller and transform it to gempy format
-    #     Returns:
-    #         numpy.array: block model
-    #     """
-    #
-    #     geo_res = pn.read_csv(path)
-    #
-    #     geo_res = geo_res.iloc[9:]
-    #
-    #     #ip_addresses = geo_res['nx 50'].unique()  # geo_data.interfaces["formation"].unique()
-    #     ip_dict = self.get_formation_number()
-    #
-    #     geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
-    #     block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
-    #                                     self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
-    #     return block_geomodeller
+    def _read_vox(self, path):
+        """
+        read vox from geomodeller and transform it to gempy format
+        Returns:
+            numpy.array: block model
+        """
+
+        geo_res = pn.read_csv(path)
+
+        geo_res = geo_res.iloc[9:]
+
+        #ip_addresses = geo_res['nx 50'].unique()  # geo_data.interfaces["formation"].unique()
+        ip_dict = self.get_formation_number()
+
+        geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
+        block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
+                                        self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
+        return block_geomodeller
 
     def set_triangle_foliations(self, verbose=False):
         # next we need to iterate over every unique triangle id to create a foliation from each triplet
@@ -747,7 +747,7 @@ class InputData(object):
                     tri_id) + ". Only exactly 3 points are supported.")
 
 
-class DataPlane:
+class FoliaitionsFromInterfaces:
     def __init__(self, geo_data, group_id, mode, verbose=False):
         """
 
@@ -1083,7 +1083,7 @@ class InterpolatorInput:
         self.rescaling_factor = rescaling_factor
         geo_data_rescaled.rescaling_factor = rescaling_factor
         self.centers = centers
-        self.extent_rescaled = new_coord_extent
+      #  self.extent_rescaled = new_coord_extent
 
         return geo_data_rescaled
 
@@ -1179,10 +1179,11 @@ class InterpolatorInput:
         #  print('I am in update')
         # I update the data
         self.interpolator.geo_data_res = geo_data_in
-        self.interpolator.grid_res = geo_data_in.grid
+        #self.interpolator.geo_data_res.grid_res = geo_data_in.grid
         # I order it again just in case. TODO if this still necessary
         self.interpolator.order_table()
         self.interpolator.set_theano_shared_parameteres(**kwargs)
+        self.interpolator.data_prep()
 
     def get_input_data(self, u_grade=None):
         """
@@ -1247,17 +1248,17 @@ class InterpolatorInput:
             range_var = kwargs.get('range_var', None)
 
             # Drift grade
-            u_grade = kwargs.get('u_grade', [2, 2])
+            u_grade = kwargs.get('u_grade', [3, 3])
 
             # We hide the scaled copy of DataManagement object from the user. The scaling happens in gempy what is a
             # bit weird. Maybe at some point I should bring the function to this module
             self.geo_data_res = geo_data_res
 
             # In case someone wants to provide a grid otherwise we extract it from the DataManagement object.
-            if not grid_res:
-                self.grid_res = geo_data_res.grid
-            else:
-                self.grid_res = grid_res
+            # if not grid_res:
+            #     self.grid_res = geo_data_res.grid
+            # else:
+            #     self.grid_res = grid_res
 
             # Importing the theano graph. The methods of this object generate different parts of graph.
             # See theanograf doc
@@ -1485,11 +1486,11 @@ class InterpolatorInput:
            # assert (0 <= all(u_grade) <= 2)
 
             # Creating the drift matrix. TODO find the official name of this matrix?
-            _universal_matrix = np.vstack((self.grid_res.grid.T,
-                                           (self.grid_res.grid ** 2).T,
-                                           self.grid_res.grid[:, 0] * self.grid_res.grid[:, 1],
-                                           self.grid_res.grid[:, 0] * self.grid_res.grid[:, 2],
-                                           self.grid_res.grid[:, 1] * self.grid_res.grid[:, 2]))
+            _universal_matrix = np.vstack((self.geo_data_res.grid.grid.T,
+                                           (self.geo_data_res.grid.grid ** 2).T,
+                                           self.geo_data_res.grid.grid[:, 0] * self.geo_data_res.grid.grid[:, 1],
+                                           self.geo_data_res.grid.grid[:, 0] * self.geo_data_res.grid.grid[:, 2],
+                                           self.geo_data_res.grid.grid[:, 1] * self.geo_data_res.grid.grid[:, 2]))
 
             # Setting shared variables
             # Range
@@ -1510,12 +1511,12 @@ class InterpolatorInput:
                 # self.tg.c_resc.set_value(1)
 
             # Just grid. I add a small number to avoid problems with the origin point
-            self.tg.grid_val_T.set_value(np.cast[self.dtype](self.grid_res.grid + 10e-6))
+            self.tg.grid_val_T.set_value(np.cast[self.dtype](self.geo_data_res.grid.grid + 10e-6))
             # Universal grid
             self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](_universal_matrix + 1e-10))
 
             # Initialization of the block model
-            self.tg.final_block.set_value(np.zeros((1, self.grid_res.grid.shape[0]), dtype=self.dtype))
+            self.tg.final_block.set_value(np.zeros((1, self.geo_data_res.grid.grid.shape[0]), dtype=self.dtype))
 
             # Initialization of the boolean array that represent the areas of the block model to be computed in the
             # following series
