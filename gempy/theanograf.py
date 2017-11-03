@@ -904,9 +904,17 @@ class TheanoGraph_pro(object):
         aux_ones = T.ones([2 * self.len_points])
         faults_select = T.concatenate((self.yet_simulated, aux_ones))
 
-        fault_matrix_selection = (self.fault_matrix * faults_select)
-        fault_matrix_selection_non_zero = fault_matrix_selection[::2, :].nonzero_values().reshape((length_of_faults,
-                                                                                                   grid_val.shape[0]))
+        nfc = theano.printing.Print('Faults nfc')(faults_select.nonzero_values().shape[0])
+
+        fault_matrix_selection = theano.printing.Print('f_sle')((self.fault_matrix[::2, :]+1) * faults_select)
+
+        fault_matrix_selection_non_zero0 = fault_matrix_selection.nonzero_values()
+
+        fault_matrix_selection_non_zero = fault_matrix_selection_non_zero0.reshape((length_of_faults, nfc))
+
+
+       # fault_matrix_comp = T.switch(T.eq(length_of_faults, 0), self.fault_matrix, fault_matrix_selection_non_zero)
+
         f_1 = T.sum(
             weights[length_of_CG + length_of_CGI + length_of_U_I:, :] * fault_matrix_selection_non_zero, axis=0)
 
@@ -1143,7 +1151,7 @@ class TheanoGraph_pro(object):
         # Update the block matrix
         block_matrix = T.set_subtensor(
                     final_block[0, T.nonzero(T.cast(faults_select, "int8"))[0]],
-                    faults_matrix+1)
+                    faults_matrix)
 
         # Update the potential field matrix
         if self.compute_all:
