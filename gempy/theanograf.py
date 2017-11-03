@@ -262,6 +262,10 @@ class TheanoGraph_pro(object):
 
         # Add name to the theano node
         C_I.name = 'Covariance Interfaces'
+
+        if str(sys._getframe().f_code.co_name) in self.verbose:
+            C_I = theano.printing.Print('Cov interfaces')(C_I)
+
         return C_I
 
     def cov_gradients(self, verbose=0):
