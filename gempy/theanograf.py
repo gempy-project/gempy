@@ -1180,7 +1180,7 @@ class TheanoGraph_pro(object):
                          len_f_0, len_f_1,
                          n_form_per_serie_0, n_form_per_serie_1,
                          u_grade_iter,
-                         final_block):
+                         final_block, fault_block):
 
         """
         Function that loops each series, generating a potential field for each on them with the respective block model
@@ -1196,6 +1196,8 @@ class TheanoGraph_pro(object):
              theano.tensor.matrix: final block model
         """
 
+
+        self.fault_matrix = fault_block
         # THIS IS THE FINAL BLOCK. (DO I NEED TO LOOP THE FAULTS FIRST? Yes you do)
         # ==================
         # Preparing the data
@@ -1342,6 +1344,7 @@ class TheanoGraph_pro(object):
                             dict(input=self.len_series_f[n_faults:], taps=[0, 1]),
                             dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),
                             dict(input=self.u_grade_T[n_faults:], taps=[0])],
+                 non_sequences=[self.fault_matrix],
                  name='Looping interfaces',
                  profile=False
              )
