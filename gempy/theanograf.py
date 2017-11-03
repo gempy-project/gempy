@@ -31,7 +31,7 @@ import sys
 theano.config.openmp_elemwise_minsize = 50000
 theano.config.openmp = True
 
-theano.config.optimizer = 'fast_run'
+theano.config.optimizer = 'fast_compile'
 theano.config.floatX = 'float64'
 
 theano.config.exception_verbosity = 'high'
@@ -188,7 +188,7 @@ class TheanoGraph_pro(object):
         sqd = T.sqrt(T.maximum(
             (x_1**2).sum(1).reshape((x_1.shape[0], 1)) +
             (x_2**2).sum(1).reshape((1, x_2.shape[0])) -
-            2 * x_1.dot(x_2.T), 0
+            2 * x_1.dot(x_2.T), 0.000001
         ))
 
         return sqd
@@ -258,7 +258,7 @@ class TheanoGraph_pro(object):
              (1 - 7 * (sed_ref_ref / self.a_T) ** 2 +
               35 / 4 * (sed_ref_ref / self.a_T) ** 3 -
               7 / 2 * (sed_ref_ref / self.a_T) ** 5 +
-              3 / 4 * (sed_ref_ref / self.a_T) ** 7)))) + 10
+              3 / 4 * (sed_ref_ref / self.a_T) ** 7)))) + 1e-7
 
         # Add name to the theano node
         C_I.name = 'Covariance Interfaces'
@@ -543,7 +543,7 @@ class TheanoGraph_pro(object):
 
      #   F_I = (self.fault_matrix[:, -2*len_points:-len_points] - self.fault_matrix[:, -len_points:])[self.n_formation_op-1]
 
-        F_I = (fault_matrix_at_interfaces_ref - fault_matrix_at_interfaces_rest)+0.01
+        F_I = (fault_matrix_at_interfaces_ref - fault_matrix_at_interfaces_rest)+0.0001
 
         # As long as the drift is a constant F_G is null
         F_G = T.zeros((length_of_faults, length_of_CG))
@@ -691,7 +691,7 @@ class TheanoGraph_pro(object):
         DK_parameters.name = 'Dual Kriging parameters'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            DK_parameters = theano.printing.Print(DK_parameters.name )(DK_parameters)
+            DK_parameters = theano.printing.Print(DK_parameters.name)(DK_parameters)
         return DK_parameters
 
     def x_to_interpolate(self, verbose=0):
