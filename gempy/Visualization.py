@@ -1110,7 +1110,7 @@ class vtkVisualization:
 
         lith_block, fault_block = gp.compute_model(interp_data)
         try:
-            v_l, s_l = gp.get_surfaces(interp_data, lith_block[1], fault_block[1], original_scale=False)
+            v_l, s_l = gp.get_surfaces(interp_data, lith_block[1], fault_block[1::2], original_scale=False)
         except IndexError:
             v_l, s_l = gp.get_surfaces(interp_data, lith_block[1], None, original_scale=False)
         return v_l, s_l

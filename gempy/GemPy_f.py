@@ -584,13 +584,16 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
     simplices = []
 
     if potential_fault is not None:
+
+        assert len(potential_fault) is interp_data.geo_data_res.n_faults, 'You need to pass a potential field per fault'
+
         pot_int = interp_data.potential_at_interfaces[:interp_data.geo_data_res.n_faults + 1]
         for n in interp_data.geo_data_res.interfaces['formation number'][
             interp_data.geo_data_res.interfaces['isFault']].unique():
             if n == 0:
                 continue
             else:
-                v, s = get_surface(potential_fault, interp_data, pot_int, n,
+                v, s = get_surface(_np.atleast_2d(potential_fault)[n-1], interp_data, pot_int, n,
                                    step_size=step_size, original_scale=original_scale)
                 vertices.append(v)
                 simplices.append(s)
