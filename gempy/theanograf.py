@@ -106,7 +106,7 @@ class TheanoGraph_pro(object):
         self.len_series_i = theano.shared(np.arange(2, dtype='int64'), 'Length of interfaces in every series')
         self.len_series_f = theano.shared(np.arange(2, dtype='int64'), 'Length of foliations in every series')
         self.n_formations_per_serie = theano.shared(np.arange(3, dtype='int64'), 'List with the number of formations')
-        self.n_formation = theano.shared(np.arange(2, dtype='int64'), "Value of the formation")
+        self.n_formation = theano.shared(np.arange(2,5, dtype='int64'), "Value of the formation")
         self.number_of_points_per_formation_T = theano.shared(np.zeros(3, dtype='int64'))
 
         # ======================
@@ -137,7 +137,7 @@ class TheanoGraph_pro(object):
 
         self.u_grade_T_op = theano.shared(0)
         self.len_points = self.rest_layer_points_all.shape[0]
-        self.fault_matrix_init = T.zeros((0, self.grid_val_T.shape[0] + 2*self.len_points))
+    #    self.fault_matrix_init = T.zeros((0, self.grid_val_T.shape[0] + 2*self.len_points))
 
 
         self.len_i_0 = 0
@@ -534,10 +534,26 @@ class TheanoGraph_pro(object):
       #  self.len_points = self.rest_layer_points_all.shape[0]
         interface_loc = self.fault_matrix.shape[1] - 2*self.len_points
 
-        fault_matrix_at_interfaces_rest = self.fault_matrix[::2, interface_loc+self.len_i_0: interface_loc+self.len_i_1]
-        fault_matrix_at_interfaces_ref  = self.fault_matrix[::2, interface_loc+self.len_points+self.len_i_0:
-                                                                 interface_loc+self.len_points+self.len_i_1]
+        kk = theano.printing.Print('kk')(interface_loc+self.len_points+self.len_i_0)
+        kk2 = theano.printing.Print('kk2')(interface_loc+self.len_points+self.len_i_1)
+        ll =  theano.printing.Print('ll')(interface_loc+self.len_i_0)
+        ll2 = theano.printing.Print('ll2')(interface_loc + self.len_i_1)
 
+        # fault_matrix_at_interfaces_rest = self.fault_matrix[::2, interface_loc+self.len_i_0: interface_loc+self.len_i_1]
+        # fault_matrix_at_interfaces_ref  = self.fault_matrix[::2, interface_loc+self.len_points+self.len_i_0:
+        #                                                          interface_loc+self.len_points+self.len_i_1]
+
+
+        fault_matrix_at_interfaces_rest = self.fault_matrix[::2,
+                                          ll: ll2]
+        fault_matrix_at_interfaces_ref = self.fault_matrix[::2, kk:
+        kk2]
+
+
+        fault_matrix_at_interfaces_rest = theano.printing.Print('Faults interfaces matrix points')(
+            fault_matrix_at_interfaces_rest)
+        fault_matrix_at_interfaces_ref = theano.printing.Print('Faults interfaces matrix points ref')(
+            fault_matrix_at_interfaces_ref)
        # len_points_i = 2*self.rest_layer_points_all.shape[0] + self.n_formation_op[0]-1
        # len_points_e = 2*self.rest_layer_points_all.shape[0] + self.n_formation_op[-1]-1
 
@@ -551,6 +567,7 @@ class TheanoGraph_pro(object):
         if str(sys._getframe().f_code.co_name) in self.verbose:
             F_I = theano.printing.Print('Faults interfaces matrix')(F_I)
             F_G = theano.printing.Print('Faults gradients matrix')(F_G)
+
 
         return F_I, F_G
 
@@ -1114,7 +1131,6 @@ class TheanoGraph_pro(object):
         self.yet_simulated.name = 'Yet simulated FAULTS node'
 
         #self.yet_simulated.name = 'Yet simulated node'
-        self.fault_matrix = fault_matrix
 
 
         # Slice the matrices for the corresponding series
@@ -1135,14 +1151,24 @@ class TheanoGraph_pro(object):
         self.ref_layer_points = self.ref_layer_points_all[len_i_0: len_i_1, :]
         self.rest_layer_points = self.rest_layer_points_all[len_i_0: len_i_1, :]
 
+        # For the contribution of the faults I did not find a better way
+        self.len_i_0 = len_i_0
+        self.len_i_1 = len_i_1
+
        # self.fault_matrix_at_rest = self.fault_matrix[]
        # self.fault_matrix_at_ref =
-
-
-
-
         if 'n_formation' in self.verbose:
             self.n_formation_op = theano.printing.Print('n_formation_fault')(self.n_formation_op)
+
+        fault_matrix = theano.printing.Print('fault matrix')(fault_matrix)
+        aux_ind = T.max(self.n_formation_op,0)
+
+
+        self.fault_matrix = fault_matrix[0:(aux_ind-1)*2, :]
+        self.fault_matrix = theano.printing.Print('self fault matrix')(self.fault_matrix)
+
+
+
 
         # ====================
         # Computing the series
@@ -1180,9 +1206,9 @@ class TheanoGraph_pro(object):
 
         #self.fault_matrix = block_matrix
         # self.fault_matrix.name = 'potatoes'
-        fault_matrix = theano.printing.Print('fault matrix within')(T.vertical_stack(fault_matrix, block_matrix))
+        fault_matrix = T.set_subtensor(fault_matrix[(aux_ind-1)*2:aux_ind*2, :], block_matrix)
 
-        return block_matrix, self.final_potential_field_at_faults_op, fault_matrix
+        return block_matrix, fault_matrix, self.final_potential_field_at_faults_op,
 
     def compute_a_series(self,
                          len_i_0, len_i_1,
@@ -1295,6 +1321,10 @@ class TheanoGraph_pro(object):
             lith_matrix = T.zeros((0, 0, self.grid_val_T.shape[0] + 2 * self.len_points))
             #pfai_lith = T.zeros((0, len(self.len_series_f.get_value()) ))
             pfai_lith = T.zeros((0, self.n_formations_per_serie[-1]))
+
+            self.fault_matrix_init = T.zeros((n_faults*2, self.grid_val_T.shape[0] + 2 * self.len_points))
+
+
         else:
             # Change the flag to extend the graph in the compute fault and compute series function
             self.compute_all = False
@@ -1313,7 +1343,7 @@ class TheanoGraph_pro(object):
             lith_matrix = T.zeros((0, self.grid_val_T.shape[0] + 2 * self.len_points))
            # pfai_lith = T.zeros((0, len(self.len_series_f.get_value()) ))
             pfai_lith = T.zeros((0, self.n_formations_per_serie[-1]))
-
+            self.fault_matrix_init = T.zeros((n_faults * 2, self.grid_val_T.shape[0] + 2 * self.len_points))
         # Compute Faults
         if n_faults != 0:
             # --DEP--? Initialize yet simulated
@@ -1322,7 +1352,9 @@ class TheanoGraph_pro(object):
             # Looping
             fault_loop, updates3 = theano.scan(
                 fn=self.compute_a_fault,
-                outputs_info=[fault_block_init, None, self.fault_matrix_init],  # This line may be used for the faults network
+                outputs_info=[fault_block_init,
+                              dict(initial=self.fault_matrix_init, taps=[-1]),
+                              None],  # This line may be used for the faults network
                 sequences=[dict(input=self.len_series_i[:n_faults + 1], taps=[0, 1]),
                            dict(input=self.len_series_f[:n_faults + 1], taps=[0, 1]),
                            dict(input=self.n_formations_per_serie[:n_faults + 1], taps=[0, 1]),
@@ -1332,7 +1364,8 @@ class TheanoGraph_pro(object):
             )
 
             fault_matrix = fault_loop[0]
-            pfai_fault = fault_loop[1]
+            pfai_fault = fault_loop[2]
+            self.fault_matrix = fault_loop[1][-1]
             # pfai_fault = T.set_subtensor(pfai_fault[0, 0], pfai_fault[0, 0] + pfai_fault[0, 0] * 0.001)
             # pfai_fault = T.set_subtensor(pfai_fault[-1, -1], pfai_fault[-1, -1] - pfai_fault[0, 0] * 0.001)
 
@@ -1348,6 +1381,7 @@ class TheanoGraph_pro(object):
 
         # Check if there are lithologies to compute
         if len(self.len_series_f.get_value()) - 1 > n_faults:
+
              # Compute Lithologies
              lith_loop, updates2 = theano.scan(
                  fn=self.compute_a_series,
