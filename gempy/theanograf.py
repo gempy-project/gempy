@@ -873,10 +873,30 @@ class TheanoGraph_pro(object):
         """
         weights = self.extend_dual_kriging()
         length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C = self.matrices_shapes()
+        grid_val = self.x_to_interpolate()
+
+        # Contribution
+        # selecting the voxels that are not computed in the previous pot. field
+
+        aux_ones = T.ones([2 * self.len_points])
+        faults_select = T.concatenate((self.yet_simulated, aux_ones))
+
+        nfc = faults_select.nonzero_values().shape[0]
+
+        if 'nfc' in self.verbose:
+            nfc = theano.printing.Print('Faults nfc')(nfc)
+
+        fault_matrix_selection = (self.fault_matrix[::2, :]+1) * faults_select
+
+        if 'fault matrix selection' in self.verbose:
+            fault_matrix_selection = theano.printing.Print('f_sle')(fault_matrix_selection)
+
+        fault_matrix_selection_non_zero0 = fault_matrix_selection.nonzero_values()
+
+        fault_matrix_selection_non_zero = fault_matrix_selection_non_zero0.reshape((length_of_faults, nfc))
 
         f_1 = T.sum(
-            weights[length_of_CG + length_of_CGI + length_of_U_I:, :] * self.fault_matrix[::2, :],
-            axis=0)
+            weights[length_of_CG + length_of_CGI + length_of_U_I:, :] * fault_matrix_selection_non_zero, axis=0)
 
         # Add name to the theano node
         f_1.name = 'Faults contribution'
