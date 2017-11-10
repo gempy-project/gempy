@@ -1543,7 +1543,7 @@ class InterpolatorInput:
         def set_z_comp(self, tz, selected_cells):
 
             self.tg.tz.set_value(tz.astype(self.dtype))
-            self.tg.select.set_value(selected_cells)
+            self.tg.select.set_value(selected_cells.astype(bool))
 
         def get_kriging_parameters(self, verbose=0):
             """

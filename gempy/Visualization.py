@@ -300,6 +300,8 @@ class PlotData2D(object):
             c1, c2 = (0, 2)
             e1 = geo_data.extent[1] - geo_data.extent[0]
             e2 = geo_data.extent[5] - geo_data.extent[4]
+            d1 = geo_data.extent[0]
+            d2 = geo_data.extent[4]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = geo_data.resolution[0]
@@ -308,6 +310,8 @@ class PlotData2D(object):
             c1, c2 = (1, 2)
             e1 = geo_data.extent[3] - geo_data.extent[2]
             e2 = geo_data.extent[5] - geo_data.extent[4]
+            d1 = geo_data.extent[2]
+            d2 = geo_data.extent[4]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = geo_data.resolution[1]
@@ -316,6 +320,8 @@ class PlotData2D(object):
             c1, c2 = (0, 1)
             e1 = geo_data.extent[1] - geo_data.extent[0]
             e2 = geo_data.extent[3] - geo_data.extent[2]
+            d1 = geo_data.extent[0]
+            d2 = geo_data.extent[2]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = geo_data.resolution[0]
@@ -325,17 +331,17 @@ class PlotData2D(object):
             a, b = edge
 
             if G.adj[a][b]["edge_type"] == "stratigraphic":
-                plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1,
-                         np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2, "gray", linewidth=2)
+                plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
+                         np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "gray", linewidth=2)
             elif G.adj[a][b]["edge_type"] == "fault":
-                plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1,
-                         np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2, "black", linewidth=2)
+                plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
+                         np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "black", linewidth=2)
 
             for node in G.nodes_iter():
-                plt.plot(centroids[node][c1] * e1 / r1, centroids[node][c2] * e2 / r2,
+                plt.plot(centroids[node][c1] * e1 / r1 + d1, centroids[node][c2] * e2 / r2 +d2,
                          marker="o", color="black", markersize=20)
-                plt.text(centroids[node][c1] * e1 / r1 * 0.99,
-                         centroids[node][c2] * e2 / r2 * 0.99, str(node), color="white", size=10)
+                plt.text(centroids[node][c1] * e1 / r1 * 0.99 + d1,
+                         centroids[node][c2] * e2 / r2 * 0.99 + d2, str(node), color="white", size=10)
 
     @staticmethod
     def annotate_plot(frame, label_col, x, y, **kwargs):

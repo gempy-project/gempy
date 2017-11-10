@@ -506,6 +506,7 @@ def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_
 
     if output is 'geology':
         lith_matrix, fault_matrix, potential_at_interfaces = interp_data.th_fn(*i)
+        # TODO check if this is necessary yet
         if len(lith_matrix.shape) < 3:
             _np.expand_dims(lith_matrix, 0)
             _np.expand_dims(fault_matrix, 0)
@@ -517,9 +518,20 @@ def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_
         else:
             return lith_matrix, fault_matrix
 
+    # TODO this should be a flag read from the compilation I guess
     if output is 'gravity':
-        grav = interp_data.th_fn(*i)
-        return grav
+        # TODO make asserts
+        lith_matrix, fault_matrix, potential_at_interfaces, grav = interp_data.th_fn(*i)
+        if len(lith_matrix.shape) < 3:
+            _np.expand_dims(lith_matrix, 0)
+            _np.expand_dims(fault_matrix, 0)
+
+        interp_data.potential_at_interfaces = potential_at_interfaces
+
+        if get_potential_at_interfaces:
+            return lith_matrix, fault_matrix, grav, interp_data.potential_at_interfaces
+        else:
+            return lith_matrix, fault_matrix, grav
 
 
 def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_formation='all', step_size=1, original_scale=True):
@@ -585,7 +597,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
 
     if potential_fault is not None:
 
-        assert len(potential_fault) is interp_data.geo_data_res.n_faults, 'You need to pass a potential field per fault'
+        assert len(_np.atleast_2d(potential_fault)) is interp_data.geo_data_res.n_faults, 'You need to pass a potential field per fault'
 
         pot_int = interp_data.potential_at_interfaces[:interp_data.geo_data_res.n_faults + 1]
         for n in interp_data.geo_data_res.interfaces['formation number'][

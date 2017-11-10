@@ -31,7 +31,7 @@ import sys
 theano.config.openmp_elemwise_minsize = 50000
 theano.config.openmp = True
 
-theano.config.optimizer = 'fast_compile'
+theano.config.optimizer = 'fast_run'
 theano.config.floatX = 'float64'
 
 theano.config.exception_verbosity = 'high'
@@ -159,7 +159,7 @@ class TheanoGraph_pro(object):
         if output is 'gravity':
             self.densities = theano.shared(np.cast[dtype](np.zeros(3)), "List with the densities")
             self.tz = theano.shared(np.cast[dtype](np.zeros((1, 3))), "Component z")
-            self.select = theano.shared(np.cast[dtype](np.zeros(3)), "Select nearby cells")
+            self.select = theano.shared(np.cast['int8'](np.zeros(3)), "Select nearby cells")
 
     def input_parameters_list(self):
         """
@@ -1241,7 +1241,7 @@ class TheanoGraph_pro(object):
             pfai_lith = T.zeros((0, self.n_formations_per_serie[-1]))
 
             # Init to matrix which contains the block and scalar field of every fault
-            self.fault_matrix_init = T.zeros((n_faults*2, self.grid_val_T.shape[0] + 2 * self.len_points))
+            self.fault_matrix = T.zeros((n_faults*2, self.grid_val_T.shape[0] + 2 * self.len_points))
 
         else:
             # TODO Check if still makes sense to have to condition and if yes debugging
@@ -1262,7 +1262,7 @@ class TheanoGraph_pro(object):
             lith_matrix = T.zeros((0, self.grid_val_T.shape[0] + 2 * self.len_points))
 
             pfai_lith = T.zeros((0, self.n_formations_per_serie[-1]))
-            self.fault_matrix_init = T.zeros((n_faults * 2, self.grid_val_T.shape[0] + 2 * self.len_points))
+            self.fault_matrix = T.zeros((n_faults * 2, self.grid_val_T.shape[0] + 2 * self.len_points))
         # Compute Faults
         if n_faults != 0:
             # --DEP--? Initialize yet simulated
@@ -1272,7 +1272,7 @@ class TheanoGraph_pro(object):
             fault_loop, updates3 = theano.scan(
                 fn=self.compute_a_fault,
                 outputs_info=[fault_block_init,
-                              dict(initial=self.fault_matrix_init, taps=[-1]),
+                              dict(initial=self.fault_matrix, taps=[-1]),
                               None],  # This line may be used for the faults network
                 sequences=[dict(input=self.len_series_i[:n_faults + 1], taps=[0, 1]),
                            dict(input=self.len_series_f[:n_faults + 1], taps=[0, 1]),
@@ -1309,7 +1309,7 @@ class TheanoGraph_pro(object):
 
         pfai = T.vertical_stack(pfai_fault, pfai_lith)
 
-        return [lith_matrix[:, :-2 * self.len_points], self.fault_matrix [:, :-2 * self.len_points], pfai]
+        return [lith_matrix[:, :-2 * self.len_points], self.fault_matrix[:, :-2 * self.len_points], pfai]
 
     # ==================================
     # Geophysics
@@ -1349,7 +1349,7 @@ class TheanoGraph_pro(object):
         # # density times the component z of gravity
         grav = densities_selected_reshaped * self.tz
 
-        return grav.sum(axis=1)
+        return [lith_matrix, self.fault_matrix, pfai, grav.sum(axis=1)]
 
 
 
