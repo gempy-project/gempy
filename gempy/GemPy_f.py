@@ -430,7 +430,7 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
         w.set_interfaces()
         w.set_foliations()
     w.render_model(size=size, fullscreen=fullscreen)
-
+    return w
 
 def export_vtk_rectilinear(geo_data, block, path=None):
     """
@@ -443,7 +443,7 @@ def export_vtk_rectilinear(geo_data, block, path=None):
     Returns:
         None
     """
-    vtkVisualization.export_vtk_rectilinear(geo_data, block, path)
+    vtkVisualization.export_vtk_lith_block(geo_data, block, path)
 
 # =====================================
 # Functions for the InterpolatorData
@@ -630,6 +630,14 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
 
 
     return vertices, simplices
+
+
+def export_to_vtk(geo_data, path=None, lith_block=None, vertices=None, simplices=None):
+    if lith_block is not None:
+        vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path)
+    if vertices is not None and simplices is not None:
+        vtkVisualization.export_vtk_surfaces(vertices, simplices)
+
 
 
 def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
