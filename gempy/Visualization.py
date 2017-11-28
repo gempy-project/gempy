@@ -869,14 +869,14 @@ class vtkVisualization:
                 self.ren_list[3].RemoveActor(surf)
 
             vertices, simpleces = self.update_surfaces_real_time(self.interp_data)
-          #  print(vertices[0][60])
+            #  print(vertices[0][60])
             self.set_surfaces(vertices, simpleces)
 
-           # self.renwin.Render()
+            # self.renwin.Render()
 
     def planesCallback(self, obj, event):
         """
-        Function that rules what happend when we move a plane. At the moment we update the other 3 renderers and
+        Function that rules what happens when we move a plane. At the moment we update the other 3 renderers and
         update the pandas data frame
         """
 
@@ -915,24 +915,32 @@ class vtkVisualization:
         new_source.Update()
 
         # Modify Pandas DataFrame
+        # update the gradient vector components and its location
         self.geo_data.foliation_modify(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
                                        G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
+        # update the dip and azimuth values according to the new gradient
+        self.geo_data.calculate_orientations()
 
         # Update the other renderers
         render = obj.n_render
 
+        # TODO: get the plane source, change the stuff there, and then update the widget accordingly?
         if render != 0:
             self.f_rend_1[obj.n_plane].SetInputData(new_source.GetOutput())
             self.f_rend_1[obj.n_plane].SetNormal(new_normal)
+            self.f_rend_1[obj.n_plane].SetCenter(new_center[0], new_center[1], new_center[2])
         if render != 1:
             self.f_rend_2[obj.n_plane].SetInputData(new_source.GetOutput())
             self.f_rend_2[obj.n_plane].SetNormal(new_normal)
+            self.f_rend_2[obj.n_plane].SetCenter(new_center[0], new_center[1], new_center[2])
         if render != 2:
             self.f_rend_3[obj.n_plane].SetInputData(new_source.GetOutput())
             self.f_rend_3[obj.n_plane].SetNormal(new_normal)
+            self.f_rend_3[obj.n_plane].SetCenter(new_center[0], new_center[1], new_center[2])
         if render != 3:
             self.f_rend_4[obj.n_plane].SetInputData(new_source.GetOutput())
             self.f_rend_4[obj.n_plane].SetNormal(new_normal)
+            self.f_rend_4[obj.n_plane].SetCenter(new_center[0], new_center[1], new_center[2])
 
         if self.real_time:
             for surf in self.surf_rend_1:
@@ -942,7 +950,7 @@ class vtkVisualization:
                 self.ren_list[3].RemoveActor(surf)
 
             vertices, simpleces = self.update_surfaces_real_time(self.interp_data)
-          #  print(vertices[0][60])
+            #  print(vertices[0][60])
             self.set_surfaces(vertices, simpleces)
 
     def create_ren_list(self):

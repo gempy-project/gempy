@@ -50,12 +50,19 @@ class GeoPhysicsPreprocessing_pro(object):
         # Boolean array that select the voxels that affect each measurement. Size is measurement times resolution
         self.b_all = np.zeros((0, self.model_resolution), dtype=bool)
 
-    def compute_gravity(self, n_chunck=25):
+    def compute_gravity(self, n_chunck_o=25):
         # Init
         i_0 = 0
+        n_measurements = self.ai_resolution[0] * self.ai_resolution[1]
+        loop_list = np.linspace(0, n_measurements, int(n_measurements/n_chunck_o)+1,
+                                      endpoint=True, dtype=int)
 
-        for i_1 in np.arange(n_chunck, self.airborne_plane.shape[0] + 1, n_chunck, dtype=int):
+        n_chunck_l = loop_list[1:] - loop_list[:-1]
 
+        for e, i_1 in enumerate(loop_list[1:]):
+
+            n_chunck = n_chunck_l[e]
+            print(i_0, i_1)
             # Select the number of measurements to compute in this iteration
             airborne_plane_s = self.airborne_plane[i_0:i_1]
             airborne_plane_s[:, 2] += 0.002
@@ -138,6 +145,7 @@ class GeoPhysicsPreprocessing_pro(object):
 
     def set_airborne_plane(self, z, ai_resolution):
 
+        # TODO Include all in the loop. At the moment I am tiling all grids and is useless
         # Rescale z
         z_res = (z-self.interp_data.centers[2])/self.interp_data.rescaling_factor + 0.5001
         ai_extent_rescaled = (self.ai_extent - np.repeat(self.interp_data.centers, 2)) / \
@@ -156,8 +164,17 @@ class GeoPhysicsPreprocessing_pro(object):
         # order to obtain regular matrices when we set a maximum range of effect
 
         # First we compute the distance between the airborne plane to the grid and choose those closer
-        d = self.eu(self.model_grid.astype('float'), airborne_plane)
-        ab_g = self.model_grid[np.argmin(d, axis=0)]
+        i_0 = 0
+        for i_1 in np.arange(25, self.ai_resolution[0] * self.ai_resolution[1] + 1 + 25, 25, dtype=int):
+
+            d = self.eu(self.model_grid.astype('float'), airborne_plane[i_0:i_1])
+
+            if i_0 == 0:
+                ab_g = self.model_grid[np.argmin(d, axis=0)]
+            else:
+                ab_g = np.vstack((ab_g, self.model_grid[np.argmin(d, axis=0)]))
+
+            i_0 = i_1
 
         return ab_g
 
