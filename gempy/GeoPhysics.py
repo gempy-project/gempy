@@ -51,6 +51,7 @@ class GeoPhysicsPreprocessing_pro(object):
         self.b_all = np.zeros((0, self.model_resolution), dtype=bool)
 
     def compute_gravity(self, n_chunck_o=25):
+        # TODO this function sucks
         # Init
         i_0 = 0
         n_measurements = self.ai_resolution[0] * self.ai_resolution[1]
