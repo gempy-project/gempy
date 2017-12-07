@@ -94,7 +94,7 @@ class Posterior:
             # create the storage array
             lb, fb = self.compute_posterior_model(interp_data, 1)
             lb = lb[0]
-            fb = fb[0]
+
             self.lb = np.empty_like(lb)
             if calc_fb:
                 self.fb = np.empty_like(lb)
