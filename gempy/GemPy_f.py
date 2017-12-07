@@ -698,6 +698,7 @@ def topology_compute(geo_data, lith_block, fault_block,
     :param direction: (str) "x", "y", or "z" - the slice direction
     :return: (adjacency Graph object, centroid dict, labels-to-lith LOT dict, lith-to_labels LOT dict)
     """
+    fault_block = fault_block[::2].sum(axis=0)
 
     if cell_number is None or direction is None:  # topology of entire block
         lb = lith_block.reshape(geo_data.resolution)

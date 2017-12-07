@@ -6,14 +6,13 @@ try:
     import pymc
 except ImportError:
     warnings.warn("pymc (v2) package is not installed. No support for stochastic simulation posterior analysis.")
-import theano
 import numpy as np
 import pandas as pn
-# try:
-#     import networkx as nx
-# except ImportError:
-#     warnings.warn("networkx package is not installed. No topology graph visualization possible.")
 import gempy as gp
+try:
+    import tqdm
+except ImportError:
+    warnings.warn("tqdm package not installed. No support for dynamic progress bars.")
 
 
 class Posterior:
@@ -39,7 +38,8 @@ class Posterior:
         self.trace_names = self.db.trace_names[0]
         # get gempy block models
         try:
-            self.lb, self.fb = self.db.trace(pymc_model_f)[:]
+            self.lb = self.db.trace(pymc_model_f)[:][:, 0]
+            self.fb = self.db.trace(pymc_model_f)[:][:, 1]
         except KeyError:
             print("No GemPy model trace tallied.")
             self.lb = None
@@ -72,7 +72,6 @@ class Posterior:
 
     def change_input_data(self, interp_data, i):
         """Changes input data in interp_data to posterior input data at iteration i."""
-
         i = int(i)
         # replace interface data
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
@@ -100,21 +99,32 @@ class Posterior:
             if calc_fb:
                 self.fb = np.empty_like(lb)
 
-            # compute model for every iteration
-            if r is None:
+            if r is None:  # compute model for every iteration
                 r = self.n_iter
-            else:
+            else:  # use the given slice
                 r = range(r[0], r[1])
-            for i in range(r):
-                if i == 0:
-                    lb, fb = self.compute_posterior_model(interp_data, i)
-                    self.lb = lb[0]
-                    self.fb = fb[0]
-                else:
-                    lb, fb = self.compute_posterior_model(interp_data, i)
-                    self.lb = np.vstack((self.lb, lb[0]))
-                    if calc_fb:
-                        self.fb = np.vstack((self.fb, fb[0]))
+            try:
+                for i in tqdm.trange(r):
+                    if i == 0:
+                        lb, fb = self.compute_posterior_model(interp_data, i)
+                        self.lb = lb[0]
+                        self.fb = fb[0]
+                    else:
+                        lb, fb = self.compute_posterior_model(interp_data, i)
+                        self.lb = np.vstack((self.lb, lb[0]))
+                        if calc_fb:
+                            self.fb = np.vstack((self.fb, fb[0]))
+            except NameError:
+                for i in range(r):
+                    if i == 0:
+                        lb, fb = self.compute_posterior_model(interp_data, i)
+                        self.lb = lb[0]
+                        self.fb = fb[0]
+                    else:
+                        lb, fb = self.compute_posterior_model(interp_data, i)
+                        self.lb = np.vstack((self.lb, lb[0]))
+                        if calc_fb:
+                            self.fb = np.vstack((self.fb, fb[0]))
         else:
             print("self.lb already filled with something. If you want to override, set self.lb to 'None'")
 
@@ -134,13 +144,13 @@ class Posterior:
         interp_data.update_interpolator()
         return gp.compute_model(interp_data)
 
-    def compute_entropy(self, interp_data):
+    def compute_entropy(self):
         """Computes the voxel information entropy of stored block models."""
         if self.lb is None:
             return "No models stored in self.lb, please run 'self.compute_posterior_models_all' to generate block" \
                    " models for all iterations."
 
-        self.lith_prob = compute_prob_lith(self.lb)
+        self.lith_prob = compute_prob_lith(self.lb[:, 0])
         self.ie = calcualte_ie_masked(self.lith_prob)
         self.ie_total = calculate_ie_total(self.ie)
         print("Information Entropy successfully calculated. Stored in self.ie and self.ie_total")
@@ -169,6 +179,7 @@ class Posterior:
                 self.topo_count_dict[c] = 1
 
     def topo_analyze(self):
+        """Analysis of the tallied topology distribution."""
         if self.verbose:
             print("Starting topology analysis. This could take a while (depending on # iterations).")
         self.topo_unique, self.topo_unique_freq, self.topo_unique_ids = get_unique_topo(self.topo_graphs)
