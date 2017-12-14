@@ -20,13 +20,12 @@ class Posterior:
                  topology=False, verbose=False):
         """
         Posterior database analysis for GemPy-pymc2 hdf5 databases.
-        :param dbname: (str) path and/or name of the hdf5 database
-
-        # optional
-        :param pymc_model_f: (str) name of the model output function used (default: "gempy_model)
-        :param pymc_topo_f: (str) name of the topology output function used (default: "gempy_topo)
-        :param topology: (bool) if topology trace should be loaded
-        :param verbose: (bool) activate/deactivate verbosity
+        Args:
+            dbname (str): Path of the hdf5 database.
+            pymc_model_f (str, optional): name of the model output function used (default: "gempy_model).
+            pymc_topo_f (str, optional): name of the topology output function used (default: "gempy_topo).
+            topology (bool, optional):  if a topology trace should be loaded from the database (default: False).
+            verbose (bool, optional): Verbosity switch.
         """
         self.verbose = verbose
         # load db
@@ -45,7 +44,7 @@ class Posterior:
             self.lb = None
             self.fb = None
 
-        if topology:
+        if topology:  # load topology data from database
             topo_trace = self.db.trace(pymc_topo_f)[:]
             # load graphs
             self.topo_graphs = topo_trace[:, 0]
@@ -104,27 +103,27 @@ class Posterior:
             else:  # use the given slice
                 r = range(r[0], r[1])
             try:
-                for i in tqdm.trange(r):
+                for i in tqdm.tqdm(r):
                     if i == 0:
                         lb, fb = self.compute_posterior_model(interp_data, i)
-                        self.lb = lb[0]
-                        self.fb = fb[0]
+                        self.lb = lb[0].astype("int32")
+                        self.fb = fb[0].astype("int32")
                     else:
                         lb, fb = self.compute_posterior_model(interp_data, i)
-                        self.lb = np.vstack((self.lb, lb[0]))
+                        self.lb = np.vstack((self.lb, lb[0].astype("int32")))
                         if calc_fb:
-                            self.fb = np.vstack((self.fb, fb[0]))
+                            self.fb = np.vstack((self.fb, fb[0].astype("int32")))
             except NameError:
                 for i in range(r):
                     if i == 0:
                         lb, fb = self.compute_posterior_model(interp_data, i)
-                        self.lb = lb[0]
-                        self.fb = fb[0]
+                        self.lb = lb[0].astype("int32")
+                        self.fb = fb[0].astype("int32")
                     else:
                         lb, fb = self.compute_posterior_model(interp_data, i)
-                        self.lb = np.vstack((self.lb, lb[0]))
+                        self.lb = np.vstack((self.lb, lb[0].astype("int32")))
                         if calc_fb:
-                            self.fb = np.vstack((self.fb, fb[0]))
+                            self.fb = np.vstack((self.fb, fb[0].astype("int32")))
         else:
             print("self.lb already filled with something. If you want to override, set self.lb to 'None'")
 
