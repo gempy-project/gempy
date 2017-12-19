@@ -185,7 +185,7 @@ def select_series(geo_data, series):
 
 
 def set_series(geo_data, series_distribution=None, order_series=None, order_formations=None,
-               update_p_field=True, verbose=0):
+               update_p_field=True, verbose=1):
     """
     Method to define the different series of the project.
 
@@ -204,9 +204,10 @@ def set_series(geo_data, series_distribution=None, order_series=None, order_form
     if order_formations is not None:
         geo_data.set_formation_number(order_formations)
     # DEP
-    # if verbose > 0:
-    #     return get_series(geo_data)
-    return get_stratigraphic_pile(geo_data)
+    if verbose > 0:
+         return get_sequential_pile(geo_data)
+    else:
+        return None
 
 def set_order_formations(geo_data, order_formations):
     geo_data.set_formation_number(order_formations)
@@ -353,7 +354,7 @@ def plot_data_3D(geo_data):
     vv.render_model()
     return None
 
-def get_stratigraphic_pile(geo_data):
+def get_sequential_pile(geo_data):
     """
     Visualize an interactive stratigraphic pile to move around the formations and the series. IMPORTANT NOTE:
     To have the interactive properties it is necessary the use of qt as interactive backend. (In notebook use:
@@ -429,7 +430,7 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
         w.set_interfaces()
         w.set_foliations()
     w.render_model(size=size, fullscreen=fullscreen)
-
+    return w
 
 def export_vtk_rectilinear(geo_data, block, path=None):
     """
@@ -442,7 +443,7 @@ def export_vtk_rectilinear(geo_data, block, path=None):
     Returns:
         None
     """
-    vtkVisualization.export_vtk_rectilinear(geo_data, block, path)
+    vtkVisualization.export_vtk_lith_block(geo_data, block, path)
 
 # =====================================
 # Functions for the InterpolatorData
@@ -505,15 +506,10 @@ def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_
 
     if output is 'geology':
         lith_matrix, fault_matrix, potential_at_interfaces = interp_data.th_fn(*i)
+        # TODO check if this is necessary yet
         if len(lith_matrix.shape) < 3:
             _np.expand_dims(lith_matrix, 0)
             _np.expand_dims(fault_matrix, 0)
-
-    # Making the limit of the potential field a bit bigger to avoid float errors
-    # a_min = _np.argmin(potential_at_interfaces)
-    # a_max = _np.argmax(potential_at_interfaces)
-    # potential_at_interfaces[a_min] = potential_at_interfaces[a_min] - potential_at_interfaces[a_min] * 0.05
-    # potential_at_interfaces[a_max] = potential_at_interfaces[a_max] + potential_at_interfaces[a_max] * 0.05
 
         interp_data.potential_at_interfaces = potential_at_interfaces
 
@@ -522,9 +518,20 @@ def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_
         else:
             return lith_matrix, fault_matrix
 
+    # TODO this should be a flag read from the compilation I guess
     if output is 'gravity':
-        grav = interp_data.th_fn(*i)
-        return grav
+        # TODO make asserts
+        lith_matrix, fault_matrix, potential_at_interfaces, grav = interp_data.th_fn(*i)
+        if len(lith_matrix.shape) < 3:
+            _np.expand_dims(lith_matrix, 0)
+            _np.expand_dims(fault_matrix, 0)
+
+        interp_data.potential_at_interfaces = potential_at_interfaces
+
+        if get_potential_at_interfaces:
+            return lith_matrix, fault_matrix, grav, interp_data.potential_at_interfaces
+        else:
+            return lith_matrix, fault_matrix, grav
 
 
 def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_formation='all', step_size=1, original_scale=True):
@@ -580,22 +587,25 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
                                                                             interp_data._geo_data.extent[2],
                                                                             interp_data._geo_data.extent[4]]).reshape(1, 3)
         else:
-            vertices += _np.array([interp_data.extent_rescaled.iloc[0],
-                                   interp_data.extent_rescaled.iloc[2],
-                                   interp_data.extent_rescaled.iloc[4]]).reshape(1, 3)
+            vertices += _np.array([interp_data.geo_data_res.extent[0],
+                                   interp_data.geo_data_res.extent[2],
+                                   interp_data.geo_data_res.extent[4]]).reshape(1, 3)
         return vertices, simplices
 
     vertices = []
     simplices = []
 
     if potential_fault is not None:
+
+        assert len(_np.atleast_2d(potential_fault)) is interp_data.geo_data_res.n_faults, 'You need to pass a potential field per fault'
+
         pot_int = interp_data.potential_at_interfaces[:interp_data.geo_data_res.n_faults + 1]
         for n in interp_data.geo_data_res.interfaces['formation number'][
             interp_data.geo_data_res.interfaces['isFault']].unique():
             if n == 0:
                 continue
             else:
-                v, s = get_surface(potential_fault, interp_data, pot_int, n,
+                v, s = get_surface(_np.atleast_2d(potential_fault)[n-1], interp_data, pot_int, n,
                                    step_size=step_size, original_scale=original_scale)
                 vertices.append(v)
                 simplices.append(s)
@@ -620,6 +630,14 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
 
 
     return vertices, simplices
+
+
+def export_to_vtk(geo_data, path=None, lith_block=None, vertices=None, simplices=None):
+    if lith_block is not None:
+        vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path)
+    if vertices is not None and simplices is not None:
+        vtkVisualization.export_vtk_surfaces(vertices, simplices)
+
 
 
 def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
@@ -680,6 +698,7 @@ def topology_compute(geo_data, lith_block, fault_block,
     :param direction: (str) "x", "y", or "z" - the slice direction
     :return: (adjacency Graph object, centroid dict, labels-to-lith LOT dict, lith-to_labels LOT dict)
     """
+    fault_block = fault_block[::2].sum(axis=0)
 
     if cell_number is None or direction is None:  # topology of entire block
         lb = lith_block.reshape(geo_data.resolution)
