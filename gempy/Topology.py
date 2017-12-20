@@ -17,9 +17,16 @@
 
 @author: Alexander Schaaf
 """
-from skimage.future import graph
-from skimage.measure import label
-from skimage.measure import regionprops
+
+import warnings
+try:
+    from skimage.future import graph
+    from skimage.measure import label
+    from skimage.measure import regionprops
+except ImportError:
+    warnings.warn("skimage package is not installed, which is required for geomodel topology analysis.")
+
+
 import numpy as np
 
 

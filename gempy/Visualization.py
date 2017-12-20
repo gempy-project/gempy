@@ -337,13 +337,14 @@ class PlotData2D(object):
             #     plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
             #              np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "black", linewidth=2)
             plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
-                          np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "black", linewidth=2)
+                          np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "black", linewidth=0.75)
 
             for node in G.nodes_iter():
                 plt.plot(centroids[node][c1] * e1 / r1 + d1, centroids[node][c2] * e2 / r2 +d2,
-                         marker="o", color="black", markersize=20)
-                plt.text(centroids[node][c1] * e1 / r1 * 0.99 + d1,
-                         centroids[node][c2] * e2 / r2 * 0.99 + d2, str(node), color="white", size=10)
+                         marker="o", color="black", markersize=10, alpha=0.75)
+                plt.text(centroids[node][c1] * e1 / r1 + d1,
+                         centroids[node][c2] * e2 / r2 + d2, str(node), color="white", size=6, ha="center", va="center",
+                         weight="ultralight", family="monospace")
 
     @staticmethod
     def annotate_plot(frame, label_col, x, y, **kwargs):
