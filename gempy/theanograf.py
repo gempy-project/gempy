@@ -31,7 +31,7 @@ import sys
 theano.config.openmp_elemwise_minsize = 50000
 theano.config.openmp = True
 
-theano.config.optimizer = 'fast_run'
+theano.config.optimizer = 'fast_compile'
 theano.config.floatX = 'float64'
 
 theano.config.exception_verbosity = 'high'
@@ -545,7 +545,7 @@ class TheanoGraph_pro(object):
         F_I = (fault_matrix_at_interfaces_ref - fault_matrix_at_interfaces_rest)+0.0001
 
         # As long as the drift is a constant F_G is null
-        F_G = T.zeros((length_of_faults, length_of_CG))
+        F_G = T.zeros((length_of_faults, length_of_CG)) + 0.0001
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
             F_I = theano.printing.Print('Faults interfaces matrix')(F_I)
@@ -878,6 +878,19 @@ class TheanoGraph_pro(object):
         # Contribution
         # selecting the voxels that are not computed in the previous pot. field
 
+
+
+        # interface_loc = self.fault_matrix.shape[1] - 2*self.len_points
+        #
+        #
+        #
+        # fault_matrix_at_interfaces_rest = self.fault_matrix[::2,
+        #                                   interface_loc + self.len_i_0: interface_loc + self.len_i_1]
+        # fault_matrix_at_interfaces_ref = self.fault_matrix[::2,
+        #                                  interface_loc+self.len_points+self.len_i_0: interface_loc+self.len_points+self.len_i_1]
+        #
+        #
+
         aux_ones = T.ones([2 * self.len_points])
         faults_select = T.concatenate((self.yet_simulated, aux_ones))
 
@@ -1095,7 +1108,7 @@ class TheanoGraph_pro(object):
 
 
         # Extracting a the subset of the fault matrix to the scalar field of the current iterations
-        aux_ind = T.max(self.n_formation_op,0)
+        aux_ind = T.max(self.n_formation_op, 0)
         self.fault_matrix = fault_matrix[0:(aux_ind-1)*2, :]
         if 'fault_matrix_loop' in self.verbose:
             self.fault_matrix = theano.printing.Print('self fault matrix')(self.fault_matrix)
@@ -1111,7 +1124,7 @@ class TheanoGraph_pro(object):
         # Update the block matrix
         block_matrix = T.set_subtensor(
                     final_block[0, :],
-                    faults_matrix)
+                    T.cast(T.cast(faults_matrix, 'bool'), 'int8'))
 
         # Update the potential field matrix
         if self.compute_all:
@@ -1332,11 +1345,19 @@ class TheanoGraph_pro(object):
             formations = T.concatenate([self.n_formation[::-1], T.stack([0])])
         else:
             formations = T.concatenate([self.n_formation[:n_faults-1:-1], T.stack([0])])
+
+            formations = theano.printing.Print('formations')(formations)
+
         # Substitue lithologies by its density
         density_block_loop, updates4 = theano.scan(self.switch_densities,
                                     outputs_info=[lith_matrix[0]],
-                                     sequences=[formations, self.densities]
-                                    )
+                                     sequences=[formations, self.densities],
+                                    return_list = True
+        )
+
+        if True:
+
+            density_block_loop = theano.printing.Print('density block')(density_block_loop[-1])
 
         n_measurements = self.tz.shape[0]
         # Tiling the density block for each measurent and picking just the closer to them. This has to be possible to
@@ -1349,7 +1370,7 @@ class TheanoGraph_pro(object):
         # # density times the component z of gravity
         grav = densities_selected_reshaped * self.tz
 
+        #return [lith_matrix, self.fault_matrix, pfai, grav.sum(axis=1)]
         return [lith_matrix, self.fault_matrix, pfai, grav.sum(axis=1)]
-
 
 

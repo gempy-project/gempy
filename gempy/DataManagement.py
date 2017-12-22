@@ -902,6 +902,8 @@ class GridClass(object):
         else:
             print("Wrong type")
 
+        self.dx, self.dy, self.dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0], (extent[5] - extent[4]) / resolution[0]
+
     def create_regular_grid_3d(self):
         """
         Method to create a 3D regular grid where is interpolated
@@ -1537,8 +1539,18 @@ class InterpolatorInput:
             self.tg.final_potential_field_at_faults.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
                                                               dtype=self.dtype))
 
+        # TODO change name to weithts!
         def set_densities(self, densities):
-            self.tg.densities.set_value(np.array(densities, dtype=self.dtype))
+            resolution = [50,50,50]
+
+            #
+            # dx, dy, dz = (self.geo_data_res.extent[1] - self.geo_data_res.extent[0]) / resolution[0], (self.geo_data_res.extent[3] - self.geo_data_res.extent[2]) / resolution[
+            #     0], (self.geo_data_res.extent[5] - self.geo_data_res.extent[4]) / resolution[0]
+
+            dx, dy, dz = self.geo_data_res.grid.dx, self.geo_data_res.grid.dy, self.geo_data_res.grid.dz
+            weight = (dx * dy * dz) * np.array(densities)
+            print(weight)
+            self.tg.densities.set_value(np.array(weight, dtype=self.dtype))
 
         def set_z_comp(self, tz, selected_cells):
 
