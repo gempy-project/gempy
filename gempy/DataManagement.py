@@ -751,10 +751,11 @@ class FoliaitionsFromInterfaces:
     def __init__(self, geo_data, group_id, mode, verbose=False):
         """
 
-        :param geo_data: InputData object
-        :param group_id: (str) identifier for the data group
-        :param mode: (str), either 'interf_to_fol' or 'fol_to_interf'
-        :param verbose: (bool) adjusts verbosity, default False
+        Args:
+            geo_data: InputData object
+            group_id: (str) identifier for the data group
+            mode: (str), either 'interf_to_fol' or 'fol_to_interf'
+            verbose: (bool) adjusts verbosity, default False
         """
         self.geo_data = geo_data
         self.group_id = group_id
@@ -824,7 +825,7 @@ class FoliaitionsFromInterfaces:
         m = np.dot(x, x.T)  # np.cov(x)
         return ctr, svd(m)[0][:, -1]
 
-    def _get_dip(self, verbose=False):
+    def _get_dip(self):
         """Returns dip angle and azimuth of normal vector [x,y,z]."""
         dip = np.arccos(self.normal[2] / np.linalg.norm(self.normal)) / np.pi * 180.
 
