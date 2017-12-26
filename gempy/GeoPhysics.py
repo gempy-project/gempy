@@ -27,8 +27,7 @@ class GeoPhysicsPreprocessing_pro(object):
         self.interp_data = interp_data
         self.ai_extent = np.array(ai_extent)
         self.ai_resolution = np.array(ai_resolution)
-       # self.model_grid = interp_data.geo_data_res.grid.grid
-        self.model_grid = interp_data._geo_data.grid.grid
+        self.model_grid = interp_data.geo_data_res.grid.grid
 
         self.eu = self.compile_eu_f()
 
@@ -111,7 +110,9 @@ class GeoPhysicsPreprocessing_pro(object):
             # Component z of each voxel
             # We need to rescale it the volume so to the cube and multiply by the gravity constant for G
             tz = (
-                 np.sum(- 1 * G * mu * (
+                 np.sum(- 1 *
+                        #G *
+                        mu * (
                 x_matrix * np.log(y_matrix + s_r) +
                 y_matrix * np.log(x_matrix + s_r) -
                 z_matrix * np.arctan(x_matrix * y_matrix / (z_matrix * s_r))),
@@ -151,18 +152,13 @@ class GeoPhysicsPreprocessing_pro(object):
 
         # TODO Include all in the loop. At the moment I am tiling all grids and is useless
         # Rescale z
-        #z_res = (z-self.interp_data.centers[2])/self.interp_data.rescaling_factor + 0.5001
-        # ai_extent_rescaled = (self.ai_extent - np.repeat(self.interp_data.centers, 2)) / \
-        #                       self.interp_data.rescaling_factor + 0.5001
-        z_res = z
-        ai_extent_rescaled = self.ai_extent
+        z_res = (z-self.interp_data.centers[2])/self.interp_data.rescaling_factor + 0.5001
+        ai_extent_rescaled = (self.ai_extent - np.repeat(self.interp_data.centers, 2)) / \
+                              self.interp_data.rescaling_factor + 0.5001
 
         # Create xy meshgrid
-        # xy = np.meshgrid(np.linspace(ai_extent_rescaled.iloc[0], ai_extent_rescaled.iloc[1], self.ai_resolution[0]),
-        #                  np.linspace(ai_extent_rescaled.iloc[2], ai_extent_rescaled.iloc[3], self.ai_resolution[1]))
-
-        xy = np.meshgrid(np.linspace(ai_extent_rescaled[0], ai_extent_rescaled[1], self.ai_resolution[0]),
-                         np.linspace(ai_extent_rescaled[2], ai_extent_rescaled[3], self.ai_resolution[1]))
+        xy = np.meshgrid(np.linspace(ai_extent_rescaled.iloc[0], ai_extent_rescaled.iloc[1], self.ai_resolution[0]),
+                         np.linspace(ai_extent_rescaled.iloc[2], ai_extent_rescaled.iloc[3], self.ai_resolution[1]))
         z = np.ones(self.ai_resolution[0]*self.ai_resolution[1])*z_res
 
         # Transformation
@@ -189,9 +185,9 @@ class GeoPhysicsPreprocessing_pro(object):
 
     def set_vox_size(self):
 
-        x_extent = self.interp_data._geo_data.extent[1] - self.interp_data._geo_data.extent[0]
-        y_extent = self.interp_data._geo_data.extent[3] - self.interp_data._geo_data.extent[2]
-        z_extent = self.interp_data._geo_data.extent[5] - self.interp_data._geo_data.extent[4]
+        x_extent = self.interp_data.geo_data_res.extent[1] - self.interp_data.geo_data_res.extent[0]
+        y_extent = self.interp_data.geo_data_res.extent[3] - self.interp_data.geo_data_res.extent[2]
+        z_extent = self.interp_data.geo_data_res.extent[5] - self.interp_data.geo_data_res.extent[4]
         vox_size = np.array([x_extent, y_extent, z_extent]) / self.interp_data.geo_data_res.resolution
         return vox_size
 

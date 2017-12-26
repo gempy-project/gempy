@@ -161,6 +161,14 @@ class TheanoGraph_pro(object):
             self.tz = theano.shared(np.cast[dtype](np.zeros((1, 3))), "Component z")
             self.select = theano.shared(np.cast['int8'](np.zeros(3)), "Select nearby cells")
 
+
+        # Init fault relation matrix
+        self.fault_relation = theano.shared(np.array([[0, 1, 0, 1],
+                                                      [0, 0, 1, 1],
+                                                      [0, 0, 0, 1],
+                                                      [0, 0, 0, 0]]), 'relation matrix')
+
+
     def input_parameters_list(self):
         """
         Create a list with the symbolic variables to use when we compile the theano function
@@ -1108,8 +1116,18 @@ class TheanoGraph_pro(object):
 
 
         # Extracting a the subset of the fault matrix to the scalar field of the current iterations
-        aux_ind = T.max(self.n_formation_op, 0)
-        self.fault_matrix = fault_matrix[0:(aux_ind-1)*2, :]
+        # self.fault_relation = theano.shared(np.array([[0,1,0,1],
+        #                                     [0,0,1,1],
+        #                                     [0,0,0,1],
+        #                                     [0,0,0,0]]), 'relation matrix')
+
+        faults_relation_op =  self.fault_relation[:, T.cast(self.n_formation_op-1, 'int8')]
+        faults_relation_rep = T.repeat(faults_relation_op, 2)
+
+        faults_relation_rep = theano.printing.Print('SELECT')(faults_relation_rep)
+
+        self.fault_matrix = fault_matrix[T.nonzero(T.cast(faults_relation_rep, "int8"))[0], :]
+
         if 'fault_matrix_loop' in self.verbose:
             self.fault_matrix = theano.printing.Print('self fault matrix')(self.fault_matrix)
 
@@ -1138,7 +1156,7 @@ class TheanoGraph_pro(object):
         self.final_potential_field_at_faults_op = T.set_subtensor(self.final_potential_field_at_faults_op[self.n_formation_op-1],
                                                                self.potential_field_at_interfaces_values)
 
-
+        aux_ind = T.max(self.n_formation_op, 0)
         # Setting the values of the fault matrix computed in the current iteration
         fault_matrix = T.set_subtensor(fault_matrix[(aux_ind-1)*2:aux_ind*2, :], block_matrix)
 
@@ -1284,7 +1302,7 @@ class TheanoGraph_pro(object):
             # Looping
             fault_loop, updates3 = theano.scan(
                 fn=self.compute_a_fault,
-                outputs_info=[fault_block_init,
+                    outputs_info=[fault_block_init,
                               dict(initial=self.fault_matrix, taps=[-1]),
                               None],  # This line may be used for the faults network
                 sequences=[dict(input=self.len_series_i[:n_faults + 1], taps=[0, 1]),
