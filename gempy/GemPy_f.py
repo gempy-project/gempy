@@ -559,7 +559,10 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
     def get_surface(potential_block, interp_data, pot_int, n_formation, step_size, original_scale):
         assert n_formation > 0, 'Number of the formation has to be positive'
         # In case the values are separated by series I put all in a vector
+
         pot_int = interp_data.potential_at_interfaces.sum(axis=0)
+
+        #pot_int = np.trim_zeros(interp_data.potential_at_interfaces[n_formation]
 
         from skimage import measure
 

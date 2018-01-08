@@ -463,6 +463,9 @@ class InputData(object):
 
         self.order_table()
 
+        self.set_fault_relation_matrix(np.zeros((self.interfaces['series'].nunique(),
+                                                 self.interfaces['series'].nunique())))
+
         return _series
 
     def count_faults(self):

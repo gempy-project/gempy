@@ -31,7 +31,7 @@ import sys
 theano.config.openmp_elemwise_minsize = 50000
 theano.config.openmp = True
 
-theano.config.optimizer = 'fast_compile'
+theano.config.optimizer = 'fast_run'
 theano.config.floatX = 'float64'
 
 theano.config.exception_verbosity = 'high'
@@ -1124,7 +1124,8 @@ class TheanoGraph_pro(object):
         faults_relation_op =  self.fault_relation[:, T.cast(self.n_formation_op-1, 'int8')]
         faults_relation_rep = T.repeat(faults_relation_op, 2)
 
-        faults_relation_rep = theano.printing.Print('SELECT')(faults_relation_rep)
+        if 'faults_relation' in self.verbose:
+            faults_relation_rep = theano.printing.Print('SELECT')(faults_relation_rep)
 
         self.fault_matrix = fault_matrix[T.nonzero(T.cast(faults_relation_rep, "int8"))[0], :]
 
