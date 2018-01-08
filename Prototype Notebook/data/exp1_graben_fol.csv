@@ -1,0 +1,6 @@
+X,Y,Z,dip,azimuth,polarity,formation,group_id
+250,0,1523,10,90,1,Layer 2,l2_a
+1500,0,1054,10,90,1,Layer 2,l2_b
+2750,0,1130,10,90,1,Layer 2,l2_c
+900,0,963,60,90,-1,Fault_1,Fault_1
+2100,0,827,60,270,1,Fault_2,Fault_2

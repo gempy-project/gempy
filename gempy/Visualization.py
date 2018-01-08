@@ -250,7 +250,13 @@ class PlotData2D(object):
         # DEP?
         selecting_colors = np.unique(plot_block)
 
-        im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom", cmap=self._cmap, norm=self._norm,
+        if 'cmap' not in kwargs:
+            kwargs['cmap'] = self._cmap
+        if 'norm' not in kwargs:
+            kwargs['norm'] = self._norm
+
+
+        im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",# cmap=self._cmap, norm=self._norm,
                    extent=extent_val,
                    interpolation=interpolation, **kwargs)
 
@@ -300,6 +306,8 @@ class PlotData2D(object):
             c1, c2 = (0, 2)
             e1 = geo_data.extent[1] - geo_data.extent[0]
             e2 = geo_data.extent[5] - geo_data.extent[4]
+            d1 = geo_data.extent[0]
+            d2 = geo_data.extent[4]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = geo_data.resolution[0]
@@ -308,6 +316,8 @@ class PlotData2D(object):
             c1, c2 = (1, 2)
             e1 = geo_data.extent[3] - geo_data.extent[2]
             e2 = geo_data.extent[5] - geo_data.extent[4]
+            d1 = geo_data.extent[2]
+            d2 = geo_data.extent[4]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = geo_data.resolution[1]
@@ -316,6 +326,8 @@ class PlotData2D(object):
             c1, c2 = (0, 1)
             e1 = geo_data.extent[1] - geo_data.extent[0]
             e2 = geo_data.extent[3] - geo_data.extent[2]
+            d1 = geo_data.extent[0]
+            d2 = geo_data.extent[2]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = geo_data.resolution[0]
@@ -324,18 +336,21 @@ class PlotData2D(object):
         for edge in G.edges_iter():
             a, b = edge
 
-            if G.adj[a][b]["edge_type"] == "stratigraphic":
-                plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1,
-                         np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2, "gray", linewidth=2)
-            elif G.adj[a][b]["edge_type"] == "fault":
-                plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1,
-                         np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2, "black", linewidth=2)
+            # if G.adj[a][b]["edge_type"] == "stratigraphic":
+            #     plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
+            #              np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "gray", linewidth=2)
+            # elif G.adj[a][b]["edge_type"] == "fault":
+            #     plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
+            #              np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "black", linewidth=2)
+            plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
+                          np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "black", linewidth=0.75)
 
             for node in G.nodes_iter():
-                plt.plot(centroids[node][c1] * e1 / r1, centroids[node][c2] * e2 / r2,
-                         marker="o", color="black", markersize=20)
-                plt.text(centroids[node][c1] * e1 / r1 * 0.99,
-                         centroids[node][c2] * e2 / r2 * 0.99, str(node), color="white", size=10)
+                plt.plot(centroids[node][c1] * e1 / r1 + d1, centroids[node][c2] * e2 / r2 +d2,
+                         marker="o", color="black", markersize=10, alpha=0.75)
+                plt.text(centroids[node][c1] * e1 / r1 + d1,
+                         centroids[node][c2] * e2 / r2 + d2, str(node), color="white", size=6, ha="center", va="center",
+                         weight="ultralight", family="monospace")
 
     @staticmethod
     def annotate_plot(frame, label_col, x, y, **kwargs):
@@ -1110,7 +1125,7 @@ class vtkVisualization:
 
         lith_block, fault_block = gp.compute_model(interp_data)
         try:
-            v_l, s_l = gp.get_surfaces(interp_data, lith_block[1], fault_block[1], original_scale=False)
+            v_l, s_l = gp.get_surfaces(interp_data, lith_block[1], fault_block[1::2], original_scale=False)
         except IndexError:
             v_l, s_l = gp.get_surfaces(interp_data, lith_block[1], None, original_scale=False)
         return v_l, s_l
@@ -1121,7 +1136,7 @@ class vtkVisualization:
 
 
     @staticmethod
-    def export_vtk_rectilinear(geo_data, block, path=None):
+    def export_vtk_lith_block(geo_data, lith_block, path=None):
         """
         Export data to a vtk file for posterior visualizations
         Args:
@@ -1137,15 +1152,13 @@ class vtkVisualization:
 
         import numpy as np
 
-        import random as rnd
-
         # Dimensions
 
         nx, ny, nz = geo_data.resolution
 
-        lx = geo_data.extent[0] - geo_data.extent[1]
-        ly = geo_data.extent[2] - geo_data.extent[3]
-        lz = geo_data.extent[4] - geo_data.extent[5]
+        lx = geo_data.extent[1] - geo_data.extent[0]
+        ly = geo_data.extent[3] - geo_data.extent[2]
+        lz = geo_data.extent[5] - geo_data.extent[4]
 
         dx, dy, dz = lx / nx, ly / ny, lz / nz
 
@@ -1154,19 +1167,74 @@ class vtkVisualization:
         npoints = (nx + 1) * (ny + 1) * (nz + 1)
 
         # Coordinates
-        x = np.arange(0, lx + 0.1 * dx, dx, dtype='float64')
+        x = np.arange(geo_data.extent[0], geo_data.extent[1] + 0.1, dx, dtype='float64')
 
-        y = np.arange(0, ly + 0.1 * dy, dy, dtype='float64')
+        y = np.arange(geo_data.extent[2], geo_data.extent[3] + 0.1, dy, dtype='float64')
 
-        z = np.arange(0, lz + 0.1 * dz, dz, dtype='float64')
+        z = np.arange(geo_data.extent[4], geo_data.extent[5] + 0.1, dz, dtype='float64')
+
+        lith = lith_block.reshape((nx, ny, nz))
 
         # Variables
 
-        lith = block.reshape((nx, ny, nz))
         if not path:
-            path = "./Lithology_block"
+            path = "./default"
 
-        gridToVTK(path, x, y, z, cellData={"Lithology": lith})
+        gridToVTK(path+'_lith_block', x, y, z, cellData={"Lithology": lith})
+
+    @staticmethod
+    def export_vtk_surfaces(vertices, simplices, path=None):
+        """
+        Export data to a vtk file for posterior visualizations
+        Args:
+            geo_data(gempy.InputData): All values of a DataManagement object
+            block(numpy.array): 3D array containing the lithology block
+            path (str): path to the location of the vtk
+
+        Returns:
+            None
+        """
+        import vtk
+
+        for s_n in range(len(vertices)):
+            # setup points and vertices
+            Points = vtk.vtkPoints()
+            Triangles = vtk.vtkCellArray()
+            Triangle = vtk.vtkTriangle()
+            for p in vertices[s_n]:
+                Points.InsertNextPoint(p)
+
+            # Unfortunately in this simple example the following lines are ambiguous.
+            # The first 0 is the index of the triangle vertex which is ALWAYS 0-2.
+            # The second 0 is the index into the point (geometry) array, so this can range from 0-(NumPoints-1)
+            # i.e. a more general statement is triangle->GetPointIds()->SetId(0, PointId);
+
+            for i in simplices[s_n]:
+                Triangle.GetPointIds().SetId(0, i[0])
+                Triangle.GetPointIds().SetId(1, i[1])
+                Triangle.GetPointIds().SetId(2, i[2])
+
+                Triangles.InsertNextCell(Triangle)
+
+            polydata = vtk.vtkPolyData()
+            polydata.SetPoints(Points)
+            polydata.SetPolys(Triangles)
+
+            polydata.Modified()
+            if vtk.VTK_MAJOR_VERSION <= 5:
+                polydata.Update()
+
+            writer = vtk.vtkXMLPolyDataWriter();
+
+            if not path:
+                path = "./default_"
+
+            writer.SetFileName(path+'_surfaces'+str(s_n)+'vtp')
+            if vtk.VTK_MAJOR_VERSION <= 5:
+                writer.SetInput(polydata)
+            else:
+                writer.SetInputData(polydata)
+            writer.Write()
 
 
 def _create_color_lot(geo_data, cd_rgb):

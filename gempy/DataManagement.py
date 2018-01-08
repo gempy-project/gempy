@@ -96,6 +96,17 @@ class InputData(object):
 
         self.potential_at_interfaces = 0
 
+        self.fault_relation = None
+
+    def set_fault_relation_matrix(self, rel_matrix):
+        """
+        Method to set the faults that offset a given sequence and therefore also another fault
+        Args:
+            rel_matrix (numpy.array): 2D Boolean array with the logic. Rows affect (offset) columns
+        """
+
+        self.fault_relation = rel_matrix
+
     def import_data_csv(self, path_i, path_f, **kwargs):
         """
         Method to import interfaces and foliations from csv. The format is the same as the export 3D model data of
@@ -452,6 +463,9 @@ class InputData(object):
 
         self.order_table()
 
+        self.set_fault_relation_matrix(np.zeros((self.interfaces['series'].nunique(),
+                                                 self.interfaces['series'].nunique())))
+
         return _series
 
     def count_faults(self):
@@ -587,7 +601,9 @@ class InputData(object):
         l = len(self.interfaces)
         for key in kwargs:
             self.interfaces.ix[l, str(key)] = kwargs[key]
-        self.set_series()
+        if not 'series' in kwargs:
+            self.set_series()
+
         self.order_table()
 
     def interface_drop(self, index):
@@ -663,24 +679,24 @@ class InputData(object):
         return ip_addresses
 
     # # TODO think where this function should go
-    # def read_vox(self, path):
-    #     """
-    #     read vox from geomodeller and transform it to gempy format
-    #     Returns:
-    #         numpy.array: block model
-    #     """
-    #
-    #     geo_res = pn.read_csv(path)
-    #
-    #     geo_res = geo_res.iloc[9:]
-    #
-    #     #ip_addresses = geo_res['nx 50'].unique()  # geo_data.interfaces["formation"].unique()
-    #     ip_dict = self.get_formation_number()
-    #
-    #     geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
-    #     block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
-    #                                     self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
-    #     return block_geomodeller
+    def _read_vox(self, path):
+        """
+        read vox from geomodeller and transform it to gempy format
+        Returns:
+            numpy.array: block model
+        """
+
+        geo_res = pn.read_csv(path)
+
+        geo_res = geo_res.iloc[9:]
+
+        #ip_addresses = geo_res['nx 50'].unique()  # geo_data.interfaces["formation"].unique()
+        ip_dict = self.get_formation_number()
+
+        geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
+        block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
+                                        self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
+        return block_geomodeller
 
     def set_triangle_foliations(self, verbose=False):
         # next we need to iterate over every unique triangle id to create a foliation from each triplet
@@ -751,10 +767,11 @@ class FoliaitionsFromInterfaces:
     def __init__(self, geo_data, group_id, mode, verbose=False):
         """
 
-        :param geo_data: InputData object
-        :param group_id: (str) identifier for the data group
-        :param mode: (str), either 'interf_to_fol' or 'fol_to_interf'
-        :param verbose: (bool) adjusts verbosity, default False
+        Args:
+            geo_data: InputData object
+            group_id: (str) identifier for the data group
+            mode: (str), either 'interf_to_fol' or 'fol_to_interf'
+            verbose: (bool) adjusts verbosity, default False
         """
         self.geo_data = geo_data
         self.group_id = group_id
@@ -824,7 +841,7 @@ class FoliaitionsFromInterfaces:
         m = np.dot(x, x.T)  # np.cov(x)
         return ctr, svd(m)[0][:, -1]
 
-    def _get_dip(self, verbose=False):
+    def _get_dip(self):
         """Returns dip angle and azimuth of normal vector [x,y,z]."""
         dip = np.arccos(self.normal[2] / np.linalg.norm(self.normal)) / np.pi * 180.
 
@@ -901,6 +918,8 @@ class GridClass(object):
             self.grid = self.create_regular_grid_3d()
         else:
             print("Wrong type")
+
+        self.dx, self.dy, self.dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0], (extent[5] - extent[4]) / resolution[0]
 
     def create_regular_grid_3d(self):
         """
@@ -1083,7 +1102,7 @@ class InterpolatorInput:
         self.rescaling_factor = rescaling_factor
         geo_data_rescaled.rescaling_factor = rescaling_factor
         self.centers = centers
-        self.extent_rescaled = new_coord_extent
+      #  self.extent_rescaled = new_coord_extent
 
         return geo_data_rescaled
 
@@ -1179,10 +1198,11 @@ class InterpolatorInput:
         #  print('I am in update')
         # I update the data
         self.interpolator.geo_data_res = geo_data_in
-        self.interpolator.grid_res = geo_data_in.grid
+        #self.interpolator.geo_data_res.grid_res = geo_data_in.grid
         # I order it again just in case. TODO if this still necessary
         self.interpolator.order_table()
         self.interpolator.set_theano_shared_parameteres(**kwargs)
+        self.interpolator.data_prep()
 
     def get_input_data(self, u_grade=None):
         """
@@ -1247,17 +1267,17 @@ class InterpolatorInput:
             range_var = kwargs.get('range_var', None)
 
             # Drift grade
-            u_grade = kwargs.get('u_grade', [2, 2])
+            u_grade = kwargs.get('u_grade', [3, 3])
 
             # We hide the scaled copy of DataManagement object from the user. The scaling happens in gempy what is a
             # bit weird. Maybe at some point I should bring the function to this module
             self.geo_data_res = geo_data_res
 
             # In case someone wants to provide a grid otherwise we extract it from the DataManagement object.
-            if not grid_res:
-                self.grid_res = geo_data_res.grid
-            else:
-                self.grid_res = grid_res
+            # if not grid_res:
+            #     self.grid_res = geo_data_res.grid
+            # else:
+            #     self.grid_res = grid_res
 
             # Importing the theano graph. The methods of this object generate different parts of graph.
             # See theanograf doc
@@ -1485,11 +1505,11 @@ class InterpolatorInput:
            # assert (0 <= all(u_grade) <= 2)
 
             # Creating the drift matrix. TODO find the official name of this matrix?
-            _universal_matrix = np.vstack((self.grid_res.grid.T,
-                                           (self.grid_res.grid ** 2).T,
-                                           self.grid_res.grid[:, 0] * self.grid_res.grid[:, 1],
-                                           self.grid_res.grid[:, 0] * self.grid_res.grid[:, 2],
-                                           self.grid_res.grid[:, 1] * self.grid_res.grid[:, 2]))
+            _universal_matrix = np.vstack((self.geo_data_res.grid.grid.T,
+                                           (self.geo_data_res.grid.grid ** 2).T,
+                                           self.geo_data_res.grid.grid[:, 0] * self.geo_data_res.grid.grid[:, 1],
+                                           self.geo_data_res.grid.grid[:, 0] * self.geo_data_res.grid.grid[:, 2],
+                                           self.geo_data_res.grid.grid[:, 1] * self.geo_data_res.grid.grid[:, 2]))
 
             # Setting shared variables
             # Range
@@ -1510,12 +1530,12 @@ class InterpolatorInput:
                 # self.tg.c_resc.set_value(1)
 
             # Just grid. I add a small number to avoid problems with the origin point
-            self.tg.grid_val_T.set_value(np.cast[self.dtype](self.grid_res.grid + 10e-6))
+            self.tg.grid_val_T.set_value(np.cast[self.dtype](self.geo_data_res.grid.grid + 10e-6))
             # Universal grid
             self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](_universal_matrix + 1e-10))
 
             # Initialization of the block model
-            self.tg.final_block.set_value(np.zeros((1, self.grid_res.grid.shape[0]), dtype=self.dtype))
+            self.tg.final_block.set_value(np.zeros((1, self.geo_data_res.grid.grid.shape[0]), dtype=self.dtype))
 
             # Initialization of the boolean array that represent the areas of the block model to be computed in the
             # following series
@@ -1525,7 +1545,7 @@ class InterpolatorInput:
             #self.tg.n_formation.set_value(np.insert(_data_rescaled.interfaces['formation number'].unique(),
             #                                        0, 0)[::-1])
 
-            self.tg.n_formation.set_value(self.geo_data_res.interfaces['formation number'].unique())
+            self.tg.n_formation.set_value(self.geo_data_res.interfaces['formation number'].unique().astype('int64'))
 
             # Number of formations per series. The function is not pretty but the result is quite clear
             self.tg.n_formations_per_serie.set_value(
@@ -1536,13 +1556,33 @@ class InterpolatorInput:
             self.tg.final_potential_field_at_faults.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
                                                               dtype=self.dtype))
 
+            if self.geo_data_res.fault_relation is not None:
+                self.tg.fault_relation.set_value(self.geo_data_res.fault_relation.astype('int64'))
+            else:
+                fault_rel = np.zeros((self.geo_data_res.interfaces['series'].nunique(),
+                                      self.geo_data_res.interfaces['series'].nunique()))
+
+                self.tg.fault_relation.set_value(fault_rel.astype('int64'))
+
+        # TODO change name to weithts!
         def set_densities(self, densities):
-            self.tg.densities.set_value(np.array(densities, dtype=self.dtype))
+            resolution = [50,50,50]
+
+            #
+            dx, dy, dz = (self.geo_data_res.extent[1] - self.geo_data_res.extent[0]) / resolution[0], (self.geo_data_res.extent[3] - self.geo_data_res.extent[2]) / resolution[
+                0], (self.geo_data_res.extent[5] - self.geo_data_res.extent[4]) / resolution[0]
+
+            #dx, dy, dz = self.geo_data_res.grid.dx, self.geo_data_res.grid.dy, self.geo_data_res.grid.dz
+            weight = (
+                #(dx * dy * dz) *
+                 np.array(densities))
+            print(weight)
+            self.tg.densities.set_value(np.array(weight, dtype=self.dtype))
 
         def set_z_comp(self, tz, selected_cells):
 
             self.tg.tz.set_value(tz.astype(self.dtype))
-            self.tg.select.set_value(selected_cells)
+            self.tg.select.set_value(selected_cells.astype(bool))
 
         def get_kriging_parameters(self, verbose=0):
             """
