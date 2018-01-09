@@ -250,7 +250,13 @@ class PlotData2D(object):
         # DEP?
         selecting_colors = np.unique(plot_block)
 
-        im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom", cmap=self._cmap, norm=self._norm,
+        if 'cmap' not in kwargs:
+            kwargs['cmap'] = self._cmap
+        if 'norm' not in kwargs:
+            kwargs['norm'] = self._norm
+
+
+        im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",# cmap=self._cmap, norm=self._norm,
                    extent=extent_val,
                    interpolation=interpolation, **kwargs)
 

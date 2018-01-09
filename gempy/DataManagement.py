@@ -96,6 +96,17 @@ class InputData(object):
 
         self.potential_at_interfaces = 0
 
+        self.fault_relation = None
+
+    def set_fault_relation_matrix(self, rel_matrix):
+        """
+        Method to set the faults that offset a given sequence and therefore also another fault
+        Args:
+            rel_matrix (numpy.array): 2D Boolean array with the logic. Rows affect (offset) columns
+        """
+
+        self.fault_relation = rel_matrix
+
     def import_data_csv(self, path_i, path_f, **kwargs):
         """
         Method to import interfaces and foliations from csv. The format is the same as the export 3D model data of
@@ -452,6 +463,9 @@ class InputData(object):
 
         self.order_table()
 
+        self.set_fault_relation_matrix(np.zeros((self.interfaces['series'].nunique(),
+                                                 self.interfaces['series'].nunique())))
+
         return _series
 
     def count_faults(self):
@@ -587,7 +601,9 @@ class InputData(object):
         l = len(self.interfaces)
         for key in kwargs:
             self.interfaces.ix[l, str(key)] = kwargs[key]
-        self.set_series()
+        if not 'series' in kwargs:
+            self.set_series()
+
         self.order_table()
 
     def interface_drop(self, index):
@@ -902,6 +918,8 @@ class GridClass(object):
             self.grid = self.create_regular_grid_3d()
         else:
             print("Wrong type")
+
+        self.dx, self.dy, self.dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0], (extent[5] - extent[4]) / resolution[0]
 
     def create_regular_grid_3d(self):
         """
@@ -1527,7 +1545,7 @@ class InterpolatorInput:
             #self.tg.n_formation.set_value(np.insert(_data_rescaled.interfaces['formation number'].unique(),
             #                                        0, 0)[::-1])
 
-            self.tg.n_formation.set_value(self.geo_data_res.interfaces['formation number'].unique())
+            self.tg.n_formation.set_value(self.geo_data_res.interfaces['formation number'].unique().astype('int64'))
 
             # Number of formations per series. The function is not pretty but the result is quite clear
             self.tg.n_formations_per_serie.set_value(
@@ -1538,8 +1556,28 @@ class InterpolatorInput:
             self.tg.final_potential_field_at_faults.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
                                                               dtype=self.dtype))
 
+            if self.geo_data_res.fault_relation is not None:
+                self.tg.fault_relation.set_value(self.geo_data_res.fault_relation.astype('int64'))
+            else:
+                fault_rel = np.zeros((self.geo_data_res.interfaces['series'].nunique(),
+                                      self.geo_data_res.interfaces['series'].nunique()))
+
+                self.tg.fault_relation.set_value(fault_rel.astype('int64'))
+
+        # TODO change name to weithts!
         def set_densities(self, densities):
-            self.tg.densities.set_value(np.array(densities, dtype=self.dtype))
+            resolution = [50,50,50]
+
+            #
+            dx, dy, dz = (self.geo_data_res.extent[1] - self.geo_data_res.extent[0]) / resolution[0], (self.geo_data_res.extent[3] - self.geo_data_res.extent[2]) / resolution[
+                0], (self.geo_data_res.extent[5] - self.geo_data_res.extent[4]) / resolution[0]
+
+            #dx, dy, dz = self.geo_data_res.grid.dx, self.geo_data_res.grid.dy, self.geo_data_res.grid.dz
+            weight = (
+                #(dx * dy * dz) *
+                 np.array(densities))
+            print(weight)
+            self.tg.densities.set_value(np.array(weight, dtype=self.dtype))
 
         def set_z_comp(self, tz, selected_cells):
 

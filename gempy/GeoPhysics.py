@@ -51,6 +51,7 @@ class GeoPhysicsPreprocessing_pro(object):
         self.b_all = np.zeros((0, self.model_resolution), dtype=bool)
 
     def compute_gravity(self, n_chunck_o=25):
+        # TODO this function sucks
         # Init
         i_0 = 0
         n_measurements = self.ai_resolution[0] * self.ai_resolution[1]
@@ -107,11 +108,15 @@ class GeoPhysicsPreprocessing_pro(object):
             mu = np.array([1, -1, -1, 1, -1, 1, 1, -1])
 
             # Component z of each voxel
-            tz = np.sum(- 1 * mu * (
+            # We need to rescale it the volume so to the cube and multiply by the gravity constant for G
+            tz = (
+                 np.sum(- 1 *
+                        #G *
+                        mu * (
                 x_matrix * np.log(y_matrix + s_r) +
                 y_matrix * np.log(x_matrix + s_r) -
                 z_matrix * np.arctan(x_matrix * y_matrix / (z_matrix * s_r))),
-                        axis=2)
+                        axis=2))
 
             # Stacking the precomputation
             if i_0 == 0:
