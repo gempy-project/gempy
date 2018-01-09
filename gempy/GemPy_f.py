@@ -38,7 +38,7 @@ import copy
 from gempy.Visualization import PlotData2D, steano3D, vtkVisualization
 from gempy.DataManagement import InputData, InterpolatorInput, GridClass
 from gempy.sequential_pile import StratigraphicPile
-from gempy.Topology import topology_analyze, topology_check_adjacency
+from gempy.Topology import topology_analyze as _topology_analyze, topology_check_adjacency
 import gempy.UncertaintyAnalysisPYMC2 # So far we use this type of import because the other one makes a copy and blows up some asserts
 
 
@@ -716,7 +716,7 @@ def topology_compute(geo_data, lith_block, fault_block,
         lb = lith_block.reshape(geo_data.resolution)[:, :, cell_number]
         fb = fault_block.reshape(geo_data.resolution)[:, :, cell_number]
 
-    return topology_analyze(lb, fb, geo_data.n_faults, areas_bool=compute_areas, return_block=return_label_block)
+    return _topology_analyze(lb, fb, geo_data.n_faults, areas_bool=compute_areas, return_block=return_label_block)
 
 
 def topology_plot(geo_data, G, centroids, direction="y"):
