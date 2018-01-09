@@ -439,7 +439,7 @@ class vtkVisualization:
         camera_list (list): list of cameras for the distinct renderers
         ren_list (list): list containing the vtk renderers
     """
-    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, color_lot=color_lot, real_time=False):
+    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, color_lot=color_lot, real_time=False, bg_color=None):
 
         self.real_time = real_time
         # self.C_LOT = self.color_lot_create(geo_data)
@@ -477,7 +477,7 @@ class vtkVisualization:
         # 3d model camera for the 4 renders
         self.camera_list = self._create_cameras(self.extent, verbose=verbose)
         # Setting the camera and the background color to the renders
-        self.set_camera_backcolor()
+        self.set_camera_backcolor(color=bg_color)
 
         # Creating the axis
         for e, r in enumerate(self.ren_list):
@@ -1060,13 +1060,15 @@ class vtkVisualization:
 
         return [model_cam, xy_cam, yz_cam, xz_cam]
 
-    def set_camera_backcolor(self):
+    def set_camera_backcolor(self, color=None):
         """
         define background colors of the renderers
         """
+        if color is None:
+            color = (66 / 250, 66 / 250, 66 / 250)
 
-        ren_color = [(66 / 250, 66 / 250, 66 / 250), (60 / 250, 60 / 250, 60 / 250), (60 / 250, 60 / 250, 60 / 250),
-                     (60 / 250, 60 / 250, 60 / 250)]
+        ren_color = [color for i in range(self.n_ren)]
+
         for i in range(self.n_ren):
             # set active camera for each renderer
             self.ren_list[i].SetActiveCamera(self.camera_list[i])

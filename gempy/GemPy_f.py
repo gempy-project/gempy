@@ -406,7 +406,7 @@ def set_interpolation_data(geo_data, **kwargs):
 def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
                      #formations_names_l, formation_numbers_l,
                      alpha=1, plot_data=True,
-                     size=(1920, 1080), fullscreen=False):
+                     size=(1920, 1080), fullscreen=False, bg_color=None):
     """
     Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
     Args:
@@ -421,7 +421,7 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
     Returns:
         None
     """
-    w = vtkVisualization(geo_data)
+    w = vtkVisualization(geo_data, bg_color=bg_color)
     w.set_surfaces(vertices_l, simplices_l,
                    #formations_names_l, formation_numbers_l,
                     alpha)
