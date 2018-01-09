@@ -1365,7 +1365,8 @@ class TheanoGraph_pro(object):
         else:
             formations = T.concatenate([self.n_formation[:n_faults-1:-1], T.stack([0])])
 
-            formations = theano.printing.Print('formations')(formations)
+            if False:
+                formations = theano.printing.Print('formations')(formations)
 
         # Substitue lithologies by its density
         density_block_loop, updates4 = theano.scan(self.switch_densities,
@@ -1374,7 +1375,7 @@ class TheanoGraph_pro(object):
                                     return_list = True
         )
 
-        if True:
+        if False:
 
             density_block_loop = theano.printing.Print('density block')(density_block_loop[-1])
 
@@ -1382,7 +1383,7 @@ class TheanoGraph_pro(object):
         # Tiling the density block for each measurent and picking just the closer to them. This has to be possible to
         # optimize
 
-        densities_rep = T.tile(density_block_loop[-1], n_measurements)
+        densities_rep = T.tile(density_block_loop[-1][-1], n_measurements)
         densities_selected = densities_rep[T.nonzero(T.cast(self.select, "int8"))[0]]
         densities_selected_reshaped = densities_selected.reshape((n_measurements, -1))
         #
@@ -1390,6 +1391,6 @@ class TheanoGraph_pro(object):
         grav = densities_selected_reshaped * self.tz
 
         #return [lith_matrix, self.fault_matrix, pfai, grav.sum(axis=1)]
-        return [lith_matrix, self.fault_matrix, pfai, grav.sum(axis=1)]
+        return [lith_matrix, fault_matrix, pfai, grav.sum(axis=1)]
 
 
