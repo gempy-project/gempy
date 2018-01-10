@@ -325,3 +325,16 @@ class Topology:
             return True
         else:
             return False
+
+
+def compare_graphs(G1, G2):
+    intersection = 0
+    union = G1.number_of_edges()
+
+    for edge in G1.edges_iter():
+        if G2.has_edge(edge[0], edge[1]):
+            intersection += 1
+        else:
+            union += 1
+
+    return intersection / union
