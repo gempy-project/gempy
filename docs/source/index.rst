@@ -3,29 +3,58 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to GeMpy's documentation!
-=================================
-A 3D Structural geologic implicit modelling in python. (v 0.9)
+Welcome to GemPy's (v 0.9) documentation!
+=========================================
+Software for 3D structural geologic implicit modeling in Python.
 **************************************************************
 
-GeMpy is an opensource project for the generation of 3D structural geological modelling. The algorithm is based on a especial type of Universal cokrigin interpolation created by Laujaunie et al (1997) and developed along the past year by (*add many more papers!!!*). This tool allows the generation of models with relative complex structures just from data. The repository can be found here, https://github.com/cgre-aachen/GeMpy.
+GemPy is an open-source tool for generating 3D structural geological models in Python.
+It is capable of creating complex 3D geological models,
+including stratigraphic and structural features such as:
 
-The results look like this:
+- fold structures (e.g.: anticlines, synclines)
+- fault networks and fault-layer interactions
+- unconformities
+
+The core algorithm is based on a universal cokriging interpolation method devised by
+Lajaunie et al. (1997) and further elaborated by Calcagno et al. (2008).
+Its implicit nature allows the user to generate complete 3D geological models
+through the interpolation of input data consisting of:
+
+- Surface contact points: 3D coordinates of points marking the boundaries between different features.
+- Orientation measurements: Orientation of the poles perpendicular to the dipping of surfaces at any point in the 3D space.
+
+Additionally, topological elements such as stratigraphic sequences and fault networks have to be
+defined in GemPy.
+
+.. image:: ./images/modeling_principle.png
+
+GemPy's code can be viewed in its repository: https://github.com/cgre-aachen/GeMpy.
+
+Results from modeling with GemPy can be visualized in several different ways.
+GemPy itself offers direct visualization of 2D sections via matplotlib
+and in full 3D using VTK (Visualization Toolkit). These VTK files can also be exported
+for further processing in programs such as Paraview. GemPy can furthermore be easily
+embedded in Blender for 3D rendering. 3D models created with GemPy may thus look like this:
+
+.. image:: ./images/model_examples.png
+
+For model (a) two central lithological formations were visualized as voxels in Paraview.
+Model (b) shows a more complex setting as rendered using Blender.
+Another option is Steno3D, which allows for a flexible and interactive visualization of 3D models:
 
 .. raw:: html
 
     <div style="margin-top:10px;">
-      <iframe src="https://steno3d.com/embed/A747sS50WZZu75yEm8Yi" width="600" height="400"></iframe>
+      <iframe src="https://steno3d.com/embed/A747sS50WZZu75yEm8Yi" width="800" height="600"></iframe>
     </div>
 
-Its implicit nature allows the user to generate complete 3D geological models through the interpolation of:
 
-- Interfaces points: 3D points in space that delimit the different formation in a given setting.
-- Foliations: Measurements of the poles (perpendicular to the layer) at any point in the 3D space.
-
-.. image:: ./images/input_example.png
 
 In addition to the interpolation GeMpy has been created with the idea of perform Bayesian Inferences in geological modeling (de la Varga and Wellmann, 2016). Due to this, the whole interpolation algorithm has been written in the optimization packge theano (http://deeplearning.net/software/theano/) what allows the computation of gradients opening the door to the use of advance HMC methods coupling GeMpy and PyMC3 (https://pymc-devs.github.io/pymc3/notebooks/getting_started.html). Also, the use of theano allows the use of the GPU through cuda (see theano doc for more information).
+
+For a more detail elaboration of the theory behind GemPy, take a look at the upcoming scientific publication
+"GemPy 1.0: open-source stochastic geological modeling and inversion" by de la Varga et al. (2018).
 
 Contents:
 
@@ -36,7 +65,7 @@ Contents:
    Kriging
    tutorial
    code
-   
+
 
 Indices and tables
 ==================
@@ -44,4 +73,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
