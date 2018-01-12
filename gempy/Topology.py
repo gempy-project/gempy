@@ -185,6 +185,27 @@ def topology_check_adjacency(G, n1, n2):
     else:
         return False
 
+def compute_adj_shape(n1, n2, labels_block, ext=None):
+    """Compute shape of adjacency area: number of voxels in X, Y and Z (column height). (Fabian)"""
+    labels_bools = np.array([(labels_block == l).astype("bool") for l in np.unique(labels_block)])
+    b = np.square(labels_block * (labels_bools[n1 - 1] + labels_bools[n2 - 1]))
+    d = np.absolute(b[0:-1, 0:-1, 0:-1] - b[1:, 1:, 1:])
+    d = (d == np.absolute(n1 ** 2 - n2 ** 2))
+    if np.count_nonzero(d) != 0:
+        nz_xyz = np.ndarray.nonzero(d)
+        #print(nz_xyz)
+        x_len = max(nz_xyz[0])-min(nz_xyz[0])+1
+        y_len = max(nz_xyz[1])-min(nz_xyz[1])+1
+        z_len = max(nz_xyz[2])-min(nz_xyz[2])+1
+    else:
+        print('Unable to calculate an adjacency area.') # Implementing this due to problem, where empty lists returned
+        nz_xyz = 0
+        x_len = 0
+        y_len = 0
+        z_len = 0
+    """z_len (maximal column height) to be used to calculate fault throw. (Fabian)"""
+    return x_len, y_len, z_len, nz_xyz, d
+
 
 # DEP 1.1
 class Topology:
