@@ -8,13 +8,17 @@ Welcome to GemPy's (v 0.9) documentation!
 Software for 3D structural geologic implicit modeling in Python.
 **************************************************************
 
-GemPy is an open-source tool for generating 3D structural geological models in Python.
+GemPy is an open-source tool for generating 3D structural geological models in Python (GemPy's code can be viewed in its repository: https://github.com/cgre-aachen/GeMpy.)
 It is capable of creating complex 3D geological models,
 including stratigraphic and structural features such as:
 
 - fold structures (e.g.: anticlines, synclines)
 - fault networks and fault-layer interactions
 - unconformities
+
+3D models created with GemPy may thus look like this:
+
+.. image:: ./images/model_examples.png
 
 The core algorithm is based on a universal cokriging interpolation method devised by
 Lajaunie et al. (1997) and further elaborated by Calcagno et al. (2008).
@@ -29,18 +33,10 @@ defined in GemPy.
 
 .. image:: ./images/modeling_principle.png
 
-GemPy's code can be viewed in its repository: https://github.com/cgre-aachen/GeMpy.
-
-Results from modeling with GemPy can be visualized in several different ways.
 GemPy itself offers direct visualization of 2D sections via matplotlib
 and in full 3D using VTK (Visualization Toolkit). These VTK files can also be exported
 for further processing in programs such as Paraview. GemPy can furthermore be easily
-embedded in Blender for 3D rendering. 3D models created with GemPy may thus look like this:
-
-.. image:: ./images/model_examples.png
-
-For model (a) two central lithological formations were visualized as voxels in Paraview.
-Model (b) shows a more complex setting as rendered using Blender.
+embedded in Blender for 3D rendering.
 Another option is Steno3D, which allows for a flexible and interactive visualization of 3D models:
 
 .. raw:: html
@@ -50,8 +46,16 @@ Another option is Steno3D, which allows for a flexible and interactive visualiza
     </div>
 
 
+GemPy was furthermore designed to allow the performance of
+Bayesian inference for stochastic geological modeling. This was achieved writing GemPy's core algorithm
+in Theano (http://deeplearning.net/software/theano/) and coupling it with PyMC3 (https://pymc-devs.github.io/pymc3/notebooks/getting_started.html).
+This enables the use of advanced HMC methods and is of special relevance when considering
+uncertainties in model input data and the availability of additional secondary information. 
 
-In addition to the interpolation GeMpy has been created with the idea of perform Bayesian Inferences in geological modeling (de la Varga and Wellmann, 2016). Due to this, the whole interpolation algorithm has been written in the optimization packge theano (http://deeplearning.net/software/theano/) what allows the computation of gradients opening the door to the use of advance HMC methods coupling GeMpy and PyMC3 (https://pymc-devs.github.io/pymc3/notebooks/getting_started.html). Also, the use of theano allows the use of the GPU through cuda (see theano doc for more information).
+(This optimization package allows the computation
+of gradients opening the door to the use of advance HMC methods
+coupling GeMpy and PyMC3 (https://pymc-devs.github.io/pymc3/notebooks/getting_started.html).
+Also, the use of theano allows the use of the GPU through cuda (see theano doc for more information).)
 
 For a more detail elaboration of the theory behind GemPy, take a look at the upcoming scientific publication
 "GemPy 1.0: open-source stochastic geological modeling and inversion" by de la Varga et al. (2018).
