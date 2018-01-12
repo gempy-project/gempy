@@ -635,11 +635,11 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
     return vertices, simplices
 
 
-def export_to_vtk(geo_data, path=None, lith_block=None, vertices=None, simplices=None):
+def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None, simplices=None):
     if lith_block is not None:
-        vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path)
+        vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path+str('v'))
     if vertices is not None and simplices is not None:
-        vtkVisualization.export_vtk_surfaces(vertices, simplices)
+        vtkVisualization.export_vtk_surfaces(vertices, simplices, path=path+str('s'), name=name)
 
 
 
