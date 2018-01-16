@@ -65,7 +65,7 @@ input_data/Fab_Model_MorePoints_Points.csv
 input_data/Intrusion-test/
 legacy/.ipynb_checkpoints/
 test/.ipynb_checkpoints/
-test/GeoModeller/
+
 test/__pycache__/
 test/legacy/
 test/log
