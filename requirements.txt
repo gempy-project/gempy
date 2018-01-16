@@ -8,13 +8,8 @@ pymc3==3.1rc3
 pytest==3.1.2
 scipy==0.19.0
 steno3d==0.3.1
-bokeh==0.12.6
-ElementTree==1.2.6-20050316
 ipython==6.2.1
-elementtree==1.2.6-20050316
-Pygments==2.2.0
 pymc==2.3.6
-qgrid==1.0.1a2
 seaborn==0.8.1
 setuptools==38.4.0
 skimage==0.0
