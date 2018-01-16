@@ -1150,7 +1150,7 @@ class vtkVisualization:
             None
         """
 
-        from evtk.hl import gridToVTK
+        from pyevtk.hl import gridToVTK
 
         import numpy as np
 
@@ -1241,7 +1241,7 @@ class vtkVisualization:
             if not path:
                 path = "./default_"
 
-            writer.SetFileName(path+str(s_n)+name+'.vtp')
+            writer.SetFileName(path+'_surfaces'+str(s_n)+'.vtp')
             if vtk.VTK_MAJOR_VERSION <= 5:
                 writer.SetInput(polydata)
             else:

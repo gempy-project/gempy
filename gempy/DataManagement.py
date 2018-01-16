@@ -788,7 +788,7 @@ class FoliaitionsFromInterfaces:
             # get point cloud centroid and normal vector of plane
             self.centroid, self.normal = self._fit_plane_svd()
             # get dip and azimuth of plane from normal vector
-            self.dip, self.azimuth, self.polarity = self._get_dip(verbose=verbose)
+            self.dip, self.azimuth, self.polarity = self._get_dip()
 
         elif mode == "fol_to_interf":
             self._f = self.geo_data.foliations["group_id"] == self.group_id
@@ -1557,12 +1557,12 @@ class InterpolatorInput:
                                                               dtype=self.dtype))
 
             if self.geo_data_res.fault_relation is not None:
-                self.tg.fault_relation.set_value(self.geo_data_res.fault_relation.astype('int64'))
+                self.tg.fault_relation.set_value(self.geo_data_res.fault_relation.astype('int'))
             else:
                 fault_rel = np.zeros((self.geo_data_res.interfaces['series'].nunique(),
                                       self.geo_data_res.interfaces['series'].nunique()))
 
-                self.tg.fault_relation.set_value(fault_rel.astype('int64'))
+                self.tg.fault_relation.set_value(fault_rel.astype('int'))
 
         # TODO change name to weithts!
         def set_densities(self, densities):
