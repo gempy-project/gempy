@@ -1185,7 +1185,7 @@ class vtkVisualization:
         gridToVTK(path+'_lith_block', x, y, z, cellData={"Lithology": lith})
 
     @staticmethod
-    def export_vtk_surfaces(vertices, simplices, path=None):
+    def export_vtk_surfaces(vertices, simplices, path=None, name='_surfaces', alpha=1):
         """
         Export data to a vtk file for posterior visualizations
         Args:
@@ -1228,6 +1228,16 @@ class vtkVisualization:
 
             writer = vtk.vtkXMLPolyDataWriter();
 
+            # Add colors
+            surf_mapper = vtk.vtkPolyDataMapper()
+            surf_mapper.SetInputData(polydata)
+            surf_mapper.Update()
+
+            surf_actor = vtk.vtkActor()
+            surf_actor.SetMapper(surf_mapper)
+            surf_actor.GetProperty().SetColor(color_lot[s_n])
+            surf_actor.GetProperty().SetOpacity(alpha)
+
             if not path:
                 path = "./default_"
 
@@ -1237,6 +1247,7 @@ class vtkVisualization:
             else:
                 writer.SetInputData(polydata)
             writer.Write()
+
 
 
 def _create_color_lot(geo_data, cd_rgb):

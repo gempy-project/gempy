@@ -65,7 +65,7 @@ input_data/Fab_Model_MorePoints_Points.csv
 input_data/Intrusion-test/
 legacy/.ipynb_checkpoints/
 test/.ipynb_checkpoints/
-test/GeoModeller/
+
 test/__pycache__/
 test/legacy/
 test/log
@@ -169,3 +169,7 @@ ENV/
 # Rope project settings
 .ropeproject
 
+Prototype Notebook/vtks
+Prototype Notebook/vtk_res_model_adjusted_1
+Prototype Notebook/vtk_exp_smooth_trnasitions
+Prototype Notebook/plots

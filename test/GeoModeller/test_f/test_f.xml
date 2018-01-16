@@ -1,0 +1,1279 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?driver version="2.0.0"?>
+<!--Composed by Intrepid GeoModeller 2014 v3.3.0 geomodeller_2014 for Windows (x64) by PELAGIAN optimised build b8c286f00ab4, Jun  1 2015-->
+<geo:Project3DEdit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:geo="http://www.geomodeller.com/geo" xmlns:gml="http://www.opengis.net/gml" author="Fabian" CoordSystem="local" date="26/ 3/2017 16:48:41" deflection2d="0.001" deflection3d="1.0E-4" description="" discretisation="1000000.0" precision="1.0" projectName="Faulted Anticline - Structural Trap" unit="M" version="2.0">
+  <geo:Extent3DOfProject>
+    <geo:ExtentBox3D>
+      <geo:Extent3D>
+        <geo:ExtentXY Xmax="2000.0" Xmin="0.0" Ymax="2000.0" Ymin="0.0"/>
+        <geo:ExtentZ Zmax="0.0" Zmin="-2000.0"/>
+      </geo:Extent3D>
+      <geo:GraphicTitle Title="Faulted Anticline - Structural Trap">
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="0" Green="100" Red="0"/>
+          <geo:ColorWireFrame Blue="0" Green="255" Red="255"/>
+        </geo:Graphic>
+        <geo:Location>
+          <gml:coordinates cs="," decimal="." ts=" ">0.0,0.0,-2000.0</gml:coordinates>
+        </geo:Location>
+      </geo:GraphicTitle>
+      <geo:GraphicBox3d>
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="0" Green="100" Red="0"/>
+          <geo:ColorWireFrame Blue="0" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicBox3d>
+      <geo:GraphicTick DensityAlongX="2" DensityAlongY="2" DensityAlongZ="2" OnOff="false" TickLength="0.0">
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="0" Green="100" Red="0"/>
+          <geo:ColorWireFrame Blue="0" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicTick>
+      <geo:GraphicLabel LabelFormat="" OnOff="false">
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="0" Green="100" Red="0"/>
+          <geo:ColorWireFrame Blue="0" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicLabel>
+    </geo:ExtentBox3D>
+    <geo:TriAxis>
+      <geo:Axis3DDefinition LabelOrigin="" LabelX="" LabelY="" LabelZ="" OnOff="true" Radius="10.0" Size="40.0" Step="200.0">
+        <gml:Point>
+          <gml:coordinates cs="," decimal="." ts=" ">-200.0,-200.0,-2000.0</gml:coordinates>
+        </gml:Point>
+        <geo:Length LengthX="200.0" LengthY="200.0" LengthZ="200.0"/>
+      </geo:Axis3DDefinition>
+      <geo:GraphicOrigin>
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="255" Green="255" Red="255"/>
+          <geo:ColorWireFrame Blue="255" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicOrigin>
+      <geo:GraphicAxisX>
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="255" Green="255" Red="255"/>
+          <geo:ColorWireFrame Blue="255" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicAxisX>
+      <geo:GraphicAxisY>
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="255" Green="255" Red="255"/>
+          <geo:ColorWireFrame Blue="255" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicAxisY>
+      <geo:GraphicAxisZ>
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="255" Green="255" Red="255"/>
+          <geo:ColorWireFrame Blue="255" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicAxisZ>
+    </geo:TriAxis>
+  </geo:Extent3DOfProject>
+  <geo:Formations>
+    <geo:Formation Name="NonReservoirDeep">
+      <geo:FormationGeology AbsoluteAge="0" DatingTechnique="0" Description="0" ExtraComment="" Genesis="0" Lithology="" MineralComposition="" StratigraphicAge="" Texture=""/>
+      <geo:Geophysics>
+        <geo:DensityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="2.67" PercentageContribution="100"/>
+        </geo:DensityCompoundDistribution>
+        <geo:SusceptibilityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:SusceptibilityCompoundDistribution>
+        <geo:RemanentMagnetizationCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:RemanentMagnetizationCompoundDistribution>
+        <geo:FluidVelocityCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:FluidVelocityCompoundDistribution>
+        <geo:VelocityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1500.0" PercentageContribution="100"/>
+        </geo:VelocityCompoundDistribution>
+        <geo:ThermalConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="2.0" PercentageContribution="100"/>
+        </geo:ThermalConductivityCompoundDistribution>
+        <geo:HeatProductionRateCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:HeatProductionRateCompoundDistribution>
+        <geo:SpecificHeatCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:SpecificHeatCompoundDistribution>
+        <geo:ResistivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ResistivityCompoundDistribution>
+        <geo:ConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ConductivityCompoundDistribution>
+        <geo:PorosityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:PorosityCompoundDistribution>
+      </geo:Geophysics>
+      <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="1" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+        <geo:ColorShading Blue="68" Green="138" Red="0"/>
+        <geo:ColorWireFrame Blue="68" Green="138" Red="0"/>
+      </geo:Graphic>
+    </geo:Formation>
+    <geo:Formation Name="Reservoir">
+      <geo:FormationGeology AbsoluteAge="0" DatingTechnique="0" Description="0" ExtraComment="" Genesis="0" Lithology="" MineralComposition="" StratigraphicAge="" Texture=""/>
+      <geo:Geophysics>
+        <geo:DensityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="2.67" PercentageContribution="100"/>
+        </geo:DensityCompoundDistribution>
+        <geo:SusceptibilityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:SusceptibilityCompoundDistribution>
+        <geo:RemanentMagnetizationCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:RemanentMagnetizationCompoundDistribution>
+        <geo:FluidVelocityCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:FluidVelocityCompoundDistribution>
+        <geo:VelocityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1500.0" PercentageContribution="100"/>
+        </geo:VelocityCompoundDistribution>
+        <geo:ThermalConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="2.0" PercentageContribution="100"/>
+        </geo:ThermalConductivityCompoundDistribution>
+        <geo:HeatProductionRateCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:HeatProductionRateCompoundDistribution>
+        <geo:SpecificHeatCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:SpecificHeatCompoundDistribution>
+        <geo:ResistivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ResistivityCompoundDistribution>
+        <geo:ConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ConductivityCompoundDistribution>
+        <geo:PorosityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:PorosityCompoundDistribution>
+      </geo:Geophysics>
+      <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="1" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+        <geo:ColorShading Blue="0" Green="255" Red="126"/>
+        <geo:ColorWireFrame Blue="0" Green="255" Red="126"/>
+      </geo:Graphic>
+    </geo:Formation>
+    <geo:Formation Name="Seal">
+      <geo:FormationGeology AbsoluteAge="0" DatingTechnique="0" Description="0" ExtraComment="" Genesis="0" Lithology="" MineralComposition="" StratigraphicAge="" Texture=""/>
+      <geo:Geophysics>
+        <geo:DensityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="2.67" PercentageContribution="100"/>
+        </geo:DensityCompoundDistribution>
+        <geo:SusceptibilityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:SusceptibilityCompoundDistribution>
+        <geo:RemanentMagnetizationCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:RemanentMagnetizationCompoundDistribution>
+        <geo:FluidVelocityCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:FluidVelocityCompoundDistribution>
+        <geo:VelocityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1500.0" PercentageContribution="100"/>
+        </geo:VelocityCompoundDistribution>
+        <geo:ThermalConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="2.0" PercentageContribution="100"/>
+        </geo:ThermalConductivityCompoundDistribution>
+        <geo:HeatProductionRateCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:HeatProductionRateCompoundDistribution>
+        <geo:SpecificHeatCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:SpecificHeatCompoundDistribution>
+        <geo:ResistivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ResistivityCompoundDistribution>
+        <geo:ConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ConductivityCompoundDistribution>
+        <geo:PorosityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:PorosityCompoundDistribution>
+      </geo:Geophysics>
+      <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="1" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.008666666666666666">
+        <geo:ColorShading Blue="205" Green="154" Red="0"/>
+        <geo:ColorWireFrame Blue="205" Green="154" Red="0"/>
+      </geo:Graphic>
+    </geo:Formation>
+    <geo:Formation Name="SecondaryReservoir">
+      <geo:FormationGeology AbsoluteAge="0" DatingTechnique="0" Description="0" ExtraComment="" Genesis="0" Lithology="" MineralComposition="" StratigraphicAge="" Texture=""/>
+      <geo:Geophysics>
+        <geo:DensityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="2.67" PercentageContribution="100"/>
+        </geo:DensityCompoundDistribution>
+        <geo:SusceptibilityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:SusceptibilityCompoundDistribution>
+        <geo:RemanentMagnetizationCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:RemanentMagnetizationCompoundDistribution>
+        <geo:FluidVelocityCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:FluidVelocityCompoundDistribution>
+        <geo:VelocityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1500.0" PercentageContribution="100"/>
+        </geo:VelocityCompoundDistribution>
+        <geo:ThermalConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="2.0" PercentageContribution="100"/>
+        </geo:ThermalConductivityCompoundDistribution>
+        <geo:HeatProductionRateCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:HeatProductionRateCompoundDistribution>
+        <geo:SpecificHeatCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:SpecificHeatCompoundDistribution>
+        <geo:ResistivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ResistivityCompoundDistribution>
+        <geo:ConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ConductivityCompoundDistribution>
+        <geo:PorosityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:PorosityCompoundDistribution>
+      </geo:Geophysics>
+      <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="1" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+        <geo:ColorShading Blue="0" Green="255" Red="255"/>
+        <geo:ColorWireFrame Blue="0" Green="255" Red="255"/>
+      </geo:Graphic>
+    </geo:Formation>
+    <geo:Formation Name="SecondarySeal">
+      <geo:FormationGeology AbsoluteAge="0" DatingTechnique="0" Description="0" ExtraComment="" Genesis="0" Lithology="" MineralComposition="" StratigraphicAge="" Texture=""/>
+      <geo:Geophysics>
+        <geo:DensityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="2.67" PercentageContribution="100"/>
+        </geo:DensityCompoundDistribution>
+        <geo:SusceptibilityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:SusceptibilityCompoundDistribution>
+        <geo:RemanentMagnetizationCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:RemanentMagnetizationCompoundDistribution>
+        <geo:FluidVelocityCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:FluidVelocityCompoundDistribution>
+        <geo:VelocityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1500.0" PercentageContribution="100"/>
+        </geo:VelocityCompoundDistribution>
+        <geo:ThermalConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="2.0" PercentageContribution="100"/>
+        </geo:ThermalConductivityCompoundDistribution>
+        <geo:HeatProductionRateCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:HeatProductionRateCompoundDistribution>
+        <geo:SpecificHeatCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:SpecificHeatCompoundDistribution>
+        <geo:ResistivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ResistivityCompoundDistribution>
+        <geo:ConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ConductivityCompoundDistribution>
+        <geo:PorosityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:PorosityCompoundDistribution>
+      </geo:Geophysics>
+      <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="1" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.008666666666666666">
+        <geo:ColorShading Blue="255" Green="112" Red="131"/>
+        <geo:ColorWireFrame Blue="255" Green="112" Red="131"/>
+      </geo:Graphic>
+    </geo:Formation>
+    <geo:DummyFormation Name="DefaultBasement">
+      <geo:FormationGeology AbsoluteAge="0" DatingTechnique="0" Description="0" ExtraComment="" Genesis="0" Lithology="" MineralComposition="" StratigraphicAge="" Texture=""/>
+      <geo:Geophysics>
+        <geo:DensityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="2.67" PercentageContribution="100"/>
+        </geo:DensityCompoundDistribution>
+        <geo:SusceptibilityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:SusceptibilityCompoundDistribution>
+        <geo:RemanentMagnetizationCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:RemanentMagnetizationCompoundDistribution>
+        <geo:FluidVelocityCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:FluidVelocityCompoundDistribution>
+        <geo:VelocityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1500.0" PercentageContribution="100"/>
+        </geo:VelocityCompoundDistribution>
+        <geo:ThermalConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="2.0" PercentageContribution="100"/>
+        </geo:ThermalConductivityCompoundDistribution>
+        <geo:HeatProductionRateCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:HeatProductionRateCompoundDistribution>
+        <geo:SpecificHeatCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:SpecificHeatCompoundDistribution>
+        <geo:ResistivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ResistivityCompoundDistribution>
+        <geo:ConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ConductivityCompoundDistribution>
+        <geo:PorosityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:PorosityCompoundDistribution>
+      </geo:Geophysics>
+      <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="1" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+        <geo:ColorShading Blue="179" Green="179" Red="179"/>
+        <geo:ColorWireFrame Blue="179" Green="179" Red="179"/>
+      </geo:Graphic>
+    </geo:DummyFormation>
+  </geo:Formations>
+  <geo:Faults>
+    <geo:Fault Name="MainFault">
+      <geo:FaultGeology BEARING="0.0" CENTER_TYPE="0" DIP="0.0" FAULT_TYPE="0" LATERAL_EXTENT="900.0" RADIUS_OF_INFLUENCE="10000.0" RHEOLOGY="0" THICKNESS="0.0" TYPE_NOT_IN_USE="" VERTICAL_EXTENT="1200.0"/>
+      <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="1" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.005686274509803921">
+        <geo:ColorShading Blue="0" Green="0" Red="255"/>
+        <geo:ColorWireFrame Blue="0" Green="0" Red="255"/>
+      </geo:Graphic>
+    </geo:Fault>
+  </geo:Faults>
+  <geo:Sections>
+    <geo:Section Name="FootwallSection - parallel fault" IsAxialSurface="false">
+      <geo:OutputGraphicalData>
+        <geo:FormationPolygonList>
+          <geo:Data Name="SecondaryReservoir"/>
+          <gml:MultiPolygon srsName="localSectionSystem">
+            <gml:geometryMember xsi:type="gml:PolygonMemberType">
+              <gml:_Geometry xsi:type="gml:PolygonType">
+                <gml:outerBoundaryIs>
+                  <gml:LinearRing>
+                    <gml:coordinates cs="," decimal="." ts=" ">0.001,-1.0164221938775524 0.0,-1.0164221938775522 0.001,-1.016422193877552 40.816326530612244,-1.0164221938775522 81.63265306122449,-1.0164221938775522 122.44897959183673,-1.0164221938775522 163.26530612244898,-1.0164221938775522 204.0816326530612,-1.0164221938775522 244.89795918367346,-1.0164221938775522 285.7142857142857,-1.0164221938775522 326.53061224489795,-1.0164221938775522 367.3469387755102,-1.0164221938775522 408.1632653061224,-1.0164221938775522 448.9795918367347,-1.0164221938775522 489.7959183673469,-1.0164221938775522 530.6122448979592,-1.0164221938775522 571.4285714285714,-1.0164221938775522 612.2448979591836,-1.0164221938775522 653.0612244897959,-1.0164221938775522 693.8775510204082,-1.0164221938775522 734.6938775510204,-1.0164221938775522 775.5102040816327,-1.0164221938775522 816.3265306122448,-1.0164221938775522 857.1428571428571,-1.0164221938775522 897.9591836734694,-1.0164221938775522 938.7755102040816,-1.0164221938775522 979.5918367346939,-1.0164221938775522 1020.4081632653061,-1.0164221938775522 1061.2244897959183,-1.0164221938775522 1102.0408163265306,-1.0164221938775522 1142.857142857143,-1.0164221938775522 1183.6734693877552,-1.0164221938775522 1224.4897959183672,-1.0164221938775522 1265.3061224489795,-1.0164221938775522 1306.1224489795918,-1.0164221938775522 1346.938775510204,-1.0164221938775522 1387.7551020408164,-1.0164221938775522 1428.5714285714284,-1.0164221938775522 1469.3877551020407,-1.0164221938775522 1510.204081632653,-1.0164221938775522 1551.0204081632653,-1.0164221938775522 1591.8367346938776,-1.0164221938775522 1632.6530612244896,-1.0164221938775522 1673.469387755102,-1.0164221938775522 1714.2857142857142,-1.0164221938775522 1755.1020408163265,-1.0164221938775522 1795.9183673469388,-1.0164221938775522 1836.734693877551,-1.0164221938775522 1877.5510204081631,-1.0164221938775522 1918.3673469387754,-1.0164221938775522 1959.1836734693877,-1.0164221938775522 1999.999,-1.0164221938775522 1999.999,-402.2250225484354 1999.999,-402.2254993929796 1987.5467952232157,-408.1632653061224 1959.1836734693877,-421.70128755369575 1918.3673469387754,-440.8656166489773 1900.7102070155224,-448.9795918367347 1877.5510204081631,-459.62108904782076 1836.734693877551,-477.7573927832072 1808.4001963728224,-489.795918367347 1795.9183673469388,-495.0848723763927 1755.1020408163265,-511.4820660269613 1714.2857142857142,-526.6852926576946 1702.9073368305517,-530.6122448979593 1673.469387755102,-540.6638954016444 1632.6530612244896,-553.2588606648346 1591.8367346938776,-564.4246191542211 1562.7534346594298,-571.4285714285716 1551.0204081632653,-574.1960151459316 1510.204081632653,-582.6151622361407 1469.3877551020407,-589.7629197369737 1428.5714285714284,-595.7635558989355 1387.7551020408164,-600.7483247759093 1346.938775510204,-604.8471115494435 1306.1224489795918,-608.1820661957328 1265.3061224489795,-610.8631960965998 1238.871789884879,-612.2448979591836 1224.4897959183672,-612.9756839179977 1183.6734693877552,-614.5952746740581 1142.857142857143,-615.8056019879922 1102.0408163265306,-616.6590803913045 1061.2244897959183,-617.197775651943 1020.4081632653061,-617.4559648952833 979.5918367346939,-617.4559648952315 938.7755102040816,-617.1977756517995 897.9591836734694,-616.6590803910937 857.1428571428571,-615.8056019877631 816.3265306122448,-614.5952746738761 775.5102040816327,-612.9756839179371 761.1282101148282,-612.2448979591836 734.6938775510204,-610.8631960967567 693.8775510204082,-608.1820661961916 653.0612244897959,-604.8471115503162 612.2448979591836,-600.7483247773016 571.4285714285714,-595.7635559009433 530.6122448979592,-589.7629197396702 489.7959183673469,-582.6151622396103 448.9795918367347,-574.196015150209 437.246565321575,-571.4285714285713 408.1632653061224,-564.4246191592905 367.3469387755102,-553.2588606706827 326.53061224489795,-540.6638954081939 297.0926631492373,-530.6122448979593 285.7142857142857,-526.6852926648004 244.89795918367346,-511.4820660345485 204.0816326530612,-495.0848723843347 191.59980360835394,-489.79591836734704 163.26530612244898,-477.75739279126736 122.44897959183673,-459.6210890559314 99.28979296702256,-448.97959183673476 81.63265306122449,-440.8656166569267 40.816326530612244,-421.7012875614322 12.453204761146928,-408.16326530612247 0.001,-402.22549940031365 0.001,-402.2250225557693 0.001,-1.0164221938775524 </gml:coordinates>
+                  </gml:LinearRing>
+                </gml:outerBoundaryIs>
+              </gml:_Geometry>
+            </gml:geometryMember>
+          </gml:MultiPolygon>
+          <geo:Data Name="Seal"/>
+          <gml:MultiPolygon srsName="localSectionSystem">
+            <gml:geometryMember xsi:type="gml:PolygonMemberType">
+              <gml:_Geometry xsi:type="gml:PolygonType">
+                <gml:outerBoundaryIs>
+                  <gml:LinearRing>
+                    <gml:coordinates cs="," decimal="." ts=" ">0.001,-402.22549940031365 12.453204761146928,-408.16326530612247 40.816326530612244,-421.7012875614322 81.63265306122449,-440.8656166569267 99.28979296702256,-448.97959183673476 122.44897959183673,-459.6210890559314 163.26530612244898,-477.75739279126736 191.59980360835394,-489.79591836734704 204.0816326530612,-495.0848723843347 244.89795918367346,-511.4820660345485 285.7142857142857,-526.6852926648004 297.0926631492373,-530.6122448979593 326.53061224489795,-540.6638954081939 367.3469387755102,-553.2588606706827 408.1632653061224,-564.4246191592905 437.246565321575,-571.4285714285713 448.9795918367347,-574.196015150209 489.7959183673469,-582.6151622396103 530.6122448979592,-589.7629197396702 571.4285714285714,-595.7635559009433 612.2448979591836,-600.7483247773016 653.0612244897959,-604.8471115503162 693.8775510204082,-608.1820661961916 734.6938775510204,-610.8631960967567 761.1282101148282,-612.2448979591836 775.5102040816327,-612.9756839179371 816.3265306122448,-614.5952746738761 857.1428571428571,-615.8056019877631 897.9591836734694,-616.6590803910937 938.7755102040816,-617.1977756517995 979.5918367346939,-617.4559648952315 1020.4081632653061,-617.4559648952833 1061.2244897959183,-617.197775651943 1102.0408163265306,-616.6590803913045 1142.857142857143,-615.8056019879922 1183.6734693877552,-614.5952746740581 1224.4897959183672,-612.9756839179977 1238.871789884879,-612.2448979591836 1265.3061224489795,-610.8631960965998 1306.1224489795918,-608.1820661957328 1346.938775510204,-604.8471115494435 1387.7551020408164,-600.7483247759093 1428.5714285714284,-595.7635558989355 1469.3877551020407,-589.7629197369737 1510.204081632653,-582.6151622361407 1551.0204081632653,-574.1960151459316 1562.7534346594298,-571.4285714285716 1591.8367346938776,-564.4246191542211 1632.6530612244896,-553.2588606648346 1673.469387755102,-540.6638954016444 1702.9073368305517,-530.6122448979593 1714.2857142857142,-526.6852926576946 1755.1020408163265,-511.4820660269613 1795.9183673469388,-495.0848723763927 1808.4001963728224,-489.795918367347 1836.734693877551,-477.7573927832072 1877.5510204081631,-459.62108904782076 1900.7102070155224,-448.9795918367347 1918.3673469387754,-440.8656166489773 1959.1836734693877,-421.70128755369575 1987.5467952232157,-408.1632653061224 1999.999,-402.2254993929796 1999.999,-548.0164877205041 1999.999,-548.016950504988 1959.1836734693877,-566.9056503381686 1949.2188747266387,-571.4285714285716 1918.3673469387754,-585.5330183370527 1877.5510204081631,-603.4745903009973 1856.5888430244718,-612.2448979591836 1836.734693877551,-620.5907785816194 1795.9183673469388,-636.6203347309759 1755.1020408163265,-651.1817890113749 1749.2942810879115,-653.0612244897959 1714.2857142857142,-664.320347935965 1673.469387755102,-675.7165993383222 1632.6530612244896,-685.34222282696 1591.8367346938776,-693.2768291734783 1588.098197957442,-693.8775510204082 1551.0204081632653,-699.6885200832079 1510.204081632653,-704.6792831864591 1469.3877551020407,-708.4528828497625 1428.5714285714284,-711.2195715747125 1387.7551020408164,-713.1791701471556 1346.938775510204,-714.5136643781324 1306.1224489795918,-715.3829882265726 1265.3061224489795,-715.9229617435906 1224.4897959183672,-716.2444711420256 1183.6734693877552,-716.4332235895062 1142.857142857143,-716.5497901773638 1102.0408163265306,-716.6302203538863 1061.2244897959183,-716.6882729593125 1020.4081632653061,-716.721201389502 979.5918367346939,-716.7212013894185 938.7755102040816,-716.6882729590732 897.9591836734694,-716.6302203535266 857.1428571428571,-716.5497901769336 816.3265306122448,-716.433223589087 775.5102040816327,-716.2444711417078 734.6938775510204,-715.9229617434831 693.8775510204082,-715.3829882268134 653.0612244897959,-714.5136643788512 612.2448979591836,-713.1791701485025 571.4285714285714,-711.2195715768311 530.6122448979592,-708.4528828527878 489.7959183673469,-704.6792831905354 448.9795918367347,-699.6885200884274 411.9018020034477,-693.8775510204082 408.1632653061224,-693.2768291798549 367.3469387755102,-685.3422228345239 326.53061224489795,-675.7165993470433 285.7142857142857,-664.3203479457571 250.70571887987708,-653.0612244897959 244.89795918367346,-651.1817890218889 204.0816326530612,-636.6203347421919 163.26530612244898,-620.5907785933508 143.41115694746654,-612.2448979591836 122.44897959183673,-603.4745903127924 81.63265306122449,-585.5330183489466 50.781125247705575,-571.4285714285713 40.816326530612244,-566.9056503497566 0.001,-548.0169505163472 0.001,-548.0164877318632 0.001,-402.22549940031365 </gml:coordinates>
+                  </gml:LinearRing>
+                </gml:outerBoundaryIs>
+              </gml:_Geometry>
+            </gml:geometryMember>
+          </gml:MultiPolygon>
+          <geo:Data Name="Reservoir"/>
+          <gml:MultiPolygon srsName="localSectionSystem">
+            <gml:geometryMember xsi:type="gml:PolygonMemberType">
+              <gml:_Geometry xsi:type="gml:PolygonType">
+                <gml:outerBoundaryIs>
+                  <gml:LinearRing>
+                    <gml:coordinates cs="," decimal="." ts=" ">0.001,-1431.625609865766 0.001,-548.0169505163472 40.816326530612244,-566.9056503497566 50.781125247705575,-571.4285714285713 81.63265306122449,-585.5330183489466 122.44897959183673,-603.4745903127924 143.41115694746654,-612.2448979591836 163.26530612244898,-620.5907785933508 204.0816326530612,-636.6203347421919 244.89795918367346,-651.1817890218889 250.70571887987708,-653.0612244897959 285.7142857142857,-664.3203479457571 326.53061224489795,-675.7165993470433 367.3469387755102,-685.3422228345239 408.1632653061224,-693.2768291798549 411.9018020034477,-693.8775510204082 448.9795918367347,-699.6885200884274 489.7959183673469,-704.6792831905354 530.6122448979592,-708.4528828527878 571.4285714285714,-711.2195715768311 612.2448979591836,-713.1791701485025 653.0612244897959,-714.5136643788512 693.8775510204082,-715.3829882268134 734.6938775510204,-715.9229617434831 775.5102040816327,-716.2444711417078 816.3265306122448,-716.433223589087 857.1428571428571,-716.5497901769336 897.9591836734694,-716.6302203535266 938.7755102040816,-716.6882729590732 979.5918367346939,-716.7212013894185 1020.4081632653061,-716.721201389502 1061.2244897959183,-716.6882729593125 1102.0408163265306,-716.6302203538863 1142.857142857143,-716.5497901773638 1183.6734693877552,-716.4332235895062 1224.4897959183672,-716.2444711420256 1265.3061224489795,-715.9229617435906 1306.1224489795918,-715.3829882265726 1346.938775510204,-714.5136643781324 1387.7551020408164,-713.1791701471556 1428.5714285714284,-711.2195715747125 1469.3877551020407,-708.4528828497625 1510.204081632653,-704.6792831864591 1551.0204081632653,-699.6885200832079 1588.098197957442,-693.8775510204082 1591.8367346938776,-693.2768291734783 1632.6530612244896,-685.34222282696 1673.469387755102,-675.7165993383222 1714.2857142857142,-664.320347935965 1749.2942810879115,-653.0612244897959 1755.1020408163265,-651.1817890113749 1795.9183673469388,-636.6203347309759 1836.734693877551,-620.5907785816194 1856.5888430244718,-612.2448979591836 1877.5510204081631,-603.4745903009973 1918.3673469387754,-585.5330183370527 1949.2188747266387,-571.4285714285716 1959.1836734693877,-566.9056503381686 1999.999,-548.016950504988 1999.999,-1431.6256098630083 1959.1836734693877,-1430.953154647101 1931.7627783939042,-1428.5714285714287 1918.3673469387754,-1427.4090804949033 1877.5510204081631,-1420.7583485310333 1836.734693877551,-1411.0834231740641 1795.9183673469388,-1398.3688779410882 1768.5352852844353,-1387.7551020408162 1755.1020408163265,-1382.5598395426425 1714.2857142857142,-1364.0177433220924 1680.1003190562878,-1346.938775510204 1673.469387755102,-1343.6856814773794 1632.6530612244896,-1321.9428927131116 1603.9469279479401,-1306.1224489795918 1591.8367346938776,-1299.6578425612777 1551.0204081632653,-1277.3464429258343 1528.8652660655332,-1265.3061224489795 1510.204081632653,-1255.583133061021 1469.3877551020407,-1234.8023267627343 1448.25555188864,-1224.4897959183675 1428.5714285714284,-1215.3284071338678 1387.7551020408164,-1197.4173620575555 1353.5269388710597,-1183.673469387755 1346.938775510204,-1181.148946681157 1306.1224489795918,-1166.7576401320864 1265.3061224489795,-1154.1447061348651 1224.4897959183672,-1143.3455367281965 1222.3094185311552,-1142.857142857143 1183.6734693877552,-1134.4845504492816 1142.857142857143,-1127.4448325338578 1102.0408163265306,-1122.210798655112 1061.2244897959183,-1118.7583657618484 1020.4081632653061,-1117.0492744643288 979.5918367346939,-1117.0492744639996 938.7755102040816,-1118.75836576087 897.9591836734694,-1122.210798653523 857.1428571428571,-1127.4448325317185 816.3265306122448,-1134.4845504466687 777.6905814554622,-1142.857142857143 775.5102040816327,-1143.3455367251813 734.6938775510204,-1154.1447061315778 693.8775510204082,-1166.7576401286772 653.0612244897959,-1181.1489466777512 646.473061120179,-1183.6734693877552 612.2448979591836,-1197.417362054251 571.4285714285714,-1215.3284071308256 551.744448105354,-1224.4897959183672 530.6122448979592,-1234.802326760027 489.7959183673469,-1255.5831330587455 471.1347339306236,-1265.3061224489797 448.9795918367347,-1277.346442924009 408.1632653061224,-1299.6578425598914 396.0530720497443,-1306.1224489795918 367.3469387755102,-1321.942892712107 326.53061224489795,-1343.6856814766732 319.8996809423819,-1346.938775510204 285.7142857142857,-1364.0177433216245 244.89795918367346,-1382.5598395423733 231.46471471511057,-1387.7551020408164 204.0816326530612,-1398.368877941086 163.26530612244898,-1411.0834231744227 122.44897959183673,-1420.7583485318503 81.63265306122449,-1427.4090804963157 68.23722162464458,-1428.5714285714284 40.816326530612244,-1430.9531546491185 0.001,-1431.625609865766 </gml:coordinates>
+                  </gml:LinearRing>
+                </gml:outerBoundaryIs>
+              </gml:_Geometry>
+            </gml:geometryMember>
+          </gml:MultiPolygon>
+          <geo:Data Name="DefaultBasement"/>
+          <gml:MultiPolygon srsName="localSectionSystem">
+            <gml:geometryMember xsi:type="gml:PolygonMemberType">
+              <gml:_Geometry xsi:type="gml:PolygonType">
+                <gml:outerBoundaryIs>
+                  <gml:LinearRing>
+                    <gml:coordinates cs="," decimal="." ts=" ">571.4285743249827,-1599.9999748048601 595.4278857186114,-1599.9999769336598 601.4276930995416,-1591.8367346938776 612.2448979591837,-1584.052335877385 653.0612244897959,-1555.4071794307843 659.5776529173019,-1551.0204081632653 693.8775510204082,-1528.7207582788815 724.2612772995216,-1510.204081632653 734.6938775510205,-1504.1253273585746 775.5102040816327,-1482.4743228951959 803.4234768498673,-1469.3877551020407 816.3265306122449,-1463.6855635027339 857.1428571428571,-1448.464397048133 897.9591836734694,-1436.4415638855617 935.792920177574,-1428.5714285714287 938.7755102040817,-1427.9956375674917 979.5918367346939,-1423.8193897144845 1020.4081632653061,-1423.8193897151311 1061.2244897959183,-1427.9956375694294 1064.2070798119184,-1428.5714285714284 1102.0408163265306,-1436.441563888999 1142.857142857143,-1448.4643970528812 1183.6734693877552,-1463.6855635087372 1196.5765231357436,-1469.387755102041 1224.4897959183675,-1482.4743229027833 1265.3061224489795,-1504.125327367317 1275.7387226850278,-1510.204081632653 1306.1224489795918,-1528.7207582891378 1340.4223470655757,-1551.0204081632653 1346.938775510204,-1555.4071794424924 1387.7551020408164,-1584.0523358900568 1398.572306882501,-1591.8367346938776 1404.5721117055325,-1599.999973448537 1428.5714253937324,-1599.9999711129992 1428.5714285714284,-1599.999971112999 1469.3877551020407,-1599.9999671773794 1510.204081632653,-1599.9999632947743 1551.0204081632653,-1599.9999594727517 1591.8367346938776,-1599.999955713555 1632.6530612244896,-1599.999952016507 1673.469387755102,-1599.999948379527 1714.2857142857142,-1599.9999448000353 1755.1020408163265,-1599.9999412754657 1795.9183673469388,-1599.99993780353 1836.734693877551,-1599.99993438234 1866.4674397721606,-1599.9999319260728 1877.5510204081631,-1603.2953663123242 1918.3673469387754,-1615.4311129078353 1959.1836734693877,-1625.519086353909 1993.5990579324712,-1632.332388837576 1995.218839750289,-1632.6530612244899 1999.999,-1633.6127128245673 1999.999,-1633.6129135817698 1999.999,-1999.999 0.001,-1999.999 0.001,-1633.612913571122 0.001,-1633.6127128139194 4.781160196618032,-1632.6530612244899 40.816326530612244,-1625.519086343319 81.63265306122449,-1615.4311128975078 122.44897959183673,-1603.295366302253 133.53253509027178,-1599.9999393901182 163.26530612244898,-1599.9999415902591 204.0816326530612,-1599.9999446598435 244.89795918367346,-1599.9999477801732 285.7142857142857,-1599.9999509531372 326.53061224489795,-1599.999954181023 367.3469387755102,-1599.9999574663973 408.1632653061224,-1599.9999608118392 448.9795918367347,-1599.9999642194305 489.7959183673469,-1599.999967689847 530.6122448979592,-1599.9999712208464 571.4285714285714,-1599.99997480486 571.4285743249827,-1599.9999748048601 </gml:coordinates>
+                  </gml:LinearRing>
+                </gml:outerBoundaryIs>
+              </gml:_Geometry>
+            </gml:geometryMember>
+          </gml:MultiPolygon>
+          <geo:Data Name="NonReservoirDeep"/>
+          <gml:MultiPolygon srsName="localSectionSystem">
+            <gml:geometryMember xsi:type="gml:PolygonMemberType">
+              <gml:_Geometry xsi:type="gml:PolygonType">
+                <gml:outerBoundaryIs>
+                  <gml:LinearRing>
+                    <gml:coordinates cs="," decimal="." ts=" ">0.001,-1633.6127128139194 0.001,-1599.9999297965437 0.001,-1431.6256263413225 0.001,-1431.625609865766 40.816326530612244,-1430.9531546491185 68.23722162464458,-1428.5714285714284 81.63265306122449,-1427.4090804963157 122.44897959183673,-1420.7583485318503 163.26530612244898,-1411.0834231744227 204.0816326530612,-1398.368877941086 231.46471471511057,-1387.7551020408164 244.89795918367346,-1382.5598395423733 285.7142857142857,-1364.0177433216245 319.8996809423819,-1346.938775510204 326.53061224489795,-1343.6856814766732 367.3469387755102,-1321.942892712107 396.0530720497443,-1306.1224489795918 408.1632653061224,-1299.6578425598914 448.9795918367347,-1277.346442924009 471.1347339306236,-1265.3061224489797 489.7959183673469,-1255.5831330587455 530.6122448979592,-1234.802326760027 551.744448105354,-1224.4897959183672 571.4285714285714,-1215.3284071308256 612.2448979591836,-1197.417362054251 646.473061120179,-1183.6734693877552 653.0612244897959,-1181.1489466777512 693.8775510204082,-1166.7576401286772 734.6938775510204,-1154.1447061315778 775.5102040816327,-1143.3455367251813 777.6905814554622,-1142.857142857143 816.3265306122448,-1134.4845504466687 857.1428571428571,-1127.4448325317185 897.9591836734694,-1122.210798653523 938.7755102040816,-1118.75836576087 979.5918367346939,-1117.0492744639996 1020.4081632653061,-1117.0492744643288 1061.2244897959183,-1118.7583657618484 1102.0408163265306,-1122.210798655112 1142.857142857143,-1127.4448325338578 1183.6734693877552,-1134.4845504492816 1222.3094185311552,-1142.857142857143 1224.4897959183672,-1143.3455367281965 1265.3061224489795,-1154.1447061348651 1306.1224489795918,-1166.7576401320864 1346.938775510204,-1181.148946681157 1353.5269388710597,-1183.673469387755 1387.7551020408164,-1197.4173620575555 1428.5714285714284,-1215.3284071338678 1448.25555188864,-1224.4897959183675 1469.3877551020407,-1234.8023267627343 1510.204081632653,-1255.583133061021 1528.8652660655332,-1265.3061224489795 1551.0204081632653,-1277.3464429258343 1591.8367346938776,-1299.6578425612777 1603.9469279479401,-1306.1224489795918 1632.6530612244896,-1321.9428927131116 1673.469387755102,-1343.6856814773794 1680.1003190562878,-1346.938775510204 1714.2857142857142,-1364.0177433220924 1755.1020408163265,-1382.5598395426425 1768.5352852844353,-1387.7551020408162 1795.9183673469388,-1398.3688779410882 1836.734693877551,-1411.0834231740641 1877.5510204081631,-1420.7583485310333 1918.3673469387754,-1427.4090804949033 1931.7627783939042,-1428.5714285714287 1959.1836734693877,-1430.953154647101 1999.999,-1431.6256098630083 1999.999,-1431.6256263385649 1999.999,-1599.9999211822098 2000.0,-1599.9999211821307 1999.999,-1600.0049723866744 1999.999,-1633.6127128245673 1995.218839750289,-1632.6530612244899 1993.5990579324712,-1632.332388837576 1959.1836734693877,-1625.519086353909 1918.3673469387754,-1615.4311129078353 1877.5510204081631,-1603.2953663123242 1866.4674397721606,-1599.9999319260728 1836.734693877551,-1599.99993438234 1795.9183673469388,-1599.99993780353 1755.1020408163265,-1599.9999412754657 1714.2857142857142,-1599.9999448000353 1673.469387755102,-1599.999948379527 1632.6530612244896,-1599.999952016507 1591.8367346938776,-1599.999955713555 1551.0204081632653,-1599.9999594727517 1510.204081632653,-1599.9999632947743 1469.3877551020407,-1599.9999671773794 1428.5714285714284,-1599.999971112999 1428.5714253937324,-1599.9999711129992 1404.5721117055325,-1599.999973448537 1398.572306882501,-1591.8367346938776 1387.7551020408164,-1584.0523358900568 1346.938775510204,-1555.4071794424924 1340.4223470655757,-1551.0204081632653 1306.1224489795918,-1528.7207582891378 1275.7387226850278,-1510.204081632653 1265.3061224489795,-1504.125327367317 1224.4897959183675,-1482.4743229027833 1196.5765231357436,-1469.387755102041 1183.6734693877552,-1463.6855635087372 1142.857142857143,-1448.4643970528812 1102.0408163265306,-1436.441563888999 1064.2070798119184,-1428.5714285714284 1061.2244897959183,-1427.9956375694294 1020.4081632653061,-1423.8193897151311 979.5918367346939,-1423.8193897144845 938.7755102040817,-1427.9956375674917 935.792920177574,-1428.5714285714287 897.9591836734694,-1436.4415638855617 857.1428571428571,-1448.464397048133 816.3265306122449,-1463.6855635027339 803.4234768498673,-1469.3877551020407 775.5102040816327,-1482.4743228951959 734.6938775510205,-1504.1253273585746 724.2612772995216,-1510.204081632653 693.8775510204082,-1528.7207582788815 659.5776529173019,-1551.0204081632653 653.0612244897959,-1555.4071794307843 612.2448979591837,-1584.052335877385 601.4276930995416,-1591.8367346938776 595.4278857186114,-1599.9999769336598 571.4285743249827,-1599.9999748048601 571.4285714285714,-1599.99997480486 530.6122448979592,-1599.9999712208464 489.7959183673469,-1599.999967689847 448.9795918367347,-1599.9999642194305 408.1632653061224,-1599.9999608118392 367.3469387755102,-1599.9999574663973 326.53061224489795,-1599.999954181023 285.7142857142857,-1599.9999509531372 244.89795918367346,-1599.9999477801732 204.0816326530612,-1599.9999446598435 163.26530612244898,-1599.9999415902591 133.53253509027178,-1599.9999393901182 122.44897959183673,-1603.295366302253 81.63265306122449,-1615.4311128975078 40.816326530612244,-1625.519086343319 4.781160196618032,-1632.6530612244899 0.001,-1633.6127128139194 </gml:coordinates>
+                  </gml:LinearRing>
+                </gml:outerBoundaryIs>
+              </gml:_Geometry>
+            </gml:geometryMember>
+          </gml:MultiPolygon>
+        </geo:FormationPolygonList>
+        <geo:SeriesPotentialCountoursList/>
+      </geo:OutputGraphicalData>
+      <geo:Structural2DData>
+        <geo:Interfaces>
+          <geo:Interface>
+            <geo:Data Name="Reservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">1800,-1400 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Reservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">200,-1400 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+        </geo:Interfaces>
+      </geo:Structural2DData>
+      <geo:Shape3DOfSection FileName="FootwallSection_-_parallel_fault.sec"/>
+      <geo:Intersections>
+        <geo:Curve Degree="1" Name="MiddleSection - across fault">
+          <geo:Pole-Weight U="1000" V="0" Weight="1"/>
+          <geo:Pole-Weight U="1000" V="-2000" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+        <geo:Curve Degree="1" Name="SurfaceTopography">
+          <geo:Pole-Weight U="2000" V="-1.00005" Weight="1"/>
+          <geo:Pole-Weight U="0" V="-1.00005" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+        <geo:Curve Degree="1" Name="SideSection1 - across fault">
+          <geo:Pole-Weight U="1400" V="0" Weight="1"/>
+          <geo:Pole-Weight U="1400" V="-2000" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+      </geo:Intersections>
+    </geo:Section>
+    <geo:Section Name="MiddleSection - across fault" IsAxialSurface="false">
+      <geo:OutputGraphicalData>
+        <geo:FormationPolygonList>
+          <geo:Data Name="SecondaryReservoir"/>
+          <gml:MultiPolygon srsName="localSectionSystem">
+            <gml:geometryMember xsi:type="gml:PolygonMemberType">
+              <gml:_Geometry xsi:type="gml:PolygonType">
+                <gml:outerBoundaryIs>
+                  <gml:LinearRing>
+                    <gml:coordinates cs="," decimal="." ts=" ">0.001,-775.0424468976385 0.0,-775.0421126584172 0.001,-775.0421126584172 0.001,-1.0164221938775524 0.0,-1.0164221938775522 0.001,-1.016422193877552 40.816326530612244,-1.0164221938775522 81.63265306122449,-1.0164221938775522 122.44897959183673,-1.0164221938775522 163.26530612244898,-1.0164221938775522 204.0816326530612,-1.0164221938775522 244.89795918367346,-1.0164221938775522 285.7142857142857,-1.0164221938775522 326.53061224489795,-1.0164221938775522 367.3469387755102,-1.0164221938775522 408.1632653061224,-1.0164221938775522 448.9795918367347,-1.0164221938775522 489.7959183673469,-1.0164221938775522 530.6122448979592,-1.0164221938775522 571.4285714285714,-1.0164221938775522 612.2448979591836,-1.0164221938775522 653.0612244897959,-1.0164221938775522 666.6666710295758,-1.0164221938775522 667.0054784256172,-1.0164221938775522 693.8775510204082,-1.0164221938775522 734.6938775510204,-1.0164221938775522 775.5102040816327,-1.0164221938775522 816.3265306122448,-1.0164221938775522 857.1428571428571,-1.0164221938775522 897.9591836734694,-1.0164221938775522 938.7755102040816,-1.0164221938775522 979.5918367346939,-1.0164221938775522 1020.4081632653061,-1.0164221938775522 1061.2244897959183,-1.0164221938775522 1102.0408163265306,-1.0164221938775522 1142.857142857143,-1.0164221938775522 1183.6734693877552,-1.0164221938775522 1224.4897959183672,-1.0164221938775522 1265.3061224489795,-1.0164221938775522 1306.1224489795918,-1.0164221938775522 1346.938775510204,-1.0164221938775522 1387.7551020408164,-1.0164221938775522 1428.5714285714284,-1.0164221938775522 1469.3877551020407,-1.0164221938775522 1510.204081632653,-1.0164221938775522 1551.0204081632653,-1.0164221938775522 1591.8367346938776,-1.0164221938775522 1632.6530612244896,-1.0164221938775522 1673.469387755102,-1.0164221938775522 1714.2857142857142,-1.0164221938775522 1755.1020408163265,-1.0164221938775522 1795.9183673469388,-1.0164221938775522 1836.734693877551,-1.0164221938775522 1877.5510204081631,-1.0164221938775522 1918.3673469387754,-1.0164221938775522 1959.1836734693877,-1.0164221938775522 1999.999,-1.0164221938775522 1999.999,-340.5592304762222 2000.0,-340.5592304762222 1999.999,-340.5595016132244 1959.1836734693877,-351.62604689293306 1918.3673469387754,-363.44860213263206 1905.6691542159408,-367.34693877551035 1877.5510204081631,-375.87268392850706 1836.734693877551,-388.9250527315675 1795.9183673469388,-402.6365926630924 1780.1358875394676,-408.1632653061224 1755.1020408163265,-416.81369477839047 1714.2857142857142,-431.4433542361368 1673.469387755102,-446.5668762301906 1667.1070707324716,-448.9795918367347 1632.6530612244896,-461.8564218243034 1591.8367346938776,-477.42175378160033 1559.8259454176052,-489.795918367347 1551.0204081632653,-493.145829172724 1510.204081632653,-508.718411044466 1469.3877551020407,-524.278883398707 1452.5737846207724,-530.6122448979593 1428.5714285714284,-539.4869206252304 1387.7551020408164,-554.2693873948788 1346.938775510204,-568.6937309354586 1339.0006930458894,-571.4285714285716 1306.1224489795918,-582.5510959415486 1265.3061224489795,-596.1251477034265 1224.4897959183672,-609.5506603627588 1216.2356063874022,-612.2448979591836 1183.6734693877552,-622.7567082668926 1142.857142857143,-635.9847115023962 1102.0408163265306,-649.3405713714877 1090.8135986354541,-653.0612244897959 1061.2244897959183,-662.8510516560669 1020.4081632653061,-676.5681783153285 979.5918367346939,-690.4818976274314 969.9753841313774,-693.8775510204082 938.7755102040816,-705.0072073601525 908.9097576872502,-726.7292686118993 897.9591836734694,-693.8775518117368 884.3537398287494,-653.0612244897959 878.0571422905747,-634.1714329145058 870.7482969033665,-612.2448979591836 857.1428571428571,-571.4285793034695 848.211957768914,-544.6358806603716 816.3265306122449,-556.9723155723074 778.962097828094,-571.4285714285713 775.5102040816327,-572.7381606051651 734.6938775510205,-587.6646144547933 693.8775510204082,-601.9841229135791 663.365669366102,-612.2448979591836 653.0612244897959,-615.6548585385771 612.2448979591837,-628.7952716827581 571.4285714285714,-641.7626893276555 536.0168176229413,-653.0612244897959 530.6122448979592,-654.7712609197838 489.7959183673469,-668.0133633000942 448.97959183673464,-681.8844866306474 416.17224920799896,-693.8775510204082 408.1632653061224,-696.7893715151657 367.3469387755102,-712.8372921390644 326.53061224489795,-730.5391963053893 317.3106336059289,-734.6938775510205 285.7142857142857,-749.4401109774363 244.89795918367344,-767.8758051485819 225.34172385109594,-775.5102040816325 204.0816326530612,-783.7441430616774 163.26530612244898,-794.9073638511094 122.44897959183673,-799.8563323902631 81.63265306122449,-797.4495838074997 40.816326530612244,-788.4136868887399 1.400468267484659,-775.5102040816328 0.001,-775.0424468976385 </gml:coordinates>
+                  </gml:LinearRing>
+                </gml:outerBoundaryIs>
+              </gml:_Geometry>
+            </gml:geometryMember>
+          </gml:MultiPolygon>
+          <geo:Data Name="Seal"/>
+          <gml:MultiPolygon srsName="localSectionSystem">
+            <gml:geometryMember xsi:type="gml:PolygonMemberType">
+              <gml:_Geometry xsi:type="gml:PolygonType">
+                <gml:outerBoundaryIs>
+                  <gml:LinearRing>
+                    <gml:coordinates cs="," decimal="." ts=" ">0.001,-875.0344937835875 0.0,-875.0341624773575 0.001,-875.0341624773575 0.001,-775.0424468976385 1.400468267484659,-775.5102040816328 40.816326530612244,-788.4136868887399 81.63265306122449,-797.4495838074997 122.44897959183673,-799.8563323902631 163.26530612244898,-794.9073638511094 204.0816326530612,-783.7441430616774 225.34172385109594,-775.5102040816325 244.89795918367344,-767.8758051485819 285.7142857142857,-749.4401109774363 317.3106336059289,-734.6938775510205 326.53061224489795,-730.5391963053893 367.3469387755102,-712.8372921390644 408.1632653061224,-696.7893715151657 416.17224920799896,-693.8775510204082 448.97959183673464,-681.8844866306474 489.7959183673469,-668.0133633000942 530.6122448979592,-654.7712609197838 536.0168176229413,-653.0612244897959 571.4285714285714,-641.7626893276555 612.2448979591837,-628.7952716827581 653.0612244897959,-615.6548585385771 663.365669366102,-612.2448979591836 693.8775510204082,-601.9841229135791 734.6938775510205,-587.6646144547933 775.5102040816327,-572.7381606051651 778.962097828094,-571.4285714285713 816.3265306122449,-556.9723155723074 848.211957768914,-544.6358806603716 857.1428571428571,-571.4285793034695 870.7482969033665,-612.2448979591836 878.0571422905747,-634.1714329145058 857.1428571428571,-642.3090921612319 829.5092152505584,-653.0612244897959 816.3265306122449,-658.1554488480125 775.5102040816327,-673.3665915827609 734.6938775510205,-688.0054784569883 717.6679434800069,-693.8775510204082 693.8775510204082,-702.1364358692308 653.0612244897959,-715.8943851276974 612.2448979591837,-729.2331910761728 594.9793953224154,-734.6938775510205 571.4285714285714,-742.3037396146268 530.6122448979592,-755.2239860847419 489.7959183673469,-768.0988727363668 467.1492742457621,-775.5102040816325 448.97959183673464,-781.7328979214044 408.1632653061224,-797.3288064186648 367.3469387755102,-815.5996024601219 365.8799411129936,-816.3265306122448 326.53061224489795,-836.4672760572207 285.7142857142857,-856.7043251997927 284.743292130943,-857.1428571428571 244.89795918367344,-874.3382344356768 204.0816326530612,-888.2349199150669 163.26530612244898,-897.373549007646 156.32738540699427,-897.9591836734694 122.44897959183673,-900.6502218976259 84.93772076233667,-897.9591836734694 81.63265306122449,-897.7120359725054 40.816326530612244,-888.5568657424778 0.001,-875.0344937835875 </gml:coordinates>
+                  </gml:LinearRing>
+                </gml:outerBoundaryIs>
+              </gml:_Geometry>
+            </gml:geometryMember>
+          </gml:MultiPolygon>
+          <geo:Data Name="Seal"/>
+          <gml:MultiPolygon srsName="localSectionSystem">
+            <gml:geometryMember xsi:type="gml:PolygonMemberType">
+              <gml:_Geometry xsi:type="gml:PolygonType">
+                <gml:outerBoundaryIs>
+                  <gml:LinearRing>
+                    <gml:coordinates cs="," decimal="." ts=" ">1999.999,-445.32369845112953 1986.3088621749284,-448.9795918367347 1959.1836734693877,-456.1319255652424 1918.3673469387754,-467.63103604747596 1877.5510204081631,-479.84674610721925 1846.0785680399301,-489.795918367347 1836.734693877551,-492.70943898590224 1795.9183673469388,-506.0555622833877 1755.1020408163265,-519.9913161544556 1725.1404628864173,-530.6122448979593 1714.2857142857142,-534.4028610872327 1673.469387755102,-549.0879970462472 1632.6530612244896,-564.1581451349033 1613.3176148370167,-571.4285714285716 1591.8367346938776,-579.3731895192733 1551.0204081632653,-594.6302462893324 1510.204081632653,-609.9641533189717 1504.097949370722,-612.2448979591836 1469.3877551020407,-624.9772911788006 1428.5714285714284,-639.7661415931128 1391.1704540806147,-653.0612244897959 1387.7551020408164,-654.254790417709 1346.938775510204,-668.1718454369447 1306.1224489795918,-681.8719818511139 1269.9979182665247,-693.8775510204082 1265.3061224489795,-695.4175102288659 1224.4897959183672,-708.7141749360039 1183.6734693877552,-722.0954212733914 1145.7705559020253,-734.6938775510205 1142.857142857143,-735.6482863782737 1102.0408163265306,-749.1511355871907 1061.2244897959183,-762.9581161146755 1025.276405266864,-775.5102040816328 1020.4081632653061,-777.162177871845 979.5918367346939,-791.2521143622662 938.7755102040816,-805.4096549920164 935.5136892870152,-806.5410493649446 925.1700724167869,-775.5102040816325 911.5646277571833,-734.6938775510205 908.9097576872502,-726.7292686118993 938.7755102040816,-705.0072073601525 969.9753841313774,-693.8775510204082 979.5918367346939,-690.4818976274314 1020.4081632653061,-676.5681783153285 1061.2244897959183,-662.8510516560669 1090.8135986354541,-653.0612244897959 1102.0408163265306,-649.3405713714877 1142.857142857143,-635.9847115023962 1183.6734693877552,-622.7567082668926 1216.2356063874022,-612.2448979591836 1224.4897959183672,-609.5506603627588 1265.3061224489795,-596.1251477034265 1306.1224489795918,-582.5510959415486 1339.0006930458894,-571.4285714285716 1346.938775510204,-568.6937309354586 1387.7551020408164,-554.2693873948788 1428.5714285714284,-539.4869206252304 1452.5737846207724,-530.6122448979593 1469.3877551020407,-524.278883398707 1510.204081632653,-508.718411044466 1551.0204081632653,-493.145829172724 1559.8259454176052,-489.795918367347 1591.8367346938776,-477.42175378160033 1632.6530612244896,-461.8564218243034 1667.1070707324716,-448.9795918367347 1673.469387755102,-446.5668762301906 1714.2857142857142,-431.4433542361368 1755.1020408163265,-416.81369477839047 1780.1358875394676,-408.1632653061224 1795.9183673469388,-402.6365926630924 1836.734693877551,-388.9250527315675 1877.5510204081631,-375.87268392850706 1905.6691542159408,-367.34693877551035 1918.3673469387754,-363.44860213263206 1959.1836734693877,-351.62604689293306 1999.999,-340.5595016132244 1999.999,-445.32343140536045 2000.0,-445.32343140536034 1999.999,-445.32369845112953 </gml:coordinates>
+                  </gml:LinearRing>
+                </gml:outerBoundaryIs>
+              </gml:_Geometry>
+            </gml:geometryMember>
+          </gml:MultiPolygon>
+          <geo:Data Name="Reservoir"/>
+          <gml:MultiPolygon srsName="localSectionSystem">
+            <gml:geometryMember xsi:type="gml:PolygonMemberType">
+              <gml:_Geometry xsi:type="gml:PolygonType">
+                <gml:outerBoundaryIs>
+                  <gml:LinearRing>
+                    <gml:coordinates cs="," decimal="." ts=" ">935.5136892870152,-806.5410493649446 938.7755102040816,-805.4096549920164 979.5918367346939,-791.2521143622662 1020.4081632653061,-777.162177871845 1025.276405266864,-775.5102040816328 1061.2244897959183,-762.9581161146755 1102.0408163265306,-749.1511355871907 1142.857142857143,-735.6482863782737 1145.7705559020253,-734.6938775510205 1183.6734693877552,-722.0954212733914 1224.4897959183672,-708.7141749360039 1265.3061224489795,-695.4175102288659 1269.9979182665247,-693.8775510204082 1306.1224489795918,-681.8719818511139 1346.938775510204,-668.1718454369447 1387.7551020408164,-654.254790417709 1391.1704540806147,-653.0612244897959 1428.5714285714284,-639.7661415931128 1469.3877551020407,-624.9772911788006 1504.097949370722,-612.2448979591836 1510.204081632653,-609.9641533189717 1551.0204081632653,-594.6302462893324 1591.8367346938776,-579.3731895192733 1613.3176148370167,-571.4285714285716 1632.6530612244896,-564.1581451349033 1673.469387755102,-549.0879970462472 1714.2857142857142,-534.4028610872327 1725.1404628864173,-530.6122448979593 1755.1020408163265,-519.9913161544556 1795.9183673469388,-506.0555622833877 1836.734693877551,-492.70943898590224 1846.0785680399301,-489.795918367347 1877.5510204081631,-479.84674610721925 1918.3673469387754,-467.63103604747596 1959.1836734693877,-456.1319255652424 1986.3088621749284,-448.9795918367347 1999.999,-445.32369845112953 1999.999,-874.5760408788167 1999.999,-874.5762395415942 1959.1836734693877,-882.6847256645061 1918.3673469387754,-891.5163721446568 1890.8525715204048,-897.9591836734694 1877.5510204081631,-901.0598905267886 1836.734693877551,-911.2963477188298 1795.9183673469388,-922.1617070850517 1755.1020408163265,-933.6232166684589 1737.675364193325,-938.7755102040817 1714.2857142857142,-945.6764178994453 1673.469387755102,-958.258213748472 1632.6530612244896,-971.2773525204008 1607.325511564422,-979.5918367346939 1591.8367346938776,-984.6869071733381 1551.0204081632653,-998.4090617481845 1510.204081632653,-1012.2885855465123 1486.4568451509133,-1020.4081632653061 1469.3877551020407,-1026.2770565809792 1428.5714285714284,-1040.2903071819537 1387.7551020408164,-1054.1867121192245 1366.8563337600706,-1061.2244897959185 1346.938775510204,-1067.985195606627 1306.1224489795918,-1081.6723263592567 1265.3061224489795,-1095.2135632441086 1244.528481147773,-1102.0408163265306 1224.4897959183672,-1108.718589587886 1183.6734693877552,-1122.2462671705648 1142.857142857143,-1135.76949561293 1121.2632341121057,-1142.857142857143 1102.0408163265306,-1149.298913555838 1061.2244897959183,-1162.77147797273 1054.947770240897,-1164.8432839317588 1047.6190497313357,-1142.857142857143 1034.0135956903798,-1102.0408163265306 1020.4081632653061,-1061.2245212013893 1006.8027170582852,-1020.4081632653063 999.2545938637726,-997.763782453675 979.5918367346939,-1004.3698786881134 938.7755102040817,-1018.0829393350725 932.2598804576829,-1020.4081632653063 897.9591836734694,-1032.8071421055204 857.1428571428571,-1047.4513584267609 817.3854207024201,-1061.2244897959183 816.3265306122449,-1061.5837597266047 775.5102040816327,-1075.2178087094844 734.6938775510205,-1088.5704553289336 693.8775510204082,-1102.063859044872 653.0612244897959,-1115.6655166507353 612.2448979591837,-1129.3057164940626 572.5858881290109,-1142.857142857143 571.4285714285714,-1143.232384576919 530.6122448979592,-1157.2341352339456 489.7959183673469,-1170.7159096626604 450.22610209509446,-1183.673469387755 448.97959183673464,-1184.1192384390627 408.1632653061224,-1197.5581205175654 367.3469387755102,-1210.3778247638443 326.53061224489795,-1223.0968428932358 322.1692796856978,-1224.4897959183675 285.7142857142857,-1237.074859675191 244.89795918367344,-1252.692000177662 214.78638609338634,-1265.3061224489795 204.0816326530612,-1270.1124177183447 163.26530612244898,-1286.371074266515 122.44897959183673,-1297.0968619558416 81.63265306122449,-1298.4249220188262 40.816326530612244,-1289.913133329799 0.001,-1275.3522899392262 0.001,-1275.3519331898228 0.001,-875.0344937835875 40.816326530612244,-888.5568657424778 81.63265306122449,-897.7120359725054 84.93772076233667,-897.9591836734694 122.44897959183673,-900.6502218976259 156.32738540699427,-897.9591836734694 163.26530612244898,-897.373549007646 204.0816326530612,-888.2349199150669 244.89795918367344,-874.3382344356768 284.743292130943,-857.1428571428571 285.7142857142857,-856.7043251997927 326.53061224489795,-836.4672760572207 365.8799411129936,-816.3265306122448 367.3469387755102,-815.5996024601219 408.1632653061224,-797.3288064186648 448.97959183673464,-781.7328979214044 467.1492742457621,-775.5102040816325 489.7959183673469,-768.0988727363668 530.6122448979592,-755.2239860847419 571.4285714285714,-742.3037396146268 594.9793953224154,-734.6938775510205 612.2448979591837,-729.2331910761728 653.0612244897959,-715.8943851276974 693.8775510204082,-702.1364358692308 717.6679434800069,-693.8775510204082 734.6938775510205,-688.0054784569883 775.5102040816327,-673.3665915827609 816.3265306122449,-658.1554488480125 829.5092152505584,-653.0612244897959 857.1428571428571,-642.3090921612319 878.0571422905747,-634.1714329145058 884.3537398287494,-653.0612244897959 897.9591836734694,-693.8775518117368 908.9097576872502,-726.7292686118993 911.5646277571833,-734.6938775510205 925.1700724167869,-775.5102040816325 935.5136892870152,-806.5410493649446 </gml:coordinates>
+                  </gml:LinearRing>
+                </gml:outerBoundaryIs>
+              </gml:_Geometry>
+            </gml:geometryMember>
+          </gml:MultiPolygon>
+          <geo:Data Name="NonReservoirDeep"/>
+          <gml:MultiPolygon srsName="localSectionSystem">
+            <gml:geometryMember xsi:type="gml:PolygonMemberType">
+              <gml:_Geometry xsi:type="gml:PolygonType">
+                <gml:outerBoundaryIs>
+                  <gml:LinearRing>
+                    <gml:coordinates cs="," decimal="." ts=" ">0.001,-1275.3522899392262 40.816326530612244,-1289.913133329799 81.63265306122449,-1298.4249220188262 122.44897959183673,-1297.0968619558416 163.26530612244898,-1286.371074266515 204.0816326530612,-1270.1124177183447 214.78638609338634,-1265.3061224489795 244.89795918367344,-1252.692000177662 285.7142857142857,-1237.074859675191 322.1692796856978,-1224.4897959183675 326.53061224489795,-1223.0968428932358 367.3469387755102,-1210.3778247638443 408.1632653061224,-1197.5581205175654 448.97959183673464,-1184.1192384390627 450.22610209509446,-1183.673469387755 489.7959183673469,-1170.7159096626604 530.6122448979592,-1157.2341352339456 571.4285714285714,-1143.232384576919 572.5858881290109,-1142.857142857143 612.2448979591837,-1129.3057164940626 653.0612244897959,-1115.6655166507353 693.8775510204082,-1102.063859044872 734.6938775510205,-1088.5704553289336 775.5102040816327,-1075.2178087094844 816.3265306122449,-1061.5837597266047 817.3854207024201,-1061.2244897959183 857.1428571428571,-1047.4513584267609 897.9591836734694,-1032.8071421055204 932.2598804576829,-1020.4081632653063 938.7755102040817,-1018.0829393350725 979.5918367346939,-1004.3698786881134 999.2545938637726,-997.763782453675 1006.8027170582852,-1020.4081632653063 1020.4081632653061,-1061.2245212013893 1034.0135956903798,-1102.0408163265306 1047.6190497313357,-1142.857142857143 1054.947770240897,-1164.8432839317588 1061.2244897959183,-1162.77147797273 1102.0408163265306,-1149.298913555838 1121.2632341121057,-1142.857142857143 1142.857142857143,-1135.76949561293 1183.6734693877552,-1122.2462671705648 1224.4897959183672,-1108.718589587886 1244.528481147773,-1102.0408163265306 1265.3061224489795,-1095.2135632441086 1306.1224489795918,-1081.6723263592567 1346.938775510204,-1067.985195606627 1366.8563337600706,-1061.2244897959185 1387.7551020408164,-1054.1867121192245 1428.5714285714284,-1040.2903071819537 1469.3877551020407,-1026.2770565809792 1486.4568451509133,-1020.4081632653061 1510.204081632653,-1012.2885855465123 1551.0204081632653,-998.4090617481845 1591.8367346938776,-984.6869071733381 1607.325511564422,-979.5918367346939 1632.6530612244896,-971.2773525204008 1673.469387755102,-958.258213748472 1714.2857142857142,-945.6764178994453 1737.675364193325,-938.7755102040817 1755.1020408163265,-933.6232166684589 1795.9183673469388,-922.1617070850517 1836.734693877551,-911.2963477188298 1877.5510204081631,-901.0598905267886 1890.8525715204048,-897.9591836734694 1918.3673469387754,-891.5163721446568 1959.1836734693877,-882.6847256645061 1999.999,-874.5762395415942 1999.999,-1189.2552613169537 1999.999,-1189.255396520959 1959.1836734693877,-1194.773792145761 1918.3673469387754,-1201.1382802989683 1877.5510204081631,-1208.337332516378 1836.734693877551,-1216.36212224714 1799.266476928385,-1224.4897959183672 1795.9183673469388,-1225.2345957550026 1755.1020408163265,-1235.2727793531699 1714.2857142857142,-1246.1905451517353 1673.469387755102,-1257.985365979973 1649.7284870939316,-1265.3061224489797 1632.6530612244896,-1270.727723647561 1591.8367346938776,-1284.252156139171 1551.0204081632653,-1298.0219851574905 1527.231577312901,-1306.1224489795918 1510.204081632653,-1312.0732238589328 1469.3877551020407,-1326.3165457150865 1428.5714285714284,-1340.3105587057967 1408.9115348590365,-1346.938775510204 1387.7551020408164,-1354.2749606734715 1346.938775510204,-1368.252999357044 1306.1224489795918,-1382.2377247717739 1290.473335558128,-1387.7551020408164 1265.3061224489795,-1397.0853825898146 1224.4897959183672,-1413.0867804216937 1187.9696305153857,-1428.5714285714284 1183.6734693877552,-1430.5425442445812 1153.1859158673803,-1459.5577826477438 1142.857142857143,-1428.5714661909894 1129.251689371368,-1387.7551020408162 1115.6462508502968,-1346.938775510204 1102.0408163265306,-1306.1224523437324 1089.5564215199706,-1268.6692415863959 1061.2244897959183,-1276.3014627118498 1020.4081632653061,-1292.190302547369 983.6441048415099,-1306.1224489795918 979.5918367346939,-1307.7282066010434 938.7755102040817,-1322.9856386335582 897.9591836734694,-1337.530572280733 869.8256873200107,-1346.938775510204 857.1428571428571,-1351.4645128910572 816.3265306122449,-1365.0415084467102 775.5102040816327,-1377.8480501763086 741.8030660561257,-1387.7551020408162 734.6938775510205,-1389.979689977957 693.8775510204082,-1401.6434596380113 653.0612244897959,-1412.6970867408033 612.2448979591837,-1424.2137494325189 598.3400923547152,-1428.5714285714287 571.4285714285714,-1437.2412083736147 530.6122448979592,-1451.764991849393 489.7959183673469,-1466.9784623009355 483.502259421369,-1469.3877551020407 448.97959183673464,-1482.5311471491939 408.1632653061224,-1497.1949454741307 367.3469387755102,-1510.285280640282 326.53061224489795,-1523.3658020168766 285.7142857142857,-1537.1500665844453 249.08161763445122,-1551.0204081632653 244.89795918367344,-1552.7547218926609 204.0816326530612,-1571.6166414028462 163.26530612244898,-1587.809586251776 146.9241291342978,-1591.8367346938776 122.44897959183673,-1597.8238649951586 81.63265306122449,-1598.352307883188 51.30051273819123,-1591.8367346938776 40.816326530612244,-1589.6578444448799 0.001,-1575.6936343402065 0.001,-1575.6932922086771 0.001,-1275.3522899392262 </gml:coordinates>
+                  </gml:LinearRing>
+                </gml:outerBoundaryIs>
+              </gml:_Geometry>
+            </gml:geometryMember>
+          </gml:MultiPolygon>
+          <geo:Data Name="DefaultBasement"/>
+          <gml:MultiPolygon srsName="localSectionSystem">
+            <gml:geometryMember xsi:type="gml:PolygonMemberType">
+              <gml:_Geometry xsi:type="gml:PolygonType">
+                <gml:outerBoundaryIs>
+                  <gml:LinearRing>
+                    <gml:coordinates cs="," decimal="." ts=" ">0.001,-1575.6936343402065 40.816326530612244,-1589.6578444448799 51.30051273819123,-1591.8367346938776 81.63265306122449,-1598.352307883188 122.44897959183673,-1597.8238649951586 146.9241291342978,-1591.8367346938776 163.26530612244898,-1587.809586251776 204.0816326530612,-1571.6166414028462 244.89795918367344,-1552.7547218926609 249.08161763445122,-1551.0204081632653 285.7142857142857,-1537.1500665844453 326.53061224489795,-1523.3658020168766 367.3469387755102,-1510.285280640282 408.1632653061224,-1497.1949454741307 448.97959183673464,-1482.5311471491939 483.502259421369,-1469.3877551020407 489.7959183673469,-1466.9784623009355 530.6122448979592,-1451.764991849393 571.4285714285714,-1437.2412083736147 598.3400923547152,-1428.5714285714287 612.2448979591837,-1424.2137494325189 653.0612244897959,-1412.6970867408033 693.8775510204082,-1401.6434596380113 734.6938775510205,-1389.979689977957 741.8030660561257,-1387.7551020408162 775.5102040816327,-1377.8480501763086 816.3265306122449,-1365.0415084467102 857.1428571428571,-1351.4645128910572 869.8256873200107,-1346.938775510204 897.9591836734694,-1337.530572280733 938.7755102040817,-1322.9856386335582 979.5918367346939,-1307.7282066010434 983.6441048415099,-1306.1224489795918 1020.4081632653061,-1292.190302547369 1061.2244897959183,-1276.3014627118498 1089.5564215199706,-1268.6692415863959 1102.0408163265306,-1306.1224523437324 1115.6462508502968,-1346.938775510204 1129.251689371368,-1387.7551020408162 1142.857142857143,-1428.5714661909894 1153.1859158673803,-1459.5577826477438 1183.6734693877552,-1430.5425442445812 1187.9696305153857,-1428.5714285714284 1224.4897959183672,-1413.0867804216937 1265.3061224489795,-1397.0853825898146 1290.473335558128,-1387.7551020408164 1306.1224489795918,-1382.2377247717739 1346.938775510204,-1368.252999357044 1387.7551020408164,-1354.2749606734715 1408.9115348590365,-1346.938775510204 1428.5714285714284,-1340.3105587057967 1469.3877551020407,-1326.3165457150865 1510.204081632653,-1312.0732238589328 1527.231577312901,-1306.1224489795918 1551.0204081632653,-1298.0219851574905 1591.8367346938776,-1284.252156139171 1632.6530612244896,-1270.727723647561 1649.7284870939316,-1265.3061224489797 1673.469387755102,-1257.985365979973 1714.2857142857142,-1246.1905451517353 1755.1020408163265,-1235.2727793531699 1795.9183673469388,-1225.2345957550026 1799.266476928385,-1224.4897959183672 1836.734693877551,-1216.36212224714 1877.5510204081631,-1208.337332516378 1918.3673469387754,-1201.1382802989683 1959.1836734693877,-1194.773792145761 1999.999,-1189.255396520959 1999.999,-1999.999 1333.333041371356,-1999.999 0.001,-1999.999 0.001,-1575.6936343402065 </gml:coordinates>
+                  </gml:LinearRing>
+                </gml:outerBoundaryIs>
+              </gml:_Geometry>
+            </gml:geometryMember>
+          </gml:MultiPolygon>
+        </geo:FormationPolygonList>
+        <geo:SeriesPotentialCountoursList/>
+      </geo:OutputGraphicalData>
+      <geo:Structural2DData>
+        <geo:Interfaces>
+          <geo:Interface>
+            <geo:Data Name="Reservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">1100,-1150 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="SecondaryReservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">1100,-650 1400,-550 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Seal"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">1100,-750 1400,-650 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="NonReservoirDeep"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">1400,-1350 1700,-1250 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Reservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">1400,-1050 1700,-950 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="NonReservoirDeep"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">0,-1575 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Reservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">0,-1275 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="NonReservoirDeep"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">100,-1600 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Reservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">100,-1300 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="SecondaryReservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">700,-600 400,-700 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="SecondaryReservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">100,-800 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Seal"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">700,-700 400,-800 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Reservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">700,-1100 400,-1200 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Reservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">250,-1250 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="MainFault"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">1000,-1000 1100,-1300 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="NonReservoirDeep"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">700,-1400 400,-1500 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="NonReservoirDeep"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">250,-1550 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="NonReservoirDeep"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">1000,-1300 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Reservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">850,-1050 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="NonReservoirDeep"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">1187.716,-1428.492 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Reservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">977.714,-1004.636 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="NonReservoirDeep"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">1075.972,-1270.509 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Seal"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">960.375,-798.488 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Seal"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">862.117,-640.505 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="SecondaryReservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">930.400,-707.746 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="SecondaryReservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">837.077,-548.898 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="MainFault"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">900,-700 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="MainFault"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">800,-400 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="MainFault"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">1200,-1600 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Seal"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">100,-900 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="SecondaryReservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">0,-775 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Seal"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">0,-875 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+        </geo:Interfaces>
+        <geo:Foliations>
+          <geo:Foliation ObservationID="">
+            <geo:Data Name="Reservoir"/>
+            <geo:FoliationObservation Azimuth="90.0" Dip="18.435" NormalPolarity="true">
+              <gml:Point>
+                <gml:coordinates cs="," decimal="." ts=" ">550.0,-1150.0</gml:coordinates>
+              </gml:Point>
+            </geo:FoliationObservation>
+          </geo:Foliation>
+          <geo:Foliation ObservationID="">
+            <geo:Data Name="MainFault"/>
+            <geo:FoliationObservation Azimuth="270.0" Dip="71.565" NormalPolarity="true">
+              <gml:Point>
+                <gml:coordinates cs="," decimal="." ts=" ">1082.55,-1135.398</gml:coordinates>
+              </gml:Point>
+            </geo:FoliationObservation>
+          </geo:Foliation>
+        </geo:Foliations>
+      </geo:Structural2DData>
+      <geo:Shape3DOfSection FileName="MiddleSection_-_across_fault.sec"/>
+      <geo:Intersections>
+        <geo:Curve Degree="1" Name="SurfaceTopography">
+          <geo:Pole-Weight U="2000" V="-1.00005" Weight="1"/>
+          <geo:Pole-Weight U="0" V="-1.00005" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+        <geo:Curve Degree="1" Name="MiddleSection - along fault">
+          <geo:Pole-Weight U="1000" V="0" Weight="1"/>
+          <geo:Pole-Weight U="1000" V="-2000" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+        <geo:Curve Degree="1" Name="FootwallSection - parallel fault">
+          <geo:Pole-Weight U="1200" V="0" Weight="1"/>
+          <geo:Pole-Weight U="1200" V="-2000" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+      </geo:Intersections>
+    </geo:Section>
+    <geo:Section Name="MiddleSection - along fault" IsAxialSurface="false">
+      <geo:Structural2DData>
+        <geo:Interfaces>
+          <geo:Interface>
+            <geo:Data Name="Reservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">1975,-1050 1900,-1100 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="Reservoir"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">25,-1050 100,-1100 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+        </geo:Interfaces>
+      </geo:Structural2DData>
+      <geo:Shape3DOfSection FileName="MiddleSection_-_along_fault.sec"/>
+      <geo:Intersections>
+        <geo:Curve Degree="1" Name="MiddleSection - across fault">
+          <geo:Pole-Weight U="1000" V="0" Weight="1"/>
+          <geo:Pole-Weight U="1000" V="-2000" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+        <geo:Curve Degree="1" Name="SurfaceTopography">
+          <geo:Pole-Weight U="2000" V="-1.00005" Weight="1"/>
+          <geo:Pole-Weight U="0" V="-1.00005" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+        <geo:Curve Degree="1" Name="SideSection1 - across fault">
+          <geo:Pole-Weight U="1400" V="0" Weight="1"/>
+          <geo:Pole-Weight U="1400" V="-2000" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+      </geo:Intersections>
+    </geo:Section>
+    <geo:Section Name="SideSection1 - across fault" IsAxialSurface="false">
+      <geo:Shape3DOfSection FileName="SideSection1_-_across_fault.sec"/>
+      <geo:Intersections>
+        <geo:Curve Degree="1" Name="FootwallSection - parallel fault">
+          <geo:Pole-Weight U="800" V="0" Weight="1"/>
+          <geo:Pole-Weight U="800" V="-2000" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+        <geo:Curve Degree="1" Name="MiddleSection - along fault">
+          <geo:Pole-Weight U="1000" V="0" Weight="1"/>
+          <geo:Pole-Weight U="1000" V="-2000" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+        <geo:Curve Degree="1" Name="SurfaceTopography">
+          <geo:Pole-Weight U="2000" V="-1.00005" Weight="1"/>
+          <geo:Pole-Weight U="0" V="-1.00005" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+      </geo:Intersections>
+    </geo:Section>
+    <geo:Section Name="SurfaceTopography" Description="Topography of the model." IsAxialSurface="false" IsTopography="true">
+      <geo:OutputGraphicalData>
+        <geo:FormationPolygonList>
+          <geo:Data Name="SecondaryReservoir"/>
+          <gml:MultiPolygon srsName="localSectionSystem">
+            <gml:geometryMember xsi:type="gml:PolygonMemberType">
+              <gml:_Geometry xsi:type="gml:PolygonType">
+                <gml:outerBoundaryIs>
+                  <gml:LinearRing>
+                    <gml:coordinates cs="," decimal="." ts=" ">1332.999997219511,0.001 0.001,0.001 0.001,1999.999 1333.0000000909558,1999.999 1333.0000000909602,2000.0 1333.0000000909602,1999.999 1999.999,1999.999 1999.999,0.001 1332.9999972195128,0.001 1332.9999972195128,0.0 1332.999997219511,0.001 </gml:coordinates>
+                  </gml:LinearRing>
+                </gml:outerBoundaryIs>
+              </gml:_Geometry>
+            </gml:geometryMember>
+          </gml:MultiPolygon>
+        </geo:FormationPolygonList>
+        <geo:SeriesPotentialCountoursList/>
+      </geo:OutputGraphicalData>
+      <geo:Shape3DOfSection FileName="SurfaceTopography.sec"/>
+      <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+        <geo:ColorShading Blue="0" Green="140" Red="255"/>
+        <geo:ColorWireFrame Blue="0" Green="255" Red="255"/>
+      </geo:Graphic>
+      <geo:Intersections>
+        <geo:Curve Degree="1" Name="MiddleSection - across fault">
+          <geo:Pole-Weight U="0" V="1000" Weight="1"/>
+          <geo:Pole-Weight U="2000" V="1000" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+        <geo:Curve Degree="1" Name="MiddleSection - along fault">
+          <geo:Pole-Weight U="1000" V="0" Weight="1"/>
+          <geo:Pole-Weight U="1000" V="2000" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+        <geo:Curve Degree="1" Name="FootwallSection - parallel fault">
+          <geo:Pole-Weight U="800" V="0" Weight="1"/>
+          <geo:Pole-Weight U="800" V="2000" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+        <geo:Curve Degree="1" Name="SideSection1 - across fault">
+          <geo:Pole-Weight U="2000" V="600" Weight="1"/>
+          <geo:Pole-Weight U="0" V="600" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+      </geo:Intersections>
+    </geo:Section>
+  </geo:Sections>
+  <geo:GeologicalModel Inequalities="false" MinimumDykeThickness="2.0" SimplificationRadius="10.0">
+    <geo:Extent3D>
+      <geo:ExtentXY Xmax="2000.0" Xmin="0.0" Ymax="2000.0" Ymin="0.0"/>
+      <geo:ExtentZ Zmax="0.0" Zmin="-2000.0"/>
+    </geo:Extent3D>
+    <geo:ModelSections>
+      <geo:Data Name="FootwallSection - parallel fault"/>
+      <geo:Data Name="MiddleSection - across fault"/>
+      <geo:Data Name="MiddleSection - along fault"/>
+      <geo:Data Name="SideSection1 - across fault"/>
+      <geo:Data Name="SurfaceTopography"/>
+    </geo:ModelSections>
+    <geo:ModelFaults>
+      <geo:PotentialFault>
+        <geo:Data Name="MainFault"/>
+        <geo:PotentialField maxValue="1200.0" Xmax="1200.0" Xmin="800.0" Ymax="1000.0" Ymin="1000.0" Zmax="-400.0" Zmin="-1600.0">
+          <geo:covariance anisotropyA1="0.0" anisotropyA2="0.0" anisotropyA3="0.0" anisotropyV1="2.8571428571428574E-4" anisotropyV2="2.8571428571428574E-4" anisotropyV3="2.8571428571428574E-4" covarianceModel="1" degreDrift="1" gradient="1.0" isotropic="true" nuggetGradient="0.01" nuggetPotentiel="1.0E-6" range="3500.0" tangentVariance="1.0"/>
+          <geo:Gradients>
+            <geo:Gradient Gx="-0.9486830156443770700747109003714285790920257568359375" Gy="1.3620472059408008225372781535762213567242184808492311276495456695556640625E-9" Gz="0.316228613233987376762712528943666256964206695556640625" XGr="917.450000000000045474735088646411895751953125" YGr="1000" ZGr="-1135.397999999999910869519226253032684326171875"/>
+          </geo:Gradients>
+          <geo:Points>
+            <gml:coord>
+              <gml:X>1000</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1000</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>900</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1300</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1100</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-700</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1200</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-400</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>800</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1600</gml:Z>
+            </gml:coord>
+          </geo:Points>
+          <geo:Constraints>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+          </geo:Constraints>
+          <geo:InterfacePoints>
+            <geo:InterfacePoint npnt="5" pnt="0"/>
+          </geo:InterfacePoints>
+          <geo:Solutions>
+            <geo:Solution sol="0.000009769226254174867563051520846784114837646484375"/>
+            <geo:Solution sol="0"/>
+            <geo:Solution sol="0.00002930767876507811564579242258332669734954833984375"/>
+            <geo:Solution sol="0.000145935300183364091708426713012158870697021484375"/>
+            <geo:Solution sol="0.0000134367285198333519247171352617442607879638671875"/>
+            <geo:Solution sol="-0.0000024000711620342229934976785443723201751708984375"/>
+            <geo:Solution sol="-0.000010033999465142162677011583582498133182525634765625"/>
+            <geo:Solution sol="-0.94868328542533519875945557942031882703304290771484375"/>
+            <geo:Solution sol="1.3620472059408008225372781535762213567242184808492311276495456695556640625E-9"/>
+            <geo:Solution sol="0.316227794852265431391202810118556953966617584228515625"/>
+          </geo:Solutions>
+        </geo:PotentialField>
+      </geo:PotentialFault>
+    </geo:ModelFaults>
+    <geo:ProjectStratigraphicColumn IsBase="true">
+      <geo:Series isUptodate="true" name="Reservoir_Series" relation="1">
+        <geo:Data Name="NonReservoirDeep"/>
+        <geo:Data Name="Reservoir"/>
+        <geo:Data Name="Seal"/>
+        <geo:Data Name="SecondaryReservoir"/>
+        <geo:ExtraConstrainingFormation Name="NonReservoirDeep" typeOfConstraint="2"/>
+        <geo:InfluencedByFault Name="MainFault"/>
+        <geo:PotentialField maxValue="1950.0" Xmax="2000.0" Xmin="300.0" Ymax="1975.0" Ymin="25.0" Zmax="-548.898" Zmin="-1600.0">
+          <geo:covariance anisotropyA1="0.0" anisotropyA2="0.0" anisotropyA3="0.0" anisotropyV1="2.8571428571428574E-4" anisotropyV2="2.8571428571428574E-4" anisotropyV3="2.8571428571428574E-4" covarianceModel="1" degreDrift="1" gradient="1.0" isotropic="true" nuggetGradient="0.01" nuggetPotentiel="1.0E-6" range="3500.0" tangentVariance="1.0"/>
+          <geo:Gradients>
+            <geo:Gradient Gx="0.31622861342856534161427362050744704902172088623046875" Gy="-6.485957280884803604124414686571170780837736202784071792848408222198486328125E-11" Gz="0.94868301557951750790920186773291788995265960693359375" XGr="1450" YGr="1000" ZGr="-1150"/>
+          </geo:Gradients>
+          <geo:Points>
+            <gml:coord>
+              <gml:X>600</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1350</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>300</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1250</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>2000</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1575</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1900</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1600</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1300</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1400</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1600</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1500</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1750</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1550</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1000</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1300</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>812.28400000000010550138540565967559814453125</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1428.491999999999961801222525537014007568359375</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>924.028000000000020008883439004421234130859375</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1270.509000000000014551915228366851806640625</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>800</gml:X>
+              <gml:Y>200</gml:Y>
+              <gml:Z>-1400</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>800</gml:X>
+              <gml:Y>1800</gml:Y>
+              <gml:Z>-1400</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>900</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1150</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>600</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1050</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>300</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-950</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>2000</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1275</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1900</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1300</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1300</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1100</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1600</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1200</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1750</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1250</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1150</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1050</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1022.2859999999999445208231918513774871826171875</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-1004.63599999999996725819073617458343505859375</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1000</gml:X>
+              <gml:Y>25</gml:Y>
+              <gml:Z>-1050</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1000</gml:X>
+              <gml:Y>100</gml:Y>
+              <gml:Z>-1100</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1000</gml:X>
+              <gml:Y>1975</gml:Y>
+              <gml:Z>-1050</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1000</gml:X>
+              <gml:Y>1900</gml:Y>
+              <gml:Z>-1100</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>900</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-750</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>600</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-650</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1300</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-700</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1600</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-800</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1039.625</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-798.488000000000056388671509921550750732421875</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1137.883000000000038198777474462985992431640625</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-640.5049999999999954525264911353588104248046875</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1900</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-900</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>2000</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-875</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>900</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-650</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>600</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-550</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1300</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-600</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1600</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-700</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1900</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-800</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1069.59999999999990905052982270717620849609375</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-707.7459999999999809006112627685070037841796875</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>1162.923000000000001818989403545856475830078125</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-548.8980000000000245563569478690624237060546875</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>2000</gml:X>
+              <gml:Y>1000</gml:Y>
+              <gml:Z>-775</gml:Z>
+            </gml:coord>
+          </geo:Points>
+          <geo:Constraints>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+          </geo:Constraints>
+          <geo:InterfacePoints>
+            <geo:InterfacePoint npnt="10" pnt="0"/>
+            <geo:InterfacePoint npnt="16" pnt="10"/>
+            <geo:InterfacePoint npnt="8" pnt="26"/>
+            <geo:InterfacePoint npnt="8" pnt="34"/>
+          </geo:InterfacePoints>
+          <geo:Solutions>
+            <geo:Solution sol="2.8473176289548600692569380044005811214447021484375"/>
+            <geo:Solution sol="-4.7930827605682956702354196722539771136073483148720697499811649322509765625E-10"/>
+            <geo:Solution sol="8.8717362238481083380747804767452180385589599609375"/>
+            <geo:Solution sol="-5.7916854440101790402195547358132898807525634765625"/>
+            <geo:Solution sol="-72.9441382453315014799954951740801334381103515625"/>
+            <geo:Solution sol="120.88042682926487714212271384894847869873046875"/>
+            <geo:Solution sol="29.8941591582663335202596499584615230560302734375"/>
+            <geo:Solution sol="37.440144987129343689957750029861927032470703125"/>
+            <geo:Solution sol="-101.918537306251664631417952477931976318359375"/>
+            <geo:Solution sol="10.13433479057024300118428072892129421234130859375"/>
+            <geo:Solution sol="-24.858431094101131719753539073280990123748779296875"/>
+            <geo:Solution sol="2.065900062076480026007629930973052978515625"/>
+            <geo:Solution sol="7.8453507725430089436713387840427458286285400390625"/>
+            <geo:Solution sol="12.04555559359545213737874291837215423583984375"/>
+            <geo:Solution sol="0.383065836927482195051197777502238750457763671875"/>
+            <geo:Solution sol="-0.35755836825419995417263407944119535386562347412109375"/>
+            <geo:Solution sol="-80.2107042925150750534157850779592990875244140625"/>
+            <geo:Solution sol="166.924359993485495579079724848270416259765625"/>
+            <geo:Solution sol="-11.076229706735926328065033885650336742401123046875"/>
+            <geo:Solution sol="18.811712294021074143302030279301106929779052734375"/>
+            <geo:Solution sol="-91.436530422319748367954161949455738067626953125"/>
+            <geo:Solution sol="14.60750612958776173400110565125942230224609375"/>
+            <geo:Solution sol="-41.8672810915283690746946376748383045196533203125"/>
+            <geo:Solution sol="-34.7058625436527705687694833613932132720947265625"/>
+            <geo:Solution sol="32.9485637864189442325368872843682765960693359375"/>
+            <geo:Solution sol="-34.7058625480624556303155259229242801666259765625"/>
+            <geo:Solution sol="32.94856379304012961029002326540648937225341796875"/>
+            <geo:Solution sol="2.5396872381945030383576522581279277801513671875"/>
+            <geo:Solution sol="-6.32098452594775750412736670114099979400634765625"/>
+            <geo:Solution sol="-83.976219038281584516880684532225131988525390625"/>
+            <geo:Solution sol="57.53239018557862749503328814171254634857177734375"/>
+            <geo:Solution sol="24.621086566416664709322503767907619476318359375"/>
+            <geo:Solution sol="35.65137939080283757675715605728328227996826171875"/>
+            <geo:Solution sol="-35.80147358373563548639140208251774311065673828125"/>
+            <geo:Solution sol="2.441376999059787777923702378757297992706298828125"/>
+            <geo:Solution sol="7.63235309989738208713561107288114726543426513671875"/>
+            <geo:Solution sol="25.122353641806011381731877918355166912078857421875"/>
+            <geo:Solution sol="47.8640856071643980840235599316656589508056640625"/>
+            <geo:Solution sol="-65.5406087724038428632411523722112178802490234375"/>
+            <geo:Solution sol="0.2842645634923623987333485274575650691986083984375"/>
+            <geo:Solution sol="-12.867371389077870702521977364085614681243896484375"/>
+            <geo:Solution sol="-0.01202705713698180335635701254659579717554152011871337890625"/>
+            <geo:Solution sol="-4.637445190603480930529913233017024593550503563932352335541509091854095458984375E-12"/>
+            <geo:Solution sol="0.3225934662336615854627552835154347121715545654296875"/>
+            <geo:Solution sol="0.0509478334009363376111423349357210099697113037109375"/>
+          </geo:Solutions>
+        </geo:PotentialField>
+      </geo:Series>
+      <geo:Series isUptodate="false" name="SecondarySeal_Series" relation="1">
+        <geo:Data Name="SecondarySeal"/>
+      </geo:Series>
+    </geo:ProjectStratigraphicColumn>
+    <geo:ModelStratigraphicColumn>
+      <geo:Data Name="Reservoir_Series"/>
+    </geo:ModelStratigraphicColumn>
+  </geo:GeologicalModel>
+  <geo:ProvenanceGroup>
+    <geo:Provenance id="Unspecified" rank="0"/>
+    <geo:Provenance id="Observed" rank="1"/>
+    <geo:Provenance id="Inferred" rank="2"/>
+    <geo:Provenance id="Interpreted" rank="3"/>
+    <geo:Provenance id="ModelConstructor" rank="4"/>
+  </geo:ProvenanceGroup>
+  <geo:GeophysicalReferenceType AmbientMagneticDeclination="0.0" AmbientMagneticInclination="90.0" AmbientMagneticMagnitude="50000.0" DensityRef="2.67"/>
+</geo:Project3DEdit>
