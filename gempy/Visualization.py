@@ -389,7 +389,7 @@ class PlotData2D(object):
             plt.annotate(label, xy=(x + 0.2, y + 0.15), **kwargs)
 
 
-class steano3D():
+class steno3D():
 
     def __init__(self, geo_data):
         self._data = geo_data

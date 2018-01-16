@@ -35,7 +35,7 @@ import numpy as _np
 
 # --DEP-- import pandas as _pn
 import copy
-from gempy.Visualization import PlotData2D, steano3D, vtkVisualization
+from gempy.Visualization import PlotData2D, steno3D, vtkVisualization
 from gempy.DataManagement import InputData, InterpolatorInput, GridClass
 from gempy.sequential_pile import StratigraphicPile
 from gempy.Topology import topology_analyze, topology_check_adjacency
