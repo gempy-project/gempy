@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><projectDescription>
+	<name>test_a</name>
+	<comment/>
+	<projects>
+	</projects>
+	<buildSpec>
+		<buildCommand>
+			<name>com.geomodeller.core.geomodellerbuilder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
+	</buildSpec>
+	<natures>
+		<nature>com.geomodeller.core.geomodellernature</nature>
+	</natures>
+</projectDescription>
