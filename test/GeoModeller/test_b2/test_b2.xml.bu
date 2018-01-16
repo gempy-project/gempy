@@ -1,0 +1,328 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?driver version="2.0.0"?>
+<!--Composed by Intrepid GeoModeller 2014 v3.3.0 geomodeller_2014 for Windows (x64) by PELAGIAN optimised build b8c286f00ab4, Jun  1 2015-->
+<geo:Project3DEdit xmlns:geo="http://www.geomodeller.com/geo" xmlns:gml="http://www.opengis.net/gml" author="legui" CoordSystem="local" date="14/ 8/2015 15: 0:31" deflection2d="0.001" deflection3d="1.0E-4" description="" discretisation="1000000.0" precision="1.0" projectName="test_a" unit="M" version="2.0">
+  <geo:Extent3DOfProject>
+    <geo:ExtentBox3D>
+      <geo:Extent3D>
+        <geo:ExtentXY Xmax="10.0" Xmin="0.0" Ymax="10.0" Ymin="0.0"/>
+        <geo:ExtentZ Zmax="0.0" Zmin="-10.0"/>
+      </geo:Extent3D>
+      <geo:GraphicTitle Title="test_a">
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="191" Green="0" Red="0"/>
+          <geo:ColorWireFrame Blue="0" Green="255" Red="255"/>
+        </geo:Graphic>
+        <geo:Location>
+          <gml:coordinates cs="," decimal="." ts=" ">0.0,0.0,-10.0</gml:coordinates>
+        </geo:Location>
+      </geo:GraphicTitle>
+      <geo:GraphicBox3d>
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="191" Green="0" Red="0"/>
+          <geo:ColorWireFrame Blue="0" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicBox3d>
+      <geo:GraphicTick DensityAlongX="0" DensityAlongY="0" DensityAlongZ="0" OnOff="false" TickLength="0.0">
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="191" Green="0" Red="0"/>
+          <geo:ColorWireFrame Blue="0" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicTick>
+      <geo:GraphicLabel LabelFormat="" OnOff="false">
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="191" Green="0" Red="0"/>
+          <geo:ColorWireFrame Blue="0" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicLabel>
+    </geo:ExtentBox3D>
+    <geo:TriAxis>
+      <geo:Axis3DDefinition LabelOrigin="Z" LabelX="" LabelY="" LabelZ="" OnOff="true" Radius="0.05" Size="0.2" Step="1.0">
+        <gml:Point>
+          <gml:coordinates cs="," decimal="." ts=" ">-1.0,-1.0,-10.0</gml:coordinates>
+        </gml:Point>
+        <geo:Length LengthX="1.0" LengthY="1.0" LengthZ="1.0"/>
+      </geo:Axis3DDefinition>
+      <geo:GraphicOrigin>
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="255" Green="255" Red="255"/>
+          <geo:ColorWireFrame Blue="255" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicOrigin>
+      <geo:GraphicAxisX>
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="255" Green="255" Red="255"/>
+          <geo:ColorWireFrame Blue="255" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicAxisX>
+      <geo:GraphicAxisY>
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="255" Green="255" Red="255"/>
+          <geo:ColorWireFrame Blue="255" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicAxisY>
+      <geo:GraphicAxisZ>
+        <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+          <geo:ColorShading Blue="255" Green="255" Red="255"/>
+          <geo:ColorWireFrame Blue="255" Green="255" Red="255"/>
+        </geo:Graphic>
+      </geo:GraphicAxisZ>
+    </geo:TriAxis>
+  </geo:Extent3DOfProject>
+  <geo:Formations>
+    <geo:Formation Name="A">
+      <geo:FormationGeology AbsoluteAge="0" DatingTechnique="0" Description="0" ExtraComment="" Genesis="0" Lithology="" MineralComposition="" StratigraphicAge="" Texture=""/>
+      <geo:Geophysics>
+        <geo:DensityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="2.67" PercentageContribution="100"/>
+        </geo:DensityCompoundDistribution>
+        <geo:SusceptibilityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:SusceptibilityCompoundDistribution>
+        <geo:RemanentMagnetizationCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:RemanentMagnetizationCompoundDistribution>
+        <geo:FluidVelocityCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:FluidVelocityCompoundDistribution>
+        <geo:VelocityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1500.0" PercentageContribution="100"/>
+        </geo:VelocityCompoundDistribution>
+        <geo:ThermalConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="2.0" PercentageContribution="100"/>
+        </geo:ThermalConductivityCompoundDistribution>
+        <geo:HeatProductionRateCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:HeatProductionRateCompoundDistribution>
+        <geo:SpecificHeatCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:SpecificHeatCompoundDistribution>
+        <geo:ResistivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ResistivityCompoundDistribution>
+        <geo:ConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ConductivityCompoundDistribution>
+        <geo:PorosityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:PorosityCompoundDistribution>
+      </geo:Geophysics>
+      <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="1" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+        <geo:ColorShading Blue="0" Green="0" Red="255"/>
+        <geo:ColorWireFrame Blue="0" Green="0" Red="255"/>
+      </geo:Graphic>
+    </geo:Formation>
+    <geo:Formation Name="B">
+      <geo:FormationGeology AbsoluteAge="0" DatingTechnique="0" Description="0" ExtraComment="" Genesis="0" Lithology="" MineralComposition="" StratigraphicAge="" Texture=""/>
+      <geo:Geophysics>
+        <geo:DensityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="2.67" PercentageContribution="100"/>
+        </geo:DensityCompoundDistribution>
+        <geo:SusceptibilityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:SusceptibilityCompoundDistribution>
+        <geo:RemanentMagnetizationCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:RemanentMagnetizationCompoundDistribution>
+        <geo:FluidVelocityCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:FluidVelocityCompoundDistribution>
+        <geo:VelocityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1500.0" PercentageContribution="100"/>
+        </geo:VelocityCompoundDistribution>
+        <geo:ThermalConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="2.0" PercentageContribution="100"/>
+        </geo:ThermalConductivityCompoundDistribution>
+        <geo:HeatProductionRateCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:HeatProductionRateCompoundDistribution>
+        <geo:SpecificHeatCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:SpecificHeatCompoundDistribution>
+        <geo:ResistivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ResistivityCompoundDistribution>
+        <geo:ConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ConductivityCompoundDistribution>
+        <geo:PorosityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:PorosityCompoundDistribution>
+      </geo:Geophysics>
+      <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="1" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+        <geo:ColorShading Blue="255" Green="0" Red="0"/>
+        <geo:ColorWireFrame Blue="255" Green="0" Red="0"/>
+      </geo:Graphic>
+    </geo:Formation>
+    <geo:DummyFormation Name="DefaultCover">
+      <geo:FormationGeology AbsoluteAge="0" DatingTechnique="0" Description="0" ExtraComment="" Genesis="0" Lithology="" MineralComposition="" StratigraphicAge="" Texture=""/>
+      <geo:Geophysics>
+        <geo:DensityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="2.67" PercentageContribution="100"/>
+        </geo:DensityCompoundDistribution>
+        <geo:SusceptibilityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:SusceptibilityCompoundDistribution>
+        <geo:RemanentMagnetizationCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:RemanentMagnetizationCompoundDistribution>
+        <geo:FluidVelocityCompoundDistribution>
+          <geo:SimpleDistributionVector Deviation="0.0" LawType="Normal" Mean="0.0" PercentageContribution="100" Declinaison="0.0" Dip="0.0"/>
+        </geo:FluidVelocityCompoundDistribution>
+        <geo:VelocityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1500.0" PercentageContribution="100"/>
+        </geo:VelocityCompoundDistribution>
+        <geo:ThermalConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="2.0" PercentageContribution="100"/>
+        </geo:ThermalConductivityCompoundDistribution>
+        <geo:HeatProductionRateCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:HeatProductionRateCompoundDistribution>
+        <geo:SpecificHeatCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:SpecificHeatCompoundDistribution>
+        <geo:ResistivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ResistivityCompoundDistribution>
+        <geo:ConductivityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="0.0" PercentageContribution="100"/>
+        </geo:ConductivityCompoundDistribution>
+        <geo:PorosityCompoundDistribution>
+          <geo:SimpleDistribution Deviation="0.0" LawType="Log-normal" Mean="1.0E-7" PercentageContribution="100"/>
+        </geo:PorosityCompoundDistribution>
+      </geo:Geophysics>
+      <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="1" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+        <geo:ColorShading Blue="179" Green="179" Red="179"/>
+        <geo:ColorWireFrame Blue="179" Green="179" Red="179"/>
+      </geo:Graphic>
+    </geo:DummyFormation>
+  </geo:Formations>
+  <geo:Sections>
+    <geo:Section Name="Middle" IsAxialSurface="false">
+      <geo:OutputGraphicalData>
+        <geo:FormationBoundaryList>
+          <geo:Data Name="B"/>
+          <gml:MultiLineString srsName="localSectionSystem">
+            <gml:lineStringMember>
+              <gml:LineString>
+                <gml:coordinates cs="," decimal="." ts=" ">8.844,-1.000 8.835,-1.020 8.827,-1.038 8.733,-1.224 8.626,-1.407 8.613,-1.429 8.474,-1.633 8.425,-1.696 8.315,-1.837 8.225,-1.939 8.134,-2.041 8.024,-2.151 7.929,-2.245 7.824,-2.338 7.695,-2.449 7.623,-2.505 7.426,-2.653 7.422,-2.656 7.222,-2.788 7.111,-2.857 7.021,-2.908 6.821,-3.017 6.734,-3.061 6.620,-3.114 6.419,-3.201 6.259,-3.265 6.219,-3.280 6.018,-3.348 5.818,-3.408 5.617,-3.460 5.576,-3.469 5.416,-3.502 5.216,-3.535 5.015,-3.561 4.815,-3.579 4.614,-3.590 4.413,-3.595 4.213,-3.596 4.012,-3.593 3.812,-3.587 3.611,-3.578 3.410,-3.568 3.210,-3.556 3.009,-3.541 2.808,-3.525 2.608,-3.507 2.407,-3.486 2.265,-3.469 2.207,-3.462 2.006,-3.434 1.805,-3.402 1.605,-3.366 1.404,-3.326 1.204,-3.282 1.132,-3.265 1.003,-3.232 0.802,-3.176 0.602,-3.115 0.441,-3.061 0.401,-3.047 0.201,-2.970 0,-2.886 </gml:coordinates>
+              </gml:LineString>
+            </gml:lineStringMember>
+          </gml:MultiLineString>
+        </geo:FormationBoundaryList>
+      </geo:OutputGraphicalData>
+      <geo:Structural2DData>
+        <geo:Interfaces>
+          <geo:Interface>
+            <geo:Data Name="A"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">8.172,-2 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="A"/>
+            <gml:LineString>
+              <gml:coordinates cs="," decimal="." ts=" ">2.050,-3.441 </gml:coordinates>
+            </gml:LineString>
+          </geo:Interface>
+          <geo:Interface>
+            <geo:Data Name="B"/>
+            <gml:LineString/>
+          </geo:Interface>
+        </geo:Interfaces>
+        <geo:Foliations>
+          <geo:Foliation ObservationID="">
+            <geo:Data Name="A"/>
+            <geo:FoliationObservation Azimuth="90.0" Dip="0.0" NormalPolarity="true">
+              <gml:Point>
+                <gml:coordinates cs="," decimal="." ts=" ">5.0,-5.0</gml:coordinates>
+              </gml:Point>
+            </geo:FoliationObservation>
+          </geo:Foliation>
+        </geo:Foliations>
+      </geo:Structural2DData>
+      <geo:Shape3DOfSection FileName="Middle.sec"/>
+      <geo:Intersections>
+        <geo:Curve Degree="1" Name="SurfaceTopography">
+          <geo:Pole-Weight U="9.82969" V="-1.00037" Weight="1"/>
+          <geo:Pole-Weight U="0" V="-1.00037" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+      </geo:Intersections>
+    </geo:Section>
+    <geo:Section Name="SurfaceTopography" Description="Topography of the model." IsAxialSurface="false" IsTopography="true">
+      <geo:Shape3DOfSection FileName="SurfaceTopography.sec"/>
+      <geo:Graphic LINE_TYPE="0" LINE_WIDTH="1.0" MARKER_SYMBOL="3" MARKER_SYMBOL_SIZE="1" MARKER_SYMBOL_SIZE_DEC="1" ORIENTATION_SCALE="5.0" SURFACE_CONTOUR_DENSITY_U="0" SURFACE_CONTOUR_DENSITY_V="0" SURFACE_RENDERING_MODE="0" SURFACE_TEXTURE_EFFECT="6" SURFACE_TRANSPARENCY="0.0">
+        <geo:ColorShading Blue="0" Green="0" Red="255"/>
+        <geo:ColorWireFrame Blue="0" Green="255" Red="255"/>
+      </geo:Graphic>
+      <geo:Intersections>
+        <geo:Curve Degree="1" Name="Middle">
+          <geo:Pole-Weight U="9.87742" V="5.01247" Weight="1"/>
+          <geo:Pole-Weight U="0.04773" V="5.01247" Weight="1"/>
+          <geo:Knot-Multiplicity Knot="0" Multiplicity="2"/>
+          <geo:Knot-Multiplicity Knot="1" Multiplicity="2"/>
+        </geo:Curve>
+      </geo:Intersections>
+    </geo:Section>
+  </geo:Sections>
+  <geo:GeologicalModel Inequalities="false" MinimumDykeThickness="2.0" SimplificationRadius="0.001">
+    <geo:Extent3D>
+      <geo:ExtentXY Xmax="10.0" Xmin="0.0" Ymax="10.0" Ymin="0.0"/>
+      <geo:ExtentZ Zmax="0.0" Zmin="-10.0"/>
+    </geo:Extent3D>
+    <geo:ModelSections>
+      <geo:Data Name="Middle"/>
+      <geo:Data Name="SurfaceTopography"/>
+    </geo:ModelSections>
+    <geo:ProjectStratigraphicColumn IsBase="false">
+      <geo:Series isUptodate="true" name="B_Series" relation="1">
+        <geo:Data Name="B"/>
+        <geo:Data Name="A"/>
+        <geo:PotentialField maxValue="6.121962" Xmax="8.219693958762887" Xmin="2.0977319587628864" Ymax="5.012474226804125" Ymin="5.012474226804125" Zmax="-2.0" Zmin="-5.0">
+          <geo:covariance anisotropyA1="0.0" anisotropyA2="0.0" anisotropyA3="0.0" anisotropyV1="0.058824" anisotropyV2="0.058824" anisotropyV3="0.058824" covarianceModel="1" degreDrift="0" gradient="1.0" isotropic="true" nuggetGradient="0.01" nuggetPotentiel="1.0E-6" range="17.0" tangentVariance="0.0"/>
+          <geo:Gradients>
+            <geo:Gradient Gx="0" Gy="0" Gz="1" XGr="5.0477319587628866059958454570733010768890380859375" YGr="5.0124742268041249104726375662721693515777587890625" ZGr="-5"/>
+          </geo:Gradients>
+          <geo:Points>
+            <gml:coord>
+              <gml:X>8.2196939587628872203595165046863257884979248046875</gml:X>
+              <gml:Y>5.0124742268041249104726375662721693515777587890625</gml:Y>
+              <gml:Z>-2</gml:Z>
+            </gml:coord>
+            <gml:coord>
+              <gml:X>2.09773195876288642836016151704825460910797119140625</gml:X>
+              <gml:Y>5.0124742268041249104726375662721693515777587890625</gml:Y>
+              <gml:Z>-3.44099999999999983657517077517695724964141845703125</gml:Z>
+            </gml:coord>
+          </geo:Points>
+          <geo:Constraints>
+            <geo:Constraint value="0"/>
+            <geo:Constraint value="0"/>
+          </geo:Constraints>
+          <geo:InterfacePoints>
+            <geo:InterfacePoint npnt="2" pnt="0"/>
+          </geo:InterfacePoints>
+          <geo:Solutions>
+            <geo:Solution sol="0.67920321218331369816922915561008267104625701904296875"/>
+            <geo:Solution sol="0"/>
+            <geo:Solution sol="3.0291084221558133293683567899279296398162841796875"/>
+            <geo:Solution sol="1.188902416790082128272842965088784694671630859375"/>
+          </geo:Solutions>
+        </geo:PotentialField>
+      </geo:Series>
+    </geo:ProjectStratigraphicColumn>
+    <geo:ModelStratigraphicColumn>
+      <geo:Data Name="B_Series"/>
+    </geo:ModelStratigraphicColumn>
+  </geo:GeologicalModel>
+  <geo:ProvenanceGroup>
+    <geo:Provenance id="Unspecified" rank="0"/>
+    <geo:Provenance id="Observed" rank="1"/>
+    <geo:Provenance id="Inferred" rank="2"/>
+    <geo:Provenance id="Interpreted" rank="3"/>
+    <geo:Provenance id="ModelConstructor" rank="4"/>
+  </geo:ProvenanceGroup>
+  <geo:GeophysicalReferenceType AmbientMagneticDeclination="0.0" AmbientMagneticInclination="90.0" AmbientMagneticMagnitude="50000.0" DensityRef="2.67"/>
+</geo:Project3DEdit>
