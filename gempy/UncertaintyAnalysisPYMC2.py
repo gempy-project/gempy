@@ -37,8 +37,8 @@ class Posterior:
         self.trace_names = self.db.trace_names[0]
         # get gempy block models
         try:
-            self.lb = self.db.trace(pymc_model_f)[:][:, 0]
-            self.fb = self.db.trace(pymc_model_f)[:][:, 1]
+            self.lb = self.db.trace(pymc_model_f)[:, :2, :]
+            self.fb = self.db.trace(pymc_model_f)[:, 2:, :]
         except KeyError:
             print("No GemPy model trace tallied.")
             self.lb = None
@@ -75,7 +75,10 @@ class Posterior:
         # replace interface data
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
         # replace foliation data
-        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", "azimuth", "dip", "polarity"]] = self.input_data[i][1]
+        interp_data.geo_data_res.foliations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = self.input_data[i][1]
+
+        recalc_gradients(interp_data.geo_data_res.foliations)
+
         # update interpolator
         interp_data.update_interpolator()
         if self.verbose:
@@ -87,45 +90,68 @@ class Posterior:
         self.change_input_data(interp_data, i)
         return gp.compute_model(interp_data)
 
-    def compute_posterior_models_all(self, interp_data, r=None, calc_fb=True):
-        """Computes block models from stored input parameters for all iterations."""
-        if self.lb is None:
-            # create the storage array
+    def compute_posterior_models_all(self, interp_data, r=None):
+        """Computes block models from stored input parameters for all iterations.
+
+        Args:
+            interp_data: GemPy interpolator object
+            r (optional):
+
+        Returns: Stores calculated posterior models in self.lb and self.lb
+
+        """
+
+        if r is None:  # compute model for every iteration
+            r = range(self.n_iter)
+        else:  # use the given slice
+            r = range(r[0], r[1])
+
+        for i in tqdm.tqdm(r):
             lb, fb = self.compute_posterior_model(interp_data, 1)
-            lb = lb[0]
+            if i == 0 or i == r[0]:
+                self.lb = np.expand_dims(lb, 0)
+                self.fb = np.expand_dims(fb, 0)
+            else:
+                self.lb = np.concatenate((self.lb, np.expand_dims(lb, 0)), axis=0)
+                self.fb = np.concatenate((self.fb, np.expand_dims(fb, 0)), axis=0)
 
-            self.lb = np.empty_like(lb)
-            if calc_fb:
-                self.fb = np.empty_like(lb)
-
-            if r is None:  # compute model for every iteration
-                r = self.n_iter
-            else:  # use the given slice
-                r = range(r[0], r[1])
-            try:
-                for i in tqdm.tqdm(r):
-                    if i == 0:
-                        lb, fb = self.compute_posterior_model(interp_data, i)
-                        self.lb = lb[0].astype("int32")
-                        self.fb = fb[0].astype("int32")
-                    else:
-                        lb, fb = self.compute_posterior_model(interp_data, i)
-                        self.lb = np.vstack((self.lb, lb[0].astype("int32")))
-                        if calc_fb:
-                            self.fb = np.vstack((self.fb, fb[0].astype("int32")))
-            except NameError:
-                for i in range(r):
-                    if i == 0:
-                        lb, fb = self.compute_posterior_model(interp_data, i)
-                        self.lb = lb[0].astype("int32")
-                        self.fb = fb[0].astype("int32")
-                    else:
-                        lb, fb = self.compute_posterior_model(interp_data, i)
-                        self.lb = np.vstack((self.lb, lb[0].astype("int32")))
-                        if calc_fb:
-                            self.fb = np.vstack((self.fb, fb[0].astype("int32")))
-        else:
-            print("self.lb already filled with something. If you want to override, set self.lb to 'None'")
+        # if self.lb is None:
+        #     # create the storage array
+        #     lb, fb = self.compute_posterior_model(interp_data, 1)
+        #     lb = lb[0]
+        #
+        #     self.lb = np.empty_like(lb)
+        #     if calc_fb:
+        #         self.fb = np.empty_like(lb)
+        #
+        #     if r is None:  # compute model for every iteration
+        #         r = range(self.n_iter)
+        #     else:  # use the given slice
+        #         r = range(r[0], r[1])
+        #     try:
+        #         for i in tqdm.tqdm(r):
+        #             output = self.compute_posterior_model(interp_data, i)
+        #             if i == 0:
+        #                 self.lb = lb[0].astype("int32")
+        #                 self.fb = fb[0].astype("int32")
+        #             else:
+        #                 lb, fb = self.compute_posterior_model(interp_data, i)
+        #                 self.lb = np.vstack((self.lb, lb[0].astype("int32")))
+        #                 if calc_fb:
+        #                     self.fb = np.vstack((self.fb, fb[0].astype("int32")))
+        #     except NameError:
+        #         for i in range(r):
+        #             if i == 0:
+        #                 lb, fb = self.compute_posterior_model(interp_data, i)
+        #                 self.lb = lb[0].astype("int32")
+        #                 self.fb = fb[0].astype("int32")
+        #             else:
+        #                 lb, fb = self.compute_posterior_model(interp_data, i)
+        #                 self.lb = np.vstack((self.lb, lb[0].astype("int32")))
+        #                 if calc_fb:
+        #                     self.fb = np.vstack((self.fb, fb[0].astype("int32")))
+        # else:
+        #     print("self.lb already filled with something. If you want to override, set self.lb to 'None'")
 
     def compute_posterior_model_avrg(self, interp_data):
         """Computes average posterior model."""
@@ -139,7 +165,7 @@ class Posterior:
         fol_avrg = pn.concat(list_fol).groupby(level=0).mean()
 
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = interf_avrg
-        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", "azimuth", "dip", "polarity"]] = fol_avrg
+        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = fol_avrg
         interp_data.update_interpolator()
         return gp.compute_model(interp_data)
 
@@ -149,7 +175,7 @@ class Posterior:
             return "No models stored in self.lb, please run 'self.compute_posterior_models_all' to generate block" \
                    " models for all iterations."
 
-        self.lith_prob = compute_prob_lith(self.lb[:, 0])
+        self.lith_prob = compute_prob_lith(self.lb[:, 0, :])
         self.ie = calcualte_ie_masked(self.lith_prob)
         self.ie_total = calculate_ie_total(self.ie)
         print("Information Entropy successfully calculated. Stored in self.ie and self.ie_total")
@@ -232,7 +258,8 @@ def check_adjacency(G, n1, n2):
 def compute_prob_lith(lith_blocks):
     """Blocks must be just the lith blocks!"""
     lith_id = np.unique(lith_blocks)
-    lith_count = np.zeros_like(lith_blocks[0:len(lith_id)])
+    # lith_count = np.zeros_like(lith_blocks[0:len(lith_id)])
+    lith_count = np.zeros((len(np.unique(lith_blocks)), lith_blocks.shape[1]))
     for i, l_id in enumerate(lith_id):
         lith_count[i] = np.sum(lith_blocks == l_id, axis=0)
     lith_prob = lith_count / len(lith_blocks)
@@ -257,6 +284,15 @@ def calculate_ie_total(ie, absolute=False):
 
 
 def compare_graphs(G1, G2):
+    """Compare two NetworkX graphs to obtain the Jaccard index (e.g. to compare topology graphs).
+
+    Args:
+        G1 (:obj:): Graph
+        G2 (:obj:): Another graph
+
+    Returns: (float) Jaccard index
+
+    """
     intersection = 0
     union = G1.number_of_edges()
 
@@ -326,6 +362,16 @@ def calculate_gradient(dip, az, pol):
     g_z = np.cos(np.deg2rad(dip)) * pol
     return g_x, g_y, g_z
 
+
+def recalc_gradients(folations_dataframe):
+    folations_dataframe["G_x"] = np.sin(np.deg2rad(folations_dataframe["dip"].astype('float'))) * \
+                             np.sin(np.deg2rad(folations_dataframe["azimuth"].astype('float'))) * \
+                             folations_dataframe["polarity"].astype('float')
+    folations_dataframe["G_y"] = np.sin(np.deg2rad(folations_dataframe["dip"].astype('float'))) * \
+                             np.cos(np.deg2rad(folations_dataframe["azimuth"].astype('float'))) *\
+                             folations_dataframe["polarity"].astype('float')
+    folations_dataframe["G_z"] = np.cos(np.deg2rad(folations_dataframe["dip"].astype('float'))) *\
+                             folations_dataframe["polarity"].astype('float')
 
 # DEP PLANE CLASS SHIT
 # class Plane:
