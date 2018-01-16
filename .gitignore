@@ -169,3 +169,7 @@ ENV/
 # Rope project settings
 .ropeproject
 
+Prototype Notebook/vtks
+Prototype Notebook/vtk_res_model_adjusted_1
+Prototype Notebook/vtk_exp_smooth_trnasitions
+Prototype Notebook/plots
