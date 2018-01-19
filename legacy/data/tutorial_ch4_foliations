@@ -1,3 +1,0 @@
-,G_x,G_y,G_z,X,X_std,Y,Y_std,Z,Z_std,annotations,azimuth,azimuth_std,dip,dip_std,formation,formation number,group_id,isFault,order_series,polarity,series
-0,-0.5169921826496945,-0.00855947322267713,0.8559473222677055,500.0,,100.0,,1148.0,,"${\bf{x}}_{\beta \,{\bf{1}},0}$",269.051481039,,31.1354510371,,Layer 2,1,l2_a,False,1,1,Default serie
-1,0.5161215666197044,-0.014273273413155542,0.8563964047893331,2500.0,,100.0,,1147.33333333,,"${\bf{x}}_{\beta \,{\bf{1}},1}$",91.5841034228,,31.0856523502,,Layer 2,1,l2_b,False,1,1,Default serie

@@ -65,7 +65,6 @@ class InputData(object):
 
         # TODO choose the default source of data. So far only csv
         # Create the pandas dataframes
-
         # if we dont read a csv we create an empty dataframe with the columns that have to be filled
         self.foliations = pn.DataFrame(columns=['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity',
                                                 'formation', 'series', 'X_std', 'Y_std', 'Z_std',
@@ -77,12 +76,8 @@ class InputData(object):
         if path_f or path_i:
             self.import_data_csv(path_i=path_i, path_f=path_f)
 
-        # DEP-
-        # self._set_formations()
-
         # If not provided set default series
         self.series = self.set_series()
-        # DEP- self.set_formation_number()
 
         # Compute gradients given azimuth and dips to plot data
         self.calculate_gradient()
@@ -91,8 +86,6 @@ class InputData(object):
         self.grid = self.set_grid(extent=None, resolution=None, grid_type="regular_3D", **kwargs)
 
         self.order_table()
-        # DEP
-        #self.geo_data_type = 'InputData'
 
         self.potential_at_interfaces = 0
 
@@ -166,48 +159,33 @@ class InputData(object):
         self.foliations["dip"] = np.arccos(self.foliations["G_z"] / self.foliations["polarity"])
         self.foliations["azimuth"] = np.arcsin(self.foliations["G_x"]) / (np.sin(np.arccos(self.foliations["G_z"] / self.foliations["polarity"])) * self.foliations["polarity"])
 
-    # # DEP?
-    # def create_grid(self, extent=None, resolution=None, grid_type="regular_3D", **kwargs):
-    #     """
-    #     Method to initialize the class grid. So far is really simple and only has the regular grid type
-    #
-    #     Args:
-    #         grid_type (str): regular_3D or regular_2D (I am not even sure if regular 2D still working)
-    #         **kwargs: Arbitrary keyword arguments.
-    #
-    #     Returns:
-    #         self.grid(GeMpy_core.grid): Object that contain different grids
-    #     """
-    #
-    #     if not extent:
-    #         extent = self.extent
-    #     if not resolution:
-    #         resolution = self.resolution
-    #
-    #   return self.GridClass(extent, resolution, grid_type=grid_type, **kwargs)
-
-    def set_grid(self, new_grid=None, extent=None, resolution=None, grid_type="regular_3D", **kwargs):
+    def set_grid(self, custom_grid=None, extent=None, resolution=None, grid_type=None, **kwargs):
         """
-        Method to initialize the class new_grid. So far is really simple and only has the regular new_grid type
+        Method to initialize the class GridClass. You can pass either a custom set of points or
 
         Args:
-            grid_type (str): regular_3D or regular_2D (I am not even sure if regular 2D still working)
+            grid_type (str): regular_3D
+            custom_grid(array_like): 2D array with XYZ columns. To exploit gempy functionality the indexing has to be ij
+                (See Also numpy.meshgrid documentation)
             **kwargs: Arbitrary keyword arguments.
 
         Returns:
             self.new_grid(GeMpy_core.new_grid): Object that contain different grids
         """
-        if new_grid is not None:
-            assert new_grid.shape[1] is 3, 'The shape of new grid must be (n,3) where n is' \
+        self.grid = GridClass()
+        if custom_grid is not None:
+            assert custom_grid.shape[1] is 3, 'The shape of new grid must be (n,3) where n is' \
                                                                         'the number of points of the grid'
-            self.grid.grid = new_grid
-        else:
+
+            self.grid.create_custom_grid(custom_grid)
+        if grid_type is 'regular_3D':
             if not extent:
                 extent = self.extent
             if not resolution:
                 resolution = self.resolution
+            self.grid.create_regular_grid_3d(extent, resolution)
 
-            return GridClass(extent, resolution, grid_type=grid_type, **kwargs)
+            return self.grid
 
     def data_to_pickle(self, path=False):
         """
@@ -763,143 +741,6 @@ class InputData(object):
                     tri_id) + ". Only exactly 3 points are supported.")
 
 
-class FoliaitionsFromInterfaces:
-    def __init__(self, geo_data, group_id, mode, verbose=False):
-        """
-
-        Args:
-            geo_data: InputData object
-            group_id: (str) identifier for the data group
-            mode: (str), either 'interf_to_fol' or 'fol_to_interf'
-            verbose: (bool) adjusts verbosity, default False
-        """
-        self.geo_data = geo_data
-        self.group_id = group_id
-
-        if mode is "interf_to_fol":
-            # df bool filter
-            self._f = self.geo_data.interfaces["group_id"] == self.group_id
-            # get formation string
-            self.formation = self.geo_data.interfaces[self._f]["formation"].values[0]
-            # df indices
-            self.interf_i = self.geo_data.interfaces[self._f].index
-            # get point coordinates from df
-            self.interf_p = self._get_points()
-            # get point cloud centroid and normal vector of plane
-            self.centroid, self.normal = self._fit_plane_svd()
-            # get dip and azimuth of plane from normal vector
-            self.dip, self.azimuth, self.polarity = self._get_dip()
-
-        elif mode == "fol_to_interf":
-            self._f = self.geo_data.foliations["group_id"] == self.group_id
-            self.formation = self.geo_data.foliations[self._f]["formation"].values[0]
-
-            # get interface indices
-            self.interf_i = self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].index
-            # get interface point coordinates from df
-            self.interf_p = self._get_points()
-            self.normal = [self.geo_data.foliations[self._f]["G_x"],
-                           self.geo_data.foliations[self._f]["G_y"],
-                           self.geo_data.foliations[self._f]["G_z"]]
-            self.centroid = [self.geo_data.foliations[self._f]["X"],
-                             self.geo_data.foliations[self._f]["Y"],
-                             self.geo_data.foliations[self._f]["Z"]]
-            # modify all Z of interface points belonging to group_id to fit plane
-            self._fol_to_p()
-
-        else:
-            print("Mode must be either 'interf_to_fol' or 'fol_to_interf'.")
-
-    def _fol_to_p(self):
-        a, b, c = self.normal
-        d = -a * self.centroid[0] - b * self.centroid[1] - c * self.centroid[2]
-        for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"] == self.group_id].iterrows():
-            # iterate over each point and recalculate Z, set Z
-            # x, y, z = row["X"], row["Y"], row["Z"]
-            Z = (a*row["X"] + b*row["Y"] + d)/-c
-            self.geo_data.interfaces.set_value(i, "Z", Z)
-
-    def _get_points(self):
-        """Returns n points from geo_data.interfaces matching group_id in np.array shape (n, 3)."""
-        # TODO: zip
-        x = []
-        y = []
-        z = []
-        for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].iterrows():
-            x.append(float(row["X"]))
-            y.append(float(row["Y"]))
-            z.append(float(row["Z"]))
-        return np.array([x, y, z])
-
-    def _fit_plane_svd(self):
-        """Fit plane to points using singular value decomposition (svd). Returns point cloud centroid [x,y,z] and
-        normal vector of plane [x,y,z]."""
-        from numpy.linalg import svd
-        # https://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points
-        ctr = self.interf_p.mean(axis=1)  # calculate point cloud centroid [x,y,z]
-        x = self.interf_p - ctr[:, np.newaxis]
-        m = np.dot(x, x.T)  # np.cov(x)
-        return ctr, svd(m)[0][:, -1]
-
-    def _get_dip(self):
-        """Returns dip angle and azimuth of normal vector [x,y,z]."""
-        dip = np.arccos(self.normal[2] / np.linalg.norm(self.normal)) / np.pi * 180.
-
-        azimuth = None
-        if self.normal[0] >= 0 and self.normal[1] > 0:
-            azimuth = np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
-        # border cases where arctan not defined:
-        elif self.normal[0] > 0 and self.normal[1] == 0:
-            azimuth = 90
-        elif self.normal[0] < 0 and self.normal[1] == 0:
-            azimuth = 270
-        elif self.normal[1] < 0:
-            azimuth = 180 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
-        elif self.normal[1] >= 0 < self.normal[0]:
-            azimuth = 360 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
-
-        if -90 < dip < 90:
-            polarity = 1
-        else:
-            polarity = -1
-
-        return dip, azimuth, polarity
-
-    def set_fol(self):
-        """Appends foliation data point for group_id to geo_data.foliations."""
-        if "group_id" not in self.geo_data.foliations.columns:
-            self.geo_data.foliations["group_id"] = "NaN"
-        fol = [self.centroid[0], self.centroid[1], self.centroid[2],
-               self.dip, self.azimuth, self.polarity,
-               self.formation, self.group_id]
-        fol_series = pn.Series(fol, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'group_id'])
-        fol_df = fol_series.to_frame().transpose()
-        self.geo_data.set_foliations(fol_df, append=True)
-
-
-def _get_plane_normal(A, B, C, verbose=False):
-    """Returns normal vector of plane defined by points A,B,C as [x,y,z]."""
-    A = np.array(A)
-    B = np.array(B)
-    C = np.array(C)
-
-    v1 = C - A
-    v2 = B - A
-    if verbose:
-        print("vector C-A", v1)
-        print("vector B-A", v2)
-
-    return np.cross(v1, v2)
-
-
-def _get_centroid(A, B, C):
-    """Returns centroid (x,y,z) of three points 3x[x,y,z]."""
-    X = (A[0]+B[0]+C[0])/3
-    Y = (A[1]+B[1]+C[1])/3
-    Z = (A[2]+B[2]+C[2])/3
-    return X,Y,Z
-
-
 class GridClass(object):
     """
     -DOCS NOT UPDATED- Class with set of functions to generate grids
@@ -910,24 +751,26 @@ class GridClass(object):
         grid_type(str): Type of grid. So far only regular 3D is implemented
     """
 
-    def __init__(self, extent, resolution, grid_type="regular_3D"):
-        self._grid_ext = extent
-        self._grid_res = resolution
+    def __init__(self):
 
-        if grid_type == "regular_3D":
-            self.grid = self.create_regular_grid_3d()
-        else:
-            print("Wrong type")
+        self.values = None
 
-        self.dx, self.dy, self.dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0], (extent[5] - extent[4]) / resolution[0]
+    def create_custom_grid(self, custom_grid):
+        assert type(custom_grid) is np.ndarray and custom_grid.shape[1] is 3
+        self.values = custom_grid
 
-    def create_regular_grid_3d(self):
+    def create_regular_grid_3d(self, extent, resolution):
         """
         Method to create a 3D regular grid where is interpolated
 
         Returns:
             numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid
         """
+        self._grid_ext = extent
+        self._grid_res = resolution
+
+        self.dx, self.dy, self.dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0], (
+        extent[5] - extent[4]) / resolution[0]
 
         g = np.meshgrid(
             np.linspace(self._grid_ext[0], self._grid_ext[1], self._grid_res[0], dtype="float32"),
@@ -935,7 +778,8 @@ class GridClass(object):
             np.linspace(self._grid_ext[4], self._grid_ext[5], self._grid_res[2], dtype="float32"), indexing="ij"
         )
 
-        return np.vstack(map(np.ravel, g)).T.astype("float32")
+        self.values = np.vstack(map(np.ravel, g)).T.astype("float32")
+        return self.values
 
 
 class InterpolatorInput:
@@ -1616,3 +1460,137 @@ class InterpolatorInput:
                 # Number of points per formation
                 print('Number of points per formation (rest)', self.tg.number_of_points_per_formation_T.get_value())
 
+
+class FoliaitionsFromInterfaces:
+    def __init__(self, geo_data, group_id, mode, verbose=False):
+        """
+
+        Args:
+            geo_data: InputData object
+            group_id: (str) identifier for the data group
+            mode: (str), either 'interf_to_fol' or 'fol_to_interf'
+            verbose: (bool) adjusts verbosity, default False
+        """
+        self.geo_data = geo_data
+        self.group_id = group_id
+
+        if mode is "interf_to_fol":
+            # df bool filter
+            self._f = self.geo_data.interfaces["group_id"] == self.group_id
+            # get formation string
+            self.formation = self.geo_data.interfaces[self._f]["formation"].values[0]
+            # df indices
+            self.interf_i = self.geo_data.interfaces[self._f].index
+            # get point coordinates from df
+            self.interf_p = self._get_points()
+            # get point cloud centroid and normal vector of plane
+            self.centroid, self.normal = self._fit_plane_svd()
+            # get dip and azimuth of plane from normal vector
+            self.dip, self.azimuth, self.polarity = self._get_dip()
+
+        elif mode == "fol_to_interf":
+            self._f = self.geo_data.foliations["group_id"] == self.group_id
+            self.formation = self.geo_data.foliations[self._f]["formation"].values[0]
+
+            # get interface indices
+            self.interf_i = self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].index
+            # get interface point coordinates from df
+            self.interf_p = self._get_points()
+            self.normal = [self.geo_data.foliations[self._f]["G_x"],
+                           self.geo_data.foliations[self._f]["G_y"],
+                           self.geo_data.foliations[self._f]["G_z"]]
+            self.centroid = [self.geo_data.foliations[self._f]["X"],
+                             self.geo_data.foliations[self._f]["Y"],
+                             self.geo_data.foliations[self._f]["Z"]]
+            # modify all Z of interface points belonging to group_id to fit plane
+            self._fol_to_p()
+
+        else:
+            print("Mode must be either 'interf_to_fol' or 'fol_to_interf'.")
+
+    def _fol_to_p(self):
+        a, b, c = self.normal
+        d = -a * self.centroid[0] - b * self.centroid[1] - c * self.centroid[2]
+        for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"] == self.group_id].iterrows():
+            # iterate over each point and recalculate Z, set Z
+            # x, y, z = row["X"], row["Y"], row["Z"]
+            Z = (a*row["X"] + b*row["Y"] + d)/-c
+            self.geo_data.interfaces.set_value(i, "Z", Z)
+
+    def _get_points(self):
+        """Returns n points from geo_data.interfaces matching group_id in np.array shape (n, 3)."""
+        # TODO: zip
+        x = []
+        y = []
+        z = []
+        for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].iterrows():
+            x.append(float(row["X"]))
+            y.append(float(row["Y"]))
+            z.append(float(row["Z"]))
+        return np.array([x, y, z])
+
+    def _fit_plane_svd(self):
+        """Fit plane to points using singular value decomposition (svd). Returns point cloud centroid [x,y,z] and
+        normal vector of plane [x,y,z]."""
+        from numpy.linalg import svd
+        # https://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points
+        ctr = self.interf_p.mean(axis=1)  # calculate point cloud centroid [x,y,z]
+        x = self.interf_p - ctr[:, np.newaxis]
+        m = np.dot(x, x.T)  # np.cov(x)
+        return ctr, svd(m)[0][:, -1]
+
+    def _get_dip(self):
+        """Returns dip angle and azimuth of normal vector [x,y,z]."""
+        dip = np.arccos(self.normal[2] / np.linalg.norm(self.normal)) / np.pi * 180.
+
+        azimuth = None
+        if self.normal[0] >= 0 and self.normal[1] > 0:
+            azimuth = np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
+        # border cases where arctan not defined:
+        elif self.normal[0] > 0 and self.normal[1] == 0:
+            azimuth = 90
+        elif self.normal[0] < 0 and self.normal[1] == 0:
+            azimuth = 270
+        elif self.normal[1] < 0:
+            azimuth = 180 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
+        elif self.normal[1] >= 0 < self.normal[0]:
+            azimuth = 360 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
+
+        if -90 < dip < 90:
+            polarity = 1
+        else:
+            polarity = -1
+
+        return dip, azimuth, polarity
+
+    def set_fol(self):
+        """Appends foliation data point for group_id to geo_data.foliations."""
+        if "group_id" not in self.geo_data.foliations.columns:
+            self.geo_data.foliations["group_id"] = "NaN"
+        fol = [self.centroid[0], self.centroid[1], self.centroid[2],
+               self.dip, self.azimuth, self.polarity,
+               self.formation, self.group_id]
+        fol_series = pn.Series(fol, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'group_id'])
+        fol_df = fol_series.to_frame().transpose()
+        self.geo_data.set_foliations(fol_df, append=True)
+
+    def _get_plane_normal(A, B, C, verbose=False):
+        """Returns normal vector of plane defined by points A,B,C as [x,y,z]."""
+        A = np.array(A)
+        B = np.array(B)
+        C = np.array(C)
+
+        v1 = C - A
+        v2 = B - A
+        if verbose:
+            print("vector C-A", v1)
+            print("vector B-A", v2)
+
+        return np.cross(v1, v2)
+
+    def _get_centroid(A, B, C):
+        """Returns centroid (x,y,z) of three points 3x[x,y,z]."""
+        X = (A[0] + B[0] + C[0]) / 3
+        Y = (A[1] + B[1] + C[1]) / 3
+        Z = (A[2] + B[2] + C[2]) / 3
+        return X, Y, Z

@@ -7,46 +7,46 @@ GeMpy/__pycache__/__init__.cpython-36.pyc
 GeMpy/__pycache__/geomodeller_xml_obj.cpython-36.pyc
 GeMpy/geomodeller_xml_obj.py.bak
 GeMpy/qgrid/__pycache__/
-Prototype Notebook/Example_4_faults_network.ipynb
-Prototype Notebook/Example_Peter_Model.ipynb
-Prototype Notebook/Fabian.vtp
-Prototype Notebook/Fabian1.vtp
-Prototype Notebook/Fabian2.vtp
-Prototype Notebook/Fabian3.vtp
-Prototype Notebook/Fabian4.vtp
-Prototype Notebook/FabianModelBigPoints.vtk
-Prototype Notebook/FabianModelSmallPoints.vtk
-Prototype Notebook/FabianModel_point.vti
-Prototype Notebook/FabianModel_point_good_res.vti
-Prototype Notebook/Fabian_f.vtp
-Prototype Notebook/Fault.vtk
-Prototype Notebook/Intrusions.ipynb
-Prototype Notebook/Layer1.vtk
-Prototype Notebook/Layer2.vtk
-Prototype Notebook/Layer3.vtk
-Prototype Notebook/Layer4.vtk
-Prototype Notebook/More cave/
-Prototype Notebook/PF_over_TKC/
-Prototype Notebook/PerthBasin.vti
-Prototype Notebook/PerthBasin.vtk
-Prototype Notebook/PerthBasinOtherColors.vtk
-Prototype Notebook/Physics.ipynb
-Prototype Notebook/SandstoneSol.npy
-Prototype Notebook/TriangleColoredPoints.vtp
-Prototype Notebook/TriangleSolidColor.vtp
-Prototype Notebook/Visualization3_vtkBasics.ipynb
-Prototype Notebook/files fab/
-Prototype Notebook/geomodels.sqlite
-Prototype Notebook/legacy/.ipynb_checkpoints/
-Prototype Notebook/models.npy
-Prototype Notebook/olaqases.vox
-Prototype Notebook/preth.npy
-Prototype Notebook/sandstone.vtk
-Prototype Notebook/sandstone.vtr
-Prototype Notebook/simplices.npy
-Prototype Notebook/vertices.npy
-Prototype Notebook/voxet_sub.vox
-Prototype Notebook/withfault.npy
+notebooks/prototype notebooks/Example_4_faults_network.ipynb
+notebooks/prototype notebooks/Example_Peter_Model.ipynb
+notebooks/prototype notebooks/Fabian.vtp
+notebooks/prototype notebooks/Fabian1.vtp
+notebooks/prototype notebooks/Fabian2.vtp
+notebooks/prototype notebooks/Fabian3.vtp
+notebooks/prototype notebooks/Fabian4.vtp
+notebooks/prototype notebooks/FabianModelBigPoints.vtk
+notebooks/prototype notebooks/FabianModelSmallPoints.vtk
+notebooks/prototype notebooks/FabianModel_point.vti
+notebooks/prototype notebooks/FabianModel_point_good_res.vti
+notebooks/prototype notebooks/Fabian_f.vtp
+notebooks/prototype notebooks/Fault.vtk
+notebooks/prototype notebooks/Intrusions.ipynb
+notebooks/prototype notebooks/Layer1.vtk
+notebooks/prototype notebooks/Layer2.vtk
+notebooks/prototype notebooks/Layer3.vtk
+notebooks/prototype notebooks/Layer4.vtk
+notebooks/prototype notebooks/More cave/
+notebooks/prototype notebooks/PF_over_TKC/
+notebooks/prototype notebooks/PerthBasin.vti
+notebooks/prototype notebooks/PerthBasin.vtk
+notebooks/prototype notebooks/PerthBasinOtherColors.vtk
+notebooks/prototype notebooks/Physics.ipynb
+notebooks/prototype notebooks/SandstoneSol.npy
+notebooks/prototype notebooks/TriangleColoredPoints.vtp
+notebooks/prototype notebooks/TriangleSolidColor.vtp
+notebooks/prototype notebooks/Visualization3_vtkBasics.ipynb
+notebooks/prototype notebooks/files fab/
+notebooks/prototype notebooks/geomodels.sqlite
+notebooks/prototype notebooks/legacy/.ipynb_checkpoints/
+notebooks/prototype notebooks/models.npy
+notebooks/prototype notebooks/olaqases.vox
+notebooks/prototype notebooks/preth.npy
+notebooks/prototype notebooks/sandstone.vtk
+notebooks/prototype notebooks/sandstone.vtr
+notebooks/prototype notebooks/simplices.npy
+notebooks/prototype notebooks/vertices.npy
+notebooks/prototype notebooks/voxet_sub.vox
+notebooks/prototype notebooks/withfault.npy
 docs/source/Notebooks/Erosion.rst
 docs/source/Notebooks/Example_1_Sandstone_files/Example_1_Sandstone_39_0.png
 docs/source/Notebooks/Example_1_Sandstone_files/Example_1_Sandstone_41_0.png
@@ -71,8 +71,8 @@ test/legacy/
 test/log
 test/log2
 /legacy/geomodeller_xml_obj.py.bak
-!/input_data/FabLessPoints_Foliations.csv
-!/input_data/FabLessPoints_Points.csv
+!/notebooks/input_data/FabLessPoints_Foliations.csv
+!/notebooks/input_data/FabLessPoints_Points.csv
 
 ### Python template
 # Byte-compiled / optimized / DLL files
@@ -169,8 +169,8 @@ ENV/
 # Rope project settings
 .ropeproject
 
-Prototype Notebook/vtks
-Prototype Notebook/vtk_res_model_adjusted_1
-Prototype Notebook/vtk_exp_smooth_trnasitions
-Prototype Notebook/plots
-!/gempy/geophysics.py
+notebooks/prototype notebooks/vtks
+notebooks/prototype notebooks/vtk_res_model_adjusted_1
+notebooks/prototype notebooks/vtk_exp_smooth_trnasitions
+notebooks/prototype notebooks/plots
+
