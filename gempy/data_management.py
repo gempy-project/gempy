@@ -16,8 +16,8 @@
 """
 
 import os
-from os import path
 import sys
+from os import path
 
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
@@ -40,12 +40,12 @@ class InputData(object):
         extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]
         Resolution ((Optional[list])): [nx, ny, nz]. Defaults to 50
         path_i: Path to the data bases of interfaces. Default os.getcwd(),
-        path_f: Path to the data bases of foliations. Default os.getcwd()
+        path_f: Path to the data bases of orientations. Default os.getcwd()
 
     Attributes:
         extent(list):  [x_min, x_max, y_min, y_max, z_min, z_max]
         resolution ((Optional[list])): [nx, ny, nz]
-        Foliations(pandas.core.frame.DataFrame): Pandas data frame with the foliations data
+        orientations(pandas.core.frame.DataFrame): Pandas data frame with the orientations data
         Interfaces(pandas.core.frame.DataFrame): Pandas data frame with the interfaces data
         series(pandas.core.frame.DataFrame): Pandas data frame which contains every formation within each series
     """
@@ -66,7 +66,7 @@ class InputData(object):
         # TODO choose the default source of data. So far only csv
         # Create the pandas dataframes
         # if we dont read a csv we create an empty dataframe with the columns that have to be filled
-        self.foliations = pn.DataFrame(columns=['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity',
+        self.orientations = pn.DataFrame(columns=['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity',
                                                 'formation', 'series', 'X_std', 'Y_std', 'Z_std',
                                                 'dip_std', 'azimuth_std'])
 
@@ -91,40 +91,58 @@ class InputData(object):
 
         self.fault_relation = None
 
-    def set_fault_relation_matrix(self, rel_matrix):
+    def calculate_gradient(self):
         """
-        Method to set the faults that offset a given sequence and therefore also another fault
-        Args:
-            rel_matrix (numpy.array): 2D Boolean array with the logic. Rows affect (offset) columns
-        """
-
-        self.fault_relation = rel_matrix
-
-    def import_data_csv(self, path_i, path_f, **kwargs):
-        """
-        Method to import interfaces and foliations from csv. The format is the same as the export 3D model data of
-        GeoModeller (check in the input data folder for an example).
-        Args:
-            path_i (str): path to the csv table
-            path_f (str): path to the csv table
-            **kwargs: kwargs of Pandas load_csv
+        Calculate the gradient vector of module 1 given dip and azimuth to be able to plot the orientations
 
         Attributes:
-            Foliations(pandas.core.frame.DataFrame): Pandas data frame with the foliations data
-            Interfaces(pandas.core.frame.DataFrame): Pandas data frame with the interfaces data
-
+            orientations: extra columns with components xyz of the unity vector.
         """
 
-        if path_f:
-            self.foliations = self.load_data_csv(data_type="foliations", path=path_f, **kwargs)
-            assert set(['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']).issubset(self.foliations.columns), \
-                "One or more columns do not match with the expected values " + str(self.foliations.columns)
-            self.foliations = self.foliations[['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']]
+        self.orientations['G_x'] = np.sin(np.deg2rad(self.orientations["dip"].astype('float'))) * \
+                                 np.sin(np.deg2rad(self.orientations["azimuth"].astype('float'))) * \
+                                 self.orientations["polarity"].astype('float')
+        self.orientations['G_y'] = np.sin(np.deg2rad(self.orientations["dip"].astype('float'))) * \
+                                 np.cos(np.deg2rad(self.orientations["azimuth"].astype('float'))) *\
+                                 self.orientations["polarity"].astype('float')
+        self.orientations['G_z'] = np.cos(np.deg2rad(self.orientations["dip"].astype('float'))) *\
+                                 self.orientations["polarity"].astype('float')
 
-        if path_i:
-            self.interfaces = self.load_data_csv(data_type="interfaces", path=path_i, **kwargs)
-            assert set(['X', 'Y', 'Z', 'formation']).issubset(self.interfaces.columns), \
-                "One or more columns do not match with the expected values " + str(self.interfaces.columns)
+    def calculate_orientations(self):
+        """
+        Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.
+        """
+        self.orientations["dip"] = np.arccos(self.orientations["G_z"] / self.orientations["polarity"])
+        self.orientations["azimuth"] = np.arcsin(self.orientations["G_x"]) / (np.sin(np.arccos(self.orientations["G_z"] / self.orientations["polarity"])) * self.orientations["polarity"])
+
+    def count_faults(self):
+        """
+        Read the string names of the formations to detect automatically the number of faults.
+        """
+        faults_series = []
+        for i in self.interfaces['series'].unique():
+            if ('fault' in i or 'Fault' in i) and 'Default' not in i:
+                faults_series.append(i)
+        return faults_series
+
+    def data_to_pickle(self, path=False):
+        """
+        Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
+        versions used to export and import the pickle differ it may give problems
+
+        Args:
+            path (str): path where save the pickle
+
+        Returns:
+            None
+        """
+
+        if not path:
+            path = './geo_data'
+        import pickle
+        with open(path+'.pickle', 'wb') as f:
+            # Pickle the 'data' dictionary using the highest protocol available.
+            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
     def get_formations(self):
         """
@@ -134,43 +152,287 @@ class InputData(object):
         """
         return self.interfaces["formation"].unique()
 
-    def calculate_gradient(self):
+    def get_data(self, itype='all', numeric=False, verbosity=0):
         """
-        Calculate the gradient vector of module 1 given dip and azimuth to be able to plot the foliations
+        Method that returns the interfaces and orientations pandas Dataframes. Can return both at the same time or only
+        one of the two
+
+        Args:
+            itype: input data type, either 'orientations', 'interfaces' or 'all' for both.
+            numeric(bool): Return only the numerical values of the dataframe. This is much lighter database for storing
+                traces
+            verbosity (int): Number of properties shown
+        Returns:
+            pandas.core.frame.DataFrame: Data frame with the raw data
+
+        """
+
+        dtype = 'object'
+
+        if verbosity == 0:
+            show_par_f = ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series']
+            show_par_i = ['X', 'Y', 'Z', 'formation', 'series']
+        else:
+            show_par_f = self.orientations.columns
+            show_par_i = self.interfaces.columns
+
+        if numeric:
+            show_par_f = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
+            show_par_i = ['X', 'Y', 'Z']
+            dtype = 'float'
+        if itype == 'orientations':
+            raw_data = self.orientations[show_par_f].astype(dtype)
+        elif itype == 'interfaces':
+            raw_data = self.interfaces[show_par_i].astype(dtype)
+        elif itype == 'all':
+            raw_data = pn.concat([self.interfaces[show_par_i].astype(dtype),
+                                  self.orientations[show_par_f].astype(dtype)],
+                                 keys=['interfaces', 'orientations'])
+        else:
+            raise AttributeError('itype has to be: \'orientations\', \'interfaces\', or \'all\'')
+        return raw_data
+
+    def get_formation_number(self):
+        """
+            Get a dictionary with the key the name of the formation and the value their number
+
+            Returns:
+                dict: key the name of the formation and the value their number
+            """
+        pn_series = self.interfaces.groupby('formation number').formation.unique()
+        ip_addresses = {}
+        for e, i in enumerate(pn_series):
+            ip_addresses[i[0]] = e + 1
+        ip_addresses['DefaultBasement'] = 0
+        return ip_addresses
+
+    # DEP so far: Changing just a value from the dataframe gives too many problems
+    # def i_open_set_data(self, itype="orientations"):
+    #     """
+    #     Method to have interactive pandas tables in jupyter notebooks. The idea is to use this method to interact with
+    #      the table and i_close_set_data to recompute the parameters that depend on the changes made. I did not find a
+    #      easier solution than calling two different methods.
+    #     Args:
+    #         itype: input data type, either 'orientations' or 'interfaces'
+    #
+    #     Returns:
+    #         pandas.core.frame.DataFrame: Data frame with the changed data on real time
+    #     """
+    #     try:
+    #         import qgrid
+    #     except:
+    #         raise ModuleNotFoundError('It is necessary to instal qgrid to have interactive tables')
+    #
+    #     # if the data frame is empty the interactive table is bugged. Therefore I create a default raw when the method
+    #     # is called
+    #     if self.orientations.empty:
+    #         self.orientations = pn.DataFrame(
+    #             np.array([0., 0., 0., 0., 0., 1., 'Default Formation', 'Default series']).reshape(1, 8),
+    #             columns=['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series']).\
+    #             convert_objects(convert_numeric=True)
+    #
+    #     if self.interfaces.empty:
+    #         self.interfaces = pn.DataFrame(
+    #             np.array([0, 0, 0, 'Default Formation', 'Default series']).reshape(1, 5),
+    #             columns=['X', 'Y', 'Z', 'formation', 'series']).convert_objects(convert_numeric=True)
+    #
+    #     # Setting some options
+    #     qgrid.nbinstall(overwrite=True)
+    #     qgrid.set_defaults(show_toolbar=True)
+    #     assert itype is 'orientations' or itype is 'interfaces', 'itype must be either orientations or interfaces'
+    #
+    #     import warnings
+    #     warnings.warn('Remember to call i_close_set_data after the editing.')
+    #
+    #     # We kind of set the show grid to a variable so we can close it afterwards
+    #     self.pandas_frame = qgrid.show_grid(self.get_data(itype=itype))
+    #
+    # def i_close_set_data(self):
+    #
+    #     """
+    #     Method to have interactive pandas tables in jupyter notebooks. The idea is to use this method to interact with
+    #      the table and i_close_set_data to recompute the parameters that depend on the changes made. I did not find a
+    #      easier solution than calling two different methods.
+    #     Args:
+    #         itype: input data type, either 'orientations' or 'interfaces'
+    #
+    #     Returns:
+    #         pandas.core.frame.DataFrame: Data frame with the changed data on real time
+    #     """
+    #     # We close it to guarantee that after this method it is not possible further modifications
+    #     self.pandas_frame.close()
+    #
+    #     # Set parameters
+    #     self.series = self.set_series()
+    #     self.calculate_gradient()
+    #     self.order_table()
+
+    def import_data_csv(self, path_i, path_f, **kwargs):
+        """
+        Method to import interfaces and orientations from csv. The format is the same as the export 3D model data of
+        GeoModeller (check in the input data folder for an example).
+
+        Args:
+            path_i (str): path to the csv table
+            path_f (str): path to the csv table
+            **kwargs: kwargs of :func: `~pn.read_csv`
 
         Attributes:
-            foliations: extra columns with components xyz of the unity vector.
+            orientations(pandas.core.frame.DataFrame): Pandas data frame with the orientations data
+            Interfaces(pandas.core.frame.DataFrame): Pandas data frame with the interfaces data
         """
 
-        self.foliations['G_x'] = np.sin(np.deg2rad(self.foliations["dip"].astype('float'))) * \
-                                 np.sin(np.deg2rad(self.foliations["azimuth"].astype('float'))) * \
-                                 self.foliations["polarity"].astype('float')
-        self.foliations['G_y'] = np.sin(np.deg2rad(self.foliations["dip"].astype('float'))) * \
-                                 np.cos(np.deg2rad(self.foliations["azimuth"].astype('float'))) *\
-                                 self.foliations["polarity"].astype('float')
-        self.foliations['G_z'] = np.cos(np.deg2rad(self.foliations["dip"].astype('float'))) *\
-                                 self.foliations["polarity"].astype('float')
+        if path_f:
+            self.orientations = self.load_data_csv(data_type="orientations", path=path_f, **kwargs)
+            assert set(['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']).issubset(self.orientations.columns), \
+                "One or more columns do not match with the expected values " + str(self.orientations.columns)
+            self.orientations = self.orientations[['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']]
 
-    def calculate_orientations(self):
+        if path_i:
+            self.interfaces = self.load_data_csv(data_type="interfaces", path=path_i, **kwargs)
+            assert set(['X', 'Y', 'Z', 'formation']).issubset(self.interfaces.columns), \
+                "One or more columns do not match with the expected values " + str(self.interfaces.columns)
+
+    def interface_modify(self, index, **kwargs):
         """
-        Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.
-        :return: automatically updates data frame
+        Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
+
+        Args:
+            index: dataframe index of the orientation point
+            **kwargs: X, Y, Z (int or float)
+
+        Returns:
+            None
         """
-        self.foliations["dip"] = np.arccos(self.foliations["G_z"] / self.foliations["polarity"])
-        self.foliations["azimuth"] = np.arcsin(self.foliations["G_x"]) / (np.sin(np.arccos(self.foliations["G_z"] / self.foliations["polarity"])) * self.foliations["polarity"])
+        for key in kwargs:
+            self.interfaces.ix[index, str(key)] = kwargs[key]
+
+    def interface_add(self, **kwargs):
+        """
+        Adds interface to dataframe.
+
+        Args:
+            **kwargs: X, Y, Z, formation, labels, order_series, series
+
+        Returns:
+            None
+
+        """
+        l = len(self.interfaces)
+        for key in kwargs:
+            self.interfaces.ix[l, str(key)] = kwargs[key]
+        if not 'series' in kwargs:
+            self.set_series()
+
+        self.order_table()
+
+    def interface_drop(self, index):
+        """
+        Drops interface from dataframe identified by index
+
+        Args:
+            index: dataframe index
+
+        Returns:
+            None
+
+        """
+        self.interfaces.drop(index, inplace=True)
+
+    def orientation_modify(self, index, recalculate_gradient=False, recalculate_orientations=False, **kwargs):
+        """
+        Allows modification of orientation data at specified dataframe index.
+
+        Args:
+            index: dataframe index of the orientation point
+            **kwargs: G_x, G_y, G_z, X, Y, Z, azimuth, dip, formation, labels, order_series, polarity
+
+        Returns:
+            None
+        """
+        for key in kwargs:
+            self.orientations.ix[index, str(key)] = kwargs[key]
+
+        if recalculate_gradient:
+            self.calculate_gradient()
+        if recalculate_orientations:
+            self.calculate_orientations()
+
+    def orientation_add(self, **kwargs):
+        """
+        Adds orientation to dataframe.
+        Args:
+            **kwargs: G_x, G_y, G_z, X, Y, Z, azimuth, dip, formation, labels, order_series, polarity, series
+
+        Returns: Nothing
+
+        """
+        l = len(self.orientations)
+        for key in kwargs:
+            self.orientations.ix[l, str(key)] = kwargs[key]
+        self.calculate_gradient()
+        self.set_series()
+        self.order_table()
+
+    def orientations_drop(self, index):
+        """
+        Drops orientation from dataframe identified by index
+        Args:
+            index: dataframe index
+
+        Returns:
+            None
+
+        """
+        self.orientations.drop(index, inplace=True)
+
+    @staticmethod
+    def load_data_csv(data_type, path=os.getcwd(), **kwargs):
+        """
+        Method to load either interface or orientations data csv files. Normally this is in which GeoModeller exports it
+
+        Args:
+            data_type (str): 'interfaces' or 'orientations'
+            path (str): path to the files. Default os.getcwd()
+            **kwargs: Arbitrary keyword arguments.
+
+        Returns:
+            pandas.core.frame.DataFrame: Data frame with the raw data
+
+        """
+        # TODO: in case that the columns have a different name specify in pandas which columns are interfaces /
+        # coordinates, dips and so on.
+        # TODO: use pandas to read any format file not only csv
+
+        if data_type == "orientations":
+            return pn.read_csv(path, **kwargs)
+        elif data_type == 'interfaces':
+            return pn.read_csv(path, **kwargs)
+        else:
+            raise NameError('Data type not understood. Try interfaces or orientations')
+
+    def reset_indices(self):
+        """
+        Resets dataframe indices for orientations and interfaces.
+
+        Returns:
+            None
+        """
+        self.interfaces.reset_index(inplace=True, drop=True)
+        self.orientations.reset_index(inplace=True, drop=True)
 
     def set_grid(self, custom_grid=None, extent=None, resolution=None, grid_type=None, **kwargs):
         """
-        Method to initialize the class GridClass. You can pass either a custom set of points or
+        Method to initialize the class GridClass. You can pass either a custom set of points or create a regular grid
 
         Args:
-            grid_type (str): regular_3D
+            grid_type (str): regular_3D or None
             custom_grid(array_like): 2D array with XYZ columns. To exploit gempy functionality the indexing has to be ij
                 (See Also numpy.meshgrid documentation)
             **kwargs: Arbitrary keyword arguments.
 
         Returns:
-            self.new_grid(GeMpy_core.new_grid): Object that contain different grids
+            self.grid(gempy.GridClass): Object that contain different grids
         """
         self.grid = GridClass()
         if custom_grid is not None:
@@ -187,154 +449,11 @@ class InputData(object):
 
             return self.grid
 
-    def data_to_pickle(self, path=False):
-        """
-        Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
-        versions used to export and import the pickle differ it may give problems
-        Args:
-            path (str): path where save the pickle
-
-        Returns:
-            None
-        """
-
-        if not path:
-            path = './geo_data'
-        import pickle
-        with open(path+'.pickle', 'wb') as f:
-            # Pickle the 'data' dictionary using the highest protocol available.
-            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
-
-    def get_data(self, itype='all', numeric=False, verbosity=0):
-        """
-        Method that returns the interfaces and foliations pandas Dataframes. Can return both at the same time or only
-        one of the two
-        Args:
-            itype: input data type, either 'foliations', 'interfaces' or 'all' for both.
-            verbosity (int): Number of properties shown
-        Returns:
-            pandas.core.frame.DataFrame: Data frame with the raw data
-
-        """
-        import pandas as pn
-
-        dtype = 'object'
-
-        if verbosity == 0:
-            show_par_f = ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series']
-            show_par_i = ['X', 'Y', 'Z', 'formation', 'series']
-        else:
-            show_par_f = self.foliations.columns
-            show_par_i = self.interfaces.columns
-
-        if numeric:
-            show_par_f = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
-            show_par_i = ['X', 'Y', 'Z']
-            dtype = 'float'
-        if itype == 'foliations':
-            raw_data = self.foliations[show_par_f].astype(dtype)
-        elif itype == 'interfaces':
-            raw_data = self.interfaces[show_par_i].astype(dtype)
-        elif itype == 'all':
-            raw_data = pn.concat([self.interfaces[show_par_i].astype(dtype),
-                                  self.foliations[show_par_f].astype(dtype)],
-                                 keys=['interfaces', 'foliations'])
-        else:
-            raise AttributeError('itype has to be: \'foliations\', \'interfaces\', or \'all\'')
-        return raw_data
-
-    def i_open_set_data(self, itype="foliations"):
-        """
-        Method to have interactive pandas tables in jupyter notebooks. The idea is to use this method to interact with
-         the table and i_close_set_data to recompute the parameters that depend on the changes made. I did not find a
-         easier solution than calling two different methods.
-        Args:
-            itype: input data type, either 'foliations' or 'interfaces'
-
-        Returns:
-            pandas.core.frame.DataFrame: Data frame with the changed data on real time
-        """
-        try:
-            import qgrid
-        except:
-            raise ModuleNotFoundError('It is necessary to instal qgrid to have interactive tables')
-
-        # if the data frame is empty the interactive table is bugged. Therefore I create a default raw when the method
-        # is called
-        if self.foliations.empty:
-            self.foliations = pn.DataFrame(
-                np.array([0., 0., 0., 0., 0., 1., 'Default Formation', 'Default series']).reshape(1, 8),
-                columns=['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series']).\
-                convert_objects(convert_numeric=True)
-
-        if self.interfaces.empty:
-            self.interfaces = pn.DataFrame(
-                np.array([0, 0, 0, 'Default Formation', 'Default series']).reshape(1, 5),
-                columns=['X', 'Y', 'Z', 'formation', 'series']).convert_objects(convert_numeric=True)
-
-        # Setting some options
-        qgrid.nbinstall(overwrite=True)
-        qgrid.set_defaults(show_toolbar=True)
-        assert itype is 'foliations' or itype is 'interfaces', 'itype must be either foliations or interfaces'
-
-        import warnings
-        warnings.warn('Remember to call i_close_set_data after the editing.')
-
-        # We kind of set the show grid to a variable so we can close it afterwards
-        self.pandas_frame = qgrid.show_grid(self.get_data(itype=itype))
-
-    def i_close_set_data(self):
-
-        """
-        Method to have interactive pandas tables in jupyter notebooks. The idea is to use this method to interact with
-         the table and i_close_set_data to recompute the parameters that depend on the changes made. I did not find a
-         easier solution than calling two different methods.
-        Args:
-            itype: input data type, either 'foliations' or 'interfaces'
-
-        Returns:
-            pandas.core.frame.DataFrame: Data frame with the changed data on real time
-        """
-        # We close it to guarantee that after this method it is not possible further modifications
-        self.pandas_frame.close()
-
-        # Set parameters
-        self.series = self.set_series()
-        self.calculate_gradient()
-        self.order_table()
-
-    @staticmethod
-    def load_data_csv(data_type, path=os.getcwd(), **kwargs):
-        """
-        Method to load either interface or foliations data csv files. Normally this is in which GeoModeller exports it
-
-        Args:
-            data_type (str): 'interfaces' or 'foliations'
-            path (str): path to the files. Default os.getcwd()
-            **kwargs: Arbitrary keyword arguments.
-
-        Returns:
-            pandas.core.frame.DataFrame: Data frame with the raw data
-
-        """
-        # TODO: in case that the columns have a different name specify in pandas which columns are interfaces /
-        #  coordinates, dips and so on.
-        # TODO: use pandas to read any format file not only csv
-
-        if data_type == "foliations":
-            return pn.read_csv(path, **kwargs)
-        elif data_type == 'interfaces':
-            return pn.read_csv(path, **kwargs)
-        else:
-            raise NameError('Data type not understood. Try interfaces or foliations')
-
-        # TODO if we load different data the Interpolator parameters must be also updated. Prob call gradients and
-        # series
-
     def set_interfaces(self, interf_Dataframe, append=False):
         """
         Method to change or append a Dataframe to interfaces in place. A equivalent Pandas Dataframe with
         ['X', 'Y', 'Z', 'formation'] has to be passed.
+
         Args:
             interf_Dataframe: pandas.core.frame.DataFrame with the data
             append: Bool: if you want to append the new data frame or substitute it
@@ -351,10 +470,11 @@ class InputData(object):
         self.order_table()
         # self.interfaces.reset_index(drop=True, inplace=True)
 
-    def set_foliations(self, foliat_Dataframe, append=False):
+    def set_orientations(self, foliat_Dataframe, append=False):
         """
-          Method to change or append a Dataframe to foliations in place.  A equivalent Pandas Dataframe with
+          Method to change or append a Dataframe to orientations in place.  A equivalent Pandas Dataframe with
         ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation'] has to be passed.
+
           Args:
               interf_Dataframe: pandas.core.frame.DataFrame with the data
               append: Bool: if you want to append the new data frame or substitute it
@@ -363,14 +483,13 @@ class InputData(object):
             foliat_Dataframe.columns), "One or more columns do not match with the expected values " +\
                                        str(foliat_Dataframe.columns)
         if append:
-            self.foliations = self.foliations.append(foliat_Dataframe)
+            self.orientations = self.orientations.append(foliat_Dataframe)
         else:
-            self.foliations = foliat_Dataframe
+            self.orientations = foliat_Dataframe
 
         self.set_series()
         self.order_table()
         self.calculate_gradient()
-        #  self.foliations.reset_index(drop=True, inplace=True)
 
     def set_series(self, series_distribution=None, order=None):
         """
@@ -384,7 +503,7 @@ class InputData(object):
         Returns:
             self.series: A pandas DataFrame with the series and formations relations
             self.interfaces: one extra column with the given series
-            self.foliations: one extra column with the given series
+            self.orientations: one extra column with the given series
         """
 
         if series_distribution is None:
@@ -406,23 +525,21 @@ class InputData(object):
             order = _series.keys()
 
         # TODO assert len order is equal to len of the dictionary
-
         # We create a dataframe with the links
-        #_series = pn.DataFrame(data=_series) #columns=order)
         _series = pn.DataFrame(dict([ (k,pn.Series(v)) for k,v in _series.items() ]), columns=order)
 
-        # Now we fill the column series in the interfaces and foliations tables with the correspondant series and
+        # Now we fill the column series in the interfaces and orientations tables with the correspondant series and
         # assigned number to the series
         self.interfaces["series"] = [(i == _series).sum().argmax() for i in self.interfaces["formation"]]
         self.interfaces["order_series"] = [(i == _series).sum().as_matrix().argmax() + 1
                                            for i in self.interfaces["formation"]]
-        self.foliations["series"] = [(i == _series).sum().argmax() for i in self.foliations["formation"]]
-        self.foliations["order_series"] = [(i == _series).sum().as_matrix().argmax() + 1
-                                           for i in self.foliations["formation"]]
+        self.orientations["series"] = [(i == _series).sum().argmax() for i in self.orientations["formation"]]
+        self.orientations["order_series"] = [(i == _series).sum().as_matrix().argmax() + 1
+                                           for i in self.orientations["formation"]]
 
         # We sort the series altough is only important for the computation (we will do it again just before computing)
         self.interfaces.sort_values(by='order_series', inplace=True)
-        self.foliations.sort_values(by='order_series', inplace=True)
+        self.orientations.sort_values(by='order_series', inplace=True)
 
         # Save the dataframe in a property. This is used in the pile
         self.series = _series
@@ -446,14 +563,6 @@ class InputData(object):
 
         return _series
 
-    def count_faults(self):
-        # Set default faults
-        faults_series = []
-        for i in self.interfaces['series'].unique():
-            if ('fault' in i or 'Fault' in i) and 'Default' not in i:
-                faults_series.append(i)
-        return faults_series
-
     def set_faults(self, series_name):
         """
         Set a flag to the series that are faults.
@@ -462,45 +571,9 @@ class InputData(object):
         """
       #  if not len(series_name) == 0:
         self.interfaces.loc[:, 'isFault'] = self.interfaces['series'].isin(series_name)
-        self.foliations.loc[:, 'isFault'] = self.foliations['series'].isin(series_name)
+        self.orientations.loc[:, 'isFault'] = self.orientations['series'].isin(series_name)
 
         self.n_faults = len(series_name)
-
-    def order_table(self):
-        """
-        First we sort the dataframes by the series age. Then we set a unique number for every formation and resort
-        the formations. All inplace
-        """
-
-        # We order the pandas table by series
-        self.interfaces.sort_values(by=['order_series'],  # , 'formation number'],
-                                                 ascending=True, kind='mergesort',
-                                                 inplace=True)
-
-        self.foliations.sort_values(by=['order_series'],  # , 'formation number'],
-                                                 ascending=True, kind='mergesort',
-                                                 inplace=True)
-
-        # Give formation number
-        if not 'formation number' in self.interfaces.columns or not 'formation number' in self.foliations.columns:
-            # print('I am here')
-            self.set_formation_number()
-
-        # We order the pandas table by formation (also by series in case something weird happened)
-        self.interfaces.sort_values(by=['order_series', 'formation number'],
-                                                 ascending=True, kind='mergesort',
-                                                 inplace=True)
-
-        self.foliations.sort_values(by=['order_series', 'formation number'],
-                                                 ascending=True, kind='mergesort',
-                                                 inplace=True)
-
-        # Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset
-        # the index. For some of the methods (pn.drop) we have to apply afterwards we need to reset these indeces
-        self.interfaces.reset_index(drop=True, inplace=True)
-
-        # Update labels for anotations
-        self.set_annotations()
 
     def set_formation_number(self, formation_order=None):
         """
@@ -509,7 +582,7 @@ class InputData(object):
         has been moved to the interpolator class as preprocessing
 
         Returns:
-            Column in the interfaces and foliations dataframes
+            Column in the interfaces and orientations dataframes
         """
 
 
@@ -524,7 +597,7 @@ class InputData(object):
             ip_addresses = formation_order
             ip_dict = dict(zip(ip_addresses, range(1, len(ip_addresses)+1)))
             self.interfaces.loc[:, 'formation number'] = self.interfaces['formation'].replace(ip_dict)
-            self.foliations.loc[:, 'formation number'] = self.foliations['formation'].replace(ip_dict)
+            self.orientations.loc[:, 'formation number'] = self.orientations['formation'].replace(ip_dict)
         except ValueError:
             pass
 
@@ -536,125 +609,58 @@ class InputData(object):
         point_l = [r'${\bf{x}}_{\alpha \,{\bf{' + str(f) + '}},' + str(p) + '}$'
                    for p, f in zip(point_num, self.interfaces['formation number'])]
 
-        foliation_num = self.foliations.groupby('formation number').cumcount()
+        orientation_num = self.orientations.groupby('formation number').cumcount()
         foli_l = [r'${\bf{x}}_{\beta \,{\bf{' + str(f) + '}},' + str(p) + '}$'
-                   for p, f in zip(foliation_num, self.foliations['formation number'])]
+                   for p, f in zip(orientation_num, self.orientations['formation number'])]
 
         self.interfaces['annotations'] = point_l
-        self.foliations['annotations'] = foli_l
+        self.orientations['annotations'] = foli_l
 
-    def reset_indices(self):
+    def set_fault_relation_matrix(self, rel_matrix):
         """
-        Resets dataframe indices for foliations and interfaces.
+        Method to set the faults that offset a given sequence and therefore also another fault
 
-        Returns:
-            None
-        """
-        self.interfaces.reset_index(inplace=True, drop=True)
-        self.foliations.reset_index(inplace=True, drop=True)
-
-    def interface_modify(self, index, **kwargs):
-        """
-        Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
         Args:
-            index: dataframe index of the foliation point
-            **kwargs: X, Y, Z (int or float)
-
-        Returns:
-            None
+            rel_matrix (numpy.array): 2D Boolean array with the logic. Rows affect (offset) columns
         """
-        for key in kwargs:
-            self.interfaces.ix[index, str(key)] = kwargs[key]
 
-    def interface_add(self, **kwargs):
+        self.fault_relation = rel_matrix
+
+    def order_table(self):
         """
-        Adds interface to dataframe.
-        Args:
-            **kwargs: X, Y, Z, formation, labels, order_series, series
-
-        Returns:
-            None
-
+        First we sort the dataframes by the series age. Then we set a unique number for every formation and resort
+        the formations. All inplace
         """
-        l = len(self.interfaces)
-        for key in kwargs:
-            self.interfaces.ix[l, str(key)] = kwargs[key]
-        if not 'series' in kwargs:
-            self.set_series()
 
-        self.order_table()
+        # We order the pandas table by series
+        self.interfaces.sort_values(by=['order_series'],  # , 'formation number'],
+                                                 ascending=True, kind='mergesort',
+                                                 inplace=True)
 
-    def interface_drop(self, index):
-        """
-        Drops interface from dataframe identified by index
-        Args:
-            index: dataframe index
+        self.orientations.sort_values(by=['order_series'],  # , 'formation number'],
+                                                 ascending=True, kind='mergesort',
+                                                 inplace=True)
 
-        Returns:
-            None
+        # Give formation number
+        if not 'formation number' in self.interfaces.columns or not 'formation number' in self.orientations.columns:
+            # print('I am here')
+            self.set_formation_number()
 
-        """
-        self.interfaces.drop(index, inplace=True)
+        # We order the pandas table by formation (also by series in case something weird happened)
+        self.interfaces.sort_values(by=['order_series', 'formation number'],
+                                                 ascending=True, kind='mergesort',
+                                                 inplace=True)
 
-    def foliation_modify(self, index, recalculate_gradient=False, recalculate_orientations=False, **kwargs):
-        """
-        Allows modification of foliation data at specified dataframe index.
-        Args:
-            index: dataframe index of the foliation point
-            **kwargs: G_x, G_y, G_z, X, Y, Z, azimuth, dip, formation, labels, order_series, polarity
+        self.orientations.sort_values(by=['order_series', 'formation number'],
+                                                 ascending=True, kind='mergesort',
+                                                 inplace=True)
 
-        Returns:
-            None
-        """
-        for key in kwargs:
-            self.foliations.ix[index, str(key)] = kwargs[key]
+        # Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset
+        # the index. For some of the methods (pn.drop) we have to apply afterwards we need to reset these indeces
+        self.interfaces.reset_index(drop=True, inplace=True)
 
-        if recalculate_gradient:
-            self.calculate_gradient()
-        if recalculate_orientations:
-            self.calculate_orientations()
-
-    def foliation_add(self, **kwargs):
-        """
-        Adds foliation to dataframe.
-        Args:
-            **kwargs: G_x, G_y, G_z, X, Y, Z, azimuth, dip, formation, labels, order_series, polarity, series
-
-        Returns: Nothing
-
-        """
-        l = len(self.foliations)
-        for key in kwargs:
-            self.foliations.ix[l, str(key)] = kwargs[key]
-        self.calculate_gradient()
-        self.set_series()
-        self.order_table()
-
-    def foliations_drop(self, index):
-        """
-        Drops foliation from dataframe identified by index
-        Args:
-            index: dataframe index
-
-        Returns:
-            None
-
-        """
-        self.foliations.drop(index, inplace=True)
-
-    def get_formation_number(self):
-        """
-            Get a dictionary with the key the name of the formation and the value their number
-
-            Returns:
-                dict: key the name of the formation and the value their number
-            """
-        pn_series = self.interfaces.groupby('formation number').formation.unique()
-        ip_addresses = {}
-        for e, i in enumerate(pn_series):
-            ip_addresses[i[0]] = e + 1
-        ip_addresses['DefaultBasement'] = 0
-        return ip_addresses
+        # Update labels for anotations
+        self.set_annotations()
 
     # # TODO think where this function should go
     def _read_vox(self, path):
@@ -676,26 +682,26 @@ class InputData(object):
                                         self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
         return block_geomodeller
 
-    def set_triangle_foliations(self, verbose=False):
-        # next we need to iterate over every unique triangle id to create a foliation from each triplet
+    def set_triangle_orientations(self, verbose=False):
+        # next we need to iterate over every unique triangle id to create a orientation from each triplet
         # of points and assign the same triange_id to it
         tri_ids = np.unique(self.interfaces["triangle_id"])
 
-        # check if column in foliations too, else create it
-        if "triangle_id" not in self.foliations.columns:
-            self.foliations["triangle_id"] = "NaN"
+        # check if column in orientations too, else create it
+        if "triangle_id" not in self.orientations.columns:
+            self.orientations["triangle_id"] = "NaN"
             if verbose:
-                print("Setting triangle_id column in geo_data.foliations.")
+                print("Setting triangle_id column in geo_data.orientations.")
 
         # loop over all triangle_id's
         for tri_id in tri_ids[tri_ids != "NaN"]:
             # get the three points dataframe
             _filter = self.interfaces["triangle_id"] == tri_id
 
-            # check if triangle foliation value already exists
-            if tri_id in np.unique(self.foliations["triangle_id"]):
+            # check if triangle orientation value already exists
+            if tri_id in np.unique(self.orientations["triangle_id"]):
                 if verbose:
-                    print("triangle_id already in geo_data.foliations - skipping it.")
+                    print("triangle_id already in geo_data.orientations - skipping it.")
                 continue  # if yes, continue with the next iteration not not double append
 
             if verbose:
@@ -732,7 +738,7 @@ class InputData(object):
                 _f = [_centroid[0], _centroid[1], _centroid[2], _dip, _az, _pol, _fmt, tri_id]
                 _fs = pn.Series(_f, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'triangle_id'])
                 _df = _fs.to_frame().transpose()
-                self.set_foliations(_df, append=True)
+                self.set_orientations(_df, append=True)
             elif len(self.interfaces[_filter]) > 3:
                 print("More than three points share the same triangle-id: " + str(
                     tri_id) + ". Only exactly 3 points are supported.")
@@ -756,7 +762,9 @@ class GridClass(object):
         self.values = None
 
     def create_custom_grid(self, custom_grid):
-        assert type(custom_grid) is np.ndarray and custom_grid.shape[1] is 3
+        assert type(custom_grid) is np.ndarray and custom_grid.shape[1] is 3, 'The shape of new grid must be (n,3)' \
+                                                                              ' where n is the number of points of ' \
+                                                                              'the grid'
         self.values = custom_grid
 
     def create_regular_grid_3d(self, extent, resolution):
@@ -904,9 +912,9 @@ class InterpolatorInput:
 
         # Check which axis is the largest
         max_coord = pn.concat(
-            [geo_data.foliations, geo_data.interfaces]).max()[['X', 'Y', 'Z']]
+            [geo_data.orientations, geo_data.interfaces]).max()[['X', 'Y', 'Z']]
         min_coord = pn.concat(
-            [geo_data.foliations, geo_data.interfaces]).min()[['X', 'Y', 'Z']]
+            [geo_data.orientations, geo_data.interfaces]).min()[['X', 'Y', 'Z']]
 
         # Compute rescalin factor if not given
         if not rescaling_factor:
@@ -919,15 +927,15 @@ class InterpolatorInput:
         new_coord_interfaces = (geo_data.interfaces[['X', 'Y', 'Z']] -
                                 centers) / rescaling_factor + 0.5001
 
-        # Change the coordinates of foliations
-        new_coord_foliations = (geo_data.foliations[['X', 'Y', 'Z']] -
+        # Change the coordinates of orientations
+        new_coord_orientations = (geo_data.orientations[['X', 'Y', 'Z']] -
                                 centers) / rescaling_factor + 0.5001
 
         # Rescaling the std in case of stochastic values
         try:
             geo_data.interfaces[['X_std', 'Y_std', 'Z_std']] = (geo_data.interfaces[
                                                                     ['X_std', 'Y_std', 'Z_std']]) / rescaling_factor
-            geo_data.foliations[['X_std', 'Y_std', 'Z_std']] = (geo_data.foliations[
+            geo_data.orientations[['X_std', 'Y_std', 'Z_std']] = (geo_data.orientations[
                                                                     ['X_std', 'Y_std', 'Z_std']]) / rescaling_factor
         except KeyError:
             pass
@@ -937,10 +945,10 @@ class InterpolatorInput:
 
         geo_data_rescaled = copy.deepcopy(geo_data)
         geo_data_rescaled.interfaces[['X', 'Y', 'Z']] = new_coord_interfaces
-        geo_data_rescaled.foliations[['X', 'Y', 'Z']] = new_coord_foliations
+        geo_data_rescaled.orientations[['X', 'Y', 'Z']] = new_coord_orientations
         geo_data_rescaled.extent = new_coord_extent.as_matrix()
 
-        geo_data_rescaled.grid.grid = (geo_data.grid.grid - centers.as_matrix()) / rescaling_factor + 0.5001
+        geo_data_rescaled.grid.values = (geo_data.grid.values - centers.as_matrix()) / rescaling_factor + 0.5001
 
         # Saving useful values for later
         self.rescaling_factor = rescaling_factor
@@ -1151,13 +1159,13 @@ class InterpolatorInput:
             has been moved to the interpolator class as preprocessing
 
             Returns:
-                Column in the interfaces and foliations dataframes
+                Column in the interfaces and orientations dataframes
             """
             try:
                 ip_addresses = self.geo_data_res.interfaces["formation"].unique()
                 ip_dict = dict(zip(ip_addresses, range(1, len(ip_addresses) + 1)))
                 self.geo_data_res.interfaces['formation number'] = self.geo_data_res.interfaces['formation'].replace(ip_dict)
-                self.geo_data_res.foliations['formation number'] = self.geo_data_res.foliations['formation'].replace(ip_dict)
+                self.geo_data_res.orientations['formation number'] = self.geo_data_res.orientations['formation'].replace(ip_dict)
             except ValueError:
                 pass
 
@@ -1172,7 +1180,7 @@ class InterpolatorInput:
                                                      ascending=True, kind='mergesort',
                                                      inplace=True)
 
-            self.geo_data_res.foliations.sort_values(by=['order_series'],  # , 'formation number'],
+            self.geo_data_res.orientations.sort_values(by=['order_series'],  # , 'formation number'],
                                                      ascending=True, kind='mergesort',
                                                      inplace=True)
 
@@ -1186,7 +1194,7 @@ class InterpolatorInput:
                                                      ascending=True, kind='mergesort',
                                                      inplace=True)
 
-            self.geo_data_res.foliations.sort_values(by=['order_series', 'formation number'],
+            self.geo_data_res.orientations.sort_values(by=['order_series', 'formation number'],
                                                      ascending=True, kind='mergesort',
                                                      inplace=True)
 
@@ -1229,10 +1237,10 @@ class InterpolatorInput:
             pandas_rest_layer_points = self.geo_data_res.interfaces.drop(ref_position)
             self.pandas_rest_layer_points = pandas_rest_layer_points
             # TODO: do I need this? PYTHON
-            # DEP- because per series the foliations do not belong to a formation but to the whole series
-            # len_foliations = np.asarray(
-            #     [np.sum(self._data_scaled.foliations['formation number'] == i)
-            #      for i in self._data_scaled.foliations['formation number'].unique()])
+            # DEP- because per series the orientations do not belong to a formation but to the whole series
+            # len_orientations = np.asarray(
+            #     [np.sum(self._data_scaled.orientations['formation number'] == i)
+            #      for i in self._data_scaled.orientations['formation number'].unique()])
 
             # -DEP- I think this was just a kind of print to know what was going on
         #    self.pandas_rest = pandas_rest_layer_points
@@ -1245,10 +1253,10 @@ class InterpolatorInput:
             # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
             self.tg.len_series_i.set_value(np.insert(len_series_i, 0, 0).cumsum())
 
-            # Array containing the size of every series. Foliations.
+            # Array containing the size of every series. orientations.
             len_series_f = np.asarray(
-                [np.sum(self.geo_data_res.foliations['order_series'] == i)
-                 for i in self.geo_data_res.foliations['order_series'].unique()])
+                [np.sum(self.geo_data_res.orientations['order_series'] == i)
+                 for i in self.geo_data_res.orientations['order_series'].unique()])
 
             # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
             self.tg.len_series_f.set_value(np.insert(len_series_f, 0, 0).cumsum())
@@ -1297,11 +1305,11 @@ class InterpolatorInput:
                 'A reference point is in the rest list point. Check you do ' \
                 'not have duplicated values in your dataframes'
 
-            # Foliations, this ones I tile them inside theano. PYTHON VAR
-            dips_position = self.geo_data_res.foliations[['X', 'Y', 'Z']].as_matrix()
-            dip_angles = self.geo_data_res.foliations["dip"].as_matrix()
-            azimuth = self.geo_data_res.foliations["azimuth"].as_matrix()
-            polarity = self.geo_data_res.foliations["polarity"].as_matrix()
+            # orientations, this ones I tile them inside theano. PYTHON VAR
+            dips_position = self.geo_data_res.orientations[['X', 'Y', 'Z']].as_matrix()
+            dip_angles = self.geo_data_res.orientations["dip"].as_matrix()
+            azimuth = self.geo_data_res.orientations["azimuth"].as_matrix()
+            polarity = self.geo_data_res.orientations["polarity"].as_matrix()
 
             # Set all in a list casting them in the chosen dtype
             idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity,
@@ -1320,7 +1328,7 @@ class InterpolatorInput:
                 u_grade (int): Drift grade. Default to 2.
                 range_var (float): Range of the variogram. Default 3D diagonal of the extent
                 c_o (float): Covariance at lag 0. Default range_var ** 2 / 14 / 3. See my paper when I write it
-                nugget_effect (flaot): Nugget effect of foliations. Default to 0.01
+                nugget_effect (flaot): Nugget effect of orientations. Default to 0.01
             """
 
             # Kwargs
@@ -1349,18 +1357,18 @@ class InterpolatorInput:
            # assert (0 <= all(u_grade) <= 2)
 
             # Creating the drift matrix. TODO find the official name of this matrix?
-            _universal_matrix = np.vstack((self.geo_data_res.grid.grid.T,
-                                           (self.geo_data_res.grid.grid ** 2).T,
-                                           self.geo_data_res.grid.grid[:, 0] * self.geo_data_res.grid.grid[:, 1],
-                                           self.geo_data_res.grid.grid[:, 0] * self.geo_data_res.grid.grid[:, 2],
-                                           self.geo_data_res.grid.grid[:, 1] * self.geo_data_res.grid.grid[:, 2]))
+            _universal_matrix = np.vstack((self.geo_data_res.grid.values.T,
+                                           (self.geo_data_res.grid.values ** 2).T,
+                                           self.geo_data_res.grid.values[:, 0] * self.geo_data_res.grid.values[:, 1],
+                                           self.geo_data_res.grid.values[:, 0] * self.geo_data_res.grid.values[:, 2],
+                                           self.geo_data_res.grid.values[:, 1] * self.geo_data_res.grid.values[:, 2]))
 
             # Setting shared variables
             # Range
             self.tg.a_T.set_value(np.cast[self.dtype](range_var))
             # Covariance at 0
             self.tg.c_o_T.set_value(np.cast[self.dtype](c_o))
-            # Foliations nugget effect
+            # orientations nugget effect
             self.tg.nugget_effect_grad_T.set_value(np.cast[self.dtype](nugget_effect))
 
             # TODO change the drift to the same style I have the faults so I do not need to do this
@@ -1374,12 +1382,12 @@ class InterpolatorInput:
                 # self.tg.c_resc.set_value(1)
 
             # Just grid. I add a small number to avoid problems with the origin point
-            self.tg.grid_val_T.set_value(np.cast[self.dtype](self.geo_data_res.grid.grid + 10e-6))
+            self.tg.grid_val_T.set_value(np.cast[self.dtype](self.geo_data_res.grid.values + 10e-6))
             # Universal grid
             self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](_universal_matrix + 1e-10))
 
             # Initialization of the block model
-            self.tg.final_block.set_value(np.zeros((1, self.geo_data_res.grid.grid.shape[0]), dtype=self.dtype))
+            self.tg.final_block.set_value(np.zeros((1, self.geo_data_res.grid.values.shape[0]), dtype=self.dtype))
 
             # Initialization of the boolean array that represent the areas of the block model to be computed in the
             # following series
@@ -1443,16 +1451,16 @@ class InterpolatorInput:
             print('Number of drift equations', self.tg.u_grade_T.get_value())
             # Covariance at 0
             print('Covariance at 0', self.tg.c_o_T.get_value())
-            # Foliations nugget effect
-            print('Foliations nugget effect', self.tg.nugget_effect_grad_T.get_value())
+            # orientations nugget effect
+            print('orientations nugget effect', self.tg.nugget_effect_grad_T.get_value())
 
             if verbose > 0:
                 # Input data shapes
 
                 # Lenght of the interfaces series
                 print('Length of the interfaces series', self.tg.len_series_i.get_value())
-                # Length of the foliations series
-                print('Length of the foliations series', self.tg.len_series_f.get_value())
+                # Length of the orientations series
+                print('Length of the orientations series', self.tg.len_series_f.get_value())
                 # Number of formation
                 print('Number of formations', self.tg.n_formation.get_value())
                 # Number of formations per series
@@ -1489,19 +1497,19 @@ class FoliaitionsFromInterfaces:
             self.dip, self.azimuth, self.polarity = self._get_dip()
 
         elif mode == "fol_to_interf":
-            self._f = self.geo_data.foliations["group_id"] == self.group_id
-            self.formation = self.geo_data.foliations[self._f]["formation"].values[0]
+            self._f = self.geo_data.orientations["group_id"] == self.group_id
+            self.formation = self.geo_data.orientations[self._f]["formation"].values[0]
 
             # get interface indices
             self.interf_i = self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].index
             # get interface point coordinates from df
             self.interf_p = self._get_points()
-            self.normal = [self.geo_data.foliations[self._f]["G_x"],
-                           self.geo_data.foliations[self._f]["G_y"],
-                           self.geo_data.foliations[self._f]["G_z"]]
-            self.centroid = [self.geo_data.foliations[self._f]["X"],
-                             self.geo_data.foliations[self._f]["Y"],
-                             self.geo_data.foliations[self._f]["Z"]]
+            self.normal = [self.geo_data.orientations[self._f]["G_x"],
+                           self.geo_data.orientations[self._f]["G_y"],
+                           self.geo_data.orientations[self._f]["G_z"]]
+            self.centroid = [self.geo_data.orientations[self._f]["X"],
+                             self.geo_data.orientations[self._f]["Y"],
+                             self.geo_data.orientations[self._f]["Z"]]
             # modify all Z of interface points belonging to group_id to fit plane
             self._fol_to_p()
 
@@ -1564,15 +1572,15 @@ class FoliaitionsFromInterfaces:
         return dip, azimuth, polarity
 
     def set_fol(self):
-        """Appends foliation data point for group_id to geo_data.foliations."""
-        if "group_id" not in self.geo_data.foliations.columns:
-            self.geo_data.foliations["group_id"] = "NaN"
+        """Appends orientation data point for group_id to geo_data.orientations."""
+        if "group_id" not in self.geo_data.orientations.columns:
+            self.geo_data.orientations["group_id"] = "NaN"
         fol = [self.centroid[0], self.centroid[1], self.centroid[2],
                self.dip, self.azimuth, self.polarity,
                self.formation, self.group_id]
         fol_series = pn.Series(fol, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'group_id'])
         fol_df = fol_series.to_frame().transpose()
-        self.geo_data.set_foliations(fol_df, append=True)
+        self.geo_data.set_orientations(fol_df, append=True)
 
     def _get_plane_normal(A, B, C, verbose=False):
         """Returns normal vector of plane defined by points A,B,C as [x,y,z]."""
