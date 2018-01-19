@@ -944,7 +944,7 @@ class InterpolatorInput:
     Also is the object that has to be manipulated to vary the data without recompile the modeling function.
 
     Args:
-        geo_data(gempy.DataManagement.InputData): All values of a DataManagement object
+        geo_data(gempy.data_management.InputData): All values of a DataManagement object
         compile_theano (bool): select if the theano function is compiled during the initialization. Default: True
         compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
          the block model of faults. If False only return the block model of lithologies. This may be important to speed
@@ -1053,7 +1053,7 @@ class InterpolatorInput:
             rescaling_factor(float): factor of the rescaling. Default to maximum distance in one the axis
 
         Returns:
-            gempy.DataManagement.InputData: Rescaled data
+            gempy.data_management.InputData: Rescaled data
 
         """
         # TODO split this function in compute rescaling factor and rescale z
@@ -1225,7 +1225,7 @@ class InterpolatorInput:
     ## =======
     ## Gravity
     def set_geophysics_obj(self, ai_extent, ai_resolution, ai_z=None, range_max=None):
-        from .GeoPhysics import GeoPhysicsPreprocessing_pro
+        from .geophysics import GeoPhysicsPreprocessing_pro
         self.geophy = GeoPhysicsPreprocessing_pro(self, ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
 
     class InterpolatorClass(object):
@@ -1236,7 +1236,7 @@ class InterpolatorInput:
          preparation of the data from DataFrames to numpy arrays
 
         Args:
-             geo_data_res (gempy.DataManagement.InterpolatorInput): Rescaled data. It has the same structure has gempy.InputData
+             geo_data_res (gempy.data_management.InterpolatorInput): Rescaled data. It has the same structure has gempy.InputData
             grid(gempy.DataManagement.grid): A grid object rescaled. Default takes it from the InterpolatorInput object.
 
         Keyword Args:

@@ -23,7 +23,7 @@ interp_data = gp.InterpolatorInput(geo_data, compile_theano=False)
 
 import sys
 import gempy as gp
-from gempy.GeoPhysics import GeoPhysicsPreprocessing
+from gempy.geophysics import GeoPhysicsPreprocessing
 
 
 inter_data = gp.InterpolatorInput(geo_data, compile_theano=False)
