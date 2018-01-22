@@ -27,22 +27,26 @@ class Posterior:
             topology (bool, optional):  if a topology trace should be loaded from the database (default: False).
             verbose (bool, optional): Verbosity switch.
         """
+        # TODO: Add a method to set the lith_block and fault_block
+
+
         self.verbose = verbose
         # load db
         self.db = pymc.database.hdf5.load(dbname)
 
-        # number iter n = self.db.getstate()["sampler"]["_iter"]
         self.n_iter = self.db.getstate()['sampler']['_iter'] - self.db.getstate()["sampler"]["_burn"]
         # get trace names
         self.trace_names = self.db.trace_names[0]
+
+        # TODO DEP
         # get gempy block models
-        try:
-            self.lb = self.db.trace(pymc_model_f)[:, :2, :]
-            self.fb = self.db.trace(pymc_model_f)[:, 2:, :]
-        except KeyError:
-            print("No GemPy model trace tallied.")
-            self.lb = None
-            self.fb = None
+        # try:
+        #     self.lb = self.db.trace(pymc_model_f)[:, :2, :]
+        #     self.fb = self.db.trace(pymc_model_f)[:, 2:, :]
+        # except KeyError:
+        #     print("No GemPy model trace tallied.")
+        #     self.lb = None
+        #     self.fb = None
 
         if topology:  # load topology data from database
             topo_trace = self.db.trace(pymc_topo_f)[:]
@@ -70,7 +74,17 @@ class Posterior:
         self.ie_total = None
 
     def change_input_data(self, interp_data, i):
-        """Changes input data in interp_data to posterior input data at iteration i."""
+        """
+        Changes input data in interp_data to posterior input data at iteration i.
+
+        Args:
+            interp_data (gempy.data_management.InterpolationData): An interp_data object with the structure we want to
+            compute.
+            i (int): Iteration we want to recompute
+
+        Returns:
+             gempy.data_management.InterpolationData: interp_data with the data of the given iteration
+        """
         i = int(i)
         # replace interface data
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
@@ -85,12 +99,13 @@ class Posterior:
             print("interp_data parameters changed.")
         return interp_data
 
-    def compute_posterior_model(self, interp_data, i):
-        """Computes the model with the respective posterior input data. Returns lith block, fault block."""
-        self.change_input_data(interp_data, i)
-        return gp.compute_model(interp_data)
+    # TODO: DEP Use gp.compute_model instead
+    # def compute_posterior_model(self, interp_data, i):
+    #     """Computes the model with the respective posterior input data. Returns lith block, fault block."""
+    #     self.change_input_data(interp_data, i)
+    #     return gp.compute_model(interp_data)
 
-    def compute_posterior_models_all(self, interp_data, r=None):
+    def compute_posterior_models_all(self, interp_data, r=None, output='geology', u_grade=None, get_potential_at_interfaces=False):
         """Computes block models from stored input parameters for all iterations.
 
         Args:
@@ -100,58 +115,20 @@ class Posterior:
         Returns: Stores calculated posterior models in self.lb and self.lb
 
         """
-
         if r is None:  # compute model for every iteration
             r = range(self.n_iter)
         else:  # use the given slice
             r = range(r[0], r[1])
 
         for i in tqdm.tqdm(r):
-            lb, fb = self.compute_posterior_model(interp_data, 1)
+            interp_data_loop = self.change_input_data(interp_data, i)
+            lb, fb = gp.compute_model(interp_data_loop, output=output, u_grade=u_grade, get_potential_at_interfaces=get_potential_at_interfaces)
             if i == 0 or i == r[0]:
                 self.lb = np.expand_dims(lb, 0)
                 self.fb = np.expand_dims(fb, 0)
             else:
                 self.lb = np.concatenate((self.lb, np.expand_dims(lb, 0)), axis=0)
                 self.fb = np.concatenate((self.fb, np.expand_dims(fb, 0)), axis=0)
-
-        # if self.lb is None:
-        #     # create the storage array
-        #     lb, fb = self.compute_posterior_model(interp_data, 1)
-        #     lb = lb[0]
-        #
-        #     self.lb = np.empty_like(lb)
-        #     if calc_fb:
-        #         self.fb = np.empty_like(lb)
-        #
-        #     if r is None:  # compute model for every iteration
-        #         r = range(self.n_iter)
-        #     else:  # use the given slice
-        #         r = range(r[0], r[1])
-        #     try:
-        #         for i in tqdm.tqdm(r):
-        #             output = self.compute_posterior_model(interp_data, i)
-        #             if i == 0:
-        #                 self.lb = lb[0].astype("int32")
-        #                 self.fb = fb[0].astype("int32")
-        #             else:
-        #                 lb, fb = self.compute_posterior_model(interp_data, i)
-        #                 self.lb = np.vstack((self.lb, lb[0].astype("int32")))
-        #                 if calc_fb:
-        #                     self.fb = np.vstack((self.fb, fb[0].astype("int32")))
-        #     except NameError:
-        #         for i in range(r):
-        #             if i == 0:
-        #                 lb, fb = self.compute_posterior_model(interp_data, i)
-        #                 self.lb = lb[0].astype("int32")
-        #                 self.fb = fb[0].astype("int32")
-        #             else:
-        #                 lb, fb = self.compute_posterior_model(interp_data, i)
-        #                 self.lb = np.vstack((self.lb, lb[0].astype("int32")))
-        #                 if calc_fb:
-        #                     self.fb = np.vstack((self.fb, fb[0].astype("int32")))
-        # else:
-        #     print("self.lb already filled with something. If you want to override, set self.lb to 'None'")
 
     def compute_posterior_model_avrg(self, interp_data):
         """Computes average posterior model."""
@@ -372,75 +349,3 @@ def recalc_gradients(folations_dataframe):
                              folations_dataframe["polarity"].astype('float')
     folations_dataframe["G_z"] = np.cos(np.deg2rad(folations_dataframe["dip"].astype('float'))) *\
                              folations_dataframe["polarity"].astype('float')
-
-# DEP PLANE CLASS SHIT
-# class Plane:
-#     def __init__(self, group_id, data_obj):
-#         self.group_id = group_id
-#         self.data_obj = data_obj
-#
-#         # create dataframe bool filters for convenience
-#         self.fol_f = self.data_obj.foliations["group_id"] == self.group_id
-#         self.interf_f = self.data_obj.interfaces["group_id"] == self.group_id
-#
-#         # get indices for both foliations and interfaces
-#         self.interf_i = self.data_obj.interfaces[self.interf_f].index
-#         self.fol_i = self.data_obj.foliations[self.fol_f].index[0]
-#
-#         # normal
-#         self.normal = None
-#         # centroid
-#         self.centroid = None
-#         self.refresh()
-#
-#     # method: give dip, change interfaces accordingly
-#     def interf_recalc_Z(self, dip):
-#         """Changes the dip of plane and recalculates Z coordinates for the points belonging to it."""
-#         # set the foliation dip in df
-#         self.data_obj.foliations.set_value(self.fol_i, "dip", dip)
-#         # get azimuth
-#         az = float(self.data_obj.foliations.iloc[self.fol_i]["azimuth"])
-#
-#         # set polarity according to dip
-#         #if -90 < dip < 90:
-#         #    polarity = 1
-#         #else:
-#         #    polarity = -1
-#
-#         #self.data_obj.foliations.set_value(self.fol_i, "polarity", polarity)
-#         polarity = self.data_obj.foliations.iloc[self.fol_i]["polarity"]
-#
-#         # modify gradient
-#         self.data_obj.foliations.set_value(self.fol_i, "G_x",
-#                                            np.sin(np.deg2rad(dip)) * np.sin(np.deg2rad(az)) * polarity)
-#         self.data_obj.foliations.set_value(self.fol_i, "G_y",
-#                                            np.sin(np.deg2rad(dip)) * np.cos(np.deg2rad(az)) * polarity)
-#         self.data_obj.foliations.set_value(self.fol_i, "G_z", np.cos(np.deg2rad(dip)) * polarity)
-#
-#         # update normal
-#         self.normal = self.get_normal()
-#
-#         # modify points (Z only so far)
-#         a, b, c = self.normal
-#         d = -a * self.centroid[0] - b * self.centroid[1] - c * self.centroid[2]
-#         for i, row in self.data_obj.interfaces[self.interf_f].iterrows():
-#             # iterate over each point and recalculate Z, set Z
-#             Z = (a * row["X"] + b * row["Y"] + d) / -c
-#             self.data_obj.interfaces.set_value(i, "Z", Z)
-#
-#     def refresh(self):
-#         # normal
-#         self.normal = self.get_normal()
-#         # centroid
-#         self.centroid = [float(self.data_obj.foliations[self.fol_f]["X"]),
-#                          float(self.data_obj.foliations[self.fol_f]["Y"]),
-#                          float(self.data_obj.foliations[self.fol_f]["Z"])]
-#
-#     def get_normal(self):
-#         """Just returns updated normal vector (values from dataframe)."""
-#         normal = [float(self.data_obj.foliations.iloc[self.fol_i]["G_x"]),
-#                   float(self.data_obj.foliations.iloc[self.fol_i]["G_y"]),
-#                   float(self.data_obj.foliations.iloc[self.fol_i]["G_z"])]
-#         return normal
-
-

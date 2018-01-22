@@ -149,11 +149,11 @@ class TheanoGraph(object):
       #  self.final_potential_field_at_formations = T.zeros(self.n_formations_per_serie.get_value()[-1])
 
       #  self.pot_value = theano.shared(np.zeros(self.n_formations_per_serie.sum(), dtype='float64'), 'average potential field')
-        self.final_potential_field_at_formations = theano.shared(np.zeros(self.n_formations_per_serie.get_value().sum(), dtype=dtype))#np.array([], ndmin=1, dtype=dtype)) #T.vector('Final value of potential fields at interfacse', dtype=dtype)
-        self.final_potential_field_at_faults = theano.shared(np.zeros(self.n_formations_per_serie.get_value().sum(), dtype=dtype))
+        self.final_scalar_field_at_formations = theano.shared(np.zeros(self.n_formations_per_serie.get_value().sum(), dtype=dtype))#np.array([], ndmin=1, dtype=dtype)) #T.vector('Final value of potential fields at interfacse', dtype=dtype)
+        self.final_scalar_field_at_faults = theano.shared(np.zeros(self.n_formations_per_serie.get_value().sum(), dtype=dtype))
 
-        self.final_potential_field_at_formations_op = self.final_potential_field_at_formations
-        self.final_potential_field_at_faults_op = self.final_potential_field_at_faults
+        self.final_potential_field_at_formations_op = self.final_scalar_field_at_formations
+        self.final_potential_field_at_faults_op = self.final_scalar_field_at_faults
         #self.potential_field_at_interfaces_value   = theano.shared(np.cast[np.int64](np.zeros((2, 2))), 'Potential field value at each interface',)
 
         if output is 'gravity':

@@ -39,7 +39,7 @@ from gempy.visualization import PlotData2D, steno3D, vtkVisualization
 from gempy.data_management import InputData, InterpolatorData, GridClass
 from gempy.sequential_pile import StratigraphicPile
 from gempy.topology import topology_analyze as _topology_analyze, topology_check_adjacency
-import gempy.posterior_analysis # So far we use this type of import because the other one makes a copy and blows up some asserts
+import gempy.posterior_analysis as pa # So far we use this type of import because the other one makes a copy and blows up some asserts
 
 
 def data_to_pickle(geo_data, path=False):
@@ -752,7 +752,7 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
                     alpha)
 
     if posterior is not None:
-        assert isinstance(posterior, gempy.posterior_analysis.Posterior), 'The object has to be instance of the Posterior class'
+        assert isinstance(posterior, pa.Posterior), 'The object has to be instance of the Posterior class'
         w.post = posterior
         if samples is not None:
             samp_i = samples[0]

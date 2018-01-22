@@ -1076,8 +1076,6 @@ class InterpolatorData:
             if 'dtype' in verbose:
                 print(self.dtype)
 
-            range_var = kwargs.get('range_var', None)
-
             # Drift grade
             u_grade = kwargs.get('u_grade', [3, 3])
 
@@ -1095,7 +1093,7 @@ class InterpolatorData:
             self.set_theano_shared_parameteres(**kwargs)
 
             # Extracting data from the pandas dataframe to numpy array in the required form for the theano function
-            self.data_prep(u_grade=u_grade)
+            self.data_prep(**kwargs)
 
             # Avoid crashing my pc
             import theano
@@ -1234,24 +1232,16 @@ class InterpolatorData:
             # ================
             # Rest layers matrix # PYTHON VAR
             rest_layer_points = pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix()
-          #  self.rest_layer_points = rest_layer_points
-            # TODO delete
-            # -DEP- Again i was just a check point
-            # self.rest_layer_points = rest_layer_points
 
-            # TODO: rethink how to do it for pymc
             # Ref layers matrix #VAR
             # Calculation of the ref matrix and tile. Iloc works with the row number
             # Here we extract the reference points
-            self.pandas_ref_layer_points = self.geo_data_res.interfaces.iloc[ref_position]#.apply(
-              #  lambda x: np.repeat(x, len_interfaces - 1))
+            self.pandas_ref_layer_points = self.geo_data_res.interfaces.iloc[ref_position]
             self.len_interfaces = len_interfaces
-
 
             pandas_ref_layer_points_rep = self.pandas_ref_layer_points.apply(lambda x: np.repeat(x, len_interfaces - 1))
             ref_layer_points = pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()
 
-            # -DEP- was just a check point
             self.ref_layer_points = ref_layer_points
             self.pandas_ref_layer_points_rep = pandas_ref_layer_points_rep
             # Check no reference points in rest points (at least in coor x)
@@ -1290,11 +1280,6 @@ class InterpolatorData:
             range_var = kwargs.get('range_var', None)
             c_o = kwargs.get('c_o', None)
             nugget_effect = kwargs.get('nugget_effect', 0.01)
-            # DEP
-           # compute_all = kwargs.get('compute_all', True)
-
-            # -DEP- Now I rescale the data so we do not need this
-            # rescaling_factor = kwargs.get('rescaling_factor', None)
 
             # Default range
             if not range_var:
@@ -1302,66 +1287,55 @@ class InterpolatorData:
                                     (self.geo_data_res.extent[2] - self.geo_data_res.extent[3]) ** 2 +
                                     (self.geo_data_res.extent[4] - self.geo_data_res.extent[5]) ** 2)
 
-
             # Default covariance at 0
             if not c_o:
                 c_o = range_var ** 2 / 14 / 3
 
-            # Asserting that the drift grade is in this range
-           # assert (0 <= all(u_grade) <= 2)
-
-            # Creating the drift matrix. TODO find the official name of this matrix?
-            _universal_matrix = np.vstack((self.geo_data_res.grid.values.T,
-                                           (self.geo_data_res.grid.values ** 2).T,
-                                           self.geo_data_res.grid.values[:, 0] * self.geo_data_res.grid.values[:, 1],
-                                           self.geo_data_res.grid.values[:, 0] * self.geo_data_res.grid.values[:, 2],
-                                           self.geo_data_res.grid.values[:, 1] * self.geo_data_res.grid.values[:, 2]))
+            # Creating the drift matrix.
+            universal_matrix = np.vstack((self.geo_data_res.grid.values.T,
+                                         (self.geo_data_res.grid.values ** 2).T,
+                                          self.geo_data_res.grid.values[:, 0] * self.geo_data_res.grid.values[:, 1],
+                                          self.geo_data_res.grid.values[:, 0] * self.geo_data_res.grid.values[:, 2],
+                                          self.geo_data_res.grid.values[:, 1] * self.geo_data_res.grid.values[:, 2]))
 
             # Setting shared variables
             # Range
             self.tg.a_T.set_value(np.cast[self.dtype](range_var))
+
             # Covariance at 0
             self.tg.c_o_T.set_value(np.cast[self.dtype](c_o))
+
             # orientations nugget effect
             self.tg.nugget_effect_grad_T.set_value(np.cast[self.dtype](nugget_effect))
-
-            # TODO change the drift to the same style I have the faults so I do not need to do this
-            # # Drift grade
-            # if u_grade == 0:
-            #     self.tg.u_grade_T.set_value(u_grade)
-            # else:
-            #     self.tg.u_grade_T.set_value(u_grade)
-                # TODO: To be sure what is the mathematical meaning of this -> It seems that nothing
-                # TODO Deprecated
-                # self.tg.c_resc.set_value(1)
 
             # Just grid. I add a small number to avoid problems with the origin point
             self.tg.grid_val_T.set_value(np.cast[self.dtype](self.geo_data_res.grid.values + 10e-6))
             # Universal grid
-            self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](_universal_matrix + 1e-10))
+            self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](universal_matrix + 1e-10))
 
             # Initialization of the block model
             self.tg.final_block.set_value(np.zeros((1, self.geo_data_res.grid.values.shape[0]), dtype=self.dtype))
 
+            # TODO DEP?
             # Initialization of the boolean array that represent the areas of the block model to be computed in the
             # following series
             #self.tg.yet_simulated.set_value(np.ones((_grid_rescaled.grid.shape[0]), dtype='int'))
 
             # Unique number assigned to each lithology
-            #self.tg.n_formation.set_value(np.insert(_data_rescaled.interfaces['formation number'].unique(),
-            #                                        0, 0)[::-1])
-
             self.tg.n_formation.set_value(self.geo_data_res.interfaces['formation number'].unique().astype('int64'))
 
             # Number of formations per series. The function is not pretty but the result is quite clear
             self.tg.n_formations_per_serie.set_value(
                 np.insert(self.geo_data_res.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0))
 
-            self.tg.final_potential_field_at_formations.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
-                                                                  dtype=self.dtype))
-            self.tg.final_potential_field_at_faults.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
-                                                              dtype=self.dtype))
+            # Init the list to store the values at the interfaces. Here we init the shape for the given dataset
+            self.tg.final_scalar_field_at_formations.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
+                                                                        dtype=self.dtype))
+            self.tg.final_scalar_field_at_faults.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
+                                                                    dtype=self.dtype))
 
+            # TODO: Push this condition to the geo_data
+            # Set fault relation matrix
             if self.geo_data_res.fault_relation is not None:
                 self.tg.fault_relation.set_value(self.geo_data_res.fault_relation.astype('int'))
             else:
@@ -1370,8 +1344,16 @@ class InterpolatorData:
 
                 self.tg.fault_relation.set_value(fault_rel.astype('int'))
 
-        # TODO change name to weithts!
+        # TODO change name to weights!
         def set_densities(self, densities):
+            """
+            WORKING IN PROGRESS -- Set the weight of each voxel given a density
+            Args:
+                densities:
+
+            Returns:
+
+            """
             resolution = [50,50,50]
 
             #
@@ -1386,6 +1368,16 @@ class InterpolatorData:
             self.tg.densities.set_value(np.array(weight, dtype=self.dtype))
 
         def set_z_comp(self, tz, selected_cells):
+            """
+            Set z component precomputation for the gravity.
+            Args:
+                tz:
+                selected_cells:
+
+            Returns:
+
+            """
+
 
             self.tg.tz.set_value(tz.astype(self.dtype))
             self.tg.select.set_value(selected_cells.astype(bool))
@@ -1393,6 +1385,7 @@ class InterpolatorData:
         def get_kriging_parameters(self, verbose=0):
             """
             Print the kringing parameters
+
             Args:
                 verbose (int): if > 0 print all the shape values as well.
 
@@ -1422,7 +1415,7 @@ class InterpolatorData:
                 # Number of points per formation
                 print('Number of points per formation (rest)', self.tg.number_of_points_per_formation_T.get_value())
 
-
+# TODO: @Alex documentation
 class FoliaitionsFromInterfaces:
     def __init__(self, geo_data, group_id, mode, verbose=False):
         """
