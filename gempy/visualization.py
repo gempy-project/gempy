@@ -39,12 +39,10 @@ import sys
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from IPython.core.debugger import Pdb
 from gempy.colors import color_lot, cmap, norm
-#from gempy import compute_model, get_surfaces
 import gempy as gp
-# TODO: inherit pygeomod classes
-# import sys, os
-#sns.set_context('talk')
+sns.set_context('talk')
 plt.style.use(['seaborn-white', 'seaborn-talk'])
+
 
 class PlotData2D(object):
     """
@@ -56,7 +54,7 @@ class PlotData2D(object):
         **kwargs: Arbitrary keyword arguments.
 
     Keyword Args:
-        potential_field(numpy.ndarray): 3D array containing a individual potential field
+        scalar_field(numpy.ndarray): 3D array containing a individual potential field
         verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0
     """
 
@@ -69,32 +67,30 @@ class PlotData2D(object):
         self.formation_names = self._data.interfaces['formation'].unique()
         self.formation_numbers = self._data.interfaces['formation number'].unique()
 
-        if 'potential_field' in kwargs:
-            self._potential_field_p = kwargs['potential_field']
+        # DEP?
+        # if 'scalar_field' in kwargs:
+        #     self._scalar_field_p = kwargs['scalar_field']
 
-            # TODO planning the whole visualization scheme. Only data, potential field
-            # and block. 2D 3D? Improving the iteration
-            # with pandas framework
-       # self._set_style()
-    #
-    # def _set_style(self):
-    #     """
-    #     Private function to set some plotting options
-    #
-    #     """
-    #
-    #     plt.style.use(['seaborn-white', 'seaborn-talk'])
-    #     # sns.set_context("paper")
-    #     # matplotlib.rc("font", family="Helvetica")
+        self._set_style()
+
+    def _set_style(self):
+        """
+        Private function to set some plotting options
+
+        """
+
+        plt.style.use(['seaborn-white', 'seaborn-talk'])
+        sns.set_context("paper")
+        matplotlib.rc("font", family="Helvetica")
 
     def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=8, **kwargs):
         """
-        Plot the projecton of the raw data (interfaces and foliations) in 2D following a
+        Plot the projecton of the raw data (interfaces and orientations) in 2D following a
         specific directions
 
         Args:
             direction(str): xyz. Caartesian direction to be plotted
-            data_type (str): type of data to plot. 'all', 'interfaces' or 'foliations'
+            data_type (str): type of data to plot. 'all', 'interfaces' or 'orientations'
             series(str): series to plot
             **kwargs: seaborn lmplot key arguments. (TODO: adding the link to them)
 
@@ -115,13 +111,13 @@ class PlotData2D(object):
         if series == "all":
             series_to_plot_i = self._data.interfaces[self._data.interfaces["series"].
                 isin(self._data.series.columns.values)]
-            series_to_plot_f = self._data.foliations[self._data.foliations["series"].
+            series_to_plot_f = self._data.orientations[self._data.orientations["series"].
                 isin(self._data.series.columns.values)]
 
         else:
 
             series_to_plot_i = self._data.interfaces[self._data.interfaces["series"] == series]
-            series_to_plot_f = self._data.foliations[self._data.foliations["series"] == series]
+            series_to_plot_f = self._data.orientations[self._data.orientations["series"] == series]
 
         # Change dictionary keys numbers for formation names
         for i in zip(self.formation_names, self.formation_numbers):
@@ -156,26 +152,26 @@ class PlotData2D(object):
                            palette=self._color_lot,
                            **kwargs)
 
-        if data_type == 'foliations':
+        if data_type == 'orientations':
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
                        pivot="tail")
-        #
-        # # code for moving legend outside of plot
-        # box = p.ax.get_position()  # get figure position
-        # # reduce width of box to make room for outside legend
-        # p.ax.set_position([box.x0, box.y0, box.width * 0.93, box.height])
-        # # put legend outside
-        # p.ax.legend(loc="center right", title="Formation",
-        #             bbox_to_anchor=(1.25, 0.5), ncol=1,
-        #             prop={'size': legend_font_size})
+
+        # code for moving legend outside of plot
+        box = p.ax.get_position()  # get figure position
+        # reduce width of box to make room for outside legend
+        p.ax.set_position([box.x0, box.y0, box.width * 1.08, box.height])
+        # put legend outside
+        p.ax.legend(loc="center right", title="Formation",
+                    bbox_to_anchor=(1.25, 0.5), ncol=1,
+                    prop={'size': legend_font_size})
 
         plt.xlabel(x)
         plt.ylabel(y)
 
     def _slice(self, direction, cell_number=25):
         """
-        Slice the 3D array (blocks or potential field) in the specific direction selected in the plotting functions
+        Slice the 3D array (blocks or scalar field) in the specific direction selected in the plotting functions
 
         """
         _a, _b, _c = (slice(0, self._data.resolution[0]),
@@ -247,16 +243,12 @@ class PlotData2D(object):
             self.plot_data(direction, 'all')
         # TODO: plot_topo option - need fault_block for that
 
-        # DEP?
-        selecting_colors = np.unique(plot_block)
-
         if 'cmap' not in kwargs:
             kwargs['cmap'] = self._cmap
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
 
-
-        im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",# cmap=self._cmap, norm=self._norm,
+        im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
                    extent=extent_val,
                    interpolation=interpolation, **kwargs)
 
@@ -267,28 +259,28 @@ class PlotData2D(object):
         plt.xlabel(x)
         plt.ylabel(y)
 
-    def plot_potential_field(self, potential_field, cell_number, N=20,
+    def plot_scalar_field(self, scalar_field, cell_number, N=20,
                              direction="y", plot_data=True, series="all", *args, **kwargs):
         """
-        Plot a potential field in a given direction.
+        Plot a scalar field in a given direction.
 
         Args:
             cell_number(int): position of the array to plot
-            potential_field(str): name of the potential field (or series) to plot
-            n_pf(int): number of the  potential field (or series) to plot
+            scalar_field(str): name of the scalar field (or series) to plot
+            n_pf(int): number of the  scalar field (or series) to plot
             direction(str): xyz. Caartesian direction to be plotted
             serie: *Deprecated*
             **kwargs: plt.contour kwargs
 
         Returns:
-            Potential field plot
+            scalar field plot
         """
 
         if plot_data:
             self.plot_data(direction, 'all')
 
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
-        plt.contour(potential_field.reshape(
+        plt.contour(scalar_field.reshape(
             self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[_a, _b, _c].T,
                     N,
                     extent=extent_val, *args,
@@ -297,7 +289,6 @@ class PlotData2D(object):
         if 'colorbar' in kwargs:
             plt.colorbar()
 
-      #  plt.title(self._data.interfaces['series'].unique()[n_pf])
         plt.xlabel(x)
         plt.ylabel(y)
 
@@ -336,12 +327,6 @@ class PlotData2D(object):
         for edge in G.edges_iter():
             a, b = edge
 
-            # if G.adj[a][b]["edge_type"] == "stratigraphic":
-            #     plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
-            #              np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "gray", linewidth=2)
-            # elif G.adj[a][b]["edge_type"] == "fault":
-            #     plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
-            #              np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "black", linewidth=2)
             plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
                           np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "black", linewidth=0.75)
 
@@ -352,6 +337,7 @@ class PlotData2D(object):
                          centroids[node][c2] * e2 / r2 + d2, str(node), color="white", size=6, ha="center", va="center",
                          weight="ultralight", family="monospace")
 
+    # TODO: Incorporate to the class
     @staticmethod
     def annotate_plot(frame, label_col, x, y, **kwargs):
         """
@@ -427,13 +413,14 @@ class steno3D():
 class vtkVisualization:
     """
     Class to visualize data and results in 3D. Init will create all the render properties while the method render
-    model will lunch the window. Using set_interfaces, set_foliations and set_surfaces in between can be chosen what
+    model will lunch the window. Using set_interfaces, set_orientations and set_surfaces in between can be chosen what
     will be displayed.
 
     Args:
         geo_data(gempy.InputData): All values of a DataManagement object
         ren_name (str): Name of the renderer window
         verbose (int): Verbosity for certain functions
+
     Attributes:
         renWin(vtk.vtkRenderWindow())
         camera_list (list): list of cameras for the distinct renderers
@@ -442,7 +429,6 @@ class vtkVisualization:
     def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, color_lot=color_lot, real_time=False, bg_color=None):
 
         self.real_time = real_time
-        # self.C_LOT = self.color_lot_create(geo_data)
         self.geo_data = geo_data
         self.interp_data = None
         self.C_LOT = color_lot
@@ -450,14 +436,13 @@ class vtkVisualization:
         self.n_ren = 4
         self.formation_number = geo_data.interfaces['formation number'].unique()
         self.formation_name = geo_data.interfaces['formation'].unique()
-        # Extents
 
+        # Extents
         self.extent = geo_data.extent
         _e = geo_data.extent
         self._e_dx = _e[1] - _e[0]
         self._e_dy = _e[3] - _e[2]
         self._e_dz = _e[5] - _e[4]
-
         self._e_d_avrg = (self._e_dx + self._e_dy + self._e_dz) / 3
 
         # Resolution
@@ -490,6 +475,7 @@ class vtkVisualization:
     def render_model(self, size=(1920, 1080), fullscreen=False):
         """
         Method to launch the window
+
         Args:
             size (tuple): Resolution of the window
             fullscreen (bool): Launch window in full screen or not
@@ -507,7 +493,8 @@ class vtkVisualization:
         # close_window(interactor)
         del self.renwin, self.interactor
 
-    def create_surface_points(self, vertices):
+    @staticmethod
+    def create_surface_points(vertices):
         """
         Method to create the points that form the surfaces
         Args:
@@ -521,7 +508,8 @@ class vtkVisualization:
             Points.InsertNextPoint(v)
         return Points
 
-    def create_surface_triangles(self, simplices):
+    @staticmethod
+    def create_surface_triangles(simplices):
         """
         Method to create the Triangles that form the surfaces
         Args:
@@ -545,6 +533,7 @@ class vtkVisualization:
     def create_surface(self, vertices, simplices, fn, alpha=1):
         """
         Method to create the polydata that define the surfaces
+
         Args:
             vertices (numpy.array): 2D array (XYZ) with the coordinates of the points
             simplices (numpy.array): 2D array with the value of the vertices that form every single triangle
@@ -610,6 +599,7 @@ class vtkVisualization:
                          n_plane=0, n_render=0, n_index=0, alpha=0.5):
         """
         Method to create a plane given a foliation
+
         Args:
             X : X coord
             Y: Y coord
@@ -631,7 +621,6 @@ class vtkVisualization:
         d.SetRepresentationToSurface()
 
         # Position
-
         source = vtk.vtkPlaneSource()
         source.SetCenter(X, Y, Z)
         source.SetNormal(Gx, Gy, Gz)
@@ -661,21 +650,19 @@ class vtkVisualization:
         """
         Create all the surfaces and set them to the corresponding renders for their posterior visualization with
         render_model
+
         Args:
             vertices (list): list of 3D numpy arrays containing the points that form each plane
             simplices (list): list of 3D numpy arrays containing the verticies that form every triangle
             formations (list): ordered list of strings containing the name of the formations to represent
             fns (list): ordered list of formation numbers (int)
             alpha: Opacity of the plane
+
         Returns:
             None
         """
         self.surf_rend_1 = []
-        # self.s_rend_2 = []
-        # self.s_rend_3 = []
-        # self.s_rend_4 = []
-        # self.s_mapper = []
-        # self.s_polydata = []
+
         formations = self.formation_name
         fns = self.formation_number
         assert type(
@@ -686,9 +673,7 @@ class vtkVisualization:
         for v, s, fn in zip(vertices, simplices, fns):
             act, map, pol = self.create_surface(v, s, fn, alpha)
             self.surf_rend_1.append(act)
-            #  self.s_mapper.append(map)
-            #  self.s_polydata.append(pol)
-            #print(self.s_rend_1)
+
             self.ren_list[0].AddActor(act)
             self.ren_list[1].AddActor(act)
             self.ren_list[2].AddActor(act)
@@ -698,6 +683,7 @@ class vtkVisualization:
         """
         Create all the interfaces points and set them to the corresponding renders for their posterior visualization
          with render_model
+
         Returns:
             None
         """
@@ -717,9 +703,9 @@ class vtkVisualization:
             self.s_rend_4.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation number'],
                                                     n_sphere=e, n_render=3, n_index=index))
 
-    def set_foliations(self):
+    def set_orientations(self):
         """
-        Create all the foliations and set them to the corresponding renders for their posterior visualization with
+        Create all the orientations and set them to the corresponding renders for their posterior visualization with
         render_model
         Returns:
             None
@@ -728,7 +714,7 @@ class vtkVisualization:
         self.f_rend_2 = []
         self.f_rend_3 = []
         self.f_rend_4 = []
-        for e, val in enumerate(self.geo_data.foliations.iterrows()):
+        for e, val in enumerate(self.geo_data.orientations.iterrows()):
             index = val[0]
             row = val[1]
             self.f_rend_1.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation number'],
@@ -766,7 +752,6 @@ class vtkVisualization:
     def slideCallback(self, obj, event):
 
         self.post.change_input_data(self.interp_data, obj.GetRepresentation().GetValue())
-        # lith_block, fault_block = gp.compute_model(self.interp_data)
         try:
             for surf in self.surf_rend_1:
                 self.ren_list[0].RemoveActor(surf)
@@ -801,17 +786,12 @@ class vtkVisualization:
         except AttributeError:
             pass
         try:
-            for fol in (zip(self.f_rend_1, self.f_rend_2, self.f_rend_3, self.f_rend_4, self.geo_data.foliations.iterrows())):
+            for fol in (zip(self.f_rend_1, self.f_rend_2, self.f_rend_3, self.f_rend_4, self.geo_data.orientations.iterrows())):
                 row_f = fol[4][1]
 
                 fol[0].SetCenter(row_f['X'], row_f['Y'], row_f['Z'])
                 fol[0].SetNormal(row_f['G_x'], row_f['G_y'], row_f['G_z'])
 
-                # self.ren_list[0].RemoveActor(fol[0])
-                # self.ren_list[1].RemoveActor(fol[1])
-                # self.ren_list[2].RemoveActor(fol[2])
-                # self.ren_list[3].RemoveActor(fol[3])
-                # self.set_foliations()
         except AttributeError:
             pass
 
@@ -884,10 +864,7 @@ class vtkVisualization:
                 self.ren_list[3].RemoveActor(surf)
 
             vertices, simpleces = self.update_surfaces_real_time(self.interp_data)
-            #  print(vertices[0][60])
             self.set_surfaces(vertices, simpleces)
-
-            # self.renwin.Render()
 
     def planesCallback(self, obj, event):
         """
@@ -1013,7 +990,6 @@ class vtkVisualization:
 
         model_cam.SetViewUp(-0.239, 0.155, 0.958)
 
-
         # XY camera RED
         xy_cam = vtk.vtkCamera()
 
@@ -1123,7 +1099,8 @@ class vtkVisualization:
 
         return cube_axes_actor
 
-    def update_surfaces_real_time(self, interp_data):
+    @staticmethod
+    def update_surfaces_real_time(interp_data):
 
         lith_block, fault_block = gp.compute_model(interp_data)
         try:
@@ -1132,15 +1109,11 @@ class vtkVisualization:
             v_l, s_l = gp.get_surfaces(interp_data, lith_block[1], None, original_scale=False)
         return v_l, s_l
 
-    # def load_posteriors(self, dbname):
-    #     import gempy.UncertaintyAnalysisPYMC2
-    #     self.post = gempy.UncertaintyAnalysisPYMC2.Posterior(dbname)
-
-
     @staticmethod
     def export_vtk_lith_block(geo_data, lith_block, path=None):
         """
         Export data to a vtk file for posterior visualizations
+
         Args:
             geo_data(gempy.InputData): All values of a DataManagement object
             block(numpy.array): 3D array containing the lithology block
@@ -1188,6 +1161,7 @@ class vtkVisualization:
     def export_vtk_surfaces(vertices, simplices, path=None, name='_surfaces', alpha=1):
         """
         Export data to a vtk file for posterior visualizations
+
         Args:
             geo_data(gempy.InputData): All values of a DataManagement object
             block(numpy.array): 3D array containing the lithology block
@@ -1210,7 +1184,6 @@ class vtkVisualization:
             # The first 0 is the index of the triangle vertex which is ALWAYS 0-2.
             # The second 0 is the index into the point (geometry) array, so this can range from 0-(NumPoints-1)
             # i.e. a more general statement is triangle->GetPointIds()->SetId(0, PointId);
-
             for i in simplices[s_n]:
                 Triangle.GetPointIds().SetId(0, i[0])
                 Triangle.GetPointIds().SetId(1, i[1])
@@ -1249,10 +1222,9 @@ class vtkVisualization:
             writer.Write()
 
 
-
 def _create_color_lot(geo_data, cd_rgb):
     """Returns color [r,g,b] LOT for formation numbers."""
-    if "formation number" not in geo_data.interfaces or "formation number" not in geo_data.foliations:
+    if "formation number" not in geo_data.interfaces or "formation number" not in geo_data.orientations:
         geo_data.set_formation_number()  # if not, set formation numbers
 
     c_names = ["indigo", "red", "yellow", "brown", "orange",

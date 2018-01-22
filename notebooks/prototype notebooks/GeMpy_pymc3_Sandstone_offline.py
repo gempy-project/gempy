@@ -153,7 +153,7 @@ geo_data
 
 # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
 input_data_T = data_interp.interpolator.tg.input_parameters_list()
-debugging = theano.function(input_data_T, data_interp.interpolator.tg.potential_field_at_all(), on_unused_input='ignore',
+debugging = theano.function(input_data_T, data_interp.interpolator.tg.scalar_field_at_all(), on_unused_input='ignore',
                             allow_input_downcast=True, profile=True)
 
 

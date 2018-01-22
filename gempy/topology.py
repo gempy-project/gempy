@@ -33,10 +33,14 @@ import numpy as np
 def topology_analyze(lith_block, fault_block, n_faults, areas_bool=False, return_block=False):
     """
     Function to analyze the geological model topology.
-    :param lith_block:
-    :param fault_block:
-    :param n_faults:
-    Return: G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot
+
+    Args:
+        lith_block:
+        fault_block:
+        n_faults:
+
+    Return:
+        G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot
     """
 
     lith_block = lith_block.astype(int)
@@ -194,7 +198,6 @@ def compute_adj_shape(n1, n2, labels_block, ext=None):
     d = (d == np.absolute(n1 ** 2 - n2 ** 2))
     if np.count_nonzero(d) != 0:
         nz_xyz = np.ndarray.nonzero(d)
-        #print(nz_xyz)
         x_len = max(nz_xyz[0])-min(nz_xyz[0])+1
         y_len = max(nz_xyz[1])-min(nz_xyz[1])+1
         z_len = max(nz_xyz[2])-min(nz_xyz[2])+1
@@ -219,136 +222,3 @@ def compare_graphs(G1, G2):
             union += 1
 
     return intersection / union
-
-
-
-# # DEP 1.1
-# class Topology:
-#     """
-#     3D-Topology analysis class.
-#     """
-#     def __init__(self, block, fault_block, n_faults):
-#         """
-#
-#         :param block:
-#         :param fault_block:
-#         :param section: y-section (int)
-#         """
-#
-#         self.block = block.astype(int)
-#         self.block_original = block.astype(int)
-#         self.fault_block = fault_block.astype(int)
-#         self.fault_block = label(self.fault_block, neighbors=8, background=999)
-#
-#         if 0 in self.block:
-#             # then this is a gempy model, numpy starts with 1
-#             self.block[self.block == 0] = int(np.max(self.block) + 1)  # set the 0 to highest value + 1
-#             self.block -= n_faults  # lower by n_faults to equal with pynoddy models
-#             # so the block starts at 1 and goes continuously to max
-#
-#         self.ublock = (self.block.max() + 1) * self.fault_block + self.block
-#
-#         self.lithologies = np.unique(self.block_original)
-#         self.labels, self.n_labels = self.get_labels()
-#         if 0 in np.unique(self.labels):
-#             self.labels += 1
-#
-#         self.labels_unique = np.unique(self.labels)
-#         self.G = graph.RAG(self.labels)
-#         self.centroids = self._get_centroids()
-#         self.lith_to_labels_lot = self._lithology_labels_lot()
-#         self.labels_to_lith_lot = self._labels_lithology_lot()
-#
-#         self.classify_edges()
-#
-#     def get_labels(self, neighbors=8, background=999, return_num=True):
-#         """Get label block."""
-#         return label(self.ublock, neighbors, return_num, background)
-#
-#     def classify_edges(self):
-#         # loop over every node in adjacency dictionary
-#         for n1 in self.G.adj:
-#             # loop over every node that it is connected with
-#             for n2 in self.G.adj[n1]:
-#                 # get centroid coordinates
-#                 if n2 == 0 or n1 == 0:
-#                     continue
-#                 n1_c = self.centroids[n1]
-#                 n2_c = self.centroids[n2]
-#                 # get fault block values at node positions
-#                 if len(np.shape(self.block)) == 3:
-#                     n1_fb_val = self.fault_block[int(n1_c[0]), int(n1_c[1]), int(n1_c[2])]
-#                     n2_fb_val = self.fault_block[int(n2_c[0]), int(n2_c[1]), int(n2_c[2])]
-#                 else:
-#                     n1_fb_val = self.fault_block[int(n1_c[0]), int(n1_c[1])]
-#                     n2_fb_val = self.fault_block[int(n2_c[0]), int(n2_c[1])]
-#
-#                 if n1_fb_val == n2_fb_val:
-#                     # both are in the same fault entity
-#                     self.G.adj[n1][n2] = {"edge_type": "stratigraphic"}
-#                 else:
-#                     self.G.adj[n1][n2] = {"edge_type": "fault"}
-#
-#     def _get_centroids(self):
-#         """Get node centroids in 2d and 3d."""
-#         _rprops = regionprops(self.labels)
-#         centroids = {}
-#         for rp in _rprops:
-#                 centroids[rp.label] = rp.centroid
-#         return centroids
-#
-#     def _lithology_labels_lot(self, verbose=0):
-#         """Create LOT from lithology id to label."""
-#         lot = {}
-#         for lith in self.lithologies:
-#             lot[str(lith)] = {}
-#         for l in self.labels_unique:
-#             if len(np.where(self.labels == l)) == 3:
-#                 _x, _y, _z = np.where(self.labels == l)
-#                 lith_id = np.unique(self.block_original[_x, _y, _z])[0]
-#             else:
-#                 _x, _z = np.where(self.labels == l)
-#                 lith_id = np.unique(self.block_original[_x, _z])[0]
-#
-#             if verbose:
-#                 print("label:", l)
-#                 print("lith:", lith_id)
-#             lot[str(lith_id)][str(l)] = {}
-#         return lot
-#
-#     def _labels_lithology_lot(self, verbose=0):
-#         """Create LOT from label to lithology id."""
-#         lot = {}
-#         for l in self.labels_unique:
-#             if len(np.where(self.labels == l)) == 3:
-#                 _x, _y, _z = np.where(self.labels == l)
-#                 lith_id = np.unique(self.block_original[_x, _y, _z])[0]
-#             else:
-#                 _x, _z = np.where(self.labels == l)
-#                 lith_id = np.unique(self.block_original[_x, _z])[0]
-#             if verbose:
-#                 print(l)
-#             lot[l] = str(lith_id)
-#         if verbose:
-#             print(lot)
-#         return lot
-#
-#     def check_adjacency(self, n1, n2):
-#         """Check if n2 is adjacent/shares edge with n1."""
-#         if n2 in self.G.adj[n1]:
-#             return True
-#         else:
-#             return False
-#
-#
-# def compare_graphs(G1, G2):
-#     intersection = 0
-#     union = G1.number_of_edges()
-#
-#     for edge in G1.edges_iter():
-#         if G2.has_edge(edge[0], edge[1]):
-#             intersection += 1
-#         else:
-#             union += 1
-#
-#     return intersection / union

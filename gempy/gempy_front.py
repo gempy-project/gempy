@@ -46,6 +46,7 @@ def data_to_pickle(geo_data, path=False):
     """
      Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
      versions used to export and import the pickle differ it may give problems
+
      Args:
          path (str): path where save the pickle
 
@@ -58,6 +59,7 @@ def data_to_pickle(geo_data, path=False):
 def read_pickle(path):
     """
     Read InputData object from python pickle.
+
     Args:
        path (str): path where save the pickle
 
@@ -88,7 +90,7 @@ def rescale_factor_default(geo_data):
     min_coord = _pn.concat(
         [geo_data.orientations, geo_data.interfaces]).min()[['X', 'Y', 'Z']]
 
-    # Compute rescalin factor if not given
+    # Compute rescaling factor if not given
     rescaling_factor = 2 * _np.max(max_coord - min_coord)
     return rescaling_factor
 
@@ -185,15 +187,17 @@ def get_extent(geo_data):
 
 def get_data(geo_data, dtype='all', numeric=False, verbosity=0):
     """
-        Method that returns the interfaces and foliations pandas Dataframes. Can return both at the same time or only
-        one of the two
-        Args:
-            itype: input data type, either 'foliations', 'interfaces' or 'all' for both.
-            verbosity (int): Number of properties shown
-        Returns:
-            pandas.core.frame.DataFrame: Data frame with the raw data
+    Method that returns the interfaces and orientations pandas Dataframes. Can return both at the same time or only
+    one of the two
 
-        """
+    Args:
+        dtype(str): input data type, either 'orientations', 'interfaces' or 'all' for both.
+        verbosity (int): Number of properties shown
+
+    Returns:
+        pandas.core.frame.DataFrame: Data frame with the raw data
+
+    """
     return geo_data.get_data(itype=dtype, numeric=numeric, verbosity=verbosity)
 
 
@@ -210,7 +214,7 @@ def create_data(extent, resolution=[50, 50, 50], **kwargs):
     Keyword Args:
         Resolution ((Optional[list])): [nx, ny, nz]. Defaults to 50
         path_i: Path to the data bases of interfaces. Default os.getcwd(),
-        path_f: Path to the data bases of foliations. Default os.getcwd()
+        path_f: Path to the data bases of orientations. Default os.getcwd()
 
     Returns:
         GeMpy.DataManagement: Object that encapsulate all raw data of the project
@@ -222,39 +226,24 @@ def create_data(extent, resolution=[50, 50, 50], **kwargs):
     return InputData(extent, resolution, **kwargs)
 
 
-def i_set_data(geo_data, dtype="foliations", action="Open"):
-    """
-    Method to have interactive pandas tables in jupyter notebooks. The idea is to use this method to interact with
-    the table and i_close_set_data to recompute the parameters that depend on the changes made. I did not find a
-    easier solution than calling two different methods. After editing a dataframe is recommended to call
-     i_set_data(action= 'close') to recompute dependent variables
-    Args:
-        itype: input data type, either 'foliations' or 'interfaces'
-
-    Returns:
-        pandas.core.frame.DataFrame: Data frame with the changed data on real time
-    """
-    if action == 'Close':
-        geo_data.i_close_set_data()
-
-    if action == 'Open':
-        geo_data.i_open_set_data(itype=dtype)
-
-
 def select_series(geo_data, series):
     """
     Return the formations of a given serie in string
-    :param series: list of int or list of str
-    :return: formations of a given serie in string separeted by |
+
+    Args:
+        series: list of int or list of str
+
+    Returns:
+         formations of a given serie in string separeted by |
     """
     new_geo_data = copy.deepcopy(geo_data)
 
     if type(series) == int or type(series[0]) == int:
         new_geo_data.interfaces = geo_data.interfaces[geo_data.interfaces['order_series'].isin(series)]
-        new_geo_data.foliations = geo_data.foliations[geo_data.foliations['order_series'].isin(series)]
+        new_geo_data.orientations = geo_data.orientations[geo_data.orientations['order_series'].isin(series)]
     elif type(series[0]) == str:
         new_geo_data.interfaces = geo_data.interfaces[geo_data.interfaces['series'].isin(series)]
-        new_geo_data.foliations = geo_data.foliations[geo_data.foliations['series'].isin(series)]
+        new_geo_data.orientations = geo_data.orientations[geo_data.orientations['series'].isin(series)]
 
     # Count faults
     new_geo_data.set_faults(new_geo_data.count_faults())
@@ -266,7 +255,7 @@ def select_series(geo_data, series):
 
 
 def set_series(geo_data, series_distribution=None, order_series=None, order_formations=None,
-               update_p_field=True, verbose=1):
+               verbose=1):
     """
     Method to define the different series of the project.
 
@@ -278,89 +267,55 @@ def set_series(geo_data, series_distribution=None, order_series=None, order_form
     Returns:
         self.series: A pandas DataFrame with the series and formations relations
         self.interfaces: one extra column with the given series
-        self.foliations: one extra column with the given series
+        self.orientations: one extra column with the given series
     """
     geo_data.set_series(series_distribution=series_distribution, order=order_series)
     geo_data.order_table()
     if order_formations is not None:
         geo_data.set_formation_number(order_formations)
-    # DEP
+
     if verbose > 0:
          return get_sequential_pile(geo_data)
     else:
         return None
 
+
 def set_order_formations(geo_data, order_formations):
     geo_data.set_formation_number(order_formations)
+
 
 def set_interfaces(geo_data, interf_Dataframe, append=False):
     """
      Method to change or append a Dataframe to interfaces in place.
+
      Args:
          interf_Dataframe: pandas.core.frame.DataFrame with the data
          append: Bool: if you want to append the new data frame or substitute it
      """
     geo_data.set_interfaces(interf_Dataframe, append=append)
-    # --DEP--
-    # # To update the interpolator parameters without calling a new object
-    # try:
-    #     geo_data.interpolator._data = geo_data
-    #     geo_data.interpolator._grid = geo_data.grid
-    #
-    #     if update_p_field:
-    #         geo_data.interpolator.compute_potential_fields()
-    # except AttributeError:
-    #     pass
 
 
-def set_foliations(geo_data, foliat_Dataframe, append=False, update_p_field=True):
+def set_orientations(geo_data, orient_Dataframe, append=False):
     """
-    Method to change or append a Dataframe to foliations in place.  A equivalent Pandas Dataframe with
+    Method to change or append a Dataframe to orientations in place.  A equivalent Pandas Dataframe with
     ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation'] has to be passed.
+
     Args:
         interf_Dataframe: pandas.core.frame.DataFrame with the data
         append: Bool: if you want to append the new data frame or substitute it
     """
 
-    geo_data.set_foliations(foliat_Dataframe, append=append)
-    # To update the interpolator parameters without calling a new object
-    # try:
-    #     geo_data.interpolator._data = geo_data
-    #     geo_data.interpolator._grid = geo_data.grid
-    #   #  geo_data.interpolator._set_constant_parameteres(geo_data, geo_data.interpolator._grid)
-    #     if update_p_field:
-    #         geo_data.interpolator.compute_potential_fields()
-    # except AttributeError:
-    #     pass
+    geo_data.set_orientations(orient_Dataframe, append=append)
 
-#DEP?
-# def set_grid(geo_data, new_grid=None, extent=None, resolution=None, grid_type="regular_3D", **kwargs):
-#     """
-#     Method to initialize the class new_grid. So far is really simple and only has the regular new_grid type
-#
-#     Args:
-#         grid_type (str): regular_3D or regular_2D (I am not even sure if regular 2D still working)
-#         **kwargs: Arbitrary keyword arguments.
-#
-#     Returns:
-#         self.new_grid(GeMpy_core.new_grid): Object that contain different grids
-#     """
-#     if new_grid is not None:
-#         assert new_grid.shape[1] is 3 and len(new_grid.shape) is 2, 'The shape of new grid must be (n,3) where n is' \
-#                                                                     'the number of points of the grid'
-#         geo_data.grid.grid = new_grid
-#     else:
-#         if not extent:
-#             extent = geo_data.extent
-#         if not resolution:
-#             resolution = geo_data.resolution
-#
-#         geo_data.grid = geo_data.GridClass(extent, resolution, grid_type=grid_type, **kwargs)
+
+# TODO:
+def set_grid(geo_data, grid):
+    pass
 
 
 def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
     """
-    Plot the projection of the raw data (interfaces and foliations) in 2D following a
+    Plot the projection of the raw data (interfaces and orientations) in 2D following a
     specific directions
 
     Args:
@@ -431,7 +386,7 @@ def plot_data_3D(geo_data):
     """
     vv = vtkVisualization(geo_data)
     vv.set_interfaces()
-    vv.set_foliations()
+    vv.set_orientations()
     vv.render_model()
     return None
 
@@ -440,6 +395,7 @@ def get_sequential_pile(geo_data):
     Visualize an interactive stratigraphic pile to move around the formations and the series. IMPORTANT NOTE:
     To have the interactive properties it is necessary the use of qt as interactive backend. (In notebook use:
     %matplotlib qt5)
+
     Args:
         geo_data: gempy.DataManagement.InputData object
 
@@ -483,13 +439,13 @@ def set_interpolation_data(geo_data, **kwargs):
     in_data = InterpolatorData(geo_data, **kwargs)
     return in_data
 
-
 def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
                      #formations_names_l, formation_numbers_l,
                      alpha=1, plot_data=True,
                      size=(1920, 1080), fullscreen=False, bg_color=None):
     """
     Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
+
     Args:
         vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
         simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
@@ -499,6 +455,7 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
         plot_data (bool): Default True
         size (tuple): Resolution of the window
         fullscreen (bool): Launch window in full screen or not
+
     Returns:
         None
     """
@@ -509,22 +466,9 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
 
     if plot_data:
         w.set_interfaces()
-        w.set_foliations()
+        w.set_orientations()
     w.render_model(size=size, fullscreen=fullscreen)
     return w
-
-def export_vtk_rectilinear(geo_data, block, path=None):
-    """
-    Export data to a vtk file for posterior visualizations
-    Args:
-        geo_data(gempy.InputData): All values of a DataManagement object
-        block(numpy.array): 3D array containing the lithology block
-        path (str): path to the location of the vtk
-
-    Returns:
-        None
-    """
-    vtkVisualization.export_vtk_lith_block(geo_data, block, path)
 
 # =====================================
 # Functions for the InterpolatorData
@@ -535,6 +479,7 @@ def export_vtk_rectilinear(geo_data, block, path=None):
 def get_kriging_parameters(interp_data, verbose=0):
     """
     Print the kringing parameters
+
     Args:
         interp_data (gempy.DataManagement.InterpolatorInput)
         verbose (int): if > 0 print all the shape values as well.
@@ -548,6 +493,7 @@ def get_kriging_parameters(interp_data, verbose=0):
 def get_th_fn(interp_data, compute_all=True):
     """
     Get theano function
+
     Args:
         interp_data (gempy.DataManagement.InterpolatorInput): Rescaled data.
          compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
@@ -565,6 +511,7 @@ def get_th_fn(interp_data, compute_all=True):
 def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_interfaces=False):
     """
     Compute the geological model
+
     Args:
         interp_data (gempy.DataManagement.InterpolatorInput): Rescaled data.
         u_grade (list): grade of the polynomial for the universal part of the Kriging interpolations. The value has to
@@ -619,6 +566,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
     """
     compute vertices and simplices of the interfaces for its vtk visualization or further
     analysis
+
     Args:
         potential_lith (numpy.array): 1D numpy array with the solution of the computation of the model
          containing the scalar field of potentials (second row of solution)
@@ -634,16 +582,14 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
     """
     try:
         getattr(interp_data, 'potential_at_interfaces')
-    except:
+    except AttributeError:
         raise AttributeError('You need to compute the model first')
 
     def get_surface(potential_block, interp_data, pot_int, n_formation, step_size, original_scale):
         assert n_formation > 0, 'Number of the formation has to be positive'
+
         # In case the values are separated by series I put all in a vector
-
         pot_int = interp_data.potential_at_interfaces.sum(axis=0)
-
-        #pot_int = np.trim_zeros(interp_data.potential_at_interfaces[n_formation]
 
         from skimage import measure
 
@@ -655,7 +601,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
             pot_int[n_formation - 1] = potential_block.min()
             print('Potential field of the surface is outside the block. Probably is due to float errors')
 
-        vertices, simplices, normals, values = measure.marching_cubes_lewiner(
+        vertices_p, simplices_p, normals, values = measure.marching_cubes_lewiner(
             potential_block.reshape(interp_data.geo_data_res.resolution[0],
                                     interp_data.geo_data_res.resolution[1],
                                     interp_data.geo_data_res.resolution[2]),
@@ -665,16 +611,15 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
                      (interp_data.geo_data_res.extent[3] - interp_data.geo_data_res.extent[2]) / interp_data.geo_data_res.resolution[1],
                      (interp_data.geo_data_res.extent[5] - interp_data.geo_data_res.extent[4]) / interp_data.geo_data_res.resolution[2]))
 
-
         if original_scale:
-            vertices = interp_data.rescaling_factor * vertices + _np.array([interp_data._geo_data.extent[0],
+            vertices_p = interp_data.rescaling_factor * vertices_p + _np.array([interp_data._geo_data.extent[0],
                                                                             interp_data._geo_data.extent[2],
                                                                             interp_data._geo_data.extent[4]]).reshape(1, 3)
         else:
-            vertices += _np.array([interp_data.geo_data_res.extent[0],
+            vertices_p += _np.array([interp_data.geo_data_res.extent[0],
                                    interp_data.geo_data_res.extent[2],
                                    interp_data.geo_data_res.extent[4]]).reshape(1, 3)
-        return vertices, simplices
+        return vertices_p, simplices_p
 
     vertices = []
     simplices = []
@@ -717,6 +662,17 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
 
 
 def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None, simplices=None):
+    """
+      Export data to a vtk file for posterior visualizations
+
+      Args:
+          geo_data(gempy.InputData): All values of a DataManagement object
+          block(numpy.array): 3D array containing the lithology block
+          path (str): path to the location of the vtk
+
+      Returns:
+          None
+      """
     if lith_block is not None:
         vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path+str('v'))
     if vertices is not None and simplices is not None:
@@ -733,6 +689,7 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
     IMPORTANT NOTE it is highly recommended to have the flag fast_run in the theano optimization. Also note that the
     time needed to compute each model increases linearly with every potential field (i.e. fault or discontinuity). It
     may be better to just modify each potential field individually to increase the speed (See gempy.select_series).
+
     Args:
         vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
         simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
@@ -742,6 +699,7 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
         plot_data (bool): Default True
         size (tuple): Resolution of the window
         fullscreen (bool): Launch window in full screen or not
+
     Returns:
         None
     """
@@ -766,7 +724,7 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
     w.interp_data = interp_data
     if plot_data:
         w.set_interfaces()
-        w.set_foliations()
+        w.set_orientations()
     w.render_model(size=size, fullscreen=fullscreen)
 
 
@@ -775,12 +733,16 @@ def topology_compute(geo_data, lith_block, fault_block,
                      compute_areas=False, return_label_block=False):
     """
     Computes model topology and returns graph, centroids and look-up-tables.
-    :param geo_data: geo_data object
-    :param lith_block: lithology block
-    :param fault_block: fault block
-    :param cell_number: (int) the slice position
-    :param direction: (str) "x", "y", or "z" - the slice direction
-    :return: (adjacency Graph object, centroid dict, labels-to-lith LOT dict, lith-to_labels LOT dict)
+    geo_data: geo_data object
+
+    Args:
+        lith_block: lithology block
+        fault_block: fault block
+        cell_number: (int) the slice position
+        direction: (str) "x", "y", or "z" - the slice direction
+
+    Returns:
+        (adjacency Graph object, centroid dict, labels-to-lith LOT dict, lith-to_labels LOT dict)
     """
     fault_block = fault_block[::2].sum(axis=0)
 
