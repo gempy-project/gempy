@@ -25,7 +25,7 @@ sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import copy
 import numpy as np
 import pandas as pn
-from gempy import theanograf
+from gempy import theano_graph
 import theano
 
 pn.options.mode.chained_assignment = None  #
@@ -166,7 +166,6 @@ class InputData(object):
             pandas.core.frame.DataFrame: Data frame with the raw data
 
         """
-
         dtype = 'object'
 
         if verbosity == 0:
@@ -293,7 +292,7 @@ class InputData(object):
             assert set(['X', 'Y', 'Z', 'formation']).issubset(self.interfaces.columns), \
                 "One or more columns do not match with the expected values " + str(self.interfaces.columns)
 
-    def interface_modify(self, index, **kwargs):
+    def modify_interface(self, index, **kwargs):
         """
         Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
 
@@ -307,7 +306,7 @@ class InputData(object):
         for key in kwargs:
             self.interfaces.ix[index, str(key)] = kwargs[key]
 
-    def interface_add(self, **kwargs):
+    def add_interface(self, **kwargs):
         """
         Adds interface to dataframe.
 
@@ -326,7 +325,7 @@ class InputData(object):
 
         self.order_table()
 
-    def interface_drop(self, index):
+    def drop_interface(self, index):
         """
         Drops interface from dataframe identified by index
 
@@ -339,7 +338,7 @@ class InputData(object):
         """
         self.interfaces.drop(index, inplace=True)
 
-    def orientation_modify(self, index, recalculate_gradient=False, recalculate_orientations=False, **kwargs):
+    def modify_orientation(self, index, recalculate_gradient=False, recalculate_orientations=False, **kwargs):
         """
         Allows modification of orientation data at specified dataframe index.
 
@@ -353,14 +352,16 @@ class InputData(object):
         for key in kwargs:
             self.orientations.ix[index, str(key)] = kwargs[key]
 
+        # TODO: EASY: make the condition check automatic regarding the keys that are modified
         if recalculate_gradient:
             self.calculate_gradient()
         if recalculate_orientations:
             self.calculate_orientations()
 
-    def orientation_add(self, **kwargs):
+    def add_orientation(self, **kwargs):
         """
         Adds orientation to dataframe.
+
         Args:
             **kwargs: G_x, G_y, G_z, X, Y, Z, azimuth, dip, formation, labels, order_series, polarity, series
 
@@ -371,12 +372,14 @@ class InputData(object):
         for key in kwargs:
             self.orientations.ix[l, str(key)] = kwargs[key]
         self.calculate_gradient()
+        self.calculate_orientations()
         self.set_series()
         self.order_table()
 
-    def orientations_drop(self, index):
+    def drop_orientations(self, index):
         """
         Drops orientation from dataframe identified by index
+
         Args:
             index: dataframe index
 
@@ -468,7 +471,6 @@ class InputData(object):
 
         self.set_series()
         self.order_table()
-        # self.interfaces.reset_index(drop=True, inplace=True)
 
     def set_orientations(self, foliat_Dataframe, append=False):
         """
@@ -544,11 +546,6 @@ class InputData(object):
         # Save the dataframe in a property. This is used in the pile
         self.series = _series
 
-        # Set default faults
-        # faults_series = []
-        # for i in self.series.columns:
-        #     if ('fault' in i or 'Fault' in i) and 'Default' not in i:
-        #         faults_series.append(i)
         faults_series = self.count_faults()
 
         self.set_faults(faults_series)
@@ -566,10 +563,11 @@ class InputData(object):
     def set_faults(self, series_name):
         """
         Set a flag to the series that are faults.
+
         Args:
             series_name(list or array_like): Name of the series which are faults
         """
-      #  if not len(series_name) == 0:
+
         self.interfaces.loc[:, 'isFault'] = self.interfaces['series'].isin(series_name)
         self.orientations.loc[:, 'isFault'] = self.orientations['series'].isin(series_name)
 
@@ -585,14 +583,13 @@ class InputData(object):
             Column in the interfaces and orientations dataframes
         """
 
-
         if formation_order is None:
             formation_order = self.interfaces["formation"].unique()
 
         else:
             assert self.interfaces['formation'].isin(formation_order).all(), 'Some of the formations given are not in '\
                                                                              'the formations data frame. Check misspells'\
-                                                                             'and that you include the name of the faults!!!'
+                                                                             'and that you include the name of the faults!'
         try:
             ip_addresses = formation_order
             ip_dict = dict(zip(ip_addresses, range(1, len(ip_addresses)+1)))
@@ -604,7 +601,12 @@ class InputData(object):
         self.order_table()
 
     def set_annotations(self):
+        """
+        Add a column in the Dataframes with latex names for each input paramenter.
 
+        Returns:
+            None
+        """
         point_num = self.interfaces.groupby('formation number').cumcount()
         point_l = [r'${\bf{x}}_{\alpha \,{\bf{' + str(f) + '}},' + str(p) + '}$'
                    for p, f in zip(point_num, self.interfaces['formation number'])]
@@ -623,7 +625,7 @@ class InputData(object):
         Args:
             rel_matrix (numpy.array): 2D Boolean array with the logic. Rows affect (offset) columns
         """
-
+        #TODO: Change the fault relation automatically every time we add a fault
         self.fault_relation = rel_matrix
 
     def order_table(self):
@@ -633,17 +635,17 @@ class InputData(object):
         """
 
         # We order the pandas table by series
-        self.interfaces.sort_values(by=['order_series'],  # , 'formation number'],
-                                                 ascending=True, kind='mergesort',
-                                                 inplace=True)
+        self.interfaces.sort_values(by=['order_series'],
+                                    ascending=True, kind='mergesort',
+                                    inplace=True)
 
-        self.orientations.sort_values(by=['order_series'],  # , 'formation number'],
-                                                 ascending=True, kind='mergesort',
-                                                 inplace=True)
+        self.orientations.sort_values(by=['order_series'],
+                                      ascending=True, kind='mergesort',
+                                      inplace=True)
 
         # Give formation number
         if not 'formation number' in self.interfaces.columns or not 'formation number' in self.orientations.columns:
-            # print('I am here')
+
             self.set_formation_number()
 
         # We order the pandas table by formation (also by series in case something weird happened)
@@ -674,7 +676,6 @@ class InputData(object):
 
         geo_res = geo_res.iloc[9:]
 
-        #ip_addresses = geo_res['nx 50'].unique()  # geo_data.interfaces["formation"].unique()
         ip_dict = self.get_formation_number()
 
         geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
@@ -682,6 +683,7 @@ class InputData(object):
                                         self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
         return block_geomodeller
 
+    # TODO Alex: Documentation
     def set_triangle_orientations(self, verbose=False):
         # next we need to iterate over every unique triangle id to create a orientation from each triplet
         # of points and assign the same triange_id to it
@@ -749,12 +751,7 @@ class InputData(object):
 
 class GridClass(object):
     """
-    -DOCS NOT UPDATED- Class with set of functions to generate grids
-
-    Args:
-        extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]
-        resolution (list): [nx, ny, nz].
-        grid_type(str): Type of grid. So far only regular 3D is implemented
+    Class to generate grids to pass later on to a InputData class.
     """
 
     def __init__(self):
@@ -762,14 +759,28 @@ class GridClass(object):
         self.values = None
 
     def create_custom_grid(self, custom_grid):
+        """
+        Give the coordinates of an external generated grid
+
+        Args:
+            custom_grid (numpy.ndarray like): XYZ (in columns) of the desired coordinates
+
+        Returns:
+              numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid
+        """
         assert type(custom_grid) is np.ndarray and custom_grid.shape[1] is 3, 'The shape of new grid must be (n,3)' \
                                                                               ' where n is the number of points of ' \
                                                                               'the grid'
         self.values = custom_grid
+        return self.values
 
     def create_regular_grid_3d(self, extent, resolution):
         """
         Method to create a 3D regular grid where is interpolated
+
+        Args:
+            extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]
+            resolution (list): [nx, ny, nz].
 
         Returns:
             numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid
@@ -790,13 +801,14 @@ class GridClass(object):
         return self.values
 
 
-class InterpolatorInput:
+class InterpolatorData:
     """
     InterpolatorInput is a class that contains all the preprocessing operations to prepare the data to compute the model.
     Also is the object that has to be manipulated to vary the data without recompile the modeling function.
 
     Args:
         geo_data(gempy.data_management.InputData): All values of a DataManagement object
+        geophysics(gempy.geophysics): Object with the corresponding geophysical precomputations
         compile_theano (bool): select if the theano function is compiled during the initialization. Default: True
         compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
          the block model of faults. If False only return the block model of lithologies. This may be important to speed
@@ -821,7 +833,7 @@ class InterpolatorInput:
         dtype:  type of float
 
     """
-    def __init__(self, geo_data, output='geology', compile_theano=True, compute_all=True,
+    def __init__(self, geo_data, geophysics=None, output='geology', compile_theano=False, compute_all=True,
                  u_grade=None, rescaling_factor=None, **kwargs):
         # TODO add all options before compilation in here. Basically this is n_faults, n_layers, verbose, dtype, and \
         # only block or all
@@ -833,7 +845,6 @@ class InterpolatorInput:
         # Here we can change the dtype for stability and GPU vs CPU
         self.dtype = kwargs.get('dtype', 'float32')
 
-        #self.in_data = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
         # Set some parameters. TODO possibly this should go in kwargs
         self.u_grade = u_grade
 
@@ -845,22 +856,17 @@ class InterpolatorInput:
         # Rescaling
         self.geo_data_res = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
 
-        # # This are necessary parameters for the visualization package
-        #self.resolution = self.geo_data.resolution
-        #self.extent = self.extent_rescaled.as_matrix()
-
         # Creating interpolator class with all the precompilation options
-        # --DEP-- self.interpolator = self.set_interpolator(**kwargs)
-        self.interpolator = self.InterpolatorClass(self.geo_data_res, self.geo_data_res.grid, output=output, **kwargs)
+        self.interpolator = self.InterpolatorTheano(self, output=output, **kwargs)
         if compile_theano:
             self.th_fn = self.compile_th_fn(output, compute_all=compute_all)
 
-        self.geophy = None
-
+        self.geophy = geophysics
 
     def compile_th_fn(self, output, compute_all=True):
         """
         Compile the theano function given the input data.
+
         Args:
             compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
              the block model of faults. If False only return the block model of lithologies. This may be important to speed
@@ -900,6 +906,7 @@ class InterpolatorInput:
     def rescale_data(self, geo_data, rescaling_factor=None):
         """
         Rescale the data of a DataManagement object between 0 and 1 due to stability problem of the float32.
+
         Args:
             geo_data: Original gempy.DataManagement.InputData object
             rescaling_factor(float): factor of the rescaling. Default to maximum distance in one the axis
@@ -908,7 +915,6 @@ class InterpolatorInput:
             gempy.data_management.InputData: Rescaled data
 
         """
-        # TODO split this function in compute rescaling factor and rescale z
 
         # Check which axis is the largest
         max_coord = pn.concat(
@@ -954,85 +960,31 @@ class InterpolatorInput:
         self.rescaling_factor = rescaling_factor
         geo_data_rescaled.rescaling_factor = rescaling_factor
         self.centers = centers
-      #  self.extent_rescaled = new_coord_extent
 
         return geo_data_rescaled
 
-    def get_formation_number(self):
+    def set_geo_data_rescaled(self, geo_data, rescaling_factor=None):
         """
-        DEP in next version. Get a dictionary with the key the name of the formation and the value their number
+        Set the rescale the data of a DataManagement object between 0 and 1 due to stability problem of the float32.
+
+        Args:
+             geo_data: Original gempy.DataManagement.InputData object
+             rescaling_factor(float): factor of the rescaling. Default to maximum distance in one the axis
 
         Returns:
-            dict: key the name of the formation and the value their number
-        """
-        pn_series = self.geo_data_res.interfaces.groupby('formation number').formation.unique()
-        ip_addresses = {}
-        for e, i in enumerate(pn_series):
-            ip_addresses[i[0]] = e + 1
-        ip_addresses['DefaultBasement'] = 0
-        return ip_addresses
+             gempy.data_management.InputData: Rescaled data
 
-    # --DEP--
-    # def set_interpolator(self, geo_data=None, **kwargs):
-    #     """
-    #     Method to initialize the class interpolator. All the constant parameters for the interpolation can be passed
-    #     as args, otherwise they will take the default value (TODO: documentation of the dafault values)
-    #
-    #     Args:
-    #         geo_data: Original gempy.DataManagement.InputData object. If given it rescales it again Default takes the property
-    #
-    #     Keyword Args:
-    #         range_var: Range of the variogram. Default None
-    #         c_o: Covariance at 0. Default None
-    #         nugget_effect: Nugget effect of the gradients. Default 0.01
-    #         u_grade: Grade of the polynomial used in the universal part of the Kriging. Default 2
-    #         rescaling_factor: Magic factor that multiplies the covariances). Default 2
-    #
-    #     Returns:
-    #         self.Interpolator (GeMpy_core.Interpolator): Object to perform the potential field method
-    #     """
-    #
-    #     if 'u_grade' in kwargs:
-    #         compile_theano = True
-    #
-    #     range_var = kwargs.get('range_var', None)
-    #
-    #     rescaling_factor = kwargs.get('rescaling_factor', None)
-    #
-    #     if geo_data:
-    #         geo_data_in = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
-    #         self.geo_data_res = geo_data_in
-    #     else:
-    #         geo_data_in = self.geo_data_res
-    #
-    #     # First creation
-    #     if not getattr(self, 'interpolator', None):
-    #         # print('I am in the setting')
-    #         interpolator = self.InterpolatorClass(geo_data_in, geo_data_in.grid, **kwargs)
-    #
-    #     # Update
-    #     else:
-    #         print('I am in update')
-    #         # I update the data
-    #         self.interpolator._data_scaled = geo_data_in
-    #         self.interpolator._grid_scaled = geo_data_in.grid
-    #         # I order it again just in case. TODO if this still necessary
-    #         self.interpolator.order_table()
-    #
-    #         # Refresh all shared parameters of
-    #         self.interpolator.set_theano_shared_parameteres(range_var=range_var)
-    #         interpolator = None
-    #
-    #     return interpolator
+         """
+        self.geo_data_res = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
 
-    def update_interpolator(self, geo_data_res=None, **kwargs):
+    def update_interpolator(self, geo_data=None, **kwargs):
         """
-        Method to update the constant parameters of the class interpolator (i.e. theano shared).
-         All the constant parameters for the interpolation can be passed
+        Method to update the constant parameters of the class interpolator (i.e. theano shared) WITHOUT recompiling.
+        All the constant parameters for the interpolation can be passed
         as kwargs, otherwise they will take the default value (TODO: documentation of the dafault values)
 
         Args:
-            geo_data_res: Rescaled gempy.DataManagement.InputData object.
+            geo_data: Rescaled gempy.DataManagement.InputData object. If None the stored geo_data_res will be used
 
         Keyword Args:
            range_var: Range of the variogram. Default None
@@ -1041,17 +993,14 @@ class InterpolatorInput:
            u_grade: Grade of the polynomial used in the universal part of the Kriging. Default 2
         """
 
-        if geo_data_res:
-            geo_data_in = geo_data_res
+        if geo_data:
+            geo_data_in = self.rescale_data(geo_data)
             self.geo_data_res = geo_data_in
         else:
             geo_data_in = self.geo_data_res
 
-        #  print('I am in update')
-        # I update the data
+        # I update the interpolator data
         self.interpolator.geo_data_res = geo_data_in
-        #self.interpolator.geo_data_res.grid_res = geo_data_in.grid
-        # I order it again just in case. TODO if this still necessary
         self.interpolator.order_table()
         self.interpolator.set_theano_shared_parameteres(**kwargs)
         self.interpolator.data_prep()
@@ -1074,22 +1023,34 @@ class InterpolatorInput:
             u_grade = self.u_grade
         return self.interpolator.data_prep(u_grade=u_grade)
 
-    ## =======
-    ## Gravity
-    def set_geophysics_obj(self, ai_extent, ai_resolution, ai_z=None, range_max=None):
-        from .geophysics import GeoPhysicsPreprocessing_pro
-        self.geophy = GeoPhysicsPreprocessing_pro(self, ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
+    # =======
+    # Gravity
+    def create_geophysics_obj(self, ai_extent, ai_resolution, ai_z=None, range_max=None):
+        from .geophysics import GravityPreprocessing
+        self.geophy = GravityPreprocessing(self, ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
 
-    class InterpolatorClass(object):
+    def set_gravity_precomputation(self, gravity_obj):
         """
-        -DOCS NOT UPDATED-
-         Class which contain all needed methods to perform potential field implicit modelling in theano.
-         Here there are methods to modify the shared parameters of the theano graph as well as the final
-         preparation of the data from DataFrames to numpy arrays
+        Set a gravity object to the interpolator to pass the values to the theano graph
 
         Args:
-             geo_data_res (gempy.data_management.InterpolatorInput): Rescaled data. It has the same structure has gempy.InputData
-            grid(gempy.DataManagement.grid): A grid object rescaled. Default takes it from the InterpolatorInput object.
+            gravity_obj (gempy.geophysics.GravityPreprocessing): GravityPreprocessing
+             (See Also gempy.geophysics.GravityPreprocessing documentation)
+
+        """
+        # TODO assert that is a gravity object
+        self.geophy = gravity_obj
+
+    class InterpolatorTheano(object):
+        """
+         Class which contain all needed methods to perform potential field implicit modelling in theano.
+         Here there are methods to modify the shared parameters of the theano graph as well as the final
+         preparation of the data from DataFrames to numpy arrays. This class is intended to be hidden from the user
+         leaving the most useful calls into the InterpolatorData class
+
+        Args:
+            interp_data (gempy.data_management.InterpolatorData): InterpolatorData: data rescaled plus geophysics and
+            other additional data
 
         Keyword Args:
             range_var: Range of the variogram. Default None
@@ -1097,23 +1058,22 @@ class InterpolatorInput:
             nugget_effect: Nugget effect of the gradients. Default 0.01
             u_grade: Grade of the polynomial used in the universal part of the Kriging. Default 2
             rescaling_factor: Magic factor that multiplies the covariances). Default 2
-            verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0
+            verbose(list of str): Level of verbosity during the execution of the functions. List of the strings with
+            the parameters to be printed during the theano execution. TODO Make the list
         """
 
-        def __init__(self, geo_data_res, grid_res=None, **kwargs):
+        def __init__(self, interp_data, **kwargs):
 
             # verbose is a list of strings. See theanograph
             verbose = kwargs.get('verbose', [0])
-            # -DEP-rescaling_factor = kwargs.get('rescaling_factor', None)
 
             # Here we can change the dtype for stability and GPU vs CPU
-            dtype = kwargs.get('dtype', 'float32')
-            self.dtype = dtype
+            self.dtype = kwargs.get('dtype', 'float32')
             # Here we change the graph type
             output = kwargs.get('output', 'geology')
             self.output = output
 
-            if dtype in verbose:
+            if 'dtype' in verbose:
                 print(self.dtype)
 
             range_var = kwargs.get('range_var', None)
@@ -1121,19 +1081,12 @@ class InterpolatorInput:
             # Drift grade
             u_grade = kwargs.get('u_grade', [3, 3])
 
-            # We hide the scaled copy of DataManagement object from the user. The scaling happens in gempy what is a
-            # bit weird. Maybe at some point I should bring the function to this module
-            self.geo_data_res = geo_data_res
-
-            # In case someone wants to provide a grid otherwise we extract it from the DataManagement object.
-            # if not grid_res:
-            #     self.grid_res = geo_data_res.grid
-            # else:
-            #     self.grid_res = grid_res
+            # We hide the scaled copy of DataManagement object from the user.
+            self.geo_data_res = interp_data.geo_data_res
 
             # Importing the theano graph. The methods of this object generate different parts of graph.
             # See theanograf doc
-            self.tg = theanograf.TheanoGraph_pro(output=output, dtype=dtype, verbose=verbose,)
+            self.tg = theano_graph.TheanoGraph(output=output, dtype=self.dtype, verbose=verbose, )
 
             # Sorting data in case the user provides it unordered
             self.order_table()
@@ -1149,7 +1102,7 @@ class InterpolatorInput:
             if theano.config.optimizer != 'fast_run':
                 assert self.tg.grid_val_T.get_value().shape[0] * \
                        np.math.factorial(len(self.tg.len_series_i.get_value())) < 2e7, \
-                       'The grid is too big for the number of potential fields. Reduce the grid or change the' \
+                       'The grid is too big for the number of scalar fields. Reduce the grid or change the' \
                        'optimization flag to fast run'
 
         def set_formation_number(self):
@@ -1204,11 +1157,13 @@ class InterpolatorInput:
 
         def data_prep(self, **kwargs):
             """
-            Ideally this method will extract the data from the pandas dataframes to individual numpy arrays to be input
+            Ideally this method will only extract the data from the pandas dataframes to individual numpy arrays to be input
             of the theano function. However since some of the shared parameters are function of these arrays shape I also
             set them here
+
             Returns:
                 idl (list): List of arrays which are the input for the theano function:
+
                     - numpy.array: dips_position
                     - numpy.array: dip_angles
                     - numpy.array: azimuth
@@ -1236,14 +1191,6 @@ class InterpolatorInput:
             # Drop the reference points using pandas indeces to get just the rest_layers array
             pandas_rest_layer_points = self.geo_data_res.interfaces.drop(ref_position)
             self.pandas_rest_layer_points = pandas_rest_layer_points
-            # TODO: do I need this? PYTHON
-            # DEP- because per series the orientations do not belong to a formation but to the whole series
-            # len_orientations = np.asarray(
-            #     [np.sum(self._data_scaled.orientations['formation number'] == i)
-            #      for i in self._data_scaled.orientations['formation number'].unique()])
-
-            # -DEP- I think this was just a kind of print to know what was going on
-        #    self.pandas_rest = pandas_rest_layer_points
 
             # Array containing the size of every series. Interfaces.
             len_series_i = np.asarray(
@@ -1264,16 +1211,23 @@ class InterpolatorInput:
             # =========================
             # Choosing Universal drifts
             # =========================
-
             if u_grade is None:
                 u_grade = np.zeros_like(len_series_i)
-                # Force the user to choose drift degree 2
-                # u_grade[len_series_i > 12] = 9
-                u_grade[(len_series_i > 6)] = 3
+                u_grade[(len_series_i > 4)] = 1
+
+            else:
+                u_grade = np.array(u_grade)
+
             if 'u_grade' in verbose:
                 print(u_grade)
+
+            n_universal_eq = np.zeros_like(len_series_i)
+            n_universal_eq[u_grade == 0] = 0
+            n_universal_eq[u_grade == 1] = 3
+            n_universal_eq[u_grade == 2] = 9
+
             # it seems I have to pass list instead array_like that is weird
-            self.tg.u_grade_T.set_value(list(u_grade))
+            self.tg.n_universal_eq_T.set_value(list(n_universal_eq))
 
             # ================
             # Prepare Matrices
@@ -1448,7 +1402,7 @@ class InterpolatorInput:
             # range
             print('range', self.tg.a_T.get_value(), self.tg.a_T.get_value() * self.geo_data_res.rescaling_factor)
             # Number of drift equations
-            print('Number of drift equations', self.tg.u_grade_T.get_value())
+            print('Number of drift equations', self.tg.n_universal_eq_T.get_value())
             # Covariance at 0
             print('Covariance at 0', self.tg.c_o_T.get_value())
             # orientations nugget effect

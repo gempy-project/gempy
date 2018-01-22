@@ -40,7 +40,7 @@ theano.config.profile_memory = False
 theano.config.scan.debug = False
 theano.config.profile = False
 
-class TheanoGraph_pro(object):
+class TheanoGraph(object):
     """
     This class is used to help to divide the construction of the graph into sensical parts. All its methods build a part
     of the graph. Every method can be seen as a branch and collection of branches until the last method that will be the
@@ -84,7 +84,7 @@ class TheanoGraph_pro(object):
         # ======================
         # INITIALIZE SHARED
         # ====================
-        self.u_grade_T = theano.shared(np.arange(2, dtype='int64'), "Grade of the universal drift")
+        self.n_universal_eq_T = theano.shared(np.arange(2, dtype='int64'), "Grade of the universal drift")
         self.a_T = theano.shared(np.cast[dtype](1.), "Range")
         self.c_o_T = theano.shared(np.cast[dtype](1.), 'Covariance at 0')
         self.nugget_effect_grad_T = theano.shared(np.cast[dtype](0.01))
@@ -1309,7 +1309,7 @@ class TheanoGraph_pro(object):
                 sequences=[dict(input=self.len_series_i[:n_faults + 1], taps=[0, 1]),
                            dict(input=self.len_series_f[:n_faults + 1], taps=[0, 1]),
                            dict(input=self.n_formations_per_serie[:n_faults + 1], taps=[0, 1]),
-                           dict(input=self.u_grade_T[:n_faults + 1], taps=[0])],
+                           dict(input=self.n_universal_eq_T[:n_faults + 1], taps=[0])],
                 return_list=True,
             )
 
@@ -1329,7 +1329,7 @@ class TheanoGraph_pro(object):
                  sequences=[dict(input=self.len_series_i[n_faults:], taps=[0, 1]),
                             dict(input=self.len_series_f[n_faults:], taps=[0, 1]),
                             dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),
-                            dict(input=self.u_grade_T[n_faults:], taps=[0])],
+                            dict(input=self.n_universal_eq_T[n_faults:], taps=[0])],
                  non_sequences=[self.fault_matrix],
                  name='Looping interfaces',
                  profile=False,

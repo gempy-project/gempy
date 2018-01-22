@@ -32,11 +32,11 @@ import sys
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
 import numpy as _np
+import pandas as _pn
 
-# --DEP-- import pandas as _pn
 import copy
 from gempy.visualization import PlotData2D, steno3D, vtkVisualization
-from gempy.data_management import InputData, InterpolatorInput, GridClass
+from gempy.data_management import InputData, InterpolatorData, GridClass
 from gempy.sequential_pile import StratigraphicPile
 from gempy.topology import topology_analyze as _topology_analyze, topology_check_adjacency
 import gempy.posterior_analysis # So far we use this type of import because the other one makes a copy and blows up some asserts
@@ -70,6 +70,87 @@ def read_pickle(path):
         # have to specify it.
         data = pickle.load(f)
         return data
+
+
+def rescale_factor_default(geo_data):
+    """
+    Gives the default rescaling factor for a given geo_data
+
+    Args:
+        geo_data: Original gempy.DataManagement.InputData object
+
+    Returns:
+        float: rescaling factor
+    """
+    # Check which axis is the largest
+    max_coord = _pn.concat(
+        [geo_data.orientations, geo_data.interfaces]).max()[['X', 'Y', 'Z']]
+    min_coord = _pn.concat(
+        [geo_data.orientations, geo_data.interfaces]).min()[['X', 'Y', 'Z']]
+
+    # Compute rescalin factor if not given
+    rescaling_factor = 2 * _np.max(max_coord - min_coord)
+    return rescaling_factor
+
+
+def rescale_data(geo_data, rescaling_factor=None):
+    """
+    Rescale the data of a DataManagement object between 0 and 1 due to stability problem of the float32.
+
+    Args:
+        geo_data: Original gempy.DataManagement.InputData object
+        rescaling_factor(float): factor of the rescaling. Default to maximum distance in one the axis
+
+    Returns:
+        gempy.data_management.InputData: Rescaled data
+
+    """
+    # TODO split this function in compute rescaling factor and rescale z
+
+    # Check which axis is the largest
+    max_coord = _pn.concat(
+        [geo_data.orientations, geo_data.interfaces]).max()[['X', 'Y', 'Z']]
+    min_coord = _pn.concat(
+        [geo_data.orientations, geo_data.interfaces]).min()[['X', 'Y', 'Z']]
+
+    # Compute rescalin factor if not given
+    if not rescaling_factor:
+        rescaling_factor = 2 * _np.max(max_coord - min_coord)
+
+    # Get the centers of every axis
+    centers = (max_coord + min_coord) / 2
+
+    # Change the coordinates of interfaces
+    new_coord_interfaces = (geo_data.interfaces[['X', 'Y', 'Z']] -
+                            centers) / rescaling_factor + 0.5001
+
+    # Change the coordinates of orientations
+    new_coord_orientations = (geo_data.orientations[['X', 'Y', 'Z']] -
+                              centers) / rescaling_factor + 0.5001
+
+    # Rescaling the std in case of stochastic values
+    try:
+        geo_data.interfaces[['X_std', 'Y_std', 'Z_std']] = (geo_data.interfaces[
+            ['X_std', 'Y_std', 'Z_std']]) / rescaling_factor
+        geo_data.orientations[['X_std', 'Y_std', 'Z_std']] = (geo_data.orientations[
+            ['X_std', 'Y_std', 'Z_std']]) / rescaling_factor
+    except KeyError:
+        pass
+
+    # Updating properties
+    new_coord_extent = (geo_data.extent - _np.repeat(centers, 2)) / rescaling_factor + 0.5001
+
+    geo_data_rescaled = copy.deepcopy(geo_data)
+    geo_data_rescaled.interfaces[['X', 'Y', 'Z']] = new_coord_interfaces
+    geo_data_rescaled.orientations[['X', 'Y', 'Z']] = new_coord_orientations
+    geo_data_rescaled.extent = new_coord_extent.as_matrix()
+
+    geo_data_rescaled.grid.values = (geo_data.grid.values - centers.as_matrix()) / rescaling_factor + 0.5001
+
+    # Saving useful values for later
+    geo_data_rescaled.rescaling_factor = rescaling_factor
+
+    return geo_data_rescaled
 
 
 def get_series(geo_gata):
@@ -399,7 +480,7 @@ def set_interpolation_data(geo_data, **kwargs):
         dtype:  type of float
 
     """
-    in_data = InterpolatorInput(geo_data, **kwargs)
+    in_data = InterpolatorData(geo_data, **kwargs)
     return in_data
 
 
@@ -664,7 +745,7 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
     Returns:
         None
     """
-    assert isinstance(interp_data, InterpolatorInput), 'The object has to be instance of the InterpolatorInput'
+    assert isinstance(interp_data, InterpolatorData), 'The object has to be instance of the InterpolatorInput'
     w = vtkVisualization(interp_data.geo_data_res, real_time=True)
     w.set_surfaces(vertices_l, simplices_l,
                    #formations_names_l, formation_numbers_l,
@@ -743,8 +824,8 @@ def precomputations_gravity(interp_data, n_chunck=25, densities=None):
 
 def set_geophysics_obj(interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
 
-    assert isinstance(interp_data, InterpolatorInput), 'The object has to be instance of the InterpolatorInput'
-    interp_data.set_geophysics_obj(ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
+    assert isinstance(interp_data, InterpolatorData), 'The object has to be instance of the InterpolatorInput'
+    interp_data.create_geophysics_obj(ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
     return interp_data.geophy
 
 

@@ -30,7 +30,7 @@ class TestNoFaults:
                                      path_f="./GeoModeller/test_a/test_a_Foliations.csv",
                                      path_i="./GeoModeller/test_a/test_a_Points.csv")
 
-        interp_data = gempy.InterpolatorInput(geo_data, dtype='float64')
+        interp_data = gempy.InterpolatorData(geo_data, dtype='float64')
 
         return interp_data
 
@@ -47,7 +47,7 @@ class TestNoFaults:
         interp_data = theano_f
 
         # Create new interp data without compiling theano
-        new_interp_data = gempy.InterpolatorInput(geo_data, dtype='float64', compile_theano=False)
+        new_interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=False)
         # Updating the interp data which has theano compiled
         interp_data.update_interpolator(new_interp_data.geo_data_res)
 
@@ -77,7 +77,7 @@ class TestNoFaults:
         interp_data = theano_f
 
         # Create new interp data without compiling theano
-        new_interp_data = gempy.InterpolatorInput(geo_data, dtype='float64', compile_theano=False)
+        new_interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=False)
         # Updating the interp data which has theano compiled
         interp_data.update_interpolator(new_interp_data.geo_data_res)
 
@@ -108,7 +108,7 @@ class TestNoFaults:
         interp_data = theano_f
 
         # Create new interp data without compiling theano
-        new_interp_data = gempy.InterpolatorInput(geo_data, dtype='float64', compile_theano=False)
+        new_interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=False)
         # Updating the interp data which has theano compiled
         interp_data.update_interpolator(new_interp_data.geo_data_res)
 
@@ -158,7 +158,7 @@ class TestFaults:
        # geo_data.n_faults = 1
        #  interp_data = gempy.InterpolatorInput(geo_data, dtype='float64')
        #  compiled_f = interp_data.compile_th_fn()
-        interp_data = gempy.InterpolatorInput(geo_data, dtype='float64')
+        interp_data = gempy.InterpolatorData(geo_data, dtype='float64')
         return interp_data#, compiled_f
 
     def test_d(self, theano_f_1f):
@@ -199,7 +199,7 @@ class TestFaults:
         interp_data = theano_f_1f
 
         # Create new interp data without compiling theano
-        new_interp_data = gempy.InterpolatorInput(geo_data, dtype='float64', compile_theano=False)
+        new_interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=False)
         # Updating the interp data which has theano compiled
         interp_data.update_interpolator(new_interp_data.geo_data_res)
 
@@ -252,7 +252,7 @@ class TestFaults:
         interp_data = theano_f_1f
 
         # Create new interp data without compiling theano
-        new_interp_data = gempy.InterpolatorInput(geo_data, dtype='float64', compile_theano=False)
+        new_interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=False)
         # Updating the interp data which has theano compiled
         interp_data.update_interpolator(new_interp_data.geo_data_res)
 
@@ -296,7 +296,7 @@ class TestFaults:
         interp_data = theano_f_1f
 
         # Create new interp data without compiling theano
-        new_interp_data = gempy.InterpolatorInput(geo_data, dtype='float64', compile_theano=False)
+        new_interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=False)
         # Updating the interp data which has theano compiled
         interp_data.update_interpolator(new_interp_data.geo_data_res)
 

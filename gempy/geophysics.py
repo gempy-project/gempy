@@ -21,7 +21,7 @@ import theano.tensor as T
 from scipy.constants import G
 
 
-class GeoPhysicsPreprocessing_pro(object):
+class GravityPreprocessing(object):
     def __init__(self, interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
 
         self.interp_data = interp_data

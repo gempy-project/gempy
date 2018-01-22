@@ -851,7 +851,7 @@ class vtkVisualization:
         index = obj.index
 
         # Modify Pandas DataFrame
-        self.geo_data.interface_modify(index, X=new_center[0], Y=new_center[1], Z=new_center[2])
+        self.geo_data.modify_interface(index, X=new_center[0], Y=new_center[1], Z=new_center[2])
 
         # Check what render we are working with
         render = obj.n_render
