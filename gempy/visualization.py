@@ -80,10 +80,9 @@ class PlotData2D(object):
         """
 
         plt.style.use(['seaborn-white', 'seaborn-talk'])
-        sns.set_context("paper")
-        matplotlib.rc("font", family="Helvetica")
+        sns.set_context("talk")
 
-    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=8, **kwargs):
+    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, **kwargs):
         """
         Plot the projecton of the raw data (interfaces and orientations) in 2D following a
         specific directions
@@ -130,8 +129,8 @@ class PlotData2D(object):
                            aspect=aspect,
                            hue="formation",
                            #scatter_kws=scatter_kws,
-                           legend=True,
-                           legend_out=True,
+                           legend=False,
+                           legend_out=False,
                            palette=self._color_lot,
                            **kwargs)
 
@@ -147,8 +146,8 @@ class PlotData2D(object):
                            aspect=aspect,
                            hue="formation",
                            #scatter_kws=scatter_kws,
-                           legend=True,
-                           legend_out=True,
+                           legend=False,
+                           legend_out=False,
                            palette=self._color_lot,
                            **kwargs)
 
@@ -157,15 +156,9 @@ class PlotData2D(object):
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
                        pivot="tail")
 
-        # code for moving legend outside of plot
-        box = p.ax.get_position()  # get figure position
-        # reduce width of box to make room for outside legend
-        p.ax.set_position([box.x0, box.y0, box.width * 1.08, box.height])
-        # put legend outside
-        p.ax.legend(loc="center right", title="Formation",
-                    bbox_to_anchor=(1.25, 0.5), ncol=1,
-                    prop={'size': legend_font_size})
-
+        plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        plt.xlim(extent[0] + extent[0]*0.05, extent[1] + extent[1]*0.05)
+        plt.ylim(extent[2] + extent[2]*0.05, extent[3] + extent[3]*0.05)
         plt.xlabel(x)
         plt.ylabel(y)
 
@@ -254,8 +247,9 @@ class PlotData2D(object):
 
         import matplotlib.patches as mpatches
         colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
-        patches  = [ mpatches.Patch(color=colors[i], label=self.formation_names[i]) for i in range(len(self.formation_names))]
-        plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        patches = [ mpatches.Patch(color=colors[i], label=self.formation_names[i]) for i in range(len(self.formation_names))]
+        if not plot_data:
+            plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.xlabel(x)
         plt.ylabel(y)
 

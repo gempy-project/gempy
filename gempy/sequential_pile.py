@@ -179,6 +179,10 @@ class StratigraphicPile(object):
         #plt.show()
         #print('finish', dr.anch_series)
         plt.ion()
+
+        ax.text(1, 15, r'Series', fontsize=15, fontweight='bold', bbox={'facecolor':'gray', 'alpha':0.5, 'pad':10}, horizontalalignment='center')
+        ax.text(4, 15, r'Faults/Formations', fontsize=15, fontweight='bold', bbox={'facecolor':'gray', 'alpha':0.5, 'pad':10}, horizontalalignment='center')
+
         self.figure = plt.gcf()
 
 

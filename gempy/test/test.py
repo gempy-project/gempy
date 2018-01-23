@@ -62,7 +62,7 @@ class TestNoFaults:
 
         # Checking that the plots do not rise errors
         gempy.plot_section(geo_data, sol[0][0, :], 25, direction='y', plot_data=True)
-        gempy.plot_potential_field(geo_data, sol[0][1, :], 25)
+        gempy.plot_scalar_field(geo_data, sol[0][1, :], 25)
 
     def test_b(self, theano_f):
         """
@@ -92,7 +92,7 @@ class TestNoFaults:
 
         # Checking that the plots do not rise errors
         gempy.plot_section(geo_data, sol[0][0, :], 25, direction='y', plot_data=True)
-        gempy.plot_potential_field(geo_data, sol[0][1, :], 25)
+        gempy.plot_scalar_field(geo_data, sol[0][1, :], 25)
 
 
     def test_c(self, theano_f):
@@ -123,7 +123,7 @@ class TestNoFaults:
 
         # Checking that the plots do not rise errors
         gempy.plot_section(geo_data, sol[0][0, :], 25, direction='y', plot_data=True)
-        gempy.plot_potential_field(geo_data, sol[0][1, :], 25)
+        gempy.plot_scalar_field(geo_data, sol[0][1, :], 25)
 
 
 class TestFaults:

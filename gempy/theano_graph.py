@@ -49,7 +49,7 @@ class TheanoGraph(object):
     of these methods is more and more difficult to provide (if you are in a branch close to the trunk you need all the
     results of the branches above)
     """
-    def __init__(self, output='geology', verbose=[0], dtype='float32'):
+    def __init__(self, output='geology', optimizer='fast_compile', verbose=[0], dtype='float32'):
         """
         In the init we need to create all the symbolic parameters that are used in the process. Most of the variables
         are shared parameters initialized with random values. At this stage we only care about the type and shape of the
@@ -68,8 +68,7 @@ class TheanoGraph(object):
         self.compute_all = False
 
         theano.config.floatX = dtype
-        theano.config.optimizer = 'fast_run'
-
+        theano.config.optimizer = optimizer
         # Creation of symbolic parameters
         # =============
         # Constants
@@ -1099,12 +1098,12 @@ class TheanoGraph(object):
                     T.cast(T.cast(faults_matrix, 'bool'), 'int8'))
 
         # Update the potential field matrix
-        if self.compute_all:
-            potential_field_values = self.scalar_field_at_all()
+        #if self.compute_all:
+        potential_field_values = self.scalar_field_at_all()
 
-            block_matrix = T.set_subtensor(
-                block_matrix[1, T.nonzero(T.cast(faults_select, "int8"))[0]],
-                potential_field_values)
+        block_matrix = T.set_subtensor(
+            block_matrix[1, T.nonzero(T.cast(faults_select, "int8"))[0]],
+            potential_field_values)
 
         # Store the potential field at the interfaces
         self.final_potential_field_at_faults_op = T.set_subtensor(self.final_potential_field_at_faults_op[self.n_formation_op-1],
@@ -1195,12 +1194,12 @@ class TheanoGraph(object):
             self.scalar_field_at_interfaces_values)
 
         # Update the potential field matrix
-        if self.compute_all:
-            potential_field_values = self.scalar_field_at_all()
+        #if self.compute_all:
+        potential_field_values = self.scalar_field_at_all()
 
-            final_block = T.set_subtensor(
-                                          final_block[1, T.nonzero(T.cast(lith_select, "int8"))[0]],
-                                          potential_field_values)
+        final_block = T.set_subtensor(
+                                      final_block[1, T.nonzero(T.cast(lith_select, "int8"))[0]],
+                                      potential_field_values)
 
         return final_block, self.final_scalar_field_at_formations_op
 
