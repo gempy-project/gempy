@@ -1268,11 +1268,11 @@ class TheanoGraph(object):
         density_block = T.switch(T.eq(density_block, n_formation), density, density_block)
         return density_block
 
-    def compute_forward_gravity(self, n_faults=0, compute_all=True): # densities, tz, select,
+    def compute_forward_gravity(self, n_faults=0): # densities, tz, select,
 
         # TODO: Assert outside that densities is the same size as formations (minus faults)
         # Compute the geological model
-        lith_matrix, fault_matrix, pfai = self.compute_geological_model(n_faults=n_faults, compute_all=compute_all)
+        lith_matrix, fault_matrix, pfai = self.compute_geological_model(n_faults=n_faults)
 
         if n_faults == 0:
             formations = T.concatenate([self.n_formation[::-1], T.stack([0])])
@@ -1289,15 +1289,20 @@ class TheanoGraph(object):
                                     return_list = True
         )
 
-        if False:
 
-            density_block_loop = theano.printing.Print('density block')(density_block_loop[-1])
+        self.weigths_weigths = theano.shared(np.ones((10)))
+        self.weigths_index = theano.shared(np.ones((10), dtype='int'))
+
+        density_block_loop_f = T.set_subtensor(density_block_loop[-1][-1][self.weigths_index], self.weigths_weigths)
+        if 'density_block' in self.verbose:
+            density_block_loop_f = theano.printing.Print('density block')(density_block_loop_f)
 
         n_measurements = self.tz.shape[0]
         # Tiling the density block for each measurent and picking just the closer to them. This has to be possible to
         # optimize
 
-        densities_rep = T.tile(density_block_loop[-1][-1], n_measurements)
+        #densities_rep = T.tile(density_block_loop[-1][-1], n_measurements)
+        densities_rep = T.tile(density_block_loop_f, n_measurements)
         densities_selected = densities_rep[T.nonzero(T.cast(self.select, "int8"))[0]]
         densities_selected_reshaped = densities_selected.reshape((n_measurements, -1))
         #

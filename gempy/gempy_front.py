@@ -62,7 +62,7 @@ def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_
         the interfaces is given as well
     """
     if not getattr(interp_data, 'th_fn', None):
-        interp_data.compile_th_fn()
+        interp_data.th_fn = interp_data.compile_th_fn(output=output)
 
     i = interp_data.get_input_data(u_grade=u_grade)
 
@@ -699,11 +699,14 @@ def set_orientations(geo_data, orient_Dataframe, append=False):
     """
 
     geo_data.set_orientations(orient_Dataframe, append=append)
+
+
 # TODO:
-
-
 def set_grid(geo_data, grid):
-    pass
+    assert isinstance(grid, GridClass)
+    geo_data.grid = grid
+    geo_data.extent = grid._grid_ext
+    geo_data.resolution = grid._grid_res
 
 
 def set_interpolation_data(geo_data, **kwargs):

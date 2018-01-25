@@ -137,7 +137,7 @@ class PlotData2D(object):
             # Plotting orientations
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
-                       pivot="tail")
+                       pivot="tail", scale_units='y', scale=1.5)
 
         if data_type == 'interfaces':
             p = sns.lmplot(x, y,

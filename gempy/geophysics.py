@@ -27,7 +27,7 @@ class GravityPreprocessing(object):
         self.interp_data = interp_data
         self.ai_extent = np.array(ai_extent)
         self.ai_resolution = np.array(ai_resolution)
-        self.model_grid = interp_data.geo_data_res.grid.grid
+        self.model_grid = interp_data.geo_data_res.grid.values
 
         self.eu = self.compile_eu_f()
 

@@ -788,13 +788,13 @@ class GridClass(object):
         self._grid_ext = extent
         self._grid_res = resolution
 
-        self.dx, self.dy, self.dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0], (
-        extent[5] - extent[4]) / resolution[0]
+        self.dx, self.dy, self.dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0],\
+                                    (extent[5] - extent[4]) / resolution[0]
 
         g = np.meshgrid(
-            np.linspace(self._grid_ext[0], self._grid_ext[1], self._grid_res[0], dtype="float32"),
-            np.linspace(self._grid_ext[2], self._grid_ext[3], self._grid_res[1], dtype="float32"),
-            np.linspace(self._grid_ext[4], self._grid_ext[5], self._grid_res[2], dtype="float32"), indexing="ij"
+            np.linspace(self._grid_ext[0] + self.dx/2, self._grid_ext[1] - self.dx/2, self._grid_res[0], dtype="float32"),
+            np.linspace(self._grid_ext[2] + self.dy/2, self._grid_ext[3] - self.dy/2, self._grid_res[1], dtype="float32"),
+            np.linspace(self._grid_ext[4] + self.dz/2, self._grid_ext[5] - self.dz/2, self._grid_res[2], dtype="float32"), indexing="ij"
         )
 
         self.values = np.vstack(map(np.ravel, g)).T.astype("float32")
