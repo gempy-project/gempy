@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Welcome to GeMpy’s documentation! &#8212; GemPy beta documentation</title>
+    <title>Welcome to GemPy’s (v 0.9) documentation! &#8212; GemPy beta documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -43,25 +43,57 @@
         <div class="bodywrapper">
           <div class="body" role="main">
             
-  <div class="section" id="welcome-to-gempy-s-documentation">
-<h1>Welcome to GeMpy’s documentation!<a class="headerlink" href="#welcome-to-gempy-s-documentation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="a-3d-structural-geologic-implicit-modelling-in-python-v-0-9">
-<h2>A 3D Structural geologic implicit modelling in python. (v 0.9)<a class="headerlink" href="#a-3d-structural-geologic-implicit-modelling-in-python-v-0-9" title="Permalink to this headline">¶</a></h2>
-<p>GeMpy is an opensource project for the generation of 3D structural geological modelling. The algorithm is based on a especial type of Universal cokrigin interpolation created by Laujaunie et al (1997) and developed along the past year by (<em>add many more papers!!!</em>). This tool allows the generation of models with relative complex structures just from data. The repository can be found here, <a class="reference external" href="https://github.com/cgre-aachen/GeMpy">https://github.com/cgre-aachen/GeMpy</a>.</p>
-<p>The results look like this:</p>
-<div style="margin-top:10px;">
-  <iframe src="https://steno3d.com/embed/A747sS50WZZu75yEm8Yi" width="600" height="400"></iframe>
-</div><p>Its implicit nature allows the user to generate complete 3D geological models through the interpolation of:</p>
+  <div class="section" id="welcome-to-gempy-s-v-0-9-documentation">
+<h1>Welcome to GemPy’s (v 0.9) documentation!<a class="headerlink" href="#welcome-to-gempy-s-v-0-9-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="software-for-3d-structural-geologic-implicit-modeling-in-python">
+<h2>Software for 3D structural geologic implicit modeling in Python.<a class="headerlink" href="#software-for-3d-structural-geologic-implicit-modeling-in-python" title="Permalink to this headline">¶</a></h2>
+<p>GemPy is an open-source tool for generating 3D structural geological models in Python (GemPy’s code can be viewed in its repository: <a class="reference external" href="https://github.com/cgre-aachen/GeMpy">https://github.com/cgre-aachen/GeMpy</a>.)
+It is capable of creating complex 3D geological models,
+including stratigraphic and structural features such as:</p>
 <ul class="simple">
-<li>Interfaces points: 3D points in space that delimit the different formation in a given setting.</li>
-<li>Foliations: Measurements of the poles (perpendicular to the layer) at any point in the 3D space.</li>
+<li>fold structures (e.g.: anticlines, synclines)</li>
+<li>fault networks and fault-layer interactions</li>
+<li>unconformities</li>
 </ul>
-<img alt="_images/input_example.png" src="_images/input_example.png" />
-<p>In addition to the interpolation GeMpy has been created with the idea of perform Bayesian Inferences in geological modeling (de la Varga and Wellmann, 2016). Due to this, the whole interpolation algorithm has been written in the optimization packge theano (<a class="reference external" href="http://deeplearning.net/software/theano/">http://deeplearning.net/software/theano/</a>) what allows the computation of gradients opening the door to the use of advance HMC methods coupling GeMpy and PyMC3 (<a class="reference external" href="https://pymc-devs.github.io/pymc3/notebooks/getting_started.html">https://pymc-devs.github.io/pymc3/notebooks/getting_started.html</a>). Also, the use of theano allows the use of the GPU through cuda (see theano doc for more information).</p>
+<p>3D models created with GemPy may thus look like this:</p>
+<img alt="_images/model_example.png" src="_images/model_example.png" />
+<p>The core algorithm is based on a universal cokriging interpolation method devised by
+Lajaunie et al. (1997) and further elaborated by Calcagno et al. (2008).
+Its implicit nature allows the user to generate complete 3D geological models
+through the interpolation of input data consisting of:</p>
+<ul class="simple">
+<li>Surface contact points: 3D coordinates of points marking the boundaries between different features.</li>
+<li>Orientation measurements: Orientation of the poles perpendicular to the dipping of surfaces at any point in the 3D space.</li>
+</ul>
+<p>Additionally, topological elements such as stratigraphic sequences and fault networks have to be
+defined in GemPy.</p>
+<img alt="_images/modeling_principle.png" src="_images/modeling_principle.png" />
+<p>GemPy itself offers direct visualization of 2D sections via matplotlib
+and in full 3D using VTK (Visualization Toolkit). These VTK files can also be exported
+for further processing in programs such as Paraview. GemPy can furthermore be easily
+embedded in Blender for 3D rendering.
+Another option is Steno3D, which allows for a flexible and interactive visualization of 3D models:</p>
+<div style="margin-top:10px;">
+  <iframe src="https://steno3d.com/embed/A747sS50WZZu75yEm8Yi" width="800" height="600"></iframe>
+</div><p>GemPy was furthermore designed to allow the performance of
+Bayesian inference for stochastic geological modeling. This was achieved by writing GemPy’s core algorithm
+in Theano (<a class="reference external" href="http://deeplearning.net/software/theano/">http://deeplearning.net/software/theano/</a>) and coupling it with PyMC3 (<a class="reference external" href="https://pymc-devs.github.io/pymc3/notebooks/getting_started.html">https://pymc-devs.github.io/pymc3/notebooks/getting_started.html</a>).
+This enables the use of advanced HMC methods and is of particular relevance when considering
+uncertainties in model input data and the availability of additional secondary information.</p>
+<p>We can, for example, include uncertainties with respect to the z-position of layer boundaries
+in the model space. Simple Monte Carlo simulation via PyMC will then result in different model realizations:</p>
+<p><a class="reference internal" href="_images/gempy_zunc.png"><img alt="z_unc" src="_images/gempy_zunc.png" style="width: 40%;" /></a> <a class="reference internal" href="_images/model_wobble.gif"><img alt="wobble" src="_images/model_wobble.gif" style="width: 55%;" /></a></p>
+<p>This opens the path to…</p>
+<p>((This optimization package allows the computation
+of gradients opening the door to the use of advance HMC methods
+coupling GeMpy and PyMC3 (<a class="reference external" href="https://pymc-devs.github.io/pymc3/notebooks/getting_started.html">https://pymc-devs.github.io/pymc3/notebooks/getting_started.html</a>).
+Also, the use of theano allows the use of the GPU through cuda (see theano doc for more information).)</p>
+<p>For a more detail elaboration of the theory behind GemPy, take a look at the upcoming scientific publication
+“GemPy 1.0: open-source stochastic geological modeling and inversion” by de la Varga et al. (2018).</p>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome to GeMpy’s documentation!</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome to GemPy’s (v 0.9) documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Kriging.html">Kriging structure of the <em>Potential field method</em></a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Notebooks/ch1.html">Chapter 1: GemPy Basic</a><ul>
@@ -87,6 +119,15 @@
 </ul>
 </li>
 <li class="toctree-l2"><a class="reference internal" href="Notebooks/ch4.html">Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Notebooks/ch5.html">Chapter 5: Computing forward gravity. (Under development)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch5.html#computing-the-model">Computing the model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Notebooks/ch6.html">Tutorial Chapter 6: Analyzing Topology (WIP)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch6.html#creating-an-example-model">Creating an example Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch6.html#analyzing-topology">Analyzing Topology</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="code.html">Code</a><ul class="simple">
@@ -113,7 +154,7 @@
         <div class="sphinxsidebarwrapper">
 <h3><a href="#">Table Of Contents</a></h3>
 <ul class="current">
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome to GeMpy’s documentation!</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome to GemPy’s (v 0.9) documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="Kriging.html">Kriging structure of the <em>Potential field method</em></a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
