@@ -1290,8 +1290,8 @@ class TheanoGraph(object):
         )
 
 
-        self.weigths_weigths = theano.shared(np.ones([]))
-        self.weigths_index = theano.shared(np.ones([], dtype='int'))
+        self.weigths_weigths = theano.shared(np.ones((0)))
+        self.weigths_index = theano.shared(np.ones((0), dtype='int'))
 
         density_block_loop_f = T.set_subtensor(density_block_loop[-1][-1][self.weigths_index], self.weigths_weigths)
         if 'density_block' in self.verbose:

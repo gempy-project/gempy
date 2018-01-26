@@ -40,7 +40,7 @@ class InputData(object):
         extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]
         Resolution ((Optional[list])): [nx, ny, nz]. Defaults to 50
         path_i: Path to the data bases of interfaces. Default os.getcwd(),
-        path_f: Path to the data bases of orientations. Default os.getcwd()
+        path_o: Path to the data bases of orientations. Default os.getcwd()
 
     Attributes:
         extent(list):  [x_min, x_max, y_min, y_max, z_min, z_max]
@@ -53,8 +53,13 @@ class InputData(object):
     def __init__(self,
                  extent,
                  resolution=[50, 50, 50],
-                 path_i=None, path_f=None,
+                 path_i=None, path_o=None, path_f =None,
                  **kwargs):
+
+        if path_f and path_o is None:
+            import warnings
+            warnings.warn('path_f is deprecated use instead path_o')
+            path_o = path_f
 
         # Set extent and resolution
         self.extent = np.array(extent)
@@ -73,8 +78,8 @@ class InputData(object):
         self.interfaces = pn.DataFrame(columns=['X', 'Y', 'Z', 'formation', 'series',
                                                 'X_std', 'Y_std', 'Z_std'])
 
-        if path_f or path_i:
-            self.import_data_csv(path_i=path_i, path_f=path_f)
+        if path_o or path_i:
+            self.import_data_csv(path_i=path_i, path_o=path_o)
 
         # If not provided set default series
         self.series = self.set_series()
@@ -266,14 +271,14 @@ class InputData(object):
     #     self.calculate_gradient()
     #     self.order_table()
 
-    def import_data_csv(self, path_i, path_f, **kwargs):
+    def import_data_csv(self, path_i, path_o, **kwargs):
         """
         Method to import interfaces and orientations from csv. The format is the same as the export 3D model data of
         GeoModeller (check in the input data folder for an example).
 
         Args:
             path_i (str): path to the csv table
-            path_f (str): path to the csv table
+            path_o (str): path to the csv table
             **kwargs: kwargs of :func: `~pn.read_csv`
 
         Attributes:
@@ -281,8 +286,8 @@ class InputData(object):
             Interfaces(pandas.core.frame.DataFrame): Pandas data frame with the interfaces data
         """
 
-        if path_f:
-            self.orientations = self.load_data_csv(data_type="orientations", path=path_f, **kwargs)
+        if path_o:
+            self.orientations = self.load_data_csv(data_type="orientations", path=path_o, **kwargs)
             assert set(['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']).issubset(self.orientations.columns), \
                 "One or more columns do not match with the expected values " + str(self.orientations.columns)
             self.orientations = self.orientations[['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']]
@@ -880,6 +885,8 @@ class InterpolatorData:
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.interpolator.tg.input_parameters_list()
 
+        print('Compiling theano function...')
+
         if output is 'geology':
             # then we compile we have to pass the number of formations that are faults!!
             th_fn = theano.function(input_data_T,
@@ -895,7 +902,7 @@ class InterpolatorData:
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
                                     profile=False)
-
+        print('Compilation Done!')
         print('Level of Optimization: ', theano.config.optimizer)
         print('Device: ', theano.config.device)
         print('Precision: ', self.dtype)
@@ -1368,7 +1375,7 @@ class InterpolatorData:
             weight = (
                 #(dx * dy * dz) *
                  np.array(densities))
-            print(weight)
+
             self.tg.densities.set_value(np.array(weight, dtype=self.dtype))
 
         def set_z_comp(self, tz, selected_cells):
