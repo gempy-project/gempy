@@ -176,11 +176,10 @@ class StratigraphicPile(object):
 
             formation_rect[formation] = dr
         plt.legend(bbox_to_anchor=(1.1, 1.05))
-
         plt.ion()
-        ax.text(1, self.anch_series.max().values + self.thick_series/2 + 2, r'Series', fontsize=15,
+        ax.text(1, self.anch_series.max().values.max() + self.thick_series/2 + 2, r'Series', fontsize=15,
                 fontweight='bold', bbox={'facecolor':'gray', 'alpha':0.5, 'pad':10}, horizontalalignment='center')
-        ax.text(4, self.anch_series.max().values + self.thick_series/2 + 2, r'Faults/Formations', fontsize=15,
+        ax.text(4, self.anch_series.max().values.max() + self.thick_series/2 + 2, r'Faults/Formations', fontsize=15,
                 fontweight='bold', bbox={'facecolor':'gray', 'alpha':0.5, 'pad':10}, horizontalalignment='center')
 
         self.figure = plt.gcf()
