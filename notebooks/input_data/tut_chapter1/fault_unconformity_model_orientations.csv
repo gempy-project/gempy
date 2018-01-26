@@ -1,0 +1,5 @@
+X,Y,Z,azimuth,dip,polarity,formation
+1000,1000,950,90,18.435,1,Shale
+400,1000,1400,90,18.435,1,Sandstone_2
+1000,1500,1600,270,20,1,Carbonate
+500,1000,864.602,270,71.565,1,Main_Fault

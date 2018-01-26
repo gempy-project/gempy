@@ -1,0 +1,304 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Chapter 5: Computing forward gravity. (Under development) &#8212; GemPy beta documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'beta',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Tutorial Chapter 6: Analyzing Topology (WIP)" href="ch6.html" />
+    <link rel="prev" title="Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)" href="ch4.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="chapter-5-computing-forward-gravity-under-development">
+<h1>Chapter 5: Computing forward gravity. (Under development)<a class="headerlink" href="#chapter-5-computing-forward-gravity-under-development" title="Permalink to this headline">¶</a></h1>
+<p>GemPy also brings a module to compute the forward gravity response. The
+idea is to be able to use gravity as a likelihood to validate the
+geological models within the Bayesian inference. In this chapter we will
+see how we can compute the gravity response of the sandstone model of
+chapter 2.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># These two lines are necessary only if gempy is not installed</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../&quot;</span><span class="p">)</span>
+
+<span class="c1"># Importing gempy</span>
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="kn">as</span> <span class="nn">gp</span>
+
+<span class="c1"># Embedding matplotlib figures into the notebooks</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># Aux imports</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<p>First we just recreate the model as usual.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Importing the data from csv files and settign extent and resolution</span>
+<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">([</span><span class="mi">696000</span><span class="p">,</span><span class="mi">747000</span><span class="p">,</span><span class="mi">6863000</span><span class="p">,</span><span class="mi">6950000</span><span class="p">,</span><span class="o">-</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">200</span><span class="p">],[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+                         <span class="n">path_f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/a_Foliations.csv&quot;</span><span class="p">,</span>
+                         <span class="n">path_i</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/a_Points.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Setting the series and the formations order:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Assigning series to formations as well as their order (timewise)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">set_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;EarlyGranite_Series&quot;</span><span class="p">:</span> <span class="s1">&#39;EarlyGranite&#39;</span><span class="p">,</span>
+                              <span class="s2">&quot;BIF_Series&quot;</span><span class="p">:(</span><span class="s1">&#39;SimpleMafic2&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpleBIF&#39;</span><span class="p">),</span>
+                              <span class="s2">&quot;SimpleMafic_Series&quot;</span><span class="p">:</span><span class="s1">&#39;SimpleMafic1&#39;</span><span class="p">},</span>
+                      <span class="n">order_series</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EarlyGranite_Series&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;BIF_Series&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;SimpleMafic_Series&quot;</span><span class="p">],</span>
+                      <span class="n">order_formations</span><span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EarlyGranite&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpleMafic2&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpleBIF&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpleMafic1&#39;</span><span class="p">],</span>
+              <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">strat_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7fa630047f98</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<img alt="../_images/ch5_5_1.png" src="../_images/ch5_5_1.png" />
+<p>Projection in 2D:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch5_7_0.png" src="../_images/ch5_7_0.png" />
+<div class="section" id="computing-the-model">
+<h2>Computing the model<a class="headerlink" href="#computing-the-model" title="Permalink to this headline">¶</a></h2>
+<p>Now as in the previous chapter we just need to create the interpolator
+object and compute the model.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Level</span> <span class="n">of</span> <span class="n">Optimization</span><span class="p">:</span>  <span class="n">fast_compile</span>
+<span class="n">Device</span><span class="p">:</span>  <span class="n">cpu</span>
+<span class="n">Precision</span><span class="p">:</span>  <span class="n">float32</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">lith_block</span><span class="p">,</span> <span class="n">fault_block</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The green rectangle represent the area where we want to compute the
+forward gravity (in this case is due to this is the area where we have
+measured data). As we can see the original extent of the geological
+model is not going to be enough (remember that gravity is affected by a
+cone, not only the mass right below). An advantage of the method is that
+we can extrapolate as much as needed keeping in mind that the error will
+increase accordingly.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mf">18.5</span><span class="p">,</span> <span class="mf">10.5</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
+
+<span class="n">currentAxis</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+<span class="n">currentAxis</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">Rectangle</span><span class="p">((</span><span class="mf">7.050000e+05</span><span class="p">,</span> <span class="mi">6863000</span><span class="p">),</span>  <span class="mi">747000</span> <span class="o">-</span> <span class="mf">7.050000e+05</span><span class="p">,</span> <span class="mi">6925000</span> <span class="o">-</span> <span class="mi">6863000</span><span class="p">,</span>
+                      <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span><span class="s1">&#39;green&#39;</span> <span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">patches</span><span class="o">.</span><span class="n">Rectangle</span> <span class="n">at</span> <span class="mh">0x7fa60a8e4860</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<img alt="../_images/ch5_13_1.png" src="../_images/ch5_13_1.png" />
+<p>So we recalculate all just adding some padding around the measured data
+(the green rectangle)</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Importing the data from csv files and settign extent and resolution</span>
+<span class="n">geo_data_extended</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">([</span><span class="mi">696000</span><span class="o">-</span><span class="mi">10000</span><span class="p">,</span><span class="mi">747000</span> <span class="o">+</span> <span class="mi">20600</span><span class="p">,</span><span class="mi">6863000</span> <span class="o">-</span> <span class="mi">20600</span><span class="p">,</span><span class="mi">6950000</span> <span class="o">+</span> <span class="mi">20600</span><span class="p">,</span><span class="o">-</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">600</span><span class="p">],[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+                         <span class="n">path_f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/a_Foliations.csv&quot;</span><span class="p">,</span>
+                         <span class="n">path_i</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/a_Points.csv&quot;</span><span class="p">)</span>
+
+
+<span class="c1"># Assigning series to formations as well as their order (timewise)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">set_series</span><span class="p">(</span><span class="n">geo_data_extended</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;EarlyGranite_Series&quot;</span><span class="p">:</span> <span class="s1">&#39;EarlyGranite&#39;</span><span class="p">,</span>
+                              <span class="s2">&quot;BIF_Series&quot;</span><span class="p">:(</span><span class="s1">&#39;SimpleMafic2&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpleBIF&#39;</span><span class="p">),</span>
+                              <span class="s2">&quot;SimpleMafic_Series&quot;</span><span class="p">:</span><span class="s1">&#39;SimpleMafic1&#39;</span><span class="p">},</span>
+                      <span class="n">order_series</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EarlyGranite_Series&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;BIF_Series&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;SimpleMafic_Series&quot;</span><span class="p">],</span>
+                      <span class="n">order_formations</span><span class="o">=</span> <span class="p">[</span><span class="s1">&#39;EarlyGranite&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpleMafic2&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpleBIF&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpleMafic1&#39;</span><span class="p">],</span>
+              <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+
+<span class="n">interp_data_extended</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data_extended</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;geology&#39;</span><span class="p">,</span> <span class="n">compile_theano</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Level</span> <span class="n">of</span> <span class="n">Optimization</span><span class="p">:</span>  <span class="n">fast_compile</span>
+<span class="n">Device</span><span class="p">:</span>  <span class="n">cpu</span>
+<span class="n">Precision</span><span class="p">:</span>  <span class="n">float32</span>
+</pre></div>
+</div>
+<img alt="../_images/ch5_15_1.png" src="../_images/ch5_15_1.png" />
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">lith_ext</span><span class="p">,</span> <span class="n">fautl</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data_extended</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data_extended</span><span class="p">,</span> <span class="n">lith_ext</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mf">18.5</span><span class="p">,</span> <span class="mf">10.5</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">matplotlib.patches</span> <span class="kn">import</span> <span class="n">Rectangle</span>
+
+<span class="n">currentAxis</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+<span class="n">currentAxis</span><span class="o">.</span><span class="n">add_patch</span><span class="p">(</span><span class="n">Rectangle</span><span class="p">((</span><span class="mf">7.050000e+05</span><span class="p">,</span> <span class="mi">6863000</span><span class="p">),</span>  <span class="mi">747000</span> <span class="o">-</span> <span class="mf">7.050000e+05</span><span class="p">,</span> <span class="mi">6925000</span> <span class="o">-</span> <span class="mi">6863000</span><span class="p">,</span>
+                      <span class="n">alpha</span><span class="o">=</span><span class="mf">0.3</span><span class="p">,</span> <span class="n">fill</span><span class="o">=</span><span class="s1">&#39;none&#39;</span><span class="p">,</span> <span class="n">color</span> <span class="o">=</span><span class="s1">&#39;green&#39;</span> <span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">patches</span><span class="o">.</span><span class="n">Rectangle</span> <span class="n">at</span> <span class="mh">0x7fa61f180128</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<img alt="../_images/ch5_17_1.png" src="../_images/ch5_17_1.png" />
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data_grav</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data_extended</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;gravity&#39;</span><span class="p">,</span> <span class="n">compile_theano</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Level</span> <span class="n">of</span> <span class="n">Optimization</span><span class="p">:</span>  <span class="n">fast_compile</span>
+<span class="n">Device</span><span class="p">:</span>  <span class="n">cpu</span>
+<span class="n">Precision</span><span class="p">:</span>  <span class="n">float32</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_geophysics_obj</span><span class="p">(</span><span class="n">interp_data_grav</span><span class="p">,</span>  <span class="p">[</span><span class="mf">7.050000e+05</span><span class="p">,</span><span class="mi">747000</span><span class="p">,</span><span class="mi">6863000</span><span class="p">,</span><span class="mi">6925000</span><span class="p">,</span><span class="o">-</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span>
+                                             <span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">],</span> <span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">GeoPhysics</span><span class="o">.</span><span class="n">GeoPhysicsPreprocessing_pro</span> <span class="n">at</span> <span class="mh">0x7fa5f0125358</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">precomputations_gravity</span><span class="p">(</span><span class="n">interp_data_grav</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="p">[</span><span class="mf">2.92</span><span class="p">,</span> <span class="mf">3.1</span><span class="p">,</span> <span class="mf">2.92</span><span class="p">,</span> <span class="mf">2.61</span><span class="p">,</span> <span class="mf">2.61</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">array</span><span class="p">([[</span>  <span class="mf">2.32206772e-05</span><span class="p">,</span>   <span class="mf">1.38317570e-05</span><span class="p">,</span>   <span class="mf">4.37779836e-06</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span>
+           <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.09674338e-06</span><span class="p">],</span>
+        <span class="p">[</span>  <span class="mf">2.32206772e-05</span><span class="p">,</span>   <span class="mf">1.38317570e-05</span><span class="p">,</span>   <span class="mf">4.37779837e-06</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span>
+           <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.09674338e-06</span><span class="p">],</span>
+        <span class="p">[</span>  <span class="mf">2.32206772e-05</span><span class="p">,</span>   <span class="mf">1.38317570e-05</span><span class="p">,</span>   <span class="mf">4.37779837e-06</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span>
+           <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.09674338e-06</span><span class="p">],</span>
+        <span class="o">...</span><span class="p">,</span>
+        <span class="p">[</span>  <span class="mf">2.32204160e-05</span><span class="p">,</span>   <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span>
+           <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.09674338e-06</span><span class="p">],</span>
+        <span class="p">[</span>  <span class="mf">2.32204160e-05</span><span class="p">,</span>   <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span>
+           <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.09674338e-06</span><span class="p">],</span>
+        <span class="p">[</span>  <span class="mf">2.32204160e-05</span><span class="p">,</span>   <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span>
+           <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.09674338e-06</span><span class="p">]]),</span>
+ <span class="n">array</span><span class="p">([</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">grav</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data_grav</span><span class="p">,</span> <span class="s1">&#39;gravity&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">grav</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mf">7.050000e+05</span><span class="p">,</span><span class="mi">747000</span><span class="p">,</span><span class="mi">6863000</span><span class="p">,</span><span class="mi">6950000</span><span class="p">]</span> <span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">colorbar</span><span class="o">.</span><span class="n">Colorbar</span> <span class="n">at</span> <span class="mh">0x7fa5ebdc1a58</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<img alt="../_images/ch5_22_1.png" src="../_images/ch5_22_1.png" />
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../index.html">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to GemPy’s (v 0.9) documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Kriging.html">Kriging structure of the <em>Potential field method</em></a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ch1.html">Chapter 1: GemPy Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ch2.html">Chapter 2: A real example. Importing data and setting series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ch3.html">Chapter 3: Stochastic Simulations in pymc2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ch4.html">Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Chapter 5: Computing forward gravity. (Under development)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#computing-the-model">Computing the model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="ch6.html">Tutorial Chapter 6: Analyzing Topology (WIP)</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../tutorial.html">Tutorial</a><ul>
+      <li>Previous: <a href="ch4.html" title="previous chapter">Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)</a></li>
+      <li>Next: <a href="ch6.html" title="next chapter">Tutorial Chapter 6: Analyzing Topology (WIP)</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Notebooks/ch5.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/Notebooks/ch5.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -1,0 +1,2577 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Chapter 1: GemPy Basic &#8212; GemPy beta documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'beta',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="chapter-1-gempy-basic">
+<h1>Chapter 1: GemPy Basic<a class="headerlink" href="#chapter-1-gempy-basic" title="Permalink to this headline">¶</a></h1>
+<p>In this first example, we will show how to construct a first basic model
+and the main objects and functions. First we import gempy:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># These two lines are necessary only if gempy is not installed</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../&quot;</span><span class="p">)</span>
+
+<span class="c1"># Importing gempy</span>
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="kn">as</span> <span class="nn">gp</span>
+
+<span class="c1"># Embedding matplotlib figures into the notebooks</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># Aux imports</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<p>All data get stored in a python object InputData. This object can be
+easily stored in a Python pickle. However, these files have the
+limitation that all dependecies must have the same versions as those
+when the pickle were created. For these reason to have more stable
+tutorials we will generate the InputData from raw data—i.e. csv files
+exported from Geomodeller.</p>
+<p>These csv files can be found in the input_data folder in the root
+folder of GemPy. These tables contains uniquely the XYZ (and poles,
+azimuth and polarity in the foliation case) as well as their respective
+formation name (but not necessary the formation order).</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Importing the data from csv files and settign extent and resolution</span>
+<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">2000</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2000</span><span class="p">,</span><span class="o">-</span><span class="mi">2000</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span> <span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">],</span>
+                         <span class="n">path_f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/FabLessPoints_Foliations.csv&quot;</span><span class="p">,</span>
+                         <span class="n">path_i</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/FabLessPoints_Points.csv&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pn</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">set_interfaces</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span>
+                  <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">1200</span><span class="p">,</span> <span class="mi">1800</span><span class="p">),</span>
+                                       <span class="s2">&quot;Y&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">1000</span><span class="p">,</span>  <span class="mi">1000</span><span class="p">),</span>
+                                       <span class="s2">&quot;Z&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="o">-</span> <span class="mi">1600</span><span class="p">,</span> <span class="o">-</span><span class="mi">1800</span><span class="p">),</span>
+                                       <span class="s2">&quot;formation&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="s2">&quot;Layer 3&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                                                      <span class="p">}),</span> <span class="n">append</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+
+
+<span class="n">gp</span><span class="o">.</span><span class="n">set_foliations</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span>
+                   <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">1500</span><span class="p">),</span>
+                      <span class="s2">&quot;Y&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">1000</span> <span class="p">),</span>
+                      <span class="s2">&quot;Z&quot;</span> <span class="p">:</span> <span class="p">(</span> <span class="o">-</span><span class="mi">1400</span><span class="p">),</span>
+                      <span class="s2">&quot;azimuth&quot;</span> <span class="p">:</span> <span class="p">(</span> <span class="mi">90</span><span class="p">),</span>
+                      <span class="s2">&quot;dip&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">20</span><span class="p">),</span>
+                      <span class="s2">&quot;polarity&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+                      <span class="s2">&quot;formation&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Layer 3&#39;</span><span class="p">],</span>
+                                       <span class="p">}),</span><span class="n">append</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+
+<span class="n">gp</span><span class="o">.</span><span class="n">set_interfaces</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span>
+                  <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">500</span><span class="p">,</span> <span class="mi">600</span><span class="p">),</span>
+                                       <span class="s2">&quot;Y&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">1000</span><span class="p">,</span>  <span class="mi">1000</span><span class="p">),</span>
+                                       <span class="s2">&quot;Z&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="o">-</span> <span class="mi">150</span><span class="p">,</span> <span class="o">-</span><span class="mi">1700</span><span class="p">),</span>
+                                       <span class="s2">&quot;formation&quot;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="s2">&quot;fault2&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                                                      <span class="p">}),</span> <span class="n">append</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+
+
+<span class="n">gp</span><span class="o">.</span><span class="n">set_foliations</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span>
+                   <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;X&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">400</span><span class="p">),</span>
+                      <span class="s2">&quot;Y&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">1000</span><span class="p">),</span>
+                      <span class="s2">&quot;Z&quot;</span> <span class="p">:</span> <span class="p">(</span> <span class="o">-</span><span class="mi">1300</span><span class="p">),</span>
+                      <span class="s2">&quot;azimuth&quot;</span> <span class="p">:</span> <span class="p">(</span> <span class="mi">90</span><span class="p">),</span>
+                      <span class="s2">&quot;dip&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">90</span><span class="p">),</span>
+                      <span class="s2">&quot;polarity&quot;</span> <span class="p">:</span> <span class="p">(</span><span class="mi">1</span><span class="p">),</span>
+                      <span class="s2">&quot;formation&quot;</span> <span class="p">:</span> <span class="p">[</span><span class="s1">&#39;fault2&#39;</span><span class="p">],</span>
+                                       <span class="p">}),</span><span class="n">append</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>With the command get data is possible to see all the input data.
+However, at the moment the (depositional) order of the formation and the
+separation of the series (More explanation about this in the next
+notebook) is totally arbitrary.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>azimuth</th>
+      <th>dip</th>
+      <th>formation</th>
+      <th>polarity</th>
+      <th>series</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="41" valign="top">interfaces</th>
+      <th>0</th>
+      <td>800</td>
+      <td>1000</td>
+      <td>-1600</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>MainFault</td>
+      <td>NaN</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1200</td>
+      <td>1000</td>
+      <td>-400</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>MainFault</td>
+      <td>NaN</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1100</td>
+      <td>1000</td>
+      <td>-700</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>MainFault</td>
+      <td>NaN</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>900</td>
+      <td>1000</td>
+      <td>-1300</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>MainFault</td>
+      <td>NaN</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>1000</td>
+      <td>1000</td>
+      <td>-1000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>MainFault</td>
+      <td>NaN</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>800</td>
+      <td>200</td>
+      <td>-1400</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>800</td>
+      <td>1800</td>
+      <td>-1400</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>600</td>
+      <td>1000</td>
+      <td>-1050</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>300</td>
+      <td>1000</td>
+      <td>-950</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>2000</td>
+      <td>1000</td>
+      <td>-1275</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>1900</td>
+      <td>1000</td>
+      <td>-1300</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>1300</td>
+      <td>1000</td>
+      <td>-1100</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>1600</td>
+      <td>1000</td>
+      <td>-1200</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>1750</td>
+      <td>1000</td>
+      <td>-1250</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>1000</td>
+      <td>100</td>
+      <td>-1100</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>1000</td>
+      <td>1975</td>
+      <td>-1050</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>1000</td>
+      <td>1900</td>
+      <td>-1100</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>1150</td>
+      <td>1000</td>
+      <td>-1050</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>1000</td>
+      <td>25</td>
+      <td>-1050</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>1300</td>
+      <td>1000</td>
+      <td>-600</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>SecondaryReservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>600</td>
+      <td>1000</td>
+      <td>-550</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>SecondaryReservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>900</td>
+      <td>1000</td>
+      <td>-650</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>SecondaryReservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>1600</td>
+      <td>1000</td>
+      <td>-700</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>SecondaryReservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>1900</td>
+      <td>1000</td>
+      <td>-800</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>SecondaryReservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>2000</td>
+      <td>1000</td>
+      <td>-775</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>SecondaryReservoir</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>2000</td>
+      <td>1000</td>
+      <td>-875</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Seal</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>600</td>
+      <td>1000</td>
+      <td>-650</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Seal</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>1300</td>
+      <td>1000</td>
+      <td>-700</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Seal</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>1900</td>
+      <td>1000</td>
+      <td>-900</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Seal</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>900</td>
+      <td>1000</td>
+      <td>-750</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Seal</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>1600</td>
+      <td>1000</td>
+      <td>-800</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Seal</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>600</td>
+      <td>1000</td>
+      <td>-1350</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>300</td>
+      <td>1000</td>
+      <td>-1250</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>1000</td>
+      <td>1000</td>
+      <td>-1300</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>2000</td>
+      <td>1000</td>
+      <td>-1575</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>35</th>
+      <td>1300</td>
+      <td>1000</td>
+      <td>-1400</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>1600</td>
+      <td>1000</td>
+      <td>-1500</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>1750</td>
+      <td>1000</td>
+      <td>-1550</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>1900</td>
+      <td>1000</td>
+      <td>-1600</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>1800</td>
+      <td>1000</td>
+      <td>200</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Layer 3</td>
+      <td>NaN</td>
+      <td>unco</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>1200</td>
+      <td>1000</td>
+      <td>200</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Layer 3</td>
+      <td>NaN</td>
+      <td>unco</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">foliations</th>
+      <th>0</th>
+      <td>917.45</td>
+      <td>1000</td>
+      <td>-1135.4</td>
+      <td>270</td>
+      <td>71.565</td>
+      <td>MainFault</td>
+      <td>1</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1450</td>
+      <td>1000</td>
+      <td>-1150</td>
+      <td>90</td>
+      <td>18.435</td>
+      <td>Reservoir</td>
+      <td>1</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1500</td>
+      <td>1000</td>
+      <td>400</td>
+      <td>90</td>
+      <td>0</td>
+      <td>Layer 3</td>
+      <td>1</td>
+      <td>unco</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>To set the number of (depositional) series and which formation belongs
+to which, it is possible to use the function set_series. Here, there
+are two important things to notice:</p>
+<ul class="simple">
+<li>set_series requires a dictionary. In Python dictionaries are not
+order (keys dictionaries since Python 3.6 are) and therefore there is
+not guarantee of having the right order.<ul>
+<li>The order of the series are vital for the method (from younger to
+older).</li>
+<li>The order of the formations (as long they belong to the correct
+series) are only important for the color code. If the order of the
+pile differs from the final result the color of the interfaces and
+input data will be different</li>
+</ul>
+</li>
+<li>Every fault is treated as an independent series and <strong>have to be at
+the top of the pile</strong>. The relative order between the distinct faults
+represent the tectonic relation between them (from younger to older
+as well).</li>
+</ul>
+<p>The order of the series (for Python &lt; 3.6, otherwise passing the correct
+order of keys in the dictionary is enough) can be given as attribute as
+in the cell below. For the order of formations can be passed as
+attribute as well or using the specific function set_order_formations.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Assigning series to formations as well as their order (timewise)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">set_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;fault&quot;</span><span class="p">:</span><span class="s1">&#39;MainFault&#39;</span><span class="p">,</span>
+                      <span class="s2">&quot;Rest&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;SecondaryReservoir&#39;</span><span class="p">,</span><span class="s1">&#39;Seal&#39;</span><span class="p">,</span> <span class="s1">&#39;Reservoir&#39;</span><span class="p">,</span> <span class="s1">&#39;Overlying&#39;</span><span class="p">),</span>
+                        <span class="s1">&#39;unco&#39;</span> <span class="p">:</span> <span class="s1">&#39;Layer 3&#39;</span><span class="p">,</span> <span class="s1">&#39;Fault_serie2&#39;</span><span class="p">:</span><span class="s1">&#39;fault2&#39;</span><span class="p">},</span>
+                       <span class="n">order_series</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fault&quot;</span><span class="p">,</span> <span class="s1">&#39;Fault_serie2&#39;</span><span class="p">,</span> <span class="s1">&#39;Rest&#39;</span><span class="p">,</span> <span class="s1">&#39;unco&#39;</span><span class="p">],</span>
+                       <span class="n">order_formations</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;MainFault&#39;</span><span class="p">,</span> <span class="s1">&#39;fault2&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;SecondaryReservoir&#39;</span><span class="p">,</span> <span class="s1">&#39;Seal&#39;</span><span class="p">,</span><span class="s1">&#39;Reservoir&#39;</span><span class="p">,</span> <span class="s1">&#39;Overlying&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer 3&#39;</span><span class="p">,</span>
+                                         <span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">strat_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7fdf34fda898</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1-Copy1_8_1.png" src="../_images/ch1-Copy1_8_1.png" />
+<p>As an alternative the stratigraphic pile is interactive given the right
+backend (try %matplotlib notebook or %matplotlib qt5). These backends
+sometimes give some trouble though. Try to execute the cell twice:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> notebook
+<span class="n">gp</span><span class="o">.</span><span class="n">get_stratigraphic_pile</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">IPython</span><span class="o">.</span><span class="n">core</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">Javascript</span> <span class="nb">object</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<img src="data:image/png;base64,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" width="747.9999777078635"><div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">strat_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7f6e21c1d470</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>Notice that the colors depends on the order and therefore every time the
+cell is executed the colors are always in the same position. Be aware of
+the legend to be sure that the pile is as you wish!! (In the future
+every color will have the annotation within the rectangles to avoid
+confusion)</p>
+<p>This geo_data object contains essential information that we can access
+through the correspondent getters. Such a the coordinates of the grid.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">gp</span><span class="o">.</span><span class="n">get_grid</span><span class="p">(</span><span class="n">geo_data</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[[</span>    <span class="mf">0.</span>             <span class="mf">0.</span>         <span class="o">-</span><span class="mf">2000.</span>        <span class="p">]</span>
+ <span class="p">[</span>    <span class="mf">0.</span>             <span class="mf">0.</span>         <span class="o">-</span><span class="mf">1959.18371582</span><span class="p">]</span>
+ <span class="p">[</span>    <span class="mf">0.</span>             <span class="mf">0.</span>         <span class="o">-</span><span class="mf">1918.36730957</span><span class="p">]</span>
+ <span class="o">...</span><span class="p">,</span>
+ <span class="p">[</span> <span class="mf">2000.</span>          <span class="mf">2000.</span>           <span class="o">-</span><span class="mf">81.63265228</span><span class="p">]</span>
+ <span class="p">[</span> <span class="mf">2000.</span>          <span class="mf">2000.</span>           <span class="o">-</span><span class="mf">40.81632614</span><span class="p">]</span>
+ <span class="p">[</span> <span class="mf">2000.</span>          <span class="mf">2000.</span>             <span class="mf">0.</span>        <span class="p">]]</span>
+</pre></div>
+</div>
+<p>The main input the potential field method is the coordinates of
+interfaces points as well as the orientations. These pandas dataframes
+can we access by the following methods:</p>
+<div class="section" id="interfaces-dataframe">
+<h2>Interfaces Dataframe<a class="headerlink" href="#interfaces-dataframe" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="s1">&#39;interfaces&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>formation</th>
+      <th>series</th>
+      <th>annotations</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1000</td>
+      <td>1000</td>
+      <td>-1000</td>
+      <td>MainFault</td>
+      <td>fault</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},0}$</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>800</td>
+      <td>1000</td>
+      <td>-1600</td>
+      <td>MainFault</td>
+      <td>fault</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},1}$</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>1200</td>
+      <td>1000</td>
+      <td>-400</td>
+      <td>MainFault</td>
+      <td>fault</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},2}$</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>1100</td>
+      <td>1000</td>
+      <td>-700</td>
+      <td>MainFault</td>
+      <td>fault</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},3}$</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>900</td>
+      <td>1000</td>
+      <td>-1300</td>
+      <td>MainFault</td>
+      <td>fault</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},4}$</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+<div class="section" id="foliations-dataframe">
+<h2>Foliations Dataframe<a class="headerlink" href="#foliations-dataframe" title="Permalink to this headline">¶</a></h2>
+<p>Now the formations and the series are correctly set.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="s1">&#39;foliations&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>dip</th>
+      <th>azimuth</th>
+      <th>polarity</th>
+      <th>formation</th>
+      <th>series</th>
+      <th>annotations</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>917.45</td>
+      <td>1000.0</td>
+      <td>-1135.398</td>
+      <td>71.565</td>
+      <td>270.0</td>
+      <td>1</td>
+      <td>MainFault</td>
+      <td>fault</td>
+      <td>${\bf{x}}_{\beta \,{\bf{1}},0}$</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1450.00</td>
+      <td>1000.0</td>
+      <td>-1150.000</td>
+      <td>18.435</td>
+      <td>90.0</td>
+      <td>1</td>
+      <td>Reservoir</td>
+      <td>Rest</td>
+      <td>${\bf{x}}_{\beta \,{\bf{4}},0}$</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>It is important to notice the columns of each data frame. These not only
+contains the geometrical properties of the data but also the
+<strong>formation</strong> and <strong>series</strong> at which they belong. This division is
+fundamental in order to preserve the depositional ages of the setting to
+model.</p>
+<p>A projection of the aforementioned data can be visualized in to 2D by
+the following function. It is possible to choose the direction of
+visualization as well as the series:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1-Copy1_20_0.png" src="../_images/ch1-Copy1_20_0.png" />
+<p>GemPy supports visualization in 3D as well trough vtk. These plots are
+interactive. Try to drag and drop a point or interface! In the
+perpendicular views only 2D movements are possible to help to place the
+data where is required.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_data_3D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="section" id="the-ins-and-outs-of-input-data-objects">
+<h3>The ins and outs of Input data objects<a class="headerlink" href="#the-ins-and-outs-of-input-data-objects" title="Permalink to this headline">¶</a></h3>
+<p>As we have seen objects DataManagement.InputData (usually called
+geo_data in the tutorials) aim to have all the original geological
+properties, measurements and geological relations stored.</p>
+<p>Once we have the data ready to generate a model, we will need to create
+the next object type towards the final geological model:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span><span class="c1">#, verbose=[&#39;faults_matrix&#39;, &#39;covariance_matrix&#39;])</span>
+<span class="k">print</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">Level</span> <span class="n">of</span> <span class="n">Optimization</span><span class="p">:</span>  <span class="n">fast_run</span>
+<span class="n">Device</span><span class="p">:</span>  <span class="n">cpu</span>
+<span class="n">Precision</span><span class="p">:</span>  <span class="n">float32</span>
+<span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">DataManagement</span><span class="o">.</span><span class="n">InterpolatorInput</span> <span class="nb">object</span> <span class="n">at</span> <span class="mh">0x7fdf34ec0320</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="nb">len</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">len_series_f</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span><span class="o">-</span><span class="mi">1</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="mi">3</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span><span class="o">.</span><span class="n">get_formation_number</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;DefaultBasement&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+ <span class="s1">&#39;Layer 3&#39;</span><span class="p">:</span> <span class="mi">6</span><span class="p">,</span>
+ <span class="s1">&#39;MainFault&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+ <span class="s1">&#39;Overlying&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+ <span class="s1">&#39;Reservoir&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+ <span class="s1">&#39;Seal&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">,</span>
+ <span class="s1">&#39;SecondaryReservoir&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>By default (there is a flag in case you do not need) when we create a
+interp_data object we also compile the theano function that compute the
+model. That is the reason why takes long.</p>
+<p>gempy.DataManagement.InterpolatorInput (usually called interp_data in
+the tutorials) prepares the original data to the interpolation algorithm
+by scaling the coordinates for better and adding all the mathematical
+parametrization needed.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_kriging_parameters</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">range</span> <span class="mf">0.8882311582565308</span> <span class="mf">3464.1015172</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">drift</span> <span class="n">equations</span> <span class="p">[</span><span class="mi">2</span> <span class="mi">2</span><span class="p">]</span>
+<span class="n">Covariance</span> <span class="n">at</span> <span class="mi">0</span> <span class="mf">0.01878463476896286</span>
+<span class="n">Foliations</span> <span class="n">nugget</span> <span class="n">effect</span> <span class="mf">0.009999999776482582</span>
+</pre></div>
+</div>
+<p>These later parameters have a default value computed from the original
+data or can be changed by the user (be careful of changing any of these
+if you do not fully understand their meaning).</p>
+<p>At this point, we have all what we need to compute our model. By default
+everytime we compute a model we obtain:</p>
+<ul class="simple">
+<li>Lithology block model<ul>
+<li>with the lithology values in 0</li>
+<li>with the potential field values in 1</li>
+</ul>
+</li>
+<li>Fault block model<ul>
+<li>with the faults zones values (i.e. every divided region by each
+fault has one number) in 0</li>
+<li>with the potential field values in 1</li>
+</ul>
+</li>
+</ul>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span>
+</pre></div>
+</div>
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>annotations</th>
+      <th>formation</th>
+      <th>formation number</th>
+      <th>isFault</th>
+      <th>order_series</th>
+      <th>series</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>0.410356</td>
+      <td>0.5001</td>
+      <td>0.371895</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},0}$</td>
+      <td>MainFault</td>
+      <td>1</td>
+      <td>True</td>
+      <td>1</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.512921</td>
+      <td>0.5001</td>
+      <td>0.679587</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},1}$</td>
+      <td>MainFault</td>
+      <td>1</td>
+      <td>True</td>
+      <td>1</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.487279</td>
+      <td>0.5001</td>
+      <td>0.602664</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},2}$</td>
+      <td>MainFault</td>
+      <td>1</td>
+      <td>True</td>
+      <td>1</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.435997</td>
+      <td>0.5001</td>
+      <td>0.448818</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},3}$</td>
+      <td>MainFault</td>
+      <td>1</td>
+      <td>True</td>
+      <td>1</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>0.461638</td>
+      <td>0.5001</td>
+      <td>0.525741</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},4}$</td>
+      <td>MainFault</td>
+      <td>1</td>
+      <td>True</td>
+      <td>1</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>0.538562</td>
+      <td>0.5001</td>
+      <td>0.628305</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{2}},0}$</td>
+      <td>SecondaryReservoir</td>
+      <td>2</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>0.359074</td>
+      <td>0.5001</td>
+      <td>0.641126</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{2}},1}$</td>
+      <td>SecondaryReservoir</td>
+      <td>2</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>0.435997</td>
+      <td>0.5001</td>
+      <td>0.615485</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{2}},2}$</td>
+      <td>SecondaryReservoir</td>
+      <td>2</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>0.615485</td>
+      <td>0.5001</td>
+      <td>0.602664</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{2}},3}$</td>
+      <td>SecondaryReservoir</td>
+      <td>2</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>0.692408</td>
+      <td>0.5001</td>
+      <td>0.577023</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{2}},4}$</td>
+      <td>SecondaryReservoir</td>
+      <td>2</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>0.718049</td>
+      <td>0.5001</td>
+      <td>0.583433</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{2}},5}$</td>
+      <td>SecondaryReservoir</td>
+      <td>2</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>0.718049</td>
+      <td>0.5001</td>
+      <td>0.557792</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{3}},0}$</td>
+      <td>Seal</td>
+      <td>3</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>0.359074</td>
+      <td>0.5001</td>
+      <td>0.615485</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{3}},1}$</td>
+      <td>Seal</td>
+      <td>3</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>0.538562</td>
+      <td>0.5001</td>
+      <td>0.602664</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{3}},2}$</td>
+      <td>Seal</td>
+      <td>3</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>0.692408</td>
+      <td>0.5001</td>
+      <td>0.551382</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{3}},3}$</td>
+      <td>Seal</td>
+      <td>3</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>0.435997</td>
+      <td>0.5001</td>
+      <td>0.589844</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{3}},4}$</td>
+      <td>Seal</td>
+      <td>3</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>0.615485</td>
+      <td>0.5001</td>
+      <td>0.577023</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{3}},5}$</td>
+      <td>Seal</td>
+      <td>3</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>0.410356</td>
+      <td>0.294972</td>
+      <td>0.423177</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},0}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>0.410356</td>
+      <td>0.705228</td>
+      <td>0.423177</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},1}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>0.359074</td>
+      <td>0.5001</td>
+      <td>0.512921</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},2}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>0.282151</td>
+      <td>0.5001</td>
+      <td>0.538562</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},3}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>0.718049</td>
+      <td>0.5001</td>
+      <td>0.455228</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},4}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>0.692408</td>
+      <td>0.5001</td>
+      <td>0.448818</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},5}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>0.538562</td>
+      <td>0.5001</td>
+      <td>0.5001</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},6}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>0.615485</td>
+      <td>0.5001</td>
+      <td>0.474459</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},7}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>0.653946</td>
+      <td>0.5001</td>
+      <td>0.461638</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},8}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>0.461638</td>
+      <td>0.269331</td>
+      <td>0.5001</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},9}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>0.461638</td>
+      <td>0.7501</td>
+      <td>0.512921</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},10}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>0.461638</td>
+      <td>0.730869</td>
+      <td>0.5001</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},11}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>0.5001</td>
+      <td>0.5001</td>
+      <td>0.512921</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},12}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>0.461638</td>
+      <td>0.2501</td>
+      <td>0.512921</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},13}$</td>
+      <td>Reservoir</td>
+      <td>4</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>0.359074</td>
+      <td>0.5001</td>
+      <td>0.435997</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},0}$</td>
+      <td>Overlying</td>
+      <td>5</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>0.282151</td>
+      <td>0.5001</td>
+      <td>0.461638</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},1}$</td>
+      <td>Overlying</td>
+      <td>5</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>0.461638</td>
+      <td>0.5001</td>
+      <td>0.448818</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},2}$</td>
+      <td>Overlying</td>
+      <td>5</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>0.718049</td>
+      <td>0.5001</td>
+      <td>0.378305</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},3}$</td>
+      <td>Overlying</td>
+      <td>5</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>35</th>
+      <td>0.538562</td>
+      <td>0.5001</td>
+      <td>0.423177</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},4}$</td>
+      <td>Overlying</td>
+      <td>5</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>0.615485</td>
+      <td>0.5001</td>
+      <td>0.397536</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},5}$</td>
+      <td>Overlying</td>
+      <td>5</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>0.653946</td>
+      <td>0.5001</td>
+      <td>0.384715</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},6}$</td>
+      <td>Overlying</td>
+      <td>5</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>0.692408</td>
+      <td>0.5001</td>
+      <td>0.371895</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},7}$</td>
+      <td>Overlying</td>
+      <td>5</td>
+      <td>False</td>
+      <td>2</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>0.666767</td>
+      <td>0.5001</td>
+      <td>0.320613</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{6}},0}$</td>
+      <td>Layer 3</td>
+      <td>6</td>
+      <td>False</td>
+      <td>3</td>
+      <td>unco</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>0.512921</td>
+      <td>0.5001</td>
+      <td>0.320613</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{6}},1}$</td>
+      <td>Layer 3</td>
+      <td>6</td>
+      <td>False</td>
+      <td>3</td>
+      <td>unco</td>
+    </tr>
+  </tbody>
+</table>
+</div><div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">lith_block</span><span class="p">,</span> <span class="n">fault_block</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>This solution can be plot with the correspondent plotting function.
+Blocks:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">25</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1-Copy1_33_0.png" src="../_images/ch1-Copy1_33_0.png" />
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">fault_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">25</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1-Copy1_34_0.png" src="../_images/ch1-Copy1_34_0.png" />
+<p>Potential field:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_potential_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">25</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">500</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1-Copy1_36_0.png" src="../_images/ch1-Copy1_36_0.png" />
+<p>From the potential fields (of lithologies and faults) it is possible to
+extract vertices and simpleces to create the 3D triangles for a vtk
+visualization.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">ver</span><span class="p">,</span> <span class="n">sim</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span><span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">fault_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">original_scale</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">---------------------------------------------------------------------------</span>
+
+<span class="ne">ValueError</span>                                <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">)</span>
+
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">49</span><span class="o">-</span><span class="n">b70d47564eaf</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+<span class="o">----&gt;</span> <span class="mi">1</span> <span class="n">ver</span><span class="p">,</span> <span class="n">sim</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span><span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">fault_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">original_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+
+<span class="o">~/</span><span class="n">PycharmProjects</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">GemPy_f</span><span class="o">.</span><span class="n">py</span> <span class="ow">in</span> <span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">potential_lith</span><span class="p">,</span> <span class="n">potential_fault</span><span class="p">,</span> <span class="n">n_formation</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">original_scale</span><span class="p">)</span>
+    <span class="mi">580</span>             <span class="k">else</span><span class="p">:</span>
+    <span class="mi">581</span>                 <span class="n">v</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">get_surface</span><span class="p">(</span><span class="n">potential_fault</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">pot_int</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+<span class="o">--&gt;</span> <span class="mi">582</span>                                    <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">original_scale</span><span class="o">=</span><span class="n">original_scale</span><span class="p">)</span>
+    <span class="mi">583</span>                 <span class="n">vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="mi">584</span>                 <span class="n">simplices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+
+<span class="o">~/</span><span class="n">PycharmProjects</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">GemPy_f</span><span class="o">.</span><span class="n">py</span> <span class="ow">in</span> <span class="n">get_surface</span><span class="p">(</span><span class="n">potential_block</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">pot_int</span><span class="p">,</span> <span class="n">n_formation</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">original_scale</span><span class="p">)</span>
+    <span class="mi">556</span>             <span class="n">spacing</span><span class="o">=</span><span class="p">((</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="mi">557</span>                      <span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="o">--&gt;</span> <span class="mi">558</span>                      <span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="o">/</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="mi">559</span>
+    <span class="mi">560</span>
+
+
+<span class="o">~/</span><span class="n">anaconda3</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="o">.</span><span class="mi">6</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">skimage</span><span class="o">/</span><span class="n">measure</span><span class="o">/</span><span class="n">_marching_cubes_lewiner</span><span class="o">.</span><span class="n">py</span> <span class="ow">in</span> <span class="n">marching_cubes_lewiner</span><span class="p">(</span><span class="n">volume</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">spacing</span><span class="p">,</span> <span class="n">gradient_direction</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">allow_degenerate</span><span class="p">,</span> <span class="n">use_classic</span><span class="p">)</span>
+    <span class="mi">197</span>         <span class="n">level</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+    <span class="mi">198</span>         <span class="k">if</span> <span class="n">level</span> <span class="o">&lt;</span> <span class="n">volume</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="ow">or</span> <span class="n">level</span> <span class="o">&gt;</span> <span class="n">volume</span><span class="o">.</span><span class="n">max</span><span class="p">():</span>
+<span class="o">--&gt;</span> <span class="mi">199</span>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Surface level must be within volume data range.&quot;</span><span class="p">)</span>
+    <span class="mi">200</span>     <span class="c1"># spacing</span>
+    <span class="mi">201</span>     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spacing</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+
+
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">Surface</span> <span class="n">level</span> <span class="n">must</span> <span class="n">be</span> <span class="n">within</span> <span class="n">volume</span> <span class="n">data</span> <span class="nb">range</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">debug</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span>&gt; [0;32m/home/miguel/anaconda3/lib/python3.6/site-packages/skimage/measure/_marching_cubes_lewiner.py[0m(199)[0;36mmarching_cubes_lewiner[0;34m()[0m
+[0;32m    197 [0;31m        [0mlevel[0m [0;34m=[0m [0mfloat[0m[0;34m([0m[0mlevel[0m[0;34m)[0m[0;34m[0m[0m
+[0m[0;32m    198 [0;31m        [0;32mif[0m [0mlevel[0m [0;34m&lt;[0m [0mvolume[0m[0;34m.[0m[0mmin[0m[0;34m([0m[0;34m)[0m [0;32mor[0m [0mlevel[0m [0;34m&gt;[0m [0mvolume[0m[0;34m.[0m[0mmax[0m[0;34m([0m[0;34m)[0m[0;34m:[0m[0;34m[0m[0m
+[0m[0;32m--&gt; 199 [0;31m            [0;32mraise[0m [0mValueError[0m[0;34m([0m[0;34m&quot;Surface level must be within volume data range.&quot;[0m[0;34m)[0m[0;34m[0m[0m
+[0m[0;32m    200 [0;31m    [0;31m# spacing[0m[0;34m[0m[0;34m[0m[0m
+[0m[0;32m    201 [0;31m    [0;32mif[0m [0mlen[0m[0;34m([0m[0mspacing[0m[0;34m)[0m [0;34m!=[0m [0;36m3[0m[0;34m:[0m[0;34m[0m[0m
+[0m
+ipdb&gt; up
+&gt; [0;32m/home/miguel/PycharmProjects/gempy/gempy/GemPy_f.py[0m(558)[0;36mget_surface[0;34m()[0m
+[0;32m    556 [0;31m            spacing=((interp_data.geo_data_res.extent[1] - interp_data.geo_data_res.extent[0]) / interp_data.geo_data_res.resolution[0],
+[0m[0;32m    557 [0;31m                     [0;34m([0m[0minterp_data[0m[0;34m.[0m[0mgeo_data_res[0m[0;34m.[0m[0mextent[0m[0;34m[[0m[0;36m3[0m[0;34m][0m [0;34m-[0m [0minterp_data[0m[0;34m.[0m[0mgeo_data_res[0m[0;34m.[0m[0mextent[0m[0;34m[[0m[0;36m2[0m[0;34m][0m[0;34m)[0m [0;34m/[0m [0minterp_data[0m[0;34m.[0m[0mgeo_data_res[0m[0;34m.[0m[0mresolution[0m[0;34m[[0m[0;36m1[0m[0;34m][0m[0;34m,[0m[0;34m[0m[0m
+[0m[0;32m--&gt; 558 [0;31m                     (interp_data.geo_data_res.extent[5] - interp_data.geo_data_res.extent[4]) / interp_data.geo_data_res.resolution[2]))
+[0m[0;32m    559 [0;31m[0;34m[0m[0m
+[0m[0;32m    560 [0;31m[0;34m[0m[0m
+[0m
+ipdb&gt; pot_int[n_formation-1]
+90.703789
+ipdb&gt; potential_block.max()
+95.060684
+ipdb&gt; potential_block.min()
+90.841385
+ipdb&gt; exit
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_surfaces_3D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">ver</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Additionally is possible to update the model and recompute the surfaces
+in real time. To do so, we need to pass the data rescaled. To get an
+smooth response is important to have the theano optimizer flag in
+fast_run and run theano in the gpu. This can speed up the modeling time
+in a factor of 20.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>G_x</th>
+      <th>G_y</th>
+      <th>G_z</th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>annotations</th>
+      <th>azimuth</th>
+      <th>dip</th>
+      <th>formation</th>
+      <th>formation number</th>
+      <th>isFault</th>
+      <th>order_series</th>
+      <th>polarity</th>
+      <th>series</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="43" valign="top">interfaces</th>
+      <th>0</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.474459</td>
+      <td>0.5001</td>
+      <td>0.49369</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},0}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>MainFault</td>
+      <td>1</td>
+      <td>True</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.423177</td>
+      <td>0.5001</td>
+      <td>0.339844</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},1}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>MainFault</td>
+      <td>1</td>
+      <td>True</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.525741</td>
+      <td>0.5001</td>
+      <td>0.647536</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},2}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>MainFault</td>
+      <td>1</td>
+      <td>True</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.5001</td>
+      <td>0.5001</td>
+      <td>0.570613</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},3}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>MainFault</td>
+      <td>1</td>
+      <td>True</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.448818</td>
+      <td>0.5001</td>
+      <td>0.416767</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{1}},4}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>MainFault</td>
+      <td>1</td>
+      <td>True</td>
+      <td>1</td>
+      <td>NaN</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.679587</td>
+      <td>0.5001</td>
+      <td>0.314203</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{2}},0}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>fault2</td>
+      <td>2</td>
+      <td>True</td>
+      <td>2</td>
+      <td>NaN</td>
+      <td>Fault_serie2</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.269331</td>
+      <td>0.5001</td>
+      <td>0.711638</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{2}},1}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>fault2</td>
+      <td>2</td>
+      <td>True</td>
+      <td>2</td>
+      <td>NaN</td>
+      <td>Fault_serie2</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.705228</td>
+      <td>0.5001</td>
+      <td>0.544972</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{3}},0}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>SecondaryReservoir</td>
+      <td>3</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.628305</td>
+      <td>0.5001</td>
+      <td>0.570613</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{3}},1}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>SecondaryReservoir</td>
+      <td>3</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.371895</td>
+      <td>0.5001</td>
+      <td>0.609074</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{3}},2}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>SecondaryReservoir</td>
+      <td>3</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.551382</td>
+      <td>0.5001</td>
+      <td>0.596254</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{3}},3}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>SecondaryReservoir</td>
+      <td>3</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.448818</td>
+      <td>0.5001</td>
+      <td>0.583433</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{3}},4}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>SecondaryReservoir</td>
+      <td>3</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.730869</td>
+      <td>0.5001</td>
+      <td>0.551382</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{3}},5}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>SecondaryReservoir</td>
+      <td>3</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.448818</td>
+      <td>0.5001</td>
+      <td>0.557792</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},0}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Seal</td>
+      <td>4</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.730869</td>
+      <td>0.5001</td>
+      <td>0.525741</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},1}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Seal</td>
+      <td>4</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.371895</td>
+      <td>0.5001</td>
+      <td>0.583433</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},2}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Seal</td>
+      <td>4</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.551382</td>
+      <td>0.5001</td>
+      <td>0.570613</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},3}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Seal</td>
+      <td>4</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.628305</td>
+      <td>0.5001</td>
+      <td>0.544972</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},4}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Seal</td>
+      <td>4</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.705228</td>
+      <td>0.5001</td>
+      <td>0.519331</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{4}},5}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Seal</td>
+      <td>4</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.423177</td>
+      <td>0.294972</td>
+      <td>0.391126</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},0}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.423177</td>
+      <td>0.705228</td>
+      <td>0.391126</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},1}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.364376</td>
+      <td>0.504601</td>
+      <td>0.481594</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},2}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.294972</td>
+      <td>0.5001</td>
+      <td>0.50651</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},3}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.730869</td>
+      <td>0.5001</td>
+      <td>0.423177</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},4}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.705228</td>
+      <td>0.5001</td>
+      <td>0.416767</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},5}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.551382</td>
+      <td>0.5001</td>
+      <td>0.468049</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},6}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.628305</td>
+      <td>0.5001</td>
+      <td>0.442408</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},7}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.666767</td>
+      <td>0.5001</td>
+      <td>0.429587</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},8}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.474459</td>
+      <td>0.730869</td>
+      <td>0.468049</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},9}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.512921</td>
+      <td>0.5001</td>
+      <td>0.480869</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},10}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.474459</td>
+      <td>0.269331</td>
+      <td>0.468049</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},11}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.474459</td>
+      <td>0.7501</td>
+      <td>0.480869</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},12}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.474459</td>
+      <td>0.2501</td>
+      <td>0.480869</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{5}},13}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.474459</td>
+      <td>0.5001</td>
+      <td>0.416767</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{6}},0}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>6</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.730869</td>
+      <td>0.5001</td>
+      <td>0.346254</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{6}},1}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>6</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>35</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.628305</td>
+      <td>0.5001</td>
+      <td>0.365485</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{6}},2}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>6</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.666767</td>
+      <td>0.5001</td>
+      <td>0.352664</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{6}},3}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>6</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.705228</td>
+      <td>0.5001</td>
+      <td>0.339844</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{6}},4}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>6</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.551382</td>
+      <td>0.5001</td>
+      <td>0.391126</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{6}},5}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>6</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.371895</td>
+      <td>0.5001</td>
+      <td>0.403946</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{6}},6}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>6</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.294972</td>
+      <td>0.5001</td>
+      <td>0.429587</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{6}},7}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Overlying</td>
+      <td>6</td>
+      <td>False</td>
+      <td>3</td>
+      <td>NaN</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>41</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.679587</td>
+      <td>0.5001</td>
+      <td>0.288562</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{7}},0}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Layer 3</td>
+      <td>7</td>
+      <td>False</td>
+      <td>4</td>
+      <td>NaN</td>
+      <td>unco</td>
+    </tr>
+    <tr>
+      <th>42</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0.525741</td>
+      <td>0.5001</td>
+      <td>0.339844</td>
+      <td>${\bf{x}}_{\alpha \,{\bf{7}},1}$</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Layer 3</td>
+      <td>7</td>
+      <td>False</td>
+      <td>4</td>
+      <td>NaN</td>
+      <td>unco</td>
+    </tr>
+    <tr>
+      <th rowspan="4" valign="top">foliations</th>
+      <th>0</th>
+      <td>-0.948683</td>
+      <td>-1.7427e-16</td>
+      <td>0.316229</td>
+      <td>0.453292</td>
+      <td>0.5001</td>
+      <td>0.458972</td>
+      <td>${\bf{x}}_{\beta \,{\bf{1}},0}$</td>
+      <td>270</td>
+      <td>71.565</td>
+      <td>MainFault</td>
+      <td>1</td>
+      <td>True</td>
+      <td>1</td>
+      <td>1</td>
+      <td>fault</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.642788</td>
+      <td>3.93594e-17</td>
+      <td>0.766044</td>
+      <td>0.577023</td>
+      <td>0.5001</td>
+      <td>0.416767</td>
+      <td>${\bf{x}}_{\beta \,{\bf{2}},0}$</td>
+      <td>90</td>
+      <td>40</td>
+      <td>fault2</td>
+      <td>2</td>
+      <td>True</td>
+      <td>2</td>
+      <td>1</td>
+      <td>Fault_serie2</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>0.316229</td>
+      <td>1.93634e-17</td>
+      <td>0.948683</td>
+      <td>0.589844</td>
+      <td>0.5001</td>
+      <td>0.455228</td>
+      <td>${\bf{x}}_{\beta \,{\bf{5}},0}$</td>
+      <td>90</td>
+      <td>18.435</td>
+      <td>Reservoir</td>
+      <td>5</td>
+      <td>False</td>
+      <td>3</td>
+      <td>1</td>
+      <td>Rest</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>0.34202</td>
+      <td>2.09427e-17</td>
+      <td>0.939693</td>
+      <td>0.602664</td>
+      <td>0.5001</td>
+      <td>0.391126</td>
+      <td>${\bf{x}}_{\beta \,{\bf{7}},0}$</td>
+      <td>90</td>
+      <td>20</td>
+      <td>Layer 3</td>
+      <td>7</td>
+      <td>False</td>
+      <td>4</td>
+      <td>1</td>
+      <td>unco</td>
+    </tr>
+  </tbody>
+</table>
+</div><div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">ver_s</span><span class="p">,</span> <span class="n">sim_s</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span><span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                               <span class="n">fault_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                               <span class="n">original_scale</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">---------------------------------------------------------------------------</span>
+
+<span class="ne">ValueError</span>                                <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">)</span>
+
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">50</span><span class="o">-</span><span class="mi">88</span><span class="n">ef9c3214df</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+      <span class="mi">1</span> <span class="n">ver_s</span><span class="p">,</span> <span class="n">sim_s</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span><span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+      <span class="mi">2</span>                                <span class="n">fault_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="o">----&gt;</span> <span class="mi">3</span>                                <span class="n">original_scale</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+
+<span class="o">~/</span><span class="n">PycharmProjects</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">GemPy_f</span><span class="o">.</span><span class="n">py</span> <span class="ow">in</span> <span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">potential_lith</span><span class="p">,</span> <span class="n">potential_fault</span><span class="p">,</span> <span class="n">n_formation</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">original_scale</span><span class="p">)</span>
+    <span class="mi">580</span>             <span class="k">else</span><span class="p">:</span>
+    <span class="mi">581</span>                 <span class="n">v</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">get_surface</span><span class="p">(</span><span class="n">potential_fault</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">pot_int</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+<span class="o">--&gt;</span> <span class="mi">582</span>                                    <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">original_scale</span><span class="o">=</span><span class="n">original_scale</span><span class="p">)</span>
+    <span class="mi">583</span>                 <span class="n">vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+    <span class="mi">584</span>                 <span class="n">simplices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+
+<span class="o">~/</span><span class="n">PycharmProjects</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">GemPy_f</span><span class="o">.</span><span class="n">py</span> <span class="ow">in</span> <span class="n">get_surface</span><span class="p">(</span><span class="n">potential_block</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">pot_int</span><span class="p">,</span> <span class="n">n_formation</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">original_scale</span><span class="p">)</span>
+    <span class="mi">556</span>             <span class="n">spacing</span><span class="o">=</span><span class="p">((</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+    <span class="mi">557</span>                      <span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+<span class="o">--&gt;</span> <span class="mi">558</span>                      <span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="o">/</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+    <span class="mi">559</span>
+    <span class="mi">560</span>
+
+
+<span class="o">~/</span><span class="n">anaconda3</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="o">.</span><span class="mi">6</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">skimage</span><span class="o">/</span><span class="n">measure</span><span class="o">/</span><span class="n">_marching_cubes_lewiner</span><span class="o">.</span><span class="n">py</span> <span class="ow">in</span> <span class="n">marching_cubes_lewiner</span><span class="p">(</span><span class="n">volume</span><span class="p">,</span> <span class="n">level</span><span class="p">,</span> <span class="n">spacing</span><span class="p">,</span> <span class="n">gradient_direction</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">allow_degenerate</span><span class="p">,</span> <span class="n">use_classic</span><span class="p">)</span>
+    <span class="mi">197</span>         <span class="n">level</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">level</span><span class="p">)</span>
+    <span class="mi">198</span>         <span class="k">if</span> <span class="n">level</span> <span class="o">&lt;</span> <span class="n">volume</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="ow">or</span> <span class="n">level</span> <span class="o">&gt;</span> <span class="n">volume</span><span class="o">.</span><span class="n">max</span><span class="p">():</span>
+<span class="o">--&gt;</span> <span class="mi">199</span>             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;Surface level must be within volume data range.&quot;</span><span class="p">)</span>
+    <span class="mi">200</span>     <span class="c1"># spacing</span>
+    <span class="mi">201</span>     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">spacing</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">3</span><span class="p">:</span>
+
+
+<span class="ne">ValueError</span><span class="p">:</span> <span class="n">Surface</span> <span class="n">level</span> <span class="n">must</span> <span class="n">be</span> <span class="n">within</span> <span class="n">volume</span> <span class="n">data</span> <span class="nb">range</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_surfaces_3D_real_time</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">ver_s</span><span class="p">,</span> <span class="n">sim_s</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>In the same manner we can visualize the fault block:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">fault_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">25</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1-Copy1_46_0.png" src="../_images/ch1-Copy1_46_0.png" />
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_potential_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">fault_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">25</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1-Copy1_47_0.png" src="../_images/ch1-Copy1_47_0.png" />
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to GemPy’s (v 0.9) documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Kriging.html">Kriging structure of the <em>Potential field method</em></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Notebooks/ch1-Copy1.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/Notebooks/ch1-Copy1.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

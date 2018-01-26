@@ -1,0 +1,527 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept) &#8212; GemPy beta documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'beta',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="chapter-4-bayesian-statistics-in-pymc3-working-in-progress-proof-of-concept">
+<h1>Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)<a class="headerlink" href="#chapter-4-bayesian-statistics-in-pymc3-working-in-progress-proof-of-concept" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># These two lines are necessary only if gempy is not installed</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../&quot;</span><span class="p">)</span>
+
+<span class="c1"># Importing gempy</span>
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="kn">as</span> <span class="nn">gp</span>
+
+<span class="c1"># Embedding matplotlib figures into the notebooks</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># Aux imports</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">read_pickle</span><span class="p">(</span><span class="s1">&#39;../input_data/sandstone.pickle&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Assigning series to formations as well as their order (timewise)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">set_data_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;EarlyGranite_Series&quot;</span><span class="p">:</span> <span class="s1">&#39;EarlyGranite&#39;</span><span class="p">,</span>
+                              <span class="s2">&quot;BIF_Series&quot;</span><span class="p">:(</span><span class="s1">&#39;SimpleMafic2&#39;</span><span class="p">,</span> <span class="s1">&#39;SimpleBIF&#39;</span><span class="p">),</span>
+                              <span class="s2">&quot;SimpleMafic_Series&quot;</span><span class="p">:</span><span class="s1">&#39;SimpleMafic1&#39;</span><span class="p">},</span>
+                      <span class="n">order_series</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EarlyGranite_Series&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;BIF_Series&quot;</span><span class="p">,</span>
+                                      <span class="s2">&quot;SimpleMafic_Series&quot;</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>EarlyGranite_Series</th>
+      <th>BIF_Series</th>
+      <th>SimpleMafic_Series</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>EarlyGranite</td>
+      <td>SimpleMafic2</td>
+      <td>SimpleMafic1</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>EarlyGranite</td>
+      <td>SimpleBIF</td>
+      <td>SimpleMafic1</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>Setting uncertainties adding the values to the Dataframe.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;X_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;Y_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;Z_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;X_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
+<span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;Y_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;Z_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+
+<span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;dip_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;azimuth_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<div>
+<style>
+    .dataframe thead tr:only-child th {
+        text-align: right;
+    }
+
+    .dataframe thead th {
+        text-align: left;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>azimuth</th>
+      <th>dip</th>
+      <th>polarity</th>
+      <th>formation</th>
+      <th>series</th>
+      <th>order_series</th>
+      <th>G_x</th>
+      <th>G_y</th>
+      <th>G_z</th>
+      <th>X_std</th>
+      <th>Y_std</th>
+      <th>Z_std</th>
+      <th>dip_std</th>
+      <th>azimuth_std</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>735082.0630</td>
+      <td>6879102.25</td>
+      <td>480.551436</td>
+      <td>276.153239</td>
+      <td>80.0</td>
+      <td>1</td>
+      <td>EarlyGranite</td>
+      <td>EarlyGranite_Series</td>
+      <td>1</td>
+      <td>-0.979134</td>
+      <td>0.105560</td>
+      <td>0.173648</td>
+      <td>None</td>
+      <td>0</td>
+      <td>0</td>
+      <td>10</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>715991.2815</td>
+      <td>6882773.25</td>
+      <td>505.165864</td>
+      <td>152.654159</td>
+      <td>80.0</td>
+      <td>1</td>
+      <td>EarlyGranite</td>
+      <td>EarlyGranite_Series</td>
+      <td>1</td>
+      <td>0.452382</td>
+      <td>-0.874755</td>
+      <td>0.173648</td>
+      <td>None</td>
+      <td>0</td>
+      <td>0</td>
+      <td>10</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>728767.4065</td>
+      <td>6878759.25</td>
+      <td>470.031623</td>
+      <td>165.980598</td>
+      <td>80.0</td>
+      <td>1</td>
+      <td>EarlyGranite</td>
+      <td>EarlyGranite_Series</td>
+      <td>1</td>
+      <td>0.238570</td>
+      <td>-0.955474</td>
+      <td>0.173648</td>
+      <td>None</td>
+      <td>0</td>
+      <td>0</td>
+      <td>10</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>730627.5315</td>
+      <td>6880472.50</td>
+      <td>477.402658</td>
+      <td>120.986348</td>
+      <td>80.0</td>
+      <td>1</td>
+      <td>EarlyGranite</td>
+      <td>EarlyGranite_Series</td>
+      <td>1</td>
+      <td>0.844266</td>
+      <td>-0.507012</td>
+      <td>0.173648</td>
+      <td>None</td>
+      <td>0</td>
+      <td>0</td>
+      <td>10</td>
+      <td>10</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>732683.4690</td>
+      <td>6882332.75</td>
+      <td>481.711952</td>
+      <td>161.600709</td>
+      <td>80.0</td>
+      <td>1</td>
+      <td>EarlyGranite</td>
+      <td>EarlyGranite_Series</td>
+      <td>1</td>
+      <td>0.310842</td>
+      <td>-0.934464</td>
+      <td>0.173648</td>
+      <td>None</td>
+      <td>0</td>
+      <td>0</td>
+      <td>10</td>
+      <td>10</td>
+    </tr>
+  </tbody>
+</table>
+</div><div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># input_data_T = interp_data.interpolator.tg.input_parameters_list()</span>
+<span class="c1"># input_data_P = interp_data.get_input_data(u_grade=[3, 3])</span>
+<span class="c1"># select = interp_data.interpolator.pandas_rest_layer_points[&#39;formation&#39;] == &#39;Reservoir&#39;</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">compile_theano</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                                   <span class="n">u_grade</span><span class="o">=</span><span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">,</span><span class="mi">9</span><span class="p">])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">I</span> <span class="n">am</span> <span class="ow">in</span> <span class="n">the</span> <span class="n">setting</span>
+<span class="n">float32</span>
+<span class="n">I</span> <span class="n">am</span> <span class="n">here</span>
+<span class="p">[</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+<p>Now the generation of the geomodel will be an operation embedded in a
+larger tree.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">theano</span>
+<span class="kn">import</span> <span class="nn">theano.tensor</span> <span class="kn">as</span> <span class="nn">T</span>
+<span class="n">geomodel</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">OpFromGraph</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">input_parameters_list</span><span class="p">(),</span>
+                              <span class="p">[</span><span class="n">interp_data</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">whole_block_model</span><span class="p">(</span><span class="mi">0</span><span class="p">)],</span>
+                              <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
+                            <span class="p">)</span>
+</pre></div>
+</div>
+<p>Because now the GeMpy model is a theano operation and not a theano
+function, to call it we need to use theano variables (with theano
+functions we call them with python variables). This is very easy to
+modify, we just need to use theano shared to convert our python input
+data into theano variables.</p>
+<p>The pymc3 objects are already theano variables (pm.Normal and so on).
+Now the trick is that using the theano function T.set_subtensor, we can
+change one deterministic value of the input arrays(the ones printed in
+the cell above) by a stochastic pymc3 object. Then with the new arrays
+we just have to call the theano operation and pymc will do the rest</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># This is the creation of the model</span>
+<span class="kn">import</span> <span class="nn">pymc3</span> <span class="kn">as</span> <span class="nn">pm</span>
+<span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">compute_test_value</span> <span class="o">=</span> <span class="s1">&#39;off&#39;</span>
+<span class="c1">#theano.config.warn_float64 = &#39;warn&#39;</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Model</span><span class="p">()</span>
+<span class="k">with</span> <span class="n">model</span><span class="p">:</span>
+    <span class="c1"># We create the Stochastic parameters. In this case only the Z position</span>
+    <span class="c1"># of the interfaces</span>
+    <span class="n">Z_rest</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s1">&#39;Z_unc_rest&#39;</span><span class="p">,</span>
+       <span class="n">interp_data</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">pandas_rest_layer_points</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span>
+       <span class="n">interp_data</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">pandas_rest_layer_points</span><span class="p">[</span><span class="s1">&#39;Z_std&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span>
+                  <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">66</span><span class="p">))</span>
+
+    <span class="n">Z_ref</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s1">&#39;Z_unc_ref&#39;</span><span class="p">,</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">ref_layer_points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span>
+              <span class="n">interp_data</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">ref_layer_points</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span>
+              <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">66</span><span class="p">))</span>
+
+    <span class="c1"># We convert a python variable to theano.shared</span>
+    <span class="n">input_sh</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">get_input_data</span><span class="p">():</span>
+        <span class="n">input_sh</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+
+    <span class="c1"># We add the stochastic value to the correspondant array. rest array is</span>
+    <span class="c1"># a n_points*3 (XYZ) array. We only want to change Z in this case.</span>
+    <span class="n">input_sh</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
+    <span class="n">input_sh</span><span class="p">[</span><span class="mi">4</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">Z_ref</span><span class="p">)</span>
+
+    <span class="n">input_sh</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
+    <span class="n">input_sh</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">Z_rest</span><span class="p">)</span>
+
+    <span class="c1"># With the stochastic parameters we create the geomodel result:</span>
+    <span class="n">geo_model</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Deterministic</span><span class="p">(</span><span class="s1">&#39;GemPy&#39;</span><span class="p">,</span> <span class="n">geomodel</span><span class="p">(</span><span class="n">input_sh</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">input_sh</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">input_sh</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                                                   <span class="n">input_sh</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">input_sh</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">input_sh</span><span class="p">[</span><span class="mi">5</span><span class="p">]))</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[</span><span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">9</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">miguel</span><span class="o">/</span><span class="n">anaconda3</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="o">.</span><span class="mi">6</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">scipy</span><span class="o">/</span><span class="n">linalg</span><span class="o">/</span><span class="n">basic</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">223</span><span class="p">:</span> <span class="ne">RuntimeWarning</span><span class="p">:</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">solve</span>
+<span class="n">Ill</span><span class="o">-</span><span class="n">conditioned</span> <span class="n">matrix</span> <span class="n">detected</span><span class="o">.</span> <span class="n">Result</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">guaranteed</span> <span class="n">to</span> <span class="n">be</span> <span class="n">accurate</span><span class="o">.</span>
+<span class="n">Reciprocal</span> <span class="n">condition</span> <span class="n">number</span><span class="p">:</span> <span class="mf">2.4215285776563178e-08</span>
+  <span class="s1">&#39; condition number: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">rcond</span><span class="p">),</span> <span class="ne">RuntimeWarning</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">compute_test_value</span> <span class="o">=</span> <span class="s1">&#39;ignore&#39;</span>
+<span class="c1"># This is the sampling</span>
+<span class="c1"># BEFORE RUN THIS FOR LONG CHECK IN THE MODULE THEANOGRAF THAT THE FLAG</span>
+<span class="c1"># THEANO OPTIMIZER IS IN &#39;fast_run&#39;!!</span>
+<span class="k">with</span> <span class="n">model</span><span class="p">:</span>
+   <span class="c1"># backend = pm.backends.ndarray.NDArray(&#39;geomodels&#39;)</span>
+    <span class="n">step</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">NUTS</span><span class="p">()</span>
+    <span class="n">trace</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span> <span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span>  0%|          | 0/40 [00:00&lt;?, ?it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 2.4215285776563178e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+  8%|▊         | 3/40 [00:04&lt;01:18,  2.13s/it]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 3.6804916447863434e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+ 10%|█         | 4/40 [00:05&lt;01:00,  1.69s/it]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 4.177091028623181e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+ 12%|█▎        | 5/40 [00:06&lt;00:48,  1.38s/it]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 2.817358790707658e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+ 15%|█▌        | 6/40 [00:06&lt;00:39,  1.16s/it]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 5.478779740997197e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+ 18%|█▊        | 7/40 [00:07&lt;00:33,  1.01s/it]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 4.4421348377454706e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+ 20%|██        | 8/40 [00:08&lt;00:28,  1.11it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 5.4531707149862996e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+ 28%|██▊       | 11/40 [00:10&lt;00:21,  1.36it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 4.235039341438096e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+ 40%|████      | 16/40 [00:13&lt;00:15,  1.51it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 5.433537708654512e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+ 42%|████▎     | 17/40 [00:14&lt;00:15,  1.52it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 4.1121396066046145e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+ 45%|████▌     | 18/40 [00:14&lt;00:14,  1.52it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 4.794599561819268e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+ 85%|████████▌ | 34/40 [00:25&lt;00:03,  1.53it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 3.8119761569532784e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+ 92%|█████████▎| 37/40 [00:27&lt;00:01,  1.51it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 4.07877926988931e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+ 98%|█████████▊| 39/40 [00:28&lt;00:00,  1.47it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
+Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
+Reciprocal condition number: 3.935079107009187e-08
+  &#39; condition number: {}&#39;.format(rcond), RuntimeWarning)
+100%|██████████| 40/40 [00:29&lt;00:00,  1.47it/s]/home/miguel/anaconda3/lib/python3.6/site-packages/pymc3/step_methods/hmc/nuts.py:418: UserWarning: Chain 0 contains only 30 samples.
+  % (self._chain_id, n))
+/home/miguel/anaconda3/lib/python3.6/site-packages/pymc3/step_methods/hmc/nuts.py:448: UserWarning: Chain 0 reached the maximum tree depth. Increase max_treedepth, increase target_accept or reparameterize.
+  &#39;reparameterize.&#39; % self._chain_id)
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+    <span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">trace</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s1">&#39;GemPy&#39;</span><span class="p">)[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="mi">13</span><span class="p">,</span>
+                       <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+    <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+<img alt="../_images/ch4_13_0.png" src="../_images/ch4_13_0.png" />
+<img alt="../_images/ch4_13_1.png" src="../_images/ch4_13_1.png" />
+<img alt="../_images/ch4_13_2.png" src="../_images/ch4_13_2.png" />
+<img alt="../_images/ch4_13_3.png" src="../_images/ch4_13_3.png" />
+<img alt="../_images/ch4_13_4.png" src="../_images/ch4_13_4.png" />
+<img alt="../_images/ch4_13_5.png" src="../_images/ch4_13_5.png" />
+<img alt="../_images/ch4_13_6.png" src="../_images/ch4_13_6.png" />
+<img alt="../_images/ch4_13_7.png" src="../_images/ch4_13_7.png" />
+<img alt="../_images/ch4_13_8.png" src="../_images/ch4_13_8.png" />
+<img alt="../_images/ch4_13_9.png" src="../_images/ch4_13_9.png" />
+<img alt="../_images/ch4_13_10.png" src="../_images/ch4_13_10.png" />
+<img alt="../_images/ch4_13_11.png" src="../_images/ch4_13_11.png" />
+<img alt="../_images/ch4_13_12.png" src="../_images/ch4_13_12.png" />
+<img alt="../_images/ch4_13_13.png" src="../_images/ch4_13_13.png" />
+<img alt="../_images/ch4_13_14.png" src="../_images/ch4_13_14.png" />
+<img alt="../_images/ch4_13_15.png" src="../_images/ch4_13_15.png" />
+<img alt="../_images/ch4_13_16.png" src="../_images/ch4_13_16.png" />
+<img alt="../_images/ch4_13_17.png" src="../_images/ch4_13_17.png" />
+<img alt="../_images/ch4_13_18.png" src="../_images/ch4_13_18.png" />
+<img alt="../_images/ch4_13_19.png" src="../_images/ch4_13_19.png" />
+<img alt="../_images/ch4_13_20.png" src="../_images/ch4_13_20.png" />
+<img alt="../_images/ch4_13_21.png" src="../_images/ch4_13_21.png" />
+<img alt="../_images/ch4_13_22.png" src="../_images/ch4_13_22.png" />
+<img alt="../_images/ch4_13_23.png" src="../_images/ch4_13_23.png" />
+<img alt="../_images/ch4_13_24.png" src="../_images/ch4_13_24.png" />
+<img alt="../_images/ch4_13_25.png" src="../_images/ch4_13_25.png" />
+<img alt="../_images/ch4_13_26.png" src="../_images/ch4_13_26.png" />
+<img alt="../_images/ch4_13_27.png" src="../_images/ch4_13_27.png" />
+<img alt="../_images/ch4_13_28.png" src="../_images/ch4_13_28.png" />
+<img alt="../_images/ch4_13_29.png" src="../_images/ch4_13_29.png" />
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">---------------------------------------------------------------------------</span>
+
+<span class="ne">IndexError</span>                                <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">)</span>
+
+<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">10</span><span class="o">-</span><span class="n">bb562bc0d205</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
+      <span class="mi">1</span> <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+      <span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
+<span class="o">----&gt;</span> <span class="mi">3</span>     <span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">trace</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s1">&#39;GemPy&#39;</span><span class="p">)[</span><span class="n">i</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="mi">13</span><span class="p">,</span>
+      <span class="mi">4</span>                        <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+      <span class="mi">5</span>     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+
+
+<span class="ne">IndexError</span><span class="p">:</span> <span class="n">index</span> <span class="mi">30</span> <span class="ow">is</span> <span class="n">out</span> <span class="n">of</span> <span class="n">bounds</span> <span class="k">for</span> <span class="n">axis</span> <span class="mi">0</span> <span class="k">with</span> <span class="n">size</span> <span class="mi">30</span>
+</pre></div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="../index.html">Table Of Contents</a></h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to GemPy’s (v 0.9) documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../Kriging.html">Kriging structure of the <em>Potential field method</em></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="../_sources/Notebooks_old/ch4.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/Notebooks_old/ch4.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
