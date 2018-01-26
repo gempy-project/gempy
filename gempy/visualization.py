@@ -106,6 +106,11 @@ class PlotData2D(object):
         x, y, Gx, Gy = self._slice(direction)[4:]
         extent = self._slice(direction)[3]
         aspect = (extent[1] - extent[0])/(extent[3] - extent[2])
+        if aspect < 1:
+            min_axis = 'width'
+        else:
+            min_axis = 'height'
+
 
         if series == "all":
             series_to_plot_i = self._data.interfaces[self._data.interfaces["series"].
@@ -137,7 +142,7 @@ class PlotData2D(object):
             # Plotting orientations
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
-                       pivot="tail", )
+                       pivot="tail", scale_units=min_axis, scale=15)
 
         if data_type == 'interfaces':
             p = sns.lmplot(x, y,
@@ -154,11 +159,12 @@ class PlotData2D(object):
         if data_type == 'orientations':
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
-                       pivot="tail")
+                       pivot="tail", scale_units=min_axis, scale=15)
 
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
-
+        # plt.xlim(extent[0] - extent[0]*0.05, extent[1] + extent[1]*0.05)
+        # plt.ylim(extent[2] - extent[2]*0.05, extent[3] + extent[3]*0.05)
         plt.xlabel(x)
         plt.ylabel(y)
 

@@ -775,7 +775,7 @@ def topology_compute(geo_data, lith_block, fault_block,
     Returns:
         (adjacency Graph object, centroid dict, labels-to-lith LOT dict, lith-to_labels LOT dict)
     """
-    fault_block = fault_block[::2].sum(axis=0)
+    fault_block = _np.atleast_2d(fault_block)[::2].sum(axis=0)
 
     if cell_number is None or direction is None:  # topology of entire block
         lb = lith_block.reshape(geo_data.resolution)
