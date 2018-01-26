@@ -19,6 +19,7 @@
 """
 
 import warnings
+import numpy as np
 try:
     from skimage.future import graph
     from skimage.measure import label
@@ -27,20 +28,32 @@ except ImportError:
     warnings.warn("skimage package is not installed, which is required for geomodel topology analysis.")
 
 
-import numpy as np
-
-
-def topology_analyze(lith_block, fault_block, n_faults, areas_bool=False, return_block=False):
+def topology_analyze(lith_block, fault_block, n_faults,
+                     areas_bool=False,
+                     return_block=False):
     """
-    Function to analyze the geological model topology.
+    Analyses the block models adjacency topology. Every lithological entity is described by a uniquely labeled node
+    (centroid) and its connections to other entities by edges.
 
     Args:
-        lith_block:
-        fault_block:
-        n_faults:
+        lith_block (np.ndarray): Lithology block model
+        fault_block (np.ndarray): Fault block model
+        n_faults (int): Number of faults.
+
+
+    Keyword Args:
+        areas_bool (bool): If True computes adjacency areas for connected nodes in voxel number. Default False.
+        return_block (bool): If True additionally returns the uniquely labeled block model as np.ndarray.
 
     Return:
-        G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot
+        tuple:
+            G: Region adjacency graph object (skimage.future.graph.rag.RAG) containing the adjacency topology graph
+                (G.adj).
+            centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys and (x,y,z) coordinates
+                as values.
+            labels_unique (np.array): List of all labels used.
+            lith_to_labels_lot (dict): Dictionary look-up-table to go from lithology id to node id.
+            labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithology id.
     """
 
     lith_block = lith_block.astype(int)
@@ -71,13 +84,10 @@ def topology_analyze(lith_block, fault_block, n_faults, areas_bool=False, return
     # get the centroids from the labeled block
     centroids = get_centroids(labels_block)
     # create look-up-tables in both directions
-    # TODO: change dict to pandas df you lazy dict fan
     lith_to_labels_lot = lithology_labels_lot(lithologies, labels_block, block_original, labels_unique)
     labels_to_lith_lot = labels_lithology_lot(labels_unique, labels_block, block_original)
     # classify the edges (stratigraphic, across-fault)
-    # TODO: Across-unconformity edge identification
-    # TODO: Redo edge classification assignment - Graph dictionary changed to AtlasView object (not-assignable)
-    # classify_edges(G, centroids, block_original, fault_block)
+    classify_edges(G, centroids, block_original, fault_block)
     # compute the adjacency areas for each edge
     if areas_bool:
         # TODO: 2d option (if slice only), right now it only works for 3d
@@ -90,7 +100,13 @@ def topology_analyze(lith_block, fault_block, n_faults, areas_bool=False, return
 
 
 def compute_areas(G, labels_block):
-    """Computes adjacency areas and stores them in G.adj[n1][n2]["area"]."""
+    """
+    Computes adjacency areas and stores them in G.adj[n1][n2]["area"].
+
+    Args:
+        G (skimage.future.graph.rag.RAG): Topology graph object.
+        labels_block (np.ndarray): Uniquely labeled block model.
+    """
     # TODO: AS: make area computation function more modular to support additional functionality (e.g. fault throw) FABIAN?
     # get all bool arrays for each label, for filtering
     labels_bools = np.array([(labels_block == l).astype("bool") for l in np.unique(labels_block)])
@@ -109,34 +125,43 @@ def compute_areas(G, labels_block):
         G.adj[n2][n1]["area"] = area
 
 
-def classify_edges(G, centroids, block, fault_block):
-    """Classifies edges into stratigraphic or fault in G.adj"""
-    # loop over every node in adjacency dictionary
-    for n1 in G.adj:
-        # loop over every node that it is connected with
-        for n2 in G.adj[n1]:
-            # get centroid coordinates
-            if n2 == 0 or n1 == 0:
-                continue
-            n1_c = centroids[n1]
-            n2_c = centroids[n2]
-            # get fault block values at node positions
-            if len(np.shape(block)) == 3:
-                n1_fb_val = fault_block[int(n1_c[0]), int(n1_c[1]), int(n1_c[2])]
-                n2_fb_val = fault_block[int(n2_c[0]), int(n2_c[1]), int(n2_c[2])]
-            else:
-                n1_fb_val = fault_block[int(n1_c[0]), int(n1_c[1])]
-                n2_fb_val = fault_block[int(n2_c[0]), int(n2_c[1])]
+def classify_edges(G, centroids, lith_block, fault_block):
+    """
+    Classifies edges by type into stratigraphic or fault in "G.adj". Accessible via G.adj[node1][node2]["edge_type"]
 
-            if n1_fb_val == n2_fb_val:
-                # both are in the same fault entity
-                G.adj[n1][n2] = {"edge_type": "stratigraphic"}
-            else:
-                G.adj[n1][n2] = {"edge_type": "fault"}
+    Args:
+        G (skimage.future.graph.rag.RAG): Topology graph object.
+        centroids (dict): Centroid dictionary {node id (int): tuple(x,y,z)}
+        lith_block (np.ndarray): Shaped lithology block model.
+        fault_block (np.ndarray): Shaped fault block model.
+
+    Returns:
+
+    """
+    # loop over every node in adjacency dictionary
+    for n1, n2 in G.edges_iter():
+        # get centroid coordinates
+        if n2 == 0 or n1 == 0:
+            continue
+        n1_c = centroids[n1]
+        n2_c = centroids[n2]
+        # get fault block values at node positions
+        if len(np.shape(lith_block)) == 3:
+            n1_fb_val = fault_block[int(n1_c[0]), int(n1_c[1]), int(n1_c[2])]
+            n2_fb_val = fault_block[int(n2_c[0]), int(n2_c[1]), int(n2_c[2])]
+        else:
+            n1_fb_val = fault_block[int(n1_c[0]), int(n1_c[1])]
+            n2_fb_val = fault_block[int(n2_c[0]), int(n2_c[1])]
+
+        if n1_fb_val == n2_fb_val:
+            # both are in the same fault entity
+            G.adj[n1][n2]["edge_type"] = "stratigraphic"
+        else:
+            G.adj[n1][n2]["edge_type"] = "fault"
 
 
 def get_centroids(label_block):
-    """Get node centroids in 2d and 3d."""
+    """Get node centroids in 2d and 3d as {node id (int): tuple(x,y,z)}."""
     _rprops = regionprops(label_block)
     centroids = {}
     for rp in _rprops:
@@ -190,7 +215,7 @@ def topology_check_adjacency(G, n1, n2):
         return False
 
 
-def compute_adj_shape(n1, n2, labels_block, ext=None):
+def compute_adj_shape(n1, n2, labels_block):
     """Compute shape of adjacency area: number of voxels in X, Y and Z (column height). (Fabian)"""
     labels_bools = np.array([(labels_block == l).astype("bool") for l in np.unique(labels_block)])
     b = np.square(labels_block * (labels_bools[n1 - 1] + labels_bools[n2 - 1]))
@@ -202,16 +227,26 @@ def compute_adj_shape(n1, n2, labels_block, ext=None):
         y_len = max(nz_xyz[1])-min(nz_xyz[1])+1
         z_len = max(nz_xyz[2])-min(nz_xyz[2])+1
     else:
-        print('Unable to calculate an adjacency area.') # Implementing this due to problem, where empty lists returned
+        print('Unable to calculate an adjacency area.')  # Implementing this due to problem, where empty lists returned
         nz_xyz = 0
         x_len = 0
         y_len = 0
         z_len = 0
-    """z_len (maximal column height) to be used to calculate fault throw. (Fabian)"""
+    # z_len (maximal column height) to be used to calculate fault throw. (Fabian)
     return x_len, y_len, z_len, nz_xyz, d
 
 
 def compare_graphs(G1, G2):
+    """
+    Compares two graph objects using the Jaccard-Index.
+
+    Args:
+        G1 (skimage.future.graph.rag.RAG): Topology graph object.
+        G2 (skimage.future.graph.rag.RAG): Another topology graph object.
+
+    Returns:
+        (float): Jaccard-Index
+    """
     intersection = 0
     union = G1.number_of_edges()
 

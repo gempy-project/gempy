@@ -44,7 +44,7 @@ import gempy.posterior_analysis as pa # So far we use this type of import becaus
 
 def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_interfaces=False):
     """
-    Compute the geological model
+    Computes the geological model.
 
     Args:
         interp_data (gempy.DataManagement.InterpolatorInput): Rescaled data.
@@ -764,16 +764,27 @@ def topology_compute(geo_data, lith_block, fault_block,
                      compute_areas=False, return_label_block=False):
     """
     Computes model topology and returns graph, centroids and look-up-tables.
-    geo_data: geo_data object
 
     Args:
-        lith_block: lithology block
-        fault_block: fault block
-        cell_number: (int) the slice position
-        direction: (str) "x", "y", or "z" - the slice direction
+        geo_data (gempy.data_management.InputData): GemPy's data object for the model.
+        lith_block (np.ndarray): Lithology block model.
+        fault_block (np.ndarray): Fault block model.
+    Keyword Args:
+        cell_number (int): Cell number for 2-D slice topology analysis. Default None.
+        direction (str): "x", "y" or "z" specifying the slice direction for 2-D topology analysis. Default None.
+        compute_areas (bool): If True computes adjacency areas for connected nodes in voxel number. Default False.
+        return_label_block (bool): If True additionally returns the uniquely labeled block model as np.ndarray. Default False.
 
     Returns:
-        (adjacency Graph object, centroid dict, labels-to-lith LOT dict, lith-to_labels LOT dict)
+        tuple:
+            G: Region adjacency graph object (skimage.future.graph.rag.RAG) containing the adjacency topology graph
+                (G.adj).
+            centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys and (x,y,z) coordinates
+                as values. {node id (int): tuple(x,y,z)}
+            labels_unique (np.array): List of all labels used.
+            lith_to_labels_lot (dict): Dictionary look-up-table to go from lithology id to node id.
+            labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithology id.
+
     """
     fault_block = _np.atleast_2d(fault_block)[::2].sum(axis=0)
 
@@ -793,6 +804,19 @@ def topology_compute(geo_data, lith_block, fault_block,
     return _topology_analyze(lb, fb, geo_data.n_faults, areas_bool=compute_areas, return_block=return_label_block)
 
 
-def topology_plot(geo_data, G, centroids, direction="y"):
-    "Plot topology graph."
+def plot_topology(geo_data, G, centroids, direction="y"):
+    """
+    Plot the topology adjacency graph in 2-D.
+
+    Args:
+        geo_data (gempy.data_management.InputData):
+        G (skimage.future.graph.rag.RAG):
+        centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys and (x,y,z) coordinates
+                as values.
+    Keyword Args
+        direction (str): "x", "y" or "z" specifying the slice direction for 2-D topology analysis. Default None.
+
+    Returns:
+        Nothing, it just plots.
+    """
     PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)
