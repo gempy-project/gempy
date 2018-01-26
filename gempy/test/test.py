@@ -3,26 +3,16 @@ import pytest
 import theano
 import numpy as np
 import sys
-sys.path.append("../")
+sys.path.append("../..")
 import gempy
+import pdb
 
 
 class TestNoFaults:
     """
     I am testing all block and potential field values so sol is (n_block+n_pot)
     """
-    # # DEP?
-    # # Init interpolator
-    # @pytest.fixture(scope='class')
-    # def interpolator(self):
-    #     # Importing the data from csv files and settign extent and resolution
-    #     geo_data = gempy.import_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
-    #                                  path_f="./GeoModeller/test_a/test_a_Foliations.csv",
-    #                                  path_i="./GeoModeller/test_a/test_a_Points.csv")
-    #
-    #     data_interp = gempy.InterpolatorInput(geo_data,
-    #                                          dtype="float64",
-    #                                          verbose=['solve_kriging'])
+
     @pytest.fixture(scope='class')
     def theano_f(self):
         # Importing the data from csv files and settign extent and resolution
@@ -46,13 +36,12 @@ class TestNoFaults:
 
         interp_data = theano_f
 
-        # Create new interp data without compiling theano
-        new_interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=False)
         # Updating the interp data which has theano compiled
-        interp_data.update_interpolator(new_interp_data.geo_data_res)
+
+        interp_data.update_interpolator(geo_data)
 
         # Compute model
-        sol = gempy.compute_model(interp_data, u_grade=[3])
+        sol = gempy.compute_model(interp_data, u_grade=[1])
 
         # Load model
         real_sol = np.load('test_a_sol.npy')
@@ -76,13 +65,12 @@ class TestNoFaults:
 
         interp_data = theano_f
 
-        # Create new interp data without compiling theano
-        new_interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=False)
         # Updating the interp data which has theano compiled
-        interp_data.update_interpolator(new_interp_data.geo_data_res)
+        interp_data.update_interpolator(geo_data)
+
 
         # Compute model
-        sol = gempy.compute_model(interp_data, u_grade=[3])
+        sol = gempy.compute_model(interp_data, u_grade=[1])
 
         # Load model
         real_sol = np.load('test_b_sol.npy')
@@ -93,7 +81,6 @@ class TestNoFaults:
         # Checking that the plots do not rise errors
         gempy.plot_section(geo_data, sol[0][0, :], 25, direction='y', plot_data=True)
         gempy.plot_scalar_field(geo_data, sol[0][1, :], 25)
-
 
     def test_c(self, theano_f):
         """
@@ -108,9 +95,9 @@ class TestNoFaults:
         interp_data = theano_f
 
         # Create new interp data without compiling theano
-        new_interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=False)
+        #new_interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=False)
         # Updating the interp data which has theano compiled
-        interp_data.update_interpolator(new_interp_data.geo_data_res)
+        interp_data.update_interpolator(geo_data)
 
         # Compute model
         sol = gempy.compute_model(interp_data, u_grade=[0])

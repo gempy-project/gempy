@@ -79,7 +79,7 @@ class InputData(object):
                                                 'X_std', 'Y_std', 'Z_std'])
 
         if path_o or path_i:
-            self.import_data_csv(path_i=path_i, path_f=path_o)
+            self.import_data_csv(path_i=path_i, path_o=path_o)
 
         # If not provided set default series
         self.series = self.set_series()
@@ -271,14 +271,14 @@ class InputData(object):
     #     self.calculate_gradient()
     #     self.order_table()
 
-    def import_data_csv(self, path_i, path_f, **kwargs):
+    def import_data_csv(self, path_i, path_o, **kwargs):
         """
         Method to import interfaces and orientations from csv. The format is the same as the export 3D model data of
         GeoModeller (check in the input data folder for an example).
 
         Args:
             path_i (str): path to the csv table
-            path_f (str): path to the csv table
+            path_o (str): path to the csv table
             **kwargs: kwargs of :func: `~pn.read_csv`
 
         Attributes:
@@ -286,8 +286,8 @@ class InputData(object):
             Interfaces(pandas.core.frame.DataFrame): Pandas data frame with the interfaces data
         """
 
-        if path_f:
-            self.orientations = self.load_data_csv(data_type="orientations", path=path_f, **kwargs)
+        if path_o:
+            self.orientations = self.load_data_csv(data_type="orientations", path=path_o, **kwargs)
             assert set(['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']).issubset(self.orientations.columns), \
                 "One or more columns do not match with the expected values " + str(self.orientations.columns)
             self.orientations = self.orientations[['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']]
