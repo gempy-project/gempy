@@ -50,6 +50,10 @@ Another option is Steno3D, which allows for a flexible and interactive visualiza
 <div style="margin-top:10px;">
   <iframe src="https://steno3d.com/embed/A747sS50WZZu75yEm8Yi" width="800" height="600"></iframe>
 </div>
+
+<iframe src="https://steno3d.com/embed/A747sS50WZZu75yEm8Yi" width="800" height="600"></iframe>
+
+
 GemPy was furthermore designed to allow the performance of
 Bayesian inference for stochastic geological modeling. This was achieved by writing GemPy's core algorithm
 in Theano (http://deeplearning.net/software/theano/) and coupling it with PyMC3 (https://pymc-devs.github.io/pymc3/notebooks/getting_started.html).
@@ -59,7 +63,7 @@ uncertainties in model input data and the availability of additional secondary i
 We can, for example, include uncertainties with respect to the z-position of layer boundaries
 in the model space. Simple Monte Carlo simulation via PyMC will then result in different model realizations:
 
-![alt-text-1](docs/source/images/gempy_zunc.png){width=4} ![alt-text-2](docs/source/images/model_wobble.gif)
+![alt-text-1](docs/source/images/gempy_zunc.png){:height="36px" width="10"} ![alt-text-2](docs/source/images/model_wobble.gif){:height="36px" width="10"}
 
 This opens the path to...
 
