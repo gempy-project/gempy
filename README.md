@@ -42,9 +42,12 @@ GemPy also allows for the definition of topological elements such as stratigraph
 
 
 GemPy itself offers direct visualization of 2D sections via matplotlib
-and in full 3D using the Visualization Toolkit (VTK). These VTK files can also be exported
-for further processing in programs such as Paraview. GemPy can furthermore be easily
-embedded in Blender for 3D rendering.
+and in full 3D using the Visualization Toolkit (VTK). The VTK support also allow to the real time maniulation
+ of the 3-D model, facilitating the exact placement of the data. These VTK files can also be exported
+for further processing in programs such as Paraview.
+
+![modeling-steps](docs/source/images/gempy-animation.gif)
+
 
 GemPy was furthermore designed to allow the performance of
 Bayesian inference for stochastic geological modeling. This was achieved by writing GemPy's core algorithm
