@@ -11,7 +11,7 @@ def topo_geodata():
     # initialize geo_data object
     geo_data = gp.create_data([0, 3000, 0, 20, 0, 2000], resolution=[3, 3, 3])
     geo_data.import_data_csv(path_i="../../notebooks/input_data/ch6_data_interf",
-                             path_f="../../notebooks/input_data/ch6_data_fol")
+                             path_o="../../notebooks/input_data/ch6_data_fol")
 
     gp.set_series(geo_data, {"fault": geo_data.get_formations()[np.where(geo_data.get_formations() == "Fault")[0][0]],
                              "Rest": np.delete(geo_data.get_formations(),
