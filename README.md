@@ -55,7 +55,7 @@ uncertainties in model input data and the availability of additional secondary i
 We can, for example, include uncertainties with respect to the z-position of layer boundaries
 in the model space. Simple Monte Carlo simulation via PyMC will then result in different model realizations:
 
-<img src="docs/source/images/gempy_zunc.png" width="200" height="200"> <img src="docs/source/images/model_wobble.gif" width="200" height="200">
+<img src="docs/source/images/gempy_zunc.png" width="400" height="400"> <img src="docs/source/images/model_wobble.gif" width="400" height="350">
 
 
 This opens the path to...
