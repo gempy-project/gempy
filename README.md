@@ -45,14 +45,6 @@ GemPy itself offers direct visualization of 2D sections via matplotlib
 and in full 3D using the Visualization Toolkit (VTK). These VTK files can also be exported
 for further processing in programs such as Paraview. GemPy can furthermore be easily
 embedded in Blender for 3D rendering.
-Another option is Steno3D, which allows for a flexible and interactive visualization of 3D models:
-
-<div style="margin-top:10px;">
-  <iframe src="https://steno3d.com/embed/A747sS50WZZu75yEm8Yi" width="800" height="600"></iframe>
-</div>
-
-<iframe src="https://steno3d.com/embed/A747sS50WZZu75yEm8Yi" width="800" height="600"></iframe>
-
 
 GemPy was furthermore designed to allow the performance of
 Bayesian inference for stochastic geological modeling. This was achieved by writing GemPy's core algorithm
@@ -63,7 +55,8 @@ uncertainties in model input data and the availability of additional secondary i
 We can, for example, include uncertainties with respect to the z-position of layer boundaries
 in the model space. Simple Monte Carlo simulation via PyMC will then result in different model realizations:
 
-![alt-text-1](docs/source/images/gempy_zunc.pngs) [alt-text-2](docs/source/images/model_wobble.gif){:height="36px" width="10"}
+<img src="docs/source/images/gempy_zunc.png" width="400" height="400"> <img src="docs/source/images/model_wobble.gif" width="480" height="400">
+
 
 This opens the path to...
 
