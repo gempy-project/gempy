@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gmd:MD_Metadata xsi:schemaLocation="http://www.isotc211.org/2005/gmd ../schemas/iso19139fra/gmd/gmd.xsd" xmlns:fo="http://www.w3.org/1999/XSL/Format" xmlns:map="urn:brgm:mapping" xmlns:gmd="http://www.isotc211.org/2005/gmd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:gml="http://www.opengis.net/gml" xmlns:gts="http://www.isotc211.org/2005/gts" xmlns:gmx="http://www.isotc211.org/2005/gmx" xmlns:gfc="http://www.isotc211.org/2005/gfc" xmlns:gco="http://www.isotc211.org/2005/gco">
+	<geosoft xmlns="http://www.geosoft.com/schema/geo">
+		<dataset version="1">
+			<title>Sst_grav_image</title>
+			<file_format>tif</file_format>
+			<project_name>v:\eis\es42_3.3 3d database and modelling\users\ruthmurdie\geosoft\sandstone.gpf</project_name>
+			<data_created_by>MURDIE, Ruth</data_created_by>
+			<data_creation_date>2015-08-10</data_creation_date>
+			<metadata_created_by>MURDIE, Ruth</metadata_created_by>
+			<metadata_creation_date>2015-08-10</metadata_creation_date>
+			<lineage>
+				<process name="MapExport" user="MURDIE, Ruth" version="Version 8.4 (20150512.3285)" date="2015-08-10" time="14:02:56">
+					<parameter name="MAPEXPORT.ACTIVEVIEW" value="Data" type="string"/>
+					<parameter name="MAPEXPORT.BITS" value="24" type="integer"/>
+					<parameter name="MAPEXPORT.CELLSIZE" value="18.3931034482759" type="double"/>
+					<parameter name="MAPEXPORT.DITHER" value="ClusteredDithering" type="string"/>
+					<parameter name="MAPEXPORT.FORMAT" value="GeoTIFF (*.tif)" type="string"/>
+					<parameter name="MAPEXPORT.MAXX" value="208.293787159767" type="double"/>
+					<parameter name="MAPEXPORT.MAXY" value="300.471826760487" type="double"/>
+					<parameter name="MAPEXPORT.MINX" value="-0.357279223258605" type="double"/>
+					<parameter name="MAPEXPORT.MINY" value="-0.357279223258605" type="double"/>
+					<parameter name="MAPEXPORT.NAME" value=".\Sst_grav_image.tif" type="string"/>
+					<parameter name="MAPEXPORT.OPTIONS" value="" type="string"/>
+					<parameter name="MAPEXPORT.OUTPUT" value="FILE" type="string"/>
+					<parameter name="MAPEXPORT.SIZEX" value="2464" type="integer"/>
+					<parameter name="MAPEXPORT.SIZEY" value="3553" type="integer"/>
+					<parameter name="MAPEXPORT.TRANSPARENT" value="FALSE" type="string"/>
+					<parameter name="MAPEXPORT.VIEWS" value="1" type="integer"/>
+					<source name="V:\EIS\ES42_3.3 3D Database and Modelling\Users\RuthMURDIE\Geosoft\Sst_grav_1000_nomean.grd" type="GRID">
+						<lineage>
+							<process name="geogxnet.dll(Geosoft.GX.MathExpressionBuilder.MathExpressionBuilder;RunGrid)" user="MURDIE, Ruth" version="Version 8.4 (20150512.3285)" date="2015-08-10" time="14:01:11">
+								<parameter name="MATHEXPRESSIONBUILDER::EXPRESSION" value="G0=G1+617;" type="string"/>
+								<parameter name="MATHEXPRESSIONBUILDER::G0" value=".\Sst_grav_1000_nomean.grd(GRD)" type="string"/>
+								<parameter name="MATHEXPRESSIONBUILDER::G1" value=".\Sst_grav_1000.grd(GRD)" type="string"/>
+								<parameter name="MATHEXPRESSIONBUILDER::MASTERINPUT" value="G1" type="string"/>
+								<parameter name="MATHEXPRESSIONBUILDER::OUTPUT" value="G0" type="string"/>
+								<source name="V:\EIS\ES42_3.3 3D Database and Modelling\Users\RuthMURDIE\Geosoft\Sst_grav_1000.grd" type="GRID"/>
+							</process>
+						</lineage>
+					</source>
+				</process>
+			</lineage>
+			<georeference>
+				<dataextents>
+					<extent2d minx="703345.3738239127" miny="6861345.3738239128" maxx="748647.58761701616" maxy="6926677.6772721885"/>
+				</dataextents>
+				<projection type="TRANSVERSE_MERCATOR" name="GDA94 / MGA zone 50" wellknown_epsg="28350" projection="Map Grid of Australia zone 50" ellipsoid="GRS 1980" datum="GDA94" datumtrf="GDA94 to WGS 84 (1)" datumtrf_epsg="1150" datumtrf_description="[GDA94] (1m) Australia - onshore" radius="6378137" eccentricity="0.081819191042815806">
+					<shift x="0" y="0" z="0"/>
+					<parameters scale="0.9996" false_east="500000" false_north="10000000" lat_origin="0" lon_origin="117"/>
+					<units name="m" unit_scale="1"/>
+				</projection>
+			</georeference>
+		</dataset>
+	</geosoft>
+	<gmd:dataQualityInfo>
+		<gmd:DQ_DataQuality>
+			<gmd:lineage>
+				<gmd:LI_Lineage>
+					<gmd:processStep xlink:type="Geosoft Process" xlink:title="MapExport">
+						<gmd:LI_ProcessStep>
+							<gmd:dateTime>
+								<gco:DateTime>2015-08-10T14:02:56</gco:DateTime>
+							</gmd:dateTime>
+							<gmd:processor>
+								<gmd:CI_ResponsibleParty>
+									<gmd:individualName>
+										<gco:CharacterString>MURDIE, Ruth</gco:CharacterString>
+									</gmd:individualName>
+								</gmd:CI_ResponsibleParty>
+							</gmd:processor>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.ACTIVEVIEW" xlink:title="Data">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.BITS" xlink:title="24">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.CELLSIZE" xlink:title="18.3931034482759">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.DITHER" xlink:title="ClusteredDithering">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.FORMAT" xlink:title="GeoTIFF (*.tif)">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.MAXX" xlink:title="208.293787159767">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.MAXY" xlink:title="300.471826760487">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.MINX" xlink:title="-0.357279223258605">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.MINY" xlink:title="-0.357279223258605">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.NAME" xlink:title=".\Sst_grav_image.tif">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.OPTIONS" xlink:title="">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.OUTPUT" xlink:title="FILE">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.SIZEX" xlink:title="2464">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.SIZEY" xlink:title="3553">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.TRANSPARENT" xlink:title="FALSE">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Parameter" xlink:role="MAPEXPORT.VIEWS" xlink:title="1">
+								<gmd:LI_Source/>
+							</gmd:source>
+							<gmd:source xlink:type="Data Source" xlink:role="GRID" xlink:title="V:\EIS\ES42_3.3 3D Database and Modelling\Users\RuthMURDIE\Geosoft\Sst_grav_1000_nomean.grd">
+								<gmd:LI_Source/>
+							</gmd:source>
+						</gmd:LI_ProcessStep>
+					</gmd:processStep>
+				</gmd:LI_Lineage>
+			</gmd:lineage>
+		</gmd:DQ_DataQuality>
+	</gmd:dataQualityInfo>
+	<gmd:identificationInfo>
+		<gmd:MD_DataIdentification>
+			<gmd:citation>
+				<gmd:CI_Citation>
+					<gmd:title>
+						<gco:CharacterString>Sst_grav_image</gco:CharacterString>
+					</gmd:title>
+					<gmd:collectiveTitle>
+						<gco:CharacterString>v:\eis\es42_3.3 3d database and modelling\users\ruthmurdie\geosoft\sandstone.gpf</gco:CharacterString>
+					</gmd:collectiveTitle>
+					<gmd:date>
+						<gmd:CI_Date>
+							<gmd:date>
+								<gco:Date>2015-8-10</gco:Date>
+							</gmd:date>
+						</gmd:CI_Date>
+					</gmd:date>
+				</gmd:CI_Citation>
+			</gmd:citation>
+			<gmd:resourceFormat>
+				<gmd:MD_Format>
+					<gmd:name>
+						<gco:CharacterString>tif</gco:CharacterString>
+					</gmd:name>
+				</gmd:MD_Format>
+			</gmd:resourceFormat>
+			<gmd:pointOfContact>
+				<gmd:CI_ResponsibleParty>
+					<gmd:individualName>
+						<gco:CharacterString>MURDIE, Ruth</gco:CharacterString>
+					</gmd:individualName>
+				</gmd:CI_ResponsibleParty>
+			</gmd:pointOfContact>
+			<gmd:extent>
+				<gmd:EX_Extent>
+					<gmd:geographicElement>
+						<gmd:EX_GeographicBoundingBox>
+							<gmd:westBoundLongitude>
+								<gco:Decimal>119.06350830673692</gco:Decimal>
+							</gmd:westBoundLongitude>
+							<gmd:eastBoundLongitude>
+								<gco:Decimal>119.53669808300631</gco:Decimal>
+							</gmd:eastBoundLongitude>
+							<gmd:southBoundLatitude>
+								<gco:Decimal>-28.358401145357472</gco:Decimal>
+							</gmd:southBoundLatitude>
+							<gmd:northBoundLatitude>
+								<gco:Decimal>-27.761395280551625</gco:Decimal>
+							</gmd:northBoundLatitude>
+						</gmd:EX_GeographicBoundingBox>
+					</gmd:geographicElement>
+				</gmd:EX_Extent>
+			</gmd:extent>
+		</gmd:MD_DataIdentification>
+	</gmd:identificationInfo>
+	<gmd:contact>
+		<gmd:CI_ResponsibleParty>
+			<gmd:individualName>
+				<gco:CharacterString>MURDIE, Ruth</gco:CharacterString>
+			</gmd:individualName>
+		</gmd:CI_ResponsibleParty>
+	</gmd:contact>
+	<gmd:dateStamp>
+		<gco:Date>2015-8-10</gco:Date>
+	</gmd:dateStamp>
+	<gmd:referenceSystemInfo>
+		<gmd:MD_ReferenceSystem>
+			<gmd:referenceSystemIdentifier>
+				<gmd:RS_Identifier>
+					<gmd:codeSpace>
+						<gco:CharacterString>ESRI</gco:CharacterString>
+					</gmd:codeSpace>
+					<gmd:code>
+						<gco:CharacterString>PROJCS["GDA_1994_MGA_Zone_50",GEOGCS["GCS_GDA_1994",DATUM["D_GDA_1994",SPHEROID["GRS_1980",6378137.0,298.257222101]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],PROJECTION["Transverse_Mercator"],PARAMETER["False_Easting",500000.0],PARAMETER["False_Northing",10000000.0],PARAMETER["Central_Meridian",117.0],PARAMETER["Scale_Factor",0.9996],PARAMETER["Latitude_Of_Origin",0.0],UNIT["Meter",1.0],AUTHORITY["EPSG",28350]]</gco:CharacterString>
+					</gmd:code>
+					<gmd:version>
+						<gco:CharacterString>1</gco:CharacterString>
+					</gmd:version>
+				</gmd:RS_Identifier>
+			</gmd:referenceSystemIdentifier>
+		</gmd:MD_ReferenceSystem>
+	</gmd:referenceSystemInfo>
+</gmd:MD_Metadata>

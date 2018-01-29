@@ -882,6 +882,14 @@ class InterpolatorData:
             (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
         """
 
+        # Avoid crashing my pc
+        import theano
+        if theano.config.optimizer != 'fast_run':
+            assert self.tg.grid_val_T.get_value().shape[0] * \
+                   np.math.factorial(len(self.tg.len_series_i.get_value())) < 2e7, \
+                   'The grid is too big for the number of scalar fields. Reduce the grid or change the' \
+                   'optimization flag to fast run'
+
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.interpolator.tg.input_parameters_list()
 
@@ -1105,14 +1113,6 @@ class InterpolatorData:
 
             # Extracting data from the pandas dataframe to numpy array in the required form for the theano function
             self.data_prep(**kwargs)
-
-            # Avoid crashing my pc
-            import theano
-            if theano.config.optimizer != 'fast_run':
-                assert self.tg.grid_val_T.get_value().shape[0] * \
-                       np.math.factorial(len(self.tg.len_series_i.get_value())) < 2e7, \
-                       'The grid is too big for the number of scalar fields. Reduce the grid or change the' \
-                       'optimization flag to fast run'
 
         def set_formation_number(self):
             """
