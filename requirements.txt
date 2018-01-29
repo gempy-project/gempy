@@ -1,4 +1,4 @@
-pandas
+pandas==0.22.0
 tqdm
 scikit_image
 Theano
