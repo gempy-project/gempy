@@ -12,6 +12,5 @@ ipython==6.2.1
 pymc==2.3.6
 seaborn==0.8.1
 setuptools==38.4.0
-skimage==0.0
 scikit_learn==0.19.1
 vtk==8.0.0.dev20170717
