@@ -163,7 +163,7 @@ class InputData(object):
         one of the two
 
         Args:
-            itype: input data type, either 'orientations', 'interfaces' or 'all' for both.
+            itype: input_data data type, either 'orientations', 'interfaces' or 'all' for both.
             numeric(bool): Return only the numerical values of the dataframe. This is much lighter database for storing
                 traces
             verbosity (int): Number of properties shown
@@ -217,7 +217,7 @@ class InputData(object):
     #      the table and i_close_set_data to recompute the parameters that depend on the changes made. I did not find a
     #      easier solution than calling two different methods.
     #     Args:
-    #         itype: input data type, either 'orientations' or 'interfaces'
+    #         itype: input_data data type, either 'orientations' or 'interfaces'
     #
     #     Returns:
     #         pandas.core.frame.DataFrame: Data frame with the changed data on real time
@@ -258,7 +258,7 @@ class InputData(object):
     #      the table and i_close_set_data to recompute the parameters that depend on the changes made. I did not find a
     #      easier solution than calling two different methods.
     #     Args:
-    #         itype: input data type, either 'orientations' or 'interfaces'
+    #         itype: input_data data type, either 'orientations' or 'interfaces'
     #
     #     Returns:
     #         pandas.core.frame.DataFrame: Data frame with the changed data on real time
@@ -274,7 +274,7 @@ class InputData(object):
     def import_data_csv(self, path_i, path_o, **kwargs):
         """
         Method to import interfaces and orientations from csv. The format is the same as the export 3D model data of
-        GeoModeller (check in the input data folder for an example).
+        GeoModeller (check in the input_data data folder for an example).
 
         Args:
             path_i (str): path to the csv table
@@ -607,7 +607,7 @@ class InputData(object):
 
     def set_annotations(self):
         """
-        Add a column in the Dataframes with latex names for each input paramenter.
+        Add a column in the Dataframes with latex names for each input_data paramenter.
 
         Returns:
             None
@@ -820,9 +820,9 @@ class InterpolatorData:
           up the computation. Default True
         u_grade (list): grade of the polynomial for the universal part of the Kriging interpolations. The value has to
         be either 0, 3 or 9 (number of equations) and the length has to be the number of series. By default the value
-        depends on the number of points given as input to try to avoid singular matrix. NOTE: if during the computation
+        depends on the number of points given as input_data to try to avoid singular matrix. NOTE: if during the computation
         of the model a singular matrix is returned try to reduce the u_grade of the series.
-        rescaling_factor (float): rescaling factor of the input data to improve the stability when float32 is used. By
+        rescaling_factor (float): rescaling factor of the input_data data to improve the stability when float32 is used. By
         defaut the rescaling factor is calculated to obtein values between 0 and 1.
 
     Keyword Args:
@@ -870,7 +870,7 @@ class InterpolatorData:
 
     def compile_th_fn(self, output):
         """
-        Compile the theano function given the input data.
+        Compile the theano function given the input_data data.
 
         Args:
             compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
@@ -878,17 +878,10 @@ class InterpolatorData:
               up the computation. Default True
 
         Returns:
-            theano.function: Compiled function if C or CUDA which computes the interpolation given the input data
+            theano.function: Compiled function if C or CUDA which computes the interpolation given the input_data data
             (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
         """
 
-        # Avoid crashing my pc
-        import theano
-        if theano.config.optimizer != 'fast_run':
-            assert self.tg.grid_val_T.get_value().shape[0] * \
-                   np.math.factorial(len(self.tg.len_series_i.get_value())) < 2e7, \
-                   'The grid is too big for the number of scalar fields. Reduce the grid or change the' \
-                   'optimization flag to fast run'
 
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.interpolator.tg.input_parameters_list()
@@ -1020,16 +1013,16 @@ class InterpolatorData:
 
     def get_input_data(self, u_grade=None):
         """
-        Get the theano variables that are input. This are necessary to compile the theano function
+        Get the theano variables that are input_data. This are necessary to compile the theano function
         or a theno op for pymc3
         Args:
              u_grade (list): grade of the polynomial for the universal part of the Kriging interpolations. The value has to
             be either 0, 3 or 9 (number of equations) and the length has to be the number of series. By default the value
-            depends on the number of points given as input to try to avoid singular matrix. NOTE: if during the computation
+            depends on the number of points given as input_data to try to avoid singular matrix. NOTE: if during the computation
             of the model a singular matrix is returned try to reduce the u_grade of the series.
 
         Returns:
-            theano.variables: input nodes of the theano graph
+            theano.variables: input_data nodes of the theano graph
         """
 
         if not u_grade:
@@ -1105,6 +1098,14 @@ class InterpolatorData:
             # See theanograf doc
             self.tg = theano_graph.TheanoGraph(output=output, optimizer=theano_optimizer, dtype=self.dtype, verbose=verbose, )
 
+            # Avoid crashing my pc
+            import theano
+            if theano.config.optimizer != 'fast_run':
+                assert self.tg.grid_val_T.get_value().shape[0] * \
+                       np.math.factorial(len(self.tg.len_series_i.get_value())) < 2e7, \
+                    'The grid is too big for the number of scalar fields. Reduce the grid or change the' \
+                    'optimization flag to fast run'
+
             # Sorting data in case the user provides it unordered
             self.order_table()
 
@@ -1166,12 +1167,12 @@ class InterpolatorData:
 
         def data_prep(self, **kwargs):
             """
-            Ideally this method will only extract the data from the pandas dataframes to individual numpy arrays to be input
+            Ideally this method will only extract the data from the pandas dataframes to individual numpy arrays to be input_data
             of the theano function. However since some of the shared parameters are function of these arrays shape I also
             set them here
 
             Returns:
-                idl (list): List of arrays which are the input for the theano function:
+                idl (list): List of arrays which are the input_data for the theano function:
 
                     - numpy.array: dips_position
                     - numpy.array: dip_angles
@@ -1276,7 +1277,7 @@ class InterpolatorData:
             """
             Here we create most of the kriging parameters. The user can pass them as kwargs otherwise we pick the
             default values from the DataManagement info. The share variables are set in place. All the parameters here
-            are independent of the input data so this function only has to be called if you change the extent or grid or
+            are independent of the input_data data so this function only has to be called if you change the extent or grid or
             if you want to change one the kriging parameters.
 
             Keyword Args:

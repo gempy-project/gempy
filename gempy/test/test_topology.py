@@ -10,8 +10,8 @@ import gempy as gp
 def topo_geodata():
     # initialize geo_data object
     geo_data = gp.create_data([0, 3000, 0, 20, 0, 2000], resolution=[3, 3, 3])
-    geo_data.import_data_csv(path_i="../../notebooks/input_data/ch6_data_interf",
-                             path_o="../../notebooks/input_data/ch6_data_fol")
+    geo_data.import_data_csv(path_i="input_data/ch6_data_interf",
+                             path_o="input_data/ch6_data_fol")
 
     gp.set_series(geo_data, {"fault": geo_data.get_formations()[np.where(geo_data.get_formations() == "Fault")[0][0]],
                              "Rest": np.delete(geo_data.get_formations(),
@@ -20,7 +20,6 @@ def topo_geodata():
                   order_formations=['Fault', 'Layer 2', 'Layer 3', 'Layer 4', 'Layer 5'])
 
     return geo_data
-
 
 @pytest.fixture
 def topo_lb_fb():
