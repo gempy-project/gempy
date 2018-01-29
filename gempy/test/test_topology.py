@@ -10,8 +10,8 @@ import gempy as gp
 def topo_geodata():
     # initialize geo_data object
     geo_data = gp.create_data([0, 3000, 0, 20, 0, 2000], resolution=[3, 3, 3])
-    geo_data.import_data_csv(path_i="input_data/ch6_data_interf",
-                             path_o="input_data/ch6_data_fol")
+    geo_data.import_data_csv(path_i="input_data/ch6_data_interf.csv",
+                             path_o="input_data/ch6_data_fol.csv")
 
     gp.set_series(geo_data, {"fault": geo_data.get_formations()[np.where(geo_data.get_formations() == "Fault")[0][0]],
                              "Rest": np.delete(geo_data.get_formations(),
