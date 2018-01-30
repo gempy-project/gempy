@@ -9,7 +9,7 @@
 [![Read the Docs (version)](https://img.shields.io/readthedocs/pip/stable.svg)]()
 [![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)]()
 
-![blender-model](docs/source/images/model_examples.png) 
+<p align="center"><img src="docs/source/images/model_examples.png" width="700"></p>
 
 *GemPy* is an Python-based, open-source library for implicitly generating 3D structural geological models. It is capable of 
 constructing complex 3D geological models of folded structures, fault networks and unconformities. It was designed from the 
@@ -36,14 +36,14 @@ Lajaunie et al. (1997) and extended by Calcagno et al. (2008). Its implicit natu
 *GemPy* also allows for the definition of topological elements such as combining multiple stratigraphic sequences and 
 complex fault networks to be considered in the modeling process.
 
-<img src="docs/source/images/modeling_principle.png" width="600">
+<p align="center"><img src="docs/source/images/modeling_principle.png" width="600"></p>
 
 *GemPy* itself offers direct visualization of 2D model sections via matplotlib
 and in full, interactive 3D using the Visualization Toolkit (VTK). The VTK support also allow to the real time maniulation
  of the 3-D model, allowing for the exact modification of data. Models can also easily be exportes in VTK file format 
 for further visualization and processing in other software such as ParaView.
 
-<img src="docs/source/images/gempy-animation.gif" width="600">
+<p align="center"><img src="docs/source/images/gempy-animation.gif" width="600"></p>
 
 *GemPy* was designed from the beginning to support stochastic geological modeling for uncertainty analysis (e.g. Monte Carlo simulations, Bayesian inference). This was achieved by writing *GemPy*'s core architecture
 using the numerical computation library [Theano](http://deeplearning.net/software/theano/) to couple it with the probabilistic programming framework [PyMC3](https://pymc-devs.github.io/pymc3/notebooks/getting_started.html).
@@ -53,7 +53,7 @@ uncertainties in the model input data and making use of additional secondary inf
 We can, for example, include uncertainties with respect to the z-position of layer boundaries
 in the model space. Simple Monte Carlo simulation via PyMC will then result in different model realizations:
 
-<img src="docs/source/images/gempy_zunc.png" width="400"> <img src="docs/source/images/model_wobble.gif" width="480" height="400">
+<p align="center"><img src="docs/source/images/gempy_zunc.png" height="300"> <img src="docs/source/images/model_wobble.gif" height="300"></p>
 
 Theano allows the automated computation of gradients opening the door to the use of advanced gradient-based sampling methods
 coupling *GeMpy* and [PyMC3](https://pymc-devs.github.io/pymc3/notebooks/getting_started.html) for advanced stochastic modeling.
