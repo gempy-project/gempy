@@ -1,6 +1,6 @@
 # GemPy
 
-> Open-source, implicit structural geological modeling in 3D
+> Open-source, implicit 3D structural geological modeling in Python for uncertainty analysis.
 
 [![PyPI](https://img.shields.io/badge/python-3-blue.svg)]()
 [![PyPI](https://img.shields.io/badge/pypi-1.0-blue.svg)]()
@@ -12,7 +12,8 @@
 ![blender-model](docs/source/images/model_examples.png) 
 
 *GemPy* is an Python-based, open-source library for implicitly generating 3D structural geological models. It is capable of 
-constructing complex 3D geological models of folded structures, fault networks and unconformities.
+constructing complex 3D geological models of folded structures, fault networks and unconformities. It was designed from the 
+ground up to support easy embedding in probabilistic frameworks for the uncertainty analysis of subsurface structures.
 
 ## Table of Contents
 
@@ -28,8 +29,8 @@ The core algorithm of *GemPy* is based on a universal cokriging interpolation me
 Lajaunie et al. (1997) and extended by Calcagno et al. (2008). Its implicit nature allows the user to automatically 
  generate complex 3D structural geological models through the interpolation of input data:
 
-- Surface contact points: 3D coordinates of points marking the boundaries between different features (e.g. layer interfaces, fault planes, unconformities).
-- Orientation measurements: Orientation of the poles perpendicular to the dipping of surfaces at any point in the 3D space.
+- *Surface contact points*: 3D coordinates of points marking the boundaries between different features (e.g. layer interfaces, fault planes, unconformities).
+- *Orientation measurements*: Orientation of the poles perpendicular to the dipping of surfaces at any point in the 3D space.
 
 *GemPy* also allows for the definition of topological elements such as combining multiple stratigraphic sequences and 
 complex fault networks to be considered in the modeling process.
