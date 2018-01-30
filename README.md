@@ -66,7 +66,7 @@ For a more detailed elaboration of the theory behind *GemPy*, take a look at the
 
 ### Dependecies
 
-*GemPy* requires [![PyPI](https://img.shields.io/badge/python-3-blue.svg)]() and makes use of numerous open-source libraries:
+*GemPy* requires Python 3 and makes use of numerous open-source libraries:
 
 * pandas
 * tqdm
@@ -95,7 +95,8 @@ its dependencies.
 
 ### Installation
 
-We provide the latest release version of *GemPy* via the **Conda** and **PyPi** package services.
+We provide the latest release version of *GemPy* via the **Conda** and **PyPi** package services. We highly
+recommend using either Conda or PyPi as both will take care of automatically installing all dependencies.
 
 #### Conda
 
@@ -115,7 +116,7 @@ and then manually install it using the provided Python install file by calling
 
 `$ python install.py`
 
-in the cloned or downloaded repository folder.
+in the cloned or downloaded repository folder. Make sure you have installed all necessary dependencies listed above before using *GemPy*.
 
 ## Documentation
 
