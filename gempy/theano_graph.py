@@ -169,6 +169,10 @@ class TheanoGraph(object):
         self.lith_block_init.name = 'final block of lithologies init'
         self.pfai_lith = T.zeros((0, self.n_formations_per_serie[-1]))
 
+        # Init gray voxels for gravity
+        self.weigths_weigths = theano.shared(np.ones(0))
+        self.weigths_index = theano.shared(np.ones(0, dtype='int'))
+
 
     def input_parameters_list(self):
         """
@@ -1288,10 +1292,6 @@ class TheanoGraph(object):
                                      sequences=[formations, self.densities],
                                     return_list = True
         )
-
-
-        self.weigths_weigths = theano.shared(np.ones((0)))
-        self.weigths_index = theano.shared(np.ones((0), dtype='int'))
 
         density_block_loop_f = T.set_subtensor(density_block_loop[-1][-1][self.weigths_index], self.weigths_weigths)
         if 'density_block' in self.verbose:

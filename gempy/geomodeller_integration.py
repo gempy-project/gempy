@@ -47,12 +47,34 @@ def read_vox(geo_data, path):
     geo_res = geo_res.iloc[9:]
 
     # ip_addresses = geo_res['nx 50'].unique()  # geo_data.interfaces["formation"].unique()
-    ip_dict = geo_data.interfaces['formation number'].unique()
+    ip_dict = geo_data.get_formation_number()
+  #  ip_dict = geo_data.interfaces['formation number'].unique()
 
     geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
     block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
-        self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
+        geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2], order='C').T)
     return block_geomodeller
+
+# Code to check the mismatch between geomodeller and gempy. We have to compare bottoms!
+  # mismatch = ~np.isclose(sol[0][0, :], real_sol[0][0, :], rtol=0.01).sum()/sol[0][0].shape[0]
+  # assert mismatch * 100 < 1
+  # #  GeoMod_sol = geo_data._read_vox('./GeoModeller/test_f/test_f.vox')
+  #   import gempy.geomodeller_integration as geomodeller_integration
+  #
+  #   GeoMod_sol = geomodeller_integration.read_vox(geo_data, './GeoModeller/test_f/test_f.vox')
+  #   op1 = (GeoMod_sol - sol[0][0, :])
+  #   gempy.plot_section(geo_data, GeoMod_sol, 25, direction='y', plot_data=True)
+  #
+  #   plt.savefig('test_f.png', dpi=200)
+  #
+  #   op2 = (op1 != 0).sum()
+  #   similarity = op2/sol[0][0].shape[0]
+  #   #similarity = ((GeoMod_sol - sol[0][0, :]) != 0).sum() / sol[0][0].shape[0]
+  #
+  #   print('The mismatch geomodeller-gempy is ', similarity*100, '%')
+  #   assert similarity < 0.05, 'The mismatch with geomodeller is too high'
+
+
 
 class GeomodellerClass:
     """Wrapper for GeoModeller XML-datafiles to perform all kinds of data
