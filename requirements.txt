@@ -11,3 +11,4 @@ seaborn
 setuptools
 scikit_learn
 networkx==1.11
+nbsphinx

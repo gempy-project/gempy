@@ -6,7 +6,7 @@
 [![PyPI](https://img.shields.io/badge/pypi-1.0-blue.svg)]()
 [![PyPI](https://img.shields.io/badge/conda-1.0-blue.svg)]()
 [![license: LGPL v3](https://img.shields.io/badge/license-LGPL%20v3-blue.svg)]()
-[![Read the Docs (version)](https://img.shields.io/readthedocs/pip/stable.svg)]()
+[![Documentation Status](https://readthedocs.org/projects/gempy/badge/?version=latest)](http://gempy.readthedocs.io/?badge=latest)
 [![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)]()
 
 <p align="center"><img src="docs/source/images/model_examples.png" width="700"></p>
