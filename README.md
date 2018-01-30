@@ -3,8 +3,9 @@
 [![PyPI](https://img.shields.io/badge/pypi-1.0-green.svg)]()
 [![PyPI](https://img.shields.io/badge/conda-1.0-green.svg)]()
 [![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)]()
-[![Read the Docs (version)](https://img.shields.io/readthedocs/pip/stable.svg)]()
+[![Documentation Status](https://readthedocs.org/projects/gempy/badge/?version=latest)](http://gempy.readthedocs.io/?badge=latest)
 [![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)]()
+
 
 GemPy is an open-source tool for generating 3D structural geological models in Python (GemPy's code can be viewed in its repository: https://github.com/cgre-aachen/GeMpy.)
 It is capable of creating complex 3D geological models,
