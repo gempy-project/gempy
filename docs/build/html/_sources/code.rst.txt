@@ -3,14 +3,17 @@ Code
 
 .. toctree::
 
-.. automodule:: GemPy_f
+.. automodule:: gempy_front
     :members:
-.. automodule:: DataManagement
+.. automodule:: data_management
     :members:
-.. automodule:: theanograf
+.. automodule:: theano_graph
     :members:
-.. automodule:: GeoPhysics
+.. automodule:: geophysics
     :members:
-.. automodule:: Visualization
+.. automodule:: topology
     :members:
-
+.. automodule:: posterior_analysis
+    :members:
+.. automodule:: visualization
+    :members:
