@@ -1,67 +1,57 @@
 # GemPy
 
-[![PyPI](https://img.shields.io/badge/pypi-1.0-green.svg)]()
-[![PyPI](https://img.shields.io/badge/conda-1.0-green.svg)]()
-[![License: LGPL v3](https://img.shields.io/badge/License-LGPL%20v3-blue.svg)]()
+> Open-source, implicit structural geological modeling in 3D
+
+[![PyPI](https://img.shields.io/badge/python-3-blue.svg)]()
+[![PyPI](https://img.shields.io/badge/pypi-1.0-blue.svg)]()
+[![PyPI](https://img.shields.io/badge/conda-1.0-blue.svg)]()
+[![license: LGPL v3](https://img.shields.io/badge/license-LGPL%20v3-blue.svg)]()
 [![Read the Docs (version)](https://img.shields.io/readthedocs/pip/stable.svg)]()
 [![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)]()
 
-GemPy is an open-source tool for generating 3D structural geological models in Python (GemPy's code can be viewed in its repository: https://github.com/cgre-aachen/GeMpy.)
-It is capable of creating complex 3D geological models,
-including stratigraphic and structural features such as:
+![blender-model](docs/source/images/model_examples.png) 
 
-- fold structures (e.g.: anticlines, synclines)
-- fault networks and fault-layer interactions
-- unconformities
+*GemPy* is an Python-based, open-source library for implicitly generating 3D structural geological models. It is capable of 
+constructing complex 3D geological models of folded structures, fault networks and unconformities.
 
 ## Table of Contents
 
-* [Examples](##Examples)
+* [Features](##Features)
 * [Getting Started](##GettingStarted)
-    * [Prerequisits](###Prerequisits)
+    * [Dependecies](###Dependecies)
     * [Installation](###Installation)
 * [Documentation](##Documentation)
 
+## Features
 
-## Examples
+The core algorithm of *GemPy* is based on a universal cokriging interpolation method devised by
+Lajaunie et al. (1997) and extended by Calcagno et al. (2008). Its implicit nature allows the user to automatically 
+ generate complex 3D structural geological models through the interpolation of input data:
 
-3D models created with GemPy may look like this:
-
-![blender-model](docs/source/images/model_examples.png)
-
-
-The core algorithm is based on a universal cokriging interpolation method devised by
-Lajaunie et al. (1997) and further elaborated by Calcagno et al. (2008).
-Its implicit nature allows the user to generate complete 3D geological models
-through the interpolation of input data consisting of:
-
-- Surface contact points: 3D coordinates of points marking the boundaries between different features.
+- Surface contact points: 3D coordinates of points marking the boundaries between different features (e.g. layer interfaces, fault planes, unconformities).
 - Orientation measurements: Orientation of the poles perpendicular to the dipping of surfaces at any point in the 3D space.
 
-GemPy also allows for the definition of topological elements such as stratigraphic sequences and fault networks to be considered in this process.
+*GemPy* also allows for the definition of topological elements such as combining multiple stratigraphic sequences and 
+complex fault networks to be considered in the modeling process.
 
-![modeling-steps](docs/source/images/modeling_principle.png)
+[modeling-steps](docs/source/images/modeling_principle.png)
 
+*GemPy* itself offers direct visualization of 2D model sections via matplotlib
+and in full, interactive 3D using the Visualization Toolkit (VTK). The VTK support also allow to the real time maniulation
+ of the 3-D model, allowing for the exact modification of data. Models can also easily be exportes in VTK file format 
+for further visualization and processing in other software such as ParaView.
 
-GemPy itself offers direct visualization of 2D sections via matplotlib
-and in full 3D using the Visualization Toolkit (VTK). The VTK support also allow to the real time maniulation
- of the 3-D model, facilitating the exact placement of the data. These VTK files can also be exported
-for further processing in programs such as Paraview.
+[modeling-steps](docs/source/images/gempy-animation.gif)
 
-![modeling-steps](docs/source/images/gempy-animation.gif)
-
-
-GemPy was furthermore designed to allow the performance of
-Bayesian inference for stochastic geological modeling. This was achieved by writing GemPy's core algorithm
-in Theano (http://deeplearning.net/software/theano/) and coupling it with PyMC3 (https://pymc-devs.github.io/pymc3/notebooks/getting_started.html).
-This enables the use of advanced HMC methods and is of particular relevance when considering
-uncertainties in model input data and the availability of additional secondary information.
+*GemPy* was designed from the beginning to support stochastic geological modeling for uncertainty analysis (e.g. Monte Carlo simulations, Bayesian inference). This was achieved by writing *GemPy*'s core architecture
+using the numerical computation library [Theano](http://deeplearning.net/software/theano/) to couple it with the probabilistic programming framework [PyMC3](https://pymc-devs.github.io/pymc3/notebooks/getting_started.html).
+This enables the use of advanced sampling methods (e.g. Hamiltonian Monte Carlo) and is of particular relevance when considering
+uncertainties in the model input data and making use of additional secondary information in a Bayesian inference framework.
 
 We can, for example, include uncertainties with respect to the z-position of layer boundaries
 in the model space. Simple Monte Carlo simulation via PyMC will then result in different model realizations:
 
 <img src="docs/source/images/gempy_zunc.png" width="400" height="400"> <img src="docs/source/images/model_wobble.gif" width="480" height="400">
-
 
 This opens the path to...
 
@@ -76,7 +66,7 @@ For a more detailed elaboration of the theory behind GemPy, take a look at the u
 
 ## Getting Started
 
-### Prerequisits
+### Dependecies
 
 GemPy requires `Python 3.X` and makes use of numerous open-source libraries:
 
