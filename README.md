@@ -9,7 +9,7 @@
 [![Read the Docs (version)](https://img.shields.io/readthedocs/pip/stable.svg)]()
 [![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)]()
 
-<p align="center"><img src="docs/source/images/model_examples.png" width="700"></p>
+<p align="center"><img src="docs/source/images/model_examples.png" width="800"></p>
 
 *GemPy* is an Python-based, open-source library for implicitly generating 3D structural geological models. It is capable of 
 constructing complex 3D geological models of folded structures, fault networks and unconformities. It was designed from the 
