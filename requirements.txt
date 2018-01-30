@@ -1,6 +1,6 @@
 pandas==0.22.0
 tqdm
-scikit_image
+scikit_image=>0.19
 Theano
 matplotlib
 numpy
