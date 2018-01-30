@@ -537,10 +537,10 @@ class InputData(object):
 
         # Now we fill the column series in the interfaces and orientations tables with the correspondant series and
         # assigned number to the series
-        self.interfaces["series"] = [(i == _series).sum().argmax() for i in self.interfaces["formation"]]
+        self.interfaces["series"] = [(i == _series).sum().idxmax() for i in self.interfaces["formation"]]
         self.interfaces["order_series"] = [(i == _series).sum().as_matrix().argmax() + 1
                                            for i in self.interfaces["formation"]]
-        self.orientations["series"] = [(i == _series).sum().argmax() for i in self.orientations["formation"]]
+        self.orientations["series"] = [(i == _series).sum().idxmax() for i in self.orientations["formation"]]
         self.orientations["order_series"] = [(i == _series).sum().as_matrix().argmax() + 1
                                            for i in self.orientations["formation"]]
 

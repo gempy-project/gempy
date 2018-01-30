@@ -1,17 +1,20 @@
+import os
+import sys
 import pytest
 import numpy as np
-import sys
+from .context import gempy as gp
 
-sys.path.append("../")
-import gempy as gp
-
+TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture
 def topo_geodata():
     # initialize geo_data object
+
+    sys.path.insert(0, TEST_DIR)
+
     geo_data = gp.create_data([0, 3000, 0, 20, 0, 2000], resolution=[3, 3, 3])
-    geo_data.import_data_csv(path_i="input_data/ch6_data_interf.csv",
-                             path_o="input_data/ch6_data_fol.csv")
+    geo_data.import_data_csv(path_i=TEST_DIR+"/input_data/ch6_data_interf.csv",
+                             path_o=TEST_DIR+"/input_data/ch6_data_fol.csv")
 
     gp.set_series(geo_data, {"fault": geo_data.get_formations()[np.where(geo_data.get_formations() == "Fault")[0][0]],
                              "Rest": np.delete(geo_data.get_formations(),
