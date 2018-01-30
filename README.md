@@ -34,14 +34,14 @@ Lajaunie et al. (1997) and extended by Calcagno et al. (2008). Its implicit natu
 *GemPy* also allows for the definition of topological elements such as combining multiple stratigraphic sequences and 
 complex fault networks to be considered in the modeling process.
 
-[modeling-steps](docs/source/images/modeling_principle.png)
+![modeling-steps](docs/source/images/modeling_principle.png)
 
 *GemPy* itself offers direct visualization of 2D model sections via matplotlib
 and in full, interactive 3D using the Visualization Toolkit (VTK). The VTK support also allow to the real time maniulation
  of the 3-D model, allowing for the exact modification of data. Models can also easily be exportes in VTK file format 
 for further visualization and processing in other software such as ParaView.
 
-[modeling-steps](docs/source/images/gempy-animation.gif)
+![modeling-steps](docs/source/images/gempy-animation.gif)
 
 *GemPy* was designed from the beginning to support stochastic geological modeling for uncertainty analysis (e.g. Monte Carlo simulations, Bayesian inference). This was achieved by writing *GemPy*'s core architecture
 using the numerical computation library [Theano](http://deeplearning.net/software/theano/) to couple it with the probabilistic programming framework [PyMC3](https://pymc-devs.github.io/pymc3/notebooks/getting_started.html).
