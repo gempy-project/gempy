@@ -10,4 +10,4 @@ ipython
 seaborn
 setuptools
 scikit_learn
-
+networkx
