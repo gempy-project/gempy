@@ -648,7 +648,7 @@ def select_series(geo_data, series):
 
 
 def set_series(geo_data, series_distribution=None, order_series=None, order_formations=None,
-               verbose=1):
+               verbose=0):
     """
     Method to define the different series of the project.
 
