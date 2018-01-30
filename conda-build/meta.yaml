@@ -1,0 +1,50 @@
+{% set name = "gempy" %}
+{% set version = "0.9991" %}
+{% set file_ext = "tar.gz" %}
+{% set hash_type = "sha256" %}
+{% set hash_value = "78074ae696844b2f5c8e5c5050e4a741dec7b7698676a4072f443735fdcb2ac6" %}
+
+package:
+  name: '{{ name|lower }}'
+  version: '{{ version }}'
+
+source:
+  fn: '{{ name }}-{{ version }}.{{ file_ext }}'
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.{{ file_ext }}
+  '{{ hash_type }}': '{{ hash_value }}'
+
+build:
+  number: 0
+  script: python setup.py install --single-version-externally-managed --record=record.txt
+
+requirements:
+  host:
+    - python
+    - setuptools
+    - numpy
+    - pandas
+    - matplotlib
+    - theano
+    - scikit-image
+    - seaborn
+  run:
+    - python
+    - numpy
+    - pandas
+    - matplotlib
+    - theano
+    - scikit-image
+    - seaborn
+
+about:
+  home: https://github.com/cgre-aachen/gempy
+  license: MIT
+  license_family: MIT
+  license_file: ''
+  summary: An Open-source, Python-based 3-D structural geological modeling software.
+  description: ''
+  doc_url: ''
+  dev_url: ''
+
+extra:
+  recipe-maintainers: ''
