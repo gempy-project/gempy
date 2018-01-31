@@ -287,15 +287,19 @@ class InputData(object):
         """
 
         if path_o:
-            self.orientations = self.load_data_csv(data_type="orientations", path=path_o, **kwargs)
-            assert set(['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']).issubset(self.orientations.columns), \
-                "One or more columns do not match with the expected values " + str(self.orientations.columns)
-            self.orientations = self.orientations[['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']]
+            orientations_read = self.load_data_csv(data_type="orientations", path=path_o, **kwargs)
+
+            assert set(['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']).issubset(orientations_read.columns),\
+                "One or more columns do not match with the expected values " + str(orientations_read.columns)
+
+            self.orientations[orientations_read.columns] = orientations_read[orientations_read.columns]
 
         if path_i:
-            self.interfaces = self.load_data_csv(data_type="interfaces", path=path_i, **kwargs)
-            assert set(['X', 'Y', 'Z', 'formation']).issubset(self.interfaces.columns), \
-                "One or more columns do not match with the expected values " + str(self.interfaces.columns)
+            interfaces_read = self.load_data_csv(data_type="interfaces", path=path_i, **kwargs)
+            assert set(['X', 'Y', 'Z', 'formation']).issubset(interfaces_read.columns), \
+                "One or more columns do not match with the expected values " + str(interfaces_read.columns)
+
+            self.interfaces[interfaces_read.columns] = interfaces_read[interfaces_read.columns]
 
     def modify_interface(self, index, **kwargs):
         """
@@ -943,14 +947,6 @@ class InterpolatorData:
         new_coord_orientations = (geo_data.orientations[['X', 'Y', 'Z']] -
                                 centers) / rescaling_factor + 0.5001
 
-        # Rescaling the std in case of stochastic values
-        try:
-            geo_data.interfaces[['X_std', 'Y_std', 'Z_std']] = (geo_data.interfaces[
-                                                                    ['X_std', 'Y_std', 'Z_std']]) / rescaling_factor
-            geo_data.orientations[['X_std', 'Y_std', 'Z_std']] = (geo_data.orientations[
-                                                                    ['X_std', 'Y_std', 'Z_std']]) / rescaling_factor
-        except KeyError:
-            pass
 
         # Updating properties
         new_coord_extent = (geo_data.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
@@ -958,6 +954,11 @@ class InterpolatorData:
         geo_data_rescaled = copy.deepcopy(geo_data)
         geo_data_rescaled.interfaces[['X', 'Y', 'Z']] = new_coord_interfaces
         geo_data_rescaled.orientations[['X', 'Y', 'Z']] = new_coord_orientations
+
+        # Rescaling the std in case of stochastic values
+        geo_data_rescaled.interfaces[['X_std', 'Y_std', 'Z_std']] = geo_data.interfaces[['X_std', 'Y_std', 'Z_std']]/ rescaling_factor
+        geo_data_rescaled.orientations[['X_std', 'Y_std', 'Z_std']] = geo_data.orientations[['X_std', 'Y_std', 'Z_std']]/ rescaling_factor
+
         geo_data_rescaled.extent = new_coord_extent.as_matrix()
 
         geo_data_rescaled.grid.values = (geo_data.grid.values - centers.as_matrix()) / rescaling_factor + 0.5001
