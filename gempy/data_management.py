@@ -27,6 +27,7 @@ import numpy as np
 import pandas as pn
 from gempy import theano_graph
 import theano
+import warnings
 
 pn.options.mode.chained_assignment = None  #
 
@@ -57,7 +58,6 @@ class InputData(object):
                  **kwargs):
 
         if path_f and path_o is None:
-            import warnings
             warnings.warn('path_f is deprecated use instead path_o')
             path_o = path_f
 
@@ -189,11 +189,14 @@ class InputData(object):
         elif itype == 'interfaces':
             raw_data = self.interfaces[show_par_i].astype(dtype)
         elif itype == 'all':
-            raw_data = pn.concat([self.interfaces[show_par_i].astype(dtype),
-                                  self.orientations[show_par_f].astype(dtype)],
-                                 keys=['interfaces', 'orientations'])
+            raw_data = pn.concat([self.orientations[show_par_f].astype(dtype),
+                                  self.interfaces[show_par_i].astype(dtype)],
+                                 keys=['orientations', 'interfaces'])
         else:
             raise AttributeError('itype has to be: \'orientations\', \'interfaces\', or \'all\'')
+
+        # Be sure that the columns are in order
+        raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
         return raw_data
 
     def get_formation_number(self):
@@ -1001,8 +1004,13 @@ class InterpolatorData:
         """
 
         if geo_data:
-            geo_data_in = self.rescale_data(geo_data)
-            self.geo_data_res = geo_data_in
+            # Checking is geodata is already rescaled
+            if geo_data.rescaling_factor:
+                warnings.warn('You are passing a rescaled geo_data')
+                geo_data_in = self.geo_data_res
+            else:
+                geo_data_in = self.rescale_data(geo_data)
+                self.geo_data_res = geo_data_in
         else:
             geo_data_in = self.geo_data_res
 

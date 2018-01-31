@@ -202,9 +202,9 @@ class Posterior:
         # replace interface data
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
         # replace foliation data
-        interp_data.geo_data_res.foliations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = self.input_data[i][1]
+        interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = self.input_data[i][1]
 
-        recalc_gradients(interp_data.geo_data_res.foliations)
+        recalc_gradients(interp_data.geo_data_res.orientations)
 
         # update interpolator
         interp_data.update_interpolator()
@@ -232,7 +232,7 @@ class Posterior:
         fol_avrg = pn.concat(list_fol).groupby(level=0).mean()
 
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = interf_avrg
-        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = fol_avrg
+        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = fol_avrg
         interp_data.update_interpolator()
         return gp.compute_model(interp_data)
 
@@ -330,29 +330,29 @@ def modify_plane_dip(dip, group_id, data_obj):
         Directly modifies the given data object.
     """
     # get foliation and interface data points ids
-    fol_f = data_obj.foliations["group_id"] == group_id
+    fol_f = data_obj.orientations["group_id"] == group_id
     interf_f = data_obj.interfaces["group_id"] == group_id
 
     # get indices
     interf_i = data_obj.interfaces[interf_f].index
-    fol_i = data_obj.foliations[fol_f].index[0]
+    fol_i = data_obj.orientations[fol_f].index[0]
 
-    # update dip value for foliations
-    data_obj.foliations.set_value(fol_i, "dip", dip)
+    # update dip value for orientations
+    data_obj.orientations.set_value(fol_i, "dip", dip)
     # get azimuth and polarity
-    az = float(data_obj.foliations.iloc[fol_i]["azimuth"])
-    pol = data_obj.foliations.iloc[fol_i]["polarity"]
+    az = float(data_obj.orientations.iloc[fol_i]["azimuth"])
+    pol = data_obj.orientations.iloc[fol_i]["polarity"]
 
     # calculate gradient/normal and modify
     gx, gy, gz = calculate_gradient(dip, az, pol)
-    data_obj.foliations.set_value(fol_i, "G_x", gx)
-    data_obj.foliations.set_value(fol_i, "G_y", gy)
-    data_obj.foliations.set_value(fol_i, "G_z", gz)
+    data_obj.orientations.set_value(fol_i, "G_x", gx)
+    data_obj.orientations.set_value(fol_i, "G_y", gy)
+    data_obj.orientations.set_value(fol_i, "G_z", gz)
 
     normal = [gx, gy, gz]
-    centroid = np.array([float(data_obj.foliations[fol_f]["X"]),
-                         float(data_obj.foliations[fol_f]["Y"]),
-                         float(data_obj.foliations[fol_f]["Z"])])
+    centroid = np.array([float(data_obj.orientations[fol_f]["X"]),
+                         float(data_obj.orientations[fol_f]["Y"]),
+                         float(data_obj.orientations[fol_f]["Z"])])
     # move points vertically to fit plane
     move_plane_points(normal, centroid, data_obj, interf_f)
 
