@@ -189,9 +189,9 @@ class InputData(object):
         elif itype == 'interfaces':
             raw_data = self.interfaces[show_par_i].astype(dtype)
         elif itype == 'all':
-            raw_data = pn.concat([self.orientations[show_par_f].astype(dtype),
-                                  self.interfaces[show_par_i].astype(dtype)],
-                                 keys=['orientations', 'interfaces'])
+            raw_data = pn.concat([self.interfaces[show_par_i].astype(dtype),
+                                 self.orientations[show_par_f].astype(dtype)],
+                                 keys=['interfaces', 'orientations'])
         else:
             raise AttributeError('itype has to be: \'orientations\', \'interfaces\', or \'all\'')
 
@@ -1005,10 +1005,11 @@ class InterpolatorData:
 
         if geo_data:
             # Checking is geodata is already rescaled
-            if geo_data.rescaling_factor:
+            try:
+                getattr(geo_data, 'rescaling_factor')
                 warnings.warn('You are passing a rescaled geo_data')
                 geo_data_in = self.geo_data_res
-            else:
+            except AttributeError:
                 geo_data_in = self.rescale_data(geo_data)
                 self.geo_data_res = geo_data_in
         else:
