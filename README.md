@@ -11,7 +11,7 @@
 
 <p align="center"><img src="docs/source/images/model_examples.png" width="800"></p>
 
-*GemPy* is an Python-based, open-source library for implicitly generating 3D structural geological models. It is capable of 
+*GemPy* is a Python-based, open-source library for implicitly generating 3D structural geological models. It is capable of 
 constructing complex 3D geological models of folded structures, fault networks and unconformities. It was designed from the 
 ground up to support easy embedding in probabilistic frameworks for the uncertainty analysis of subsurface structures.
 
