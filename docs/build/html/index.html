@@ -55,7 +55,7 @@ including stratigraphic and structural features such as:</p>
 <li>fault networks and fault-layer interactions</li>
 <li>unconformities</li>
 </ul>
-<p>3D models created with GemPy may thus look like this:</p>
+<p>3D models created with GemPy may look like this:</p>
 <img alt="_images/model_example.png" src="_images/model_example.png" />
 <p>The core algorithm is based on a universal cokriging interpolation method devised by
 Lajaunie et al. (1997) and further elaborated by Calcagno et al. (2008).
@@ -65,11 +65,10 @@ through the interpolation of input data consisting of:</p>
 <li>Surface contact points: 3D coordinates of points marking the boundaries between different features.</li>
 <li>Orientation measurements: Orientation of the poles perpendicular to the dipping of surfaces at any point in the 3D space.</li>
 </ul>
-<p>Additionally, topological elements such as stratigraphic sequences and fault networks have to be
-defined in GemPy.</p>
+<p>GemPy also allows for the definition of topological elements such as stratigraphic sequences and fault networks to be considered in this process.</p>
 <img alt="_images/modeling_principle.png" src="_images/modeling_principle.png" />
 <p>GemPy itself offers direct visualization of 2D sections via matplotlib
-and in full 3D using VTK (Visualization Toolkit). These VTK files can also be exported
+and in full 3D using the Visualization Toolkit (VTK). These VTK files can also be exported
 for further processing in programs such as Paraview. GemPy can furthermore be easily
 embedded in Blender for 3D rendering.
 Another option is Steno3D, which allows for a flexible and interactive visualization of 3D models:</p>
@@ -88,7 +87,7 @@ in the model space. Simple Monte Carlo simulation via PyMC will then result in d
 of gradients opening the door to the use of advance HMC methods
 coupling GeMpy and PyMC3 (<a class="reference external" href="https://pymc-devs.github.io/pymc3/notebooks/getting_started.html">https://pymc-devs.github.io/pymc3/notebooks/getting_started.html</a>).
 Also, the use of theano allows the use of the GPU through cuda (see theano doc for more information).)</p>
-<p>For a more detail elaboration of the theory behind GemPy, take a look at the upcoming scientific publication
+<p>For a more detailed elaboration of the theory behind GemPy, take a look at the upcoming scientific publication
 “GemPy 1.0: open-source stochastic geological modeling and inversion” by de la Varga et al. (2018).</p>
 <p>Contents:</p>
 <div class="toctree-wrapper compound">
