@@ -71,7 +71,7 @@ class InputData(object):
         # TODO choose the default source of data. So far only csv
         # Create the pandas dataframes
         # if we dont read a csv we create an empty dataframe with the columns that have to be filled
-        self.orientations = pn.DataFrame(columns=['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity',
+        self.orientations = pn.DataFrame(columns=['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
                                                 'formation', 'series', 'X_std', 'Y_std', 'Z_std',
                                                 'dip_std', 'azimuth_std'])
 
@@ -174,7 +174,7 @@ class InputData(object):
         dtype = 'object'
 
         if verbosity == 0:
-            show_par_f = ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series']
+            show_par_f = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity', 'formation', 'series']
             show_par_i = ['X', 'Y', 'Z', 'formation', 'series']
         else:
             show_par_f = self.orientations.columns
