@@ -588,7 +588,7 @@ class vtkVisualization:
         s.n_sphere = n_sphere
         s.n_render = n_render
         s.index = n_index
-        s.AddObserver("EndInteractionEvent", self.sphereCallback) # EndInteractionEvent
+        s.AddObserver("EndInteractionEvent", self.sphereCallback)  # EndInteractionEvent
 
         s.On()
 
@@ -798,7 +798,7 @@ class vtkVisualization:
     def sphereCallback(self, obj, event):
         """
         Function that rules what happens when we move a sphere. At the moment we update the other 3 renderers and
-        update the pandas data frame
+        update the pandas data frame.
         """
 
         # Resetting the xy camera when a sphere is moving to be able to change only 2D
@@ -908,7 +908,7 @@ class vtkVisualization:
 
         # Modify Pandas DataFrame
         # update the gradient vector components and its location
-        self.geo_data.foliation_modify(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
+        self.geo_data.modify_orientation(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
                                        G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
         # update the dip and azimuth values according to the new gradient
         self.geo_data.calculate_orientations()
