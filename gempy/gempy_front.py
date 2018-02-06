@@ -382,6 +382,32 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
     return w
 
 
+def set_orientation_from_interfaces(geo_data, indices_array, verbose=0):
+
+    if _np.ndim(indices_array) is 1:
+        indices = indices_array
+        form = geo_data.interfaces['formation'].iloc[indices].unique()
+        assert form.shape[0] is 1, 'The interface points must belong to the same formation'
+
+        ori_parameters = geo_data.create_orientation_from_interfaces(indices)
+        geo_data.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+                                 dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
+                                 G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
+                                 formation=form)
+    elif _np.ndim(indices_array) is 2:
+        for indices in indices_array:
+            form = geo_data.interfaces['formation'].iloc[indices].unique()
+            assert form.shape[0] is 1, 'The interface points must belong to the same formation'
+
+            ori_parameters = geo_data.create_orientation_from_interfaces(indices)
+            geo_data.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+                                     dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
+                                     G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
+                                     formation=form[0])
+    if verbose:
+        get_data()
+
+
 def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
     """
     Plot the projection of the raw data (interfaces and orientations) in 2D following a

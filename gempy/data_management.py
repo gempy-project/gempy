@@ -132,6 +132,14 @@ class InputData(object):
                 faults_series.append(i)
         return faults_series
 
+    def create_orientation_from_interfaces(self, indices):
+
+        selected_points = self.interfaces[['X', 'Y', 'Z']].iloc[indices].values.T
+
+        center, normal = self.plane_fit(selected_points)
+        orientation = self.get_orientation(normal)
+        return [*center, *orientation, *normal]
+
     def data_to_pickle(self, path=False):
         """
         Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
@@ -215,6 +223,40 @@ class InputData(object):
             ip_addresses[i[0]] = e + 1
         ip_addresses['DefaultBasement'] = 0
         return ip_addresses
+
+    @staticmethod
+    def get_orientation(normal):
+        """Get orientation (dip, azimuth, polarity ) for points in all point set"""
+        #    if "normal" not in dir(self):
+        #        self.plane_fit()
+
+        # calculate dip
+        dip = np.arccos(normal[2]) / np.pi * 180.
+
+        # calculate dip direction
+        # +/+
+        if normal[0] >= 0 and normal[1] > 0:
+            dip_direction = np.arctan(normal[0] / normal[1]) / np.pi * 180.
+        # border cases where arctan not defined:
+        elif normal[0] > 0 and normal[1] == 0:
+            dip_direction = 90
+        elif normal[0] < 0 and normal[1] == 0:
+            dip_direction = 270
+        # +-/-
+        elif normal[1] < 0:
+            dip_direction = 180 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
+        # -/-
+        elif normal[0] < 0 and normal[1] >= 0:
+            dip_direction = 360 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
+
+        azimuth = dip_direction
+
+        if -90 < dip < 90:
+            polarity = 1
+        else:
+            polarity = -1
+
+        return dip, azimuth, polarity
 
     # DEP so far: Changing just a value from the dataframe gives too many problems
     # def i_open_set_data(self, itype="orientations"):
@@ -372,6 +414,46 @@ class InputData(object):
             self.calculate_gradient()
         if recalculate_orientations:
             self.calculate_orientations()
+
+    @staticmethod
+    def plane_fit(point_list):
+        """
+        Fit plane to points in PointSet
+        Fit an d-dimensional plane to the points in a point set.
+        adjusted from: http://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points
+
+        Args:
+            point_list (array_like): array of points XYZ
+
+        Returns:
+            Return a point, p, on the plane (the point-cloud centroid),
+            and the normal, n.
+        """
+
+        import numpy as np
+
+        #     points = np.empty((3, len(point_list)))
+        #     for i, point in enumerate(point_list):
+        #         points[0, i] = point.x
+        #         points[1, i] = point.y
+        #         points[2, i] = point.z
+        points = point_list
+
+        from numpy.linalg import svd
+        points = np.reshape(points, (np.shape(points)[0], -1))  # Collapse trialing dimensions
+        assert points.shape[0] <= points.shape[1], "There are only {} points in {} dimensions.".format(points.shape[1],
+                                                                                                       points.shape[0])
+        ctr = points.mean(axis=1)
+        x = points - ctr[:, np.newaxis]
+        M = np.dot(x, x.T)  # Could also use np.cov(x) here.
+
+        # ctr = Point(x=ctr[0], y=ctr[1], z=ctr[2], type='utm', zone=self.points[0].zone)
+        normal = svd(M)[0][:, -1]
+        # return ctr, svd(M)[0][:, -1]
+        if normal[2] < 0:
+            normal = - normal
+
+        return ctr, normal
 
     def add_orientation(self, **kwargs):
         """
@@ -555,8 +637,9 @@ class InputData(object):
                                            for i in self.orientations["formation"]]
 
         # We sort the series altough is only important for the computation (we will do it again just before computing)
-        self.interfaces.sort_values(by='order_series', inplace=True)
-        self.orientations.sort_values(by='order_series', inplace=True)
+        if series_distribution is not None:
+            self.interfaces.sort_values(by='order_series', inplace=True)
+            self.orientations.sort_values(by='order_series', inplace=True)
 
         # Save the dataframe in a property. This is used in the pile
         self.series = _series
@@ -698,71 +781,71 @@ class InputData(object):
                                         self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
         return block_geomodeller
 
-    # TODO Alex: Documentation
-    def set_triangle_orientations(self, verbose=False):
-        # next we need to iterate over every unique triangle id to create a orientation from each triplet
-        # of points and assign the same triange_id to it
-        tri_ids = np.unique(self.interfaces["triangle_id"])
-
-        # check if column in orientations too, else create it
-        if "triangle_id" not in self.orientations.columns:
-            self.orientations["triangle_id"] = "NaN"
-            if verbose:
-                print("Setting triangle_id column in geo_data.orientations.")
-
-        # loop over all triangle_id's
-        for tri_id in tri_ids[tri_ids != "NaN"]:
-            # get the three points dataframe
-            _filter = self.interfaces["triangle_id"] == tri_id
-
-            # check if triangle orientation value already exists
-            if tri_id in np.unique(self.orientations["triangle_id"]):
-                if verbose:
-                    print("triangle_id already in geo_data.orientations - skipping it.")
-                continue  # if yes, continue with the next iteration not not double append
-
-            if verbose:
-                print("tri_id: "+tri_id)
-            if len(self.interfaces[_filter]) == 3:
-                # get points as [x,y,z]
-                _points = []
-                for i, interf in self.interfaces[_filter].iterrows():
-                    _points.append([interf["X"], interf["Y"], interf["Z"]])
-                if verbose:
-                    print("3 points xyz:",_points)
-
-                # get plane normal from three points
-                _normal = _get_plane_normal(_points[0], _points[1], _points[2], verbose=verbose)
-                # get dip and azimuth
-                _dip, _az = _get_dip(_normal)
-                # now get centroid of three points
-                _centroid = _get_centroid(_points[0], _points[1], _points[2])
-                # set polarity according to overturned or not
-                if -90 < _dip < 90:
-                    _pol = 1
-                else:
-                    _pol = -1
-
-                _fmt = np.unique(self.interfaces[_filter]["formation"])[0]
-                # _series = np.unique(self.interfaces[_filter]["series"])[0]
-
-                if verbose:
-                    print("plane normal:", _normal)
-                    print("dip", _dip)
-                    print("az", _az)
-                    print("centroid x,y,z:", _centroid)
-
-                _f = [_centroid[0], _centroid[1], _centroid[2], _dip, _az, _pol, _fmt, tri_id]
-                _fs = pn.Series(_f, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'triangle_id'])
-                _df = _fs.to_frame().transpose()
-                self.set_orientations(_df, append=True)
-            elif len(self.interfaces[_filter]) > 3:
-                print("More than three points share the same triangle-id: " + str(
-                    tri_id) + ". Only exactly 3 points are supported.")
-            elif len(self.interfaces[_filter]) < 3:
-                print("Less than three points share the same triangle-id: " + str(
-                    tri_id) + ". Only exactly 3 points are supported.")
-
+    # # TODO Alex: Documentation
+    # def set_triangle_orientations(self, verbose=False):
+    #     # next we need to iterate over every unique triangle id to create a orientation from each triplet
+    #     # of points and assign the same triange_id to it
+    #     tri_ids = np.unique(self.interfaces["triangle_id"])
+    #
+    #     # check if column in orientations too, else create it
+    #     if "triangle_id" not in self.orientations.columns:
+    #         self.orientations["triangle_id"] = "NaN"
+    #         if verbose:
+    #             print("Setting triangle_id column in geo_data.orientations.")
+    #
+    #     # loop over all triangle_id's
+    #     for tri_id in tri_ids[tri_ids != "NaN"]:
+    #         # get the three points dataframe
+    #         _filter = self.interfaces["triangle_id"] == tri_id
+    #
+    #         # check if triangle orientation value already exists
+    #         if tri_id in np.unique(self.orientations["triangle_id"]):
+    #             if verbose:
+    #                 print("triangle_id already in geo_data.orientations - skipping it.")
+    #             continue  # if yes, continue with the next iteration not not double append
+    #
+    #         if verbose:
+    #             print("tri_id: "+tri_id)
+    #         if len(self.interfaces[_filter]) == 3:
+    #             # get points as [x,y,z]
+    #             _points = []
+    #             for i, interf in self.interfaces[_filter].iterrows():
+    #                 _points.append([interf["X"], interf["Y"], interf["Z"]])
+    #             if verbose:
+    #                 print("3 points xyz:",_points)
+    #
+    #             # get plane normal from three points
+    #             _normal = _get_plane_normal(_points[0], _points[1], _points[2], verbose=verbose)
+    #             # get dip and azimuth
+    #             _dip, _az = _get_dip(_normal)
+    #             # now get centroid of three points
+    #             _centroid = _get_centroid(_points[0], _points[1], _points[2])
+    #             # set polarity according to overturned or not
+    #             if -90 < _dip < 90:
+    #                 _pol = 1
+    #             else:
+    #                 _pol = -1
+    #
+    #             _fmt = np.unique(self.interfaces[_filter]["formation"])[0]
+    #             # _series = np.unique(self.interfaces[_filter]["series"])[0]
+    #
+    #             if verbose:
+    #                 print("plane normal:", _normal)
+    #                 print("dip", _dip)
+    #                 print("az", _az)
+    #                 print("centroid x,y,z:", _centroid)
+    #
+    #             _f = [_centroid[0], _centroid[1], _centroid[2], _dip, _az, _pol, _fmt, tri_id]
+    #             _fs = pn.Series(_f, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'triangle_id'])
+    #             _df = _fs.to_frame().transpose()
+    #             self.set_orientations(_df, append=True)
+    #         elif len(self.interfaces[_filter]) > 3:
+    #             print("More than three points share the same triangle-id: " + str(
+    #                 tri_id) + ". Only exactly 3 points are supported.")
+    #         elif len(self.interfaces[_filter]) < 3:
+    #             print("Less than three points share the same triangle-id: " + str(
+    #                 tri_id) + ". Only exactly 3 points are supported.")
+    #
 
 class GridClass(object):
     """
@@ -816,137 +899,139 @@ class GridClass(object):
         return self.values
 
 
-# TODO: @Alex documentation
-class FoliaitionsFromInterfaces:
-    def __init__(self, geo_data, group_id, mode, verbose=False):
-        """
 
-        Args:
-            geo_data: InputData object
-            group_id: (str) identifier for the data group
-            mode: (str), either 'interf_to_fol' or 'fol_to_interf'
-            verbose: (bool) adjusts verbosity, default False
-        """
-        self.geo_data = geo_data
-        self.group_id = group_id
-
-        if mode is "interf_to_fol":
-            # df bool filter
-            self._f = self.geo_data.interfaces["group_id"] == self.group_id
-            # get formation string
-            self.formation = self.geo_data.interfaces[self._f]["formation"].values[0]
-            # df indices
-            self.interf_i = self.geo_data.interfaces[self._f].index
-            # get point coordinates from df
-            self.interf_p = self._get_points()
-            # get point cloud centroid and normal vector of plane
-            self.centroid, self.normal = self._fit_plane_svd()
-            # get dip and azimuth of plane from normal vector
-            self.dip, self.azimuth, self.polarity = self._get_dip()
-
-        elif mode == "fol_to_interf":
-            self._f = self.geo_data.orientations["group_id"] == self.group_id
-            self.formation = self.geo_data.orientations[self._f]["formation"].values[0]
-
-            # get interface indices
-            self.interf_i = self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].index
-            # get interface point coordinates from df
-            self.interf_p = self._get_points()
-            self.normal = [self.geo_data.orientations[self._f]["G_x"],
-                           self.geo_data.orientations[self._f]["G_y"],
-                           self.geo_data.orientations[self._f]["G_z"]]
-            self.centroid = [self.geo_data.orientations[self._f]["X"],
-                             self.geo_data.orientations[self._f]["Y"],
-                             self.geo_data.orientations[self._f]["Z"]]
-            # modify all Z of interface points belonging to group_id to fit plane
-            self._fol_to_p()
-
-        else:
-            print("Mode must be either 'interf_to_fol' or 'fol_to_interf'.")
-
-    def _fol_to_p(self):
-        a, b, c = self.normal
-        d = -a * self.centroid[0] - b * self.centroid[1] - c * self.centroid[2]
-        for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"] == self.group_id].iterrows():
-            # iterate over each point and recalculate Z, set Z
-            # x, y, z = row["X"], row["Y"], row["Z"]
-            Z = (a*row["X"] + b*row["Y"] + d)/-c
-            self.geo_data.interfaces.set_value(i, "Z", Z)
-
-    def _get_points(self):
-        """Returns n points from geo_data.interfaces matching group_id in np.array shape (n, 3)."""
-        # TODO: zip
-        x = []
-        y = []
-        z = []
-        for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].iterrows():
-            x.append(float(row["X"]))
-            y.append(float(row["Y"]))
-            z.append(float(row["Z"]))
-        return np.array([x, y, z])
-
-    def _fit_plane_svd(self):
-        """Fit plane to points using singular value decomposition (svd). Returns point cloud centroid [x,y,z] and
-        normal vector of plane [x,y,z]."""
-        from numpy.linalg import svd
-        # https://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points
-        ctr = self.interf_p.mean(axis=1)  # calculate point cloud centroid [x,y,z]
-        x = self.interf_p - ctr[:, np.newaxis]
-        m = np.dot(x, x.T)  # np.cov(x)
-        return ctr, svd(m)[0][:, -1]
-
-    def _get_dip(self):
-        """Returns dip angle and azimuth of normal vector [x,y,z]."""
-        dip = np.arccos(self.normal[2] / np.linalg.norm(self.normal)) / np.pi * 180.
-
-        azimuth = None
-        if self.normal[0] >= 0 and self.normal[1] > 0:
-            azimuth = np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
-        # border cases where arctan not defined:
-        elif self.normal[0] > 0 and self.normal[1] == 0:
-            azimuth = 90
-        elif self.normal[0] < 0 and self.normal[1] == 0:
-            azimuth = 270
-        elif self.normal[1] < 0:
-            azimuth = 180 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
-        elif self.normal[1] >= 0 < self.normal[0]:
-            azimuth = 360 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
-
-        if -90 < dip < 90:
-            polarity = 1
-        else:
-            polarity = -1
-
-        return dip, azimuth, polarity
-
-    def set_fol(self):
-        """Appends orientation data point for group_id to geo_data.orientations."""
-        if "group_id" not in self.geo_data.orientations.columns:
-            self.geo_data.orientations["group_id"] = "NaN"
-        fol = [self.centroid[0], self.centroid[1], self.centroid[2],
-               self.dip, self.azimuth, self.polarity,
-               self.formation, self.group_id]
-        fol_series = pn.Series(fol, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'group_id'])
-        fol_df = fol_series.to_frame().transpose()
-        self.geo_data.set_orientations(fol_df, append=True)
-
-    def _get_plane_normal(A, B, C, verbose=False):
-        """Returns normal vector of plane defined by points A,B,C as [x,y,z]."""
-        A = np.array(A)
-        B = np.array(B)
-        C = np.array(C)
-
-        v1 = C - A
-        v2 = B - A
-        if verbose:
-            print("vector C-A", v1)
-            print("vector B-A", v2)
-
-        return np.cross(v1, v2)
-
-    def _get_centroid(A, B, C):
-        """Returns centroid (x,y,z) of three points 3x[x,y,z]."""
-        X = (A[0] + B[0] + C[0]) / 3
-        Y = (A[1] + B[1] + C[1]) / 3
-        Z = (A[2] + B[2] + C[2]) / 3
-        return X, Y, Z
+# DEP
+# # TODO: @Alex documentation
+# class FoliaitionsFromInterfaces:
+#     def __init__(self, geo_data, group_id, mode, verbose=False):
+#         """
+#
+#         Args:
+#             geo_data: InputData object
+#             group_id: (str) identifier for the data group
+#             mode: (str), either 'interf_to_fol' or 'fol_to_interf'
+#             verbose: (bool) adjusts verbosity, default False
+#         """
+#         self.geo_data = geo_data
+#         self.group_id = group_id
+#
+#         if mode is "interf_to_fol":
+#             # df bool filter
+#             self._f = self.geo_data.interfaces["group_id"] == self.group_id
+#             # get formation string
+#             self.formation = self.geo_data.interfaces[self._f]["formation"].values[0]
+#             # df indices
+#             self.interf_i = self.geo_data.interfaces[self._f].index
+#             # get point coordinates from df
+#             self.interf_p = self._get_points()
+#             # get point cloud centroid and normal vector of plane
+#             self.centroid, self.normal = self._fit_plane_svd()
+#             # get dip and azimuth of plane from normal vector
+#             self.dip, self.azimuth, self.polarity = self._get_dip()
+#
+#         elif mode == "fol_to_interf":
+#             self._f = self.geo_data.orientations["group_id"] == self.group_id
+#             self.formation = self.geo_data.orientations[self._f]["formation"].values[0]
+#
+#             # get interface indices
+#             self.interf_i = self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].index
+#             # get interface point coordinates from df
+#             self.interf_p = self._get_points()
+#             self.normal = [self.geo_data.orientations[self._f]["G_x"],
+#                            self.geo_data.orientations[self._f]["G_y"],
+#                            self.geo_data.orientations[self._f]["G_z"]]
+#             self.centroid = [self.geo_data.orientations[self._f]["X"],
+#                              self.geo_data.orientations[self._f]["Y"],
+#                              self.geo_data.orientations[self._f]["Z"]]
+#             # modify all Z of interface points belonging to group_id to fit plane
+#             self._fol_to_p()
+#
+#         else:
+#             print("Mode must be either 'interf_to_fol' or 'fol_to_interf'.")
+#
+#     def _fol_to_p(self):
+#         a, b, c = self.normal
+#         d = -a * self.centroid[0] - b * self.centroid[1] - c * self.centroid[2]
+#         for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"] == self.group_id].iterrows():
+#             # iterate over each point and recalculate Z, set Z
+#             # x, y, z = row["X"], row["Y"], row["Z"]
+#             Z = (a*row["X"] + b*row["Y"] + d)/-c
+#             self.geo_data.interfaces.set_value(i, "Z", Z)
+#
+#     def _get_points(self):
+#         """Returns n points from geo_data.interfaces matching group_id in np.array shape (n, 3)."""
+#         # TODO: zip
+#         x = []
+#         y = []
+#         z = []
+#         for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].iterrows():
+#             x.append(float(row["X"]))
+#             y.append(float(row["Y"]))
+#             z.append(float(row["Z"]))
+#         return np.array([x, y, z])
+#
+#     def _fit_plane_svd(self):
+#         """Fit plane to points using singular value decomposition (svd). Returns point cloud centroid [x,y,z] and
+#         normal vector of plane [x,y,z]."""
+#         from numpy.linalg import svd
+#         # https://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points
+#         ctr = self.interf_p.mean(axis=1)  # calculate point cloud centroid [x,y,z]
+#         x = self.interf_p - ctr[:, np.newaxis]
+#         m = np.dot(x, x.T)  # np.cov(x)
+#         return ctr, svd(m)[0][:, -1]
+#
+#     def _get_dip(self):
+#         """Returns dip angle and azimuth of normal vector [x,y,z]."""
+#         dip = np.arccos(self.normal[2] / np.linalg.norm(self.normal)) / np.pi * 180.
+#
+#         azimuth = None
+#         if self.normal[0] >= 0 and self.normal[1] > 0:
+#             azimuth = np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
+#         # border cases where arctan not defined:
+#         elif self.normal[0] > 0 and self.normal[1] == 0:
+#             azimuth = 90
+#         elif self.normal[0] < 0 and self.normal[1] == 0:
+#             azimuth = 270
+#         elif self.normal[1] < 0:
+#             azimuth = 180 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
+#         elif self.normal[1] >= 0 < self.normal[0]:
+#             azimuth = 360 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
+#
+#         if -90 < dip < 90:
+#             polarity = 1
+#         else:
+#             polarity = -1
+#
+#         return dip, azimuth, polarity
+#
+#     def set_fol(self):
+#         """Appends orientation data point for group_id to geo_data.orientations."""
+#         if "group_id" not in self.geo_data.orientations.columns:
+#             self.geo_data.orientations["group_id"] = "NaN"
+#         fol = [self.centroid[0], self.centroid[1], self.centroid[2],
+#                self.dip, self.azimuth, self.polarity,
+#                self.formation, self.group_id]
+#         fol_series = pn.Series(fol, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'group_id'])
+#         fol_df = fol_series.to_frame().transpose()
+#         self.geo_data.set_orientations(fol_df, append=True)
+#
+#     def _get_plane_normal(A, B, C, verbose=False):
+#         """Returns normal vector of plane defined by points A,B,C as [x,y,z]."""
+#         A = np.array(A)
+#         B = np.array(B)
+#         C = np.array(C)
+#
+#         v1 = C - A
+#         v2 = B - A
+#         if verbose:
+#             print("vector C-A", v1)
+#             print("vector B-A", v2)
+#
+#         return np.cross(v1, v2)
+#
+#     def _get_centroid(A, B, C):
+#         """Returns centroid (x,y,z) of three points 3x[x,y,z]."""
+#         X = (A[0] + B[0] + C[0]) / 3
+#         Y = (A[1] + B[1] + C[1]) / 3
+#         Z = (A[2] + B[2] + C[2]) / 3
+#         return X, Y, Z
