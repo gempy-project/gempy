@@ -106,19 +106,21 @@ class InputData(object):
 
         self.orientations['G_x'] = np.sin(np.deg2rad(self.orientations["dip"].astype('float'))) * \
                                  np.sin(np.deg2rad(self.orientations["azimuth"].astype('float'))) * \
-                                 self.orientations["polarity"].astype('float')
+                                 self.orientations["polarity"].astype('float')+1e-7
         self.orientations['G_y'] = np.sin(np.deg2rad(self.orientations["dip"].astype('float'))) * \
                                  np.cos(np.deg2rad(self.orientations["azimuth"].astype('float'))) *\
-                                 self.orientations["polarity"].astype('float')
+                                 self.orientations["polarity"].astype('float')+1e-7
         self.orientations['G_z'] = np.cos(np.deg2rad(self.orientations["dip"].astype('float'))) *\
-                                 self.orientations["polarity"].astype('float')
+                                 self.orientations["polarity"].astype('float')+1e-7
 
     def calculate_orientations(self):
         """
         Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.
         """
-        self.orientations["dip"] = np.arccos(self.orientations["G_z"] / self.orientations["polarity"])
-        self.orientations["azimuth"] = np.arcsin(self.orientations["G_x"]) / (np.sin(np.arccos(self.orientations["G_z"] / self.orientations["polarity"])) * self.orientations["polarity"])
+        self.orientations["dip"] = np.nan_to_num(np.arccos(self.orientations["G_z"] / self.orientations["polarity"]))
+
+        # TODO if this way to compute azimuth breaks there is in rgeomod=kml_to_plane line 170 a good way to do it
+        self.orientations["azimuth"] = np.nan_to_num(np.arcsin(self.orientations["G_x"]) / (np.sin(np.arccos(self.orientations["G_z"] / self.orientations["polarity"])) * self.orientations["polarity"]))
 
     def count_faults(self):
         """
@@ -195,8 +197,9 @@ class InputData(object):
         else:
             raise AttributeError('itype has to be: \'orientations\', \'interfaces\', or \'all\'')
 
-        # Be sure that the columns are in order
-        raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
+        # Be sure that the columns are in order when used for operations
+        if numeric:
+            raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
         return raw_data
 
     def get_formation_number(self):
