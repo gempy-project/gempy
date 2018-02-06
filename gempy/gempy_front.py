@@ -36,7 +36,8 @@ import pandas as _pn
 
 import copy
 from gempy.visualization import PlotData2D, steno3D, vtkVisualization
-from gempy.data_management import InputData, InterpolatorData, GridClass
+from gempy.data_management import InputData, GridClass
+from gempy.interpolator import InterpolatorData
 from gempy.sequential_pile import StratigraphicPile
 from gempy.topology import topology_analyze as _topology_analyze
 import gempy.posterior_analysis as pa # So far we use this type of import because the other one makes a copy and blows up some asserts
