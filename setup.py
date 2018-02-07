@@ -2,15 +2,15 @@ from setuptools import setup, find_packages
 
 setup(
     name='gempy',
-    version='0.9991',
+    version='0.9999',
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=[
         'numpy',
         'pandas',
         'matplotlib',
-        'theano',
+        'Theano',
         'scikit-image',
-        'seaborn'
+        'seaborn',
     ],
     url='https://github.com/cgre-aachen/gempy',
     download_url='https://github.com/cgre-aachen/gempy/archive/0.9991.tar.gz',
