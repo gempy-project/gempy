@@ -904,7 +904,7 @@ class TheanoGraph(object):
         Z_x = (sigma_0_grad + sigma_0_interf + f_0 + f_1)
 
         # Add an arbitrary number at the potential field to get unique values for each of them
-        Z_x += T.repeat(T.cast(1000 - 50*self.n_formation_op[0], "float32"), Z_x.shape[0])
+        Z_x += T.repeat(T.cast(50 - 25*self.n_formation_op[0], "float32"), Z_x.shape[0])
         Z_x.name = 'Value of the potential field at every point'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
@@ -977,7 +977,7 @@ class TheanoGraph(object):
         # Value of the potential field at the interfaces of the computed series
         self.scalar_field_at_interfaces_values = T.sort(self.scalar_field_at_interfaces()[self.n_formation_op - 1])[::-1]
         # 1000 and 50 are used here to give values to the scalar fields far enough to not interfere
-        self.scalar_field_at_interfaces_values += T.repeat(T.cast(1000 - 50 * self.n_formation_op[0], "float32"),
+        self.scalar_field_at_interfaces_values += T.repeat(T.cast(50 - 10 * self.n_formation_op[0], "float32"),
                                                            self.scalar_field_at_interfaces_values.shape[0])
 
         # A tensor with the values to segment
