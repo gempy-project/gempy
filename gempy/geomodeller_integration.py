@@ -122,7 +122,6 @@ class GeomodellerClass:
         deepcopy_tree.parent = None
         return deepcopy_tree
 
-
     def reload_geomodeller_file(self, deepcopy_tree):
         """restore original tree root from deep copy of orignial tree
         deep copy can be created (not automatically to save memory!) with
@@ -176,21 +175,22 @@ class GeomodellerClass:
         self.stratigraphy_list = series_list
         return series_list
 
-    def get_provenances(self):
-        """get provenance table and return as dictionary with provenance rank as key
-        deprecated, use get_provenance_table() instead!
-        """
-        print ("deprecated, use get_provenance_table() instead!")
-        provenance_parent = self.rootelement.find("{"+self.xmlns+"}ProvenanceTable")
-        rows = provenance_parent.find("{"+self.xmlns+"}Result").findall("{"+self.xmlns+"}Row")
-        self.prov_dict = {}
-        for row in rows:
-            line = row.text.split(",")
-            #check for leading and ending '"' signs
-            if line[0][0] == '"':
-                self.prov_dict[line[0][1:-1]] = line[1][1:-1]
-            else:
-                self.prov_dict[line[0]] = line[1]
+    # DEP
+    # def get_provenances(self):
+    #     """get provenance table and return as dictionary with provenance rank as key
+    #     deprecated, use get_provenance_table() instead!
+    #     """
+    #     print ("deprecated, use get_provenance_table() instead!")
+    #     provenance_parent = self.rootelement.find("{"+self.xmlns+"}ProvenanceTable")
+    #     rows = provenance_parent.find("{"+self.xmlns+"}Result").findall("{"+self.xmlns+"}Row")
+    #     self.prov_dict = {}
+    #     for row in rows:
+    #         line = row.text.split(",")
+    #         #check for leading and ending '"' signs
+    #         if line[0][0] == '"':
+    #             self.prov_dict[line[0][1:-1]] = line[1][1:-1]
+    #         else:
+    #             self.prov_dict[line[0]] = line[1]
 
     def get_provenance_table(self):
         """get provenance table and return as dictionary with provenance rank as key"""
@@ -220,7 +220,7 @@ class GeomodellerClass:
         for l in provenance_dict:
             elem = ET.Element("{"+self.xmlns+"}Row")
             # turn list into string
-            text = '"%s","%s"' % (l,procenance_dict[l])
+            text = '"%s","%s"' % (l, procenance_dict[l])
             elem.text = text
             results.append(elem)
 
@@ -356,142 +356,142 @@ class GeomodellerClass:
             # !!! only simple distributions yet impl.
             #
 
-    def get_drillhole_elements(self):
-        """get drillhole elements and store in dictionary"""
-        try:
-            drillhole_parent = self.rootelement.find("{"+self.xmlns+"}DrillHoles").find("{"+self.xmlns+"}GeneralDrillholes")
-        except AttributeError:
-            print ("Problem with drillhole element; check if drillholes are defined in project!")
-            return
-        self.drillholes = {}
-        self.drillholes["geology"]= drillhole_parent.find("{"+self.xmlns+"}GeologyTable")
-        self.drillholes["collar"] = drillhole_parent.find("{"+self.xmlns+"}CollarTable")
-        self.drillholes["survey"] = drillhole_parent.find("{"+self.xmlns+"}SurveyTable")
-        return True
-
-    def get_drillholes_old(self):
-        """get drillhole tables as elements"""
-        drillhole_parent = self.rootelement.find("{"+self.xmlns+"}DrillHoles").find("{"+self.xmlns+"}GeneralDrillholes")
-        ct = {}
-        st = {}
-        gt = {}
-        ct["parent"] = drillhole_parent.find("{"+self.xmlns+"}CollarTable")
-        st["parent"] = drillhole_parent.find("{"+self.xmlns+"}SurveyTable")
-        gt["parent"] = drillhole_parent.find("{"+self.xmlns+"}GeologyTable")
-        ct["head"] = ct["parent"].find("{"+self.xmlns+"}Head")
-        ct["result"] = ct["parent"].find("{"+self.xmlns+"}Result")
-        st["head"] = st["parent"].find("{"+self.xmlns+"}Head")
-        st["result"] = st["parent"].find("{"+self.xmlns+"}Result")
-        gt["head"] = gt["parent"].find("{"+self.xmlns+"}Head")
-        gt["result"] = gt["parent"].find("{"+self.xmlns+"}Result")
-        # print ct
-        # set as global arguments
-        self.collar = ct
-        self.geology = gt
-        self.survey = st
-        return True
-
-    def append_drillhole_data(self, element, data_list):
-        """append data in list as drillhole data (i.e. new Row elements);
-        element should
-        be one of the drillhole file elements, i.e.
-        self.drillholes["survey"], self.drillholes["collar"]
-        or self.drillholes["geology"]
-        list should be on correct format"""
-        results = element.find("{"+self.xmlns+"}Result")
-        # rows = results.findall("{"+self.xmlns+"}Row")
-        # data = []
-        elem = ET.Element("Row")
-        # turn list into string
-        text = ""
-        for l in data_list:
-            text = text + '%s, ' % l
-        # delete last comma delimiter
-        text = text[0:-2]
-        elem.text = text
-        results.append(elem)
-        return True
-
-    def delete_drillhole_data(self, element):
-        """delete all drillhole data of an element (i.e. delete
-        all Row elements; element should be one of
-        self.drillholes["survey"], self.drillholes["collar"]
-        or self.drillholes["geology"]
-        """
-        results = element.find("{"+self.xmlns+"}Result")
-        rows = results.findall("{"+self.xmlns+"}Row")
-        for row in rows:
-            results.remove(row)
-
-    def set_drillhole_data(self, element, data_list):
-        """set data in list as drillhole data (i.e. delete all
-        existing Row elements and create new ones);
-        element should
-        be one of the drillhole file elements, i.e.
-        self.drillholes["survey"], self.drillholes["collar"]
-        or self.drillholes["geology"]
-        list should be on correct format"""
-        results = element.find("{"+self.xmlns+"}Result")
-        rows = results.findall("{"+self.xmlns+"}Row")
-        for row in rows:
-            results.remove(row)
-        # data = []
-        if element.tag == "{"+self.xmlns+"}GeologyTable":
-            for l in data_list:
-                elem = ET.Element("{"+self.xmlns+"}Row")
-                # turn list into string
-                text = '"%s","%s","%s","%s"' % (l[0], l[1], l[2], l[3])
-                elem.text = text
-                results.append(elem)
-        if element.tag == "{"+self.xmlns+"}CollarTable":
-            for l in data_list:
-                elem = ET.Element("{"+self.xmlns+"}Row")
-                # turn list into string
-                text = '"%s","%s","%s","%s","%s"' % (l[0], l[1], l[2], l[3], l[4])
-                elem.text = text
-                results.append(elem)
-        if element.tag == "{"+self.xmlns+"}SurveyTable":
-            for l in data_list:
-                elem = ET.Element("{"+self.xmlns+"}Row")
-                # turn list into string
-                text = '"%s","%s","%s","%s"' % (l[0], l[1], l[2], l[3])
-                elem.text = text
-                results.append(elem)
-        return True
-
-    def get_drillhole_data(self, element):
-        """get drillhole data from result element as list
-        element should be one of the drillhole file elements, i.e.
-        self.drillholes["survey"], self.drillholes["collar"]
-        or self.drillholes["geology"]
-        also performs some type conversion, etc. based on type
-        of element (e.g. in GeologyTable: set from and to as float values!)
-        and removes leading and tailing '"'
-        """
-        results = element.find("{"+self.xmlns+"}Result")
-        rows = results.findall("{"+self.xmlns+"}Row")
-        data = []
-        for row in rows:
-            r = row.text.split(",")
-            # now, some conversion and formatting issues:
-            # remove " " around entries
-            for i,l in enumerate(r):
-                r[i] = l[1:-1]
-                # set 1,2 to float for geology table
-                if element.tag == "{"+self.xmlns+"}GeologyTable":
-                    if i == 1 or i == 2:
-                        r[i] = float(r[i])
-                # set col 1,2,3 to float for survey table
-                if element.tag == "{"+self.xmlns+"}SurveyTable":
-                    if i == 1 or i == 2 or i == 3:
-                        r[i] = float(r[i])
-                # set col 1,2,3,4 to float for collar table
-                # check: set x,y,z as int???
-                if element.tag == "{"+self.xmlns+"}CollarTable":
-                    if i == 1 or i == 2 or i == 3 or i == 4:
-                        r[i] = float(r[i])
-            data.append(r)
-        return data
+    # def get_drillhole_elements(self):
+    #     """get drillhole elements and store in dictionary"""
+    #     try:
+    #         drillhole_parent = self.rootelement.find("{"+self.xmlns+"}DrillHoles").find("{"+self.xmlns+"}GeneralDrillholes")
+    #     except AttributeError:
+    #         print ("Problem with drillhole element; check if drillholes are defined in project!")
+    #         return
+    #     self.drillholes = {}
+    #     self.drillholes["geology"]= drillhole_parent.find("{"+self.xmlns+"}GeologyTable")
+    #     self.drillholes["collar"] = drillhole_parent.find("{"+self.xmlns+"}CollarTable")
+    #     self.drillholes["survey"] = drillhole_parent.find("{"+self.xmlns+"}SurveyTable")
+    #     return True
+    #
+    # def get_drillholes_old(self):
+    #     """get drillhole tables as elements"""
+    #     drillhole_parent = self.rootelement.find("{"+self.xmlns+"}DrillHoles").find("{"+self.xmlns+"}GeneralDrillholes")
+    #     ct = {}
+    #     st = {}
+    #     gt = {}
+    #     ct["parent"] = drillhole_parent.find("{"+self.xmlns+"}CollarTable")
+    #     st["parent"] = drillhole_parent.find("{"+self.xmlns+"}SurveyTable")
+    #     gt["parent"] = drillhole_parent.find("{"+self.xmlns+"}GeologyTable")
+    #     ct["head"] = ct["parent"].find("{"+self.xmlns+"}Head")
+    #     ct["result"] = ct["parent"].find("{"+self.xmlns+"}Result")
+    #     st["head"] = st["parent"].find("{"+self.xmlns+"}Head")
+    #     st["result"] = st["parent"].find("{"+self.xmlns+"}Result")
+    #     gt["head"] = gt["parent"].find("{"+self.xmlns+"}Head")
+    #     gt["result"] = gt["parent"].find("{"+self.xmlns+"}Result")
+    #     # print ct
+    #     # set as global arguments
+    #     self.collar = ct
+    #     self.geology = gt
+    #     self.survey = st
+    #     return True
+    #
+    # def append_drillhole_data(self, element, data_list):
+    #     """append data in list as drillhole data (i.e. new Row elements);
+    #     element should
+    #     be one of the drillhole file elements, i.e.
+    #     self.drillholes["survey"], self.drillholes["collar"]
+    #     or self.drillholes["geology"]
+    #     list should be on correct format"""
+    #     results = element.find("{"+self.xmlns+"}Result")
+    #     # rows = results.findall("{"+self.xmlns+"}Row")
+    #     # data = []
+    #     elem = ET.Element("Row")
+    #     # turn list into string
+    #     text = ""
+    #     for l in data_list:
+    #         text = text + '%s, ' % l
+    #     # delete last comma delimiter
+    #     text = text[0:-2]
+    #     elem.text = text
+    #     results.append(elem)
+    #     return True
+    #
+    # def delete_drillhole_data(self, element):
+    #     """delete all drillhole data of an element (i.e. delete
+    #     all Row elements; element should be one of
+    #     self.drillholes["survey"], self.drillholes["collar"]
+    #     or self.drillholes["geology"]
+    #     """
+    #     results = element.find("{"+self.xmlns+"}Result")
+    #     rows = results.findall("{"+self.xmlns+"}Row")
+    #     for row in rows:
+    #         results.remove(row)
+    #
+    # def set_drillhole_data(self, element, data_list):
+    #     """set data in list as drillhole data (i.e. delete all
+    #     existing Row elements and create new ones);
+    #     element should
+    #     be one of the drillhole file elements, i.e.
+    #     self.drillholes["survey"], self.drillholes["collar"]
+    #     or self.drillholes["geology"]
+    #     list should be on correct format"""
+    #     results = element.find("{"+self.xmlns+"}Result")
+    #     rows = results.findall("{"+self.xmlns+"}Row")
+    #     for row in rows:
+    #         results.remove(row)
+    #     # data = []
+    #     if element.tag == "{"+self.xmlns+"}GeologyTable":
+    #         for l in data_list:
+    #             elem = ET.Element("{"+self.xmlns+"}Row")
+    #             # turn list into string
+    #             text = '"%s","%s","%s","%s"' % (l[0], l[1], l[2], l[3])
+    #             elem.text = text
+    #             results.append(elem)
+    #     if element.tag == "{"+self.xmlns+"}CollarTable":
+    #         for l in data_list:
+    #             elem = ET.Element("{"+self.xmlns+"}Row")
+    #             # turn list into string
+    #             text = '"%s","%s","%s","%s","%s"' % (l[0], l[1], l[2], l[3], l[4])
+    #             elem.text = text
+    #             results.append(elem)
+    #     if element.tag == "{"+self.xmlns+"}SurveyTable":
+    #         for l in data_list:
+    #             elem = ET.Element("{"+self.xmlns+"}Row")
+    #             # turn list into string
+    #             text = '"%s","%s","%s","%s"' % (l[0], l[1], l[2], l[3])
+    #             elem.text = text
+    #             results.append(elem)
+    #     return True
+    #
+    # def get_drillhole_data(self, element):
+    #     """get drillhole data from result element as list
+    #     element should be one of the drillhole file elements, i.e.
+    #     self.drillholes["survey"], self.drillholes["collar"]
+    #     or self.drillholes["geology"]
+    #     also performs some type conversion, etc. based on type
+    #     of element (e.g. in GeologyTable: set from and to as float values!)
+    #     and removes leading and tailing '"'
+    #     """
+    #     results = element.find("{"+self.xmlns+"}Result")
+    #     rows = results.findall("{"+self.xmlns+"}Row")
+    #     data = []
+    #     for row in rows:
+    #         r = row.text.split(",")
+    #         # now, some conversion and formatting issues:
+    #         # remove " " around entries
+    #         for i,l in enumerate(r):
+    #             r[i] = l[1:-1]
+    #             # set 1,2 to float for geology table
+    #             if element.tag == "{"+self.xmlns+"}GeologyTable":
+    #                 if i == 1 or i == 2:
+    #                     r[i] = float(r[i])
+    #             # set col 1,2,3 to float for survey table
+    #             if element.tag == "{"+self.xmlns+"}SurveyTable":
+    #                 if i == 1 or i == 2 or i == 3:
+    #                     r[i] = float(r[i])
+    #             # set col 1,2,3,4 to float for collar table
+    #             # check: set x,y,z as int???
+    #             if element.tag == "{"+self.xmlns+"}CollarTable":
+    #                 if i == 1 or i == 2 or i == 3 or i == 4:
+    #                     r[i] = float(r[i])
+    #         data.append(r)
+    #     return data
 
         #    def set_drillhole_data(self, element, l):
         #        """set drillhole data for element from list
