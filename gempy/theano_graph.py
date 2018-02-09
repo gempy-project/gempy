@@ -904,7 +904,7 @@ class TheanoGraph(object):
         Z_x = (sigma_0_grad + sigma_0_interf + f_0 + f_1)
 
         # Add an arbitrary number at the potential field to get unique values for each of them
-        Z_x += T.repeat(T.cast(50 - 25*self.n_formation_op[0], "float32"), Z_x.shape[0])
+        Z_x += T.repeat(T.cast(50 - 10*self.n_formation_op[0], "float32"), Z_x.shape[0])
         Z_x.name = 'Value of the potential field at every point'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
