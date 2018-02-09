@@ -1,6 +1,7 @@
 *-checkpoint.ipynb
 
 .idea
+.DS_Store
 
 .cache/
 GeMpy/__pycache__/__init__.cpython-36.pyc
