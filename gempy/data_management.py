@@ -637,9 +637,9 @@ class InputData(object):
                                            for i in self.orientations["formation"]]
 
         # We sort the series altough is only important for the computation (we will do it again just before computing)
-        if series_distribution is not None:
-            self.interfaces.sort_values(by='order_series', inplace=True)
-            self.orientations.sort_values(by='order_series', inplace=True)
+       # if series_distribution is not None:
+        self.interfaces.sort_values(by='order_series', inplace=True)
+        self.orientations.sort_values(by='order_series', inplace=True)
 
         # Save the dataframe in a property. This is used in the pile
         self.series = _series
