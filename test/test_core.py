@@ -21,7 +21,7 @@ class TestNoFaults:
                                      path_o=os.path.dirname(__file__)+"/GeoModeller/test_a/test_a_Foliations.csv",
                                      path_i=os.path.dirname(__file__)+"/GeoModeller/test_a/test_a_Points.csv")
 
-        interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=True)
+        interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=True, verbose=['cov_gradients'])
 
         return interp_data
 

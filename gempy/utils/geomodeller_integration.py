@@ -18,6 +18,7 @@ except ImportError:
             import ElementTree as ET
 # import Latex_output_5 as LO
 from pylab import *
+import copy
 import string
 
 # python module to wrap GeoModeller XML file and perform all kinds of data
@@ -55,26 +56,6 @@ def read_vox(geo_data, path):
         geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2], order='C').T)
     return block_geomodeller
 
-# Code to check the mismatch between geomodeller and gempy. We have to compare bottoms!
-  # mismatch = ~np.isclose(sol[0][0, :], real_sol[0][0, :], rtol=0.01).sum()/sol[0][0].shape[0]
-  # assert mismatch * 100 < 1
-  # #  GeoMod_sol = geo_data._read_vox('./GeoModeller/test_f/test_f.vox')
-  #   import gempy.geomodeller_integration as geomodeller_integration
-  #
-  #   GeoMod_sol = geomodeller_integration.read_vox(geo_data, './GeoModeller/test_f/test_f.vox')
-  #   op1 = (GeoMod_sol - sol[0][0, :])
-  #   gempy.plot_section(geo_data, GeoMod_sol, 25, direction='y', plot_data=True)
-  #
-  #   plt.savefig('test_f.png', dpi=200)
-  #
-  #   op2 = (op1 != 0).sum()
-  #   similarity = op2/sol[0][0].shape[0]
-  #   #similarity = ((GeoMod_sol - sol[0][0, :]) != 0).sum() / sol[0][0].shape[0]
-  #
-  #   print('The mismatch geomodeller-gempy is ', similarity*100, '%')
-  #   assert similarity < 0.05, 'The mismatch with geomodeller is too high'
-
-
 
 class GeomodellerClass:
     """Wrapper for GeoModeller XML-datafiles to perform all kinds of data
@@ -89,7 +70,6 @@ class GeomodellerClass:
     - Uncertainty Simulation
     - TWT to depth conversion
     - Data analysis, e.g. Auto-documentation"""
-
 
     def load_geomodeller_file(self, xml_file):
         self.xml_file_name = xml_file
@@ -118,7 +98,7 @@ class GeomodellerClass:
     def deepcopy_tree(self):
         """create a deep copy of original tree to restore later, e.g. for uncertainty evaluation"""
 
-        deepcopy_tree = deepcopy(self.tree)
+        deepcopy_tree = copy.deepcopy(self.tree)
         deepcopy_tree.parent = None
         return deepcopy_tree
 
@@ -129,9 +109,36 @@ class GeomodellerClass:
         """
         try:
             self.tree = deepcopy_tree
-            self.rootelement = tree.getroot()
+            self.rootelement = self.tree.getroot()
         except NameError:
             print ("No deep copy of original tree available, please create with self.deepcopy_tree()")
+
+    def get_model_extent(self):
+        """get extent of model
+        returns (x_min, x_max, y_min, y_max, z_min, z_max)
+        and saves extent in self.x_min, self.x_max, etc.
+        """
+        extent_parent = self.rootelement.find("{"+self.xmlns+"}Extent3DOfProject")
+        extentbox3D = extent_parent.find("{"+self.xmlns+"}ExtentBox3D")
+        extent3D = extentbox3D.find("{"+self.xmlns+"}Extent3D")
+        extent_xy = extent3D.find("{"+self.xmlns+"}ExtentXY")
+        extent_z = extent3D.find("{"+self.xmlns+"}ExtentZ")
+        self.x_min = float(extent_xy.get("Xmin"))
+        self.x_max = float(extent_xy.get("Xmax"))
+        self.y_min = float(extent_xy.get("Ymin"))
+        self.y_max = float(extent_xy.get("Ymax"))
+        self.z_min = float(extent_z.get("Zmin"))
+        self.z_max = float(extent_z.get("Zmax"))
+        return (self.x_min, self.x_max, self.y_min, self.y_max, self.z_min, self.z_max)
+
+    # def get_model_range(self):
+    #     """get model range from model extent, e.g. for automatic mesh generation"""
+    #     (x_min, x_max, y_min, y_max, z_min, z_max) = self.get_model_extent()
+    #     from numpy import abs
+    #     self.range_x = abs(x_max - x_min)
+    #     self.range_y = abs(y_max - y_min)
+    #     self.range_z = abs(z_max - z_min)
+    #     return (self.range_x, self.range_y, self.range_z)
 
     def get_sections(self):
         """get sections out of rootelement, safe array with section elements
@@ -147,6 +154,7 @@ class GeomodellerClass:
             self.faults = faults_parent.findall("{"+self.xmlns+"}Fault")
         except IndexError:
             print("No faults found in model")
+        return self.faults
 
     def get_formations(self):
         """get formation elements out of rootelement and safe as local list"""
@@ -168,66 +176,13 @@ class GeomodellerClass:
             for d in data:
                 series_list.append(d.get("Name"))
         # append "out" as uppermost formation for "out values
-        if 'out' in kwds:
-            series_list.append(kwds['out'])
-        else:
-            series_list.append("out")
+        if "tough2" in kwds:
+            if 'out' in kwds:
+                series_list.append(kwds['out'])
+            else:
+                series_list.append("out")
         self.stratigraphy_list = series_list
         return series_list
-
-    # DEP
-    # def get_provenances(self):
-    #     """get provenance table and return as dictionary with provenance rank as key
-    #     deprecated, use get_provenance_table() instead!
-    #     """
-    #     print ("deprecated, use get_provenance_table() instead!")
-    #     provenance_parent = self.rootelement.find("{"+self.xmlns+"}ProvenanceTable")
-    #     rows = provenance_parent.find("{"+self.xmlns+"}Result").findall("{"+self.xmlns+"}Row")
-    #     self.prov_dict = {}
-    #     for row in rows:
-    #         line = row.text.split(",")
-    #         #check for leading and ending '"' signs
-    #         if line[0][0] == '"':
-    #             self.prov_dict[line[0][1:-1]] = line[1][1:-1]
-    #         else:
-    #             self.prov_dict[line[0]] = line[1]
-
-    def get_provenance_table(self):
-        """get provenance table and return as dictionary with provenance rank as key"""
-        provenance_parent = self.rootelement.find("{"+self.xmlns+"}ProvenanceTable")
-        rows = provenance_parent.find("{"+self.xmlns+"}Result").findall("{"+self.xmlns+"}Row")
-        self.prov_dict = {}
-        for row in rows:
-            line = row.text.split(",")
-            #check for leading and ending '"' signs
-            if line[0][0] == '"':
-                self.prov_dict[line[0][1:-1]] = line[1][1:-1]
-            else:
-                self.prov_dict[line[0]] = line[1]
-
-    def set_provenance_table(self, provenance_dict):
-        """create provenance table from dictionary; can be used to extend existing
-        provenance table as a first step to assign uncertainty values
-        attention: old provenance table is deleted!
-        """
-        provenance_parent = self.rootelement.find("{"+self.xmlns+"}ProvenanceTable")
-        result = provenance_parent.find("{"+self.xmlns+"}Result")
-        rows = result.findall("{"+self.xmlns+"}Row")
-        # delete old provenance table
-        for row in rows:
-            result.remove(row)
-        # define new table from provenance dictionary
-        for l in provenance_dict:
-            elem = ET.Element("{"+self.xmlns+"}Row")
-            # turn list into string
-            text = '"%s","%s"' % (l, procenance_dict[l])
-            elem.text = text
-            results.append(elem)
-
-    def get_provenance(self, element):
-        """get provenance of an element, return as string
-        if not defined: returns None"""
-        return element.get("Provenance")
 
     def get_section_names(self):
         """get all section names out of local variable self.sections"""
@@ -253,6 +208,17 @@ class GeomodellerClass:
         for formation in self.formations:
             forms.append(formation.get("Name"))
         return forms
+
+    def get_fault_names(self):
+        """get fault names and return as list"""
+        faults_list=[]
+        try:
+            self.faults
+        except AttributeError:
+            self.get_faults()
+        for fault in self.faults:
+            faults_list.append(fault.get("Name"))
+        return faults_list
 
     def get_points_in_sections(self):
         """Create dictionary of all points (with obs-id) in all sections"""
@@ -356,150 +322,6 @@ class GeomodellerClass:
             # !!! only simple distributions yet impl.
             #
 
-    # def get_drillhole_elements(self):
-    #     """get drillhole elements and store in dictionary"""
-    #     try:
-    #         drillhole_parent = self.rootelement.find("{"+self.xmlns+"}DrillHoles").find("{"+self.xmlns+"}GeneralDrillholes")
-    #     except AttributeError:
-    #         print ("Problem with drillhole element; check if drillholes are defined in project!")
-    #         return
-    #     self.drillholes = {}
-    #     self.drillholes["geology"]= drillhole_parent.find("{"+self.xmlns+"}GeologyTable")
-    #     self.drillholes["collar"] = drillhole_parent.find("{"+self.xmlns+"}CollarTable")
-    #     self.drillholes["survey"] = drillhole_parent.find("{"+self.xmlns+"}SurveyTable")
-    #     return True
-    #
-    # def get_drillholes_old(self):
-    #     """get drillhole tables as elements"""
-    #     drillhole_parent = self.rootelement.find("{"+self.xmlns+"}DrillHoles").find("{"+self.xmlns+"}GeneralDrillholes")
-    #     ct = {}
-    #     st = {}
-    #     gt = {}
-    #     ct["parent"] = drillhole_parent.find("{"+self.xmlns+"}CollarTable")
-    #     st["parent"] = drillhole_parent.find("{"+self.xmlns+"}SurveyTable")
-    #     gt["parent"] = drillhole_parent.find("{"+self.xmlns+"}GeologyTable")
-    #     ct["head"] = ct["parent"].find("{"+self.xmlns+"}Head")
-    #     ct["result"] = ct["parent"].find("{"+self.xmlns+"}Result")
-    #     st["head"] = st["parent"].find("{"+self.xmlns+"}Head")
-    #     st["result"] = st["parent"].find("{"+self.xmlns+"}Result")
-    #     gt["head"] = gt["parent"].find("{"+self.xmlns+"}Head")
-    #     gt["result"] = gt["parent"].find("{"+self.xmlns+"}Result")
-    #     # print ct
-    #     # set as global arguments
-    #     self.collar = ct
-    #     self.geology = gt
-    #     self.survey = st
-    #     return True
-    #
-    # def append_drillhole_data(self, element, data_list):
-    #     """append data in list as drillhole data (i.e. new Row elements);
-    #     element should
-    #     be one of the drillhole file elements, i.e.
-    #     self.drillholes["survey"], self.drillholes["collar"]
-    #     or self.drillholes["geology"]
-    #     list should be on correct format"""
-    #     results = element.find("{"+self.xmlns+"}Result")
-    #     # rows = results.findall("{"+self.xmlns+"}Row")
-    #     # data = []
-    #     elem = ET.Element("Row")
-    #     # turn list into string
-    #     text = ""
-    #     for l in data_list:
-    #         text = text + '%s, ' % l
-    #     # delete last comma delimiter
-    #     text = text[0:-2]
-    #     elem.text = text
-    #     results.append(elem)
-    #     return True
-    #
-    # def delete_drillhole_data(self, element):
-    #     """delete all drillhole data of an element (i.e. delete
-    #     all Row elements; element should be one of
-    #     self.drillholes["survey"], self.drillholes["collar"]
-    #     or self.drillholes["geology"]
-    #     """
-    #     results = element.find("{"+self.xmlns+"}Result")
-    #     rows = results.findall("{"+self.xmlns+"}Row")
-    #     for row in rows:
-    #         results.remove(row)
-    #
-    # def set_drillhole_data(self, element, data_list):
-    #     """set data in list as drillhole data (i.e. delete all
-    #     existing Row elements and create new ones);
-    #     element should
-    #     be one of the drillhole file elements, i.e.
-    #     self.drillholes["survey"], self.drillholes["collar"]
-    #     or self.drillholes["geology"]
-    #     list should be on correct format"""
-    #     results = element.find("{"+self.xmlns+"}Result")
-    #     rows = results.findall("{"+self.xmlns+"}Row")
-    #     for row in rows:
-    #         results.remove(row)
-    #     # data = []
-    #     if element.tag == "{"+self.xmlns+"}GeologyTable":
-    #         for l in data_list:
-    #             elem = ET.Element("{"+self.xmlns+"}Row")
-    #             # turn list into string
-    #             text = '"%s","%s","%s","%s"' % (l[0], l[1], l[2], l[3])
-    #             elem.text = text
-    #             results.append(elem)
-    #     if element.tag == "{"+self.xmlns+"}CollarTable":
-    #         for l in data_list:
-    #             elem = ET.Element("{"+self.xmlns+"}Row")
-    #             # turn list into string
-    #             text = '"%s","%s","%s","%s","%s"' % (l[0], l[1], l[2], l[3], l[4])
-    #             elem.text = text
-    #             results.append(elem)
-    #     if element.tag == "{"+self.xmlns+"}SurveyTable":
-    #         for l in data_list:
-    #             elem = ET.Element("{"+self.xmlns+"}Row")
-    #             # turn list into string
-    #             text = '"%s","%s","%s","%s"' % (l[0], l[1], l[2], l[3])
-    #             elem.text = text
-    #             results.append(elem)
-    #     return True
-    #
-    # def get_drillhole_data(self, element):
-    #     """get drillhole data from result element as list
-    #     element should be one of the drillhole file elements, i.e.
-    #     self.drillholes["survey"], self.drillholes["collar"]
-    #     or self.drillholes["geology"]
-    #     also performs some type conversion, etc. based on type
-    #     of element (e.g. in GeologyTable: set from and to as float values!)
-    #     and removes leading and tailing '"'
-    #     """
-    #     results = element.find("{"+self.xmlns+"}Result")
-    #     rows = results.findall("{"+self.xmlns+"}Row")
-    #     data = []
-    #     for row in rows:
-    #         r = row.text.split(",")
-    #         # now, some conversion and formatting issues:
-    #         # remove " " around entries
-    #         for i,l in enumerate(r):
-    #             r[i] = l[1:-1]
-    #             # set 1,2 to float for geology table
-    #             if element.tag == "{"+self.xmlns+"}GeologyTable":
-    #                 if i == 1 or i == 2:
-    #                     r[i] = float(r[i])
-    #             # set col 1,2,3 to float for survey table
-    #             if element.tag == "{"+self.xmlns+"}SurveyTable":
-    #                 if i == 1 or i == 2 or i == 3:
-    #                     r[i] = float(r[i])
-    #             # set col 1,2,3,4 to float for collar table
-    #             # check: set x,y,z as int???
-    #             if element.tag == "{"+self.xmlns+"}CollarTable":
-    #                 if i == 1 or i == 2 or i == 3 or i == 4:
-    #                     r[i] = float(r[i])
-    #         data.append(r)
-    #     return data
-
-        #    def set_drillhole_data(self, element, l):
-        #        """set drillhole data for element from list
-        #        element should be one of the drillhole file elements, i.e.
-        #        self.drillholes["survey"], self.drillholes["collar"]
-        #        or self.drillholes["geology"] """
-        #        return True
-        #
     def create_fault_dict(self):
         """create dictionary for fault elements with names as keys"""
         # test if self.formations defined, if not -> create
@@ -539,10 +361,6 @@ class GeomodellerClass:
         for section in self.sections:
             self.section_dict[section.get("Name")] = section
         return self.section_dict
-
-    def get_fault_parameters(self):
-        """get fault parameters out of """
-        pass
 
     def get_foliations(self, section_element):
         """get all foliation data elements from a for section"""
@@ -979,33 +797,6 @@ class GeomodellerClass:
         name = self.rootelement.get("projectName")
         name_new = name + " " + s
         self.rootelement.set("projectName",name_new)
-
-    def get_model_extent(self):
-        """get extent of model
-        returns (x_min, x_max, y_min, y_max, z_min, z_max)
-        and saves extent in self.x_min, self.x_max, etc.
-        """
-        extent_parent = self.rootelement.find("{"+self.xmlns+"}Extent3DOfProject")
-        extentbox3D = extent_parent.find("{"+self.xmlns+"}ExtentBox3D")
-        extent3D = extentbox3D.find("{"+self.xmlns+"}Extent3D")
-        extent_xy = extent3D.find("{"+self.xmlns+"}ExtentXY")
-        extent_z = extent3D.find("{"+self.xmlns+"}ExtentZ")
-        self.x_min = float(extent_xy.get("Xmin"))
-        self.x_max = float(extent_xy.get("Xmax"))
-        self.y_min = float(extent_xy.get("Ymin"))
-        self.y_max = float(extent_xy.get("Ymax"))
-        self.z_min = float(extent_z.get("Zmin"))
-        self.z_max = float(extent_z.get("Zmax"))
-        return (self.x_min, self.x_max, self.y_min, self.y_max, self.z_min, self.z_max)
-
-    def get_model_range(self):
-        """get model range from model extent, e.g. for automatic mesh generation"""
-        (x_min, x_max, y_min, y_max, z_min, z_max) = self.get_model_extent()
-        from numpy import abs
-        self.range_x = abs(x_max - x_min)
-        self.range_y = abs(y_max - y_min)
-        self.range_z = abs(z_max - z_min)
-        return (self.range_x, self.range_y, self.range_z)
 
     def create_TOUGH_formation_names(self, **kwds):
         """create formation names that are compatible with format required by TOUGH,
