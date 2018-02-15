@@ -6,20 +6,22 @@ with Uncertainty_Obj module)
 (c) J. Florian Wellmann, 2009-2113
 """
 
-try:
-    import elementtree.ElementTree as ET
-except ImportError:
-    try:
-        import etree.ElementTree as ET
-    except ImportError:
-        try:
-            import xml.etree.ElementTree as ET
-        except ImportError:
-            import ElementTree as ET
+# try:
+#     import elementtree.ElementTree as ET
+# except ImportError:
+#     try:
+#         import etree.ElementTree as ET
+#     except ImportError:
+#         try:
+#             import xml.etree.ElementTree as ET
+#         except ImportError:
+#             import ElementTree as ET
 # import Latex_output_5 as LO
 from pylab import *
 import copy
+import pandas as pn
 import string
+import numpy as np
 
 # python module to wrap GeoModeller XML file and perform all kinds of data
 # procedures, e.g.:
@@ -34,6 +36,90 @@ import string
 # - implement auto-documentation
 # - clear-up spaghetti code!!!!! Check dependencies and other modules
 #    to get a consistent lay-out
+
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+
+
+class ReadGeoModellerXML:
+    def __init__(self, fp):
+        self.tree = ET.ElementTree(file=fp)  # load xml as tree
+        self.root = self.tree.getroot()
+
+        self.extent = self._get_extent()
+        self.series = self._get_series()
+        self.series_fmt_dict = self._get_series_fmt_dict()
+
+    def _get_extent(self):
+        xy = self.root[0][0][0][0].attrib
+        z = self.root[0][0][0][1].attrib
+        return tuple(np.array([xy["Xmin"], xy["Xmax"],
+                               xy["Ymin"], xy["Ymax"],
+                                z["Zmin"],  z["Zmax"]]).astype(float))
+
+    def _get_series(self):
+        return [s.attrib["name"] for s in self.root[6][3]]
+
+    def get_interfaces_df(self):
+
+        fmts = [c.attrib["Name"] for c in self.root[5][0]]
+        xyzf = []
+
+        for i, fmt in enumerate(fmts):
+            for p in self.root[5][0][i]:
+                entry = p[0].text.split(",")
+                entry.append(fmt)
+
+                for s in self.series_fmt_dict.keys():
+                    if fmt in self.series_fmt_dict[s]["formations"]:
+                        series = s
+
+                if series is None:
+                    series = fmt
+
+                entry.append(series)
+                xyzf.append(entry)
+
+        interfaces = pn.DataFrame(np.array(xyzf), columns=['X', 'Y', 'Z', "formation", "series"])
+        interfaces[["X", "Y", "Z"]] = interfaces[["X", "Y", "Z"]].astype(float)
+        return interfaces
+
+    def get_orientation_df(self):
+        fol = []
+        for i, s in enumerate(self.root[5][1]):
+            for c in self.root[5][1][i]:
+                entry = c[0][0].text.split(",")
+                entry.append(c.get("Dip"))
+                entry.append(c.get("Azimuth"))
+                entry.append(c.get("NormalPolarity"))
+                entry.append(s.get("Name"))
+
+                fol.append(entry)
+
+        orientations = pn.DataFrame(np.array(fol), columns=['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'series'])
+        orientations[["X", "Y", "Z", "dip", "azimuth"]] = orientations[["X", "Y", "Z", "dip", "azimuth"]].astype(float)
+
+        return orientations
+
+    def _get_series_fmt_dict(self):
+        sp = {}
+        for i, s in enumerate(self.series):
+            fmts = []
+            influenced_by = []
+            for c in self.root[6][3][i]:
+                if "Data" in c.tag:
+                    fmts.append(c.attrib["Name"])
+                elif "InfluencedByFault" in c.tag:
+                    influenced_by.append(c.attrib["Name"])
+            # print(fmts)
+            sp[s] = {}
+            sp[s]["formations"] = fmts
+            sp[s]["InfluencedByFault"] = influenced_by
+
+        return sp
+
 
 # TODO think where this function should go
 def read_vox(geo_data, path):
