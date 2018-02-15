@@ -178,9 +178,13 @@ class InterpolatorData:
         geo_data_rescaled.interfaces[['X', 'Y', 'Z']] = new_coord_interfaces
         geo_data_rescaled.orientations[['X', 'Y', 'Z']] = new_coord_orientations
 
-        # Rescaling the std in case of stochastic values
-        geo_data_rescaled.interfaces[['X_std', 'Y_std', 'Z_std']] = geo_data.interfaces[['X_std', 'Y_std', 'Z_std']]/ rescaling_factor
-        geo_data_rescaled.orientations[['X_std', 'Y_std', 'Z_std']] = geo_data.orientations[['X_std', 'Y_std', 'Z_std']]/ rescaling_factor
+        try:
+            # Rescaling the std in case of stochastic values
+            geo_data_rescaled.interfaces[['X_std', 'Y_std', 'Z_std']] = geo_data.interfaces[['X_std', 'Y_std', 'Z_std']]/ rescaling_factor
+            geo_data_rescaled.orientations[['X_std', 'Y_std', 'Z_std']] = geo_data.orientations[['X_std', 'Y_std', 'Z_std']]/ rescaling_factor
+
+        except KeyError:
+            pass
 
         geo_data_rescaled.extent = new_coord_extent.as_matrix()
 
@@ -446,6 +450,8 @@ class InterpolatorData:
                  for i in self.geo_data_res.orientations['order_series'].unique()])
 
             # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
+
+            assert len_series_f.shape[0] is not 0, 'You need at least one orientation per series'
             self.tg.len_series_f.set_value(np.insert(len_series_f, 0, 0).cumsum())
 
             # =========================

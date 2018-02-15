@@ -23,15 +23,15 @@ class TestPerfomance:
 
     n_faults = 0
     interp_data.interpolator.tg.fault_matrix = theano.tensor.zeros((n_faults * 2,
-                                                        interp_data.interpolator.tg.grid_val_T.shape[0] +
-                                                        2 * interp_data.interpolator.tg.len_points))
+                                                                    interp_data.interpolator.tg.grid_val_T.shape[0] +
+                                                                    2 * interp_data.interpolator.tg.len_points))
 
     th_f = theano.function(interp_data.interpolator.tg.input_parameters_list(),
                            interp_data.interpolator.tg.compute_a_series(
                                *interp_data.interpolator.tg.len_series_i[n_faults:],
-                           *interp_data.interpolator.tg.len_series_f[n_faults:],
-                                *interp_data.interpolator.tg.n_formations_per_serie[n_faults:],
-                                *interp_data.interpolator.tg.n_universal_eq_T[n_faults:],
+                               *interp_data.interpolator.tg.len_series_f[n_faults:],
+                               *interp_data.interpolator.tg.n_formations_per_serie[n_faults:],
+                               *interp_data.interpolator.tg.n_universal_eq_T[n_faults:],
                                *interp_data.interpolator.tg.lith_block_init,
                                *interp_data.interpolator.tg.fault_matrix
                            ),
