@@ -680,8 +680,8 @@ class TheanoGraph(object):
         #yet_simulated = self.yet_simulated_func()
 
         # Removing points no simulated
-       # pns = (self.grid_val_T * self.yet_simulated.reshape((self.yet_simulated.shape[0], 1))).nonzero_values()
-        pns = self.grid_val_T
+        pns = (self.grid_val_T * self.yet_simulated.reshape((self.yet_simulated.shape[0], 1))).nonzero_values()
+     #   pns = self.grid_val_T
         # Adding the rest interface points
         grid_val = T.vertical_stack(pns.reshape((-1, 3)), self.rest_layer_points_all)
 
@@ -834,13 +834,13 @@ class TheanoGraph(object):
         )
 
         # I append rest and ref to grid
-        # universal_grid_interfaces_matrix = T.horizontal_stack(
-        #     (self.universal_grid_matrix_T * self.yet_simulated).nonzero_values().reshape((9, -1)),
-        #     T.vertical_stack(_universal_terms_interfaces_rest, _universal_terms_interfaces_ref).T)
-
         universal_grid_interfaces_matrix = T.horizontal_stack(
-            self.universal_grid_matrix_T.reshape((9, -1)),
+            (self.universal_grid_matrix_T * self.yet_simulated).nonzero_values().reshape((9, -1)),
             T.vertical_stack(_universal_terms_interfaces_rest, _universal_terms_interfaces_ref).T)
+
+        # universal_grid_interfaces_matrix = T.horizontal_stack(
+        #     self.universal_grid_matrix_T.reshape((9, -1)),
+        #     T.vertical_stack(_universal_terms_interfaces_rest, _universal_terms_interfaces_ref).T)
 
         # These are the magic terms to get the same as geomodeller
         gi_rescale_aux = T.repeat(self.gi_reescale, 9)
@@ -879,7 +879,7 @@ class TheanoGraph(object):
         aux_ones = T.ones([2 * self.len_points])
         faults_select = T.concatenate((self.yet_simulated, aux_ones))
 
-      #  nfc = faults_select.nonzero_values().shape[0]
+        nfc = faults_select.nonzero_values().shape[0]
 
         #if 'nfc' in self.verbose:
        #     nfc = theano.printing.Print('Faults nfc')(nfc)
@@ -889,11 +889,11 @@ class TheanoGraph(object):
         if 'fault matrix selection' in self.verbose:
             fault_matrix_selection = theano.printing.Print('f_sle')(fault_matrix_selection)
 
-      #  fault_matrix_selection_non_zero0 = fault_matrix_selection.nonzero_values()
+        fault_matrix_selection_non_zero0 = fault_matrix_selection.nonzero_values()
 
-      #  fault_matrix_selection_non_zero = fault_matrix_selection_non_zero0.reshape((length_of_faults, nfc))
+        fault_matrix_selection_non_zero = fault_matrix_selection_non_zero0.reshape((length_of_faults, nfc))
 
-        fault_matrix_selection_non_zero = (self.fault_matrix[::2, :]+1)
+       # fault_matrix_selection_non_zero = (self.fault_matrix[::2, :]+1)
 
         f_1 = T.sum(
             weights[length_of_CG + length_of_CGI + length_of_U_I:, :] * fault_matrix_selection_non_zero, axis=0)
@@ -1127,11 +1127,11 @@ class TheanoGraph(object):
         #if self.compute_all:
         potential_field_values = self.scalar_field_at_all()
 
-        # block_matrix = T.set_subtensor(
-        #     block_matrix[1, T.nonzero(T.cast(faults_select, "int8"))[0]],
-        #     potential_field_values)
+        block_matrix = T.set_subtensor(
+            block_matrix[1, T.nonzero(T.cast(faults_select, "int8"))[0]],
+            potential_field_values)
 
-        block_matrix = potential_field_values
+       # block_matrix = potential_field_values
 
         # Store the potential field at the interfaces
         self.final_potential_field_at_faults_op = T.set_subtensor(self.final_potential_field_at_faults_op[self.n_formation_op-1],
@@ -1213,20 +1213,20 @@ class TheanoGraph(object):
 
         # Updating the block model with the lithology block
         final_block = T.set_subtensor(
-            final_block[0, :],# T.nonzero(T.cast(lith_select, "int8"))[0]],
+            final_block[0, T.nonzero(T.cast(lith_select, "int8"))[0]],
             scalar_field_contribution)
 
         # Store the potential field at the interfaces
-        # self.final_scalar_field_at_formations_op = T.set_subtensor(
-        #     self.final_scalar_field_at_formations_op[T.cast(self.n_formation_op, 'int32') - 1],
-        #     self.scalar_field_at_interfaces_values)
+        self.final_scalar_field_at_formations_op = T.set_subtensor(
+            self.final_scalar_field_at_formations_op[T.cast(self.n_formation_op, 'int32') - 1],
+            self.scalar_field_at_interfaces_values)
 
         # Update the potential field matrix
         #if self.compute_all:
         potential_field_values = self.scalar_field_at_all()
 
         final_block = T.set_subtensor(
-                                      final_block[1],# T.nonzero(T.cast(lith_select, "int8"))[0]],
+                                      final_block[1, T.nonzero(T.cast(lith_select, "int8"))[0]],
                                       potential_field_values)
 
         return final_block, self.final_scalar_field_at_formations_op
@@ -1276,7 +1276,7 @@ class TheanoGraph(object):
                             dict(input=self.n_universal_eq_T[n_faults:], taps=[0])],
                  non_sequences=[self.fault_matrix],
                  name='Looping interfaces',
-                 profile=False,
+                 profile=True,
                  return_list=True
              )
 
