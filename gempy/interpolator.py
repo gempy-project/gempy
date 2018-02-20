@@ -121,7 +121,7 @@ class InterpolatorData:
                                     self.interpolator.tg.compute_geological_model(self.geo_data_res.n_faults),
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
-                                    profile=False)
+                                    profile=True)
 
         if output is 'gravity':
             # then we compile we have to pass the number of formations that are faults!!
@@ -129,7 +129,7 @@ class InterpolatorData:
                                     self.interpolator.tg.compute_forward_gravity(self.geo_data_res.n_faults),
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
-                                    profile=False)
+                                    profile=True)
         print('Compilation Done!')
         print('Level of Optimization: ', theano.config.optimizer)
         print('Device: ', theano.config.device)
@@ -427,7 +427,8 @@ class InterpolatorData:
 
             # Size of every layer in rests. SHARED (for theano)
             len_rest_form = (len_interfaces - 1)
-            self.tg.number_of_points_per_formation_T.set_value(len_rest_form)
+            self.tg.number_of_points_per_formation_T.set_value(len_rest_form.astype('int32'))
+            self.tg.npf.set_value( np.cumsum(np.concatenate(([0], len_rest_form))).astype('int32'))
 
             # Position of the first point of every layer
             ref_position = np.insert(len_interfaces[:-1], 0, 0).cumsum()
@@ -442,7 +443,7 @@ class InterpolatorData:
                  for i in pandas_rest_layer_points['order_series'].unique()])
 
             # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
-            self.tg.len_series_i.set_value(np.insert(len_series_i, 0, 0).cumsum())
+            self.tg.len_series_i.set_value(np.insert(len_series_i, 0, 0).cumsum().astype('int32'))
 
             # Array containing the size of every series. orientations.
             len_series_f = np.asarray(
@@ -452,7 +453,7 @@ class InterpolatorData:
             # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
 
             assert len_series_f.shape[0] is not 0, 'You need at least one orientation per series'
-            self.tg.len_series_f.set_value(np.insert(len_series_f, 0, 0).cumsum())
+            self.tg.len_series_f.set_value(np.insert(len_series_f, 0, 0).cumsum().astype('int32'))
 
             # =========================
             # Choosing Universal drifts
@@ -473,7 +474,7 @@ class InterpolatorData:
             n_universal_eq[u_grade == 2] = 9
 
             # it seems I have to pass list instead array_like that is weird
-            self.tg.n_universal_eq_T.set_value(list(n_universal_eq))
+            self.tg.n_universal_eq_T.set_value(list(n_universal_eq.astype('int32')))
 
             # ================
             # Prepare Matrices
@@ -570,11 +571,11 @@ class InterpolatorData:
             #self.tg.yet_simulated.set_value(np.ones((_grid_rescaled.grid.shape[0]), dtype='int'))
 
             # Unique number assigned to each lithology
-            self.tg.n_formation.set_value(self.geo_data_res.interfaces['formation number'].unique().astype('int64'))
+            self.tg.n_formation.set_value(self.geo_data_res.interfaces['formation number'].unique().astype('float32'))
 
             # Number of formations per series. The function is not pretty but the result is quite clear
             self.tg.n_formations_per_serie.set_value(
-                np.insert(self.geo_data_res.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0))
+                np.insert(self.geo_data_res.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0).astype('int32'))
 
             # Init the list to store the values at the interfaces. Here we init the shape for the given dataset
             self.tg.final_scalar_field_at_formations.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
@@ -585,12 +586,12 @@ class InterpolatorData:
             # TODO: Push this condition to the geo_data
             # Set fault relation matrix
             if self.geo_data_res.fault_relation is not None:
-                self.tg.fault_relation.set_value(self.geo_data_res.fault_relation.astype('int'))
+                self.tg.fault_relation.set_value(self.geo_data_res.fault_relation.astype('int32'))
             else:
                 fault_rel = np.zeros((self.geo_data_res.interfaces['series'].nunique(),
                                       self.geo_data_res.interfaces['series'].nunique()))
 
-                self.tg.fault_relation.set_value(fault_rel.astype('int'))
+                self.tg.fault_relation.set_value(fault_rel.astype('int32'))
 
         # TODO change name to weights!
         def set_densities(self, densities):
