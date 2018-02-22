@@ -20,7 +20,7 @@ with Uncertainty_Obj module)
 from pylab import *
 import copy
 import pandas as pn
-import string
+import gempy as gp
 import numpy as np
 
 # python module to wrap GeoModeller XML file and perform all kinds of data
@@ -57,14 +57,147 @@ class ReadGeoModellerXML:
         self.tree = ET.ElementTree(file=fp)  # load xml as tree
         self.root = self.tree.getroot()
 
+        self.xmlns = "http://www.geomodeller.com/geo"
+        self.gml = "http://www.opengis.net/gml"
+
         self.extent = self._get_extent()
-        self.strat_column = self.get_stratigraphic_column()
-        self.faults = self.get_faults()
 
-        self.series_info = self._get_series_fmt_dict()
-        self.series_distribution = self.get_series_distribution()
+        self.data = self.extract_data()
+        self.interfaces, self.orientations = self.get_dataframes()
 
-        self.fault_matrix = self.get_fault_matrix()
+        # self.stratigraphic_column = self.get_stratigraphic_column()
+        # self.faults = self.get_faults()
+        #
+        # self.series_info = self._get_series_fmt_dict()
+        # self.series_distribution = self.get_series_distribution()
+        #
+        # self.fault_matrix = self.get_fault_matrix()
+
+    def get_psc(self):
+        """Returns the ProjectStratigraphicColumn tree element used for several data extractions."""
+        return self.root.find("{" + self.xmlns + "}GeologicalModel").find("{"+self.xmlns+"}ProjectStratigraphicColumn")
+
+    def extract_data(self):
+        """
+        Extracts relevant data from the GeoModeller XML file ElementTree root (self.root) and returns it as a dictionary.
+
+
+        Returns:
+            (dict): Data dictionary
+        """
+        data = {}
+        for s in self.get_psc():
+            sn = s.get("name")
+            data[sn] = {}  # create a dict for each series
+            data[sn]["formations"] = []
+            data[sn]["InfluencedByFault"] = []
+            data[sn]["relation"] = s.get("relation")  # add relation, whatever that is
+
+            for c in s:
+                if c.tag == "{"+self.xmlns+"}Data":  # append formation names to list of formations
+                    data[sn]["formations"].append(c.get("Name"))
+
+                if c.tag == "{"+self.xmlns+"}InfluencedByFault":  # add fault influences
+                    data[sn]["InfluencedByFault"].append(c.get("Name"))
+
+                if c.tag == "{"+self.xmlns+"}PotentialField":
+
+                    data[sn]["gradients"] = []
+                    data[sn]["interfaces"] = []
+                    data[sn]["interfaces_counters"] = []
+                    data[sn]["solutions"] = []
+                    data[sn]["constraints"] = []
+
+                    for cc in c:
+                        # COVARIANCE
+                        if cc.tag == "{" + self.xmlns + "}covariance":
+                            data[sn]["covariance"] = cc.attrib
+
+                        # GRADIENTS
+                        if cc.tag == "{" + self.xmlns + "}Gradients":
+                            for gr in cc:
+                                data[sn]["gradients"].append([gr.get("Gx"), gr.get("Gy"), gr.get("Gz"),
+                                                              gr.get("XGr"), gr.get("YGr"), gr.get("ZGr")])
+
+                        # INTERFACES
+                        if cc.tag == "{" + self.xmlns + "}Points":
+                            for co in cc:
+                                data[sn]["interfaces"].append([float(co[0].text), float(co[1].text), float(co[2].text)])
+
+                        # INTERFACE COUNTERS
+                        if cc.tag == "{" + self.xmlns + "}InterfacePoints":
+                            for ip in cc:
+                                data[sn]["interfaces_counters"].append([int(ip.get("npnt")), int(ip.get("pnt"))])
+
+                        # CONSTRAINTS
+                        if cc.tag == "{" + self.xmlns + "}Constraints":
+                            for co in cc:
+                                data[sn]["constraints"].append(float(co.get("value")))
+
+                        # SOLUTIONS
+                        if cc.tag == "{" + self.xmlns + "}Solutions":
+                            for sol in cc:
+                                data[sn]["solutions"].append(float(sol.get("sol")))
+
+                    # convert from str to float
+                    data[sn]["gradients"] = np.array(data[sn]["gradients"]).astype(float)
+                    data[sn]["interfaces"] = np.array(data[sn]["interfaces"]).astype(float)
+                    data[sn]["interfaces_counters"] = np.array(data[sn]["interfaces_counters"]).astype(float)
+                    data[sn]["solutions"] = np.array(data[sn]["solutions"]).astype(float)
+
+        return data
+
+    def get_dataframes(self):
+        """
+        Extracts dataframe information from the self.data dictionary and returns GemPy-compatible interfaces and
+        orientations dataframes.
+
+        Returns:
+            (tuple) of GemPy dataframes (interfaces, orientations)
+        """
+        interf_formation = []
+        interf_series = []
+
+        orient_series = []
+
+        for i, s in enumerate(self.data.keys()):  # loop over all series
+            if i == 0:
+                coords = self.data[s]["interfaces"]
+                grads = self.data[s]["gradients"]
+            else:
+                coords = np.append(coords, self.data[s]["interfaces"])
+                grads = np.append(grads, self.data[s]["gradients"])
+
+            for j, fmt in enumerate(self.data[s]["formations"]):
+                for n in range(int(self.data[s]["interfaces_counters"][j, 0])):
+                    interf_formation.append(fmt)
+                    interf_series.append(s)
+
+            for k in range(len(grads)):
+                orient_series.append(s)
+
+        interfaces = pn.DataFrame(coords, columns=['X', 'Y', 'Z'])
+        interfaces["formation"] = interf_formation
+        interfaces["series"] = interf_series
+
+        orientations = pn.DataFrame(grads, columns=['G_x', 'G_y', 'G_z', 'X', 'Y', 'Z'])
+        orientations["series"] = orient_series
+
+        dips = []
+        azs = []
+        pols = []
+        for i, row in orientations.iterrows():
+            dip, az, pol = gp.data_management.get_orientation((row["G_x"], row["G_y"], row["G_z"]))
+            dips.append(dip)
+            azs.append(az)
+            pols.append(pol)
+
+        orientations["dip"] = dips
+        orientations["azimuth"] = azs
+        orientations["polarity"] = pols
+
+        return interfaces, orientations
+
 
     def get_stratigraphic_column(self):
         """
@@ -74,8 +207,8 @@ class ReadGeoModellerXML:
             tuple: Series names (str) in stratigraphic order.
         """
         stratigraphic_column = []
-        for c in self.root[6][3]:
-            stratigraphic_column.append(c.get("name"))
+        for s in self.get_psc():
+            stratigraphic_column.append(s.get("name"))
         return tuple(stratigraphic_column)
 
     def get_order_formations(self):
@@ -83,7 +216,7 @@ class ReadGeoModellerXML:
         for entry in self.series_distribution.values():
             if type(entry) is str:
                 order_formations.append(entry)
-            else:
+            elif type(entry) is tuple:
                 for e in entry:
                     order_formations.append(e)
 
@@ -117,7 +250,7 @@ class ReadGeoModellerXML:
             else:
                 series_distribution[key] = tuple(fmts)
 
-        for f in self.strat_column:
+        for f in self.stratigraphic_column:
             if "Fault" in f or "fault" in f:
                 series_distribution[f] = f
 
@@ -144,26 +277,30 @@ class ReadGeoModellerXML:
         Returns:
             pandas.DataFrame: InputData.interfaces dataframe
         """
-        fmts = [c.attrib["Name"] for c in self.root[5][0]]  # use formations
-        xyzf = []
+        if self.root.find("{" + self.xmlns + "}Structural3DData") is None:
+            print("No 3D data stored in given xml file.")
+            return None
+        else:
+            fmts = [c.attrib["Name"] for c in self.root.find("{" + self.xmlns + "}Structural3DData")[0]]  # use formations
+            xyzf = []
 
-        for i, fmt in enumerate(fmts):  # loop over all formations
-            for p in self.root[5][0][i]:  # loop over every point
-                entry = p[0].text.split(",")  # split the string by its seperator into coord strings
-                entry.append(fmt)
+            for i, fmt in enumerate(fmts):  # loop over all formations
+                for p in self.root[5][0][i]:  # loop over every point
+                    entry = p[0].text.split(",")  # split the string by its seperator into coord strings
+                    entry.append(fmt)
 
-                for s in self.series_info.keys():
-                    if fmt in self.series_info[s]["formations"]:
-                        series = s
-                    else:
-                        series = fmt
+                    for s in self.series_info.keys():
+                        if fmt in self.series_info[s]["formations"]:
+                            series = s
+                        else:
+                            series = fmt
 
-                entry.append(series)
-                xyzf.append(entry)
+                    entry.append(series)
+                    xyzf.append(entry)
 
-        interfaces = pn.DataFrame(np.array(xyzf), columns=['X', 'Y', 'Z', "formation", "series"])
-        interfaces[["X", "Y", "Z"]] = interfaces[["X", "Y", "Z"]].astype(float)
-        return interfaces
+            interfaces = pn.DataFrame(np.array(xyzf), columns=['X', 'Y', 'Z', "formation", "series"])
+            interfaces[["X", "Y", "Z"]] = interfaces[["X", "Y", "Z"]].astype(float)
+            return interfaces
 
     def get_orientation_df(self):
         """
@@ -173,37 +310,41 @@ class ReadGeoModellerXML:
         Returns:
             pandas.DataFrame: InputData.orientations dataframe
         """
-        fol = []
-        for i, s in enumerate(self.root[5][1]):
-            for c in self.root[5][1][i]:
-                entry = c[0][0].text.split(",")
-                entry.append(c.get("Dip"))
-                entry.append(c.get("Azimuth"))
-                # correct polarity from bool str to int
-                pol = c.get("NormalPolarity")
-                if pol == "true":
-                    entry.append(1)
-                else:
-                    entry.append(-1)
-                entry.append(s.get("Name"))
-                for series in self.series_distribution.keys():
-                    if s.get("Name") in self.series_distribution[series]:
-                        entry.append(series)
+        if self.root.find("{" + self.xmlns + "}Structural3DData") is None:
+            print("No 3D data stored in given xml file.")
+            return None
+        else:
+            fol = []
+            for i, s in enumerate(self.root.find("{" + self.xmlns + "}Structural3DData")[1]):
+                for c in self.root.find("{" + self.xmlns + "}Structural3DData")[1][i]:
+                    entry = c[0][0].text.split(",")
+                    entry.append(c.get("Dip"))
+                    entry.append(c.get("Azimuth"))
+                    # correct polarity from bool str to int
+                    pol = c.get("NormalPolarity")
+                    if pol == "true":
+                        entry.append(1)
+                    else:
+                        entry.append(-1)
+                    entry.append(s.get("Name"))
+                    for series in self.series_distribution.keys():
+                        if s.get("Name") in self.series_distribution[series]:
+                            entry.append(series)
 
-                fol.append(entry)
+                    fol.append(entry)
 
-        orientations = pn.DataFrame(np.array(fol), columns=['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series'])
-        orientations[["X", "Y", "Z", "dip", "azimuth"]] = orientations[["X", "Y", "Z", "dip", "azimuth"]].astype(float)
-        orientations["polarity"] = orientations["polarity"].astype(int)
+            orientations = pn.DataFrame(np.array(fol), columns=['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series'])
+            orientations[["X", "Y", "Z", "dip", "azimuth"]] = orientations[["X", "Y", "Z", "dip", "azimuth"]].astype(float)
+            orientations["polarity"] = orientations["polarity"].astype(int)
 
-        return orientations
+            return orientations
 
     def _get_series_fmt_dict(self):
         sp = {}
-        for i, s in enumerate(self.strat_column):  # loop over all series
+        for i, s in enumerate(self.stratigraphic_column):  # loop over all series
             fmts = []  # init formation storage list
             influenced_by = []  # init influenced by list
-            for c in self.root[6][3][i]:
+            for c in self.root.find("{" + self.xmlns + "}GeologicalModel").find("{"+self.xmlns+"}ProjectStratigraphicColumn")[i]:
                 if "Data" in c.tag:
                     fmts.append(c.attrib["Name"])
                 elif "InfluencedByFault" in c.tag:
@@ -365,7 +506,7 @@ class GeomodellerClass:
         formations_parent = self.rootelement.findall("{"+self.xmlns+"}Formations")[0]
         self.formations = formations_parent.findall("{"+self.xmlns+"}Formation")
 
-    def get_stratigraphy_list(self,**kwds):
+    def get_stratigraphy_list(self, **kwds):
         """get project stratigraphy and return as list; lowermost formation: 1
         for GeoModeller dll access (this ist the formation number that is returned with
         the GetComputedLithologyXYZ function in the geomodeller dll

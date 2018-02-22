@@ -823,6 +823,8 @@ def get_orientation(normal):
     # calculate dip
     dip = np.arccos(normal[2]) / np.pi * 180.
 
+    print(normal)
+
     # calculate dip direction
     # +/+
     if normal[0] >= 0 and normal[1] > 0:
@@ -838,15 +840,16 @@ def get_orientation(normal):
     # -/-
     elif normal[0] < 0 and normal[1] >= 0:
         dip_direction = 360 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
-
-    azimuth = dip_direction
+    # if dip is just straight up vertical
+    elif normal[0] == 0 and normal[1] == 0:
+        dip_direction = 0
 
     if -90 < dip < 90:
         polarity = 1
     else:
         polarity = -1
 
-    return dip, azimuth, polarity
+    return dip, dip_direction, polarity
 
 
 class GridClass(object):

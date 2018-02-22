@@ -123,7 +123,7 @@ def create_data(extent, resolution=(50, 50, 50), **kwargs):
     return InputData(extent, resolution, **kwargs)
 
 
-def create_from_geomodeller_xml(fp, resolution=(50, 50, 50), return_xml=True, **kwargs):
+def create_from_geomodeller_xml(fp, resolution=(50, 50, 50), return_xml=False, **kwargs):
     """
     Creates InputData object from a GeoModeller xml file. Automatically extracts and sets model extent, interface
     and orientation data as well as the stratigraphic pile.
@@ -144,17 +144,28 @@ def create_from_geomodeller_xml(fp, resolution=(50, 50, 50), return_xml=True, **
     geo_data = create_data(gmx.extent, resolution, **kwargs)
 
     # set interface and orientation dataframes
-    geo_data.interfaces = gmx.get_interfaces_df()
-    geo_data.orientations = gmx.get_orientation_df()
+    geo_data.interfaces = gmx.interfaces
+    geo_data.orientations = gmx.orientations
 
-    # this seems to fuck things up so far:
+    # interf = gmx.get_interfaces_df()
+    # orient = gmx.get_orientation_df()
+    # if interf is None or orient is None:
+    #     raise ValueError("No 3D data stored in given XML file, can't extract interfaces or orientations.")
+    # else:
+    #     geo_data.interfaces = interf
+    #     geo_data.orientations = orient
+    #
+    # # this seems to fuck things up so far:
+    # for f in gmx.faults:
+    #     gmx.series_distribution[f] = f
+    #
     # try:  # try to set series ordering and stuff, if fails (because the xml files are fucked up) tell user to do it manually
     #     set_series(geo_data, gmx.series_distribution,
-    #                order_series=list(gmx.faults + gmx.strat_column),
-    #                order_formations=list(gmx.faults)+gmx.get_order_formations())
+    #                order_series=list(gmx.faults + gmx.stratigraphic_column),
+    #                order_formations=gmx.get_order_formations())
     # except AssertionError:
     #     print("Some of the formations given are not in the formations data frame. Therefore, you have to set the series"
-    #           "order manually.")
+    #           " order manually.")
 
     if return_xml:
         return geo_data, gmx
