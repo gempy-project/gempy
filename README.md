@@ -114,7 +114,7 @@ Otherwise you can clone the current repository by downloading is manually or by 
 
 and then manually install it using the provided Python install file by calling
 
-`$ python install.py`
+`$ python gempy/setup.py install`
 
 in the cloned or downloaded repository folder. Make sure you have installed all necessary dependencies listed above before using *GemPy*.
 
