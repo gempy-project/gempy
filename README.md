@@ -102,7 +102,7 @@ recommend using either Conda or PyPi as both will take care of automatically ins
 
 `$ conda install gempy`
 
-#### PyPi
+#### PyPi (at the moment is an old version. To be updated in the following weeks)
 
 `$ pip install gempy`
 
