@@ -8,6 +8,8 @@
 [![license: LGPL v3](https://img.shields.io/badge/license-LGPL%20v3-blue.svg)]()
 [![Documentation Status](https://readthedocs.org/projects/gempy/badge/?version=latest)](http://gempy.readthedocs.io/?badge=latest)
 [![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)]()
+[![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
+
 
 <p align="center"><img src="docs/source/images/model_examples.png" width="800"></p>
 
