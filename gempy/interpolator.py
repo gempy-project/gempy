@@ -129,7 +129,7 @@ class InterpolatorData:
                                     self.interpolator.tg.compute_forward_gravity(self.geo_data_res.n_faults),
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
-                                    profile=True)
+                                    profile=False)
         print('Compilation Done!')
         print('Level of Optimization: ', theano.config.optimizer)
         print('Device: ', theano.config.device)
@@ -343,11 +343,11 @@ class InterpolatorData:
             # Sorting data in case the user provides it unordered
             self.order_table()
 
-            # Setting theano parameters
-            self.set_theano_shared_parameteres(**kwargs)
-
             # Extracting data from the pandas dataframe to numpy array in the required form for the theano function
             self.data_prep(**kwargs)
+
+            # Setting theano parameters
+            self.set_theano_shared_parameteres(**kwargs)
 
         def set_formation_number(self):
             """
@@ -540,12 +540,18 @@ class InterpolatorData:
             if not c_o:
                 c_o = range_var ** 2 / 14 / 3
 
+            x_to_interpolate = np.vstack((self.geo_data_res.grid.values,
+                                          self.pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix(),
+                                          self.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()))
+
+
             # Creating the drift matrix.
-            universal_matrix = np.vstack((self.geo_data_res.grid.values.T,
-                                         (self.geo_data_res.grid.values ** 2).T,
-                                          self.geo_data_res.grid.values[:, 0] * self.geo_data_res.grid.values[:, 1],
-                                          self.geo_data_res.grid.values[:, 0] * self.geo_data_res.grid.values[:, 2],
-                                          self.geo_data_res.grid.values[:, 1] * self.geo_data_res.grid.values[:, 2]))
+            universal_matrix = np.vstack((x_to_interpolate.T,
+                                         (x_to_interpolate ** 2).T,
+                                          x_to_interpolate[:, 0] * x_to_interpolate[:, 1],
+                                          x_to_interpolate[:, 0] * x_to_interpolate[:, 2],
+                                          x_to_interpolate[:, 1] * x_to_interpolate[:, 2],
+                                          ))
 
             # Setting shared variables
             # Range
@@ -558,7 +564,10 @@ class InterpolatorData:
             self.tg.nugget_effect_grad_T.set_value(np.cast[self.dtype](nugget_effect))
 
             # Just grid. I add a small number to avoid problems with the origin point
-            self.tg.grid_val_T.set_value(np.cast[self.dtype](self.geo_data_res.grid.values + 10e-6))
+
+
+            self.tg.grid_val_T.set_value(np.cast[self.dtype](x_to_interpolate + 10e-6))
+
             # Universal grid
             self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](universal_matrix + 1e-10))
 
@@ -571,8 +580,8 @@ class InterpolatorData:
             #self.tg.yet_simulated.set_value(np.ones((_grid_rescaled.grid.shape[0]), dtype='int'))
 
             # Unique number assigned to each lithology
-            self.tg.n_formation.set_value(self.geo_data_res.interfaces['formation number'].unique().astype('float32'))
-
+            self.tg.n_formation.set_value(self.geo_data_res.interfaces['formation number'].unique().astype('int32'))
+            self.tg.n_formation_float.set_value(self.geo_data_res.interfaces['formation number'].unique().astype('float32'))
             # Number of formations per series. The function is not pretty but the result is quite clear
             self.tg.n_formations_per_serie.set_value(
                 np.insert(self.geo_data_res.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0).astype('int32'))
