@@ -239,6 +239,13 @@ class InterpolatorData:
         else:
             geo_data_in = self.geo_data_res
 
+        import theano
+        if theano.config.optimizer != 'fast_run':
+            assert self.interpolator.tg.grid_val_T.get_value().shape[0] * \
+                   len(self.interpolator.tg.len_series_i.get_value()) < 2e7, \
+                'The grid is too big for the number of scalar fields. Reduce the grid or change the' \
+                'optimization flag to fast run'
+
         # I update the interpolator data
         self.interpolator.geo_data_res = geo_data_in
         self.interpolator.order_table()
@@ -336,7 +343,7 @@ class InterpolatorData:
             import theano
             if theano.config.optimizer != 'fast_run':
                 assert self.tg.grid_val_T.get_value().shape[0] * \
-                       np.math.factorial(len(self.tg.len_series_i.get_value())) < 2e7, \
+                       len(self.tg.len_series_i.get_value()) < 2e7, \
                     'The grid is too big for the number of scalar fields. Reduce the grid or change the' \
                     'optimization flag to fast run'
 

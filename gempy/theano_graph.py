@@ -33,11 +33,12 @@ theano.config.openmp = True
 
 theano.config.optimizer = 'fast_compile'
 theano.config.floatX = 'float32'
+theano.config.on_opt_error = 'ignore'
 
 theano.config.exception_verbosity = 'high'
 theano.config.compute_test_value = 'off'
-theano.config.profile_memory = True
-theano.config.scan.debug = True
+theano.config.profile_memory = False
+theano.config.scan.debug = False
 theano.config.profile = True
 
 
@@ -972,7 +973,7 @@ class TheanoGraph(object):
                         len_f_0, len_f_1,
                         n_form_per_serie_0, n_form_per_serie_1,
                         u_grade_iter,
-                        final_block, fault_matrix
+                        fault_matrix, final_block
                         ):
         """
         Function that loops each fault, generating a potential field for each on them with the respective block model
@@ -1000,6 +1001,8 @@ class TheanoGraph(object):
         # Theano shared
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T[n_form_per_serie_0: n_form_per_serie_1]
         self.n_formation_op = self.n_formation[n_form_per_serie_0: n_form_per_serie_1]
+        self.n_formation_op_float = self.n_formation_float[n_form_per_serie_0: n_form_per_serie_1]
+        self.npf_op = self.npf[n_form_per_serie_0: n_form_per_serie_1]
         if 'n_formation' in self.verbose:
             self.n_formation_op = theano.printing.Print('n_formation_fault')(self.n_formation_op)
 
@@ -1038,13 +1041,13 @@ class TheanoGraph(object):
         # ================================
 
         faults_matrix = self.block_series()
-        aux_ones = T.ones([2*self.len_points])
-        faults_select = T.concatenate((self.yet_simulated, aux_ones))
+        # aux_ones = T.ones([2*self.len_points])
+        # faults_select = T.concatenate((self.yet_simulated, aux_ones))
 
         # Update the block matrix
-        block_matrix = T.set_subtensor(
+        final_block = T.set_subtensor(
                     final_block[0, :],
-                    T.cast(T.cast(faults_matrix, 'bool'), 'int8'))
+                    faults_matrix)#T.cast(T.cast(faults_matrix, 'bool'), 'int8'))
 
         # Update the potential field matrix
         #if self.compute_all:
@@ -1054,7 +1057,9 @@ class TheanoGraph(object):
         #     block_matrix[1, T.nonzero(T.cast(faults_select, "int8"))[0]],
         #     potential_field_values)
 
-        block_matrix = potential_field_values
+        final_block =  T.set_subtensor(
+                    final_block[1, :],
+                    potential_field_values)
 
         # Store the potential field at the interfaces
         self.final_potential_field_at_faults_op = T.set_subtensor(self.final_potential_field_at_faults_op[self.n_formation_op-1],
@@ -1063,9 +1068,9 @@ class TheanoGraph(object):
         aux_ind = T.max(self.n_formation_op, 0)
 
         # Setting the values of the fault matrix computed in the current iteration
-        fault_matrix = T.set_subtensor(fault_matrix[(aux_ind-1)*2:aux_ind*2, :], block_matrix)
+        fault_matrix = T.set_subtensor(fault_matrix[(aux_ind-1)*2:aux_ind*2, :], final_block)
 
-        return block_matrix, fault_matrix, self.final_potential_field_at_faults_op,
+        return fault_matrix, self.final_potential_field_at_faults_op,
 
     def compute_a_series(self,
                          len_i_0, len_i_1,
@@ -1167,26 +1172,27 @@ class TheanoGraph(object):
         # Compute Faults
         if n_faults != 0:
             # --DEP--? Initialize yet simulated
-            self.yet_simulated = T.eq(self.fault_block_init[0, :-2 * self.len_points], 0)
+            self.yet_simulated = T.nonzero(T.eq(self.fault_block_init[0, :], 0))[0]#T.eq(self.fault_block_init[0, :-2 * self.len_points], 0)
 
             # Looping
             fault_loop, updates3 = theano.scan(
                 fn=self.compute_a_fault,
-                    outputs_info=[self.fault_block_init,
+                    outputs_info=[
                               dict(initial=self.fault_matrix, taps=[-1]),
                               None],  # This line may be used for the faults network
                 sequences=[dict(input=self.len_series_i[:n_faults + 1], taps=[0, 1]),
                            dict(input=self.len_series_f[:n_faults + 1], taps=[0, 1]),
                            dict(input=self.n_formations_per_serie[:n_faults + 1], taps=[0, 1]),
                            dict(input=self.n_universal_eq_T[:n_faults + 1], taps=[0])],
+                non_sequences=self.fault_block_init,
                 return_list=True,
             )
 
             # We return the last iteration of the fault matrix
-            self.fault_matrix = fault_loop[1][-1]
+            self.fault_matrix = fault_loop[0][-1]
 
             # For this we return every iteration since is each potential field at interface
-            self.pfai_fault = fault_loop[2]
+            self.pfai_fault = fault_loop[1]
 
         # Check if there are lithologies to compute
         if len(self.len_series_f.get_value()) - 1 > n_faults:
