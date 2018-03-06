@@ -432,7 +432,7 @@ class vtkVisualization:
         self.ve = ve
 
         self.real_time = real_time
-        self.geo_data = copy.deepcopy(geo_data)
+        self.geo_data = geo_data#copy.deepcopy(geo_data)
         self.interp_data = None
         self.C_LOT = color_lot
         # Number of renders
@@ -463,7 +463,7 @@ class vtkVisualization:
         # create interactor and set interactor style, assign render window
         self.interactor = vtk.vtkRenderWindowInteractor()
         self.interactor.SetRenderWindow(self.renwin)
-        print(self.extent)
+
         # 3d model camera for the 4 renders
         self.camera_list = self._create_cameras(self.extent, verbose=verbose)
         # Setting the camera and the background color to the renders

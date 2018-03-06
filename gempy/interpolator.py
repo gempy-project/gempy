@@ -249,8 +249,9 @@ class InterpolatorData:
         # I update the interpolator data
         self.interpolator.geo_data_res = geo_data_in
         self.interpolator.order_table()
-        self.interpolator.set_theano_shared_parameteres(**kwargs)
         self.interpolator.data_prep()
+        self.interpolator.set_theano_shared_parameteres(**kwargs)
+
 
     def get_input_data(self, u_grade=None):
         """

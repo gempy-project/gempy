@@ -67,6 +67,8 @@ class TheanoGraph(object):
         # Pass the verbose list as property
         self.verbose = verbose
         self.compute_all = False
+        self.dot_version = False
+
 
         theano.config.floatX = dtype
         theano.config.optimizer = optimizer
@@ -162,6 +164,8 @@ class TheanoGraph(object):
         # Init faults block. Here we store the block and potential field results of one iteration
         self.fault_block_init = T.zeros((2, self.grid_val_T.shape[0]))
         self.fault_block_init.name = 'final block of faults init'
+        self.yet_simulated = T.nonzero(T.eq(self.fault_block_init[0, :], 0))[0]
+
 
         # Here we store the value of the potential field at interfaces
         self.pfai_fault = T.zeros((0, self.n_formations_per_serie[-1]))
@@ -704,18 +708,25 @@ class TheanoGraph(object):
         # TODO IMP: Change the tile by a simple dot op
         DK_weights = T.tile(DK_parameters, (grid_val.shape[0], 1)).T
 
+        if self.dot_version:
+            DK_weights = DK_parameters
+
         return DK_weights
 
-    def gradient_contribution(self):
+    def gradient_contribution(self, grid_val=None, weights=None):
         """
         Computation of the contribution of the foliations at every point to interpolate
 
         Returns:
             theano.tensor.vector: Contribution of all foliations (input) at every point to interpolate
         """
-        weights = self.extend_dual_kriging()
+
+        if weights is None:
+            weights = self.extend_dual_kriging()
+        if grid_val is None:
+            grid_val = self.x_to_interpolate()
+
         length_of_CG = self.matrices_shapes()[0]
-        grid_val = self.x_to_interpolate()
 
         # Cartesian distances between the point to simulate and the dips
         hu_SimPoint = T.vertical_stack(
@@ -729,7 +740,7 @@ class TheanoGraph(object):
 
         # Gradient contribution
         sigma_0_grad = T.sum(
-            (weights[:length_of_CG, :] *
+            (weights[:length_of_CG] *
              self.gi_reescale *
              (-hu_SimPoint *
               (sed_dips_SimPoint < self.a_T) *  # first derivative
@@ -737,6 +748,16 @@ class TheanoGraph(object):
                                35 / 2 * sed_dips_SimPoint ** 3 / self.a_T ** 5 +
                                21 / 4 * sed_dips_SimPoint ** 5 / self.a_T ** 7)))),
             axis=0)
+
+        if self.dot_version:
+            sigma_0_grad = T.dot(
+                weights[:length_of_CG] ,
+                 self.gi_reescale *
+                 (-hu_SimPoint *
+                  (sed_dips_SimPoint < self.a_T) *  # first derivative
+                  (- self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_SimPoint / self.a_T ** 3 -
+                                   35 / 2 * sed_dips_SimPoint ** 3 / self.a_T ** 5 +
+                                   21 / 4 * sed_dips_SimPoint ** 5 / self.a_T ** 7))))
 
         # Add name to the theano node
         sigma_0_grad.name = 'Contribution of the foliations to the potential field at every point of the grid'
@@ -746,16 +767,19 @@ class TheanoGraph(object):
 
         return sigma_0_grad
 
-    def interface_contribution(self):
+    def interface_contribution(self, grid_val=None, weights=None):
         """
           Computation of the contribution of the interfaces at every point to interpolate
 
           Returns:
               theano.tensor.vector: Contribution of all interfaces (input) at every point to interpolate
           """
-        weights = self.extend_dual_kriging()
+
+        if weights is None:
+            weights = self.extend_dual_kriging()
+        if grid_val is None:
+            grid_val = self.x_to_interpolate()
         length_of_CG, length_of_CGI = self.matrices_shapes()[:2]
-        grid_val = self.x_to_interpolate()
 
         # Euclidian distances
         sed_rest_SimPoint = self.squared_euclidean_distances(self.rest_layer_points, grid_val)
@@ -765,35 +789,53 @@ class TheanoGraph(object):
         sigma_0_interf = (T.sum(
             -weights[length_of_CG:length_of_CG + length_of_CGI, :] *
             (self.c_o_T * self.i_reescale * (
-                (sed_rest_SimPoint < self.a_T) *   # SimPoint - Rest Covariances Matrix
-                (1 - 7 * (sed_rest_SimPoint / self.a_T) ** 2 +
-                 35 / 4 * (sed_rest_SimPoint / self.a_T) ** 3 -
-                 7 / 2 * (sed_rest_SimPoint / self.a_T) ** 5 +
-                 3 / 4 * (sed_rest_SimPoint / self.a_T) ** 7) -
-                ((sed_ref_SimPoint < self.a_T) *  # SimPoint- Ref
-                 (1 - 7 * (sed_ref_SimPoint / self.a_T) ** 2 +
-                  35 / 4 * (sed_ref_SimPoint / self.a_T) ** 3 -
-                  7 / 2 * (sed_ref_SimPoint / self.a_T) ** 5 +
-                  3 / 4 * (sed_ref_SimPoint / self.a_T) ** 7)))), axis=0))
+                    (sed_rest_SimPoint < self.a_T) *  # SimPoint - Rest Covariances Matrix
+                    (1 - 7 * (sed_rest_SimPoint / self.a_T) ** 2 +
+                     35 / 4 * (sed_rest_SimPoint / self.a_T) ** 3 -
+                     7 / 2 * (sed_rest_SimPoint / self.a_T) ** 5 +
+                     3 / 4 * (sed_rest_SimPoint / self.a_T) ** 7) -
+                    ((sed_ref_SimPoint < self.a_T) *  # SimPoint- Ref
+                     (1 - 7 * (sed_ref_SimPoint / self.a_T) ** 2 +
+                      35 / 4 * (sed_ref_SimPoint / self.a_T) ** 3 -
+                      7 / 2 * (sed_ref_SimPoint / self.a_T) ** 5 +
+                      3 / 4 * (sed_ref_SimPoint / self.a_T) ** 7)))), axis=0))
+
+        if self.dot_version:
+            sigma_0_interf = (
+                T.dot(-weights[length_of_CG:length_of_CG + length_of_CGI],
+                      (self.c_o_T * self.i_reescale * (
+                              (sed_rest_SimPoint < self.a_T) *  # SimPoint - Rest Covariances Matrix
+                              (1 - 7 * (sed_rest_SimPoint / self.a_T) ** 2 +
+                               35 / 4 * (sed_rest_SimPoint / self.a_T) ** 3 -
+                               7 / 2 * (sed_rest_SimPoint / self.a_T) ** 5 +
+                               3 / 4 * (sed_rest_SimPoint / self.a_T) ** 7) -
+                              ((sed_ref_SimPoint < self.a_T) *  # SimPoint- Ref
+                               (1 - 7 * (sed_ref_SimPoint / self.a_T) ** 2 +
+                                35 / 4 * (sed_ref_SimPoint / self.a_T) ** 3 -
+                                7 / 2 * (sed_ref_SimPoint / self.a_T) ** 5 +
+                                3 / 4 * (sed_ref_SimPoint / self.a_T) ** 7))))))
 
         # Add name to the theano node
         sigma_0_interf.name = 'Contribution of the interfaces to the potential field at every point of the grid'
 
         return sigma_0_interf
 
-    def universal_drift_contribution(self):
+
+    def universal_drift_contribution(self, grid_val=None, weights=None, a=0, b=100000000):
         """
         Computation of the contribution of the universal drift at every point to interpolate
 
         Returns:
             theano.tensor.vector: Contribution of the universal drift (input) at every point to interpolate
         """
-        weights = self.extend_dual_kriging()
+        if weights is None:
+            weights = self.extend_dual_kriging()
+        if grid_val is None:
+            grid_val = self.x_to_interpolate()
         length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C = self.matrices_shapes()
-        grid_val = self.x_to_interpolate()
 
         # Universal drift contribution
-        universal_grid_interfaces_matrix = self.universal_grid_matrix_T[:, self.yet_simulated]
+        universal_grid_interfaces_matrix = self.universal_grid_matrix_T[:, self.yet_simulated[a: b]]
 
         # These are the magic terms to get the same as geomodeller
         gi_rescale_aux = T.repeat(self.gi_reescale, 9)
@@ -802,9 +844,14 @@ class TheanoGraph(object):
 
         # Drif contribution
         f_0 = (T.sum(
-            weights[length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I, :] * self.gi_reescale * _aux_magic_term *
+            weights[length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I] * self.gi_reescale * _aux_magic_term *
             universal_grid_interfaces_matrix[:self.n_universal_eq_T_op]
             , axis=0))
+
+        if self.dot_version:
+            f_0 = T.dot(
+                weights[length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I] , self.gi_reescale * _aux_magic_term *
+                universal_grid_interfaces_matrix[:self.n_universal_eq_T_op])
 
         if not type(f_0) == int:
             f_0.name = 'Contribution of the universal drift to the potential field at every point of the grid'
@@ -814,7 +861,7 @@ class TheanoGraph(object):
 
         return f_0
 
-    def faults_contribution(self):
+    def faults_contribution(self, weights=None, a=0, b=100000000):
         """
         Computation of the contribution of the faults drift at every point to interpolate. To get these we need to
         compute a whole block model with the faults data
@@ -822,34 +869,18 @@ class TheanoGraph(object):
         Returns:
             theano.tensor.vector: Contribution of the faults drift (input) at every point to interpolate
         """
-        weights = self.extend_dual_kriging()
+        if weights is None:
+            weights = self.extend_dual_kriging()
         length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C = self.matrices_shapes()
-      #   grid_val = self.x_to_interpolate()
-      #
-      #   # Contribution
-      #   # selecting the voxels that are not computed in the previous pot. field
-      #
-      #   aux_ones = T.ones([2 * self.len_points])
-      #   faults_select = T.concatenate((self.yet_simulated, aux_ones))
-      #
-      # #  nfc = faults_select.nonzero_values().shape[0]
-      #
-      #   #if 'nfc' in self.verbose:
-      #  #     nfc = theano.printing.Print('Faults nfc')(nfc)
-      #
-      #   fault_matrix_selection = (self.fault_matrix[::2, :]+1) * faults_select
-      #
-      #   if 'fault matrix selection' in self.verbose:
-      #       fault_matrix_selection = theano.printing.Print('f_sle')(fault_matrix_selection)
 
-      #  fault_matrix_selection_non_zero0 = fault_matrix_selection.nonzero_values()
-
-      #  fault_matrix_selection_non_zero = fault_matrix_selection_non_zero0.reshape((length_of_faults, nfc))
-
-        fault_matrix_selection_non_zero = (self.fault_matrix[::2, self.yet_simulated]+1)
+        fault_matrix_selection_non_zero = (self.fault_matrix[::2, self.yet_simulated[a:b]]+1)
 
         f_1 = T.sum(
             weights[length_of_CG + length_of_CGI + length_of_U_I:, :] * fault_matrix_selection_non_zero, axis=0)
+
+        if self.dot_version:
+            f_1 = T.dot(
+                weights[length_of_CG + length_of_CGI + length_of_U_I:], fault_matrix_selection_non_zero)
 
         # Add name to the theano node
         f_1.name = 'Faults contribution'
@@ -859,6 +890,20 @@ class TheanoGraph(object):
 
         return f_1
 
+    def scalar_field_loop(self, a, b, Z_x, grid_val, weights, val):
+
+        sigma_0_grad = self.gradient_contribution(grid_val[a:b], weights[:, a:b])
+        sigma_0_interf = self.interface_contribution(grid_val[a:b], weights[:, a:b])
+        f_0 = self.universal_drift_contribution(grid_val[a:b],weights[:, a:b], a, b)
+        f_1 = self.faults_contribution(weights[:, a:b], a, b)
+
+        # Add an arbitrary number at the potential field to get unique values for each of them
+        partial_Z_x = (sigma_0_grad + sigma_0_interf + f_0 + f_1 + 50 - (10 * val[0]))
+
+        Z_x = T.set_subtensor(Z_x[a:b], partial_Z_x)
+
+        return Z_x
+
     def scalar_field_at_all(self):
         """
         Compute the potential field at all the interpolation points, i.e. grid plus rest plus ref
@@ -866,44 +911,35 @@ class TheanoGraph(object):
             theano.tensor.vector: Potential fields at all points
 
         """
-        sigma_0_grad = self.gradient_contribution()
-        sigma_0_interf = self.interface_contribution()
-        f_0 = self.universal_drift_contribution()
-        f_1 = self.faults_contribution()
+        grid_val = self.x_to_interpolate()
+        weights = self.extend_dual_kriging()
 
-        Z_x = (sigma_0_grad + sigma_0_interf + f_0 + f_1)
+        grid_shape = T.stack(grid_val.shape[0])
+        Z_x_init = T.zeros(grid_shape, dtype='float32')
+        if 'grid_shape' in self.verbose:
+            grid_shape =  theano.printing.Print('grid_shape')(grid_shape)
 
-        # Add an arbitrary number at the potential field to get unique values for each of them
-        Z_x += T.repeat(T.cast(50 - 10*self.n_formation_op[0], "float32"), Z_x.shape[0])
+        steps = 1e7/self.matrices_shapes()[-1]
+        slices = T.concatenate((T.arange(0, grid_shape[0], steps, dtype='int64'), grid_shape))
+
+        if 'slices' in self.verbose:
+            slices = theano.printing.Print('slices')(slices)
+        Z_x_loop, updates3 = theano.scan(
+            fn=self.scalar_field_loop,
+            outputs_info=[Z_x_init],
+            sequences=[dict(input=slices, taps=[0, 1])],
+            non_sequences=[grid_val, weights, self.n_formation_op_float],
+            profile=True,
+            name='Looping grid',
+            return_list=True)
+
+        Z_x = Z_x_loop[-1][-1]
         Z_x.name = 'Value of the potential field at every point'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
             Z_x = theano.printing.Print('Potential field at all points')(Z_x)
+
         return Z_x
-
-    def scalar_field_at_interfaces(self):
-        """
-        Potential field at interfaces. To avoid errors I take all the points of rest that belong to one interface
-        and make the average
-        Returns:
-            theano.tensor.vector: Potential field values at the interfaces of a given series
-        """
-        sigma_0_grad = self.gradient_contribution()
-        sigma_0_interf = self.interface_contribution()
-        f_0 = self.universal_drift_contribution()
-        f_1 = self.faults_contribution()
-
-        scalar_field_interfaces = (sigma_0_grad + sigma_0_interf + f_0 + f_1)[-2*self.len_points: -self.len_points]
-
-        scalar_field_interfaces_unique = scalar_field_interfaces[self.npf_op]
-
-        # Add name to the theano node
-        scalar_field_interfaces_unique.name = 'Value of the potential field at the interfaces'
-
-        if str(sys._getframe().f_code.co_name) in self.verbose:
-            scalar_field_interfaces_unique = theano.printing.Print(scalar_field_interfaces_unique.name)\
-                                                                      (scalar_field_interfaces_unique)
-        return scalar_field_interfaces_unique
 
     def block_series(self):
         """
@@ -922,10 +958,7 @@ class TheanoGraph(object):
         min_pot = -1000#T.min(Z_x)
 
         # Value of the potential field at the interfaces of the computed series
-        self.scalar_field_at_interfaces_values = self.scalar_field_at_interfaces()#[::-1] #T.sort(self.scalar_field_at_interfaces()[0:1])[::-1]         #[T.cast(self.n_formation_op, 'int32') - 1])[::-1]
-        # 1000 and 50 are used here to give values to the scalar fields far enough to not interfere
-        self.scalar_field_at_interfaces_values += T.cast(50 - 10*self.n_formation_op[0], "float32") #50 - 10 * T.cast(self.n_formation_op[0], "float32") + self.scalar_field_at_interfaces_values #T.repeat(T.cast(50 - 10 * 1, "float32"),
-                                                                                              #   self.scalar_field_at_interfaces_values.shape[0])
+        self.scalar_field_at_interfaces_values = Z_x[-2*self.len_points: -self.len_points][self.npf_op]#self.scalar_field_at_interfaces()# #
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((T.stack([max_pot]),   self.scalar_field_at_interfaces_values, T.stack([min_pot])))
@@ -956,6 +989,7 @@ class TheanoGraph(object):
             outputs_info=None,
             sequences=[dict(input=scalar_field_iter, taps=[0, 1]), self.n_formation_op_float],
             non_sequences=Z_x,
+            name='Looping compare',
             profile=True)
 
         # For every formation we get a vector so we need to sum compress them to one dimension
@@ -1185,7 +1219,9 @@ class TheanoGraph(object):
                            dict(input=self.n_formations_per_serie[:n_faults + 1], taps=[0, 1]),
                            dict(input=self.n_universal_eq_T[:n_faults + 1], taps=[0])],
                 non_sequences=self.fault_block_init,
+                name='Looping faults',
                 return_list=True,
+                profile=True
             )
 
             # We return the last iteration of the fault matrix
@@ -1207,7 +1243,7 @@ class TheanoGraph(object):
                             dict(input=self.n_universal_eq_T[n_faults:], taps=[0])],
                  non_sequences=[self.fault_matrix],
                  name='Looping interfaces',
-                 profile=False,
+                 profile=True,
                  return_list=True
              )
 

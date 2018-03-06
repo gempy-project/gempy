@@ -155,6 +155,7 @@ class TestFaults:
 
         gempy.set_series(geo_data, {'series': ('A', 'B'),
                                           'fault1': 'f1'}, order_series=['fault1', 'series'],
+                                                           order_formations=['f1', 'A', 'B'],
                          verbose=0)
 
         interp_data = theano_f_1f
@@ -190,6 +191,7 @@ class TestFaults:
 
         gempy.set_series(geo_data, {'series': ('A', 'B'),
                                         'fault1': 'f1'}, order_series=['fault1', 'series'],
+                                                         order_formations=['f1','A','B'],
                          verbose=0)
 
         interp_data = theano_f_1f
