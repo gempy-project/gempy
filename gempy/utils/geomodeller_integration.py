@@ -3,7 +3,7 @@ This version includes drillholes
 Specific methods are defined for the uncertainty analysis (in combination
 with Uncertainty_Obj module)
 
-(c) J. Florian Wellmann, 2009-2113
+(c) J. Florian Wellmann, 2009-2013
 """
 
 # try:
