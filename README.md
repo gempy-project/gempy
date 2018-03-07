@@ -100,11 +100,7 @@ its dependencies.
 We provide the latest release version of *GemPy* via the **Conda** and **PyPi** package services. We highly
 recommend using either Conda or PyPi as both will take care of automatically installing all dependencies.
 
-#### Conda
-
-`$ conda install gempy`
-
-#### PyPi (at the moment is an old version. To be updated in the following weeks)
+#### PyPi 
 
 `$ pip install gempy`
 

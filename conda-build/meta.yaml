@@ -1,5 +1,5 @@
 {% set name = "gempy" %}
-{% set version = "1.01" %}
+{% set version = "1.1" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
 {% set hash_value = "78074ae696844b2f5c8e5c5050e4a741dec7b7698676a4072f443735fdcb2ac6" %}
