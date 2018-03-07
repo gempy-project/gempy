@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='gempy',
-    version='1.01',
+    version='1.11',
     packages=find_packages(exclude=('tests', 'docs')),
     install_requires=[
         'numpy',

@@ -37,7 +37,6 @@ from os import path
 import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-from IPython.core.debugger import Pdb
 from gempy.colors import color_lot, cmap, norm
 import gempy as gp
 import copy
