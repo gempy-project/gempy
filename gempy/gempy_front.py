@@ -40,6 +40,7 @@ from gempy.data_management import InputData, GridClass
 from gempy.interpolator import InterpolatorData
 from gempy.sequential_pile import StratigraphicPile
 from gempy.topology import topology_analyze as _topology_analyze
+from gempy.utils.geomodeller_integration import ReadGeoModellerXML as _ReadGeoModellerXML
 import gempy.posterior_analysis as pa # So far we use this type of import because the other one makes a copy and blows up some asserts
 
 
@@ -97,7 +98,7 @@ def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_
             return lith_matrix, fault_matrix, grav
 
 
-def create_data(extent, resolution=[50, 50, 50], **kwargs):
+def create_data(extent, resolution=(50, 50, 50), **kwargs):
     """
     Method to create a InputData object. It is analogous to gempy.InputData()
 
@@ -120,6 +121,56 @@ def create_data(extent, resolution=[50, 50, 50], **kwargs):
     """
 
     return InputData(extent, resolution, **kwargs)
+
+
+def create_from_geomodeller_xml(fp, resolution=(50, 50, 50), return_xml=False, **kwargs):
+    """
+    Creates InputData object from a GeoModeller xml file. Automatically extracts and sets model extent, interface
+    and orientation data as well as the stratigraphic pile.
+
+    Args:
+        fp (str): Filepath for the GeoModeller xml file to be read.
+        resolution (tuple, optional): Tuple containing the number of voxels in dimensions (x,y,z). Defaults to 50.
+        return_xml (bool, optional): Toggles returning the ReadGeoModellerXML instance to leverage further info from the
+            xml file (e.g. for stratigraphic pile ordering). Defaults to True.
+        **kwargs: Keyword arguments for create_data function.
+
+    Returns:
+        gp.data_management.InputData
+    """
+    gmx = _ReadGeoModellerXML(fp)  # instantiate parser class with filepath of xml
+
+    # instantiate InputData object with extent and resolution
+    geo_data = create_data(gmx.extent, resolution, **kwargs)
+
+    # set interface and orientation dataframes
+    geo_data.interfaces = gmx.interfaces
+    geo_data.orientations = gmx.orientations
+
+    # interf = gmx.get_interfaces_df()
+    # orient = gmx.get_orientation_df()
+    # if interf is None or orient is None:
+    #     raise ValueError("No 3D data stored in given XML file, can't extract interfaces or orientations.")
+    # else:
+    #     geo_data.interfaces = interf
+    #     geo_data.orientations = orient
+    #
+    # # this seems to fuck things up so far:
+    # for f in gmx.faults:
+    #     gmx.series_distribution[f] = f
+    #
+    # try:  # try to set series ordering and stuff, if fails (because the xml files are fucked up) tell user to do it manually
+    #     set_series(geo_data, gmx.series_distribution,
+    #                order_series=list(gmx.faults + gmx.stratigraphic_column),
+    #                order_formations=gmx.get_order_formations())
+    # except AssertionError:
+    #     print("Some of the formations given are not in the formations data frame. Therefore, you have to set the series"
+    #           " order manually.")
+
+    if return_xml:
+        return geo_data, gmx
+    else:
+        return geo_data
 
 
 def data_to_pickle(geo_data, path=False):

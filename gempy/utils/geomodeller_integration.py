@@ -6,20 +6,22 @@ with Uncertainty_Obj module)
 (c) J. Florian Wellmann, 2009-2113
 """
 
-try:
-    import elementtree.ElementTree as ET
-except ImportError:
-    try:
-        import etree.ElementTree as ET
-    except ImportError:
-        try:
-            import xml.etree.ElementTree as ET
-        except ImportError:
-            import ElementTree as ET
+# try:
+#     import elementtree.ElementTree as ET
+# except ImportError:
+#     try:
+#         import etree.ElementTree as ET
+#     except ImportError:
+#         try:
+#             import xml.etree.ElementTree as ET
+#         except ImportError:
+#             import ElementTree as ET
 # import Latex_output_5 as LO
 from pylab import *
 import copy
-import string
+import pandas as pn
+import gempy as gp
+import numpy as np
 
 # python module to wrap GeoModeller XML file and perform all kinds of data
 # procedures, e.g.:
@@ -34,6 +36,349 @@ import string
 # - implement auto-documentation
 # - clear-up spaghetti code!!!!! Check dependencies and other modules
 #    to get a consistent lay-out
+
+try:
+    import xml.etree.cElementTree as ET
+except ImportError:
+    import xml.etree.ElementTree as ET
+
+
+class ReadGeoModellerXML:
+    def __init__(self, fp):
+        """
+        Reads in and parses a GeoModeller XML file to extract interface and orientation data and the overall model
+        settings (e.g. extent and sequential pile). It uses ElementTree to parse the XML and the tree's root can
+        be accessed using self.root for more direct access to the file.
+
+        Args:
+            fp (str): Filepath for the GeoModeller xml file to be read.
+
+        """
+        self.tree = ET.ElementTree(file=fp)  # load xml as tree
+        self.root = self.tree.getroot()
+
+        self.xmlns = "http://www.geomodeller.com/geo"
+        self.gml = "http://www.opengis.net/gml"
+
+        self.extent = self._get_extent()
+
+        self.data = self.extract_data()
+        self.interfaces, self.orientations = self.get_dataframes()
+
+        # self.stratigraphic_column = self.get_stratigraphic_column()
+        # self.faults = self.get_faults()
+        #
+        # self.series_info = self._get_series_fmt_dict()
+        # self.series_distribution = self.get_series_distribution()
+        #
+        # self.fault_matrix = self.get_fault_matrix()
+
+    def get_psc(self):
+        """Returns the ProjectStratigraphicColumn tree element used for several data extractions."""
+        return self.root.find("{" + self.xmlns + "}GeologicalModel").find("{"+self.xmlns+"}ProjectStratigraphicColumn")
+
+    def extract_data(self):
+        """
+        Extracts relevant data from the GeoModeller XML file ElementTree root (self.root) and returns it as a dictionary.
+
+
+        Returns:
+            (dict): Data dictionary
+        """
+        data = {}
+        for s in self.get_psc():
+            sn = s.get("name")
+            data[sn] = {}  # create a dict for each series
+            data[sn]["formations"] = []
+            data[sn]["InfluencedByFault"] = []
+            data[sn]["relation"] = s.get("relation")  # add relation, whatever that is
+
+            for c in s:
+                if c.tag == "{"+self.xmlns+"}Data":  # append formation names to list of formations
+                    data[sn]["formations"].append(c.get("Name"))
+
+                if c.tag == "{"+self.xmlns+"}InfluencedByFault":  # add fault influences
+                    data[sn]["InfluencedByFault"].append(c.get("Name"))
+
+                if c.tag == "{"+self.xmlns+"}PotentialField":
+
+                    data[sn]["gradients"] = []
+                    data[sn]["interfaces"] = []
+                    data[sn]["interfaces_counters"] = []
+                    data[sn]["solutions"] = []
+                    data[sn]["constraints"] = []
+
+                    for cc in c:
+                        # COVARIANCE
+                        if cc.tag == "{" + self.xmlns + "}covariance":
+                            data[sn]["covariance"] = cc.attrib
+
+                        # GRADIENTS
+                        if cc.tag == "{" + self.xmlns + "}Gradients":
+                            for gr in cc:
+                                data[sn]["gradients"].append([gr.get("Gx"), gr.get("Gy"), gr.get("Gz"),
+                                                              gr.get("XGr"), gr.get("YGr"), gr.get("ZGr")])
+
+                        # INTERFACES
+                        if cc.tag == "{" + self.xmlns + "}Points":
+                            for co in cc:
+                                data[sn]["interfaces"].append([float(co[0].text), float(co[1].text), float(co[2].text)])
+
+                        # INTERFACE COUNTERS
+                        if cc.tag == "{" + self.xmlns + "}InterfacePoints":
+                            for ip in cc:
+                                data[sn]["interfaces_counters"].append([int(ip.get("npnt")), int(ip.get("pnt"))])
+
+                        # CONSTRAINTS
+                        if cc.tag == "{" + self.xmlns + "}Constraints":
+                            for co in cc:
+                                data[sn]["constraints"].append(float(co.get("value")))
+
+                        # SOLUTIONS
+                        if cc.tag == "{" + self.xmlns + "}Solutions":
+                            for sol in cc:
+                                data[sn]["solutions"].append(float(sol.get("sol")))
+
+                    # convert from str to float
+                    data[sn]["gradients"] = np.array(data[sn]["gradients"]).astype(float)
+                    data[sn]["interfaces"] = np.array(data[sn]["interfaces"]).astype(float)
+                    data[sn]["interfaces_counters"] = np.array(data[sn]["interfaces_counters"]).astype(float)
+                    data[sn]["solutions"] = np.array(data[sn]["solutions"]).astype(float)
+
+        return data
+
+    def get_dataframes(self):
+        """
+        Extracts dataframe information from the self.data dictionary and returns GemPy-compatible interfaces and
+        orientations dataframes.
+
+        Returns:
+            (tuple) of GemPy dataframes (interfaces, orientations)
+        """
+        interf_formation = []
+        interf_series = []
+
+        orient_series = []
+
+        for i, s in enumerate(self.data.keys()):  # loop over all series
+            if i == 0:
+                coords = self.data[s]["interfaces"]
+                grads = self.data[s]["gradients"]
+            else:
+                coords = np.append(coords, self.data[s]["interfaces"])
+                grads = np.append(grads, self.data[s]["gradients"])
+
+            for j, fmt in enumerate(self.data[s]["formations"]):
+                for n in range(int(self.data[s]["interfaces_counters"][j, 0])):
+                    interf_formation.append(fmt)
+                    interf_series.append(s)
+
+            for k in range(len(grads)):
+                orient_series.append(s)
+
+        interfaces = pn.DataFrame(coords, columns=['X', 'Y', 'Z'])
+        interfaces["formation"] = interf_formation
+        interfaces["series"] = interf_series
+
+        orientations = pn.DataFrame(grads, columns=['G_x', 'G_y', 'G_z', 'X', 'Y', 'Z'])
+        orientations["series"] = orient_series
+
+        dips = []
+        azs = []
+        pols = []
+        for i, row in orientations.iterrows():
+            dip, az, pol = gp.data_management.get_orientation((row["G_x"], row["G_y"], row["G_z"]))
+            dips.append(dip)
+            azs.append(az)
+            pols.append(pol)
+
+        orientations["dip"] = dips
+        orientations["azimuth"] = azs
+        orientations["polarity"] = pols
+
+        return interfaces, orientations
+
+
+    def get_stratigraphic_column(self):
+        """
+        Extracts series names from ElementTree root.
+
+        Returns:
+            tuple: Series names (str) in stratigraphic order.
+        """
+        stratigraphic_column = []
+        for s in self.get_psc():
+            stratigraphic_column.append(s.get("name"))
+        return tuple(stratigraphic_column)
+
+    def get_order_formations(self):
+        order_formations = []
+        for entry in self.series_distribution.values():
+            if type(entry) is str:
+                order_formations.append(entry)
+            elif type(entry) is tuple:
+                for e in entry:
+                    order_formations.append(e)
+
+        return order_formations
+
+    def get_faults(self):
+        """
+        Extracts fault names from ElementTree root.
+
+        Returns:
+            tuple: Fault names (str) ordered as in the GeoModeller XML.
+        """
+        faults = []
+        for c in self.root[2]:
+            faults.append(c.get("Name"))
+        return tuple(faults)
+
+    def get_series_distribution(self):
+        """
+        Combines faults and stratigraphic series into an unordered dictionary as keys and maps the correct
+        formations to them as a list value. Faults series get a list of their own string assigned as formation.
+
+        Returns:
+            (dict): maps Series (str) -> Formations (list of str)
+        """
+        series_distribution = {}
+        for key in self.series_info.keys():
+            fmts = self.series_info[key]["formations"]
+            if len(fmts) == 1:
+                series_distribution[key] = fmts[0]
+            else:
+                series_distribution[key] = tuple(fmts)
+
+        for f in self.stratigraphic_column:
+            if "Fault" in f or "fault" in f:
+                series_distribution[f] = f
+
+        return series_distribution
+
+    def _get_extent(self):
+        """
+        Extracts model extent from ElementTree root and returns it as tuple of floats.
+
+        Returns:
+            tuple: Model extent as (xmin, xmax, ymin, ymax, zmin, zmax).
+        """
+        xy = self.root[0][0][0][0].attrib
+        z = self.root[0][0][0][1].attrib
+        return tuple(np.array([xy["Xmin"], xy["Xmax"],
+                               xy["Ymin"], xy["Ymax"],
+                                z["Zmin"],  z["Zmax"]]).astype(float))
+
+    def get_interfaces_df(self):
+        """
+        Extracts the interface data points stored in the GeoModeller xml file and returns it as a GemPy interfaces
+        dataframe.
+
+        Returns:
+            pandas.DataFrame: InputData.interfaces dataframe
+        """
+        if self.root.find("{" + self.xmlns + "}Structural3DData") is None:
+            print("No 3D data stored in given xml file.")
+            return None
+        else:
+            fmts = [c.attrib["Name"] for c in self.root.find("{" + self.xmlns + "}Structural3DData")[0]]  # use formations
+            xyzf = []
+
+            for i, fmt in enumerate(fmts):  # loop over all formations
+                for p in self.root[5][0][i]:  # loop over every point
+                    entry = p[0].text.split(",")  # split the string by its seperator into coord strings
+                    entry.append(fmt)
+
+                    for s in self.series_info.keys():
+                        if fmt in self.series_info[s]["formations"]:
+                            series = s
+                        else:
+                            series = fmt
+
+                    entry.append(series)
+                    xyzf.append(entry)
+
+            interfaces = pn.DataFrame(np.array(xyzf), columns=['X', 'Y', 'Z', "formation", "series"])
+            interfaces[["X", "Y", "Z"]] = interfaces[["X", "Y", "Z"]].astype(float)
+            return interfaces
+
+    def get_orientation_df(self):
+        """
+        Extracts the orientation data points sotred in the GeoModeller xml file and returns it as a GemPy
+        orientations dataframe.
+
+        Returns:
+            pandas.DataFrame: InputData.orientations dataframe
+        """
+        if self.root.find("{" + self.xmlns + "}Structural3DData") is None:
+            print("No 3D data stored in given xml file.")
+            return None
+        else:
+            fol = []
+            for i, s in enumerate(self.root.find("{" + self.xmlns + "}Structural3DData")[1]):
+                for c in self.root.find("{" + self.xmlns + "}Structural3DData")[1][i]:
+                    entry = c[0][0].text.split(",")
+                    entry.append(c.get("Dip"))
+                    entry.append(c.get("Azimuth"))
+                    # correct polarity from bool str to int
+                    pol = c.get("NormalPolarity")
+                    if pol == "true":
+                        entry.append(1)
+                    else:
+                        entry.append(-1)
+                    entry.append(s.get("Name"))
+                    for series in self.series_distribution.keys():
+                        if s.get("Name") in self.series_distribution[series]:
+                            entry.append(series)
+
+                    fol.append(entry)
+
+            orientations = pn.DataFrame(np.array(fol), columns=['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series'])
+            orientations[["X", "Y", "Z", "dip", "azimuth"]] = orientations[["X", "Y", "Z", "dip", "azimuth"]].astype(float)
+            orientations["polarity"] = orientations["polarity"].astype(int)
+
+            return orientations
+
+    def _get_series_fmt_dict(self):
+        sp = {}
+        for i, s in enumerate(self.stratigraphic_column):  # loop over all series
+            fmts = []  # init formation storage list
+            influenced_by = []  # init influenced by list
+            for c in self.root.find("{" + self.xmlns + "}GeologicalModel").find("{"+self.xmlns+"}ProjectStratigraphicColumn")[i]:
+                if "Data" in c.tag:
+                    fmts.append(c.attrib["Name"])
+                elif "InfluencedByFault" in c.tag:
+                    influenced_by.append(c.attrib["Name"])
+            # print(fmts)
+            sp[s] = {}
+            sp[s]["formations"] = fmts
+            sp[s]["InfluencedByFault"] = influenced_by
+
+        return sp
+
+    def _where_do_faults_stop(self):
+        fstop = {}
+        for i, f in enumerate(self.root[2]):
+
+            stops_on = []
+            for c in self.root[2][i][2:]:
+                stops_on.append(c.get("Name"))
+
+            fstop[f.get("Name")] = stops_on
+
+        return fstop
+
+    def get_fault_matrix(self):
+        nf = len(self.faults)
+        fm = np.zeros((nf, nf))  # zero matrix of n_faults²
+        fstop = self._where_do_faults_stop()
+        for i, f in enumerate(self.faults):
+            for fs in fstop[f]:
+                j = np.where(np.array(self.faults) == fs)[0][0]
+                fm[i, j] = 1
+
+        return fm
+
 
 # TODO think where this function should go
 def read_vox(geo_data, path):
@@ -161,7 +506,7 @@ class GeomodellerClass:
         formations_parent = self.rootelement.findall("{"+self.xmlns+"}Formations")[0]
         self.formations = formations_parent.findall("{"+self.xmlns+"}Formation")
 
-    def get_stratigraphy_list(self,**kwds):
+    def get_stratigraphy_list(self, **kwds):
         """get project stratigraphy and return as list; lowermost formation: 1
         for GeoModeller dll access (this ist the formation number that is returned with
         the GetComputedLithologyXYZ function in the geomodeller dll

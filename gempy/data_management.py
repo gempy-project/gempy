@@ -137,7 +137,7 @@ class InputData(object):
         selected_points = self.interfaces[['X', 'Y', 'Z']].iloc[indices].values.T
 
         center, normal = self.plane_fit(selected_points)
-        orientation = self.get_orientation(normal)
+        orientation = get_orientation(normal)
         return [*center, *orientation, *normal]
 
     def data_to_pickle(self, path=False):
@@ -224,39 +224,6 @@ class InputData(object):
         ip_addresses['DefaultBasement'] = 0
         return ip_addresses
 
-    @staticmethod
-    def get_orientation(normal):
-        """Get orientation (dip, azimuth, polarity ) for points in all point set"""
-        #    if "normal" not in dir(self):
-        #        self.plane_fit()
-
-        # calculate dip
-        dip = np.arccos(normal[2]) / np.pi * 180.
-
-        # calculate dip direction
-        # +/+
-        if normal[0] >= 0 and normal[1] > 0:
-            dip_direction = np.arctan(normal[0] / normal[1]) / np.pi * 180.
-        # border cases where arctan not defined:
-        elif normal[0] > 0 and normal[1] == 0:
-            dip_direction = 90
-        elif normal[0] < 0 and normal[1] == 0:
-            dip_direction = 270
-        # +-/-
-        elif normal[1] < 0:
-            dip_direction = 180 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
-        # -/-
-        elif normal[0] < 0 and normal[1] >= 0:
-            dip_direction = 360 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
-
-        azimuth = dip_direction
-
-        if -90 < dip < 90:
-            polarity = 1
-        else:
-            polarity = -1
-
-        return dip, azimuth, polarity
 
     # DEP so far: Changing just a value from the dataframe gives too many problems
     # def i_open_set_data(self, itype="orientations"):
@@ -846,6 +813,44 @@ class InputData(object):
     #             print("Less than three points share the same triangle-id: " + str(
     #                 tri_id) + ". Only exactly 3 points are supported.")
     #
+
+
+def get_orientation(normal):
+    """Get orientation (dip, azimuth, polarity ) for points in all point set"""
+    #    if "normal" not in dir(self):
+    #        self.plane_fit()
+
+    # calculate dip
+    dip = np.arccos(normal[2]) / np.pi * 180.
+
+    print(normal)
+
+    # calculate dip direction
+    # +/+
+    if normal[0] >= 0 and normal[1] > 0:
+        dip_direction = np.arctan(normal[0] / normal[1]) / np.pi * 180.
+    # border cases where arctan not defined:
+    elif normal[0] > 0 and normal[1] == 0:
+        dip_direction = 90
+    elif normal[0] < 0 and normal[1] == 0:
+        dip_direction = 270
+    # +-/-
+    elif normal[1] < 0:
+        dip_direction = 180 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
+    # -/-
+    elif normal[0] < 0 and normal[1] >= 0:
+        dip_direction = 360 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
+    # if dip is just straight up vertical
+    elif normal[0] == 0 and normal[1] == 0:
+        dip_direction = 0
+
+    if -90 < dip < 90:
+        polarity = 1
+    else:
+        polarity = -1
+
+    return dip, dip_direction, polarity
+
 
 class GridClass(object):
     """

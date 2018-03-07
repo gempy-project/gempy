@@ -31,7 +31,7 @@ except ImportError:
     warnings.warn("tqdm package not installed. No support for dynamic progress bars.")
 
 
-def change_input_data(db, interp_data, i, input_data_trace="input_data"):
+def change_input_data(db, interp_data, i):
     """
     Changes input data in interp_data to posterior input data at iteration i.
 
@@ -45,14 +45,16 @@ def change_input_data(db, interp_data, i, input_data_trace="input_data"):
     """
     i = int(i)
     # replace interface data
-    interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = db.trace(input_data_trace)[i][0]
+    interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = db.trace("input_interf")[i]
     # replace foliation data
     try:
-        interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace(input_data_trace)[i][1]
+        interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace("input_orient")[i]
     except ValueError:
-        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace(input_data_trace)[i][1]
+        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace("input_orient")[i]
 
     recalc_gradients(interp_data.geo_data_res.orientations)
+
+    # interp_data.geo_data_res = interp_data.rescale_data(interp_data.geo_data_res)
 
     # update interpolator
     interp_data.update_interpolator()
@@ -60,37 +62,55 @@ def change_input_data(db, interp_data, i, input_data_trace="input_data"):
     return interp_data
 
 
-def compute_posterior_models_all(db, interp_data, r=None, u_grade=None, get_potential_at_interfaces=False):
+def _change_input_data_old(db, interp_data, i, tracename="input_data"):
+    """
+    Changes input data in interp_data to posterior input data at iteration i.
+
+    Args:
+        interp_data (gempy.data_management.InterpolationData): An interp_data object with the structure we want to
+        compute.
+        i (int): Iteration we want to recompute
+
+    Returns:
+         gempy.data_management.InterpolationData: interp_data with the data of the given iteration
+    """
+    i = int(i)
+    # replace interface data
+    interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = db.trace(tracename)[i][0]
+    # replace foliation data
+    try:
+        interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace(tracename)[i][1]
+    except ValueError:
+        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace(tracename)[i][1]
+
+    recalc_gradients(interp_data.geo_data_res.orientations)
+
+    # interp_data.geo_data_res = interp_data.rescale_data(interp_data.geo_data_res)
+
+    # update interpolator
+    interp_data.update_interpolator()
+
+    return interp_data
+
+
+def compute_posterior_models_all(db, interp_data, indices, u_grade=None, get_potential_at_interfaces=False):
     """Computes block models from stored input parameters for all iterations.
 
     Args:
-        db:
-        interp_data: GemPy interpolator object
-        r (tuple or list/array, optional): The default value 'None' computes for models for the entire trace. If
-            'tuple' like (start, end) computes all models in the given range. If 'np.array' or 'list' with indices
-            it computes the models for all given indices
+        db (): loaded pymc database (e.g. hdf5)
+        interp_data  (gp.data_management.InterpolatorData): GemPy interpolator object
+        indices (list or np.array): Trace indices specifying which models from the database will be calculated.
         u_grade (list, optional):
         get_potential_at_interfaces:
 
     Returns:
 
     """
-    n_iter = db.getstate()["sampler"]["_iter"]
 
-    if r is None:  # compute model for every iteration
-        r = range(n_iter)
-    else:  # use the given slice
-        if type(r) is tuple:
-            if r[1] > n_iter:
-                raise ValueError("Given range larger than number of iterations stored in database.")
-            r = range(r[0], r[1])
-        elif type(r) is list or type(r) is np.ndarray:
-            pass
-
-    for i in tqdm.tqdm(r):
+    for i in tqdm.tqdm(indices):
         interp_data_loop = change_input_data(db, interp_data, i)
         lb, fb = gp.compute_model(interp_data_loop, output="geology", u_grade=u_grade, get_potential_at_interfaces=get_potential_at_interfaces)
-        if i == 0 or i == r[0]:
+        if i == 0 or i == indices[0]:
             lbs = np.expand_dims(lb, 0)
             fbs = np.expand_dims(fb, 0)
         else:
@@ -285,6 +305,9 @@ class Posterior:
             print("Topology analysis completed.")
 
 
+
+
+
 def find_first_match(t, topo_u):
     index = 0
     for t2 in topo_u:
@@ -314,6 +337,8 @@ def get_unique_topo(topo_l):
     return topo_u, topo_u_freq, topo_u_ids
 
 
+def get_unique_jaccard(js):
+    j_u = np.unique(js)  # unique topology states
 
 
 
