@@ -23,7 +23,7 @@ class TestNoFaults:
 
         interp_data = gempy.InterpolatorData(geo_data, dtype='float64', u_grade=[1], compile_theano=True,
                                              verbose=['cov_gradients', 'cov_interfaces',
-                                                      'solve_kriging', 'sed_dips_dips'])
+                                                      'solve_kriging', 'sed_dips_dips', 'slices'])
 
         return interp_data
 

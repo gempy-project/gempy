@@ -19,7 +19,7 @@ class TestPerfomance:
                                  formation='basement')
 
         new_grid = gempy.GridClass()
-        res = 170
+        res = 100
 
         # Create a new grid object with the new resolution
         new_grid.create_regular_grid_3d(geo_data.extent, [res, res, res])
@@ -35,7 +35,7 @@ class TestPerfomance:
         interp_data.interpolator.tg.fault_matrix = theano.tensor.zeros((n_faults * 2,
                                                                         interp_data.interpolator.tg.grid_val_T.shape[0] +
                                                                         2 * interp_data.interpolator.tg.len_points))
-
+        theano.config.optimizer = 'fast_run'
         th_f = theano.function(interp_data.interpolator.tg.input_parameters_list(),
                                interp_data.interpolator.tg.compute_a_series(
                                    *interp_data.interpolator.tg.len_series_i.get_value()[n_faults:].astype(int),
