@@ -121,7 +121,7 @@ class InterpolatorData:
                                     self.interpolator.tg.compute_geological_model(self.geo_data_res.n_faults),
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
-                                    profile=True)
+                                    profile=False)
 
         if output is 'gravity':
             # then we compile we have to pass the number of formations that are faults!!
@@ -134,6 +134,7 @@ class InterpolatorData:
         print('Level of Optimization: ', theano.config.optimizer)
         print('Device: ', theano.config.device)
         print('Precision: ', self.dtype)
+        print('Number of faults: ', self.geo_data_res.n_faults)
         return th_fn
 
     def rescale_data(self, geo_data, rescaling_factor=None):
@@ -529,15 +530,15 @@ class InterpolatorData:
                 u_grade (int): Drift grade. Default to 2.
                 range_var (float): Range of the variogram. Default 3D diagonal of the extent
                 c_o (float): Covariance at lag 0. Default range_var ** 2 / 14 / 3. See my paper when I write it
-                nugget_effect (flaot): Nugget effect of orientations. Default to 0.01
+                nugget_effect_gradient (flaot): Nugget effect of orientations. Default to 0.01
             """
 
             # Kwargs
             # --This is DEP because is a condition not a shared-- u_grade = kwargs.get('u_grade', 2)
             range_var = kwargs.get('range_var', None)
             c_o = kwargs.get('c_o', None)
-            nugget_effect = kwargs.get('nugget_effect', 0.01)
-
+            nugget_effect_gradient = kwargs.get('nugget_effect_gradient', 0.01)
+            nugget_effect_scalar = kwargs.get('nugget_effect_scalar', 1e-6)
             # Default range
             if not range_var:
                 range_var = np.sqrt((self.geo_data_res.extent[0] - self.geo_data_res.extent[1]) ** 2 +
@@ -569,7 +570,9 @@ class InterpolatorData:
             self.tg.c_o_T.set_value(np.cast[self.dtype](c_o))
 
             # orientations nugget effect
-            self.tg.nugget_effect_grad_T.set_value(np.cast[self.dtype](nugget_effect))
+            self.tg.nugget_effect_grad_T.set_value(np.cast[self.dtype](nugget_effect_gradient))
+
+            self.tg.nugget_effect_scalar_T.set_value(np.cast[self.dtype](nugget_effect_scalar))
 
             # Just grid. I add a small number to avoid problems with the origin point
 
@@ -667,6 +670,7 @@ class InterpolatorData:
             # orientations nugget effect
             print('orientations nugget effect', self.tg.nugget_effect_grad_T.get_value())
 
+            print('scalar nugget effect', self.tg.nugget_effect_scalar_T.get_value())
             if verbose > 0:
                 # Input data shapes
 
