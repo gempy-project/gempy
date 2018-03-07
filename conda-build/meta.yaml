@@ -1,5 +1,5 @@
 {% set name = "gempy" %}
-{% set version = "0.9991" %}
+{% set version = "1.01" %}
 {% set file_ext = "tar.gz" %}
 {% set hash_type = "sha256" %}
 {% set hash_value = "78074ae696844b2f5c8e5c5050e4a741dec7b7698676a4072f443735fdcb2ac6" %}
@@ -38,12 +38,12 @@ requirements:
 
 about:
   home: https://github.com/cgre-aachen/gempy
-  license: MIT
-  license_family: MIT
-  license_file: ''
+  license: GNU LESSER GENERAL PUBLIC LICENSE
+  license_family: GNU
+  license_file: '/home/miguel/PycharmProjects/gempy/LICENSE.txt'
   summary: An Open-source, Python-based 3-D structural geological modeling software.
   description: ''
-  doc_url: ''
+  doc_url: 'http://gempy.readthedocs.io/'
   dev_url: ''
 
 extra:
