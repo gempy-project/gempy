@@ -8,6 +8,8 @@
 [![license: LGPL v3](https://img.shields.io/badge/license-LGPL%20v3-blue.svg)]()
 [![Documentation Status](https://readthedocs.org/projects/gempy/badge/?version=latest)](http://gempy.readthedocs.io/?badge=latest)
 [![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)]()
+[![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
+
 
 <p align="center"><img src="docs/source/images/model_examples.png" width="800"></p>
 
@@ -102,7 +104,7 @@ recommend using either Conda or PyPi as both will take care of automatically ins
 
 `$ conda install gempy`
 
-#### PyPi
+#### PyPi (at the moment is an old version. To be updated in the following weeks)
 
 `$ pip install gempy`
 
@@ -114,7 +116,7 @@ Otherwise you can clone the current repository by downloading is manually or by 
 
 and then manually install it using the provided Python install file by calling
 
-`$ python install.py`
+`$ python gempy/setup.py install`
 
 in the cloned or downloaded repository folder. Make sure you have installed all necessary dependencies listed above before using *GemPy*.
 
