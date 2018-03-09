@@ -6,7 +6,7 @@ SPHINXOPTS    =
 SPHINXBUILD   = python -msphinx
 SPHINXPROJ    = GemPy
 SOURCEDIR     = source
-BUILDDIR      = .
+BUILDDIR      = build
 
 # Put it first so that "make" without argument is like "make help".
 help:

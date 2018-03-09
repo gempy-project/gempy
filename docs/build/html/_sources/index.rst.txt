@@ -3,8 +3,10 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to GemPy's (v 1.0) documentation!
-=========================================
+:tocdepth: 2
+
+GemPy's (v 1.0) documentation
+=============================
 Software for 3D structural geologic implicit modeling in Python.
 ****************************************************************
 
@@ -19,6 +21,17 @@ including stratigraphic and structural features such as:
 3D models created with GemPy may look like this:
 
 .. image:: ./images/model_example.png
+
+Contents:
+
+.. toctree::
+   :maxdepth: 2
+
+   self
+   ./theory/motivation
+   tutorial
+   theory
+   code
 
 The core algorithm is based on a universal cokriging interpolation method devised by
 Lajaunie et al. (1997) and further elaborated by Calcagno et al. (2008).
@@ -41,7 +54,7 @@ Another option is Steno3D, which allows for a flexible and interactive visualiza
 .. raw:: html
 
     <div style="margin-top:10px;">
-      <iframe src="https://steno3d.com/embed/A747sS50WZZu75yEm8Yi" width="800" height="600"></iframe>
+      <iframe src="https://steno3d.com/embed/mWACfOTPB2vT3scgJABp" width="800" height="600"></iframe>
     </div>
 
 
@@ -72,16 +85,6 @@ Also, the use of theano allows the use of the GPU through cuda (see theano doc f
 
 For a more detailed elaboration of the theory behind GemPy, take a look at the upcoming scientific publication
 "GemPy 1.0: open-source stochastic geological modeling and inversion" by de la Varga et al. (2018).
-
-Contents:
-
-.. toctree::
-   :glob:
-
-   self
-   tutorial
-   theory
-   code
 
 
 Indices and tables

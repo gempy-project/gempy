@@ -978,7 +978,16 @@ class TheanoGraph(object):
                 theano.tensor.vector: segmented values
             """
 
-            return T.le(Zx, a) * T.ge(Zx, b) * n_formation
+            if True:
+                mid_pot = (a - b) / 2 + b
+                # The 5 rules the slope of the function
+                segm = 1. / (1 + T.exp(-20 * (Z_x - mid_pot)))
+
+                return T.switch(T.le(Zx, a) * T.ge(Zx, b), segm + n_formation, 0)
+
+            else:
+
+                return T.le(Zx, a) * T.ge(Zx, b) * n_formation
 
         partial_block, updates2 = theano.scan(
             fn=compare,

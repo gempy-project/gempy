@@ -66,7 +66,7 @@ class PlotData2D(object):
         verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0
     """
 
-    def __init__(self, geo_data, color_lot=color_lot, cmap=cmap, norm=norm, **kwargs):
+    def __init__(self, geo_data, cmap=cmap, norm=norm, **kwargs):
 
         self._data = geo_data
         self._color_lot = color_lot
@@ -458,7 +458,7 @@ class vtkVisualization:
         camera_list (list): list of cameras for the distinct renderers
         ren_list (list): list containing the vtk renderers
     """
-    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, color_lot=color_lot, real_time=False, bg_color=None, ve=1):
+    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, real_time=False, bg_color=None, ve=1):
         self.ve = ve
 
         self.real_time = real_time

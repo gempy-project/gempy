@@ -2,7 +2,6 @@ Tutorial
 ========
 
 .. toctree::
-   :maxdepth: 1
 
    ./Notebooks/ch1
    ./Notebooks/ch2
