@@ -978,7 +978,7 @@ class TheanoGraph(object):
                 theano.tensor.vector: segmented values
             """
 
-            if True:
+            if False:
                 mid_pot = (a - b) / 2 + b
                 # The 5 rules the slope of the function
                 segm = 1. / (1 + T.exp(-20 * (Z_x - mid_pot)))

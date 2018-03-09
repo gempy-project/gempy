@@ -3,8 +3,6 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-:tocdepth: 2
-
 GemPy's (v 1.0) documentation
 =============================
 Software for 3D structural geologic implicit modeling in Python.
