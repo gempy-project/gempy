@@ -6,9 +6,7 @@ matplotlib
 numpy
 pytest
 scipy
-ipython
+nbsphinx
 seaborn
-setuptools
 scikit_learn
 networkx==1.11
-

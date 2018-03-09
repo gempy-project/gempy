@@ -37,9 +37,10 @@ from os import path
 import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-from IPython.core.debugger import Pdb
 from gempy.colors import color_lot, cmap, norm
 import gempy as gp
+import copy
+
 sns.set_context('talk')
 plt.style.use(['seaborn-white', 'seaborn-talk'])
 
@@ -426,10 +427,11 @@ class vtkVisualization:
         camera_list (list): list of cameras for the distinct renderers
         ren_list (list): list containing the vtk renderers
     """
-    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, color_lot=color_lot, real_time=False, bg_color=None):
+    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, color_lot=color_lot, real_time=False, bg_color=None, ve=1):
+        self.ve = ve
 
         self.real_time = real_time
-        self.geo_data = geo_data
+        self.geo_data = geo_data#copy.deepcopy(geo_data)
         self.interp_data = None
         self.C_LOT = color_lot
         # Number of renders
@@ -438,15 +440,17 @@ class vtkVisualization:
         self.formation_name = geo_data.interfaces['formation'].unique()
 
         # Extents
-        self.extent = geo_data.extent
-        _e = geo_data.extent
+        self.extent = self.geo_data.extent
+        self.extent[-1] = ve * self.extent[-1]
+        self.extent[-2] = ve * self.extent[-2]
+        _e = self.geo_data.extent
         self._e_dx = _e[1] - _e[0]
         self._e_dy = _e[3] - _e[2]
         self._e_dz = _e[5] - _e[4]
         self._e_d_avrg = (self._e_dx + self._e_dy + self._e_dz) / 3
 
         # Resolution
-        self.res = geo_data.resolution
+        self.res = self.geo_data.resolution
 
         # create render window, settings
         self.renwin = vtk.vtkRenderWindow()
@@ -493,8 +497,7 @@ class vtkVisualization:
         # close_window(interactor)
         del self.renwin, self.interactor
 
-    @staticmethod
-    def create_surface_points(vertices):
+    def create_surface_points(self, vertices):
         """
         Method to create the points that form the surfaces
         Args:
@@ -505,6 +508,7 @@ class vtkVisualization:
         """
         Points = vtk.vtkPoints()
         for v in vertices:
+            v[-1] = self.ve * v[-1]
             Points.InsertNextPoint(v)
         return Points
 
@@ -543,10 +547,13 @@ class vtkVisualization:
         Returns:
             vtk.vtkActor, vtk.vtkPolyDataMapper, vtk.vtkPolyData
         """
+        vertices_c = copy.deepcopy(vertices)
+        simplices_c = copy.deepcopy(simplices)
+
         surf_polydata = vtk.vtkPolyData()
 
-        surf_polydata.SetPoints(self.create_surface_points(vertices))
-        surf_polydata.SetPolys(self.create_surface_triangles(simplices))
+        surf_polydata.SetPoints(self.create_surface_points(vertices_c))
+        surf_polydata.SetPolys(self.create_surface_triangles(simplices_c))
         surf_polydata.Modified()
 
         surf_mapper = vtk.vtkPolyDataMapper()
@@ -579,7 +586,7 @@ class vtkVisualization:
         s = vtk.vtkSphereWidget()
         s.SetInteractor(self.interactor)
         s.SetRepresentationToSurface()
-
+        Z = Z * self.ve
         s.r_f = self._e_d_avrg * r
         s.PlaceWidget(X - s.r_f, X + s.r_f, Y - s.r_f, Y + s.r_f, Z - s.r_f, Z + s.r_f)
         s.GetSphereProperty().SetColor(self.C_LOT[fn])
@@ -588,7 +595,7 @@ class vtkVisualization:
         s.n_sphere = n_sphere
         s.n_render = n_render
         s.index = n_index
-        s.AddObserver("EndInteractionEvent", self.sphereCallback) # EndInteractionEvent
+        s.AddObserver("EndInteractionEvent", self.sphereCallback)  # EndInteractionEvent
 
         s.On()
 
@@ -616,6 +623,9 @@ class vtkVisualization:
         Returns:
             vtk.vtkPlaneWidget
         """
+
+        Z = Z * self.ve
+
         d = vtk.vtkPlaneWidget()
         d.SetInteractor(self.interactor)
         d.SetRepresentationToSurface()
@@ -798,7 +808,7 @@ class vtkVisualization:
     def sphereCallback(self, obj, event):
         """
         Function that rules what happens when we move a sphere. At the moment we update the other 3 renderers and
-        update the pandas data frame
+        update the pandas data frame.
         """
 
         # Resetting the xy camera when a sphere is moving to be able to change only 2D
@@ -908,7 +918,7 @@ class vtkVisualization:
 
         # Modify Pandas DataFrame
         # update the gradient vector components and its location
-        self.geo_data.foliation_modify(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
+        self.geo_data.modify_orientation(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
                                        G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
         # update the dip and azimuth values according to the new gradient
         self.geo_data.calculate_orientations()

@@ -21,7 +21,9 @@ class TestNoFaults:
                                      path_o=os.path.dirname(__file__)+"/GeoModeller/test_a/test_a_Foliations.csv",
                                      path_i=os.path.dirname(__file__)+"/GeoModeller/test_a/test_a_Points.csv")
 
-        interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=True)
+        interp_data = gempy.InterpolatorData(geo_data, dtype='float64', u_grade=[1], compile_theano=True,
+                                             verbose=['cov_gradients', 'cov_interfaces',
+                                                      'solve_kriging', 'sed_dips_dips', 'slices'])
 
         return interp_data
 
@@ -73,7 +75,7 @@ class TestNoFaults:
         # Updating the interp data which has theano compiled
         interp_data.update_interpolator(geo_data)
 
-
+        gempy.get_kriging_parameters(interp_data, verbose=1)
         # Compute model
         sol = gempy.compute_model(interp_data, u_grade=[1])
 
@@ -155,6 +157,7 @@ class TestFaults:
 
         gempy.set_series(geo_data, {'series': ('A', 'B'),
                                           'fault1': 'f1'}, order_series=['fault1', 'series'],
+                                                           order_formations=['f1', 'A', 'B'],
                          verbose=0)
 
         interp_data = theano_f_1f
@@ -190,6 +193,7 @@ class TestFaults:
 
         gempy.set_series(geo_data, {'series': ('A', 'B'),
                                         'fault1': 'f1'}, order_series=['fault1', 'series'],
+                                                         order_formations=['f1','A','B'],
                          verbose=0)
 
         interp_data = theano_f_1f
@@ -214,7 +218,7 @@ class TestFaults:
 
     def test_f(self, theano_f_1f):
         """
-        Two layers a bit curvy, 1 fault
+        Two layers a bit curvy, 1 fault. Checked with geomodeller
         """
 
         # Importing the data from csv files and settign extent and resolution

@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Code &#8212; GemPy beta documentation</title>
+    <title>Code &#8212; GemPy rc documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     'beta',
+        VERSION:     'rc',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -27,7 +27,7 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Tutorial Chapter 6: Analyzing Topology (WIP)" href="Notebooks/ch6.html" />
+    <link rel="prev" title="Motivation" href="gempy.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -62,11 +62,11 @@ Tested on Ubuntu 14</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>interp_data</strong> (<em>gempy.DataManagement.InterpolatorInput</em>) – Rescaled data.</li>
-<li><strong>u_grade</strong> (<em>list</em>) – grade of the polynomial for the universal part of the Kriging interpolations. The value has to</li>
+<li><strong>u_grade</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – grade of the polynomial for the universal part of the Kriging interpolations. The value has to</li>
 <li><strong>either 0</strong><strong>, </strong><strong>3</strong><strong> or </strong><strong>9</strong> (<em>be</em>) – </li>
 <li><strong>on the number of points given as input to try to avoid singular matrix. NOTE</strong> (<em>depends</em>) – if during the computation</li>
 <li><strong>the model a singular matrix is returned try to reduce the u_grade of the series.</strong> (<em>of</em>) – </li>
-<li><strong>get_potential_at_interfaces</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Get potential at interfaces</li>
+<li><strong>get_potential_at_interfaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Get potential at interfaces</li>
 </ul>
 </td>
 </tr>
@@ -86,23 +86,23 @@ the interfaces is given as well</p>
 
 <dl class="function">
 <dt id="gempy_front.create_data">
-<code class="descclassname">gempy_front.</code><code class="descname">create_data</code><span class="sig-paren">(</span><em>extent, resolution=[50, 50, 50], **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#create_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.create_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">gempy_front.</code><code class="descname">create_data</code><span class="sig-paren">(</span><em>extent</em>, <em>resolution=(50</em>, <em>50</em>, <em>50)</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#create_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.create_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to create a InputData object. It is analogous to gempy.InputData()</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>extent</strong> (<em>list</em><em> or </em><a class="reference external" href="https://docs.python.org/2/library/array.html#module-array" title="(in Python v2.7)"><em>array</em></a>) – [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data
+<li><strong>extent</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.6)"><em>array</em></a>) – [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data
 and default of for the grid class.</li>
-<li><strong>resolution</strong> (<em>list</em><em> or </em><a class="reference external" href="https://docs.python.org/2/library/array.html#module-array" title="(in Python v2.7)"><em>array</em></a>) – [nx, ny, nz]. Resolution for the visualization of data
+<li><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/array.html#module-array" title="(in Python v3.6)"><em>array</em></a>) – [nx, ny, nz]. Resolution for the visualization of data
 and default of for the grid class.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>Resolution</strong> (<em>(</em><em>Optional</em><em>[</em><em>list</em><em>]</em><em>)</em>) – [nx, ny, nz]. Defaults to 50</li>
+<li><strong>Resolution</strong> (<em>(</em><em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>]</em><em>)</em>) – [nx, ny, nz]. Defaults to 50</li>
 <li><strong>path_i</strong> – Path to the data bases of interfaces. Default os.getcwd(),</li>
 <li><strong>path_f</strong> – Path to the data bases of orientations. Default os.getcwd()</li>
 </ul>
@@ -121,6 +121,31 @@ and default of for the grid class.</li>
 </dd></dl>
 
 <dl class="function">
+<dt id="gempy_front.create_from_geomodeller_xml">
+<code class="descclassname">gempy_front.</code><code class="descname">create_from_geomodeller_xml</code><span class="sig-paren">(</span><em>fp</em>, <em>resolution=(50</em>, <em>50</em>, <em>50)</em>, <em>return_xml=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#create_from_geomodeller_xml"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.create_from_geomodeller_xml" title="Permalink to this definition">¶</a></dt>
+<dd><p>Creates InputData object from a GeoModeller xml file. Automatically extracts and sets model extent, interface
+and orientation data as well as the stratigraphic pile.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>fp</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Filepath for the GeoModeller xml file to be read.</li>
+<li><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)"><em>tuple</em></a><em>, </em><em>optional</em>) – Tuple containing the number of voxels in dimensions (x,y,z). Defaults to 50.</li>
+<li><strong>return_xml</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a><em>, </em><em>optional</em>) – Toggles returning the ReadGeoModellerXML instance to leverage further info from the
+xml file (e.g. for stratigraphic pile ordering). Defaults to True.</li>
+<li><strong>**kwargs</strong> – Keyword arguments for create_data function.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">gp.data_management.InputData</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="gempy_front.data_to_pickle">
 <code class="descclassname">gempy_front.</code><code class="descname">data_to_pickle</code><span class="sig-paren">(</span><em>geo_data</em>, <em>path=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#data_to_pickle"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.data_to_pickle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
@@ -129,7 +154,7 @@ versions used to export and import the pickle differ it may give problems</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path where save the pickle</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path where save the pickle</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -148,7 +173,7 @@ versions used to export and import the pickle differ it may give problems</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>geo_data</strong> (<em>gempy.InputData</em>) – All values of a DataManagement object</li>
 <li><strong>block</strong> (<em>numpy.array</em>) – 3D array containing the lithology block</li>
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the location of the vtk</li>
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to the location of the vtk</li>
 </ul>
 </td>
 </tr>
@@ -169,8 +194,8 @@ one of the two</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – input data type, either ‘orientations’, ‘interfaces’ or ‘all’ for both.</li>
-<li><strong>verbosity</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of properties shown</li>
+<li><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – input data type, either ‘orientations’, ‘interfaces’ or ‘all’ for both.</li>
+<li><strong>verbosity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Number of properties shown</li>
 </ul>
 </td>
 </tr>
@@ -211,7 +236,7 @@ one of the two</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>interp_data</strong> (<em>gempy.DataManagement.InterpolatorInput</em>) – </li>
-<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – if &gt; 0 print all the shape values as well.</li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – if &gt; 0 print all the shape values as well.</li>
 </ul>
 </td>
 </tr>
@@ -270,10 +295,10 @@ analysis</p>
 <li><strong>potential_lith</strong> (<em>numpy.array</em>) – 1D numpy array with the solution of the computation of the model
 containing the scalar field of potentials (second row of solution)</li>
 <li><strong>interp_data</strong> (<em>gempy.DataManagement.InterpolatorInput</em>) – Interpolator object.</li>
-<li><strong>n_formation</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a><em> or </em><em>'all'</em>) – Positive integer with the number of the formation of which the surface is returned.
+<li><strong>n_formation</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em> or </em><em>'all'</em>) – Positive integer with the number of the formation of which the surface is returned.
 use method get_formation_number() to get a dictionary back with the values</li>
-<li><strong>step_size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – resolution of the method. This is every how many voxels the marching cube method is applied</li>
-<li><strong>original_scale</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – choosing if the coordinates of the vertices are given in the original or the rescaled
+<li><strong>step_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – resolution of the method. This is every how many voxels the marching cube method is applied</li>
+<li><strong>original_scale</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – choosing if the coordinates of the vertices are given in the original or the rescaled
 coordinates</li>
 </ul>
 </td>
@@ -322,8 +347,8 @@ specific directions</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
-<li><strong>series</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – series to plot</li>
+<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
+<li><strong>series</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – series to plot</li>
 <li><strong>**kwargs</strong> – seaborn lmplot key arguments. (TODO: adding the link to them)</li>
 </ul>
 </td>
@@ -360,10 +385,10 @@ specific directions</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – position of the array to plot</li>
-<li><strong>potential_field</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the potential field (or series) to plot</li>
-<li><strong>n_pf</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of the  potential field (or series) to plot</li>
-<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
+<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – position of the array to plot</li>
+<li><strong>potential_field</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – name of the potential field (or series) to plot</li>
+<li><strong>n_pf</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – number of the  potential field (or series) to plot</li>
+<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
 <li><strong>serie</strong> – <em>Deprecated</em></li>
 <li><strong>**kwargs</strong> – plt.contour kwargs</li>
 </ul>
@@ -385,9 +410,9 @@ specific directions</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – position of the array to plot</li>
-<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
-<li><strong>interpolation</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Type of interpolation of plt.imshow. Default ‘none’.  Acceptable values are ‘none’</li>
+<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – position of the array to plot</li>
+<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
+<li><strong>interpolation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Type of interpolation of plt.imshow. Default ‘none’.  Acceptable values are ‘none’</li>
 <li><strong>'bilinear'</strong><strong>, </strong><strong>'bicubic'</strong><strong>,</strong> (<em>,</em><em>'nearest'</em><em>,</em>) – </li>
 <li><strong>'spline36'</strong><strong>, </strong><strong>'hanning'</strong><strong>, </strong><strong>'hamming'</strong><strong>, </strong><strong>'hermite'</strong><strong>, </strong><strong>'kaiser'</strong><strong>,</strong> (<em>'spline16'</em><em>,</em>) – </li>
 <li><strong>'catrom'</strong><strong>, </strong><strong>'gaussian'</strong><strong>, </strong><strong>'bessel'</strong><strong>, </strong><strong>'mitchell'</strong><strong>, </strong><strong>'sinc'</strong><strong>,</strong> (<em>'quadric'</em><em>,</em>) – </li>
@@ -413,12 +438,12 @@ specific directions</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>vertices_l</strong> (<em>numpy.array</em>) – 2D array (XYZ) with the coordinates of the points</li>
 <li><strong>simplices_l</strong> (<em>numpy.array</em>) – 2D array with the value of the vertices that form every single triangle</li>
-<li><strong>formations_names_l</strong> (<em>list</em>) – Name of the formation of the surfaces</li>
-<li><strong>formation_numbers_l</strong> (<em>list</em>) – Formation numbers (int)</li>
-<li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Opacity</li>
-<li><strong>plot_data</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Default True</li>
-<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) – Resolution of the window</li>
-<li><strong>fullscreen</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Launch window in full screen or not</li>
+<li><strong>formations_names_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Name of the formation of the surfaces</li>
+<li><strong>formation_numbers_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Formation numbers (int)</li>
+<li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Opacity</li>
+<li><strong>plot_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Default True</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)"><em>tuple</em></a>) – Resolution of the window</li>
+<li><strong>fullscreen</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Launch window in full screen or not</li>
 </ul>
 </td>
 </tr>
@@ -443,12 +468,12 @@ may be better to just modify each potential field individually to increase the s
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>vertices_l</strong> (<em>numpy.array</em>) – 2D array (XYZ) with the coordinates of the points</li>
 <li><strong>simplices_l</strong> (<em>numpy.array</em>) – 2D array with the value of the vertices that form every single triangle</li>
-<li><strong>formations_names_l</strong> (<em>list</em>) – Name of the formation of the surfaces</li>
-<li><strong>formation_numbers_l</strong> (<em>list</em>) – Formation numbers (int)</li>
-<li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Opacity</li>
-<li><strong>plot_data</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Default True</li>
-<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) – Resolution of the window</li>
-<li><strong>fullscreen</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Launch window in full screen or not</li>
+<li><strong>formations_names_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Name of the formation of the surfaces</li>
+<li><strong>formation_numbers_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Formation numbers (int)</li>
+<li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Opacity</li>
+<li><strong>plot_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Default True</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)"><em>tuple</em></a>) – Resolution of the window</li>
+<li><strong>fullscreen</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Launch window in full screen or not</li>
 </ul>
 </td>
 </tr>
@@ -470,7 +495,7 @@ may be better to just modify each potential field individually to increase the s
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>geo_data</strong> (<em>gempy.data_management.InputData</em>) – </li>
 <li><strong>G</strong> (<em>skimage.future.graph.rag.RAG</em>) – </li>
-<li><strong>centroids</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Centroid node coordinates as a dictionary with node id’s (int) as keys and (x,y,z) coordinates
+<li><strong>centroids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – Centroid node coordinates as a dictionary with node id’s (int) as keys and (x,y,z) coordinates
 as values.</li>
 </ul>
 </td>
@@ -499,7 +524,7 @@ as values.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path where save the pickle</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path where save the pickle</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Input Data object</td>
 </tr>
@@ -519,7 +544,7 @@ as values.</li>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>geo_data</strong> – Original gempy.DataManagement.InputData object</li>
-<li><strong>rescaling_factor</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – factor of the rescaling. Default to maximum distance in one the axis</li>
+<li><strong>rescaling_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – factor of the rescaling. Default to maximum distance in one the axis</li>
 </ul>
 </td>
 </tr>
@@ -545,7 +570,7 @@ as values.</li>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">rescaling factor</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a></td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)">float</a></td>
 </tr>
 </tbody>
 </table>
@@ -596,17 +621,17 @@ Also is the object that has to be manipulated to vary the data without recompile
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>geo_data</strong> (<em>gempy.DataManagement.InputData</em>) – All values of a DataManagement object</li>
-<li><strong>compile_theano</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – select if the theano function is compiled during the initialization. Default: True</li>
-<li><strong>compute_all</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – <p>If true the solution gives back the block model of lithologies, the potential field and
+<li><strong>compile_theano</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – select if the theano function is compiled during the initialization. Default: True</li>
+<li><strong>compute_all</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – <p>If true the solution gives back the block model of lithologies, the potential field and
 the block model of faults. If False only return the block model of lithologies. This may be important to speed</p>
 <blockquote>
 <div>up the computation. Default True</div></blockquote>
 </li>
-<li><strong>u_grade</strong> (<em>list</em>) – grade of the polynomial for the universal part of the Kriging interpolations. The value has to</li>
+<li><strong>u_grade</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – grade of the polynomial for the universal part of the Kriging interpolations. The value has to</li>
 <li><strong>either 0</strong><strong>, </strong><strong>3</strong><strong> or </strong><strong>9</strong> (<em>be</em>) – </li>
 <li><strong>on the number of points given as input to try to avoid singular matrix. NOTE</strong> (<em>depends</em>) – if during the computation</li>
 <li><strong>the model a singular matrix is returned try to reduce the u_grade of the series.</strong> (<em>of</em>) – </li>
-<li><strong>rescaling_factor</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – rescaling factor of the input data to improve the stability when float32 is used. By</li>
+<li><strong>rescaling_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – rescaling factor of the input data to improve the stability when float32 is used. By</li>
 <li><strong>the rescaling factor is calculated to obtein values between 0 and 1.</strong> (<em>defaut</em>) – </li>
 </ul>
 </td>
@@ -676,8 +701,8 @@ th_fn: Theano function which compute the interpolation</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>series_distribution</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – with the name of the serie as key and the name of the formations as values.</li>
-<li><strong>order</strong> (<em>Optional</em><em>[</em><em>list</em><em>]</em>) – order of the series by default takes the dictionary keys which until python 3.6 are
+<li><strong>series_distribution</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – with the name of the serie as key and the name of the formations as values.</li>
+<li><strong>order</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>]</em>) – order of the series by default takes the dictionary keys which until python 3.6 are
 random. This is important to set the erosion relations between the different series</li>
 </ul>
 </td>
@@ -711,10 +736,10 @@ self.orientations: one extra column with the given series</p>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Cell number for 2-D slice topology analysis. Default None.</li>
-<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – “x”, “y” or “z” specifying the slice direction for 2-D topology analysis. Default None.</li>
-<li><strong>compute_areas</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – If True computes adjacency areas for connected nodes in voxel number. Default False.</li>
-<li><strong>return_label_block</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – If True additionally returns the uniquely labeled block model as np.ndarray. Default False.</li>
+<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Cell number for 2-D slice topology analysis. Default None.</li>
+<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – “x”, “y” or “z” specifying the slice direction for 2-D topology analysis. Default None.</li>
+<li><strong>compute_areas</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – If True computes adjacency areas for connected nodes in voxel number. Default False.</li>
+<li><strong>return_label_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – If True additionally returns the uniquely labeled block model as np.ndarray. Default False.</li>
 </ul>
 </td>
 </tr>
@@ -732,7 +757,7 @@ labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithol
 </p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)">tuple</a></p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)">tuple</a></p>
 </td>
 </tr>
 </tbody>
@@ -781,8 +806,8 @@ along with gempy.  If not, see &lt;<a class="reference external" href="http://ww
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>extent</strong> (<em>list</em>) – [x_min, x_max, y_min, y_max, z_min, z_max]</li>
-<li><strong>resolution</strong> (<em>list</em>) – [nx, ny, nz].</li>
+<li><strong>extent</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – [x_min, x_max, y_min, y_max, z_min, z_max]</li>
+<li><strong>resolution</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – [nx, ny, nz].</li>
 </ul>
 </td>
 </tr>
@@ -808,8 +833,8 @@ This objects will contain the main information of the model.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>extent</strong> (<em>list</em>) – [x_min, x_max, y_min, y_max, z_min, z_max]</li>
-<li><strong>Resolution</strong> (<em>(</em><em>Optional</em><em>[</em><em>list</em><em>]</em><em>)</em>) – [nx, ny, nz]. Defaults to 50</li>
+<li><strong>extent</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – [x_min, x_max, y_min, y_max, z_min, z_max]</li>
+<li><strong>Resolution</strong> (<em>(</em><em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>]</em><em>)</em>) – [nx, ny, nz]. Defaults to 50</li>
 <li><strong>path_i</strong> – Path to the data bases of interfaces. Default os.getcwd(),</li>
 <li><strong>path_o</strong> – Path to the data bases of orientations. Default os.getcwd()</li>
 </ul>
@@ -911,7 +936,7 @@ versions used to export and import the pickle differ it may give problems</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path where save the pickle</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path where save the pickle</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -962,9 +987,9 @@ one of the two</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>itype</strong> – input_data data type, either ‘orientations’, ‘interfaces’ or ‘all’ for both.</li>
-<li><strong>numeric</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Return only the numerical values of the dataframe. This is much lighter database for storing
+<li><strong>numeric</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Return only the numerical values of the dataframe. This is much lighter database for storing
 traces</li>
-<li><strong>verbosity</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of properties shown</li>
+<li><strong>verbosity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Number of properties shown</li>
 </ul>
 </td>
 </tr>
@@ -988,7 +1013,7 @@ traces</li>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">key the name of the formation and the value their number</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)">dict</a></td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></td>
 </tr>
 </tbody>
 </table>
@@ -1019,8 +1044,8 @@ GeoModeller (check in the input_data data folder for an example).</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>path_i</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the csv table</li>
-<li><strong>path_o</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the csv table</li>
+<li><strong>path_i</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to the csv table</li>
+<li><strong>path_o</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to the csv table</li>
 <li><strong>**kwargs</strong> – kwargs of :func: <cite>~pn.read_csv</cite></li>
 </ul>
 </td>
@@ -1050,8 +1075,8 @@ GeoModeller (check in the input_data data folder for an example).</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>data_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – ‘interfaces’ or ‘orientations’</li>
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the files. Default os.getcwd()</li>
+<li><strong>data_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – ‘interfaces’ or ‘orientations’</li>
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to the files. Default os.getcwd()</li>
 <li><strong>**kwargs</strong> – Arbitrary keyword arguments.</li>
 </ul>
 </td>
@@ -1115,6 +1140,25 @@ GeoModeller (check in the input_data data folder for an example).</p>
 the formations. All inplace</p>
 </dd></dl>
 
+<dl class="staticmethod">
+<dt id="data_management.InputData.plane_fit">
+<em class="property">static </em><code class="descname">plane_fit</code><span class="sig-paren">(</span><em>point_list</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData.plane_fit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData.plane_fit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fit plane to points in PointSet
+Fit an d-dimensional plane to the points in a point set.
+adjusted from: <a class="reference external" href="http://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points">http://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>point_list</strong> (<em>array_like</em>) – array of points XYZ</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Return a point, p, on the plane (the point-cloud centroid),
+and the normal, n.</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
 <dl class="method">
 <dt id="data_management.InputData.reset_indices">
 <code class="descname">reset_indices</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData.reset_indices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData.reset_indices" title="Permalink to this definition">¶</a></dt>
@@ -1165,7 +1209,7 @@ the formations. All inplace</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>series_name</strong> (<em>list</em><em> or </em><em>array_like</em>) – Name of the series which are faults</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>series_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em> or </em><em>array_like</em>) – Name of the series which are faults</td>
 </tr>
 </tbody>
 </table>
@@ -1196,7 +1240,7 @@ has been moved to the interpolator class as preprocessing</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>grid_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – regular_3D or None</li>
+<li><strong>grid_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – regular_3D or None</li>
 <li><strong>custom_grid</strong> (<em>array_like</em>) – 2D array with XYZ columns. To exploit gempy functionality the indexing has to be ij
 (See Also numpy.meshgrid documentation)</li>
 <li><strong>**kwargs</strong> – Arbitrary keyword arguments.</li>
@@ -1256,8 +1300,8 @@ append: Bool: if you want to append the new data frame or substitute it</dd>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>series_distribution</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – with the name of the serie as key and the name of the formations as values.</li>
-<li><strong>order</strong> (<em>Optional</em><em>[</em><em>list</em><em>]</em>) – order of the series by default takes the dictionary keys which until python 3.6 are
+<li><strong>series_distribution</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – with the name of the serie as key and the name of the formations as values.</li>
+<li><strong>order</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>]</em>) – order of the series by default takes the dictionary keys which until python 3.6 are
 random. This is important to set the erosion relations between the different series</li>
 </ul>
 </td>
@@ -1276,345 +1320,10 @@ self.orientations: one extra column with the given series</p>
 
 </dd></dl>
 
-<dl class="class">
-<dt id="data_management.InterpolatorData">
-<em class="property">class </em><code class="descclassname">data_management.</code><code class="descname">InterpolatorData</code><span class="sig-paren">(</span><em>geo_data</em>, <em>geophysics=None</em>, <em>output=’geology’</em>, <em>compile_theano=False</em>, <em>theano_optimizer=’fast_compile’</em>, <em>u_grade=None</em>, <em>rescaling_factor=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData" title="Permalink to this definition">¶</a></dt>
-<dd><p>InterpolatorInput is a class that contains all the preprocessing operations to prepare the data to compute the model.
-Also is the object that has to be manipulated to vary the data without recompile the modeling function.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>geo_data</strong> (<em>gempy.data_management.InputData</em>) – All values of a DataManagement object</li>
-<li><strong>geophysics</strong> (<em>gempy.geophysics</em>) – Object with the corresponding geophysical precomputations</li>
-<li><strong>compile_theano</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – select if the theano function is compiled during the initialization. Default: True</li>
-<li><strong>compute_all</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – <p>If true the solution gives back the block model of lithologies, the potential field and
-the block model of faults. If False only return the block model of lithologies. This may be important to speed</p>
-<blockquote>
-<div>up the computation. Default True</div></blockquote>
-</li>
-<li><strong>u_grade</strong> (<em>list</em>) – grade of the polynomial for the universal part of the Kriging interpolations. The value has to</li>
-<li><strong>either 0</strong><strong>, </strong><strong>3</strong><strong> or </strong><strong>9</strong> (<em>be</em>) – </li>
-<li><strong>on the number of points given as input_data to try to avoid singular matrix. NOTE</strong> (<em>depends</em>) – if during the computation</li>
-<li><strong>the model a singular matrix is returned try to reduce the u_grade of the series.</strong> (<em>of</em>) – </li>
-<li><strong>rescaling_factor</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – rescaling factor of the input_data data to improve the stability when float32 is used. By</li>
-<li><strong>the rescaling factor is calculated to obtein values between 0 and 1.</strong> (<em>defaut</em>) – </li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>dtype</strong> (<em>'str'</em>) – Choosing if using float32 or float64. This is important if is intended to use the GPU</li>
-<li><strong>Also InterpolatorClass kwargs</strong> (<em>See</em>) – </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="data_management.InterpolatorData.geo_data">
-<code class="descname">geo_data</code><a class="headerlink" href="#data_management.InterpolatorData.geo_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Original gempy.DataManagement.InputData object</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="data_management.InterpolatorData.geo_data_res">
-<code class="descname">geo_data_res</code><a class="headerlink" href="#data_management.InterpolatorData.geo_data_res" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rescaled data. It has the same structure has gempy.InputData</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="data_management.InterpolatorData.interpolator">
-<code class="descname">interpolator</code><a class="headerlink" href="#data_management.InterpolatorData.interpolator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Instance of the gempy.DataManagement.InterpolaorInput.InterpolatorClass. See Also
-gempy.DataManagement.InterpolaorInput.InterpolatorClass docs
-th_fn: Theano function which compute the interpolation</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="data_management.InterpolatorData.dtype">
-<code class="descname">dtype</code><a class="headerlink" href="#data_management.InterpolatorData.dtype" title="Permalink to this definition">¶</a></dt>
-<dd><p>type of float</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="data_management.InterpolatorData.InterpolatorTheano">
-<em class="property">class </em><code class="descname">InterpolatorTheano</code><span class="sig-paren">(</span><em>interp_data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.InterpolatorTheano"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.InterpolatorTheano" title="Permalink to this definition">¶</a></dt>
-<dd><blockquote>
-<div>Class which contain all needed methods to perform potential field implicit modelling in theano.
-Here there are methods to modify the shared parameters of the theano graph as well as the final
-preparation of the data from DataFrames to numpy arrays. This class is intended to be hidden from the user
-leaving the most useful calls into the InterpolatorData class</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>interp_data</strong> (<em>gempy.data_management.InterpolatorData</em>) – InterpolatorData: data rescaled plus geophysics and</li>
-<li><strong>additional data</strong> (<em>other</em>) – </li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>range_var</strong> – Range of the variogram. Default None</li>
-<li><strong>c_o</strong> – Covariance at 0. Default None</li>
-<li><strong>nugget_effect</strong> – Nugget effect of the gradients. Default 0.01</li>
-<li><strong>u_grade</strong> – Grade of the polynomial used in the universal part of the Kriging. Default 2</li>
-<li><strong>rescaling_factor</strong> – Magic factor that multiplies the covariances). Default 2</li>
-<li><strong>verbose</strong> (<em>list of str</em>) – Level of verbosity during the execution of the functions. List of the strings with</li>
-<li><strong>parameters to be printed during the theano execution. TODO Make the list</strong> (<em>the</em>) – </li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="method">
-<dt id="data_management.InterpolatorData.InterpolatorTheano.data_prep">
-<code class="descname">data_prep</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.InterpolatorTheano.data_prep"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.InterpolatorTheano.data_prep" title="Permalink to this definition">¶</a></dt>
-<dd><p>Ideally this method will only extract the data from the pandas dataframes to individual numpy arrays to be input_data
-of the theano function. However since some of the shared parameters are function of these arrays shape I also
-set them here</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">List of arrays which are the input_data for the theano function:<blockquote>
-<div><ul class="simple">
-<li>numpy.array: dips_position</li>
-<li>numpy.array: dip_angles</li>
-<li>numpy.array: azimuth</li>
-<li>numpy.array: polarity</li>
-<li>numpy.array: ref_layer_points</li>
-<li>numpy.array: rest_layer_points</li>
-</ul>
-</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">idl (list)</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="data_management.InterpolatorData.InterpolatorTheano.get_kriging_parameters">
-<code class="descname">get_kriging_parameters</code><span class="sig-paren">(</span><em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.InterpolatorTheano.get_kriging_parameters"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.InterpolatorTheano.get_kriging_parameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>Print the kringing parameters</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – if &gt; 0 print all the shape values as well.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="data_management.InterpolatorData.InterpolatorTheano.order_table">
-<code class="descname">order_table</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.InterpolatorTheano.order_table"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.InterpolatorTheano.order_table" title="Permalink to this definition">¶</a></dt>
-<dd><p>First we sort the dataframes by the series age. Then we set a unique number for every formation and resort
-the formations. All inplace</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="data_management.InterpolatorData.InterpolatorTheano.set_densities">
-<code class="descname">set_densities</code><span class="sig-paren">(</span><em>densities</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.InterpolatorTheano.set_densities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.InterpolatorTheano.set_densities" title="Permalink to this definition">¶</a></dt>
-<dd><p>WORKING IN PROGRESS – Set the weight of each voxel given a density
-:param densities:</p>
-<p>Returns:</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="data_management.InterpolatorData.InterpolatorTheano.set_formation_number">
-<code class="descname">set_formation_number</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.InterpolatorTheano.set_formation_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.InterpolatorTheano.set_formation_number" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a unique number to each formation. NOTE: this method is getting deprecated since the user does not need
-to know it and also now the numbers must be set in the order of the series as well. Therefore this method
-has been moved to the interpolator class as preprocessing</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Column in the interfaces and orientations dataframes</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="data_management.InterpolatorData.InterpolatorTheano.set_theano_shared_parameteres">
-<code class="descname">set_theano_shared_parameteres</code><span class="sig-paren">(</span><em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.InterpolatorTheano.set_theano_shared_parameteres"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.InterpolatorTheano.set_theano_shared_parameteres" title="Permalink to this definition">¶</a></dt>
-<dd><p>Here we create most of the kriging parameters. The user can pass them as kwargs otherwise we pick the
-default values from the DataManagement info. The share variables are set in place. All the parameters here
-are independent of the input_data data so this function only has to be called if you change the extent or grid or
-if you want to change one the kriging parameters.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>u_grade</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Drift grade. Default to 2.</li>
-<li><strong>range_var</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Range of the variogram. Default 3D diagonal of the extent</li>
-<li><strong>c_o</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Covariance at lag 0. Default range_var ** 2 / 14 / 3. See my paper when I write it</li>
-<li><strong>nugget_effect</strong> (<em>flaot</em>) – Nugget effect of orientations. Default to 0.01</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="data_management.InterpolatorData.InterpolatorTheano.set_z_comp">
-<code class="descname">set_z_comp</code><span class="sig-paren">(</span><em>tz</em>, <em>selected_cells</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.InterpolatorTheano.set_z_comp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.InterpolatorTheano.set_z_comp" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set z component precomputation for the gravity.
-:param tz:
-:param selected_cells:</p>
-<p>Returns:</p>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="method">
-<dt id="data_management.InterpolatorData.compile_th_fn">
-<code class="descname">compile_th_fn</code><span class="sig-paren">(</span><em>output</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.compile_th_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.compile_th_fn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compile the theano function given the input_data data.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>compute_all</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – <p>If true the solution gives back the block model of lithologies, the potential field and
-the block model of faults. If False only return the block model of lithologies. This may be important to speed</p>
-<blockquote>
-<div>up the computation. Default True</div></blockquote>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Compiled function if C or CUDA which computes the interpolation given the input_data data
-(XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">theano.function</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="data_management.InterpolatorData.get_input_data">
-<code class="descname">get_input_data</code><span class="sig-paren">(</span><em>u_grade=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.get_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.get_input_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get the theano variables that are input_data. This are necessary to compile the theano function
-or a theno op for pymc3
-:param u_grade: grade of the polynomial for the universal part of the Kriging interpolations. The value has to
-:type u_grade: list</p>
-<blockquote>
-<div>be either 0, 3 or 9 (number of equations) and the length has to be the number of series. By default the value
-depends on the number of points given as input_data to try to avoid singular matrix. NOTE: if during the computation
-of the model a singular matrix is returned try to reduce the u_grade of the series.</div></blockquote>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">input_data nodes of the theano graph</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.variables</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="data_management.InterpolatorData.rescale_data">
-<code class="descname">rescale_data</code><span class="sig-paren">(</span><em>geo_data</em>, <em>rescaling_factor=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.rescale_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.rescale_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rescale the data of a DataManagement object between 0 and 1 due to stability problem of the float32.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>geo_data</strong> – Original gempy.DataManagement.InputData object</li>
-<li><strong>rescaling_factor</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – factor of the rescaling. Default to maximum distance in one the axis</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Rescaled data</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">gempy.data_management.InputData</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="data_management.InterpolatorData.set_geo_data_rescaled">
-<code class="descname">set_geo_data_rescaled</code><span class="sig-paren">(</span><em>geo_data</em>, <em>rescaling_factor=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.set_geo_data_rescaled"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.set_geo_data_rescaled" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the rescale the data of a DataManagement object between 0 and 1 due to stability problem of the float32.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>geo_data</strong> – Original gempy.DataManagement.InputData object</li>
-<li><strong>rescaling_factor</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – factor of the rescaling. Default to maximum distance in one the axis</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Rescaled data</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">gempy.data_management.InputData</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="data_management.InterpolatorData.set_gravity_precomputation">
-<code class="descname">set_gravity_precomputation</code><span class="sig-paren">(</span><em>gravity_obj</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.set_gravity_precomputation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.set_gravity_precomputation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a gravity object to the interpolator to pass the values to the theano graph</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>gravity_obj</strong> (<em>gempy.geophysics.GravityPreprocessing</em>) – GravityPreprocessing
-(See Also gempy.geophysics.GravityPreprocessing documentation)</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="data_management.InterpolatorData.update_interpolator">
-<code class="descname">update_interpolator</code><span class="sig-paren">(</span><em>geo_data=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InterpolatorData.update_interpolator"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InterpolatorData.update_interpolator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to update the constant parameters of the class interpolator (i.e. theano shared) WITHOUT recompiling.
-All the constant parameters for the interpolation can be passed
-as kwargs, otherwise they will take the default value (TODO: documentation of the dafault values)</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>geo_data</strong> – Rescaled gempy.DataManagement.InputData object. If None the stored geo_data_res will be used</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>range_var</strong> – Range of the variogram. Default None</li>
-<li><strong>c_o</strong> – Covariance at 0. Default None</li>
-<li><strong>nugget_effect</strong> – Nugget effect of the gradients. Default 0.01</li>
-<li><strong>u_grade</strong> – Grade of the polynomial used in the universal part of the Kriging. Default 2</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
+<dl class="function">
+<dt id="data_management.get_orientation">
+<code class="descclassname">data_management.</code><code class="descname">get_orientation</code><span class="sig-paren">(</span><em>normal</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#get_orientation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.get_orientation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get orientation (dip, azimuth, polarity ) for points in all point set</p>
 </dd></dl>
 
 <p>DEP– I need to update this string
@@ -1633,7 +1342,7 @@ theano function for the block</td>
 <dl class="class">
 <dt id="theano_graph.TheanoGraph">
 <em class="property">class </em><code class="descclassname">theano_graph.</code><code class="descname">TheanoGraph</code><span class="sig-paren">(</span><em>output=’geology’, optimizer=’fast_compile’, verbose=[0], dtype=’float32’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph" title="Permalink to this definition">¶</a></dt>
-<dd><p>This class is used to help to divide the construction of the graph into sensical parts. All its methods build a part
+<dd><p>This class is used to help to divide the construction of the graph into sensical parts. All its methods buildDEP2 a part
 of the graph. Every method can be seen as a branch and collection of branches until the last method that will be the
 whole tree. Every part of the graph could be compiled separately but as we increase the complexity the input of each
 of these methods is more and more difficult to provide (if you are in a branch close to the trunk you need all the
@@ -1674,7 +1383,7 @@ results of the branches above)</p>
 
 <dl class="method">
 <dt id="theano_graph.TheanoGraph.compute_a_fault">
-<code class="descname">compute_a_fault</code><span class="sig-paren">(</span><em>len_i_0</em>, <em>len_i_1</em>, <em>len_f_0</em>, <em>len_f_1</em>, <em>n_form_per_serie_0</em>, <em>n_form_per_serie_1</em>, <em>u_grade_iter</em>, <em>final_block</em>, <em>fault_matrix</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.compute_a_fault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.compute_a_fault" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compute_a_fault</code><span class="sig-paren">(</span><em>len_i_0</em>, <em>len_i_1</em>, <em>len_f_0</em>, <em>len_f_1</em>, <em>n_form_per_serie_0</em>, <em>n_form_per_serie_1</em>, <em>u_grade_iter</em>, <em>fault_matrix</em>, <em>final_block</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.compute_a_fault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.compute_a_fault" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that loops each fault, generating a potential field for each on them with the respective block model</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1819,7 +1528,7 @@ dimensions len(DK)x(grid) but in the future maybe I have to try to loop all this
 
 <dl class="method">
 <dt id="theano_graph.TheanoGraph.faults_contribution">
-<code class="descname">faults_contribution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.faults_contribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.faults_contribution" title="Permalink to this definition">¶</a></dt>
+<code class="descname">faults_contribution</code><span class="sig-paren">(</span><em>weights=None</em>, <em>a=0</em>, <em>b=100000000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.faults_contribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.faults_contribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computation of the contribution of the faults drift at every point to interpolate. To get these we need to
 compute a whole block model with the faults data</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1851,7 +1560,7 @@ discrete values this matrix will be null since the derivative of a constant is 0
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)">list</a></td>
 </tr>
 </tbody>
 </table>
@@ -1859,7 +1568,7 @@ discrete values this matrix will be null since the derivative of a constant is 0
 
 <dl class="method">
 <dt id="theano_graph.TheanoGraph.gradient_contribution">
-<code class="descname">gradient_contribution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.gradient_contribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.gradient_contribution" title="Permalink to this definition">¶</a></dt>
+<code class="descname">gradient_contribution</code><span class="sig-paren">(</span><em>grid_val=None</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.gradient_contribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.gradient_contribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computation of the contribution of the foliations at every point to interpolate</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1887,7 +1596,7 @@ discrete values this matrix will be null since the derivative of a constant is 0
 </dl>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">list</td>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)">list</a></td>
 </tr>
 </tbody>
 </table>
@@ -1895,7 +1604,7 @@ discrete values this matrix will be null since the derivative of a constant is 0
 
 <dl class="method">
 <dt id="theano_graph.TheanoGraph.interface_contribution">
-<code class="descname">interface_contribution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.interface_contribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.interface_contribution" title="Permalink to this definition">¶</a></dt>
+<code class="descname">interface_contribution</code><span class="sig-paren">(</span><em>grid_val=None</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.interface_contribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.interface_contribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computation of the contribution of the interfaces at every point to interpolate</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1928,15 +1637,6 @@ discrete values this matrix will be null since the derivative of a constant is 0
 <code class="descname">scalar_field_at_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.scalar_field_at_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.scalar_field_at_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the potential field at all the interpolation points, i.e. grid plus rest plus ref
 :returns: Potential fields at all points
-:rtype: theano.tensor.vector</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="theano_graph.TheanoGraph.scalar_field_at_interfaces">
-<code class="descname">scalar_field_at_interfaces</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.scalar_field_at_interfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.scalar_field_at_interfaces" title="Permalink to this definition">¶</a></dt>
-<dd><p>Potential field at interfaces. To avoid errors I take all the points of rest that belong to one interface
-and make the average
-:returns: Potential field values at the interfaces of a given series
 :rtype: theano.tensor.vector</p>
 </dd></dl>
 
@@ -1983,7 +1683,7 @@ decomposition in all likelihood</p>
 
 <dl class="method">
 <dt id="theano_graph.TheanoGraph.universal_drift_contribution">
-<code class="descname">universal_drift_contribution</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.universal_drift_contribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.universal_drift_contribution" title="Permalink to this definition">¶</a></dt>
+<code class="descname">universal_drift_contribution</code><span class="sig-paren">(</span><em>grid_val=None</em>, <em>weights=None</em>, <em>a=0</em>, <em>b=100000000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.universal_drift_contribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.universal_drift_contribution" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computation of the contribution of the universal drift at every point to interpolate</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2064,7 +1764,7 @@ along with gempy.  If not, see &lt;<a class="reference external" href="http://ww
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>G</strong> (<em>skimage.future.graph.rag.RAG</em>) – Topology graph object.</li>
-<li><strong>centroids</strong> (<a class="reference external" href="https://docs.python.org/2/library/stdtypes.html#dict" title="(in Python v2.7)"><em>dict</em></a>) – Centroid dictionary {node id (int): tuple(x,y,z)}</li>
+<li><strong>centroids</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – Centroid dictionary {node id (int): tuple(x,y,z)}</li>
 <li><strong>lith_block</strong> (<em>np.ndarray</em>) – Shaped lithology block model.</li>
 <li><strong>fault_block</strong> (<em>np.ndarray</em>) – Shaped fault block model.</li>
 </ul>
@@ -2092,7 +1792,7 @@ along with gempy.  If not, see &lt;<a class="reference external" href="http://ww
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Jaccard-Index</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)">float</a>)</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">(<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)">float</a>)</p>
 </td>
 </tr>
 </tbody>
@@ -2153,14 +1853,14 @@ along with gempy.  If not, see &lt;<a class="reference external" href="http://ww
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>lith_block</strong> (<em>np.ndarray</em>) – Lithology block model</li>
 <li><strong>fault_block</strong> (<em>np.ndarray</em>) – Fault block model</li>
-<li><strong>n_faults</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of faults.</li>
+<li><strong>n_faults</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Number of faults.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>areas_bool</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – If True computes adjacency areas for connected nodes in voxel number. Default False.</li>
-<li><strong>return_block</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – If True additionally returns the uniquely labeled block model as np.ndarray.</li>
+<li><strong>areas_bool</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – If True computes adjacency areas for connected nodes in voxel number. Default False.</li>
+<li><strong>return_block</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – If True additionally returns the uniquely labeled block model as np.ndarray.</li>
 </ul>
 </td>
 </tr>
@@ -2178,7 +1878,7 @@ labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithol
 </p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)">tuple</a></p>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)">tuple</a></p>
 </td>
 </tr>
 </tbody>
@@ -2206,7 +1906,7 @@ labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithol
 
 <dl class="function">
 <dt id="posterior_analysis.change_input_data">
-<code class="descclassname">posterior_analysis.</code><code class="descname">change_input_data</code><span class="sig-paren">(</span><em>db</em>, <em>interp_data</em>, <em>i</em>, <em>input_data_trace=’input_data’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/posterior_analysis.html#change_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#posterior_analysis.change_input_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">posterior_analysis.</code><code class="descname">change_input_data</code><span class="sig-paren">(</span><em>db</em>, <em>interp_data</em>, <em>i</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/posterior_analysis.html#change_input_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#posterior_analysis.change_input_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Changes input data in interp_data to posterior input data at iteration i.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2215,7 +1915,7 @@ labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithol
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>interp_data</strong> (<em>gempy.data_management.InterpolationData</em>) – An interp_data object with the structure we want to</li>
 <li><strong>compute.</strong> – </li>
-<li><strong>i</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Iteration we want to recompute</li>
+<li><strong>i</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Iteration we want to recompute</li>
 </ul>
 </td>
 </tr>
@@ -2231,19 +1931,17 @@ labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithol
 
 <dl class="function">
 <dt id="posterior_analysis.compute_posterior_models_all">
-<code class="descclassname">posterior_analysis.</code><code class="descname">compute_posterior_models_all</code><span class="sig-paren">(</span><em>db</em>, <em>interp_data</em>, <em>r=None</em>, <em>u_grade=None</em>, <em>get_potential_at_interfaces=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/posterior_analysis.html#compute_posterior_models_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#posterior_analysis.compute_posterior_models_all" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">posterior_analysis.</code><code class="descname">compute_posterior_models_all</code><span class="sig-paren">(</span><em>db</em>, <em>interp_data</em>, <em>indices</em>, <em>u_grade=None</em>, <em>get_potential_at_interfaces=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/posterior_analysis.html#compute_posterior_models_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#posterior_analysis.compute_posterior_models_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes block models from stored input parameters for all iterations.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>db</strong> – </li>
-<li><strong>interp_data</strong> – GemPy interpolator object</li>
-<li><strong>r</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a><em> or </em><em>list/array</em><em>, </em><em>optional</em>) – The default value ‘None’ computes for models for the entire trace. If
-‘tuple’ like (start, end) computes all models in the given range. If ‘np.array’ or ‘list’ with indices
-it computes the models for all given indices</li>
-<li><strong>u_grade</strong> (<em>list</em><em>, </em><em>optional</em>) – </li>
+<li><strong>(</strong><strong>)</strong> (<em>db</em>) – loaded pymc database (e.g. hdf5)</li>
+<li><strong>interp_data</strong> (<em>gp.data_management.InterpolatorData</em>) – GemPy interpolator object</li>
+<li><strong>indices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em> or </em><em>np.array</em>) – Trace indices specifying which models from the database will be calculated.</li>
+<li><strong>u_grade</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>, </em><em>optional</em>) – </li>
 <li><strong>get_potential_at_interfaces</strong> – </li>
 </ul>
 </td>
@@ -2269,8 +1967,8 @@ Currently only supports the modification of dip angle - azimuth and polarity wil
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dip</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Desired dip angle of the plane.</li>
-<li><strong>group_id</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Group id identifying the data points belonging to the plane.</li>
+<li><strong>dip</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Desired dip angle of the plane.</li>
+<li><strong>group_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Group id identifying the data points belonging to the plane.</li>
 <li><strong>(</strong> (<em>data_obj</em>) – obj:): Data object to be modified (geo_data or interp_data.geo_data_res)</li>
 </ul>
 </td>
@@ -2311,7 +2009,7 @@ Tested on Ubuntu 14</p>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
 <li><strong>scalar_field</strong> (<em>numpy.ndarray</em>) – 3D array containing a individual potential field</li>
-<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Level of verbosity during the execution of the functions (up to 5). Default 0</li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Level of verbosity during the execution of the functions (up to 5). Default 0</li>
 </ul>
 </td>
 </tr>
@@ -2329,8 +2027,8 @@ before telling matplotlib to show the plot.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>frame</strong> (<em>pandas.DataFrame</em>) – </li>
-<li><strong>plot_col</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The string identifying the column of frame that was plotted</li>
-<li><strong>label_col</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – The string identifying the column of frame to be used as label</li>
+<li><strong>plot_col</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The string identifying the column of frame that was plotted</li>
+<li><strong>label_col</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The string identifying the column of frame to be used as label</li>
 <li><strong>kwargs</strong> – Other key-word args that should be passed to plt.annotate</li>
 </ul>
 </td>
@@ -2338,7 +2036,7 @@ before telling matplotlib to show the plot.</p>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/2/library/constants.html#None" title="(in Python v2.7)">None</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.6)">None</a></p>
 </td>
 </tr>
 </tbody>
@@ -2358,9 +2056,9 @@ them.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – position of the array to plot</li>
-<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
-<li><strong>interpolation</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Type of interpolation of plt.imshow. Default ‘none’.  Acceptable values are ‘none’</li>
+<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – position of the array to plot</li>
+<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
+<li><strong>interpolation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Type of interpolation of plt.imshow. Default ‘none’.  Acceptable values are ‘none’</li>
 <li><strong>'bilinear'</strong><strong>, </strong><strong>'bicubic'</strong><strong>,</strong> (<em>,</em><em>'nearest'</em><em>,</em>) – </li>
 <li><strong>'spline36'</strong><strong>, </strong><strong>'hanning'</strong><strong>, </strong><strong>'hamming'</strong><strong>, </strong><strong>'hermite'</strong><strong>, </strong><strong>'kaiser'</strong><strong>,</strong> (<em>'spline16'</em><em>,</em>) – </li>
 <li><strong>'catrom'</strong><strong>, </strong><strong>'gaussian'</strong><strong>, </strong><strong>'bessel'</strong><strong>, </strong><strong>'mitchell'</strong><strong>, </strong><strong>'sinc'</strong><strong>,</strong> (<em>'quadric'</em><em>,</em>) – </li>
@@ -2386,9 +2084,9 @@ specific directions</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
-<li><strong>data_type</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – type of data to plot. ‘all’, ‘interfaces’ or ‘orientations’</li>
-<li><strong>series</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – series to plot</li>
+<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
+<li><strong>data_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – type of data to plot. ‘all’, ‘interfaces’ or ‘orientations’</li>
+<li><strong>series</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – series to plot</li>
 <li><strong>**kwargs</strong> – seaborn lmplot key arguments. (TODO: adding the link to them)</li>
 </ul>
 </td>
@@ -2409,10 +2107,10 @@ specific directions</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – position of the array to plot</li>
-<li><strong>scalar_field</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – name of the scalar field (or series) to plot</li>
-<li><strong>n_pf</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – number of the  scalar field (or series) to plot</li>
-<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
+<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – position of the array to plot</li>
+<li><strong>scalar_field</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – name of the scalar field (or series) to plot</li>
+<li><strong>n_pf</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – number of the  scalar field (or series) to plot</li>
+<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
 <li><strong>serie</strong> – <em>Deprecated</em></li>
 <li><strong>**kwargs</strong> – plt.contour kwargs</li>
 </ul>
@@ -2429,7 +2127,7 @@ specific directions</p>
 
 <dl class="class">
 <dt id="visualization.vtkVisualization">
-<em class="property">class </em><code class="descclassname">visualization.</code><code class="descname">vtkVisualization</code><span class="sig-paren">(</span><em>geo_data, ren_name=’GemPy 3D-Editor’, verbose=0, color_lot={0: [1.0, 0.6549019607843137, 0.14901960784313725], 1: [0.3607843137254902, 0.4196078431372549, 0.7529411764705882], 2: [0.9372549019607843, 0.3254901960784314, 0.3137254901960784], 3: [1.0, 0.9333333333333333, 0.34509803921568627], 4: [0.4, 0.7333333333333333, 0.41568627450980394], 5: [0.5529411764705883, 0.43137254901960786, 0.38823529411764707], 6: [0.25882352941176473, 0.6470588235294118, 0.9607843137254902], 7: [1.0, 0.792156862745098, 0.1568627450980392], 8: [0.9254901960784314, 0.25098039215686274, 0.47843137254901963], 9: [0.1607843137254902, 0.7137254901960784, 0.9647058823529412], 10: [0.8313725490196079, 0.8823529411764706, 0.3411764705882353], 11: [0.47058823529411764, 0.5647058823529412, 0.611764705882353], 12: [1.0, 0.4392156862745098, 0.2627450980392157], 13: [0.7411764705882353, 0.7411764705882353, 0.7411764705882353], 14: [0.14901960784313725, 0.7764705882352941, 0.8549019607843137], 15: [0.49411764705882355, 0.3411764705882353, 0.7607843137254902], 16: [0.6705882352941176, 0.2784313725490196, 0.7372549019607844], 17: [0.14901960784313725, 0.6509803921568628, 0.6039215686274509], 18: [0.611764705882353, 0.8, 0.396078431372549], 19: [0.9607843137254902, 0.48627450980392156, 0.0], 20: [0.18823529411764706, 0.24705882352941178, 0.6235294117647059], 21: [0.8274509803921568, 0.1843137254901961, 0.1843137254901961], 22: [0.984313725490196, 0.7529411764705882, 0.17647058823529413], 23: [0.2196078431372549, 0.5568627450980392, 0.23529411764705882], 24: [0.36470588235294116, 0.25098039215686274, 0.21568627450980393], 25: [0.09803921568627451, 0.4627450980392157, 0.8235294117647058], 26: [1.0, 0.6274509803921569, 0.0], 27: [0.7607843137254902, 0.09411764705882353, 0.3568627450980392], 28: [0.00784313725490196, 0.5333333333333333, 0.8196078431372549], 29: [0.6862745098039216, 0.7058823529411765, 0.16862745098039217], 30: [0.27058823529411763, 0.35294117647058826, 0.39215686274509803], 31: [0.9019607843137255, 0.2901960784313726, 0.09803921568627451], 32: [0.3803921568627451, 0.3803921568627451, 0.3803921568627451], 33: [0.0, 0.592156862745098, 0.6549019607843137], 34: [0.3176470588235294, 0.17647058823529413, 0.6588235294117647], 35: [0.4823529411764706, 0.12156862745098039, 0.6352941176470588], 36: [0.0, 0.4745098039215686, 0.4196078431372549], 37: [0.40784313725490196, 0.6235294117647059, 0.2196078431372549], 38: [1.0, 0.8784313725490196, 0.6980392156862745], 39: [0.7725490196078432, 0.792156862745098, 0.9137254901960784], 40: [1.0, 0.803921568627451, 0.8235294117647058], 41: [1.0, 0.9764705882352941, 0.7686274509803922], 42: [0.7843137254901961, 0.9019607843137255, 0.788235294117647], 43: [0.8431372549019608, 0.8, 0.7843137254901961], 44: [0.7333333333333333, 0.8705882352941177, 0.984313725490196], 45: [1.0, 0.9254901960784314, 0.7019607843137254], 46: [0.9725490196078431, 0.7333333333333333, 0.8156862745098039], 47: [0.7019607843137254, 0.8980392156862745, 0.9882352941176471], 48: [0.9411764705882353, 0.9568627450980393, 0.7647058823529411], 49: [0.8117647058823529, 0.8470588235294118, 0.8627450980392157], 50: [1.0, 0.8, 0.7372549019607844], 51: [0.9607843137254902, 0.9607843137254902, 0.9607843137254902], 52: [0.6980392156862745, 0.9215686274509803, 0.9490196078431372], 53: [0.8196078431372549, 0.7686274509803922, 0.9137254901960784], 54: [0.8823529411764706, 0.7450980392156863, 0.9058823529411765], 55: [0.6980392156862745, 0.8745098039215686, 0.8588235294117647], 56: [0.8627450980392157, 0.9294117647058824, 0.7843137254901961], 57: [1.0, 0.8, 0.5019607843137255], 58: [0.6235294117647059, 0.6588235294117647, 0.8549019607843137], 59: [0.9372549019607843, 0.6039215686274509, 0.6039215686274509], 60: [1.0, 0.9607843137254902, 0.615686274509804], 61: [0.6470588235294118, 0.8392156862745098, 0.6549019607843137], 62: [0.7372549019607844, 0.6666666666666666, 0.6431372549019608], 63: [0.5647058823529412, 0.792156862745098, 0.9764705882352941], 64: [1.0, 0.8784313725490196, 0.5098039215686274], 65: [0.9568627450980393, 0.5607843137254902, 0.6941176470588235], 66: [0.5058823529411764, 0.8313725490196079, 0.9803921568627451], 67: [0.9019607843137255, 0.9333333333333333, 0.611764705882353], 68: [0.6901960784313725, 0.7450980392156863, 0.7725490196078432], 69: [1.0, 0.6705882352941176, 0.5686274509803921], 70: [0.9333333333333333, 0.9333333333333333, 0.9333333333333333], 71: [0.5019607843137255, 0.8705882352941177, 0.9176470588235294], 72: [0.7019607843137254, 0.615686274509804, 0.8588235294117647], 73: [0.807843137254902, 0.5764705882352941, 0.8470588235294118], 74: [0.5019607843137255, 0.796078431372549, 0.7686274509803922], 75: [0.7725490196078432, 0.8823529411764706, 0.6470588235294118], 76: [1.0, 0.7176470588235294, 0.30196078431372547], 77: [0.4745098039215686, 0.5254901960784314, 0.796078431372549], 78: [0.8980392156862745, 0.45098039215686275, 0.45098039215686275], 79: [1.0, 0.9450980392156862, 0.4627450980392157], 80: [0.5058823529411764, 0.7803921568627451, 0.5176470588235295], 81: [0.6313725490196078, 0.5333333333333333, 0.4980392156862745], 82: [0.39215686274509803, 0.7098039215686275, 0.9647058823529412], 83: [1.0, 0.8352941176470589, 0.30980392156862746], 84: [0.9411764705882353, 0.3843137254901961, 0.5725490196078431], 85: [0.30980392156862746, 0.7647058823529411, 0.9686274509803922], 86: [0.8627450980392157, 0.9058823529411765, 0.4588235294117647], 87: [0.5647058823529412, 0.6431372549019608, 0.6823529411764706], 88: [1.0, 0.5411764705882353, 0.396078431372549], 89: [0.8784313725490196, 0.8784313725490196, 0.8784313725490196], 90: [0.30196078431372547, 0.8156862745098039, 0.8823529411764706], 91: [0.5843137254901961, 0.4588235294117647, 0.803921568627451], 92: [0.7294117647058823, 0.40784313725490196, 0.7843137254901961], 93: [0.30196078431372547, 0.7137254901960784, 0.6745098039215687], 94: [0.6823529411764706, 0.8352941176470589, 0.5058823529411764], 95: [1.0, 0.596078431372549, 0.0], 96: [0.24705882352941178, 0.3176470588235294, 0.7098039215686275], 97: [0.9568627450980393, 0.2627450980392157, 0.21176470588235294], 98: [1.0, 0.9215686274509803, 0.23137254901960785], 99: [0.2980392156862745, 0.6862745098039216, 0.3137254901960784], 100: [0.4745098039215686, 0.3333333333333333, 0.2823529411764706], 101: [0.12941176470588237, 0.5882352941176471, 0.9529411764705882], 102: [1.0, 0.7568627450980392, 0.027450980392156862], 103: [0.9137254901960784, 0.11764705882352941, 0.38823529411764707], 104: [0.011764705882352941, 0.6627450980392157, 0.9568627450980393], 105: [0.803921568627451, 0.8627450980392157, 0.2235294117647059], 106: [0.3764705882352941, 0.49019607843137253, 0.5450980392156862], 107: [1.0, 0.3411764705882353, 0.13333333333333333], 108: [0.6196078431372549, 0.6196078431372549, 0.6196078431372549], 109: [0.0, 0.7372549019607844, 0.8313725490196079], 110: [0.403921568627451, 0.22745098039215686, 0.7176470588235294], 111: [0.611764705882353, 0.15294117647058825, 0.6901960784313725], 112: [0.0, 0.5882352941176471, 0.5333333333333333], 113: [0.5450980392156862, 0.7647058823529411, 0.2901960784313726], 114: [0.984313725490196, 0.5490196078431373, 0.0], 115: [0.2235294117647059, 0.28627450980392155, 0.6705882352941176], 116: [0.8980392156862745, 0.2235294117647059, 0.20784313725490197], 117: [0.9921568627450981, 0.8470588235294118, 0.20784313725490197], 118: [0.2627450980392157, 0.6274509803921569, 0.2784313725490196], 119: [0.42745098039215684, 0.2980392156862745, 0.2549019607843137], 120: [0.11764705882352941, 0.5333333333333333, 0.8980392156862745], 121: [1.0, 0.7019607843137254, 0.0], 122: [0.8470588235294118, 0.10588235294117647, 0.3764705882352941], 123: [0.011764705882352941, 0.6078431372549019, 0.8980392156862745], 124: [0.7529411764705882, 0.792156862745098, 0.2], 125: [0.32941176470588235, 0.43137254901960786, 0.47843137254901963], 126: [0.9568627450980393, 0.3176470588235294, 0.11764705882352941], 127: [0.4588235294117647, 0.4588235294117647, 0.4588235294117647], 128: [0.0, 0.6745098039215687, 0.7568627450980392], 129: [0.3686274509803922, 0.20784313725490197, 0.6941176470588235], 130: [0.5568627450980392, 0.1411764705882353, 0.6666666666666666], 131: [0.0, 0.5372549019607843, 0.4823529411764706], 132: [0.48627450980392156, 0.7019607843137254, 0.25882352941176473], 133: [1.0, 0.9529411764705882, 0.8784313725490196], 134: [0.9098039215686274, 0.9176470588235294, 0.9647058823529412], 135: [1.0, 0.9215686274509803, 0.9333333333333333], 136: [1.0, 0.9921568627450981, 0.9058823529411765], 137: [0.9098039215686274, 0.9607843137254902, 0.9137254901960784], 138: [0.9372549019607843, 0.9215686274509803, 0.9137254901960784], 139: [0.8901960784313725, 0.9490196078431372, 0.9921568627450981], 140: [1.0, 0.9725490196078431, 0.8823529411764706], 141: [0.9882352941176471, 0.8941176470588236, 0.9254901960784314], 142: [0.8823529411764706, 0.9607843137254902, 0.996078431372549], 143: [0.9764705882352941, 0.984313725490196, 0.9058823529411765], 144: [0.9254901960784314, 0.9372549019607843, 0.9450980392156862], 145: [0.984313725490196, 0.9137254901960784, 0.9058823529411765], 146: [0.9803921568627451, 0.9803921568627451, 0.9803921568627451], 147: [0.8784313725490196, 0.9686274509803922, 0.9803921568627451], 148: [0.9294117647058824, 0.9058823529411765, 0.9647058823529412], 149: [0.9529411764705882, 0.8980392156862745, 0.9607843137254902], 150: [0.8784313725490196, 0.9490196078431372, 0.9450980392156862], 151: [0.9450980392156862, 0.9725490196078431, 0.9137254901960784], 152: [0.9372549019607843, 0.4235294117647059, 0.0], 153: [0.1568627450980392, 0.20784313725490197, 0.5764705882352941], 154: [0.7764705882352941, 0.1568627450980392, 0.1568627450980392], 155: [0.9764705882352941, 0.6588235294117647, 0.1450980392156863], 156: [0.1803921568627451, 0.49019607843137253, 0.19607843137254902], 157: [0.3058823529411765, 0.20392156862745098, 0.1803921568627451], 158: [0.08235294117647059, 0.396078431372549, 0.7529411764705882], 159: [1.0, 0.5607843137254902, 0.0], 160: [0.6784313725490196, 0.0784313725490196, 0.3411764705882353], 161: [0.00784313725490196, 0.4666666666666667, 0.7411764705882353], 162: [0.6196078431372549, 0.615686274509804, 0.1411764705882353], 163: [0.21568627450980393, 0.2784313725490196, 0.30980392156862746], 164: [0.8470588235294118, 0.2627450980392157, 0.08235294117647059], 165: [0.25882352941176473, 0.25882352941176473, 0.25882352941176473], 166: [0.0, 0.5137254901960784, 0.5607843137254902], 167: [0.27058823529411763, 0.15294117647058825, 0.6274509803921569], 168: [0.41568627450980394, 0.10588235294117647, 0.6039215686274509], 169: [0.0, 0.4117647058823529, 0.3607843137254902], 170: [0.3333333333333333, 0.5450980392156862, 0.1843137254901961], 171: [0.9019607843137255, 0.3176470588235294, 0.0], 172: [0.10196078431372549, 0.13725490196078433, 0.49411764705882355], 173: [0.7176470588235294, 0.10980392156862745, 0.10980392156862745], 174: [0.9607843137254902, 0.4980392156862745, 0.09019607843137255], 175: [0.10588235294117647, 0.3686274509803922, 0.12549019607843137], 176: [0.24313725490196078, 0.15294117647058825, 0.13725490196078433], 177: [0.050980392156862744, 0.2784313725490196, 0.6313725490196078], 178: [1.0, 0.43529411764705883, 0.0], 179: [0.5333333333333333, 0.054901960784313725, 0.30980392156862746], 180: [0.00392156862745098, 0.3411764705882353, 0.6078431372549019], 181: [0.5098039215686274, 0.4666666666666667, 0.09019607843137255], 182: [0.14901960784313725, 0.19607843137254902, 0.2196078431372549], 183: [0.7490196078431373, 0.21176470588235294, 0.047058823529411764], 184: [0.12941176470588237, 0.12941176470588237, 0.12941176470588237], 185: [0.0, 0.3764705882352941, 0.39215686274509803], 186: [0.19215686274509805, 0.10588235294117647, 0.5725490196078431], 187: [0.2901960784313726, 0.0784313725490196, 0.5490196078431373], 188: [0.0, 0.30196078431372547, 0.25098039215686274], 189: [0.2, 0.4117647058823529, 0.11764705882352941]}, real_time=False, bg_color=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">visualization.</code><code class="descname">vtkVisualization</code><span class="sig-paren">(</span><em>geo_data, ren_name=’GemPy 3D-Editor’, verbose=0, color_lot={0: [1.0, 0.6549019607843137, 0.14901960784313725], 1: [0.3607843137254902, 0.4196078431372549, 0.7529411764705882], 2: [0.9372549019607843, 0.3254901960784314, 0.3137254901960784], 3: [1.0, 0.9333333333333333, 0.34509803921568627], 4: [0.4, 0.7333333333333333, 0.41568627450980394], 5: [0.5529411764705883, 0.43137254901960786, 0.38823529411764707], 6: [0.25882352941176473, 0.6470588235294118, 0.9607843137254902], 7: [1.0, 0.792156862745098, 0.1568627450980392], 8: [0.9254901960784314, 0.25098039215686274, 0.47843137254901963], 9: [0.1607843137254902, 0.7137254901960784, 0.9647058823529412], 10: [0.8313725490196079, 0.8823529411764706, 0.3411764705882353], 11: [0.47058823529411764, 0.5647058823529412, 0.611764705882353], 12: [1.0, 0.4392156862745098, 0.2627450980392157], 13: [0.7411764705882353, 0.7411764705882353, 0.7411764705882353], 14: [0.14901960784313725, 0.7764705882352941, 0.8549019607843137], 15: [0.49411764705882355, 0.3411764705882353, 0.7607843137254902], 16: [0.6705882352941176, 0.2784313725490196, 0.7372549019607844], 17: [0.14901960784313725, 0.6509803921568628, 0.6039215686274509], 18: [0.611764705882353, 0.8, 0.396078431372549], 19: [0.9607843137254902, 0.48627450980392156, 0.0], 20: [0.18823529411764706, 0.24705882352941178, 0.6235294117647059], 21: [0.8274509803921568, 0.1843137254901961, 0.1843137254901961], 22: [0.984313725490196, 0.7529411764705882, 0.17647058823529413], 23: [0.2196078431372549, 0.5568627450980392, 0.23529411764705882], 24: [0.36470588235294116, 0.25098039215686274, 0.21568627450980393], 25: [0.09803921568627451, 0.4627450980392157, 0.8235294117647058], 26: [1.0, 0.6274509803921569, 0.0], 27: [0.7607843137254902, 0.09411764705882353, 0.3568627450980392], 28: [0.00784313725490196, 0.5333333333333333, 0.8196078431372549], 29: [0.6862745098039216, 0.7058823529411765, 0.16862745098039217], 30: [0.27058823529411763, 0.35294117647058826, 0.39215686274509803], 31: [0.9019607843137255, 0.2901960784313726, 0.09803921568627451], 32: [0.3803921568627451, 0.3803921568627451, 0.3803921568627451], 33: [0.0, 0.592156862745098, 0.6549019607843137], 34: [0.3176470588235294, 0.17647058823529413, 0.6588235294117647], 35: [0.4823529411764706, 0.12156862745098039, 0.6352941176470588], 36: [0.0, 0.4745098039215686, 0.4196078431372549], 37: [0.40784313725490196, 0.6235294117647059, 0.2196078431372549], 38: [1.0, 0.8784313725490196, 0.6980392156862745], 39: [0.7725490196078432, 0.792156862745098, 0.9137254901960784], 40: [1.0, 0.803921568627451, 0.8235294117647058], 41: [1.0, 0.9764705882352941, 0.7686274509803922], 42: [0.7843137254901961, 0.9019607843137255, 0.788235294117647], 43: [0.8431372549019608, 0.8, 0.7843137254901961], 44: [0.7333333333333333, 0.8705882352941177, 0.984313725490196], 45: [1.0, 0.9254901960784314, 0.7019607843137254], 46: [0.9725490196078431, 0.7333333333333333, 0.8156862745098039], 47: [0.7019607843137254, 0.8980392156862745, 0.9882352941176471], 48: [0.9411764705882353, 0.9568627450980393, 0.7647058823529411], 49: [0.8117647058823529, 0.8470588235294118, 0.8627450980392157], 50: [1.0, 0.8, 0.7372549019607844], 51: [0.9607843137254902, 0.9607843137254902, 0.9607843137254902], 52: [0.6980392156862745, 0.9215686274509803, 0.9490196078431372], 53: [0.8196078431372549, 0.7686274509803922, 0.9137254901960784], 54: [0.8823529411764706, 0.7450980392156863, 0.9058823529411765], 55: [0.6980392156862745, 0.8745098039215686, 0.8588235294117647], 56: [0.8627450980392157, 0.9294117647058824, 0.7843137254901961], 57: [1.0, 0.8, 0.5019607843137255], 58: [0.6235294117647059, 0.6588235294117647, 0.8549019607843137], 59: [0.9372549019607843, 0.6039215686274509, 0.6039215686274509], 60: [1.0, 0.9607843137254902, 0.615686274509804], 61: [0.6470588235294118, 0.8392156862745098, 0.6549019607843137], 62: [0.7372549019607844, 0.6666666666666666, 0.6431372549019608], 63: [0.5647058823529412, 0.792156862745098, 0.9764705882352941], 64: [1.0, 0.8784313725490196, 0.5098039215686274], 65: [0.9568627450980393, 0.5607843137254902, 0.6941176470588235], 66: [0.5058823529411764, 0.8313725490196079, 0.9803921568627451], 67: [0.9019607843137255, 0.9333333333333333, 0.611764705882353], 68: [0.6901960784313725, 0.7450980392156863, 0.7725490196078432], 69: [1.0, 0.6705882352941176, 0.5686274509803921], 70: [0.9333333333333333, 0.9333333333333333, 0.9333333333333333], 71: [0.5019607843137255, 0.8705882352941177, 0.9176470588235294], 72: [0.7019607843137254, 0.615686274509804, 0.8588235294117647], 73: [0.807843137254902, 0.5764705882352941, 0.8470588235294118], 74: [0.5019607843137255, 0.796078431372549, 0.7686274509803922], 75: [0.7725490196078432, 0.8823529411764706, 0.6470588235294118], 76: [1.0, 0.7176470588235294, 0.30196078431372547], 77: [0.4745098039215686, 0.5254901960784314, 0.796078431372549], 78: [0.8980392156862745, 0.45098039215686275, 0.45098039215686275], 79: [1.0, 0.9450980392156862, 0.4627450980392157], 80: [0.5058823529411764, 0.7803921568627451, 0.5176470588235295], 81: [0.6313725490196078, 0.5333333333333333, 0.4980392156862745], 82: [0.39215686274509803, 0.7098039215686275, 0.9647058823529412], 83: [1.0, 0.8352941176470589, 0.30980392156862746], 84: [0.9411764705882353, 0.3843137254901961, 0.5725490196078431], 85: [0.30980392156862746, 0.7647058823529411, 0.9686274509803922], 86: [0.8627450980392157, 0.9058823529411765, 0.4588235294117647], 87: [0.5647058823529412, 0.6431372549019608, 0.6823529411764706], 88: [1.0, 0.5411764705882353, 0.396078431372549], 89: [0.8784313725490196, 0.8784313725490196, 0.8784313725490196], 90: [0.30196078431372547, 0.8156862745098039, 0.8823529411764706], 91: [0.5843137254901961, 0.4588235294117647, 0.803921568627451], 92: [0.7294117647058823, 0.40784313725490196, 0.7843137254901961], 93: [0.30196078431372547, 0.7137254901960784, 0.6745098039215687], 94: [0.6823529411764706, 0.8352941176470589, 0.5058823529411764], 95: [1.0, 0.596078431372549, 0.0], 96: [0.24705882352941178, 0.3176470588235294, 0.7098039215686275], 97: [0.9568627450980393, 0.2627450980392157, 0.21176470588235294], 98: [1.0, 0.9215686274509803, 0.23137254901960785], 99: [0.2980392156862745, 0.6862745098039216, 0.3137254901960784], 100: [0.4745098039215686, 0.3333333333333333, 0.2823529411764706], 101: [0.12941176470588237, 0.5882352941176471, 0.9529411764705882], 102: [1.0, 0.7568627450980392, 0.027450980392156862], 103: [0.9137254901960784, 0.11764705882352941, 0.38823529411764707], 104: [0.011764705882352941, 0.6627450980392157, 0.9568627450980393], 105: [0.803921568627451, 0.8627450980392157, 0.2235294117647059], 106: [0.3764705882352941, 0.49019607843137253, 0.5450980392156862], 107: [1.0, 0.3411764705882353, 0.13333333333333333], 108: [0.6196078431372549, 0.6196078431372549, 0.6196078431372549], 109: [0.0, 0.7372549019607844, 0.8313725490196079], 110: [0.403921568627451, 0.22745098039215686, 0.7176470588235294], 111: [0.611764705882353, 0.15294117647058825, 0.6901960784313725], 112: [0.0, 0.5882352941176471, 0.5333333333333333], 113: [0.5450980392156862, 0.7647058823529411, 0.2901960784313726], 114: [0.984313725490196, 0.5490196078431373, 0.0], 115: [0.2235294117647059, 0.28627450980392155, 0.6705882352941176], 116: [0.8980392156862745, 0.2235294117647059, 0.20784313725490197], 117: [0.9921568627450981, 0.8470588235294118, 0.20784313725490197], 118: [0.2627450980392157, 0.6274509803921569, 0.2784313725490196], 119: [0.42745098039215684, 0.2980392156862745, 0.2549019607843137], 120: [0.11764705882352941, 0.5333333333333333, 0.8980392156862745], 121: [1.0, 0.7019607843137254, 0.0], 122: [0.8470588235294118, 0.10588235294117647, 0.3764705882352941], 123: [0.011764705882352941, 0.6078431372549019, 0.8980392156862745], 124: [0.7529411764705882, 0.792156862745098, 0.2], 125: [0.32941176470588235, 0.43137254901960786, 0.47843137254901963], 126: [0.9568627450980393, 0.3176470588235294, 0.11764705882352941], 127: [0.4588235294117647, 0.4588235294117647, 0.4588235294117647], 128: [0.0, 0.6745098039215687, 0.7568627450980392], 129: [0.3686274509803922, 0.20784313725490197, 0.6941176470588235], 130: [0.5568627450980392, 0.1411764705882353, 0.6666666666666666], 131: [0.0, 0.5372549019607843, 0.4823529411764706], 132: [0.48627450980392156, 0.7019607843137254, 0.25882352941176473], 133: [1.0, 0.9529411764705882, 0.8784313725490196], 134: [0.9098039215686274, 0.9176470588235294, 0.9647058823529412], 135: [1.0, 0.9215686274509803, 0.9333333333333333], 136: [1.0, 0.9921568627450981, 0.9058823529411765], 137: [0.9098039215686274, 0.9607843137254902, 0.9137254901960784], 138: [0.9372549019607843, 0.9215686274509803, 0.9137254901960784], 139: [0.8901960784313725, 0.9490196078431372, 0.9921568627450981], 140: [1.0, 0.9725490196078431, 0.8823529411764706], 141: [0.9882352941176471, 0.8941176470588236, 0.9254901960784314], 142: [0.8823529411764706, 0.9607843137254902, 0.996078431372549], 143: [0.9764705882352941, 0.984313725490196, 0.9058823529411765], 144: [0.9254901960784314, 0.9372549019607843, 0.9450980392156862], 145: [0.984313725490196, 0.9137254901960784, 0.9058823529411765], 146: [0.9803921568627451, 0.9803921568627451, 0.9803921568627451], 147: [0.8784313725490196, 0.9686274509803922, 0.9803921568627451], 148: [0.9294117647058824, 0.9058823529411765, 0.9647058823529412], 149: [0.9529411764705882, 0.8980392156862745, 0.9607843137254902], 150: [0.8784313725490196, 0.9490196078431372, 0.9450980392156862], 151: [0.9450980392156862, 0.9725490196078431, 0.9137254901960784], 152: [0.9372549019607843, 0.4235294117647059, 0.0], 153: [0.1568627450980392, 0.20784313725490197, 0.5764705882352941], 154: [0.7764705882352941, 0.1568627450980392, 0.1568627450980392], 155: [0.9764705882352941, 0.6588235294117647, 0.1450980392156863], 156: [0.1803921568627451, 0.49019607843137253, 0.19607843137254902], 157: [0.3058823529411765, 0.20392156862745098, 0.1803921568627451], 158: [0.08235294117647059, 0.396078431372549, 0.7529411764705882], 159: [1.0, 0.5607843137254902, 0.0], 160: [0.6784313725490196, 0.0784313725490196, 0.3411764705882353], 161: [0.00784313725490196, 0.4666666666666667, 0.7411764705882353], 162: [0.6196078431372549, 0.615686274509804, 0.1411764705882353], 163: [0.21568627450980393, 0.2784313725490196, 0.30980392156862746], 164: [0.8470588235294118, 0.2627450980392157, 0.08235294117647059], 165: [0.25882352941176473, 0.25882352941176473, 0.25882352941176473], 166: [0.0, 0.5137254901960784, 0.5607843137254902], 167: [0.27058823529411763, 0.15294117647058825, 0.6274509803921569], 168: [0.41568627450980394, 0.10588235294117647, 0.6039215686274509], 169: [0.0, 0.4117647058823529, 0.3607843137254902], 170: [0.3333333333333333, 0.5450980392156862, 0.1843137254901961], 171: [0.9019607843137255, 0.3176470588235294, 0.0], 172: [0.10196078431372549, 0.13725490196078433, 0.49411764705882355], 173: [0.7176470588235294, 0.10980392156862745, 0.10980392156862745], 174: [0.9607843137254902, 0.4980392156862745, 0.09019607843137255], 175: [0.10588235294117647, 0.3686274509803922, 0.12549019607843137], 176: [0.24313725490196078, 0.15294117647058825, 0.13725490196078433], 177: [0.050980392156862744, 0.2784313725490196, 0.6313725490196078], 178: [1.0, 0.43529411764705883, 0.0], 179: [0.5333333333333333, 0.054901960784313725, 0.30980392156862746], 180: [0.00392156862745098, 0.3411764705882353, 0.6078431372549019], 181: [0.5098039215686274, 0.4666666666666667, 0.09019607843137255], 182: [0.14901960784313725, 0.19607843137254902, 0.2196078431372549], 183: [0.7490196078431373, 0.21176470588235294, 0.047058823529411764], 184: [0.12941176470588237, 0.12941176470588237, 0.12941176470588237], 185: [0.0, 0.3764705882352941, 0.39215686274509803], 186: [0.19215686274509805, 0.10588235294117647, 0.5725490196078431], 187: [0.2901960784313726, 0.0784313725490196, 0.5490196078431373], 188: [0.0, 0.30196078431372547, 0.25098039215686274], 189: [0.2, 0.4117647058823529, 0.11764705882352941]}, real_time=False, bg_color=None, ve=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization" title="Permalink to this definition">¶</a></dt>
 <dd><p>Class to visualize data and results in 3D. Init will create all the render properties while the method render
 model will lunch the window. Using set_interfaces, set_orientations and set_surfaces in between can be chosen what
 will be displayed.</p>
@@ -2439,8 +2137,8 @@ will be displayed.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>geo_data</strong> (<em>gempy.InputData</em>) – All values of a DataManagement object</li>
-<li><strong>ren_name</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Name of the renderer window</li>
-<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Verbosity for certain functions</li>
+<li><strong>ren_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Name of the renderer window</li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Verbosity for certain functions</li>
 </ul>
 </td>
 </tr>
@@ -2476,13 +2174,13 @@ will be displayed.</p>
 <li><strong>X</strong> – X coord</li>
 <li><strong>Y</strong> – Y coord</li>
 <li><strong>Z</strong> – Z corrd</li>
-<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Formation number</li>
-<li><strong>Gx</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Component of the gradient x</li>
-<li><strong>Gy</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Component of the gradient y</li>
-<li><strong>Gz</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – Component of the gradient z</li>
-<li><strong>n_plane</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of the plane</li>
-<li><strong>n_render</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Number of the render where the plane belongs</li>
-<li><strong>n_index</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – index value in the PandasDataframe of InupData.interfaces</li>
+<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Formation number</li>
+<li><strong>Gx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Component of the gradient x</li>
+<li><strong>Gy</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Component of the gradient y</li>
+<li><strong>Gz</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Component of the gradient z</li>
+<li><strong>n_plane</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Number of the plane</li>
+<li><strong>n_render</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Number of the render where the plane belongs</li>
+<li><strong>n_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – index value in the PandasDataframe of InupData.interfaces</li>
 <li><strong>alpha</strong> – Opacity of the plane</li>
 </ul>
 </td>
@@ -2540,8 +2238,8 @@ will be displayed.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>vertices</strong> (<em>numpy.array</em>) – 2D array (XYZ) with the coordinates of the points</li>
 <li><strong>simplices</strong> (<em>numpy.array</em>) – 2D array with the value of the vertices that form every single triangle</li>
-<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#int" title="(in Python v2.7)"><em>int</em></a>) – Formation number</li>
-<li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#float" title="(in Python v2.7)"><em>float</em></a>) – Opacity</li>
+<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Formation number</li>
+<li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Opacity</li>
 </ul>
 </td>
 </tr>
@@ -2552,9 +2250,9 @@ will be displayed.</p>
 </table>
 </dd></dl>
 
-<dl class="staticmethod">
+<dl class="method">
 <dt id="visualization.vtkVisualization.create_surface_points">
-<em class="property">static </em><code class="descname">create_surface_points</code><span class="sig-paren">(</span><em>vertices</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.create_surface_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.create_surface_points" title="Permalink to this definition">¶</a></dt>
+<code class="descname">create_surface_points</code><span class="sig-paren">(</span><em>vertices</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.create_surface_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.create_surface_points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to create the points that form the surfaces
 :param vertices: 2D array (XYZ) with the coordinates of the points
 :type vertices: numpy.array</p>
@@ -2597,7 +2295,7 @@ will be displayed.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>geo_data</strong> (<em>gempy.InputData</em>) – All values of a DataManagement object</li>
 <li><strong>block</strong> (<em>numpy.array</em>) – 3D array containing the lithology block</li>
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the location of the vtk</li>
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to the location of the vtk</li>
 </ul>
 </td>
 </tr>
@@ -2619,7 +2317,7 @@ will be displayed.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>geo_data</strong> (<em>gempy.InputData</em>) – All values of a DataManagement object</li>
 <li><strong>block</strong> (<em>numpy.array</em>) – 3D array containing the lithology block</li>
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#str" title="(in Python v2.7)"><em>str</em></a>) – path to the location of the vtk</li>
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to the location of the vtk</li>
 </ul>
 </td>
 </tr>
@@ -2646,8 +2344,8 @@ update the pandas data frame</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#tuple" title="(in Python v2.7)"><em>tuple</em></a>) – Resolution of the window</li>
-<li><strong>fullscreen</strong> (<a class="reference external" href="https://docs.python.org/2/library/functions.html#bool" title="(in Python v2.7)"><em>bool</em></a>) – Launch window in full screen or not</li>
+<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)"><em>tuple</em></a>) – Resolution of the window</li>
+<li><strong>fullscreen</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Launch window in full screen or not</li>
 </ul>
 </td>
 </tr>
@@ -2697,10 +2395,10 @@ render_model</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>vertices</strong> (<em>list</em>) – list of 3D numpy arrays containing the points that form each plane</li>
-<li><strong>simplices</strong> (<em>list</em>) – list of 3D numpy arrays containing the verticies that form every triangle</li>
-<li><strong>formations</strong> (<em>list</em>) – ordered list of strings containing the name of the formations to represent</li>
-<li><strong>fns</strong> (<em>list</em>) – ordered list of formation numbers (int)</li>
+<li><strong>vertices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – list of 3D numpy arrays containing the points that form each plane</li>
+<li><strong>simplices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – list of 3D numpy arrays containing the verticies that form every triangle</li>
+<li><strong>formations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – ordered list of strings containing the name of the formations to represent</li>
+<li><strong>fns</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – ordered list of formation numbers (int)</li>
 <li><strong>alpha</strong> – Opacity of the plane</li>
 </ul>
 </td>
@@ -2716,7 +2414,7 @@ render_model</p>
 <dt id="visualization.vtkVisualization.sphereCallback">
 <code class="descname">sphereCallback</code><span class="sig-paren">(</span><em>obj</em>, <em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.sphereCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.sphereCallback" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that rules what happens when we move a sphere. At the moment we update the other 3 renderers and
-update the pandas data frame</p>
+update the pandas data frame.</p>
 </dd></dl>
 
 </dd></dl>
@@ -2731,9 +2429,9 @@ update the pandas data frame</p>
         <div class="sphinxsidebarwrapper">
 <h3><a href="index.html">Table Of Contents</a></h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to GemPy’s (v 0.9) documentation!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Kriging.html">Kriging structure of the <em>Potential field method</em></a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to GemPy’s (v 1.0) documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Code</a><ul class="simple">
 </ul>
 </li>
@@ -2742,7 +2440,7 @@ update the pandas data frame</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="Notebooks/ch6.html" title="previous chapter">Tutorial Chapter 6: Analyzing Topology (WIP)</a></li>
+      <li>Previous: <a href="gempy.html" title="previous chapter">Motivation</a></li>
   </ul></li>
 </ul>
 </div>

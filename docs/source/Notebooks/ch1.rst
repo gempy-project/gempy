@@ -1,52 +1,142 @@
 
-Chapter 1: GemPy Basic
-======================
+Chapter 1: Basics of geological modeling with GemPy
+===================================================
 
-In this first example, we will show how to construct a first basic model
-and the main objects and functions. First we import gempy:
+--------------
+
+In this first chapter, we will guide through the most important steps of
+modeling with GemPy on the base of a relatively simple geological model,
+while introducing essential objects and functions. We will illustrate
+how to: - import and create input data for modeling in GemPy - return
+and visualize input data - generate a 3D geological model in GemPy -
+visualize a model directly in GemPy
+
+The example model: Simple stratigraphy and one fault
+----------------------------------------------------
+
+Our synthetic example model is defined to be cubic, with an extent of
+2000 m in every direction of the 3D space. Lithologically, it includes
+five stratigraphic units of sedimentary origin. Here, we list them from
+top (youngest) to bottom (oldest):
+
+-  Sandstone (2)
+-  Siltstone
+-  Shale
+-  Sandstone (1)
+-  Basement (undefined, default by GemPy)
+
+We assume that these were simply deposited in consequential order and
+deformed (tilted and folded) afterwards. Additionally, they are
+displaced by a continuous normal fault. The final modeling results
+should look somewhat like this, depending on the type of visualization:
+
+.. figure:: ../../readme_images/model_example_duo.png
+    :alt: alternate text
+
+    figure are like images but with a caption
+
+As this example involves a simple sequence of layers and only one fault,
+it provides an adequate level of complexity to introduce the basics of
+modeling with GemPy. At the end of this chapter, we will show some model
+variations and how the modeling workflow has to be adapted accordingly.
+
+Preparing the Python environment
+--------------------------------
+
+For modeling with GemPy, we first need to import it. We should also
+import any other packages we want to utilize in our Python
+environment.Typically, we will also require ``NumPy`` and ``Matplotlib``
+when working with GemPy. At this point, we can further customize some
+settings as desired, e.g. the size of figures or, as we do here, the way
+that ``Matplotlib`` figures are displayed in our notebook
+(``%matplotlib inline``).
 
 .. code:: ipython3
 
-    # These two lines are necessary only if gempy is not installed
+    # These two lines are necessary only if GemPy is not installed
     import sys, os
-    sys.path.append("../")
+    #sys.path.append("../..")
+    os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
     
-    # Importing gempy
+    # Importing GemPy
     import gempy as gp
     
-    # Embedding matplotlib figures into the notebooks
+    # Embedding matplotlib figures in the notebooks
     %matplotlib inline
     
-    # Aux imports
+    # Importing auxiliary libraries
     import numpy as np
+    import matplotlib.pyplot as plt
 
-All data get stored in a python object InputData. This object can be
-easily stored in a Python pickle. However, these files have the
-limitation that all dependecies must have the same versions as those
-when the pickle were created. For these reason to have more stable
-tutorials we will generate the InputData from raw data---i.e. csv files
-exported from Geomodeller.
 
-These csv files can be found in the input\_data folder in the root
-folder of GemPy. These tables contains uniquely the XYZ (and poles,
-azimuth and polarity in the foliation case) as well as their respective
-formation name (but not necessary the formation order).
+.. parsed-literal::
+
+    /home/miguel/anaconda3/envs/py35/lib/python3.5/site-packages/gempy/visualization.py:31: UserWarning: Vtk package is not installed. No vtk visualization available.
+      warnings.warn('Vtk package is not installed. No vtk visualization available.')
+    WARNING (theano.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+    /home/miguel/anaconda3/envs/py35/lib/python3.5/site-packages/gempy/posterior_analysis.py:24: UserWarning: pymc (v2) package is not installed. No support for stochastic simulation posterior analysis.
+      warnings.warn("pymc (v2) package is not installed. No support for stochastic simulation posterior analysis.")
+
+
+Importing and creating a set of input data
+------------------------------------------
+
+The data used for the construction of a model in GemPy is stored in a
+Python object called ``InputData``.
+
+In principle, the input data can be stored in the form of a Python
+`pickle <https://docs.python.org/3/library/pickle.html>`__. However,
+module version consistency is required. For loading a pickle into GemPy,
+you have to make sure that you are using the same version of pickle and
+dependent modules (e.g.: ``Pandas``, ``NumPy``) as were used when the
+data was originally stored.
+
+``InputData`` can also be generated from raw data that comes in the form
+of CSV-files (CSV = comma-separated values). Such files might be
+attained by exporting model data from a different program such as
+GeoModeller or by simply creating it in spreadsheet software such as
+Microsoft Excel or LibreOffice Calc.
+
+In this tutorial, all input data is created by importing such CSV-files.
+These exemplary files can be found in the ``input_data`` folder in the
+root folder of GemPy. The data comprises :math:`x`-, :math:`y`- and
+:math:`z`-positional values for all surface points and orientation
+measurements. For the latter, poles, azimuth and polarity are
+additionally included. Surface points are furthermore assigned a
+formation. This might be a lithological unit such as "Sandstone" or a
+structural feature such as "Main Fault". It is decisive to remember
+that, in GemPy, interface position points mark the **bottom** of a
+layer. If such points are needed to resemble a top of a formation (e.g.
+when modeling an intrusion), this can be achieved by defining a
+respectively inverted orientation measurement.
+
+As we generate our ``InputData`` from CSV-files, we also have to define
+our model's real extent in :math:`x`, :math:`y` and :math:`z`, as well
+as declare a desired resolution for each axis. This resolution will in
+turn determine the number of voxels used during modeling. Here, we rely
+on a medium resolution of 50x50x50, amounting to 125,000 voxels. The
+model extent should be chosen in a way that it contains all relevant
+data in a representative space. As our model voxels are not cubes, but
+prisms, the resolution can take a different shape than the extent. We
+don't recommend going much higher than 100 cells in every direction
+(1,000,000 voxels), as higher resolutions will become increasingly
+difficult to compute.
 
 .. code:: ipython3
 
-    # Importing the data from csv files and settign extent and resolution
-    geo_data = gp.create_data([0,2000,0,2000,-2000,0],[ 50,50,50],
-                             path_f = os.pardir+"/input_data/FabLessPoints_Foliations.csv",
-                             path_i = os.pardir+"/input_data/FabLessPoints_Points.csv")
+    # Importing the data from CSV-files and setting extent and resolution
+    geo_data = gp.create_data([0,2000,0,2000,0,2000],[100,100,100], 
+                              path_o = os.pardir+"/input_data/tut_chapter1/simple_fault_model_orientations.csv", # importing orientation (foliation) data
+                              path_i = os.pardir+"/input_data/tut_chapter1/simple_fault_model_points.csv") # importing point-positional interface data
 
-With the command get data is possible to see all the input data.
-However, at the moment the (depositional) order of the formation and the
-separation of the series (More explanation about this in the next
-notebook) is totally arbitrary.
+
+The input data can then be listed using the command ``get_data``. Note
+that the order of formations and respective allocation to series is
+still completely arbitrary. We will fix this in the following.
 
 .. code:: ipython3
 
-    gp.get_data(geo_data).head()
+    gp.get_data(geo_data)
 
 
 
@@ -54,17 +144,17 @@ notebook) is totally arbitrary.
 .. raw:: html
 
     <div>
-    <style>
-        .dataframe thead tr:only-child th {
-            text-align: right;
-        }
-    
-        .dataframe thead th {
-            text-align: left;
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
         }
     
         .dataframe tbody tr th {
             vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
         }
     </style>
     <table border="1" class="dataframe">
@@ -72,6 +162,9 @@ notebook) is totally arbitrary.
         <tr style="text-align: right;">
           <th></th>
           <th></th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
           <th>X</th>
           <th>Y</th>
           <th>Z</th>
@@ -84,59 +177,845 @@ notebook) is totally arbitrary.
       </thead>
       <tbody>
         <tr>
-          <th rowspan="5" valign="top">interfaces</th>
+          <th rowspan="57" valign="top">interfaces</th>
           <th>0</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
           <td>800</td>
-          <td>200</td>
-          <td>-1400</td>
+          <td>50</td>
+          <td>750</td>
           <td>NaN</td>
           <td>NaN</td>
-          <td>Reservoir</td>
+          <td>Shale</td>
           <td>NaN</td>
           <td>Default serie</td>
         </tr>
         <tr>
           <th>1</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
           <td>800</td>
-          <td>1800</td>
-          <td>-1400</td>
+          <td>150</td>
+          <td>700</td>
           <td>NaN</td>
           <td>NaN</td>
-          <td>Reservoir</td>
+          <td>Shale</td>
           <td>NaN</td>
           <td>Default serie</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>600</td>
-          <td>1000</td>
-          <td>-1050</td>
           <td>NaN</td>
           <td>NaN</td>
-          <td>Reservoir</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>300</td>
+          <td>700</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Shale</td>
           <td>NaN</td>
           <td>Default serie</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>300</td>
-          <td>1000</td>
-          <td>-950</td>
           <td>NaN</td>
           <td>NaN</td>
-          <td>Reservoir</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>500</td>
+          <td>800</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Shale</td>
           <td>NaN</td>
           <td>Default serie</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>2000</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>800</td>
           <td>1000</td>
-          <td>-1275</td>
+          <td>1000</td>
           <td>NaN</td>
           <td>NaN</td>
-          <td>Reservoir</td>
+          <td>Shale</td>
           <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>1500</td>
+          <td>700</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Shale</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>1700</td>
+          <td>600</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Shale</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>1950</td>
+          <td>650</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Shale</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>8</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>0</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Shale</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>300</td>
+          <td>1000</td>
+          <td>1000</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Shale</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>10</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>450</td>
+          <td>1000</td>
+          <td>950</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Shale</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>11</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1100</td>
+          <td>1000</td>
+          <td>900</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Shale</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>12</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1400</td>
+          <td>1000</td>
+          <td>850</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Shale</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>13</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1700</td>
+          <td>1000</td>
+          <td>900</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Shale</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>14</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1500</td>
+          <td>500</td>
+          <td>800</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Shale</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>15</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1500</td>
+          <td>1500</td>
+          <td>750</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Shale</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>16</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1500</td>
+          <td>1500</td>
+          <td>450</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>17</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1500</td>
+          <td>500</td>
+          <td>500</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>18</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1700</td>
+          <td>1000</td>
+          <td>600</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>19</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1100</td>
+          <td>1000</td>
+          <td>600</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>20</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>50</td>
+          <td>450</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>21</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>150</td>
+          <td>400</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>22</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>300</td>
+          <td>400</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>23</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>500</td>
+          <td>500</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>24</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>1000</td>
+          <td>700</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>25</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>1500</td>
+          <td>400</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>26</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>1700</td>
+          <td>300</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>27</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>1950</td>
+          <td>350</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>28</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>0</td>
+          <td>1000</td>
+          <td>800</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>29</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>300</td>
+          <td>1000</td>
+          <td>700</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>30</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1400</td>
+          <td>1000</td>
+          <td>550</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_1</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>31</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>900</td>
+          <td>150</td>
+          <td>920</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Siltstone</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>32</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>900</td>
+          <td>300</td>
+          <td>920</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Siltstone</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>33</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>900</td>
+          <td>1500</td>
+          <td>920</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Siltstone</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>34</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>900</td>
+          <td>1700</td>
+          <td>820</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Siltstone</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>35</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>900</td>
+          <td>1950</td>
+          <td>870</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Siltstone</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>36</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>0</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Siltstone</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>37</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>300</td>
+          <td>1000</td>
+          <td>1200</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Siltstone</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>38</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>600</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Siltstone</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>39</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1100</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Siltstone</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>40</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1400</td>
+          <td>1000</td>
+          <td>1050</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Siltstone</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>41</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1700</td>
+          <td>1000</td>
+          <td>1100</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Siltstone</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>42</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1500</td>
+          <td>500</td>
+          <td>1000</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Siltstone</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>43</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1500</td>
+          <td>1500</td>
+          <td>950</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Siltstone</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>44</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>0</td>
+          <td>1000</td>
+          <td>1500</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_2</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>45</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>300</td>
+          <td>1000</td>
+          <td>1400</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_2</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>46</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>600</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_2</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>47</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1100</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_2</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>48</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1400</td>
+          <td>1000</td>
+          <td>1250</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_2</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>49</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1700</td>
+          <td>1000</td>
+          <td>1300</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_2</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>50</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1500</td>
+          <td>500</td>
+          <td>1200</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_2</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>51</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1500</td>
+          <td>1500</td>
+          <td>1150</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Sandstone_2</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>52</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>700</td>
+          <td>1000</td>
+          <td>900</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Main_Fault</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>53</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>600</td>
+          <td>1000</td>
+          <td>600</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Main_Fault</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>54</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>500</td>
+          <td>1000</td>
+          <td>300</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Main_Fault</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>55</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>800</td>
+          <td>1000</td>
+          <td>1200</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Main_Fault</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>56</th>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>900</td>
+          <td>1000</td>
+          <td>1500</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>Main_Fault</td>
+          <td>NaN</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th rowspan="3" valign="top">orientations</th>
+          <th>0</th>
+          <td>0.316229</td>
+          <td>1e-07</td>
+          <td>0.948683</td>
+          <td>1000</td>
+          <td>1000</td>
+          <td>950</td>
+          <td>90</td>
+          <td>18.435</td>
+          <td>Shale</td>
+          <td>1</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0.316229</td>
+          <td>1e-07</td>
+          <td>0.948683</td>
+          <td>400</td>
+          <td>1000</td>
+          <td>1400</td>
+          <td>90</td>
+          <td>18.435</td>
+          <td>Sandstone_2</td>
+          <td>1</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>-0.948683</td>
+          <td>1e-07</td>
+          <td>0.316229</td>
+          <td>500</td>
+          <td>1000</td>
+          <td>864.602</td>
+          <td>270</td>
+          <td>71.565</td>
+          <td>Main_Fault</td>
+          <td>1</td>
           <td>Default serie</td>
         </tr>
       </tbody>
@@ -145,92 +1024,121 @@ notebook) is totally arbitrary.
 
 
 
-To set the number of (depositional) series and which formation belongs
-to which, it is possible to use the function set\_series. Here, there
-are two important things to notice:
+Declaring the sequential order of geological formations
+-------------------------------------------------------
 
--  set\_series requires a dictionary. In Python dictionaries are not
-   order (keys dictionaries since Python 3.6 are) and therefore there is
-   not guarantee of having the right order.
+We want our geological units to appear in the correct order relative to
+age. Such order might for example be given by a depositional sequence of
+stratigraphy, unconformities due to erosion or other lithological
+genesis events such as igneous intrusions. A similar age-related order
+is to be declared for the faults in our model. In GemPy, the function
+*set\_series* is used to assign formations to different sequential
+series via declaration in a Python dictionary.
 
-   -  The order of the series are vital for the method (from younger to
-      older).
-   -  The order of the formations (as long they belong to the correct
-      series) are only important for the color code. If the order of the
-      pile differs from the final result the color of the interfaces and
-      input data will be different
+Defining the correct order of series is vital to the construction of the
+model! If you are using Python 3.6, the age-related order will already
+be defined by the order of key entries, i.e. the first entry is the
+youngest series, the last one the oldest. For older versions of Python,
+you will have to specify the correct order as a separate list attribute
+"*order\_series*" (see cell below).
 
--  Every fault is treated as an independent series and **have to be at
-   the top of the pile**. The relative order between the distinct faults
-   represent the tectonic relation between them (from younger to older
-   as well).
+You can assign several formations to one series. The order of the units
+within such as series is only relevant for the color code, thus we
+recommend to be consistent. You can define this order via another
+attribute "*order\_formations*" or by using the specific command
+*set\_order\_formations*. (If the order of the pile differs from the
+final result the color of the interfaces and input data will be
+different. ?)
 
-The order of the series (for Python < 3.6, otherwise passing the correct
-order of keys in the dictionary is enough) can be given as attribute as
-in the cell below. For the order of formations can be passed as
-attribute as well or using the specific function set\_order\_formations.
+Every fault is treated as an independent series and have to be at set at
+the **top of the pile**. The relative order between the distinct faults
+defines the tectonic relation between them (first entry is the
+youngest).
+
+In a model with simple sequential stratigraphy, all layer formations can
+be assigned to one single series without a problem. All unit boundaries
+and their order would then be given by interface points. However, to
+model more complex lithostratigraphical relations and interactions, the
+definition of separate series becomes important. For example, you would
+need to declare a "newer" series to model an unconformity or an
+intrusion that disturbs older stratigraphy.
+
+Our example model comprises four main layers (plus an underlying
+basement that is automatically generated by GemPy) and one main normal
+fault displacing those layers. Assuming a simple stratigraphy where each
+younger unit was deposited onto the underlying older one, we can assign
+these layer formations to one series called "Strat\_Series". For the
+fault, we declare a respective "Fault\_Series" as the first key entry in
+the ``set_series`` dictionary. We could give any other names to these
+series, the formations however have to be referred to as named in the
+input data.
 
 .. code:: ipython3
 
     # Assigning series to formations as well as their order (timewise)
-    gp.set_series(geo_data, {"fault":'MainFault', 
-                          "Rest": ('SecondaryReservoir','Seal', 'Reservoir', 'Overlying')},
-                           order_series = ["fault", 'Rest'],
-                           order_formations=['MainFault', 
-                                             'SecondaryReservoir', 'Seal','Reservoir', 'Overlying',
-                                             ]) 
+    gp.set_series(geo_data, {"Fault_Series":'Main_Fault', 
+                          "Strat_Series": ('Sandstone_2','Siltstone', 'Shale', 'Sandstone_1')},
+                           order_series = ["Fault_Series", 'Strat_Series'],
+                           order_formations=['Main_Fault', 
+                                             'Sandstone_2','Siltstone', 'Shale', 'Sandstone_1',
+                                             ], verbose=0) 
+    
+    # unconformity model:
+    #gp.set_series(geo_data, {"Fault_Series":'Main_Fault', "Unconf_Series":'Carbonate',
+    #                      "Strat_Series": ('Sandstone_2','Siltstone', 'Shale', 'Sandstone_1')},
+    #                       order_series = ["Fault_Series", "Unconf_Series", 'Strat_Series'],
+    #                       order_formations=['Main_Fault', 'Carbonate',
+    #                                         'Sandstone_2','Siltstone', 'Shale', 'Sandstone_1',
+    #                                         ], verbose=0) 
 
+The sequence of geoligical series and assigned formations can be
+visualized using the function ``get_sequential_pile``. Using a backend
+such as ``%matplotlib notebook`` or ``%matplotlib qt5``, the figure
+generated by this function becomes interactive, i.e. you can change the
+order of series and formations by hand (via ``%matplotlib inline``, the
+figure remains static). You can also re-assign a formation to a
+different series.
 
-
-
-.. parsed-literal::
-
-    <gempy.strat_pile.StratigraphicPile at 0x7fc4b52bff98>
-
-
-
-
-.. image:: ch1_files/ch1_7_1.png
-
-
-As an alternative the stratigraphic pile is interactive given the right
-backend (try %matplotlib notebook or %matplotlib qt5). These backends
-sometimes give some trouble though. Try to execute the cell twice:
+If the backend doen't seem to work properly right away, try executing
+the cell twice.
 
 .. code:: ipython3
 
-    %matplotlib notebook
-    gp.get_stratigraphic_pile(geo_data)
-
-
-
-.. parsed-literal::
-
-    <IPython.core.display.Javascript object>
-
-
-
-.. raw:: html
-
-    <img src="data:image/png;base64,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" width="747.9999777078635">
+    %matplotlib inline
+    gp.get_sequential_pile(geo_data)
 
 
 
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7fc4b51316a0>
+    <gempy.sequential_pile.StratigraphicPile at 0x7f3eafc59898>
 
 
 
-Notice that the colors depends on the order and therefore every time the
-cell is executed the colors are always in the same position. Be aware of
-the legend to be sure that the pile is as you wish!! (In the future
-every color will have the annotation within the rectangles to avoid
-confusion)
 
-This geo\_data object contains essential information that we can access
-through the correspondent getters. Such a the coordinates of the grid.
+.. image:: ch1_files/ch1_9_1.png
+
+
+Notice that the colors are order-dependent, i.e. they will remain in the
+same order every time the cell is executed, irrespective of
+re-assignment of formations. To make sure that every unit is in its
+right place, take a look at the legend on the right. If it doesn't show
+at first, try dragging the right edge to resize the figure. The legend
+will always show you the color currently assigned to a formation (in the
+future, every color will have the annotation within its rectangle to
+avoid confusion).
+
+Returning information from our input data
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Our model input data, here named "*geo\_data*", contains all the
+information that is essential for the construction of our model. You can
+access different types of information by using correspondent "*get*"
+functions.
+
+We can, for example, return the coordinates of our modeling grid via
+*get\_grid*:
 
 .. code:: ipython3
 
@@ -239,21 +1147,29 @@ through the correspondent getters. Such a the coordinates of the grid.
 
 .. parsed-literal::
 
-    [[    0.             0.         -2000.        ]
-     [    0.             0.         -1959.18371582]
-     [    0.             0.         -1918.36730957]
+    [[   10.    10.    10.]
+     [   10.    10.    30.]
+     [   10.    10.    50.]
      ..., 
-     [ 2000.          2000.           -81.63265228]
-     [ 2000.          2000.           -40.81632614]
-     [ 2000.          2000.             0.        ]]
+     [ 1990.  1990.  1950.]
+     [ 1990.  1990.  1970.]
+     [ 1990.  1990.  1990.]]
 
 
-The main input the potential field method is the coordinates of
-interfaces points as well as the orientations. These pandas dataframes
-can we access by the following methods:
+As mentioned before, GemPy's core algorithm is based on interpolation of
+two types of data: - interface (or surface) points and - orientation
+measurements
 
-Interfaces Dataframe
-^^^^^^^^^^^^^^^^^^^^
+(if you want to know more on how this this interpolation algorithm
+works, checkout our chapter on the theory behind GemPy).
+
+We introduced the function *get\_data* above. You can also specify which
+kind of data you want to call, by declaring the string attribute
+"*dtype*" to be either "interfaces" (surface points) or "foliations"
+(orientation measurements).
+
+Interfaces Dataframe:
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
@@ -265,17 +1181,17 @@ Interfaces Dataframe
 .. raw:: html
 
     <div>
-    <style>
-        .dataframe thead tr:only-child th {
-            text-align: right;
-        }
-    
-        .dataframe thead th {
-            text-align: left;
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
         }
     
         .dataframe tbody tr th {
             vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
         }
     </style>
     <table border="1" class="dataframe">
@@ -292,43 +1208,43 @@ Interfaces Dataframe
       <tbody>
         <tr>
           <th>0</th>
+          <td>900</td>
           <td>1000</td>
-          <td>1000</td>
-          <td>-1000</td>
-          <td>MainFault</td>
-          <td>fault</td>
+          <td>1500</td>
+          <td>Main_Fault</td>
+          <td>Fault_Series</td>
         </tr>
         <tr>
           <th>1</th>
-          <td>800</td>
+          <td>700</td>
           <td>1000</td>
-          <td>-1600</td>
-          <td>MainFault</td>
-          <td>fault</td>
+          <td>900</td>
+          <td>Main_Fault</td>
+          <td>Fault_Series</td>
         </tr>
         <tr>
           <th>2</th>
-          <td>1200</td>
+          <td>800</td>
           <td>1000</td>
-          <td>-400</td>
-          <td>MainFault</td>
-          <td>fault</td>
+          <td>1200</td>
+          <td>Main_Fault</td>
+          <td>Fault_Series</td>
         </tr>
         <tr>
           <th>3</th>
-          <td>1100</td>
+          <td>500</td>
           <td>1000</td>
-          <td>-700</td>
-          <td>MainFault</td>
-          <td>fault</td>
+          <td>300</td>
+          <td>Main_Fault</td>
+          <td>Fault_Series</td>
         </tr>
         <tr>
           <th>4</th>
-          <td>900</td>
+          <td>600</td>
           <td>1000</td>
-          <td>-1300</td>
-          <td>MainFault</td>
-          <td>fault</td>
+          <td>600</td>
+          <td>Main_Fault</td>
+          <td>Fault_Series</td>
         </tr>
       </tbody>
     </table>
@@ -336,14 +1252,12 @@ Interfaces Dataframe
 
 
 
-Foliations Dataframe
-^^^^^^^^^^^^^^^^^^^^
-
-Now the formations and the series are correctly set.
+Foliations Dataframe:
+^^^^^^^^^^^^^^^^^^^^^
 
 .. code:: ipython3
 
-    gp.get_data(geo_data, 'foliations').head()
+    gp.get_data(geo_data, 'orientations')
 
 
 
@@ -351,17 +1265,17 @@ Now the formations and the series are correctly set.
 .. raw:: html
 
     <div>
-    <style>
-        .dataframe thead tr:only-child th {
-            text-align: right;
-        }
-    
-        .dataframe thead th {
-            text-align: left;
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
         }
     
         .dataframe tbody tr th {
             vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
         }
     </style>
     <table border="1" class="dataframe">
@@ -371,6 +1285,9 @@ Now the formations and the series are correctly set.
           <th>X</th>
           <th>Y</th>
           <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
           <th>dip</th>
           <th>azimuth</th>
           <th>polarity</th>
@@ -381,25 +1298,45 @@ Now the formations and the series are correctly set.
       <tbody>
         <tr>
           <th>0</th>
-          <td>917.45</td>
+          <td>500</td>
           <td>1000</td>
-          <td>-1135.4</td>
+          <td>864.602</td>
+          <td>-0.948683</td>
+          <td>1e-07</td>
+          <td>0.316229</td>
           <td>71.565</td>
           <td>270</td>
           <td>1</td>
-          <td>MainFault</td>
-          <td>fault</td>
+          <td>Main_Fault</td>
+          <td>Fault_Series</td>
         </tr>
         <tr>
-          <th>1</th>
-          <td>1450</td>
+          <th>2</th>
+          <td>400</td>
           <td>1000</td>
-          <td>-1150</td>
+          <td>1400</td>
+          <td>0.316229</td>
+          <td>1e-07</td>
+          <td>0.948683</td>
           <td>18.435</td>
           <td>90</td>
           <td>1</td>
-          <td>Reservoir</td>
-          <td>Rest</td>
+          <td>Sandstone_2</td>
+          <td>Strat_Series</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>1000</td>
+          <td>1000</td>
+          <td>950</td>
+          <td>0.316229</td>
+          <td>1e-07</td>
+          <td>0.948683</td>
+          <td>18.435</td>
+          <td>90</td>
+          <td>1</td>
+          <td>Shale</td>
+          <td>Strat_Series</td>
         </tr>
       </tbody>
     </table>
@@ -407,15 +1344,17 @@ Now the formations and the series are correctly set.
 
 
 
-It is important to notice the columns of each data frame. These not only
-contains the geometrical properties of the data but also the
-**formation** and **series** at which they belong. This division is
-fundamental in order to preserve the depositional ages of the setting to
-model.
+Notice that now all **formations** have been assigned to a **series**
+and are displayed in the correct order (from young to old).
 
-A projection of the aforementioned data can be visualized in to 2D by
-the following function. It is possible to choose the direction of
-visualization as well as the series:
+Visualizing input data
+~~~~~~~~~~~~~~~~~~~~~~
+
+We can also visualize our input data. This might for example be useful
+to check if all points and measurements are defined the way we want them
+to. Using the function *plot\_data*, we attain a 2D projection of our
+data points onto a plane of chosen *direction* (we can choose this
+attribute to be either :math:`x`, :math:`y` or :math:`z`).
 
 .. code:: ipython3
 
@@ -424,45 +1363,73 @@ visualization as well as the series:
 
 
 
-.. image:: ch1_files/ch1_19_0.png
+.. image:: ch1_files/ch1_18_0.png
 
 
-GemPy supports visualization in 3D as well trough vtk. These plots are
-interactive. Try to drag and drop a point or interface! In the
-perpendicular views only 2D movements are possible to help to place the
-data where is required.
+Using *plot\_data\_3D*, we can also visualize this data in 3D. Note that
+direct 3D visualization in GemPy requires `the Visualization
+Toolkit <https://www.vtk.org/>`__ (VTK) to be installed.
+
+All 3D VTK plots in GemPy are interactive. This means that we can drag
+and drop any data poit and measurement. The perpendicular axis views in
+VTK are particularly useful to move points solely on a desired 2D plane.
+Any changes will then be stored permanently in the "InputData"
+dataframe. If we want to reset our data points, we will then need to
+reload our original input data.
+
+Executing the cell below will open a new window with a 3D interactive
+plot of our data.
 
 .. code:: ipython3
 
     gp.plot_data_3D(geo_data)
 
-The ins and outs of Input data objects
---------------------------------------
+Model generation
+~~~~~~~~~~~~~~~~
 
-As we have seen objects DataManagement.InputData (usually called
-geo\_data in the tutorials) aim to have all the original geological
-properties, measurements and geological relations stored.
+Once we have made sure that we have defined all our primary information
+as desired in our object ``DataManagement.InputData`` (named
+``geo_data`` in these tutorials), we can continue with the next step
+towards creating our geological model: preparing the input data for
+interpolation.
 
-Once we have the data ready to generate a model, we will need to create
-the next object type towards the final geological model:
+This is done by generating an ``InterpolatorInput`` object (named
+``interp_data`` in these tutorials) from our ``InputData`` object via
+the following function:
 
 .. code:: ipython3
 
-    interp_data = gp.InterpolatorInput(geo_data, u_grade=[3,3])
-    print(interp_data)
+    interp_data = gp.InterpolatorData(geo_data, u_grade=[1,1], output='geology', compile_theano=True, theano_optimizer='fast_compile')
+    #print(interp_data)
 
 
 .. parsed-literal::
 
-    Level of Optimization:  fast_run
+    Compiling theano function...
+    Compilation Done!
+    Level of Optimization:  fast_compile
     Device:  cpu
     Precision:  float32
-    <gempy.DataManagement.InterpolatorInput object at 0x7fc4b505e2e8>
+    Number of faults:  1
 
+
+This function rescales the extent and coordinates of the original data
+and adds mathematical parameters that are needed for conducting the
+interpolation. The computation of this step may take a while, as it also
+compiles a theano function which is required for the model computation.
+However, should this not be needed, we can skip it by declaring
+``compile_theano = False`` in the function.
+
+Furthermore, this preparation process includes an assignment of numbers
+to each formation. Note that GemPy's always creates a default basement
+formation as "0". Afterwards, numbers are allocated from youngest to
+oldest as defined by the sequence of series and formations. Using
+``get_formation_number()`` on our interpolation data, we can find out
+which number has been assigned to which formation:
 
 .. code:: ipython3
 
-    interp_data.get_formation_number()
+    interp_data.geo_data_res.get_formation_number()
 
 
 
@@ -470,99 +1437,221 @@ the next object type towards the final geological model:
 .. parsed-literal::
 
     {'DefaultBasement': 0,
-     'MainFault': 1,
-     'Overlying': 5,
-     'Reservoir': 4,
-     'Seal': 3,
-     'SecondaryReservoir': 2}
+     'Main_Fault': 1,
+     'Sandstone_1': 5,
+     'Sandstone_2': 2,
+     'Shale': 4,
+     'Siltstone': 3}
 
 
 
-By default (there is a flag in case you do not need) when we create a
-interp\_data object we also compile the theano function that compute the
-model. That is the reason why takes long.
-
-gempy.DataManagement.InterpolatorInput (usually called interp\_data in
-the tutorials) prepares the original data to the interpolation algorithm
-by scaling the coordinates for better and adding all the mathematical
-parametrization needed.
+The parameters used for the interpolation can be returned using the
+function ``get_kriging_parameters``. These are generated automatically
+from the orginal data, but can be changed if needed. However, users
+should be careful doing so, if they do not fully understand their
+significance.
 
 .. code:: ipython3
 
-    gp.get_kriging_parameters(interp_data)
+    gp.get_kriging_parameters(interp_data) # Maybe move this to an extra part?
 
 
 .. parsed-literal::
 
-    range 0.8731347322463989 3464.10165466
-    Number of drift equations [2 2]
-    Covariance at 0 0.018151529133319855
-    Foliations nugget effect 0.009999999776482582
+    range 0.911605715751648 3464.10171986
+    Number of drift equations [0 3]
+    Covariance at 0 0.019786307588219643
+    orientations nugget effect 0.009999999776482582
+    scalar nugget effect 9.999999974752427e-07
 
 
-These later parameters have a default value computed from the original
-data or can be changed by the user (be careful of changing any of these
-if you do not fully understand their meaning).
+At this point, we have all we need to compute our full model via
+``compute_model``. By default, this will return two separate solutions
+in the form of arrays. The first gives information on the lithological
+formations, the second on the fault network in the model. These arrays
+consist of two subarrays as entries each:
 
-At this point, we have all what we need to compute our model. By default
-everytime we compute a model we obtain:
+1. Lithology block model solution:
 
--  Lithology block model
+   -  Entry [0]: This array shows what kind of lithological formation is
+      found in each voxel, as indicated by a respective formation
+      number.
+   -  Entry [1]: Potential field array that represents the orientation
+      of lithological units and layers in the block model.
 
-   -  with the lithology values in 0
-   -  with the potential field values in 1
+2. Fault network block model solution:
 
--  Fault block model
+   -  Entry [0]: Array in which all fault-separated areas of the model
+      are represented by a distinct number contained in each voxel.
+   -  Entry [1}: Potential field array related to the fault network in
+      the block model.
 
-   -  with the faults zones values (i.e. every divided region by each
-      fault has one number) in 0
-   -  with the potential field values in 1
+Below, we illustrate these different model solutions and how they can be
+used.
 
 .. code:: ipython3
 
     lith_block, fault_block = gp.compute_model(interp_data)
 
-This solution can be plot with the correspondent plotting function.
-Blocks:
+Direct model visualization in GemPy
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Model solutions can be easily visualized in 2D sections in GemPy
+directly. Let's take a look at our lithology block:
 
 .. code:: ipython3
 
     %matplotlib inline
-    gp.plot_section(geo_data, lith_block[0], 25, plot_data=True)
+    gp.plot_section(geo_data, lith_block[0], cell_number=50,  direction='y', plot_data=False)
 
 
 
 .. image:: ch1_files/ch1_30_0.png
 
 
-Potential field:
+With ``cell_number=25`` and remembering that we defined our resolution
+to be 50 cells in each direction, we have chosen a section going through
+the middle of our block. We have moved 25 cells in ``direction='y'``,
+the plot thus depicts a plane parallel to the :math:`x`- and
+:math:`y`-axes. Setting ``plot_data=True``, we could plot original data
+together with the results. Changing the values for ``cell_number``\ and
+``direction``, we can move through our 3D block model and explore it by
+looking at different 2D planes.
+
+We can do the same with out lithological scalar-field solution:
 
 .. code:: ipython3
 
-    gp.plot_potential_field(geo_data, lith_block[1], 25)
+    gp.plot_scalar_field(geo_data, lith_block[1], cell_number=50, N=15, 
+                            direction='y', plot_data=False)
 
 
 
 .. image:: ch1_files/ch1_32_0.png
 
 
-From the potential fields (of lithologies and faults) it is possible to
-extract vertices and simpleces to create the 3D triangles for a vtk
-visualization.
+Here, ``N`` defines the number of lines plotted to indicate the scalar
+field (default is 20).
+
+For this example, is it interesting to look at the scalar field from
+direction of the :math:`z`-axis:
+
+.. code:: ipython3
+
+    gp.plot_scalar_field(geo_data, lith_block[1], cell_number=25, N=15, 
+                            direction='z', plot_data=False)
+
+
+
+.. image:: ch1_files/ch1_34_0.png
+
+
+This illustrates well the fold-related deformation of the stratigraphy,
+as well as the way the layers are influenced by the fault.
+
+The fault network modeling solutions can be visualized in the same way:
+
+.. code:: ipython3
+
+    gp.plot_section(geo_data, fault_block[0], cell_number=25, plot_data=False)
+
+
+
+.. image:: ch1_files/ch1_36_0.png
+
+
+.. code:: ipython3
+
+    gp.plot_scalar_field(geo_data, fault_block[1], cell_number=25, N=20, 
+                            direction='y', plot_data=False)
+
+
+
+.. image:: ch1_files/ch1_37_0.png
+
+
+In the end, it is the combination of lithological and fault network
+solutions that provides us with a full geological model.
+
+Surfaces can be visualized as 3D triangle complexes in VTK (see function
+``plot_surfaces_3D`` below). To create these triangles, we need to
+extract respective vertices and simplices from the potential fields of
+lithologies and faults. This process is automatized in GemPy with the
+function ``get_surfaces``:
 
 .. code:: ipython3
 
     ver, sim = gp.get_surfaces(interp_data,lith_block[1], fault_block[1], original_scale=True)
+    
+    # In python is very easy to export data using for example:
+    # np.save('ver_fabian', ver)
+    # np.save('sim_fabian', sim)
 
 .. code:: ipython3
 
     gp.plot_surfaces_3D(geo_data, ver, sim, alpha=1)
 
-Additionally is possible to update the model and recompute the surfaces
-in real time. To do so, we need to pass the data rescaled. To get an
-smooth response is important to have the theano optimizer flag in
-fast\_run and run theano in the gpu. This can speed up the modeling time
-in a factor of 20.
+
+
+
+.. parsed-literal::
+
+    <gempy.visualization.vtkVisualization at 0x7fdf66dde0f0>
+
+
+
+The vertices always cut the edges of the voxels. In the next cell we can
+see how vertices and voxels relate:
+
+.. code:: ipython3
+
+    # Cropping a cross-section to visualize in 2D #REDO this part?
+    bool_b = np.array(ver[1][:,1] > 999)* np.array(ver[1][:,1] < 1001) 
+    bool_r = np.array(ver[1][:,1] > 1039)* np.array(ver[1][:,1] < 1041)
+    
+    # Plotting section
+    gp.plot_section(geo_data, lith_block[0], 50, plot_data=True)
+    ax = plt.gca()
+    
+    # Adding grid
+    ax.set_xticks(np.linspace(0, 2000, 100, endpoint=False))
+    ax.set_yticks(np.linspace(0, 2000, 100, endpoint=False))
+    plt.grid()
+    
+    plt.ylim(1000,1600)
+    plt.xlim(500,1100)
+    # Plotting vertices
+    ax.plot(ver[1][bool_r][:, 0], ver[1][bool_r][:, 2], '.', color='b', alpha=.9)
+    ax.get_xaxis().set_ticklabels([])
+
+
+
+
+
+.. parsed-literal::
+
+    []
+
+
+
+
+.. image:: ch1_files/ch1_42_1.png
+
+
+Interactive 3D visualization
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Using the rescaled interpolation data, we can also run our 3D VTK
+visualization in an interactive mode which allows us to alter and update
+our model in real time. Similarly to the interactive 3D visualization of
+our input data, the changes are permamently saved (in the
+``InterpolationInput`` dataframe object). Addtionally, the resulting
+changes in the geological models are re-computed in real time.
+
+Important: To get a smooth response, it is important to have the Theano
+optimization in ``fast_run``-mode (you can change this in the GemPy file
+``theanograf.py``) and to run Theano in the GPU. This can speed up the
+modeling time by a factor of 20.
 
 .. code:: ipython3
 
@@ -573,23 +1662,3 @@ in a factor of 20.
 .. code:: ipython3
 
     gp.plot_surfaces_3D_real_time(interp_data, ver_s, sim_s)
-
-In the same manner we can visualize the fault block:
-
-.. code:: ipython3
-
-    gp.plot_section(geo_data, fault_block[0], 25)
-
-
-
-.. image:: ch1_files/ch1_40_0.png
-
-
-.. code:: ipython3
-
-    gp.plot_potential_field(geo_data, fault_block[1], 25)
-
-
-
-.. image:: ch1_files/ch1_41_0.png
-

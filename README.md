@@ -8,10 +8,12 @@
 [![license: LGPL v3](https://img.shields.io/badge/license-LGPL%20v3-blue.svg)]()
 [![Documentation Status](https://readthedocs.org/projects/gempy/badge/?version=latest)](http://gempy.readthedocs.io/?badge=latest)
 [![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)]()
+[![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
 
-<p align="center"><img src="docs/source/images/model_examples.png" width="700"></p>
 
-*GemPy* is an Python-based, open-source library for implicitly generating 3D structural geological models. It is capable of 
+<p align="center"><img src="docs/source/images/model_examples.png" width="800"></p>
+
+*GemPy* is a Python-based, open-source library for implicitly generating 3D structural geological models. It is capable of 
 constructing complex 3D geological models of folded structures, fault networks and unconformities. It was designed from the 
 ground up to support easy embedding in probabilistic frameworks for the uncertainty analysis of subsurface structures.
 
@@ -98,11 +100,7 @@ its dependencies.
 We provide the latest release version of *GemPy* via the **Conda** and **PyPi** package services. We highly
 recommend using either Conda or PyPi as both will take care of automatically installing all dependencies.
 
-#### Conda
-
-`$ conda install gempy`
-
-#### PyPi
+#### PyPi 
 
 `$ pip install gempy`
 
@@ -114,7 +112,7 @@ Otherwise you can clone the current repository by downloading is manually or by 
 
 and then manually install it using the provided Python install file by calling
 
-`$ python install.py`
+`$ python gempy/setup.py install`
 
 in the cloned or downloaded repository folder. Make sure you have installed all necessary dependencies listed above before using *GemPy*.
 

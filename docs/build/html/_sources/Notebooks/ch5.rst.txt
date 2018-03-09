@@ -12,7 +12,7 @@ chapter 2.
 
     # These two lines are necessary only if gempy is not installed
     import sys, os
-    sys.path.append("../")
+    sys.path.append("../..")
     
     # Importing gempy
     import gempy as gp
@@ -23,13 +23,19 @@ chapter 2.
     # Aux imports
     import numpy as np
 
+
+.. parsed-literal::
+
+    WARNING (theano.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+
+
 First we just recreate the model as usual.
 
 .. code:: ipython3
 
     # Importing the data from csv files and settign extent and resolution
     geo_data = gp.create_data([696000,747000,6863000,6950000,-20000, 200],[50, 50, 50],
-                             path_f = os.pardir+"/input_data/a_Foliations.csv",
+                             path_o = os.pardir+"/input_data/a_Foliations.csv",
                              path_i = os.pardir+"/input_data/a_Points.csv")
 
 Setting the series and the formations order:
@@ -51,7 +57,7 @@ Setting the series and the formations order:
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7fa630047f98>
+    <gempy.sequential_pile.StratigraphicPile at 0x7fdda82276d8>
 
 
 
@@ -78,14 +84,17 @@ object and compute the model.
 
 .. code:: ipython3
 
-    interp_data = gp.InterpolatorInput(geo_data)
+    interp_data = gp.InterpolatorData(geo_data, compile_theano=True)
 
 
 .. parsed-literal::
 
+    Compiling theano function...
+    Compilation Done!
     Level of Optimization:  fast_compile
     Device:  cpu
     Precision:  float32
+    Number of faults:  0
 
 
 .. code:: ipython3
@@ -120,13 +129,23 @@ increase accordingly.
 
 .. parsed-literal::
 
-    <matplotlib.patches.Rectangle at 0x7fa60a8e4860>
+    <matplotlib.patches.Rectangle at 0x7fdcf527ccf8>
 
 
 
 
 .. image:: ch5_files/ch5_13_1.png
 
+
+.. code:: ipython3
+
+    ver_s, sim_s = gp.get_surfaces(interp_data,lith_block[1],
+                                   None,
+                                   original_scale=False)
+
+.. code:: ipython3
+
+    gp.plot_surfaces_3D_real_time(interp_data, ver_s, sim_s)
 
 So we recalculate all just adding some padding around the measured data
 (the green rectangle)
@@ -135,7 +154,7 @@ So we recalculate all just adding some padding around the measured data
 
     # Importing the data from csv files and settign extent and resolution
     geo_data_extended = gp.create_data([696000-10000,747000 + 20600,6863000 - 20600,6950000 + 20600,-20000, 600],[50, 50, 50],
-                             path_f = os.pardir+"/input_data/a_Foliations.csv",
+                             path_o = os.pardir+"/input_data/a_Foliations.csv",
                              path_i = os.pardir+"/input_data/a_Points.csv")
     
     
@@ -149,18 +168,27 @@ So we recalculate all just adding some padding around the measured data
                           order_formations= ['EarlyGranite', 'SimpleMafic2', 'SimpleBIF', 'SimpleMafic1'],
                   verbose=1)
     
-    interp_data_extended = gp.InterpolatorInput(geo_data_extended, output='geology', compile_theano=True)
+    interp_data_extended = gp.InterpolatorData(geo_data_extended, output='geology', compile_theano=True)
 
 
 .. parsed-literal::
 
+    ../../gempy/data_management.py:61: UserWarning: path_f is deprecated use instead path_o
+      warnings.warn('path_f is deprecated use instead path_o')
+
+
+.. parsed-literal::
+
+    Compiling theano function...
+    Compilation Done!
     Level of Optimization:  fast_compile
     Device:  cpu
     Precision:  float32
+    Number of faults:  0
 
 
 
-.. image:: ch5_files/ch5_15_1.png
+.. image:: ch5_files/ch5_17_2.png
 
 
 .. code:: ipython3
@@ -187,72 +215,79 @@ So we recalculate all just adding some padding around the measured data
 
 .. parsed-literal::
 
-    <matplotlib.patches.Rectangle at 0x7fa61f180128>
+    <matplotlib.patches.Rectangle at 0x7fdcf5231550>
 
 
 
 
-.. image:: ch5_files/ch5_17_1.png
+.. image:: ch5_files/ch5_19_1.png
 
 
 .. code:: ipython3
 
-    interp_data_grav = gp.InterpolatorInput(geo_data_extended, output='gravity', compile_theano=True)
+    interp_data_grav = gp.InterpolatorData(geo_data_extended, output='gravity', compile_theano=True)
 
 
 .. parsed-literal::
 
+    Compiling theano function...
+    Compilation Done!
     Level of Optimization:  fast_compile
     Device:  cpu
     Precision:  float32
+    Number of faults:  0
 
 
 .. code:: ipython3
 
     gp.set_geophysics_obj(interp_data_grav,  [7.050000e+05,747000,6863000,6925000,-20000, 200],
-                                                 [50,50], )
+                                                 [50, 50],)
+
 
 
 
 
 .. parsed-literal::
 
-    <gempy.GeoPhysics.GeoPhysicsPreprocessing_pro at 0x7fa5f0125358>
+    <gempy.geophysics.GravityPreprocessing at 0x7fdcb4cfdeb8>
 
 
 
 .. code:: ipython3
 
-    gp.precomputations_gravity(interp_data_grav, 25, [2.92, 3.1, 2.92, 2.61, 2.61])
+    gp.precomputations_gravity(interp_data_grav, 25, 
+                               [2.92, 3.1, 2.92, 2.61, 2.61])
 
 
 
 
 .. parsed-literal::
 
-    (array([[  2.32206772e-05,   1.38317570e-05,   4.37779836e-06, ...,
-               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
-            [  2.32206772e-05,   1.38317570e-05,   4.37779837e-06, ...,
-               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
-            [  2.32206772e-05,   1.38317570e-05,   4.37779837e-06, ...,
-               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
+    (array([[  2.42752881e-05,   1.44979296e-05,   4.65235891e-06, ...,
+               1.44979296e-05,   4.65235891e-06,  -5.21516146e-06],
+            [  2.42752881e-05,   1.44979296e-05,   4.65235891e-06, ...,
+               1.44979296e-05,   4.65235891e-06,  -5.21516146e-06],
+            [  2.42752881e-05,   1.44979296e-05,   4.65235891e-06, ...,
+               1.44979296e-05,   4.65235891e-06,  -5.21516146e-06],
             ..., 
-            [  2.32204160e-05,   1.38316011e-05,   4.37774898e-06, ...,
-               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
-            [  2.32204160e-05,   1.38316011e-05,   4.37774898e-06, ...,
-               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
-            [  2.32204160e-05,   1.38316011e-05,   4.37774898e-06, ...,
-               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06]]),
+            [  2.42752881e-05,   1.44979296e-05,   4.65235891e-06, ...,
+               1.44979296e-05,   4.65235891e-06,  -5.21516146e-06],
+            [  2.42752881e-05,   1.44979296e-05,   4.65235891e-06, ...,
+               1.44979296e-05,   4.65235891e-06,  -5.21516146e-06],
+            [  2.42752881e-05,   1.44979296e-05,   4.65235891e-06, ...,
+               1.44979296e-05,   4.65235891e-06,  -5.21516146e-06]]),
      array([False, False, False, ..., False, False, False], dtype=bool))
 
 
 
 .. code:: ipython3
 
-    grav = gp.compute_model(interp_data_grav, 'gravity')
+    lith, fault, grav = gp.compute_model(interp_data_grav, 'gravity')
 
 .. code:: ipython3
 
+    import matplotlib.pyplot as plt
+    
     plt.imshow(grav.reshape(50,50), cmap='viridis', origin='lower', extent=[7.050000e+05,747000,6863000,6950000] )
     plt.colorbar()
 
@@ -261,10 +296,10 @@ So we recalculate all just adding some padding around the measured data
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x7fa5ebdc1a58>
+    <matplotlib.colorbar.Colorbar at 0x7fdcb58bfba8>
 
 
 
 
-.. image:: ch5_files/ch5_22_1.png
+.. image:: ch5_files/ch5_24_1.png
 

@@ -3,12 +3,12 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to GemPy's (v 0.9) documentation!
+Welcome to GemPy's (v 1.0) documentation!
 =========================================
 Software for 3D structural geologic implicit modeling in Python.
-**************************************************************
+****************************************************************
 
-GemPy is an open-source tool for generating 3D structural geological models in Python (GemPy's code can be viewed in its repository: https://github.com/cgre-aachen/GeMpy.)
+GemPy is an open-source tool for generating 3D structural geological models in Python (GemPy's code can be viewed in its repository: https://github.com/cgre-aachen/gempy.)
 It is capable of creating complex 3D geological models,
 including stratigraphic and structural features such as:
 
@@ -76,11 +76,11 @@ For a more detailed elaboration of the theory behind GemPy, take a look at the u
 Contents:
 
 .. toctree::
-   :maxdepth: 3
+   :glob:
 
    self
-   Kriging
    tutorial
+   theory
    code
 
 
