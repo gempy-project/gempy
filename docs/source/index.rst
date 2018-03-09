@@ -41,7 +41,7 @@ Another option is Steno3D, which allows for a flexible and interactive visualiza
 .. raw:: html
 
     <div style="margin-top:10px;">
-      <iframe src="https://steno3d.com/embed/mWACfOTPB2vT3scgJABp"></iframe>
+      <iframe src="https://steno3d.com/embed/mWACfOTPB2vT3scgJABp" width="800" height="600"></iframe>
     </div>
 
 
