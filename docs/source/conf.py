@@ -130,7 +130,7 @@ html_theme_options = {
                         'github_type': 'star',
                         'travis_button': True,
                         'page_width':'1200px',
-                        'fixed_sidebar': False,
+                        'fixed_sidebar': True,
                         }
 
 
