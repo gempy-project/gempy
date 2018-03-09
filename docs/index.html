@@ -1,0 +1,226 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Welcome to GemPy’s (v 1.0) documentation! &#8212; GemPy rc documentation</title>
+    
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     'rc',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tutorial" href="tutorial.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="welcome-to-gempy-s-v-1-0-documentation">
+<h1>Welcome to GemPy’s (v 1.0) documentation!<a class="headerlink" href="#welcome-to-gempy-s-v-1-0-documentation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="software-for-3d-structural-geologic-implicit-modeling-in-python">
+<h2>Software for 3D structural geologic implicit modeling in Python.<a class="headerlink" href="#software-for-3d-structural-geologic-implicit-modeling-in-python" title="Permalink to this headline">¶</a></h2>
+<p>GemPy is an open-source tool for generating 3D structural geological models in Python (GemPy’s code can be viewed in its repository: <a class="reference external" href="https://github.com/cgre-aachen/gempy">https://github.com/cgre-aachen/gempy</a>.)
+It is capable of creating complex 3D geological models,
+including stratigraphic and structural features such as:</p>
+<ul class="simple">
+<li>fold structures (e.g.: anticlines, synclines)</li>
+<li>fault networks and fault-layer interactions</li>
+<li>unconformities</li>
+</ul>
+<p>3D models created with GemPy may look like this:</p>
+<img alt="_images/model_example.png" src="_images/model_example.png" />
+<p>The core algorithm is based on a universal cokriging interpolation method devised by
+Lajaunie et al. (1997) and further elaborated by Calcagno et al. (2008).
+Its implicit nature allows the user to generate complete 3D geological models
+through the interpolation of input data consisting of:</p>
+<ul class="simple">
+<li>Surface contact points: 3D coordinates of points marking the boundaries between different features.</li>
+<li>Orientation measurements: Orientation of the poles perpendicular to the dipping of surfaces at any point in the 3D space.</li>
+</ul>
+<p>GemPy also allows for the definition of topological elements such as stratigraphic sequences and fault networks to be considered in this process.</p>
+<img alt="_images/modeling_principle.png" src="_images/modeling_principle.png" />
+<p>GemPy itself offers direct visualization of 2D sections via matplotlib
+and in full 3D using the Visualization Toolkit (VTK). These VTK files can also be exported
+for further processing in programs such as Paraview. GemPy can furthermore be easily
+embedded in Blender for 3D rendering.
+Another option is Steno3D, which allows for a flexible and interactive visualization of 3D models:</p>
+<div style="margin-top:10px;">
+  <iframe src="https://steno3d.com/embed/A747sS50WZZu75yEm8Yi" width="800" height="600"></iframe>
+</div><p>GemPy was furthermore designed to allow the performance of
+Bayesian inference for stochastic geological modeling. This was achieved by writing GemPy’s core algorithm
+in Theano (<a class="reference external" href="http://deeplearning.net/software/theano/">http://deeplearning.net/software/theano/</a>) and coupling it with PyMC3 (<a class="reference external" href="https://pymc-devs.github.io/pymc3/notebooks/getting_started.html">https://pymc-devs.github.io/pymc3/notebooks/getting_started.html</a>).
+This enables the use of advanced HMC methods and is of particular relevance when considering
+uncertainties in model input data and the availability of additional secondary information.</p>
+<p>We can, for example, include uncertainties with respect to the z-position of layer boundaries
+in the model space. Simple Monte Carlo simulation via PyMC will then result in different model realizations:</p>
+<p><a class="reference internal" href="_images/gempy_zunc.png"><img alt="z_unc" src="_images/gempy_zunc.png" style="width: 40%;" /></a> <a class="reference internal" href="_images/model_wobble.gif"><img alt="wobble" src="_images/model_wobble.gif" style="width: 55%;" /></a></p>
+<p>This opens the path to…</p>
+<p>((This optimization package allows the computation
+of gradients opening the door to the use of advance HMC methods
+coupling GeMpy and PyMC3 (<a class="reference external" href="https://pymc-devs.github.io/pymc3/notebooks/getting_started.html">https://pymc-devs.github.io/pymc3/notebooks/getting_started.html</a>).
+Also, the use of theano allows the use of the GPU through cuda (see theano doc for more information).)</p>
+<p>For a more detailed elaboration of the theory behind GemPy, take a look at the upcoming scientific publication
+“GemPy 1.0: open-source stochastic geological modeling and inversion” by de la Varga et al. (2018).</p>
+<p>Contents:</p>
+<div class="toctree-wrapper compound">
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome to GemPy’s (v 1.0) documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="Notebooks/ch1.html">Chapter 1: Basics of geological modeling with GemPy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch1.html#the-example-model-simple-stratigraphy-and-one-fault">The example model: Simple stratigraphy and one fault</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch1.html#preparing-the-python-environment">Preparing the Python environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch1.html#importing-and-creating-a-set-of-input-data">Importing and creating a set of input data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch1.html#declaring-the-sequential-order-of-geological-formations">Declaring the sequential order of geological formations</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="Notebooks/ch1.html#returning-information-from-our-input-data">Returning information from our input data</a><ul>
+<li class="toctree-l5"><a class="reference internal" href="Notebooks/ch1.html#interfaces-dataframe">Interfaces Dataframe:</a></li>
+<li class="toctree-l5"><a class="reference internal" href="Notebooks/ch1.html#foliations-dataframe">Foliations Dataframe:</a></li>
+</ul>
+</li>
+<li class="toctree-l4"><a class="reference internal" href="Notebooks/ch1.html#visualizing-input-data">Visualizing input data</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Notebooks/ch1.html#model-generation">Model generation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Notebooks/ch1.html#direct-model-visualization-in-gempy">Direct model visualization in GemPy</a></li>
+<li class="toctree-l4"><a class="reference internal" href="Notebooks/ch1.html#interactive-3d-visualization">Interactive 3D visualization</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Notebooks/ch2.html">Chapter 2: A real example. Importing data and setting series</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch2.html#data-management">Data Management</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch2.html#computing-the-model">Computing the model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch2.html#changing-the-points-where-we-interpolate">Changing the points where we interpolate.</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Notebooks/ch3.html">Chapter 3: Stochastic Simulations in pymc2</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch3.html#preparation">Preparation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch3.html#initialize-an-example-model">Initialize an example model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch3.html#visualize-the-input-data">Visualize the input data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch3.html#compile-the-interpolator-function">Compile the interpolator function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch3.html#setting-up-the-pymc-functions">Setting up the pymc-Functions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch3.html#setting-up-the-parameter-distributions">Setting up the parameter distributions</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch3.html#input-data-handling">Input data handling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch3.html#modeling-function">Modeling function</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch3.html#analyzing-the-results">Analyzing the results</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Notebooks/ch4.html">Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch4.html#real-gravity">Real gravity</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Notebooks/ch5.html">Chapter 5: Computing forward gravity. (Under development)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch5.html#computing-the-model">Computing the model</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="Notebooks/ch6.html">Tutorial Chapter 6: Analyzing Topology (WIP)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch6.html#creating-an-example-model">Creating an example Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="Notebooks/ch6.html#analyzing-topology">Analyzing Topology</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="gempy.html">Motivation</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="code.html">Code</a><ul class="simple">
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
+<li><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></li>
+<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h3><a href="#">Table Of Contents</a></h3>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome to GemPy’s (v 1.0) documentation!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
+</ul>
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="tutorial.html" title="next chapter">Tutorial</a></li>
+  </ul></li>
+</ul>
+</div>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/index.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
