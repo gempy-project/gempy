@@ -7,6 +7,8 @@ numpy
 pytest
 scipy
 nbsphinx
+sphinxcontrib-bibtex
 seaborn
 scikit_learn
 networkx==1.11
+Ipython
