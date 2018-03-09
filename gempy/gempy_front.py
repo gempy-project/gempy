@@ -15,15 +15,15 @@
     along with gempy.  If not, see <http://www.gnu.org/licenses/>.
 
 
-Module with classes and methods to perform implicit regional modelling based on
-the potential field method.
-Tested on Ubuntu 14
+    Module with classes and methods to perform implicit regional modelling based on
+    the potential field method.
+    Tested on Ubuntu 14
 
-Created on 10/10 /2016
+    Created on 10/10 /2016
 
-@author: Miguel de la Varga
-
+    @author: Miguel de la Varga
 """
+
 import os
 from os import path
 import sys

@@ -58,6 +58,7 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
+    'sphinxcontrib.bibtex',
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive']
 
@@ -187,8 +188,8 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'GemPy', 'GemPy Documentation',
-     author, 'GemPy', 'One line description of project.',
-     'Miscellaneous'),
+     author, 'Miguel de la Varga', '3D Implicit geomodeling.',
+     'Geomodelling'),
 ]
 
 

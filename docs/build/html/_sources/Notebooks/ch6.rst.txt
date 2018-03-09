@@ -5,13 +5,19 @@ Tutorial Chapter 6: Analyzing Topology (WIP)
 .. code:: ipython3
 
     import sys
-    sys.path.append("../../gempy")
+    sys.path.append("../../")
     
     import gempy as gp
     
     import numpy as np
     import matplotlib.pyplot as plt
     %matplotlib inline
+
+
+.. parsed-literal::
+
+    WARNING (theano.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+
 
 Creating an example Model
 -------------------------
@@ -24,22 +30,150 @@ order the formations (stratigraphic pile).
 .. code:: ipython3
 
     # initialize geo_data object
-    geo_data = gp.create_data([0, 3000, 0, 20, 0, 2000], resolution=[100, 3, 67])
+    geo_data = gp.create_data([0, 3000, 0, 20, 0, 2000], resolution=[50, 3, 67])
     # import data points
     geo_data.import_data_csv("../input_data/ch6_data_interf", 
-                             "../input_data/ch6_data_fol"),
-    # set series and order formations
-    geo_data.set_formation_number()
+                             "../input_data/ch6_data_fol")
+    
+    geo_data.calculate_gradient()
+
+
+.. code:: ipython3
+
+    geo_data.orientations
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>dip</th>
+          <th>azimuth</th>
+          <th>polarity</th>
+          <th>formation</th>
+          <th>...</th>
+          <th>Y_std</th>
+          <th>Z_std</th>
+          <th>dip_std</th>
+          <th>azimuth_std</th>
+          <th>order_series</th>
+          <th>isFault</th>
+          <th>formation number</th>
+          <th>annotations</th>
+          <th>group_id</th>
+          <th>index</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>1500.000000</td>
+          <td>6.666667</td>
+          <td>990.000000</td>
+          <td>0.868243</td>
+          <td>1.000000e-07</td>
+          <td>0.496139</td>
+          <td>60.255119</td>
+          <td>90.0</td>
+          <td>1</td>
+          <td>Fault</td>
+          <td>...</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>1</td>
+          <td>True</td>
+          <td>1</td>
+          <td>${\bf{x}}_{\beta \,{\bf{1}},0}$</td>
+          <td>fault</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>506.333333</td>
+          <td>9.666667</td>
+          <td>1679.333333</td>
+          <td>0.258819</td>
+          <td>1.000000e-07</td>
+          <td>0.965926</td>
+          <td>15.000000</td>
+          <td>90.0</td>
+          <td>1</td>
+          <td>Layer 2</td>
+          <td>...</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>2</td>
+          <td>False</td>
+          <td>2</td>
+          <td>${\bf{x}}_{\beta \,{\bf{2}},0}$</td>
+          <td>l2_a</td>
+          <td>1.0</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>2500.000000</td>
+          <td>9.666667</td>
+          <td>911.000000</td>
+          <td>0.258819</td>
+          <td>1.000000e-07</td>
+          <td>0.965926</td>
+          <td>15.000000</td>
+          <td>90.0</td>
+          <td>1</td>
+          <td>Layer 2</td>
+          <td>...</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>2</td>
+          <td>False</td>
+          <td>2</td>
+          <td>${\bf{x}}_{\beta \,{\bf{2}},1}$</td>
+          <td>l2_a</td>
+          <td>1.0</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>3 rows × 22 columns</p>
+    </div>
+
+
+
+.. code:: ipython3
+
     gp.set_series(geo_data, {"fault":geo_data.get_formations()[np.where(geo_data.get_formations()=="Fault")[0][0]], 
                              "Rest":np.delete(geo_data.get_formations(), np.where(geo_data.get_formations()=="Fault")[0][0])},
                                order_series = ["fault", "Rest"], verbose=0, order_formations=['Fault','Layer 2', 'Layer 3', 'Layer 4', 'Layer 5'])
     
-    geo_data.set_formation_number()
-    geo_data.order_table()
-
-
-
-.. image:: ch6_files/ch6_3_0.png
 
 
 And quickly have a look at the data:
@@ -52,22 +186,25 @@ And quickly have a look at the data:
 
 
 
-.. image:: ch6_files/ch6_5_0.png
+.. image:: ch6_files/ch6_7_0.png
 
 
 Then we can compile our interpolator object and compute our model:
 
 .. code:: ipython3
 
-    interp_data = gp.InterpolatorInput(geo_data, u_grade=[0,3])#, verbose=['n_formation'], dtype="float32")
+    interp_data = gp.InterpolatorData(geo_data, u_grade=[0,1])
     lith_block, fault_block = gp.compute_model(interp_data)
 
 
 .. parsed-literal::
 
+    Compiling theano function...
+    Compilation Done!
     Level of Optimization:  fast_compile
     Device:  cpu
     Precision:  float32
+    Number of faults:  1
 
 
 .. code:: ipython3
@@ -76,7 +213,7 @@ Then we can compile our interpolator object and compute our model:
 
 
 
-.. image:: ch6_files/ch6_8_0.png
+.. image:: ch6_files/ch6_10_0.png
 
 
 Analyzing Topology
@@ -97,7 +234,7 @@ several useful outputs:
 
 .. code:: ipython3
 
-    G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot = gp.topology_compute(geo_data, lith_block[0], fault_block[0])
+    G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot = gp.topology_compute(geo_data, lith_block[0], fault_block)
 
 After computing the model topology, we can overlay the topology graph
 over a model section:
@@ -105,11 +242,11 @@ over a model section:
 .. code:: ipython3
 
     gp.plot_section(geo_data, lith_block[0], 0)
-    gp.topology_plot(geo_data, G, centroids)
+    gp.plot_topology(geo_data, G, centroids)
 
 
 
-.. image:: ch6_files/ch6_12_0.png
+.. image:: ch6_files/ch6_14_0.png
 
 
 So let's say we want to check if the green layer (layer 4) is connected
@@ -137,7 +274,7 @@ nodes share a connection (are adjacent) and *False* if not:
 
 .. code:: ipython3
 
-    gp.topology_check_adjacency(G, 8, 3)
+    gp.topology.check_adjacency(G, 8, 3)
 
 
 
@@ -186,4 +323,3 @@ access the type of connection (edge):
 This way we can directly check if node 8 and 2 (or any other pair of
 nodes that share a connection) are connected across a fault, or just
 stratigraphically.
-

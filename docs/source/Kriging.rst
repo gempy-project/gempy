@@ -1,5 +1,5 @@
 
-Kriging structure of the *Potential field method*
+Kriging structure of the *Scalar field method*
 -------------------------------------------------
 
 The potential field method (cite Lajaunie) serves as the core of method

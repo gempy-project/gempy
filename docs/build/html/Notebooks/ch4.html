@@ -6,7 +6,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept) &#8212; GemPy beta documentation</title>
+    <title>Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept) &#8212; GemPy rc documentation</title>
     
     <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
@@ -14,7 +14,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../',
-        VERSION:     'beta',
+        VERSION:     'rc',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -53,6 +53,7 @@
 <span class="c1"># Importing gempy</span>
 <span class="kn">import</span> <span class="nn">gempy</span> <span class="kn">as</span> <span class="nn">gp</span>
 
+
 <span class="c1"># Embedding matplotlib figures into the notebooks</span>
 <span class="o">%</span><span class="k">matplotlib</span> inline
 
@@ -61,7 +62,7 @@
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Importing the data from csv files and settign extent and resolution</span>
-<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">([</span><span class="mi">696000</span><span class="o">-</span><span class="mi">10000</span><span class="p">,</span><span class="mi">747000</span> <span class="o">+</span> <span class="mi">20600</span><span class="p">,</span><span class="mi">6863000</span> <span class="o">-</span> <span class="mi">20600</span><span class="p">,</span><span class="mi">6950000</span> <span class="o">+</span> <span class="mi">20600</span><span class="p">,</span><span class="o">-</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">600</span><span class="p">],[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">],</span>
+<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">([</span><span class="mi">696000</span><span class="o">-</span><span class="mi">10000</span><span class="p">,</span><span class="mi">747000</span> <span class="o">+</span> <span class="mi">20600</span><span class="p">,</span><span class="mi">6863000</span> <span class="o">-</span> <span class="mi">20600</span><span class="p">,</span><span class="mi">6950000</span> <span class="o">+</span> <span class="mi">20600</span><span class="p">,</span><span class="o">-</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">600</span><span class="p">],[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">10</span><span class="p">],</span>
                          <span class="n">path_f</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/a_Foliations.csv&quot;</span><span class="p">,</span>
                          <span class="n">path_i</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/a_Points.csv&quot;</span><span class="p">)</span>
 </pre></div>
@@ -77,18 +78,18 @@
               <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">strat_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7f76e43129e8</span><span class="o">&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">sequential_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7ff65c502518</span><span class="o">&gt;</span>
 </pre></div>
 </div>
 <img alt="../_images/ch4_3_1.png" src="../_images/ch4_3_1.png" />
 <p>Setting uncertainties adding the values to the Dataframe.</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;X_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
 <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;Y_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;Z_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">800</span>
+<span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;Z_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
 
 <span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;X_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">None</span>
 <span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;Y_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;Z_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;Z_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">100</span>
 
 <span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;dip_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="n">geo_data</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;azimuth_std&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mi">10</span>
@@ -116,8 +117,8 @@
       <th>X</th>
       <th>Y</th>
       <th>Z</th>
-      <th>azimuth</th>
       <th>dip</th>
+      <th>azimuth</th>
       <th>polarity</th>
       <th>formation</th>
       <th>series</th>
@@ -141,8 +142,8 @@
       <td>722403.8130</td>
       <td>6880913.25</td>
       <td>470.707065</td>
-      <td>123.702047</td>
       <td>80.0</td>
+      <td>123.702047</td>
       <td>1</td>
       <td>EarlyGranite</td>
       <td>EarlyGranite_Series</td>
@@ -155,7 +156,7 @@
       <td>0.173648</td>
       <td>None</td>
       <td>0</td>
-      <td>0</td>
+      <td>100</td>
       <td>10</td>
       <td>10</td>
     </tr>
@@ -164,8 +165,8 @@
       <td>718928.3440</td>
       <td>6883605.50</td>
       <td>509.462245</td>
-      <td>176.274084</td>
       <td>80.0</td>
+      <td>176.274084</td>
       <td>1</td>
       <td>EarlyGranite</td>
       <td>EarlyGranite_Series</td>
@@ -178,7 +179,7 @@
       <td>0.173648</td>
       <td>None</td>
       <td>0</td>
-      <td>0</td>
+      <td>100</td>
       <td>10</td>
       <td>10</td>
     </tr>
@@ -187,8 +188,8 @@
       <td>720690.5630</td>
       <td>6882822.25</td>
       <td>489.909423</td>
-      <td>254.444427</td>
       <td>80.0</td>
+      <td>254.444427</td>
       <td>1</td>
       <td>EarlyGranite</td>
       <td>EarlyGranite_Series</td>
@@ -201,7 +202,7 @@
       <td>0.173648</td>
       <td>None</td>
       <td>0</td>
-      <td>0</td>
+      <td>100</td>
       <td>10</td>
       <td>10</td>
     </tr>
@@ -210,8 +211,8 @@
       <td>721229.0005</td>
       <td>6880766.25</td>
       <td>477.680894</td>
-      <td>255.876557</td>
       <td>80.0</td>
+      <td>255.876557</td>
       <td>1</td>
       <td>EarlyGranite</td>
       <td>EarlyGranite_Series</td>
@@ -224,7 +225,7 @@
       <td>0.173648</td>
       <td>None</td>
       <td>0</td>
-      <td>0</td>
+      <td>100</td>
       <td>10</td>
       <td>10</td>
     </tr>
@@ -233,8 +234,8 @@
       <td>710459.8440</td>
       <td>6880521.50</td>
       <td>511.839758</td>
-      <td>232.658556</td>
       <td>80.0</td>
+      <td>232.658556</td>
       <td>1</td>
       <td>EarlyGranite</td>
       <td>EarlyGranite_Series</td>
@@ -247,55 +248,90 @@
       <td>0.173648</td>
       <td>None</td>
       <td>0</td>
-      <td>0</td>
+      <td>100</td>
       <td>10</td>
       <td>10</td>
     </tr>
   </tbody>
 </table>
-</div><div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># input_data_T = interp_data.interpolator.tg.input_parameters_list()</span>
+</div><div class="section" id="real-gravity">
+<h2>Real gravity<a class="headerlink" href="#real-gravity" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pn</span>
+<span class="n">grav_real</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;../input_data/Sst_grav_2000.xyz&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;N&#39;</span><span class="p">,</span> <span class="s1">&#39;G&#39;</span><span class="p">],</span> <span class="n">delim_whitespace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">grav_real</span><span class="p">[</span><span class="s1">&#39;G&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">31</span><span class="p">,</span><span class="mi">21</span><span class="p">),</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mf">7.050000e+05</span><span class="p">,</span><span class="mi">747000</span><span class="p">,</span><span class="mi">6863000</span><span class="p">,</span><span class="mi">6950000</span><span class="p">],</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">)</span>
+<span class="n">fig</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gcf</span><span class="p">()</span>
+<span class="n">fig</span><span class="o">.</span><span class="n">set_size_inches</span><span class="p">(</span><span class="mf">18.5</span><span class="p">,</span> <span class="mf">10.5</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch4_7_0.png" src="../_images/ch4_7_0.png" />
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Calibration parameters</span>
+<span class="c1"># F_min, F_max =  np.min(Forw), np.max(Forw)   #36.630742, 36.651496    #30.159309, 30.174104#</span>
+<span class="c1"># F_range = F_max - F_min</span>
+<span class="c1"># F_mid = 0.5*(F_max+F_min)</span>
+
+<span class="n">rs_min</span><span class="p">,</span> <span class="n">rs_max</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">grav_real</span><span class="p">[</span><span class="s1">&#39;G&#39;</span><span class="p">]),</span> <span class="n">np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">grav_real</span><span class="p">[</span><span class="s1">&#39;G&#39;</span><span class="p">])</span>
+<span class="n">rs_range</span> <span class="o">=</span> <span class="n">rs_max</span> <span class="o">-</span> <span class="n">rs_min</span>
+<span class="n">rs_mid</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">rs_max</span><span class="o">+</span><span class="n">rs_min</span><span class="p">)</span>
+
+<span class="c1">#Rescaling</span>
+
+<span class="c1"># rs_mid + (grid - m_mid) / m_range * rs_range</span>
+<span class="c1"># Reescaled_forw = rs_mid + (Forw - F_mid) / F_range * rs_range</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">theano</span>
+<span class="n">grav_real_mid</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">rs_mid</span><span class="p">,</span> <span class="s1">&#39;Grav_real_mid&#39;</span><span class="p">)</span>
+<span class="n">grav_real_range</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">rs_range</span><span class="p">,</span> <span class="s1">&#39;Grav_real_range&#39;</span><span class="p">)</span>
+<span class="n">grav_real_th</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">shared</span><span class="p">(</span><span class="n">grav_real</span><span class="p">[</span><span class="s1">&#39;G&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">())</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">grav_real_th</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="mi">651</span><span class="p">,)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># input_data_T = interp_data.interpolator.tg.input_parameters_list()</span>
 <span class="c1"># input_data_P = interp_data.get_input_data(u_grade=[3, 3])</span>
 <span class="c1"># select = interp_data.interpolator.pandas_rest_layer_points[&#39;formation&#39;] == &#39;Reservoir&#39;</span>
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data_grav</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;gravity&#39;</span><span class="p">,</span> <span class="n">compile_theano</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data_grav</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorInput</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;gravity&#39;</span><span class="p">,</span> <span class="n">compile_theano</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span><span class="p">,</span>
                                    <span class="n">u_grade</span><span class="o">=</span><span class="p">[</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">])</span>
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_geophysics_obj</span><span class="p">(</span><span class="n">interp_data_grav</span><span class="p">,</span>  <span class="p">[</span><span class="mf">7.050000e+05</span><span class="p">,</span><span class="mi">747000</span><span class="p">,</span><span class="mi">6863000</span><span class="p">,</span><span class="mi">6925000</span><span class="p">,</span><span class="o">-</span><span class="mi">20000</span><span class="p">,</span> <span class="mi">200</span><span class="p">],</span>
-                                             <span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">],</span> <span class="p">)</span>
+                                             <span class="p">[</span><span class="mi">31</span><span class="p">,</span><span class="mi">21</span><span class="p">])</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">GeoPhysics</span><span class="o">.</span><span class="n">GeoPhysicsPreprocessing_pro</span> <span class="n">at</span> <span class="mh">0x7f7651566b70</span><span class="o">&gt;</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">GeoPhysics</span><span class="o">.</span><span class="n">GeoPhysicsPreprocessing_pro</span> <span class="n">at</span> <span class="mh">0x7fe3dc7510b8</span><span class="o">&gt;</span>
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">precomputations_gravity</span><span class="p">(</span><span class="n">interp_data_grav</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="p">[</span><span class="mf">2.92</span><span class="p">,</span> <span class="mf">3.1</span><span class="p">,</span> <span class="mf">2.92</span><span class="p">,</span> <span class="mf">2.61</span><span class="p">,</span> <span class="mf">2.61</span><span class="p">])</span>
-</pre></div>
-</div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">array</span><span class="p">([[</span>  <span class="mf">2.32206772e-05</span><span class="p">,</span>   <span class="mf">1.38317570e-05</span><span class="p">,</span>   <span class="mf">4.37779836e-06</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span>
-           <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.09674338e-06</span><span class="p">],</span>
-        <span class="p">[</span>  <span class="mf">2.32206772e-05</span><span class="p">,</span>   <span class="mf">1.38317570e-05</span><span class="p">,</span>   <span class="mf">4.37779837e-06</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span>
-           <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.09674338e-06</span><span class="p">],</span>
-        <span class="p">[</span>  <span class="mf">2.32206772e-05</span><span class="p">,</span>   <span class="mf">1.38317570e-05</span><span class="p">,</span>   <span class="mf">4.37779837e-06</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span>
-           <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.09674338e-06</span><span class="p">],</span>
-        <span class="o">...</span><span class="p">,</span>
-        <span class="p">[</span>  <span class="mf">2.32204160e-05</span><span class="p">,</span>   <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span>
-           <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.09674338e-06</span><span class="p">],</span>
-        <span class="p">[</span>  <span class="mf">2.32204160e-05</span><span class="p">,</span>   <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span>
-           <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.09674338e-06</span><span class="p">],</span>
-        <span class="p">[</span>  <span class="mf">2.32204160e-05</span><span class="p">,</span>   <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span>
-           <span class="mf">1.38316011e-05</span><span class="p">,</span>   <span class="mf">4.37774898e-06</span><span class="p">,</span>  <span class="o">-</span><span class="mf">5.09674338e-06</span><span class="p">]]),</span>
- <span class="n">array</span><span class="p">([</span><span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="kc">False</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">bool</span><span class="p">))</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">a</span><span class="p">,</span><span class="n">b</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">precomputations_gravity</span><span class="p">(</span><span class="n">interp_data_grav</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="p">[</span><span class="mf">2.92</span><span class="p">,</span> <span class="mf">3.1</span><span class="p">,</span> <span class="mf">2.92</span><span class="p">,</span> <span class="mf">2.61</span><span class="p">,</span> <span class="mf">2.61</span><span class="p">])</span>
 </pre></div>
 </div>
 <p>Now the generation of the geomodel will be an operation embedded in a
 larger tree.</p>
-<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">theano</span>
-<span class="kn">import</span> <span class="nn">theano.tensor</span> <span class="kn">as</span> <span class="nn">T</span>
-<span class="n">geomodel</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">OpFromGraph</span><span class="p">(</span><span class="n">interp_data_grav</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">input_parameters_list</span><span class="p">(),</span>
-                              <span class="n">interp_data_grav</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">compute_geological_model</span><span class="p">(</span><span class="n">n_faults</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="bp">True</span><span class="p">),</span>
-                              <span class="n">on_unused_input</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span>
-                            <span class="p">)</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># import theano</span>
+<span class="c1"># import theano.tensor as T</span>
+<span class="c1"># geomodel = theano.OpFromGraph(interp_data_grav.interpolator.tg.input_parameters_list(),</span>
+<span class="c1">#                               interp_data_grav.interpolator.tg.compute_geological_model(n_faults=0, compute_all=True),</span>
+<span class="c1">#                               on_unused_input=&#39;ignore&#39;,</span>
+<span class="c1">#                             )</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">g</span> <span class="o">=</span> <span class="n">interp_data_grav</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">input_parameters_list</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">g</span><span class="o">.</span><span class="n">type</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">TensorType</span><span class="p">(</span><span class="n">float64</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data_grav</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">tg</span><span class="o">.</span><span class="n">n_formation</span><span class="o">.</span><span class="n">get_value</span><span class="p">()</span><span class="o">.</span><span class="n">dtype</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">dtype</span><span class="p">(</span><span class="s1">&#39;int64&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">theano</span>
@@ -318,7 +354,9 @@ the cell above) by a stochastic pymc3 object. Then with the new arrays
 we just have to call the theano operation and pymc will do the rest</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># This is the creation of the model</span>
 <span class="kn">import</span> <span class="nn">pymc3</span> <span class="kn">as</span> <span class="nn">pm</span>
-<span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">compute_test_value</span> <span class="o">=</span> <span class="s1">&#39;off&#39;</span>
+
+<span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">compute_test_value</span> <span class="o">=</span> <span class="s1">&#39;warn&#39;</span>
+<span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float64&#39;</span>
 <span class="c1">#theano.config.warn_float64 = &#39;warn&#39;</span>
 <span class="n">model</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Model</span><span class="p">()</span>
 <span class="k">with</span> <span class="n">model</span><span class="p">:</span>
@@ -327,11 +365,19 @@ we just have to call the theano operation and pymc will do the rest</p>
     <span class="n">Z_rest</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s1">&#39;Z_unc_rest&#39;</span><span class="p">,</span>
        <span class="n">interp_data_grav</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">pandas_rest_layer_points</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span>
        <span class="n">interp_data_grav</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">pandas_rest_layer_points</span><span class="p">[</span><span class="s1">&#39;Z_std&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span>
-                  <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">66</span><span class="p">))</span>
+                  <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">66</span><span class="p">))</span>
 
-    <span class="n">Z_ref</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s1">&#39;Z_unc_ref&#39;</span><span class="p">,</span> <span class="n">interp_data_grav</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">pandas_ref_layer_points_rep</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span>
-              <span class="n">interp_data_grav</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">pandas_ref_layer_points_rep</span><span class="p">[</span><span class="s1">&#39;Z_std&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span>
-              <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;float32&#39;</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">66</span><span class="p">))</span>
+    <span class="n">Z_ref</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s1">&#39;Z_unc_ref&#39;</span><span class="p">,</span> <span class="n">interp_data_grav</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">pandas_ref_layer_points_rep</span><span class="p">[</span><span class="s1">&#39;Z&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span>
+              <span class="n">interp_data_grav</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">pandas_ref_layer_points_rep</span><span class="p">[</span><span class="s1">&#39;Z_std&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float32&#39;</span><span class="p">),</span>
+              <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">66</span><span class="p">))</span>
+
+    <span class="n">dip_unc</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s1">&#39;dip_unc&#39;</span><span class="p">,</span> <span class="n">interp_data_grav</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;dip&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">(),</span>
+                        <span class="n">interp_data_grav</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;dip_std&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">(),</span>
+                       <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">41</span><span class="p">))</span>
+
+    <span class="n">azimuth_unc</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s1">&#39;azimuth_unc&#39;</span><span class="p">,</span> <span class="n">interp_data_grav</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;azimuth&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">(),</span>
+                            <span class="n">interp_data_grav</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">foliations</span><span class="p">[</span><span class="s1">&#39;azimuth_std&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">(),</span>
+                       <span class="n">dtype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">41</span><span class="p">))</span>
 
 <span class="c1">#     Z_unc = pm.Normal(&#39;Z_unc&#39;, interp_data_grav.geo_data_res.interfaces[&#39;Z&#39;].astype(&#39;float32&#39;),</span>
 <span class="c1">#                       interp_data_grav.geo_data_res.interfaces[&#39;Z_std&#39;].astype(&#39;float32&#39;), dtype=&#39;float32&#39;, shape= (70))</span>
@@ -352,11 +398,30 @@ we just have to call the theano operation and pymc will do the rest</p>
     <span class="n">input_sh</span><span class="p">[</span><span class="mi">5</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">],</span> <span class="n">Z_rest</span><span class="p">)</span>
 
     <span class="c1"># With the stochastic parameters we create the geomodel result:</span>
-    <span class="n">geo_model</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Deterministic</span><span class="p">(</span><span class="s1">&#39;GemPy&#39;</span><span class="p">,</span> <span class="n">geomodel</span><span class="p">(</span><span class="n">input_sh</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">input_sh</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">input_sh</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+    <span class="n">Forw</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">Deterministic</span><span class="p">(</span><span class="s1">&#39;GemPy&#39;</span><span class="p">,</span> <span class="n">geomodel</span><span class="p">(</span><span class="n">input_sh</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">input_sh</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">input_sh</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
                                                    <span class="n">input_sh</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">input_sh</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">input_sh</span><span class="p">[</span><span class="mi">5</span><span class="p">]))</span>
+
+    <span class="c1"># Calibration parameters</span>
+    <span class="n">F_min</span><span class="p">,</span> <span class="n">F_max</span> <span class="o">=</span>  <span class="n">T</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Forw</span><span class="p">),</span> <span class="n">T</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Forw</span><span class="p">)</span>   <span class="c1">#36.630742, 36.651496    #30.159309, 30.174104#</span>
+    <span class="n">F_range</span> <span class="o">=</span> <span class="n">F_max</span> <span class="o">-</span> <span class="n">F_min</span>
+    <span class="n">F_mid</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">F_max</span><span class="o">+</span><span class="n">F_min</span><span class="p">)</span>
+
+    <span class="n">Reescaled_forw</span> <span class="o">=</span> <span class="n">grav_real_mid</span> <span class="o">+</span> <span class="p">(</span><span class="n">Forw</span> <span class="o">-</span> <span class="n">F_mid</span><span class="p">)</span> <span class="o">/</span> <span class="n">F_range</span> <span class="o">*</span> <span class="n">grav_real_range</span>
+
+    <span class="n">e_sq</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">Reescaled_forw</span> <span class="o">-</span> <span class="p">(</span><span class="n">grav_real_th</span><span class="p">))))</span>
+
+    <span class="n">Y_obs</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">HalfCauchy</span><span class="p">(</span><span class="s1">&#39;Y_obs&#39;</span><span class="p">,</span> <span class="n">beta</span><span class="o">=</span><span class="n">e_sq</span><span class="p">,</span> <span class="n">observed</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">compute_test_value</span> <span class="o">=</span> <span class="s1">&#39;ignore&#39;</span>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">debug</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1">#import theano.tensor as T</span>
+<span class="c1">#import pymc3 as pm</span>
+<span class="c1">#pm.HalfCauchy?</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">compute_test_value</span> <span class="o">=</span> <span class="s1">&#39;off&#39;</span>
 <span class="c1"># This is the sampling</span>
 <span class="c1"># BEFORE RUN THIS FOR LONG CHECK IN THE MODULE THEANOGRAF THAT THE FLAG</span>
 <span class="c1"># THEANO OPTIMIZER IS IN &#39;fast_run&#39;!!</span>
@@ -366,17 +431,10 @@ we just have to call the theano operation and pymc will do the rest</p>
     <span class="n">trace</span> <span class="o">=</span> <span class="n">pm</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="n">tune</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span> <span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span>100%|██████████| 40/40 [01:36&lt;00:00,  2.25s/it]/home/miguel/anaconda3/lib/python3.6/site-packages/pymc3/step_methods/hmc/nuts.py:418: UserWarning: Chain 0 contains only 30 samples.
-  % (self._chain_id, n))
-/home/miguel/anaconda3/lib/python3.6/site-packages/pymc3/step_methods/hmc/nuts.py:440: UserWarning: The acceptance probability in chain 0 does not match the target. It is 0.955144655704, but should be close to 0.8. Try to increase the number of tuning steps.
-  % (self._chain_id, mean_accept, target_accept))
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">debug</span>
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">trace</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s1">&#39;GemPy&#39;</span><span class="p">)[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span>  <span class="n">trace</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s1">&#39;GemPy&#39;</span><span class="p">)[</span><span class="mi">15</span><span class="p">]</span>
-</pre></div>
-</div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">array</span><span class="p">([</span><span class="o">-</span><span class="mf">0.00171852</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00116444</span><span class="p">,</span> <span class="o">-</span><span class="mf">0.00116444</span><span class="p">,</span> <span class="o">...</span><span class="p">,</span>  <span class="mf">0.</span>        <span class="p">,</span>
-        <span class="mf">0.</span>        <span class="p">,</span>  <span class="mf">0.</span>        <span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">float32</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
@@ -384,10 +442,6 @@ we just have to call the theano operation and pymc will do the rest</p>
 <span class="n">plt</span><span class="o">.</span><span class="n">colorbar</span><span class="p">()</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">matplotlib</span><span class="o">.</span><span class="n">colorbar</span><span class="o">.</span><span class="n">Colorbar</span> <span class="n">at</span> <span class="mh">0x7f75f9def2e8</span><span class="o">&gt;</span>
-</pre></div>
-</div>
-<img alt="../_images/ch4_17_1.png" src="../_images/ch4_17_1.png" />
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
     <span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">trace</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s1">&#39;GemPy&#39;</span><span class="p">)[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="mi">18</span><span class="p">,</span>
@@ -395,58 +449,11 @@ we just have to call the theano operation and pymc will do the rest</p>
     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
 </div>
-<img alt="../_images/ch4_18_0.png" src="../_images/ch4_18_0.png" />
-<img alt="../_images/ch4_18_1.png" src="../_images/ch4_18_1.png" />
-<img alt="../_images/ch4_18_2.png" src="../_images/ch4_18_2.png" />
-<img alt="../_images/ch4_18_3.png" src="../_images/ch4_18_3.png" />
-<img alt="../_images/ch4_18_4.png" src="../_images/ch4_18_4.png" />
-<img alt="../_images/ch4_18_5.png" src="../_images/ch4_18_5.png" />
-<img alt="../_images/ch4_18_6.png" src="../_images/ch4_18_6.png" />
-<img alt="../_images/ch4_18_7.png" src="../_images/ch4_18_7.png" />
-<img alt="../_images/ch4_18_8.png" src="../_images/ch4_18_8.png" />
-<img alt="../_images/ch4_18_9.png" src="../_images/ch4_18_9.png" />
-<img alt="../_images/ch4_18_10.png" src="../_images/ch4_18_10.png" />
-<img alt="../_images/ch4_18_11.png" src="../_images/ch4_18_11.png" />
-<img alt="../_images/ch4_18_12.png" src="../_images/ch4_18_12.png" />
-<img alt="../_images/ch4_18_13.png" src="../_images/ch4_18_13.png" />
-<img alt="../_images/ch4_18_14.png" src="../_images/ch4_18_14.png" />
-<img alt="../_images/ch4_18_15.png" src="../_images/ch4_18_15.png" />
-<img alt="../_images/ch4_18_16.png" src="../_images/ch4_18_16.png" />
-<img alt="../_images/ch4_18_17.png" src="../_images/ch4_18_17.png" />
-<img alt="../_images/ch4_18_18.png" src="../_images/ch4_18_18.png" />
-<img alt="../_images/ch4_18_19.png" src="../_images/ch4_18_19.png" />
-<img alt="../_images/ch4_18_20.png" src="../_images/ch4_18_20.png" />
-<img alt="../_images/ch4_18_21.png" src="../_images/ch4_18_21.png" />
-<img alt="../_images/ch4_18_22.png" src="../_images/ch4_18_22.png" />
-<img alt="../_images/ch4_18_23.png" src="../_images/ch4_18_23.png" />
-<img alt="../_images/ch4_18_24.png" src="../_images/ch4_18_24.png" />
-<img alt="../_images/ch4_18_25.png" src="../_images/ch4_18_25.png" />
-<img alt="../_images/ch4_18_26.png" src="../_images/ch4_18_26.png" />
-<img alt="../_images/ch4_18_27.png" src="../_images/ch4_18_27.png" />
-<img alt="../_images/ch4_18_28.png" src="../_images/ch4_18_28.png" />
-<img alt="../_images/ch4_18_29.png" src="../_images/ch4_18_29.png" />
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">---------------------------------------------------------------------------</span>
-
-<span class="ne">IndexError</span>                                <span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">)</span>
-
-<span class="o">&lt;</span><span class="n">ipython</span><span class="o">-</span><span class="nb">input</span><span class="o">-</span><span class="mi">13</span><span class="o">-</span><span class="mf">2e039459</span><span class="n">f740</span><span class="o">&gt;</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span><span class="p">()</span>
-      <span class="mi">1</span> <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-      <span class="mi">2</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">100</span><span class="p">):</span>
-<span class="o">----&gt;</span> <span class="mi">3</span>     <span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">trace</span><span class="o">.</span><span class="n">get_values</span><span class="p">(</span><span class="s1">&#39;GemPy&#39;</span><span class="p">)[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="mi">18</span><span class="p">,</span>
-      <span class="mi">4</span>                        <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-      <span class="mi">5</span>     <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
-
-
-<span class="ne">IndexError</span><span class="p">:</span> <span class="n">index</span> <span class="mi">30</span> <span class="ow">is</span> <span class="n">out</span> <span class="n">of</span> <span class="n">bounds</span> <span class="k">for</span> <span class="n">axis</span> <span class="mi">0</span> <span class="k">with</span> <span class="n">size</span> <span class="mi">30</span>
-</pre></div>
-</div>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">theano.printing</span> <span class="kn">import</span> <span class="n">pydotprint</span>
 
 <span class="n">pydotprint</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">logpt</span><span class="p">)</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">The</span> <span class="n">output</span> <span class="n">file</span> <span class="ow">is</span> <span class="n">available</span> <span class="n">at</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">miguel</span><span class="o">/.</span><span class="n">theano</span><span class="o">/</span><span class="n">compiledir_Linux</span><span class="o">-</span><span class="mf">4.10</span><span class="o">--</span><span class="n">generic</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="k">with</span><span class="o">-</span><span class="n">debian</span><span class="o">-</span><span class="n">stretch</span><span class="o">-</span><span class="n">sid</span><span class="o">-</span><span class="n">x86_64</span><span class="o">-</span><span class="mf">3.6</span><span class="o">.</span><span class="mi">1</span><span class="o">-</span><span class="mi">64</span><span class="o">/</span><span class="n">theano</span><span class="o">.</span><span class="n">pydotprint</span><span class="o">.</span><span class="n">cpu</span><span class="o">.</span><span class="n">png</span>
-</pre></div>
 </div>
 </div>
 
@@ -458,17 +465,20 @@ we just have to call the theano operation and pymc will do the rest</p>
         <div class="sphinxsidebarwrapper">
 <h3><a href="../index.html">Table Of Contents</a></h3>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to GemPy’s (v 0.9) documentation!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../Kriging.html">Kriging structure of the <em>Potential field method</em></a></li>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">Welcome to GemPy’s (v 1.0) documentation!</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="ch1.html">Chapter 1: GemPy Basic</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ch1.html">Chapter 1: Basics of geological modeling with GemPy</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ch2.html">Chapter 2: A real example. Importing data and setting series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ch3.html">Chapter 3: Stochastic Simulations in pymc2</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#real-gravity">Real gravity</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="ch5.html">Chapter 5: Computing forward gravity. (Under development)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ch6.html">Tutorial Chapter 6: Analyzing Topology (WIP)</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
 </ul>
 <div class="relations">

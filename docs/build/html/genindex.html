@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Index &#8212; GemPy beta documentation</title>
+    <title>Index &#8212; GemPy rc documentation</title>
     
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    './',
-        VERSION:     'beta',
+        VERSION:     'rc',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true,
@@ -118,8 +118,6 @@
 </li>
       <li><a href="code.html#topology.compare_graphs">compare_graphs() (in module topology)</a>
 </li>
-      <li><a href="code.html#data_management.InterpolatorData.compile_th_fn">compile_th_fn() (data_management.InterpolatorData method)</a>
-</li>
       <li><a href="code.html#theano_graph.TheanoGraph.compute_a_fault">compute_a_fault() (theano_graph.TheanoGraph method)</a>
 </li>
       <li><a href="code.html#theano_graph.TheanoGraph.compute_a_series">compute_a_series() (theano_graph.TheanoGraph method)</a>
@@ -130,10 +128,10 @@
 </li>
       <li><a href="code.html#gempy_front.compute_model">compute_model() (in module gempy_front)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#posterior_analysis.compute_posterior_models_all">compute_posterior_models_all() (in module posterior_analysis)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#posterior_analysis.compute_probability_lithology">compute_probability_lithology() (in module posterior_analysis)</a>
 </li>
       <li><a href="code.html#data_management.InputData.count_faults">count_faults() (data_management.InputData method)</a>
@@ -152,6 +150,8 @@
 </li>
       <li><a href="code.html#visualization.vtkVisualization.create_foliation">create_foliation() (visualization.vtkVisualization method)</a>
 </li>
+      <li><a href="code.html#gempy_front.create_from_geomodeller_xml">create_from_geomodeller_xml() (in module gempy_front)</a>
+</li>
       <li><a href="code.html#data_management.GridClass.create_regular_grid_3d">create_regular_grid_3d() (data_management.GridClass method)</a>
 </li>
       <li><a href="code.html#visualization.vtkVisualization.create_ren_list">create_ren_list() (visualization.vtkVisualization method)</a>
@@ -160,7 +160,7 @@
 </li>
       <li><a href="code.html#visualization.vtkVisualization.create_surface">create_surface() (visualization.vtkVisualization method)</a>
 </li>
-      <li><a href="code.html#visualization.vtkVisualization.create_surface_points">create_surface_points() (visualization.vtkVisualization static method)</a>
+      <li><a href="code.html#visualization.vtkVisualization.create_surface_points">create_surface_points() (visualization.vtkVisualization method)</a>
 </li>
       <li><a href="code.html#visualization.vtkVisualization.create_surface_triangles">create_surface_triangles() (visualization.vtkVisualization static method)</a>
 </li>
@@ -171,8 +171,6 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#module-data_management">data_management (module)</a>
-</li>
-      <li><a href="code.html#data_management.InterpolatorData.InterpolatorTheano.data_prep">data_prep() (data_management.InterpolatorData.InterpolatorTheano method)</a>
 </li>
       <li><a href="code.html#data_management.InputData.data_to_pickle">data_to_pickle() (data_management.InputData method)</a>
 
@@ -187,11 +185,7 @@
       <li><a href="code.html#data_management.InputData.drop_orientations">drop_orientations() (data_management.InputData method)</a>
 </li>
       <li><a href="code.html#dtype">dtype</a>
-
-      <ul>
-        <li><a href="code.html#data_management.InterpolatorData.dtype">(data_management.InterpolatorData attribute)</a>
 </li>
-      </ul></li>
   </ul></td>
 </tr></table>
 
@@ -229,17 +223,9 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#geo_data">geo_data</a>
-
-      <ul>
-        <li><a href="code.html#data_management.InterpolatorData.geo_data">(data_management.InterpolatorData attribute)</a>
 </li>
-      </ul></li>
       <li><a href="code.html#geo_data_res">geo_data_res</a>
-
-      <ul>
-        <li><a href="code.html#data_management.InterpolatorData.geo_data_res">(data_management.InterpolatorData attribute)</a>
 </li>
-      </ul></li>
       <li><a href="code.html#module-geophysics">geophysics (module)</a>
 </li>
       <li><a href="code.html#topology.get_centroids">get_centroids() (in module topology)</a>
@@ -258,14 +244,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#gempy_front.get_grid">get_grid() (in module gempy_front)</a>
 </li>
-      <li><a href="code.html#data_management.InterpolatorData.get_input_data">get_input_data() (data_management.InterpolatorData method)</a>
+      <li><a href="code.html#gempy_front.get_kriging_parameters">get_kriging_parameters() (in module gempy_front)</a>
 </li>
-      <li><a href="code.html#data_management.InterpolatorData.InterpolatorTheano.get_kriging_parameters">get_kriging_parameters() (data_management.InterpolatorData.InterpolatorTheano method)</a>
-
-      <ul>
-        <li><a href="code.html#gempy_front.get_kriging_parameters">(in module gempy_front)</a>
+      <li><a href="code.html#data_management.get_orientation">get_orientation() (in module data_management)</a>
 </li>
-      </ul></li>
       <li><a href="code.html#gempy_front.get_sequential_pile">get_sequential_pile() (in module gempy_front)</a>
 </li>
       <li><a href="code.html#gempy_front.get_series">get_series() (in module gempy_front)</a>
@@ -290,21 +272,13 @@
 </li>
       <li><a href="code.html#data_management.InputData">InputData (class in data_management)</a>
 </li>
-      <li><a href="code.html#theano_graph.TheanoGraph.interface_contribution">interface_contribution() (theano_graph.TheanoGraph method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.html#theano_graph.TheanoGraph.interface_contribution">interface_contribution() (theano_graph.TheanoGraph method)</a>
+</li>
       <li><a href="code.html#data_management.InputData.Interfaces">Interfaces (data_management.InputData attribute)</a>, <a href="code.html#data_management.InputData.Interfaces">[1]</a>
 </li>
       <li><a href="code.html#interpolator">interpolator</a>
-
-      <ul>
-        <li><a href="code.html#data_management.InterpolatorData.interpolator">(data_management.InterpolatorData attribute)</a>
-</li>
-      </ul></li>
-      <li><a href="code.html#data_management.InterpolatorData">InterpolatorData (class in data_management)</a>
-</li>
-      <li><a href="code.html#data_management.InterpolatorData.InterpolatorTheano">InterpolatorData.InterpolatorTheano (class in data_management)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -345,11 +319,7 @@
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#data_management.InputData.order_table">order_table() (data_management.InputData method)</a>
-
-      <ul>
-        <li><a href="code.html#data_management.InterpolatorData.InterpolatorTheano.order_table">(data_management.InterpolatorData.InterpolatorTheano method)</a>
 </li>
-      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#data_management.InputData.orientations">orientations (data_management.InputData attribute)</a>, <a href="code.html#data_management.InputData.orientations">[1]</a>, <a href="code.html#data_management.InputData.orientations">[2]</a>
@@ -360,6 +330,8 @@
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.html#data_management.InputData.plane_fit">plane_fit() (data_management.InputData static method)</a>
+</li>
       <li><a href="code.html#visualization.vtkVisualization.planesCallback">planesCallback() (visualization.vtkVisualization method)</a>
 </li>
       <li><a href="code.html#visualization.PlotData2D.plot_block_section">plot_block_section() (visualization.PlotData2D method)</a>
@@ -372,14 +344,14 @@
       </ul></li>
       <li><a href="code.html#gempy_front.plot_data_3D">plot_data_3D() (in module gempy_front)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#gempy_front.plot_scalar_field">plot_scalar_field() (in module gempy_front)</a>
 
       <ul>
         <li><a href="code.html#visualization.PlotData2D.plot_scalar_field">(visualization.PlotData2D method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#gempy_front.plot_section">plot_section() (in module gempy_front)</a>
 </li>
       <li><a href="code.html#gempy_front.plot_surfaces_3D">plot_surfaces_3D() (in module gempy_front)</a>
@@ -406,12 +378,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.html#data_management.InterpolatorData.rescale_data">rescale_data() (data_management.InterpolatorData method)</a>
-
-      <ul>
-        <li><a href="code.html#gempy_front.rescale_data">(in module gempy_front)</a>
+      <li><a href="code.html#gempy_front.rescale_data">rescale_data() (in module gempy_front)</a>
 </li>
-      </ul></li>
       <li><a href="code.html#gempy_front.rescale_factor_default">rescale_factor_default() (in module gempy_front)</a>
 </li>
       <li><a href="code.html#data_management.InputData.reset_indices">reset_indices() (data_management.InputData method)</a>
@@ -426,8 +394,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#theano_graph.TheanoGraph.scalar_field_at_all">scalar_field_at_all() (theano_graph.TheanoGraph method)</a>
 </li>
-      <li><a href="code.html#theano_graph.TheanoGraph.scalar_field_at_interfaces">scalar_field_at_interfaces() (theano_graph.TheanoGraph method)</a>
-</li>
       <li><a href="code.html#gempy_front.select_series">select_series() (in module gempy_front)</a>
 </li>
       <li><a href="code.html#data_management.InputData.series">series (data_management.InputData attribute)</a>
@@ -436,26 +402,14 @@
 </li>
       <li><a href="code.html#visualization.vtkVisualization.set_camera_backcolor">set_camera_backcolor() (visualization.vtkVisualization method)</a>
 </li>
-      <li><a href="code.html#data_management.InterpolatorData.InterpolatorTheano.set_densities">set_densities() (data_management.InterpolatorData.InterpolatorTheano method)</a>
-</li>
       <li><a href="code.html#data_management.InputData.set_fault_relation_matrix">set_fault_relation_matrix() (data_management.InputData method)</a>
 </li>
       <li><a href="code.html#data_management.InputData.set_faults">set_faults() (data_management.InputData method)</a>
 </li>
       <li><a href="code.html#data_management.InputData.set_formation_number">set_formation_number() (data_management.InputData method)</a>
-
-      <ul>
-        <li><a href="code.html#data_management.InterpolatorData.InterpolatorTheano.set_formation_number">(data_management.InterpolatorData.InterpolatorTheano method)</a>
-</li>
-      </ul></li>
-      <li><a href="code.html#data_management.InterpolatorData.set_geo_data_rescaled">set_geo_data_rescaled() (data_management.InterpolatorData method)</a>
-</li>
-      <li><a href="code.html#data_management.InterpolatorData.set_gravity_precomputation">set_gravity_precomputation() (data_management.InterpolatorData method)</a>
 </li>
       <li><a href="code.html#data_management.InputData.set_grid">set_grid() (data_management.InputData method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#data_management.InputData.set_interfaces">set_interfaces() (data_management.InputData method)</a>
 
       <ul>
@@ -464,6 +418,8 @@
         <li><a href="code.html#visualization.vtkVisualization.set_interfaces">(visualization.vtkVisualization method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#gempy_front.set_interpolation_data">set_interpolation_data() (in module gempy_front)</a>
 </li>
       <li><a href="code.html#data_management.InputData.set_orientations">set_orientations() (data_management.InputData method)</a>
@@ -481,10 +437,6 @@
 </li>
       </ul></li>
       <li><a href="code.html#visualization.vtkVisualization.set_surfaces">set_surfaces() (visualization.vtkVisualization method)</a>
-</li>
-      <li><a href="code.html#data_management.InterpolatorData.InterpolatorTheano.set_theano_shared_parameteres">set_theano_shared_parameteres() (data_management.InterpolatorData.InterpolatorTheano method)</a>
-</li>
-      <li><a href="code.html#data_management.InterpolatorData.InterpolatorTheano.set_z_comp">set_z_comp() (data_management.InterpolatorData.InterpolatorTheano method)</a>
 </li>
       <li><a href="code.html#theano_graph.TheanoGraph.solve_kriging">solve_kriging() (theano_graph.TheanoGraph method)</a>
 </li>
@@ -518,8 +470,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#theano_graph.TheanoGraph.universal_matrix">universal_matrix() (theano_graph.TheanoGraph method)</a>
 </li>
-      <li><a href="code.html#data_management.InterpolatorData.update_interpolator">update_interpolator() (data_management.InterpolatorData method)</a>
-</li>
   </ul></td>
 </tr></table>
 
@@ -548,9 +498,9 @@
         <div class="sphinxsidebarwrapper">
 <h3><a href="index.html">Table Of Contents</a></h3>
 <ul>
-<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to GemPy’s (v 0.9) documentation!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="Kriging.html">Kriging structure of the <em>Potential field method</em></a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Welcome to GemPy’s (v 1.0) documentation!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Theory</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
 </ul>
 <div class="relations">

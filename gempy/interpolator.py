@@ -1,18 +1,18 @@
 """
-    This file is part of gempy.
+This file is part of gempy.
 
-    gempy is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+gempy is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
 
-    gempy is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+gempy is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
 
-    You should have received a copy of the GNU General Public License
-    along with gempy.  If not, see <http://www.gnu.org/licenses/>.
+You should have received a copy of the GNU General Public License
+along with gempy.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 import os
@@ -577,7 +577,7 @@ class InterpolatorData:
             # Just grid. I add a small number to avoid problems with the origin point
 
 
-            self.tg.grid_val_T.set_value(np.cast[self.dtype](x_to_interpolate + 10e-6))
+            self.tg.grid_val_T.set_value(np.cast[self.dtype](x_to_interpolate + 10e-9))
 
             # Universal grid
             self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](universal_matrix + 1e-10))

@@ -44,7 +44,7 @@ theano.config.profile = False
 
 class TheanoGraph(object):
     """
-    This class is used to help to divide the construction of the graph into sensical parts. All its methods build a part
+    This class is used to help to divide the construction of the graph into sensical parts. All its methods buildDEP2 a part
     of the graph. Every method can be seen as a branch and collection of branches until the last method that will be the
     whole tree. Every part of the graph could be compiled separately but as we increase the complexity the input of each
     of these methods is more and more difficult to provide (if you are in a branch close to the trunk you need all the

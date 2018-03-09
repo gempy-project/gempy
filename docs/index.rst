@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to GemPy's (v 1.0) documentation!
+Welcome to GemPy's (v 0.9) documentation!
 =========================================
 Software for 3D structural geologic implicit modeling in Python.
 ****************************************************************
@@ -76,11 +76,11 @@ For a more detailed elaboration of the theory behind GemPy, take a look at the u
 Contents:
 
 .. toctree::
-   :glob:
+   :maxdepth: 3
 
    self
+   Kriging
    tutorial
-   theory
    code
 
 

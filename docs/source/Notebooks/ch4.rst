@@ -11,6 +11,7 @@ Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)
     # Importing gempy
     import gempy as gp
     
+    
     # Embedding matplotlib figures into the notebooks
     %matplotlib inline
     
@@ -20,7 +21,7 @@ Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)
 .. code:: ipython3
 
     # Importing the data from csv files and settign extent and resolution
-    geo_data = gp.create_data([696000-10000,747000 + 20600,6863000 - 20600,6950000 + 20600,-20000, 600],[50, 50, 50],
+    geo_data = gp.create_data([696000-10000,747000 + 20600,6863000 - 20600,6950000 + 20600,-20000, 600],[10, 10, 10],
                              path_f = os.pardir+"/input_data/a_Foliations.csv",
                              path_i = os.pardir+"/input_data/a_Points.csv")
 
@@ -41,7 +42,7 @@ Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7f76e43129e8>
+    <gempy.sequential_pile.StratigraphicPile at 0x7ff65c502518>
 
 
 
@@ -55,11 +56,11 @@ Setting uncertainties adding the values to the Dataframe.
 
     geo_data.interfaces['X_std'] = None
     geo_data.interfaces['Y_std'] = 0
-    geo_data.interfaces['Z_std'] = 800
+    geo_data.interfaces['Z_std'] = 100
     
     geo_data.foliations['X_std'] = None
     geo_data.foliations['Y_std'] = 0
-    geo_data.foliations['Z_std'] = 0
+    geo_data.foliations['Z_std'] = 100
     
     geo_data.foliations['dip_std'] = 10
     geo_data.foliations['azimuth_std'] = 10
@@ -91,8 +92,8 @@ Setting uncertainties adding the values to the Dataframe.
           <th>X</th>
           <th>Y</th>
           <th>Z</th>
-          <th>azimuth</th>
           <th>dip</th>
+          <th>azimuth</th>
           <th>polarity</th>
           <th>formation</th>
           <th>series</th>
@@ -116,8 +117,8 @@ Setting uncertainties adding the values to the Dataframe.
           <td>722403.8130</td>
           <td>6880913.25</td>
           <td>470.707065</td>
-          <td>123.702047</td>
           <td>80.0</td>
+          <td>123.702047</td>
           <td>1</td>
           <td>EarlyGranite</td>
           <td>EarlyGranite_Series</td>
@@ -130,7 +131,7 @@ Setting uncertainties adding the values to the Dataframe.
           <td>0.173648</td>
           <td>None</td>
           <td>0</td>
-          <td>0</td>
+          <td>100</td>
           <td>10</td>
           <td>10</td>
         </tr>
@@ -139,8 +140,8 @@ Setting uncertainties adding the values to the Dataframe.
           <td>718928.3440</td>
           <td>6883605.50</td>
           <td>509.462245</td>
-          <td>176.274084</td>
           <td>80.0</td>
+          <td>176.274084</td>
           <td>1</td>
           <td>EarlyGranite</td>
           <td>EarlyGranite_Series</td>
@@ -153,7 +154,7 @@ Setting uncertainties adding the values to the Dataframe.
           <td>0.173648</td>
           <td>None</td>
           <td>0</td>
-          <td>0</td>
+          <td>100</td>
           <td>10</td>
           <td>10</td>
         </tr>
@@ -162,8 +163,8 @@ Setting uncertainties adding the values to the Dataframe.
           <td>720690.5630</td>
           <td>6882822.25</td>
           <td>489.909423</td>
-          <td>254.444427</td>
           <td>80.0</td>
+          <td>254.444427</td>
           <td>1</td>
           <td>EarlyGranite</td>
           <td>EarlyGranite_Series</td>
@@ -176,7 +177,7 @@ Setting uncertainties adding the values to the Dataframe.
           <td>0.173648</td>
           <td>None</td>
           <td>0</td>
-          <td>0</td>
+          <td>100</td>
           <td>10</td>
           <td>10</td>
         </tr>
@@ -185,8 +186,8 @@ Setting uncertainties adding the values to the Dataframe.
           <td>721229.0005</td>
           <td>6880766.25</td>
           <td>477.680894</td>
-          <td>255.876557</td>
           <td>80.0</td>
+          <td>255.876557</td>
           <td>1</td>
           <td>EarlyGranite</td>
           <td>EarlyGranite_Series</td>
@@ -199,7 +200,7 @@ Setting uncertainties adding the values to the Dataframe.
           <td>0.173648</td>
           <td>None</td>
           <td>0</td>
-          <td>0</td>
+          <td>100</td>
           <td>10</td>
           <td>10</td>
         </tr>
@@ -208,8 +209,8 @@ Setting uncertainties adding the values to the Dataframe.
           <td>710459.8440</td>
           <td>6880521.50</td>
           <td>511.839758</td>
-          <td>232.658556</td>
           <td>80.0</td>
+          <td>232.658556</td>
           <td>1</td>
           <td>EarlyGranite</td>
           <td>EarlyGranite_Series</td>
@@ -222,13 +223,66 @@ Setting uncertainties adding the values to the Dataframe.
           <td>0.173648</td>
           <td>None</td>
           <td>0</td>
-          <td>0</td>
+          <td>100</td>
           <td>10</td>
           <td>10</td>
         </tr>
       </tbody>
     </table>
     </div>
+
+
+
+Real gravity
+------------
+
+.. code:: ipython3
+
+    import matplotlib.pyplot as plt
+    import pandas as pn
+    grav_real = pn.read_csv('../input_data/Sst_grav_2000.xyz', header=None, names = ['X', 'Y', 'N', 'G'], delim_whitespace=True)
+    plt.imshow(grav_real['G'].values.reshape(31,21), extent=[7.050000e+05,747000,6863000,6950000], origin='lower', cmap='viridis')
+    fig = plt.gcf()
+    fig.set_size_inches(18.5, 10.5)
+
+
+
+.. image:: ch4_files/ch4_7_0.png
+
+
+.. code:: ipython3
+
+    # Calibration parameters
+    # F_min, F_max =  np.min(Forw), np.max(Forw)   #36.630742, 36.651496    #30.159309, 30.174104#
+    # F_range = F_max - F_min
+    # F_mid = 0.5*(F_max+F_min)
+    
+    rs_min, rs_max = np.min(grav_real['G']), np.max(grav_real['G'])
+    rs_range = rs_max - rs_min
+    rs_mid = 0.5*(rs_max+rs_min)
+    
+    #Rescaling
+    
+    # rs_mid + (grid - m_mid) / m_range * rs_range
+    # Reescaled_forw = rs_mid + (Forw - F_mid) / F_range * rs_range
+
+.. code:: ipython3
+
+    import theano
+    grav_real_mid = theano.shared(rs_mid, 'Grav_real_mid')
+    grav_real_range = theano.shared(rs_range, 'Grav_real_range')
+    grav_real_th = theano.shared(grav_real['G'].as_matrix())
+
+.. code:: ipython3
+
+    grav_real_th.get_value().shape
+
+
+
+
+.. parsed-literal::
+
+    (651,)
 
 
 
@@ -240,60 +294,65 @@ Setting uncertainties adding the values to the Dataframe.
 
 .. code:: ipython3
 
-    interp_data_grav = gp.InterpolatorInput(geo_data, output='gravity', compile_theano=False,
+    interp_data_grav = gp.InterpolatorInput(geo_data, output='gravity', compile_theano=False, dtype='float64',
                                        u_grade=[3, 3, 3])
 
 .. code:: ipython3
 
     gp.set_geophysics_obj(interp_data_grav,  [7.050000e+05,747000,6863000,6925000,-20000, 200],
-                                                 [50,50], )
+                                                 [31,21])
 
 
 
 
 .. parsed-literal::
 
-    <gempy.GeoPhysics.GeoPhysicsPreprocessing_pro at 0x7f7651566b70>
+    <gempy.GeoPhysics.GeoPhysicsPreprocessing_pro at 0x7fe3dc7510b8>
 
 
 
 .. code:: ipython3
 
-    gp.precomputations_gravity(interp_data_grav, 25, [2.92, 3.1, 2.92, 2.61, 2.61])
-
-
-
-
-.. parsed-literal::
-
-    (array([[  2.32206772e-05,   1.38317570e-05,   4.37779836e-06, ...,
-               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
-            [  2.32206772e-05,   1.38317570e-05,   4.37779837e-06, ...,
-               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
-            [  2.32206772e-05,   1.38317570e-05,   4.37779837e-06, ...,
-               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
-            ..., 
-            [  2.32204160e-05,   1.38316011e-05,   4.37774898e-06, ...,
-               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
-            [  2.32204160e-05,   1.38316011e-05,   4.37774898e-06, ...,
-               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06],
-            [  2.32204160e-05,   1.38316011e-05,   4.37774898e-06, ...,
-               1.38316011e-05,   4.37774898e-06,  -5.09674338e-06]]),
-     array([False, False, False, ..., False, False, False], dtype=bool))
-
-
+    a,b = gp.precomputations_gravity(interp_data_grav, 24, [2.92, 3.1, 2.92, 2.61, 2.61])
 
 Now the generation of the geomodel will be an operation embedded in a
 larger tree.
 
 .. code:: ipython3
 
-    import theano
-    import theano.tensor as T
-    geomodel = theano.OpFromGraph(interp_data_grav.interpolator.tg.input_parameters_list(),
-                                  interp_data_grav.interpolator.tg.compute_geological_model(n_faults=0, compute_all=True),
-                                  on_unused_input='ignore',
-                                )
+    # import theano
+    # import theano.tensor as T
+    # geomodel = theano.OpFromGraph(interp_data_grav.interpolator.tg.input_parameters_list(),
+    #                               interp_data_grav.interpolator.tg.compute_geological_model(n_faults=0, compute_all=True),
+    #                               on_unused_input='ignore',
+    #                             )
+
+.. code:: ipython3
+
+    g = interp_data_grav.interpolator.tg.input_parameters_list()[0]
+    g.type
+
+
+
+
+.. parsed-literal::
+
+    TensorType(float64, matrix)
+
+
+
+.. code:: ipython3
+
+    interp_data_grav.interpolator.tg.n_formation.get_value().dtype
+
+
+
+
+.. parsed-literal::
+
+    dtype('int64')
+
+
 
 .. code:: ipython3
 
@@ -320,7 +379,9 @@ we just have to call the theano operation and pymc will do the rest
 
     # This is the creation of the model
     import pymc3 as pm
-    theano.config.compute_test_value = 'off'
+    
+    theano.config.compute_test_value = 'warn'
+    dtype='float64'
     #theano.config.warn_float64 = 'warn'
     model = pm.Model()
     with model:
@@ -329,11 +390,19 @@ we just have to call the theano operation and pymc will do the rest
         Z_rest = pm.Normal('Z_unc_rest',
            interp_data_grav.interpolator.pandas_rest_layer_points['Z'].as_matrix().astype('float32'),
            interp_data_grav.interpolator.pandas_rest_layer_points['Z_std'].as_matrix().astype('float32'),
-                      dtype='float32', shape = (66))
+                      dtype=dtype, shape = (66))
         
-        Z_ref = pm.Normal('Z_unc_ref', interp_data_grav.interpolator.pandas_ref_layer_points_rep['Z'].astype('float32'),
-                  interp_data_grav.interpolator.pandas_ref_layer_points_rep['Z_std'].astype('float32'),
-                  dtype='float32', shape = (66))
+        Z_ref = pm.Normal('Z_unc_ref', interp_data_grav.interpolator.pandas_ref_layer_points_rep['Z'].as_matrix().astype('float32'),
+                  interp_data_grav.interpolator.pandas_ref_layer_points_rep['Z_std'].as_matrix().astype('float32'),
+                  dtype=dtype, shape = (66))
+        
+        dip_unc = pm.Normal('dip_unc', interp_data_grav.geo_data_res.foliations['dip'].as_matrix(),
+                            interp_data_grav.geo_data_res.foliations['dip_std'].as_matrix(),
+                           dtype=dtype, shape = (41))
+        
+        azimuth_unc = pm.Normal('azimuth_unc', interp_data_grav.geo_data_res.foliations['azimuth'].as_matrix(), 
+                                interp_data_grav.geo_data_res.foliations['azimuth_std'].as_matrix(),
+                           dtype=dtype, shape = (41))
         
     #     Z_unc = pm.Normal('Z_unc', interp_data_grav.geo_data_res.interfaces['Z'].astype('float32'),
     #                       interp_data_grav.geo_data_res.interfaces['Z_std'].astype('float32'), dtype='float32', shape= (70))
@@ -354,12 +423,33 @@ we just have to call the theano operation and pymc will do the rest
         input_sh[5][:, 2], Z_rest)
         
         # With the stochastic parameters we create the geomodel result:
-        geo_model = pm.Deterministic('GemPy', geomodel(input_sh[0], input_sh[1], input_sh[2],
+        Forw = pm.Deterministic('GemPy', geomodel(input_sh[0], input_sh[1], input_sh[2],
                                                        input_sh[3], input_sh[4], input_sh[5]))
+        
+        # Calibration parameters
+        F_min, F_max =  T.min(Forw), T.max(Forw)   #36.630742, 36.651496    #30.159309, 30.174104#
+        F_range = F_max - F_min
+        F_mid = 0.5*(F_max+F_min)
+        
+        Reescaled_forw = grav_real_mid + (Forw - F_mid) / F_range * grav_real_range
+        
+        e_sq = T.sqrt(T.sum(T.square(Reescaled_forw - (grav_real_th))))
+    
+        Y_obs = pm.HalfCauchy('Y_obs', beta=e_sq, observed=1000)
 
 .. code:: ipython3
 
-    theano.config.compute_test_value = 'ignore'
+    %debug
+
+.. code:: ipython3
+
+    #import theano.tensor as T
+    #import pymc3 as pm
+    #pm.HalfCauchy?
+
+.. code:: ipython3
+
+    theano.config.compute_test_value = 'off'
     # This is the sampling
     # BEFORE RUN THIS FOR LONG CHECK IN THE MODULE THEANOGRAF THAT THE FLAG 
     # THEANO OPTIMIZER IS IN 'fast_run'!!
@@ -368,48 +458,19 @@ we just have to call the theano operation and pymc will do the rest
         step = pm.NUTS()
         trace = pm.sample(30, tune=10, init=None, step=step, )
 
+.. code:: ipython3
 
-.. parsed-literal::
-
-    100%|██████████| 40/40 [01:36<00:00,  2.25s/it]/home/miguel/anaconda3/lib/python3.6/site-packages/pymc3/step_methods/hmc/nuts.py:418: UserWarning: Chain 0 contains only 30 samples.
-      % (self._chain_id, n))
-    /home/miguel/anaconda3/lib/python3.6/site-packages/pymc3/step_methods/hmc/nuts.py:440: UserWarning: The acceptance probability in chain 0 does not match the target. It is 0.955144655704, but should be close to 0.8. Try to increase the number of tuning steps.
-      % (self._chain_id, mean_accept, target_accept))
-    
-
+    %debug
 
 .. code:: ipython3
 
     trace.get_values('GemPy')[5] -  trace.get_values('GemPy')[15]
-
-
-
-
-.. parsed-literal::
-
-    array([-0.00171852, -0.00116444, -0.00116444, ...,  0.        ,
-            0.        ,  0.        ], dtype=float32)
-
-
 
 .. code:: ipython3
 
     import matplotlib.pyplot as plt
     plt.imshow(trace.get_values('GemPy')[-10].reshape(50,50), cmap='viridis', origin='lower', extent=[7.050000e+05,747000,6863000,6950000] )
     plt.colorbar()
-
-
-
-
-.. parsed-literal::
-
-    <matplotlib.colorbar.Colorbar at 0x7f75f9def2e8>
-
-
-
-
-.. image:: ch4_files/ch4_17_1.png
-
 
 .. code:: ipython3
 
@@ -419,154 +480,8 @@ we just have to call the theano operation and pymc will do the rest
                            direction='y', plot_data=False)
         plt.show()
 
-
-
-.. image:: ch4_files/ch4_18_0.png
-
-
-
-.. image:: ch4_files/ch4_18_1.png
-
-
-
-.. image:: ch4_files/ch4_18_2.png
-
-
-
-.. image:: ch4_files/ch4_18_3.png
-
-
-
-.. image:: ch4_files/ch4_18_4.png
-
-
-
-.. image:: ch4_files/ch4_18_5.png
-
-
-
-.. image:: ch4_files/ch4_18_6.png
-
-
-
-.. image:: ch4_files/ch4_18_7.png
-
-
-
-.. image:: ch4_files/ch4_18_8.png
-
-
-
-.. image:: ch4_files/ch4_18_9.png
-
-
-
-.. image:: ch4_files/ch4_18_10.png
-
-
-
-.. image:: ch4_files/ch4_18_11.png
-
-
-
-.. image:: ch4_files/ch4_18_12.png
-
-
-
-.. image:: ch4_files/ch4_18_13.png
-
-
-
-.. image:: ch4_files/ch4_18_14.png
-
-
-
-.. image:: ch4_files/ch4_18_15.png
-
-
-
-.. image:: ch4_files/ch4_18_16.png
-
-
-
-.. image:: ch4_files/ch4_18_17.png
-
-
-
-.. image:: ch4_files/ch4_18_18.png
-
-
-
-.. image:: ch4_files/ch4_18_19.png
-
-
-
-.. image:: ch4_files/ch4_18_20.png
-
-
-
-.. image:: ch4_files/ch4_18_21.png
-
-
-
-.. image:: ch4_files/ch4_18_22.png
-
-
-
-.. image:: ch4_files/ch4_18_23.png
-
-
-
-.. image:: ch4_files/ch4_18_24.png
-
-
-
-.. image:: ch4_files/ch4_18_25.png
-
-
-
-.. image:: ch4_files/ch4_18_26.png
-
-
-
-.. image:: ch4_files/ch4_18_27.png
-
-
-
-.. image:: ch4_files/ch4_18_28.png
-
-
-
-.. image:: ch4_files/ch4_18_29.png
-
-
-::
-
-
-    ---------------------------------------------------------------------------
-
-    IndexError                                Traceback (most recent call last)
-
-    <ipython-input-13-2e039459f740> in <module>()
-          1 import matplotlib.pyplot as plt
-          2 for i in range(100):
-    ----> 3     gp.plot_section(geo_data, trace.get_values('GemPy')[i][0, :], 18,
-          4                        direction='y', plot_data=False)
-          5     plt.show()
-
-
-    IndexError: index 30 is out of bounds for axis 0 with size 30
-
-
 .. code:: ipython3
 
     from theano.printing import pydotprint
     
     pydotprint(model.logpt)
-
-
-.. parsed-literal::
-
-    The output file is available at /home/miguel/.theano/compiledir_Linux-4.10--generic-x86_64-with-debian-stretch-sid-x86_64-3.6.1-64/theano.pydotprint.cpu.png
-
-
