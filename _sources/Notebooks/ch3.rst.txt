@@ -18,7 +18,7 @@ handling.
 .. code:: ipython3
 
     import sys, os
-    sys.path.append("../")
+    sys.path.append("../..")
     
     # import gempy
     import gempy as gp
@@ -30,6 +30,12 @@ handling.
     import numpy as np
     import pandas as pn
     import theano
+
+
+.. parsed-literal::
+
+    WARNING (theano.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+
 
 Initialize an example model
 ---------------------------
@@ -60,7 +66,7 @@ Then we use pandas to load the example data stored as csv files:
 
     geo_data.set_interfaces(pn.read_csv("../input_data/tutorial_ch3_interfaces",
                                         index_col="Unnamed: 0"))
-    geo_data.set_foliations(pn.read_csv("../input_data/tutorial_ch3_foliations",
+    geo_data.set_orientations(pn.read_csv("../input_data/tutorial_ch3_foliations",
                                         index_col="Unnamed: 0"))
 
 .. code:: ipython3
@@ -74,17 +80,17 @@ Then we use pandas to load the example data stored as csv files:
 .. raw:: html
 
     <div>
-    <style>
-        .dataframe thead tr:only-child th {
-            text-align: right;
-        }
-    
-        .dataframe thead th {
-            text-align: left;
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
         }
     
         .dataframe tbody tr th {
             vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
         }
     </style>
     <table border="1" class="dataframe">
@@ -200,14 +206,14 @@ by:
 .. code:: ipython3
 
     # Original pile
-    gp.get_stratigraphic_pile(geo_data)
+    gp.get_sequential_pile(geo_data)
 
 
 
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7f053b6ccb70>
+    <gempy.sequential_pile.StratigraphicPile at 0x7fda8cfcb160>
 
 
 
@@ -219,14 +225,14 @@ by:
 
     # Ordered pile
     gp.set_order_formations(geo_data, ['Layer 2', 'Layer 3', 'Layer 4','Layer 5'])
-    gp.get_stratigraphic_pile(geo_data)
+    gp.get_sequential_pile(geo_data)
 
 
 
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7f04c4685438>
+    <gempy.sequential_pile.StratigraphicPile at 0x7fd9fe0bdac8>
 
 
 
@@ -237,7 +243,7 @@ by:
 .. code:: ipython3
 
     # and at all of the foliation data
-    gp.get_data(geo_data, 'foliations', verbosity=0)
+    gp.get_data(geo_data, 'orientations', verbosity=0)
 
 
 
@@ -245,17 +251,17 @@ by:
 .. raw:: html
 
     <div>
-    <style>
-        .dataframe thead tr:only-child th {
-            text-align: right;
-        }
-    
-        .dataframe thead th {
-            text-align: left;
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
         }
     
         .dataframe tbody tr th {
             vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
         }
     </style>
     <table border="1" class="dataframe">
@@ -265,6 +271,9 @@ by:
           <th>X</th>
           <th>Y</th>
           <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
           <th>dip</th>
           <th>azimuth</th>
           <th>polarity</th>
@@ -278,6 +287,9 @@ by:
           <td>500</td>
           <td>100</td>
           <td>1148</td>
+          <td>-0.516992</td>
+          <td>-0.00855937</td>
+          <td>0.855947</td>
           <td>31.1355</td>
           <td>269.051</td>
           <td>1</td>
@@ -289,6 +301,9 @@ by:
           <td>2500</td>
           <td>100</td>
           <td>1147.33</td>
+          <td>0.516122</td>
+          <td>-0.0142732</td>
+          <td>0.856397</td>
           <td>31.0857</td>
           <td>91.5841</td>
           <td>1</td>
@@ -322,7 +337,7 @@ future reference:
 
 .. code:: ipython3
 
-    gp.data_to_pickle(geo_data, "pymc2_tutorial_geo_data")
+    gp.data_to_pickle(geo_data, "./pickles/ch3-pymc2_tutorial_geo_data")
 
 Compile the interpolator function
 ---------------------------------
@@ -332,14 +347,17 @@ interpolator function of GemPy with the imported model setup and data:
 
 .. code:: ipython3
 
-    interp_data = gp.InterpolatorInput(geo_data, u_grade=[3])
+    interp_data = gp.InterpolatorData(geo_data, u_grade=[1], compile_theano=True)
 
 
 .. parsed-literal::
 
+    Compiling theano function...
+    Compilation Done!
     Level of Optimization:  fast_compile
     Device:  cpu
     Precision:  float32
+    Number of faults:  0
 
 
 Afterwards we can compute the geological model:
@@ -389,11 +407,11 @@ i.e. as distributions.
 .. code:: ipython3
 
     # Checkpoint in case you did not execute the cells above
-    geo_data = gp.read_pickle("./pymc2_tutorial_geo_data.pickle")
+    geo_data = gp.read_pickle("./pickles/ch3-pymc2_tutorial_geo_data.pickle")
 
 .. code:: ipython3
 
-    gp.get_data(geo_data, 'foliations', verbosity=1).head()
+    gp.get_data(geo_data, 'orientations', verbosity=1).head()
 
 
 
@@ -401,17 +419,17 @@ i.e. as distributions.
 .. raw:: html
 
     <div>
-    <style>
-        .dataframe thead tr:only-child th {
-            text-align: right;
-        }
-    
-        .dataframe thead th {
-            text-align: left;
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
         }
     
         .dataframe tbody tr th {
             vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
         }
     </style>
     <table border="1" class="dataframe">
@@ -445,7 +463,7 @@ i.e. as distributions.
         <tr>
           <th>0</th>
           <td>-0.516992</td>
-          <td>-0.00855947</td>
+          <td>-0.00855937</td>
           <td>0.855947</td>
           <td>500</td>
           <td>NaN</td>
@@ -469,8 +487,8 @@ i.e. as distributions.
         <tr>
           <th>1</th>
           <td>0.516122</td>
-          <td>-0.0142733</td>
-          <td>0.856396</td>
+          <td>-0.0142732</td>
+          <td>0.856397</td>
           <td>2500</td>
           <td>NaN</td>
           <td>100</td>
@@ -542,7 +560,7 @@ created the rescaling happens under the hood.
     interface_Z_modifier = []
     
     # We rescale the standard deviation
-    std = 100./interp_data.rescaling_factor
+    std = 20./interp_data.rescaling_factor
     
     # loop over the unique group id's and create a pymc.Normal distribution for each
     for gID in group_ids:
@@ -560,14 +578,14 @@ our list of parameter distribution:
 
 .. parsed-literal::
 
-    [<pymc.distributions.new_dist_class.<locals>.new_class 'l2_a_stoch' at 0x7f04b0261be0>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l2_b_stoch' at 0x7f04c4685fd0>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l3_a_stoch' at 0x7f04c454e780>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l3_b_stoch' at 0x7f04b023d1d0>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l4_a_stoch' at 0x7f04b02611d0>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l4_b_stoch' at 0x7f04b0261240>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l5_a_stoch' at 0x7f04b0261320>,
-     <pymc.distributions.new_dist_class.<locals>.new_class 'l5_b_stoch' at 0x7f04b0261b38>]
+    [<pymc.distributions.new_dist_class.<locals>.new_class 'l2_a_stoch' at 0x7fd9e04e31d0>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l2_b_stoch' at 0x7fd9fd2e9240>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l3_a_stoch' at 0x7fd9fdfdff28>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l3_b_stoch' at 0x7fd9e04e3208>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l4_a_stoch' at 0x7fd9e04e36a0>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l4_b_stoch' at 0x7fd9e04e3978>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l5_a_stoch' at 0x7fd9e04e3748>,
+     <pymc.distributions.new_dist_class.<locals>.new_class 'l5_b_stoch' at 0x7fd9e04e37b8>]
 
 
 
@@ -581,7 +599,6 @@ Let's have a look at one:
     plt.hist(samples, bins=24, normed=True);
     plt.xlabel("Z modifier")
     plt.vlines(0, 0, 0.01)
-    #plt.xlim(-150,150)
     plt.ylabel("n");
 
 
@@ -616,6 +633,113 @@ Dataframes we are interested on:
 
 .. code:: ipython3
 
+    gp.get_data(geo_data_stoch_init, numeric=True).head()
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th></th>
+          <th>X</th>
+          <th>Y</th>
+          <th>Z</th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>dip</th>
+          <th>azimuth</th>
+          <th>polarity</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th rowspan="5" valign="top">interfaces</th>
+          <th>0</th>
+          <td>0.2501</td>
+          <td>0.4801</td>
+          <td>0.5299</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0.7001</td>
+          <td>0.5201</td>
+          <td>0.5605</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>0.6501</td>
+          <td>0.5001</td>
+          <td>0.5903</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>0.7501</td>
+          <td>0.4801</td>
+          <td>0.5297</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>0.3001</td>
+          <td>0.5201</td>
+          <td>0.5605</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+          <td>NaN</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+
+
+
+.. code:: ipython3
+
     @pymc.deterministic(trace=True)
     def input_data(value = 0, 
                    interface_Z_modifier = interface_Z_modifier,
@@ -639,7 +763,7 @@ Dataframes we are interested on:
             
         # then return the input data to be input into the modeling function. Due to the way pymc2 stores the traces
         # We need to save the data as numpy arrays
-        return [geo_data_stoch.xs('interfaces')[["X", "Y", "Z"]].values, geo_data_stoch.xs('foliations').values]
+        return [geo_data_stoch.xs('interfaces')[["X", "Y", "Z"]].values, geo_data_stoch.xs('orientations').values]
 
 Modeling function
 -----------------
@@ -662,7 +786,7 @@ operation is deterministic).
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = input_data[0]
         
         # Gx, Gy, Gz are just used for visualization. The theano function gets azimuth dip and polarity!!!
-        interp_data.geo_data_res.foliations[["G_x", "G_y", "G_z", "X", "Y", "Z", 'azimuth', 'dip', 'polarity']] = input_data[1]
+        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z",  'dip', 'azimuth', 'polarity']] = input_data[1]
         
         try:
             # try to compute model
@@ -683,7 +807,113 @@ operation is deterministic).
 
 
 
-.. image:: ch3_files/ch3_42_0.png
+.. image:: ch3_files/ch3_43_0.png
+
+
+.. code:: ipython3
+
+    interp_data.geo_data_res.orientations
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>G_x</th>
+          <th>G_y</th>
+          <th>G_z</th>
+          <th>X</th>
+          <th>X_std</th>
+          <th>Y</th>
+          <th>Y_std</th>
+          <th>Z</th>
+          <th>Z_std</th>
+          <th>annotations</th>
+          <th>...</th>
+          <th>azimuth_std</th>
+          <th>dip</th>
+          <th>dip_std</th>
+          <th>formation</th>
+          <th>formation number</th>
+          <th>group_id</th>
+          <th>isFault</th>
+          <th>order_series</th>
+          <th>polarity</th>
+          <th>series</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>0.3001</td>
+          <td>0.5001</td>
+          <td>0.555743</td>
+          <td>-0.516992</td>
+          <td>NaN</td>
+          <td>-0.008559</td>
+          <td>NaN</td>
+          <td>0.855947</td>
+          <td>NaN</td>
+          <td>${\bf{x}}_{\beta \,{\bf{1}},0}$</td>
+          <td>...</td>
+          <td>NaN</td>
+          <td>31.135451</td>
+          <td>NaN</td>
+          <td>Layer 2</td>
+          <td>1</td>
+          <td>l2_a</td>
+          <td>False</td>
+          <td>1</td>
+          <td>1.0</td>
+          <td>Default serie</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>0.7001</td>
+          <td>0.5001</td>
+          <td>0.559481</td>
+          <td>0.516122</td>
+          <td>NaN</td>
+          <td>-0.014273</td>
+          <td>NaN</td>
+          <td>0.856397</td>
+          <td>NaN</td>
+          <td>${\bf{x}}_{\beta \,{\bf{1}},1}$</td>
+          <td>...</td>
+          <td>NaN</td>
+          <td>31.085652</td>
+          <td>NaN</td>
+          <td>Layer 2</td>
+          <td>1</td>
+          <td>l2_b</td>
+          <td>False</td>
+          <td>1</td>
+          <td>1.0</td>
+          <td>Default serie</td>
+        </tr>
+      </tbody>
+    </table>
+    <p>2 rows × 21 columns</p>
+    </div>
+
 
 
 We then create a pymc model with the two deterministic functions
@@ -707,7 +937,7 @@ hdf5 database to store the results in:
 
 .. code:: ipython3
 
-    RUN = pymc.MCMC(model, db="hdf5", dbname="pymc2_tutorial")
+    RUN = pymc.MCMC(model, db="hdf5", dbname="./pymc-db/ch3-pymc2_tutorial-db")
 
 and we are finally able to run the simulation:
 
@@ -718,7 +948,7 @@ and we are finally able to run the simulation:
 
 .. parsed-literal::
 
-     [-----------------100%-----------------] 100 of 100 complete in 7.6 sec
+     [-----------------100%-----------------] 100 of 100 complete in 6.3 sec
 
 Analyzing the results
 ---------------------
@@ -730,40 +960,32 @@ geo\_data object:
 
 .. code:: ipython3
 
-    geo_data = gp.read_pickle("./pymc2_tutorial_geo_data.pickle")
+    geo_data = gp.read_pickle("./pymc-db/ch3-pymc2_tutorial_geo_data.pickle")
 
 Check the stratigraphic pile for correctness:
 
 .. code:: ipython3
 
-    gp.get_stratigraphic_pile(geo_data)
+    gp.get_sequential_pile(geo_data)
 
 
 
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7f04c4523be0>
+    <gempy.sequential_pile.StratigraphicPile at 0x7fd9e04e3a90>
 
 
 
 
-.. image:: ch3_files/ch3_54_1.png
+.. image:: ch3_files/ch3_56_1.png
 
 
 Then we can then compile the GemPy modeling function:
 
 .. code:: ipython3
 
-    interp_data = gp.InterpolatorInput(geo_data, u_grade=[3])
-
-
-.. parsed-literal::
-
-    Level of Optimization:  fast_compile
-    Device:  cpu
-    Precision:  float32
-
+    interp_data = gp.InterpolatorData(geo_data, u_grade=[1])
 
 Now we can reproduce the original model:
 
@@ -773,8 +995,18 @@ Now we can reproduce the original model:
     gp.plot_section(geo_data, lith_block[0], 0)
 
 
+.. parsed-literal::
 
-.. image:: ch3_files/ch3_58_0.png
+    Compiling theano function...
+    Compilation Done!
+    Level of Optimization:  fast_compile
+    Device:  cpu
+    Precision:  float32
+    Number of faults:  0
+
+
+
+.. image:: ch3_files/ch3_60_1.png
 
 
 But of course we want to look at the perturbation results. We have a
@@ -785,16 +1017,16 @@ to the gempy main framework---i.e. gp)
 
 .. code:: ipython3
 
-    import gempy.UncertaintyAnalysisPYMC2
+    import gempy.posterior_analysis
     import importlib
-    importlib.reload(gempy.UncertaintyAnalysisPYMC2)
+    importlib.reload(gempy.posterior_analysis)
 
 
 
 
 .. parsed-literal::
 
-    <module 'gempy.UncertaintyAnalysisPYMC2' from '../gempy/UncertaintyAnalysisPYMC2.py'>
+    <module 'gempy.posterior_analysis' from '../../gempy/posterior_analysis.py'>
 
 
 
@@ -802,14 +1034,8 @@ Which allows us to load the stored pymc2 database
 
 .. code:: ipython3
 
-    dbname = "pymc2_tutorial"
-    post = gempy.UncertaintyAnalysisPYMC2.Posterior(dbname)
-
-
-.. parsed-literal::
-
-    No GemPy model trace tallied.
-
+    dbname = "ch3-pymc2_tutorial-db"
+    post = gempy.posterior_analysis.Posterior(dbname)
 
 Alright, it tells us that we did not tally any GemPy models (we set the
 trace flag for the gempy\_model function to False!). But we can just
@@ -825,7 +1051,7 @@ plot the model result of the 85th iteration:
 
 .. parsed-literal::
 
-    <gempy.DataManagement.InterpolatorInput at 0x7f04ae8ffb70>
+    <gempy.interpolator.InterpolatorData at 0x7fd9dff67c50>
 
 
 
@@ -838,20 +1064,20 @@ Then we compute the model and plot it:
 
 
 
-.. image:: ch3_files/ch3_66_0.png
+.. image:: ch3_files/ch3_68_0.png
 
 
 or the 34th:
 
 .. code:: ipython3
 
-    post.change_input_data(interp_data, 34)
+    post.change_input_data(interp_data, 15)
     lith_block, fault_block = gp.compute_model(interp_data)
     gp.plot_section(interp_data.geo_data_res, lith_block[0], 2, plot_data=True)
 
 
 
-.. image:: ch3_files/ch3_68_0.png
+.. image:: ch3_files/ch3_70_0.png
 
 
 or the 95th:
@@ -864,7 +1090,7 @@ or the 95th:
 
 
 
-.. image:: ch3_files/ch3_70_0.png
+.. image:: ch3_files/ch3_72_0.png
 
 
 As you can see, we have successfully perturbated the vertical layer
@@ -881,13 +1107,3 @@ approach and how to use it with GemPy and pymc in the following chapter.
 
     ver, sim = gp.get_surfaces(interp_data,lith_block[1], None, original_scale= False)
     gp.plot_surfaces_3D_real_time(interp_data, ver, sim, posterior=post, alpha=1)
-
-
-.. parsed-literal::
-
-    /home/miguel/anaconda3/lib/python3.6/site-packages/scipy/linalg/basic.py:223: RuntimeWarning: scipy.linalg.solve
-    Ill-conditioned matrix detected. Result is not guaranteed to be accurate.
-    Reciprocal condition number: 5.822892035212135e-08
-      ' condition number: {}'.format(rcond), RuntimeWarning)
-
-

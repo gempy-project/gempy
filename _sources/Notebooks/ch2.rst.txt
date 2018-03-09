@@ -12,7 +12,8 @@ generate a model with several depositional series.
 
     # These two lines are necessary only if gempy is not installed
     import sys, os
-    sys.path.append("../")
+    sys.path.append("../..")
+    os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
     
     # Importing gempy
     import gempy as gp
@@ -22,6 +23,13 @@ generate a model with several depositional series.
     
     # Aux imports
     import numpy as np
+
+
+
+.. parsed-literal::
+
+    WARNING (theano.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
+
 
 In this case instead loading a geo\_data object directly, we will create
 one. The main atributes we need to pass are: - Extent: X min, X max, Y
@@ -33,103 +41,30 @@ with the data.
 .. code:: ipython3
 
     # Importing the data from csv files and settign extent and resolution
-    geo_data = gp.create_data([696000,747000,6863000,6950000,-20000, 200],[50, 50, 50],
-                             path_f = os.pardir+"/input_data/a_Foliations.csv",
+    geo_data = gp.create_data([696000,747000,6863000,6930000,-20000, 200],[100, 100, 100],
+                             path_o = os.pardir+"/input_data/a_Foliations.csv",
                              path_i = os.pardir+"/input_data/a_Points.csv")
 
 You can visualize the points in 3D (work in progress)
-
-.. code:: ipython3
-
-    gp.plot_data_3D(geo_data)
 
 Or a projection in 2D:
 
 .. code:: ipython3
 
-    gp.plot_data(geo_data, direction='y')
-
-
-
-.. image:: ch2_files/ch2_7_0.png
-
-
-This model consist in 3 different depositional series. This mean that
-only data in the same depositional series affect the interpolation. To
-select with formations belong to witch series we will use the
-``set_data_series`` function which takes a python dictionary as input.
-
-We can see the unique formations with:
-
-.. code:: ipython3
-
-    gp.get_series(geo_data)
+    import matplotlib.pyplot as plt
+    gp.plot_data(geo_data, direction='z')
 
 
 
 
-.. raw:: html
+.. image:: ch2_files/ch2_6_0.png
 
-    <div>
-    <style>
-        .dataframe thead tr:only-child th {
-            text-align: right;
-        }
-    
-        .dataframe thead th {
-            text-align: left;
-        }
-    
-        .dataframe tbody tr th {
-            vertical-align: top;
-        }
-    </style>
-    <table border="1" class="dataframe">
-      <thead>
-        <tr style="text-align: right;">
-          <th></th>
-          <th>Default serie</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <th>0</th>
-          <td>SimpleMafic2</td>
-        </tr>
-        <tr>
-          <th>1</th>
-          <td>SimpleBIF</td>
-        </tr>
-        <tr>
-          <th>2</th>
-          <td>SimpleMafic1</td>
-        </tr>
-        <tr>
-          <th>3</th>
-          <td>EarlyGranite</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-
-
-
-Setting the series we also give the specific order of the series. In
-python 3.6 and above the dictionaries conserve the key order so it is
-not necessary to give explicitly the order of the series.
-
-Notice as well that the order of the formations within each series is
-not relevant for the result but in case of being wrong can lead to
-confusing color coding (work in progress).
-
-In the representation given by ``get_series`` the elements get repeated
-but is only how Pandas print tables.
 
 .. code:: ipython3
 
     # Assigning series to formations as well as their order (timewise)
     gp.set_series(geo_data, {"EarlyGranite_Series": 'EarlyGranite', 
-                                  "BIF_Series":('SimpleMafic2', 'SimpleBIF'),
+                             "BIF_Series":('SimpleMafic2', 'SimpleBIF'),
                                   "SimpleMafic_Series":'SimpleMafic1'}, 
                           order_series = ["EarlyGranite_Series",
                                           "BIF_Series",
@@ -142,21 +77,12 @@ but is only how Pandas print tables.
 
 .. parsed-literal::
 
-    <gempy.strat_pile.StratigraphicPile at 0x7fa8f69f0588>
+    <gempy.sequential_pile.StratigraphicPile at 0x7f6a5cb5e198>
 
 
 
 
-.. image:: ch2_files/ch2_11_1.png
-
-
-.. code:: ipython3
-
-    gp.plot_data(geo_data)
-
-
-
-.. image:: ch2_files/ch2_12_0.png
+.. image:: ch2_files/ch2_7_1.png
 
 
 Computing the model
@@ -167,19 +93,63 @@ object and compute the model.
 
 .. code:: ipython3
 
-    interp_data = gp.InterpolatorInput(geo_data)
+    interp_data = gp.InterpolatorData(geo_data, theano_optimizer='fast_run', compile_theano=True, verbose=[])
 
 
 .. parsed-literal::
 
+    Compiling theano function...
+    Compilation Done!
     Level of Optimization:  fast_run
     Device:  cpu
     Precision:  float32
+    Number of faults:  0
 
+
+Changing the points where we interpolate.
+-----------------------------------------
+
+GemPy interpolation is continious in space and hence it is not bounded
+to a specific grid structure. The 3D points where we interpolate are
+stored in geo\_data.grid.values. grid is an object that contains all the
+methods and properties related to grids (so far very ligth class).
+
+The easiest way to change the points to interpolate is by: 1) Creating a
+GridClass object with the new locations. There is a method to give
+custom locations 2) Set the new grid to the geo\_data object 3) Update
+the interpolaor object (inter\_data) with the new data without
+recompiling theano necessarilly.
+
+.. code:: ipython3
+
+    new_grid = gp.GridClass()
+    res =  100
+    
+    # Create a new grid object with the new resolution
+    new_grid.create_regular_grid_3d(geo_data.extent,[res, res, res])
+    
+    # Setting the new grid to the geodata
+    gp.set_grid(geo_data, new_grid)
+    
+    # Update the new grid
+    interp_data.update_interpolator(geo_data)
 
 .. code:: ipython3
 
     lith_block, fault_block = gp.compute_model(interp_data)
+
+.. code:: ipython3
+
+    import matplotlib.pyplot as plt
+    
+    gp.plot_section(geo_data, lith_block[0], -2, plot_data=True, direction='z')
+    fig = plt.gcf()
+    fig.set_size_inches(18.5, 10.5)
+
+
+
+.. image:: ch2_files/ch2_14_0.png
+
 
 Now if we analyse the results we have a 3D array where the axis 0
 represent the superposition of the series (potential fields). The color
@@ -187,61 +157,33 @@ coding is working process yet.
 
 .. code:: ipython3
 
-    import matplotlib.pyplot as plt
-    
-    gp.plot_section(geo_data, lith_block[0], -1, plot_data=True, direction='z')
-    fig = plt.gcf()
-    fig.set_size_inches(18.5, 10.5)
-
-
-
-.. image:: ch2_files/ch2_18_0.png
-
-
-.. code:: ipython3
-
-    import matplotlib.pyplot as plt
-    
-    gp.plot_section(geo_data, lith_block[0], -1, plot_data=True, direction='z')
-    fig = plt.gcf()
-    fig.set_size_inches(18.5, 10.5)
-
-
-
-.. image:: ch2_files/ch2_19_0.png
-
-
-.. code:: ipython3
-
     %matplotlib inline
-    gp.plot_section(geo_data, lith_block[0],25, plot_data=True, direction='x')
+    gp.plot_section(geo_data, lith_block[0],50, plot_data=True, direction='x')
     fig = plt.gcf()
     fig.set_size_inches(18.5, 10.5)
 
 
 
-.. image:: ch2_files/ch2_20_0.png
+.. image:: ch2_files/ch2_16_0.png
 
-
-The second row keeps the potential field:
 
 .. code:: ipython3
 
-    gp.plot_potential_field(geo_data, lith_block[1], 11, cmap='inferno_r')
+    gp.plot_scalar_field(geo_data, lith_block[1], 11, cmap='viridis', N=100)
     import matplotlib.pyplot as plt
-    plt.colorbar()
+    plt.colorbar(orientation='horizontal')
 
 
 
 
 .. parsed-literal::
 
-    <matplotlib.colorbar.Colorbar at 0x7fa8e40e4a90>
+    <matplotlib.colorbar.Colorbar at 0x7f6a14adde48>
 
 
 
 
-.. image:: ch2_files/ch2_22_1.png
+.. image:: ch2_files/ch2_17_1.png
 
 
 And the axis 2 keeps the faults network that in this model since there
@@ -252,12 +194,15 @@ them in Paraview. We are working in visualization in place as well.
 
 .. code:: ipython3
 
-    gp.export_vtk_rectilinear(geo_data, lith_block[0], path=None)
+    vertices, simplices = gp.get_surfaces(interp_data, lith_block[1], None, original_scale=False)
+    
+    # np.save('ver_sand', vertices)
+    # np.save('sim_sand', simplices)
 
 .. code:: ipython3
 
-    ver, sim = gp.get_surfaces(interp_data, lith_block[1], None, original_scale=True)
+    gp.export_to_vtk(geo_data, lith_block=lith_block[0], vertices=vertices, simplices=simplices)
 
 .. code:: ipython3
 
-    gp.plot_surfaces_3D(geo_data, ver, sim, alpha=1)
+    gp.plot_surfaces_3D_real_time(interp_data, vertices, simplices, alpha=1)
