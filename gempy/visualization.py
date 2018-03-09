@@ -29,10 +29,17 @@ try:
     import vtk
 except ImportError:
     warnings.warn('Vtk package is not installed. No vtk visualization available.')
+
+try:
+    import steno3d
+except ImportError:
+    warnings.warn('Steno 3D package is not installed. No 3D online visualization available.')
+
 import matplotlib.pyplot as plt
 import matplotlib
 import seaborn as sns
 import numpy as np
+import pandas as pn
 from os import path
 import sys
 # This is for sphenix to find the packages
@@ -377,38 +384,62 @@ class PlotData2D(object):
 
 
 class steno3D():
+    def __init__(self, geo_data, project, **kwargs ):
 
-    def __init__(self, geo_data):
-        self._data = geo_data
-
-    def plot3D_steno(self, block,  project, plot=True, **kwargs):
-        import steno3d
-        import numpy as np
-        steno3d.login()
 
         description = kwargs.get('description', 'Nothing')
-        proj = steno3d.Project(
+
+        self._data = geo_data
+        self.formations = pn.DataFrame.from_dict(geo_data.get_formation_number(), orient='index')
+
+
+        steno3d.login()
+
+        self.proj = steno3d.Project(
             title=project,
             description=description,
             public=True,
         )
 
-        mesh = steno3d.Mesh3DGrid(h1=np.ones(self._data.resolution[0]) * (self._data.extent[0] - self._data.extent[1]) /
+    def plot3D_steno_grid(self, block, plot=False, **kwargs):
+
+
+        mesh = steno3d.Mesh3DGrid(h1=np.ones(self._data.resolution[0]) * (self._data.extent[1] - self._data.extent[0]) /
                                                                          (self._data.resolution[0] - 1),
-                                  h2=np.ones(self._data.resolution[1]) * (self._data.extent[2] - self._data.extent[3]) /
+                                  h2=np.ones(self._data.resolution[1]) * (self._data.extent[3] - self._data.extent[2]) /
                                                                          (self._data.resolution[1] - 1),
-                                  h3=np.ones(self._data.resolution[2]) * (self._data.extent[4] - self._data.extent[5]) /
-                                                                         (self._data.resolution[2] - 1))
+                                  h3=np.ones(self._data.resolution[2]) * (self._data.extent[5] - self._data.extent[4]) /
+                                                                         (self._data.resolution[2] - 1),
+                                  O=[self._data.extent[0], self._data.extent[2], self._data.extent[4]])
 
         data = steno3d.DataArray(
-            title='Lithologies',
+            title='Lithologies_block',
             array=block)
 
-        vol = steno3d.Volume(project=proj, mesh=mesh, data=[dict(location='CC', data=data)])
-        vol.upload()
+        vol = steno3d.Volume(project=self.proj, mesh=mesh, data=[dict(location='CC', data=data)])
+       # vol.upload()
 
         if plot:
             return vol.plot()
+
+    def plot3D_steno_surface(self, ver, sim):
+
+        for surface in self.formations.iterrows():
+            if surface[1].values[0] is 0:
+                pass
+
+            #for vertices, simpleces in zip(ver[surface[1].values[0]], sim[surface[1].values[0]]):
+            surface_mesh = steno3d.Mesh2D(
+                vertices=ver[surface[1].values[0]-1],
+                triangles=sim[surface[1].values[0]-1],
+                opts=dict(wireframe=False)
+            )
+            surface_obj = steno3d.Surface(
+                project=self.proj,
+                title='Surface: {}'.format(surface[0]),
+                mesh=surface_mesh,
+                opts=dict(opacity=1)
+            )
 
 
 class vtkVisualization:
