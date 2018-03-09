@@ -9,7 +9,7 @@ modeling with GemPy on the base of a relatively simple geological model,
 while introducing essential objects and functions. We will illustrate
 how to: - import and create input data for modeling in GemPy - return
 and visualize input data - generate a 3D geological model in GemPy -
-visualize a model directly in GemPy
+visualize a model directly in GemPy \*\*\*
 
 The example model: Simple stratigraphy and one fault
 ----------------------------------------------------
@@ -31,9 +31,9 @@ displaced by a continuous normal fault. The final modeling results
 should look somewhat like this, depending on the type of visualization:
 
 .. figure:: ../../readme_images/model_example_duo.png
-    :alt: alternate text
+   :alt: 2D and 3D visualizations of our example model
 
-    figure are like images but with a caption
+   2D and 3D visualizations of our example model.
 
 As this example involves a simple sequence of layers and only one fault,
 it provides an adequate level of complexity to introduce the basics of
@@ -55,7 +55,7 @@ that ``Matplotlib`` figures are displayed in our notebook
 
     # These two lines are necessary only if GemPy is not installed
     import sys, os
-    #sys.path.append("../..")
+    sys.path.append("../..")
     os.environ['CUDA_LAUNCH_BLOCKING'] = '1'
     
     # Importing GemPy
@@ -71,11 +71,7 @@ that ``Matplotlib`` figures are displayed in our notebook
 
 .. parsed-literal::
 
-    /home/miguel/anaconda3/envs/py35/lib/python3.5/site-packages/gempy/visualization.py:31: UserWarning: Vtk package is not installed. No vtk visualization available.
-      warnings.warn('Vtk package is not installed. No vtk visualization available.')
     WARNING (theano.tensor.blas): Using NumPy C-API based implementation for BLAS functions.
-    /home/miguel/anaconda3/envs/py35/lib/python3.5/site-packages/gempy/posterior_analysis.py:24: UserWarning: pymc (v2) package is not installed. No support for stochastic simulation posterior analysis.
-      warnings.warn("pymc (v2) package is not installed. No support for stochastic simulation posterior analysis.")
 
 
 Importing and creating a set of input data
@@ -1657,7 +1653,7 @@ modeling time by a factor of 20.
 
     ver_s, sim_s = gp.get_surfaces(interp_data,lith_block[1],
                                    fault_block[1],
-                                   original_scale=False)
+                                   original_scale=True)
 
 .. code:: ipython3
 

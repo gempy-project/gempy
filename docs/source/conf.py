@@ -129,13 +129,14 @@ html_theme_options = {  'github_user': 'cgre-aachen',
                         'github_type': 'star',
                         'travis_button': True,
                       'page_width':'1200px',
-                        'fixed_sidebar': True}
+                        'fixed_sidebar': True,
+                        }
 
 
 # Custom sidebar templates, maps document names to template names.
 #html_sidebars = { '**': ['globaltoc.html', 'relations.html', 'sourcelink.html', 'searchbox.html']}
 
-html_sidebars = {'**': [ 'about.html','globaltoc.html',#       'navigation.html',
+html_sidebars = {'**': [ 'about.html',      'navigation.html',
         'relations.html',
         'searchbox.html',
         'donate.html',] }

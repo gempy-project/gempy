@@ -1,6 +1,6 @@
 
-Chapter 6: Analyzing Topology
-=============================
+Chapter 6: Analyzing Topology (WIP)
+===================================
 
 .. code:: ipython3
 
