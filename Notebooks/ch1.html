@@ -69,23 +69,29 @@
 </p>
 
 
-
-<h3><a href="../index.html">Table Of Contents</a></h3>
+<h3>Navigation</h3>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../theory/motivation.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Chapter 1: Basics of geological modeling with GemPy</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Chapter 1: Basics of geological modeling with GemPy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-example-model-simple-stratigraphy-and-one-fault">The example model: Simple stratigraphy and one fault</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#preparing-the-python-environment">Preparing the Python environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#importing-and-creating-a-set-of-input-data">Importing and creating a set of input data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#declaring-the-sequential-order-of-geological-formations">Declaring the sequential order of geological formations</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="ch2.html">Chapter 2: A real example. Importing data and setting series</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ch3.html">Chapter 3: Stochastic Simulations in pymc2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ch4.html">Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="ch5.html">Chapter 5: Computing forward gravity. (Under development)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="ch6.html">Chapter 6: Analyzing Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ch6.html">Chapter 6: Analyzing Topology (WIP)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
 </ul>
+
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
@@ -121,7 +127,7 @@ modeling with GemPy on the base of a relatively simple geological model,
 while introducing essential objects and functions. We will illustrate
 how to: - import and create input data for modeling in GemPy - return
 and visualize input data - generate a 3D geological model in GemPy -
-visualize a model directly in GemPy</p>
+visualize a model directly in GemPy ***</p>
 <div class="section" id="the-example-model-simple-stratigraphy-and-one-fault">
 <h2>The example model: Simple stratigraphy and one fault<a class="headerlink" href="#the-example-model-simple-stratigraphy-and-one-fault" title="Permalink to this headline">¶</a></h2>
 <p>Our synthetic example model is defined to be cubic, with an extent of
@@ -140,8 +146,8 @@ deformed (tilted and folded) afterwards. Additionally, they are
 displaced by a continuous normal fault. The final modeling results
 should look somewhat like this, depending on the type of visualization:</p>
 <div class="figure" id="id1">
-<img alt="alternate text" src="../_images/model_example_duo.png" />
-<p class="caption"><span class="caption-text">figure are like images but with a caption</span></p>
+<img alt="2D and 3D visualizations of our example model" src="../_images/model_example_duo.png" />
+<p class="caption"><span class="caption-text">2D and 3D visualizations of our example model.</span></p>
 </div>
 <p>As this example involves a simple sequence of layers and only one fault,
 it provides an adequate level of complexity to introduce the basics of
@@ -159,7 +165,7 @@ that <code class="docutils literal"><span class="pre">Matplotlib</span></code> f
 (<code class="docutils literal"><span class="pre">%matplotlib</span> <span class="pre">inline</span></code>).</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># These two lines are necessary only if GemPy is not installed</span>
 <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
-<span class="c1">#sys.path.append(&quot;../..&quot;)</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
 <span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;CUDA_LAUNCH_BLOCKING&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span>
 
 <span class="c1"># Importing GemPy</span>
@@ -173,11 +179,7 @@ that <code class="docutils literal"><span class="pre">Matplotlib</span></code> f
 <span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
 </pre></div>
 </div>
-<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">miguel</span><span class="o">/</span><span class="n">anaconda3</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">py35</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">visualization</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">31</span><span class="p">:</span> <span class="ne">UserWarning</span><span class="p">:</span> <span class="n">Vtk</span> <span class="n">package</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">installed</span><span class="o">.</span> <span class="n">No</span> <span class="n">vtk</span> <span class="n">visualization</span> <span class="n">available</span><span class="o">.</span>
-  <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;Vtk package is not installed. No vtk visualization available.&#39;</span><span class="p">)</span>
-<span class="n">WARNING</span> <span class="p">(</span><span class="n">theano</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">blas</span><span class="p">):</span> <span class="n">Using</span> <span class="n">NumPy</span> <span class="n">C</span><span class="o">-</span><span class="n">API</span> <span class="n">based</span> <span class="n">implementation</span> <span class="k">for</span> <span class="n">BLAS</span> <span class="n">functions</span><span class="o">.</span>
-<span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">miguel</span><span class="o">/</span><span class="n">anaconda3</span><span class="o">/</span><span class="n">envs</span><span class="o">/</span><span class="n">py35</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">python3</span><span class="o">.</span><span class="mi">5</span><span class="o">/</span><span class="n">site</span><span class="o">-</span><span class="n">packages</span><span class="o">/</span><span class="n">gempy</span><span class="o">/</span><span class="n">posterior_analysis</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">24</span><span class="p">:</span> <span class="ne">UserWarning</span><span class="p">:</span> <span class="n">pymc</span> <span class="p">(</span><span class="n">v2</span><span class="p">)</span> <span class="n">package</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">installed</span><span class="o">.</span> <span class="n">No</span> <span class="n">support</span> <span class="k">for</span> <span class="n">stochastic</span> <span class="n">simulation</span> <span class="n">posterior</span> <span class="n">analysis</span><span class="o">.</span>
-  <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;pymc (v2) package is not installed. No support for stochastic simulation posterior analysis.&quot;</span><span class="p">)</span>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">WARNING</span> <span class="p">(</span><span class="n">theano</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">blas</span><span class="p">):</span> <span class="n">Using</span> <span class="n">NumPy</span> <span class="n">C</span><span class="o">-</span><span class="n">API</span> <span class="n">based</span> <span class="n">implementation</span> <span class="k">for</span> <span class="n">BLAS</span> <span class="n">functions</span><span class="o">.</span>
 </pre></div>
 </div>
 </div>
@@ -1601,7 +1603,7 @@ optimization in <code class="docutils literal"><span class="pre">fast_run</span>
 modeling time by a factor of 20.</p>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">ver_s</span><span class="p">,</span> <span class="n">sim_s</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span><span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
                                <span class="n">fault_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
-                               <span class="n">original_scale</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+                               <span class="n">original_scale</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
 <div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_surfaces_3D_real_time</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">ver_s</span><span class="p">,</span> <span class="n">sim_s</span><span class="p">)</span>
