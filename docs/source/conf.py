@@ -125,12 +125,12 @@ html_theme = 'alabaster'
 # documentation.
 #
 html_theme_options = {
-    # 'github_user': 'cgre-aachen',
-    #                     'github_repo': 'gempy',
-    #                     'github_type': 'star',
-    #                     'travis_button': True,
-    #                  # 'page_width':'1200px',
-    #                     'fixed_sidebar': False,
+    'github_user': 'cgre-aachen',
+                        'github_repo': 'gempy',
+                        'github_type': 'star',
+                        'travis_button': True,
+                        'page_width':'1200px',
+                        'fixed_sidebar': False,
                         }
 
 

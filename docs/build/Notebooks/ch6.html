@@ -1,0 +1,392 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Chapter 6: Analyzing Topology (WIP) &#8212; GemPy rc documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'rc',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Guide" href="../theory.html" />
+    <link rel="prev" title="Chapter 5: Computing forward gravity. (Under development)" href="ch5.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">GemPy</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/motivation.html">Introduction</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../tutorial.html">Tutorial</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="ch1.html">Chapter 1: Basics of geological modeling with GemPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ch2.html">Chapter 2: A real example. Importing data and setting series</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ch3.html">Chapter 3: Stochastic Simulations in pymc2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ch4.html">Chapter 4: Bayesian Statistics in pymc3 (Working in progress proof of concept)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="ch5.html">Chapter 5: Computing forward gravity. (Under development)</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Chapter 6: Analyzing Topology (WIP)</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#creating-an-example-model">Creating an example Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#analyzing-topology">Analyzing Topology</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../tutorial.html">Tutorial</a><ul>
+      <li>Previous: <a href="ch5.html" title="previous chapter">Chapter 5: Computing forward gravity. (Under development)</a></li>
+      <li>Next: <a href="../theory.html" title="next chapter">Guide</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="chapter-6-analyzing-topology-wip">
+<h1>Chapter 6: Analyzing Topology (WIP)<a class="headerlink" href="#chapter-6-analyzing-topology-wip" title="Permalink to this headline">¶</a></h1>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">sys</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../../&quot;</span><span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="kn">as</span> <span class="nn">gp</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">WARNING</span> <span class="p">(</span><span class="n">theano</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">blas</span><span class="p">):</span> <span class="n">Using</span> <span class="n">NumPy</span> <span class="n">C</span><span class="o">-</span><span class="n">API</span> <span class="n">based</span> <span class="n">implementation</span> <span class="k">for</span> <span class="n">BLAS</span> <span class="n">functions</span><span class="o">.</span>
+</pre></div>
+</div>
+<div class="section" id="creating-an-example-model">
+<h2>Creating an example Model<a class="headerlink" href="#creating-an-example-model" title="Permalink to this headline">¶</a></h2>
+<p>First let’s set up a simple example model. For that we initialize the
+geo_data object with the correct model extent and the resolution we
+like. Then we load our data points from csv files and set the series and
+order the formations (stratigraphic pile).</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># initialize geo_data object</span>
+<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">3000</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">],</span> <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">67</span><span class="p">])</span>
+<span class="c1"># import data points</span>
+<span class="n">geo_data</span><span class="o">.</span><span class="n">import_data_csv</span><span class="p">(</span><span class="s2">&quot;../input_data/ch6_data_interf&quot;</span><span class="p">,</span>
+                         <span class="s2">&quot;../input_data/ch6_data_fol&quot;</span><span class="p">)</span>
+
+<span class="n">geo_data</span><span class="o">.</span><span class="n">calculate_gradient</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">geo_data</span><span class="o">.</span><span class="n">orientations</span>
+</pre></div>
+</div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>G_x</th>
+      <th>G_y</th>
+      <th>G_z</th>
+      <th>dip</th>
+      <th>azimuth</th>
+      <th>polarity</th>
+      <th>formation</th>
+      <th>...</th>
+      <th>Y_std</th>
+      <th>Z_std</th>
+      <th>dip_std</th>
+      <th>azimuth_std</th>
+      <th>order_series</th>
+      <th>isFault</th>
+      <th>formation number</th>
+      <th>annotations</th>
+      <th>group_id</th>
+      <th>index</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>1500.000000</td>
+      <td>6.666667</td>
+      <td>990.000000</td>
+      <td>0.868243</td>
+      <td>1.000000e-07</td>
+      <td>0.496139</td>
+      <td>60.255119</td>
+      <td>90.0</td>
+      <td>1</td>
+      <td>Fault</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1</td>
+      <td>True</td>
+      <td>1</td>
+      <td>${\bf{x}}_{\beta \,{\bf{1}},0}$</td>
+      <td>fault</td>
+      <td>NaN</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>506.333333</td>
+      <td>9.666667</td>
+      <td>1679.333333</td>
+      <td>0.258819</td>
+      <td>1.000000e-07</td>
+      <td>0.965926</td>
+      <td>15.000000</td>
+      <td>90.0</td>
+      <td>1</td>
+      <td>Layer 2</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2</td>
+      <td>False</td>
+      <td>2</td>
+      <td>${\bf{x}}_{\beta \,{\bf{2}},0}$</td>
+      <td>l2_a</td>
+      <td>1.0</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>2500.000000</td>
+      <td>9.666667</td>
+      <td>911.000000</td>
+      <td>0.258819</td>
+      <td>1.000000e-07</td>
+      <td>0.965926</td>
+      <td>15.000000</td>
+      <td>90.0</td>
+      <td>1</td>
+      <td>Layer 2</td>
+      <td>...</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>2</td>
+      <td>False</td>
+      <td>2</td>
+      <td>${\bf{x}}_{\beta \,{\bf{2}},1}$</td>
+      <td>l2_a</td>
+      <td>1.0</td>
+    </tr>
+  </tbody>
+</table>
+<p>3 rows × 22 columns</p>
+</div><div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">set_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;fault&quot;</span><span class="p">:</span><span class="n">geo_data</span><span class="o">.</span><span class="n">get_formations</span><span class="p">()[</span><span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">get_formations</span><span class="p">()</span><span class="o">==</span><span class="s2">&quot;Fault&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]],</span>
+                         <span class="s2">&quot;Rest&quot;</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">delete</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">get_formations</span><span class="p">(),</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">get_formations</span><span class="p">()</span><span class="o">==</span><span class="s2">&quot;Fault&quot;</span><span class="p">)[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">])},</span>
+                           <span class="n">order_series</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;fault&quot;</span><span class="p">,</span> <span class="s2">&quot;Rest&quot;</span><span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">order_formations</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Fault&#39;</span><span class="p">,</span><span class="s1">&#39;Layer 2&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer 3&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer 4&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer 5&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>And quickly have a look at the data:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3000</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">2000</span><span class="p">);</span>
+</pre></div>
+</div>
+<img alt="../_images/ch6_7_0.png" src="../_images/ch6_7_0.png" />
+<p>Then we can compile our interpolator object and compute our model:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorData</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">lith_block</span><span class="p">,</span> <span class="n">fault_block</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span>Compiling theano function...
+Compilation Done!
+Level of Optimization:  fast_compile
+Device:  cpu
+Precision:  float32
+Number of faults:  1
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch6_10_0.png" src="../_images/ch6_10_0.png" />
+</div>
+<div class="section" id="analyzing-topology">
+<h2>Analyzing Topology<a class="headerlink" href="#analyzing-topology" title="Permalink to this headline">¶</a></h2>
+<p>GemPy sports in-built functionality to analyze the topology of its
+models. All we need for this is our geo_data object, lithology block
+and the fault block. We input those into <em>gp.topology_compute</em> and get
+several useful outputs:</p>
+<ul class="simple">
+<li>an adjacency graph <strong>G</strong>, representing the topological relationships
+of the model</li>
+<li>the <strong>centroids</strong> of the all the unique topological regions in the
+model (x,y,z coordinates of their center)</li>
+<li>a list of all the unique labels (labels_unique)</li>
+<li>two look-up-tables from the lithology id’s to the node labels, and
+vice versa</li>
+</ul>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">G</span><span class="p">,</span> <span class="n">centroids</span><span class="p">,</span> <span class="n">labels_unique</span><span class="p">,</span> <span class="n">lith_to_labels_lot</span><span class="p">,</span> <span class="n">labels_to_lith_lot</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">topology_compute</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fault_block</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>After computing the model topology, we can overlay the topology graph
+over a model section:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_topology</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">centroids</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch6_14_0.png" src="../_images/ch6_14_0.png" />
+<p>So let’s say we want to check if the green layer (layer 4) is connected
+across the fault. For that we first need to look up which nodes belong
+to the layer. In this simple model we could easily do that by looking at
+the plot above, but we can also use the look-up-tables provided by the
+topology function:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">lith_to_labels_lot</span><span class="p">[</span><span class="s2">&quot;4&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">dict_keys</span><span class="p">([</span><span class="s1">&#39;3&#39;</span><span class="p">,</span> <span class="s1">&#39;8&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>Okay, layer 4 is represented by nodes 3 and 8. We can now put these into
+<em>topology_check_adjacency</em> function, which puts out <em>True</em> if the two
+nodes share a connection (are adjacent) and <em>False</em> if not:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">check_adjacency</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="mi">8</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kc">False</span>
+</pre></div>
+</div>
+<p>We can also easily look up to which other nodes a node is adjacent:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">adj</span><span class="p">[</span><span class="mi">8</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="mi">1</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;edge_type&#39;</span><span class="p">:</span> <span class="s1">&#39;fault&#39;</span><span class="p">},</span>
+ <span class="mi">2</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;edge_type&#39;</span><span class="p">:</span> <span class="s1">&#39;fault&#39;</span><span class="p">},</span>
+ <span class="mi">7</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;edge_type&#39;</span><span class="p">:</span> <span class="s1">&#39;stratigraphic&#39;</span><span class="p">},</span>
+ <span class="mi">9</span><span class="p">:</span> <span class="p">{</span><span class="s1">&#39;edge_type&#39;</span><span class="p">:</span> <span class="s1">&#39;stratigraphic&#39;</span><span class="p">}}</span>
+</pre></div>
+</div>
+<p>The adjacency dictionary of the graph shows that node 8 is connected to
+nodes 1, 2, 7 and 9. If we go one level deeper in the dictionary, we can
+access the type of connection (edge):</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">G</span><span class="o">.</span><span class="n">adj</span><span class="p">[</span><span class="mi">8</span><span class="p">][</span><span class="mi">2</span><span class="p">][</span><span class="s2">&quot;edge_type&quot;</span><span class="p">]</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="s1">&#39;fault&#39;</span>
+</pre></div>
+</div>
+<p>This way we can directly check if node 8 and 2 (or any other pair of
+nodes that share a connection) are connected across a fault, or just
+stratigraphically.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/Notebooks/ch6.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

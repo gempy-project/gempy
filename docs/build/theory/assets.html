@@ -1,0 +1,944 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ASSETS – Model analysis and further use &#8212; GemPy rc documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'rc',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Advance theory" href="advanced.html" />
+    <link rel="prev" title="CORE - Geological modeling with GemPy" href="core.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../index.html">GemPy</a></h1>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../theory.html">Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="core.html">CORE - Geological modeling with GemPy</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">ASSETS – Model analysis and further use</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#visualization">Visualization</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gravity-forward-modeling">Gravity forward modeling</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#topology">Topology</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#stochastic-geomodeling-and-probabilistic-programming">Stochastic Geomodeling and probabilistic programming</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="advanced.html">Advance theory</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../theory.html">Guide</a><ul>
+      <li>Previous: <a href="core.html" title="previous chapter">CORE - Geological modeling with GemPy</a></li>
+      <li>Next: <a href="advanced.html" title="next chapter">Advance theory</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="assets-model-analysis-and-further-use">
+<h1>ASSETS – Model analysis and further use<a class="headerlink" href="#assets-model-analysis-and-further-use" title="Permalink to this headline">¶</a></h1>
+<p>In this second half of the paper we will explore different features that
+complement and expand the construction of the geological model itself.
+These extensions are just some examples of how <em>GemPy</em> can be used as
+geological modeling engine for diverse research projects. The numerous
+libraries in the open-source ecosystem allow to choose the best narrow
+purpose tool for very specific tasks. Considering the visualization of
+<em>GemPy</em>, for instance: <em>matplotlib</em>
+<a class="reference internal" href="#c-hunter2007matplotlib" id="id1">[C1]</a> for 2-D visualization, <em>vtk</em>
+for fast and interactive 3-D visualization, <em>steno3D</em> for sharing block
+models visualizations online—or even the open-source 3-D modeling
+software Blender <a class="reference internal" href="#c-blender" id="id2">[C2]</a> for creating high quality
+renderings and Virtual Reality, are only some examples of the
+flexibility that the combination of <em>GemPy</em> with other open-source
+packages offers. In the same fashion we can use the geological model as
+basis for the subsequent geophysical simulations and process
+simulations. Due to Python’s modularity, combining distinct modules to
+extend the scope of a project to include the geological modeling process
+into a specific environment is effortless. In the next sections we will
+dive into some of the built-in functionality implemented to date on top
+of the geological modeling core. Current assets are: (i) 2-D and 3-D
+visualizations, (ii) forward calculation of gravity, (iii) topology
+analysis, (iv) uncertainty quantification (UQ) as well as (v) full
+Bayesian inference.</p>
+<div class="section" id="visualization">
+<h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h2>
+<p>The segmentation of meaningful units is the central task of geological
+modelling. It is often a prerequisite for engineering projects or
+process simulations. An intuitive 3-D visualization of a geological
+model is therefore a fundamntal requirement.</p>
+<div class="figure" id="id48">
+<img alt="" src="../_images/vtkFault.png" />
+<p class="caption"><span class="caption-text">In-built <em>vtk</em> 3-D visualization of <em>GemPy</em> provides an interactive
+visualization of the geological model (left) and three additional
+orthogonal viewpoints (right) from different directions.</span></p>
+</div>
+<p>For its data and model visualization, <em>GemPy</em> makes use of freely
+available tools in the Python module ecosystem to allow the user to
+inspect data and modeling results from all possible angles. The
+fundamental plotting library <em>matplotlib</em>
+<a class="reference internal" href="#c-hunter2007matplotlib" id="id3">[C1]</a>, enhanced by the statistical
+data visualization library <em>seaborn</em>
+<a class="reference internal" href="#c-michael-waskom-2017-883859" id="id4">[C3]</a>, provides the 2-D
+graphical interface to visualize input data and 2-D sections of scalar
+fields and geological models. In addition, making use of the capacities
+of <em>pyqt</em> implemented with <em>matplotlib</em>, we can generate interactive
+sequence piles, where the user can not only visualize the temporal
+relation of the different unconformities and faulting events, but also
+modify it using intuitive drag and drop functionality (see figure
+[fig:vtk]).</p>
+<p>On top of these features, <em>GemPy</em> offers in-built 3-D visualization
+based on the the open-source Visualization Toolkit
+<a class="reference internal" href="#c-schroeder2004visualization" id="id5">[C4]</a>. It provides
+users with an interactive 3-D view of the geological model, as well as
+three additional orthogonal viewpoints (see figure [fig:vtk]). The user
+can decide to plot just the data, the geological surfaces, or both. In
+addition to just visualizing the data in 3-D, <em>GemPy</em> makes use of the
+interaction capabilities provided by <em>vtk</em> to allow the user to move
+input data points on the fly via drag-and-drop. Combined with
+<em>GemPy</em>’s optimized modeling process (and the ability to use GPUs for
+efficient model calculation), this feature allows for data modification
+with real-time updating of the geological model (in the order of
+milliseconds per scalar field). This functionality can not only improve
+the understanding of the model but can also help the user to obtain the
+desired outcome by working directly in 3-D space while getting direct
+visual feedback on the modeling results. Yet, due to the exponential
+increase of computational time with respect to the number of input data
+and the model resolution), very large and complex models may have
+difficulties to render fast enough to perceive continuity on
+conventional computer systems.</p>
+<p>For additional high quality visualization, we can generate vtk files
+using <em>pyevtk</em>. These files can later be loaded into external VTK viewer
+as Paraview <a class="reference internal" href="#c-ayachit2015paraview" id="id6">[C5]</a> in order to take
+advantage of its intuitive interface and powerful visualization options.
+Another natural compatibility exists with Blender
+<a class="reference internal" href="#c-blender" id="id7">[C2]</a> due to its use of Python as front-end.
+Using the Python distribution shipped within a Blender installation, it
+is possible to import, run and automatically represent <em>GemPy</em>’s data
+and results (figure [fig:examples], see appendix [blender] for code
+extension). This not only allow to render high quality images and videos
+but also to visualize the models in Virtual Reality, making use of the
+Blender Game engine and some of the plug-ins that enable this
+functionality.</p>
+<p>For sharing models, <em>GemPy</em> also includes functionality to upload
+discretized models to the Steno 3D platform (a freemium business model).
+Here, it is possible to visualize manipulate and shared the model with
+any number of people effortless by simple invitations or the
+distribution of a link.</p>
+<p>In short, <em>Gempy</em> is not limited to a unique visualization library.
+Currently <em>Gempy</em> gives support to many of the available visualization
+options to fulfill the different needs of the developers accordingly.
+However, these are not by all means the only possible alternatives and
+in the future we expect that <em>GemPy</em> to be employed as backend of other
+further projects.</p>
+</div>
+<div class="section" id="gravity-forward-modeling">
+<h2>Gravity forward modeling<a class="headerlink" href="#gravity-forward-modeling" title="Permalink to this headline">¶</a></h2>
+<p>In recent years gravity measurements has increased in quality
+<a class="reference internal" href="#c-nabighian200575" id="id8">[C6]</a> and is by now a valuable additional
+geophysical data source to support geological modeling. There are
+different ways to include the new information into the modeling
+workflow, and one of the most common is via inversions
+<a class="reference internal" href="#c-tarantola-2005wd" id="id9">[C7]</a>. Geophysics can validate the
+quality of the model in a probabilistic or optimization framework but
+also by back-propagating information, geophysics can improve
+automatically the modeling process itself. As a drawback, simulating
+forward geophysics adds a significant computational cost and increases
+the uncertainty to the parametrization of the model. However, due to the
+amount of uncorrelated information—often continuous in space—the
+inclusion of geophysical data in the modeling process usually becomes
+significant to evaluate the quality of a given model.</p>
+<div class="figure" id="id49">
+<img alt="" src="../_images/gravity.png" />
+<p class="caption"><span class="caption-text">Forward gravity response overlayed on top of a XY cross section of
+the lithology block.</span></p>
+</div>
+<p><em>GemPy</em> includes built-in functionality to compute forward gravity
+conserving the automatic differentiation of the package. It is
+calculated from the discretized block model applying the method of
+<a class="reference internal" href="#c-nagy1966gravitational" id="id10">[C8]</a> for rectangular prisms in the
+z direction,</p>
+<div class="math">
+\[F_z = G_\rho|||x \ln(y+r) + y\ln(x+r)-z \arctan \left( \frac{x y}{z  r} \right) |^{x_2}_{x_1}|^{y_2}_{y_1}|^{z_2}_{z_1}\]</div>
+<p>where <span class="math">\(x\)</span>, <span class="math">\(y\)</span>, and <span class="math">\(z\)</span> are the Cartesian components
+from the measuring point of the prism, <span class="math">\(r\)</span> the euclidean distance
+and <span class="math">\(G_\rho\)</span> the average gravity pull of the prism. This
+integration provides the gravitational pull of every voxel for a given
+density and distance in the component <span class="math">\(z\)</span>. Taking advantage of the
+immutability of the involved parameters with the exception of density
+allow us to precompute the decomposition of <span class="math">\(t_z\)</span>, leaving just
+its product with the weight <span class="math">\(G_\rho\)</span></p>
+<div class="math">
+\[F_z = G_\rho \cdot t_z
+\label{eq:grav}\]</div>
+<p>as a recurrent operation.</p>
+<p>As an example, we show here the forward gravity response of the
+geological model in figure [fig:model_comp]c. The first important
+detail is the increased extent of the interpolated model to avoid
+boundary errors. In general, a padding equal to the maximum distance
+used to compute the forward gravity computation would be the ideal
+value. In this example (figure [fig:gravity]) we l add
+10<span class="math">\(\; \text{km}\)</span> to the X and Y coordinates. The next step is to
+define the measurement 2-D grid—i.e. where to simulate the gravity
+response and the densities of each layers. The densities chosen are:
+2.92, 3.1, 2.61 and 2.92<span class="math">\(\; \text{kg/m^3}\)</span> for the basement,
+“Unconformity” layer (i.e. the layer on top of the unconformity), Layer
+1 and Layer 2 respectively.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+
+<span class="c1"># Main data management object containing. The extent must be large enough respect the forward gravity plane to account the effect of all cells at a given distance, $d$ to any spatial direction $x, y, z$.</span>
+<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">(</span><span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+              <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">],</span>
+              <span class="n">path_o</span> <span class="o">=</span> <span class="s2">&quot;paper_Foliations.csv&quot;</span><span class="p">,</span>
+              <span class="n">path_i</span> <span class="o">=</span> <span class="s2">&quot;paper_Points.csv&quot;</span><span class="p">)</span>
+
+<span class="c1"># Defining the series of the sequential pile</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">set_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">series_distribution</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fault_serie1&#39;</span><span class="p">:</span> <span class="s1">&#39;fault1&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;younger_serie&#39;</span> <span class="p">:</span> <span class="s1">&#39;Unconformity&#39;</span><span class="p">,</span>
+                         <span class="s1">&#39;older_serie&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Layer1&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer2&#39;</span><span class="p">)},</span>
+          <span class="n">order_formations</span><span class="o">=</span> <span class="p">[</span><span class="s1">&#39;fault1&#39;</span><span class="p">,</span> <span class="s1">&#39;Unconformity&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer2&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer1&#39;</span><span class="p">])</span>
+
+<span class="c1"># Creating object with data prepared for interpolation and compiling.</span>
+<span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorData</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;gravity&#39;</span><span class="p">)</span>
+
+<span class="c1"># Setting the 2D grid of the airborn where we want to compute the forward gravity</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">set_geophysics_obj</span><span class="p">(</span><span class="n">interp_data_g</span><span class="p">,</span>  <span class="n">ai_extent</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+              <span class="n">ai_resolution</span> <span class="o">=</span> <span class="p">[</span><span class="mi">30</span><span class="p">,</span><span class="mi">10</span><span class="p">])</span>
+
+<span class="c1"># Making all possible precomputations: Decomposing the value tz for every point of the 2D grid to each voxel</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">precomputations_gravity</span><span class="p">(</span><span class="n">interp_data_g</span><span class="p">,</span> <span class="mi">25</span><span class="p">,</span> <span class="n">densities</span><span class="o">=</span><span class="p">[</span><span class="mf">2.92</span><span class="p">,</span> <span class="mf">3.1</span><span class="p">,</span> <span class="mf">2.61</span><span class="p">,</span> <span class="mf">2.92</span><span class="p">])</span>
+
+<span class="c1"># Computing gravity (Eq. 10)</span>
+<span class="n">lith</span><span class="p">,</span> <span class="n">fault</span><span class="p">,</span> <span class="n">grav</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data_g</span><span class="p">,</span> <span class="s1">&#39;gravity&#39;</span><span class="p">)</span>
+
+<span class="c1"># Plotting lithology section</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span><span class="n">plot_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Plotting forward gravity</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">grav</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">30</span><span class="p">),</span> <span class="n">cmap</span><span class="o">=</span><span class="s1">&#39;viridis&#39;</span><span class="p">,</span> <span class="n">origin</span><span class="o">=</span><span class="s1">&#39;lower&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The computation of forward gravity is a required step towards a fully
+coupled gravity inversion. Embedding this step into a Bayesian inference
+allows to condition the initial data used to create the model to the
+final gravity response. This idea will be further developed in Section
+[sec:geol-invers-prob].</p>
+</div>
+<div class="section" id="topology">
+<h2>Topology<a class="headerlink" href="#topology" title="Permalink to this headline">¶</a></h2>
+<p>The concept of topology provides a useful tool to describe adjacency
+relations in geomodels, such as stratigraphic contacts or across-fault
+connectivity
+<a class="reference internal" href="#c-thiele-2016wx" id="id11">[C9]</a>[ Thiele:2016vg].
+<em>GemPy</em> has in-built functionality to analyze the adjacency topology of
+its generated models as Region Adjacency Graphs (RAGs), using the
+<code class="docutils literal"><span class="pre">topology_compute</span></code> method (see Listing 6). It can be directly
+visualized on top of model sections (see figure [fig:topology]), where
+each unique topological region in the geomodel is represented by a graph
+node, and each connection as a graph edge. The function outputs the
+graph object G, the region centroid coordinates, a list of all the
+unique node labels, and two look-up tables to conveniently reference
+node labels and lithologies</p>
+<div class="figure" id="id50">
+<img alt="" src="../_images/topology.png" />
+<p class="caption"><span class="caption-text">Section of the example geomodel with overlaid topology graph. The
+geomodel contains eight unique regions (graph nodes) and 13 unique
+connections (graph edges). White edges represent stratigraphic and
+unconformity connections, while black edges correspond to
+across-fault connections.</span></p>
+</div>
+<p>To analyze the model topology, <em>GemPy</em> makes use of a general connected
+component labeling (CCL) algorithm to uniquely label all separated
+geological entities in 3-D geomodels. The algorithm is provided via the
+widely used, open-source, Python-based image processing library
+<em>scikit-image</em> <a class="reference internal" href="#c-van2014scikit" id="id13">[C10]</a> by the function
+<code class="docutils literal"><span class="pre">skimage.measure.label</span></code>, which is based on the optimized algorithms of
+<a class="reference internal" href="#c-fiorio1996two" id="id14">[C11]</a>. But just using CCL
+on a 3-D geomodel fails to discriminate a layer cut by a fault into two
+unique regions because in practice both sides of a fault are represented
+by the same label. To achieve the detection of edges across the fault,
+we need to precondition the 3-D geomodel matrix, which contains just the
+lithology information (layer id), with a 3-D matrix containing the
+information about the faults (fault block id). This yields a 3-D matrix
+which combines the lithology information and the fault block
+information. This matrix can then be successfully labeled using CCL with
+a 2-connectivity stamp, resulting in a new matrix of uniquely labeled
+regions for the geomodel. From these, an adjacency graph is generated
+using <code class="docutils literal"><span class="pre">skimage.future.graph.RAG</span></code>, which created a Region Adjacency
+Graph (RAG) of all unique regions contained in a 2-D or 3-D matrix,
+representing each region with a node and their adjacency relations as
+edges, successfully capturing the topology information of our geomodel.
+The connections (edges) are then further classified into either
+stratigraphic or across-fault edges, to provide further information. If
+the argument <code class="docutils literal"><span class="pre">compute_areas=True</span></code> was given, the contact area for the
+two regions of an edge is automatically calculated (number of voxels)
+and stored inside the adjacency graph.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="n">Add</span> <span class="n">Listing</span> <span class="mi">3</span>
+<span class="o">...</span>
+
+<span class="c1"># Computing result</span>
+<span class="n">lith</span><span class="p">,</span> <span class="n">fault</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+
+<span class="c1"># Compute topology</span>
+<span class="n">G</span><span class="p">,</span> <span class="n">centroids</span><span class="p">,</span> <span class="n">labels_unique</span><span class="p">,</span> <span class="n">labels_lot</span><span class="p">,</span> <span class="n">lith_lot</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">topology_compute</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">fault</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">compute_areas</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Plotting topology network</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">5</span><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">topology_plot</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">centroids</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="stochastic-geomodeling-and-probabilistic-programming">
+<h2>Stochastic Geomodeling and probabilistic programming<a class="headerlink" href="#stochastic-geomodeling-and-probabilistic-programming" title="Permalink to this headline">¶</a></h2>
+<p>Raw geological data is noisy and measurements are usually sparse. As a
+result, geological models contain significant uncertainties
+<a class="reference internal" href="#c-wellmann-2010bz" id="id15">[C12]</a>[Bardossy.2004][Lark:2013cj][Caers:2011jr][McLane:2008wz][Chatfield.1995]
+that must be addressed thoughtfully to reach a plausible level of
+confidence in the model. However, treating geological modeling
+stochastically implies many considerations: (i) from tens or hundreds of
+variables involved in the mathematical equations which ones should be
+latent?; (ii) can we filter all the possible outcomes which represent
+unreasonable geological settings? and (iii) how can we use other sources
+of data—especially geophysics—to improve the accuracy of the inference
+itself?</p>
+<p>The answers to these questions are still actively debated in research
+and are highly dependent on the type of mathematical and computational
+framework chosen. In the interpolation method explained in this paper,
+the parameters suitable to behave as a latent variables (see figure
+[fig:overall] for an overview of possible stochastic parameters) could
+be the interface points <span class="math">\({\bf{x}}_{\alpha}\)</span> (i.e. the 3 Cartesian
+coordinates <span class="math">\(x, \; y, \; z\)</span>), orientations
+<span class="math">\({\bf{x}}_{\beta}\)</span> (i.e. the 3 Cartesian coordinates
+<span class="math">\(x, \; y, \; z\)</span> and the plane orientation normal
+<span class="math">\(Gx, \; Gy, \; Gz\)</span>) or densities for the computation of the
+forward gravity. But not only parameters with physical meaning are
+suitable to be considered stochastic. Many mathematical parameters used
+in the kriging interpolation—such as: covariance at distance zero
+<span class="math">\(C_0\)</span> (i.e. nugget effect) or the range of the covariance
+<span class="math">\(r\)</span> (see Appendix
+[covariance-function-cubic.-discuss-it-with-france] for an example of a
+covariance function)—play a crucial role during the computation of the
+final models and, at best, are inferred by an educated guess to a
+greater or lesser extent
+<a class="reference internal" href="#c-chiles-2004" id="id21">[C13]</a>[Calcagno.2008]. To tackle this problem
+in a strict manner, it would be necessary to combine Bayesian
+statistics, information theory and sensitivity analysis among other
+expertises, but in essence all these methodologies begin with a
+probabilistic programming framework.</p>
+<p><em>GemPy</em> is fully designed to be coupled with probabilistic frameworks,
+in particular with <em>pymc3</em> <a class="reference internal" href="#c-salvatier-2016ki" id="id23">[C14]</a> as both
+libraries are based on <em>Theano</em>.</p>
+<p><em>pymc</em> is a series of Python libraries that provide intuitive tools to
+build and subsequently infer complex probabilistic graphical models
+<a class="reference internal" href="#c-koller-2009wk" id="id24">[C15]</a>.
+These libraries offer expressive and clean syntax to write and use
+statistical distributions and different samplers. At the moment two main
+libraries coexist due to their different strengths and weaknesses. On
+the one hand, we have <em>pymc2</em> <a class="reference internal" href="#c-patil10pymc-bayesian" id="id25">[C16]</a>
+written in FORTRAN and Python. <em>pymc2</em> does not allow gradient based
+sampling methods, since it does not have automatic differentiation
+capabilities. However, for that same reason, the model construction and
+debugging is more accessible. Furthermore, not computing gradients
+enables an easy integration with 3rd party libraries and easy
+extensibility to other scientific libraries and languages. Therefore,
+for prototyping and lower dimensionality problems—where the posterior
+can be tracked by Metropolis-Hasting methods
+<a class="reference internal" href="#c-haario-2001tg" id="id26">[C17]</a>–<em>pymc2</em> is still the go-to choice.</p>
+<p>On the other hand the latest version, <em>pymc3</em>
+<a class="reference internal" href="#c-salvatier-2016ki" id="id27">[C14]</a>, allows the use of next generation
+gradient-based samplers such as No-U-Turn Sampler</p>
+<blockquote>
+<div>or Automatic Variational Inference</div></blockquote>
+<p><a class="reference internal" href="#c-kucukelbir2015automatic" id="id28">[C18]</a>. These sampling methods are
+proving to be a powerful tool to deal with multidimensional
+problems—i.e. models with high number of uncertain parameters
+<a class="reference internal" href="#c-betancourt2017geometric" id="id29">[C19]</a>. The weakness of these
+methods are that they rely on the computation of gradients, which in
+many cases cannot be manually derived. To circumvent this limitation
+<em>pymc3</em> makes use of the AD capabilities of <em>Theano</em>. Being built on top
+of <em>Theano</em> confer to the Bayesian inference process all the
+capabilities discussed in section [theano] in exchange for the clarity
+and flexibility that pure Python provides.</p>
+<p>In this context, the purpose of <em>GemPy</em> is to fill the gap of complex
+algebra between the prior data and observations, such as geophysical
+responses (e.g. gravity or seismic inversions) or geological
+interpretations (e.g. tectonics, model topologies). Since <em>GemPy</em> is
+built on top of <em>Theano</em> as well, the compatibility with both libraries
+is relatively straightforward. However, being able to encode most of the
+conceivable probabilistic graphical models derived from, often, diverse
+and heterogeneous data would be an herculean task. For this reason most
+of the construction of the PGM has to be coded by the user using the
+building blocks that the <em>pymc</em> packages offer (see listing 6). By doing
+so, we can guarantee full flexibility and adaptability to the
+necessities of every individual geological setting.</p>
+<p>For this paper we will use <em>pymc2</em> for its higher readability and
+simplicity. <em>pymc3</em> architecture is analogous with the major difference
+that the PGM is constructed in <em>Theano</em>—and therefore symbolically (for
+examples using <em>pymc3</em> and <em>GemPy</em> check the online documention detailed
+in Appendix [sec:documentation]).</p>
+<div class="section" id="uncertainty-quantification">
+<h3>Uncertainty Quantification<a class="headerlink" href="#uncertainty-quantification" title="Permalink to this headline">¶</a></h3>
+<p>An essential aspect of probabilistic programming is the inherent
+capability to quantify uncertainty. Monte Carlo error propagation
+<a class="reference internal" href="#c-ogilvie1984monte" id="id30">[C20]</a> has been introduced in the field
+of geological modeling a few years ago
+<a class="reference internal" href="#c-wellmann-2010bz" id="id31">[C12]</a>[Jessell.2010][Lindsay:2012gx],
+exploiting the automation of the model construction that implicit
+algorithms offer.</p>
+<p>In this paper example (figure [fig:uncertainty]-Priors), we fit a normal
+distribution of standard deviation <span class="math">\(300 \,\)</span>[m] around the Z axis
+of the interface points in initial model (figure [fig:model_comp] c).
+In other words, we allows to the interface points that define the model
+to oscillate independently along the axis Z accordingly randomly—using
+normal distributions—and subsequently we compute the geomodels that
+these new data describe.</p>
+<p>The first step to the creation of a PGM is to define the parameters that
+are supposed to be stochastic and the probability functions that
+describe them. To do so, <em>pymc2</em> provides a large selection of
+distributions as well as a clear framework to create custom ones. Once
+we created the stochastic parameters we need to substitute the initial
+value in the <em>GemPy</em> database (<code class="docutils literal"><span class="pre">interp_data</span></code> in the snippets) for the
+corresponding <em>pymc2</em> objects. Next, we just need to follow the usual
+<em>GemPy</em> construction process—i.e. calling the <code class="docutils literal"><span class="pre">compute_model</span></code>
+function—wrapping it using a deterministic <em>pymc2</em> decorator to describe
+that these function is part of the probabilistic model (figure
+[fig:PGM-prior]). After creating the graphical model we can sample from
+the stochastic parameters using Monte Carlo sampling using <em>pymc2</em>
+methods.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="n">Add</span> <span class="n">Listing</span> <span class="mi">3</span>
+<span class="o">...</span>
+
+<span class="c1"># Coping the initial data</span>
+<span class="n">geo_data_stoch_init</span> <span class="o">=</span> <span class="n">deepcopy</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="p">)</span>
+<span class="c1"># MODEL CONSTRUCTION</span>
+<span class="c1"># ==================</span>
+<span class="c1"># Positions (rows) of the data we want to make stochastic</span>
+<span class="n">ids</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">12</span><span class="p">)</span>
+
+<span class="c1"># List with the stochastic parameters. pymc.Normal attributes: Name, mean, std</span>
+<span class="n">interface_Z_modifier</span> <span class="o">=</span> <span class="p">[</span><span class="n">pymc</span><span class="o">.</span><span class="n">Normal</span><span class="p">(</span><span class="s2">&quot;interface_Z_mod_&quot;</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="mf">0.</span><span class="p">,</span> <span class="mf">1.</span><span class="o">/</span><span class="mf">0.01</span><span class="o">**</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">]</span>
+
+<span class="c1"># Modifing the input data at each iteration</span>
+<span class="nd">@pymc</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">input_data</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">interface_Z_modifier</span> <span class="o">=</span> <span class="n">interface_Z_modifier</span><span class="p">,</span>
+           <span class="n">geo_data_stoch_init</span> <span class="o">=</span> <span class="n">geo_data_stoch_init</span><span class="p">,</span>
+           <span class="n">ids</span> <span class="o">=</span> <span class="n">ids</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+<span class="c1"># First we extract from our original intep_data object the numerical data that</span>
+<span class="c1"># is necessary for the interpolation. geo_data_stoch is a pandas Dataframe</span>
+    <span class="n">geo_data_stoch</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">geo_data_stoch_init</span><span class="p">,</span> <span class="n">numeric</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Now we loop each id which share the same uncertainty variable. In this case, each layer.  We add the stochastic part to the initial value</span>
+    <span class="k">for</span> <span class="n">num</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span>
+          <span class="n">geo_data_stoch_init</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s2">&quot;Z&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">interface_Z_modifier</span><span class="p">[</span><span class="n">num</span><span class="p">])</span>
+
+<span class="c1"># Return the input data to be input into the modeling function. Due to the way pymc2</span>
+<span class="c1"># stores the traces we need to save the data as numpy arrays</span>
+    <span class="k">return</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span>
+           <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;dip&quot;</span><span class="p">,</span> <span class="s2">&quot;azimuth&quot;</span><span class="p">,</span>          <span class="s2">&quot;polarity&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span>
+
+<span class="c1"># Computing the geological model</span>
+<span class="nd">@pymc</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">gempy_model</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">input_data</span><span class="o">=</span><span class="n">input_data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+<span class="c1"># modify input data values accordingly</span>
+    <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Gx, Gy, Gz are just used for visualization. The Theano function gets azimuth dip and polarity!!!</span>
+    <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s2">&quot;G_x&quot;</span><span class="p">,</span> <span class="s2">&quot;G_y&quot;</span><span class="p">,</span> <span class="s2">&quot;G_z&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s1">&#39;dip&#39;</span><span class="p">,</span>         <span class="s1">&#39;azimuth&#39;</span><span class="p">,</span> <span class="s1">&#39;polarity&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">input_data</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+
+<span class="c1"># Some iterations will give a singular matrix, that&#39;s why we need to</span>
+<span class="c1"># create a try to not break the code.</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">lb</span><span class="p">,</span> <span class="n">fb</span><span class="p">,</span> <span class="n">grav</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">outup</span><span class="o">=</span><span class="s1">&#39;gravity&#39;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">lb</span><span class="p">,</span> <span class="n">fb</span><span class="p">,</span> <span class="n">grav</span>
+
+    <span class="k">except</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">LinAlgError</span> <span class="k">as</span> <span class="n">err</span><span class="p">:</span>
+<span class="c1"># If it fails (e.g. some input data combinations could lead to</span>
+<span class="c1"># a singular matrix and thus break the chain) return an empty model</span>
+<span class="c1"># with same dimensions (just zeros)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Exception occured.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">lith_block</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">fault_block</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">grav_i</span><span class="p">)</span>
+
+<span class="c1"># Extract the vertices in every iteration by applying the marching cube algorithm</span>
+<span class="nd">@pymc</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">gempy_surfaces</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">gempy_model</span><span class="o">=</span><span class="n">gempy_model</span><span class="p">):</span>
+    <span class="n">vert</span><span class="p">,</span> <span class="n">simp</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">gempy_model</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span> <span class="n">gempy_model</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="mi">1</span><span class="p">],</span>
+                     <span class="n">original_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">vert</span>
+
+<span class="c1"># We add all the pymc objects to a list</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">input_data</span><span class="p">,</span> <span class="n">gempy_model</span><span class="p">,</span> <span class="n">gempy_surfaces</span><span class="p">,</span> <span class="o">*</span><span class="n">interface_Z_modifier</span><span class="p">]</span>
+
+<span class="c1"># We create the pymc model i.e. the probabilistic graph</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">pymc</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="n">runner</span> <span class="o">=</span> <span class="n">pymc</span><span class="o">.</span><span class="n">MCMC</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+<span class="c1"># BAYESIAN INFERENCE</span>
+<span class="c1"># ==================</span>
+<span class="c1"># Number of iterations</span>
+<span class="n">iterations</span> <span class="o">=</span> <span class="mi">10000</span>
+
+<span class="c1"># Inference. By default without likelihoods: Sampling from priors</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">iter</span><span class="o">=</span><span class="n">iterations</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The suite of possible realization of the geological model are stored, as
+traces, in a database of choice (HDF5, SQL or Python pickles) for
+further analysis and visualization.</p>
+<p>In 2-D we can display all possible locations of the interfaces on a
+cross-section at the center of the model (see figure
+[fig:uncertainty]-Priors-2-D representation), however the extension of
+uncertainty visualization to 3D is not as trivial. <em>GemPy</em> makes use of
+the latest developments in uncertainty visualization for 3-D structural
+geological modeling
+<a class="reference internal" href="#c-lindsay-2012gx" id="id34">[C21]</a>[Lindsay:2013cv][Lindsay:2013dr][Wellmann:2012wf].
+The first method consists on representing the probability of finding a
+given geological unit <span class="math">\(F\)</span> at each discrete location in the model
+domain. This can be done by defining a probability function</p>
+<div class="math">
+\[p_F(x) = \sum_{k\in n} \frac{I_{F_k}(x)}{n}\]</div>
+<p>where n is the number of realizations and <span class="math">\(I_{F_k}(x)\)</span> is a
+indicator function of the mentioned geological unit (figure
+[fig:uncertainty]-Probability shows the probability of finding Layer 1).
+However this approach can only display each unit individually. A way to
+encapsulate geomodel uncertainty with a single parameter to quantify and
+visualize it, is by applying the concept of information entropy
+<a class="reference internal" href="#c-wellmann-2012wf" id="id38">[C22]</a>, based on the general concept
+developed by <a class="reference internal" href="#c-shannon-1948" id="id39">[C23]</a>. For a discretized
+geomodel the information entropy <span class="math">\(H\)</span> (normalized by the total
+number of voxels <span class="math">\(n\)</span>) can be defined as</p>
+<div class="math">
+\[H = - \sum_{i=1}^{n}p_i \log_2p_i\]</div>
+<p>where <span class="math">\(p_F\)</span> represents the probability of a layer at cell
+<span class="math">\(x\)</span>. Therefore, we can use information entropy to compress our
+uncertainty into a single value at each voxel as an indication of
+uncertainty, reflecting the possible number of outcomes and their
+relative probability (see figure [fig:uncertainty]-Entropy).</p>
+<div class="figure" id="id51">
+<img alt="" src="../_images/uncertainty1.png" />
+<p class="caption"><span class="caption-text">Probabilistic Programming results on a cross-section at the middle of
+the model (<span class="math">\(Y = 10000 \, [m]\)</span>). (i) Priors-UQ shows the
+uncertainty of geological models given stochastic values to the Z
+position of the input data (<span class="math">\(\sigma = 300\)</span>): (top) 2-D
+interface representation ; (middle) probability of occurrence for
+Layer 1; (bottom) information entropy. (ii) Representation of data
+used as likelihood functions: (top) ideal topology graph; (middle)
+Synthetic model taken as reference for the gravity inversion;
+(bottom) Reference forward gravity overlain on top of an XY
+cross-section of the synthetic reference model. Posterior analysis
+after combining priors and likelihood in a Bayesian inference: (top)
+2-D interface representation; (middle) probability of occurrence for
+Layer 1; (bottom) information entropy.</span></p>
+</div>
+</div>
+<div class="section" id="geological-inversion-gravity-and-topology">
+<h3>Geological inversion: Gravity and Topology<a class="headerlink" href="#geological-inversion-gravity-and-topology" title="Permalink to this headline">¶</a></h3>
+<p>Although computing the forward gravity has its own value for many
+applications, the main aim of <em>GemPy</em> is to integrate all possible
+sources of information into a single probabilistic framework. The use of
+likelihood functions in a Bayesian inference in opposition to simply
+rejection sampling has been explored by the authors during the recent
+years
+<a class="reference internal" href="#c-delavarga-dj" id="id40">[C24]</a>[wellmann2017uncertainty][schaaf17master].
+This approach enables to tune the conditioning of possible stochastic
+realizations by varying the probabilistic density function used as
+likelihoods. In addition, Bayesian networks allow to combine several
+likelihood functions, generating a competition among the prior
+distribution of the input data and likelihood functions resulting in
+posterior distributions that best honor all the given information. To
+give a flavor of what is possible, we apply custom likelihoods to the
+previous example based on, topology and gravity constrains in an
+inversion.</p>
+<p>As, we have shown above, topological graphs can represent the
+connectivity among the segmented areas of a geological model. As is
+expected, stochastic perturbations of the input data can rapidly alter
+the configuration of mentioned graphs. In order to preserve a given
+topological configuration partially or totally, we can construct
+specific likelihood functions. To exemplify the use of a topological
+likelihood function, we will use the topology computed in the section
+[sec:topology] derived from the initial model realization (figure
+[fig:topology] or [fig:uncertainty]-Likelihoods) as “ideal topology”.
+This can be based on an expert interpretation of kinematic data or
+deduced from auxiliary data.</p>
+<p>The first challenge is to find a metric that captures the similarity of
+two graphs. As a graph is nothing but a set of nodes and their edges we
+can compare the intersection and union of two different sets using the
+the Jaccard index
+<a class="reference internal" href="#c-jaccard1912distribution" id="id43">[C25]</a>[Thiele:2016wx]. It
+calculates the ratio of intersection and union of two given graphs A and
+B:</p>
+<div class="math">
+\[J(A, B) = \frac{A \cap B}{A \cup B}\]</div>
+<p>The resulting ratio is zero for entirely different graphs, while the
+metric rises as the sets of edges and nodes become more similar between
+two graphs and reaches exactly one for an identical match. Therefore,
+the Jaccard index can be used to express the similarity of topology
+graphs as a single number we can evaluate using a probability density
+function. The type of probability density function used will determine
+the “strength” or likelihood that the mean graph represent. Here, we use
+a half Cauchy distribution (<span class="math">\(\alpha = 0\)</span> and
+<span class="math">\(\beta = 10^{-3}\)</span>) due to its tolerance to outliers.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">...</span>
+<span class="n">Add</span> <span class="n">Listing</span> <span class="mi">6</span>
+<span class="o">...</span>
+
+<span class="c1"># Computation of toplogy</span>
+<span class="nd">@pymc</span><span class="o">.</span><span class="n">deterministic</span><span class="p">(</span><span class="n">trace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">gempy_topo</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">gm</span><span class="o">=</span><span class="n">gempy_model</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="n">G</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">lu</span><span class="p">,</span> <span class="n">lot1</span><span class="p">,</span> <span class="n">lot2</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">topology_compute</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">gm</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">gm</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cell_number</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">gm</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">gp</span><span class="o">.</span><span class="n">topology_plot</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">c</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">G</span><span class="p">,</span> <span class="n">c</span><span class="p">,</span> <span class="n">lu</span><span class="p">,</span> <span class="n">lot1</span><span class="p">,</span> <span class="n">lot2</span>
+
+<span class="c1"># Computation of L2-Norm for the forward gravity</span>
+<span class="nd">@pymc</span><span class="o">.</span><span class="n">deterministic</span>
+<span class="k">def</span> <span class="nf">e_sq</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="n">original_grav</span><span class="p">,</span> <span class="n">model_grav</span> <span class="o">=</span> <span class="n">gempy_model</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+    <span class="n">square_error</span> <span class="o">=</span>  <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">((</span><span class="n">value</span><span class="o">*</span><span class="mi">10</span><span class="o">**-</span><span class="mi">7</span> <span class="o">-</span> <span class="p">(</span><span class="n">model_grav</span><span class="o">*</span><span class="mi">10</span><span class="o">**-</span><span class="mi">7</span><span class="p">))</span><span class="o">**</span><span class="mi">2</span><span class="p">))</span>
+    <span class="k">return</span> <span class="n">square_error</span>
+
+<span class="c1"># Likelihoods</span>
+<span class="c1"># ===========</span>
+<span class="nd">@pymc</span><span class="o">.</span><span class="n">stochastic</span>
+<span class="k">def</span> <span class="nf">like_topo_jaccard_cauchy</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">gempy_topo</span><span class="o">=</span><span class="n">gempy_topo</span><span class="p">,</span> <span class="n">G</span><span class="o">=</span><span class="n">topo_G</span><span class="p">):</span>
+<span class="sd">&quot;&quot;&quot;Compares the model output topology with a given topology graph G using an inverse Jaccard-index embedded in a half-cauchy likelihood.&quot;&quot;&quot;</span>
+<span class="c1"># jaccard-index comparison</span>
+    <span class="n">j</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">Topology</span><span class="o">.</span><span class="n">compare_graphs</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">gempy_topo</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="c1"># the last parameter adjusts the &quot;strength&quot; of the likelihood</span>
+    <span class="k">return</span> <span class="n">pymc</span><span class="o">.</span><span class="n">half_cauchy_like</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mf">0.001</span><span class="p">)</span>
+
+<span class="nd">@pymc</span><span class="o">.</span><span class="n">observed</span>
+<span class="k">def</span> <span class="nf">inversion</span><span class="p">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">e_sq</span> <span class="o">=</span> <span class="n">e_sq</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">pymc</span><span class="o">.</span><span class="n">half_cauchy_like</span><span class="p">(</span><span class="n">e_sq</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mf">0.1</span><span class="p">)</span>
+
+<span class="c1"># We add all the pymc objects to a list</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">[</span><span class="n">input_data</span><span class="p">,</span> <span class="n">gempy_model</span><span class="p">,</span> <span class="n">gempy_surfaces</span><span class="p">,</span> <span class="n">gempy_topo</span><span class="p">,</span> <span class="o">*</span><span class="n">interface_Z_modifier</span><span class="p">,</span>
+<span class="n">like_topo_jaccard_cauchy</span><span class="p">,</span> <span class="n">e_sq</span><span class="p">,</span> <span class="n">inversion</span><span class="p">]</span>
+
+<span class="c1"># We create the pymc model i.e. the probabilistic graph</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">pymc</span><span class="o">.</span><span class="n">Model</span><span class="p">(</span><span class="n">params</span><span class="p">)</span>
+<span class="n">runner</span> <span class="o">=</span> <span class="n">pymc</span><span class="o">.</span><span class="n">MCMC</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>
+
+<span class="c1"># BAYESIAN INFERENCE</span>
+<span class="c1"># ==================</span>
+<span class="c1"># Number of iterations</span>
+<span class="n">iterations</span> <span class="o">=</span> <span class="mi">15000</span>
+
+<span class="c1"># Inference. Adaptive Metropolis</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">use_step_method</span><span class="p">(</span><span class="n">pymc</span><span class="o">.</span><span class="n">AdaptiveMetropolis</span><span class="p">,</span> <span class="n">params</span><span class="p">,</span> <span class="n">delay</span><span class="o">=</span><span class="mi">1000</span><span class="p">)</span>
+<span class="n">runner</span><span class="o">.</span><span class="n">sample</span><span class="p">(</span><span class="nb">iter</span> <span class="o">=</span> <span class="mi">20000</span><span class="p">,</span> <span class="n">burn</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">thin</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">tune_interval</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span> <span class="n">tune_throughout</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Gravity likelihoods exploit the spatial distribution of density which
+can be related to different lithotypes
+<a class="reference internal" href="#c-dentith-2014uk" id="id45">[C26]</a>. To test the likelihood function
+based on gravity data, we first generate the synthetic “measured” data.
+This was done simply by computing the forward gravity for one of the
+extreme models (to highlight the effect that a gravity likelihood can
+have) generated during the Monte Carlo error propagation in the previous
+section. This model is particularly characteristic by its high dip
+values (figure [fig:uncertainty]-Syntetic model to produce forward
+gravity). Once we have an “observed” gravity, we can compare it to a
+simulated gravity response. To do so, we compare their values applying
+an L2-norm encapsulating the difference into a single error value. This
+error value acts as the input of the likelihood function, in this case,
+a half Cauchy (<span class="math">\(\alpha = 0\)</span> and <span class="math">\(\beta = 10^{-1}\)</span>). This
+probabilistic density function increases as we approach to 0 and at both
+extremes (very low or high values of error) the function flatters to
+accommodate to possible measurement errors.</p>
+<p>As sampler we use an adaptive Metropolis method
+(<a class="reference internal" href="#c-haario-2001tg" id="id46">[C17]</a>, for a more in depth explanation
+of samplers and their importance see
+<a class="reference internal" href="#c-delavarga-dj" id="id47">[C24]</a>). This method varies the metropolis
+sampling size according to the covariance function that gets updated
+every <span class="math">\(n\)</span> iterations. For the results here exposed, we performed
+20000 iterations, tuning the adaptive covariance every 1000 steps (a
+convergence analysis can be found in the Jupyter notebooks attached to
+the on-line supplement of this paper).</p>
+<p>As a result of applying likelihood functions we can appreciate a clear
+change in the posterior (i.e. the possible outcomes) of the inference. A
+closer look shows two main zones of influence, each of them related to
+one of the likelihood functions. On one hand, we observe a reduction of
+uncertainty along the fault plane due to the restrictions that the
+topology function imposes by conditioning the models to high Jaccard
+values. On the other hand, what in the first example—i.e. Monte Carlo
+error propagation—was just an outlier, due to the influence of the
+gravity inversion, now it becomes the norm bending the layers
+pronouncedly. In both cases, it is important to keep in mind that the
+grade of impact into the final model is inversely proportional to the
+amount of uncertainty that each stochastic parameter carries. Finally,
+we would like to remind the reader that the goal of this example is not
+to obtain realistic geological models but to serve as an example how the
+in-built functionality of <em>GemPy</em> can be used to handle similar cases.</p>
+<p id="bibtex-bibliography-theory/assets-0"><table class="docutils citation" frame="void" id="c-hunter2007matplotlib" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[C1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id3">2</a>)</em> John&nbsp;D Hunter. Matplotlib: a 2d graphics environment. <em>Computing In Science &amp; Engineering</em>, 9(3):90–95, 2007.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-blender" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[C2]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id7">2</a>)</em> Blender Online Community. <em>Blender - a 3D modelling and rendering package</em>. Blender Foundation, Blender Institute, Amsterdam, 2017. URL: <a class="reference external" href="http://www.blender.org">http://www.blender.org</a>.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-michael-waskom-2017-883859" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[C3]</a></td><td>Michael Waskom, Olga Botvinnik, Drew O’Kane, Paul Hobson, Saulius Lukauskas, David&nbsp;C Gemperline, Tom Augspurger, Yaroslav Halchenko, John&nbsp;B. Cole, Jordi Warmenhoven, Julian de&nbsp;Ruiter, Cameron Pye, Stephan Hoyer, Jake Vanderplas, Santi Villalba, Gero Kunter, Eric Quintero, Pete Bachant, Marcel Martin, Kyle Meyer, Alistair Miles, Yoav Ram, Tal Yarkoni, Mike&nbsp;Lee Williams, Constantine Evans, Clark Fitzgerald, Brian, Chris Fonnesbeck, Antony Lee, and Adel Qalieh. Mwaskom/seaborn: v0.8.1 (september 2017). September 2017. URL: <a class="reference external" href="https://doi.org/10.5281/zenodo.883859">https://doi.org/10.5281/zenodo.883859</a>, <a class="reference external" href="https://doi.org/10.5281/zenodo.883859">doi:10.5281/zenodo.883859</a>.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-schroeder2004visualization" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id5">[C4]</a></td><td>Will&nbsp;J Schroeder, Bill Lorensen, and Ken Martin. <em>The visualization toolkit: an object-oriented approach to 3D graphics</em>. Kitware, 2004.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-ayachit2015paraview" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[C5]</a></td><td>Utkarsh Ayachit. The paraview guide: a parallel visualization application. 2015.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-nabighian200575" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id8">[C6]</a></td><td>M&nbsp;Nabighian and others. 75 anniversary-the historical development of the gravity method in exploration. <em>Geophysics</em>, 2005.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-tarantola-2005wd" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id9">[C7]</a></td><td>A.&nbsp;Tarantola. <em>Inverse problem theory and methods for model parameter estimation</em>. Society for Industrial Mathematics, 2005.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-nagy1966gravitational" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id10">[C8]</a></td><td>Dezsö Nagy. The gravitational attraction of a right rectangular prism. <em>Geophysics</em>, 31(2):362–371, 1966.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-thiele-2016wx" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id11">[C9]</a></td><td>Samuel&nbsp;T Thiele, Mark&nbsp;W Jessell, Mark Lindsay, Vitaliy Ogarko, J&nbsp;F Wellmann, and Evren Pakyuz-Charrier. The topology of geology 1: Topological analysis. <em>Jorunal of Structural Geology</em>, 91 IS -:27–38, October 2016.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-van2014scikit" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id13">[C10]</a></td><td>Stefan Van&nbsp;der Walt, Johannes&nbsp;L Schönberger, Juan Nunez-Iglesias, François Boulogne, Joshua&nbsp;D Warner, Neil Yager, Emmanuelle Gouillart, and Tony Yu. Scikit-image: image processing in python. <em>PeerJ</em>, 2:e453, 2014.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-fiorio1996two" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id14">[C11]</a></td><td>Christophe Fiorio and Jens Gustedt. Two linear time union-find strategies for image processing. <em>Theoretical Computer Science</em>, 154(2):165–181, 1996.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-wellmann-2010bz" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[C12]</td><td><em>(<a class="fn-backref" href="#id15">1</a>, <a class="fn-backref" href="#id31">2</a>)</em> J&nbsp;F Wellmann, Franklin&nbsp;G. Horowitz, Eva Schill, and Klaus Regenauer-Lieb. Towards incorporating uncertainty of structural data in 3D geological inversion. <em>Tectonophysics</em>, 490(3-4):141–151, 2010.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-chiles-2004" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id21">[C13]</a></td><td>Jean-Paul Chiles, Christophe Aug, Antonio Guillen, and T.&nbsp;Lees. Modelling of Geometry of Geological Units and its Uncertainty in 3D From Structural Data:~The Potential-Field Method. Perth, 2004.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-salvatier-2016ki" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[C14]</td><td><em>(<a class="fn-backref" href="#id23">1</a>, <a class="fn-backref" href="#id27">2</a>)</em> John Salvatier, Thomas&nbsp;V Wiecki, and Christopher Fonnesbeck. Probabilistic programming in Python using PyMC3. <em>PeerJ Computer Science</em>, 2(2):e55, April 2016.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-koller-2009wk" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id24">[C15]</a></td><td>D&nbsp;Koller and N&nbsp;Friedman. <em>Probabilistic graphical models: principles and techniques</em>. 2009.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-patil10pymc-bayesian" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id25">[C16]</a></td><td>Anand Patil, David Huard, and Christopher&nbsp;J. Fonnesbeck. Pymc: bayesian stochastic modelling in python. <em>J. Stat. Softw</em>, pages 1–81, 2010.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-haario-2001tg" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[C17]</td><td><em>(<a class="fn-backref" href="#id26">1</a>, <a class="fn-backref" href="#id46">2</a>)</em> H&nbsp;Haario, E&nbsp;Saksman, and J&nbsp;Tamminen. An adaptive metropolis algorithm. Bernoulli 7 223–242. <em>Mathematical Reviews (MathSciNet): MR1828504 Digital Object Identifier: doi</em>, 10:3318737, 2001.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-kucukelbir2015automatic" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id28">[C18]</a></td><td>Alp Kucukelbir, Rajesh Ranganath, Andrew Gelman, and David Blei. Automatic variational inference in stan. In <em>Advances in neural information processing systems</em>, 568–576. 2015.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-betancourt2017geometric" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id29">[C19]</a></td><td>Michael Betancourt, Simon Byrne, Sam Livingstone, Mark Girolami, and others. The geometric foundations of hamiltonian monte carlo. <em>Bernoulli</em>, 23(4A):2257–2298, 2017.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-ogilvie1984monte" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id30">[C20]</a></td><td>John&nbsp;F Ogilvie. A monte-carlo approach to error propagation. <em>Computers &amp; chemistry</em>, 8(3):205–207, 1984.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-lindsay-2012gx" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id34">[C21]</a></td><td>Mark Lindsay, Laurent Ailleres, Mark&nbsp;W Jessell, Eric de&nbsp;Kemp, and Peter&nbsp;G Betts. Locating and quantifying geological uncertainty in three-dimensional models: Analysis of the Gippsland Basin, southeastern Australia. <em>Tectonophysics</em>, 546-547:10–27, April 2012.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-wellmann-2012wf" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id38">[C22]</a></td><td>J&nbsp;F Wellmann and Klaus Regenauer-Lieb. Uncertainties have a meaning: Information entropy as a quality measure for 3-D geological models. <em>Tectonophysics</em>, 526-529:207–216, March 2012.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-shannon-1948" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id39">[C23]</a></td><td>E.&nbsp;C. Shannon. A mathematical theory of communication. <em>Bell System Technical Journal</em>, 1948.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-delavarga-dj" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[C24]</td><td><em>(<a class="fn-backref" href="#id40">1</a>, <a class="fn-backref" href="#id47">2</a>)</em> Miguel de&nbsp;la Varga and J&nbsp;F Wellmann. Structural geologic modeling as an inference problem: A Bayesian perspective. <em>Interpretation</em>, 4(3):1–16, June 2016.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-jaccard1912distribution" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id43">[C25]</a></td><td>Paul Jaccard. The distribution of the flora in the alpine zone. <em>New phytologist</em>, 11(2):37–50, 1912.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="c-dentith-2014uk" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id45">[C26]</a></td><td>Michael Dentith and Stephen&nbsp;T Mudge. <em>Geophysics for the mineral exploration geoscientist</em>. Cambridge University Press, 2014.</td></tr>
+</tbody>
+</table>
+</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+    <div class="clearer"></div>
+  </div>
+    <div class="footer">
+      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/theory/assets.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
