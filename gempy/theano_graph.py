@@ -950,14 +950,22 @@ class TheanoGraph(object):
 
         # Max and min values of the potential field.
         # TODO this may be expensive because I guess that is a sort algorithm. We just need a +inf and -inf... I guess
-        max_pot = 1000
-        min_pot = -1000
+        #max_pot = 1000
+       # min_pot = -1000
+        max_pot = T.max(Z_x)
+        min_pot = T.min(Z_x)
 
         # Value of the potential field at the interfaces of the computed series
         self.scalar_field_at_interfaces_values = Z_x[-2*self.len_points: -self.len_points][self.npf_op]
+       # max_pot = self.scalar_field_at_interfaces_values[0] + 5
+       # min_pot = self.scalar_field_at_interfaces_values[-1] - 5
+
 
         # A tensor with the values to segment
-        scalar_field_iter = T.concatenate((T.stack([max_pot]),   self.scalar_field_at_interfaces_values, T.stack([min_pot])))
+        scalar_field_iter = T.concatenate((T.stack([max_pot]),
+                                           self.scalar_field_at_interfaces_values,
+                                           #T.stack([min_pot]
+                                            ))
 
         if "scalar_field_iter" in self.verbose:
             scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
@@ -978,12 +986,13 @@ class TheanoGraph(object):
                 theano.tensor.vector: segmented values
             """
 
-            if False:
+            if True:
                 mid_pot = (a - b) / 2 + b
                 # The 5 rules the slope of the function
-                segm = 1. / (1 + T.exp(-20 * (Z_x - mid_pot)))
-
-                return T.switch(T.le(Zx, a) * T.ge(Zx, b), segm + n_formation, 0)
+                segm = 1. / (1 + T.exp(-200 * (Z_x - mid_pot)))
+                if True:
+                    segm = theano.printing.Print("middle point")(segm)
+                    return T.switch(T.le(Zx, a) * T.ge(Zx, b), segm + n_formation +1, 0)
 
             else:
 
@@ -995,7 +1004,8 @@ class TheanoGraph(object):
             sequences=[dict(input=scalar_field_iter, taps=[0, 1]), self.n_formation_op_float],
             non_sequences=Z_x,
             name='Looping compare',
-            profile=False)
+            profile=False,
+        return_list=False)
 
         # For every formation we get a vector so we need to sum compress them to one dimension
         partial_block = partial_block.sum(axis=0)
@@ -1283,7 +1293,13 @@ class TheanoGraph(object):
                                     return_list = True
         )
 
-        density_block_loop_f = T.set_subtensor(density_block_loop[-1][-1][self.weigths_index], self.weigths_weigths)
+        if False:
+            density_block_loop_f = T.set_subtensor(density_block_loop[-1][-1][self.weigths_index], self.weigths_weigths)
+
+        else:
+            density_block_loop_f = lith_matrix[0]
+
+
         if 'density_block' in self.verbose:
             density_block_loop_f = theano.printing.Print('density block')(density_block_loop_f)
 

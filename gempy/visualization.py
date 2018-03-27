@@ -135,6 +135,8 @@ class PlotData2D(object):
         for i in zip(self.formation_names, self.formation_numbers):
             self._color_lot[i[0]] = self._color_lot[i[1]]
 
+        #fig, ax = plt.subplots()
+
         if data_type == 'all':
             p = sns.lmplot(x, y,
                            data=series_to_plot_i,
@@ -165,7 +167,7 @@ class PlotData2D(object):
                            **kwargs)
 
         if data_type == 'orientations':
-            plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
+            ax.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
                        pivot="tail", scale_units=min_axis, scale=15)
 
@@ -175,6 +177,8 @@ class PlotData2D(object):
         # plt.ylim(extent[2] - extent[2]*0.05, extent[3] + extent[3]*0.05)
         plt.xlabel(x)
         plt.ylabel(y)
+
+        #return fig, ax, p
 
     def _slice(self, direction, cell_number=25):
         """
@@ -254,14 +258,14 @@ class PlotData2D(object):
             kwargs['cmap'] = self._cmap
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
-
+        print(plot_block[_a, _b, _c].T, type(plot_block[_a, _b, _c].T))
         im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
                    extent=extent_val,
                    interpolation=interpolation, **kwargs)
 
         import matplotlib.patches as mpatches
         colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
-        patches = [ mpatches.Patch(color=colors[i], label=self.formation_names[i]) for i in range(len(self.formation_names))]
+        patches = [mpatches.Patch(color=colors[i], label=self.formation_names[i]) for i in range(len(self.formation_names))]
         if not plot_data:
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.xlabel(x)
@@ -284,11 +288,21 @@ class PlotData2D(object):
             scalar field plot
         """
 
+        if 'cmap' not in kwargs:
+            kwargs['cmap'] = 'magma'
+
         if plot_data:
             self.plot_data(direction, 'all')
 
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
+
         plt.contour(scalar_field.reshape(
+            self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[_a, _b, _c].T,
+                    N,
+                    extent=extent_val, *args,
+                    **kwargs)
+
+        plt.contourf(scalar_field.reshape(
             self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[_a, _b, _c].T,
                     N,
                     extent=extent_val, *args,
@@ -517,16 +531,21 @@ class vtkVisualization:
         Returns:
 
         """
+        from vtk import (vtkSphereSource, vtkPolyDataMapper, vtkActor, vtkRenderer,
+                         vtkRenderWindow, vtkWindowToImageFilter, vtkPNGWriter)
+
         # initialize and start the app
 
         if fullscreen:
             self.renwin.FullScreenOn()
         self.renwin.SetSize(size)
+
         self.interactor.Initialize()
         self.interactor.Start()
 
         # close_window(interactor)
         del self.renwin, self.interactor
+
 
     def create_surface_points(self, vertices):
         """
@@ -896,6 +915,7 @@ class vtkVisualization:
             self.s_rend_4[obj.n_sphere].PlaceWidget(new_center[0] - r_f, new_center[0] + r_f,
                                                     new_center[1] - r_f, new_center[1] + r_f,
                                                     new_center[2] - r_f, new_center[2] + r_f)
+
 
         if self.real_time:
             for surf in self.surf_rend_1:

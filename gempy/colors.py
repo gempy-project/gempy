@@ -32,6 +32,7 @@ def _create_color_lot(color_names, color_subnames, color_dict_rgb):
     i = 0
     for sn in np.arange(len(color_subnames)):
         for n in np.arange(len(color_names)):
+            #lot[i] = color_dict_rgb[color_names[n]][color_subnames[sn]]
             lot[i] = color_dict_rgb[color_names[n]][color_subnames[sn]]
             i += 1
 
