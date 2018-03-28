@@ -437,7 +437,7 @@ class InterpolatorData:
             # Size of every layer in rests. SHARED (for theano)
             len_rest_form = (len_interfaces - 1)
             self.tg.number_of_points_per_formation_T.set_value(len_rest_form.astype('int32'))
-            self.tg.npf.set_value( np.cumsum(np.concatenate(([0], len_rest_form))).astype('int32'))
+            self.tg.npf.set_value(np.cumsum(np.concatenate(([0], len_rest_form))).astype('int32')) # Last value is useless and breaks the basement
 
             # Position of the first point of every layer
             ref_position = np.insert(len_interfaces[:-1], 0, 0).cumsum()
@@ -461,7 +461,7 @@ class InterpolatorData:
 
             # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
 
-            assert len_series_f.shape[0] is not 0, 'You need at least one orientation per series'
+            assert len_series_f.shape[0] is len_series_i.shape[0], 'You need at least one orientation per series'
             self.tg.len_series_f.set_value(np.insert(len_series_f, 0, 0).cumsum().astype('int32'))
 
             # =========================

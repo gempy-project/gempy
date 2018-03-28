@@ -169,6 +169,11 @@ class TheanoGraph(object):
             self.weigths_weigths = theano.shared(np.ones(0))
             self.weigths_index = theano.shared(np.ones(0, dtype='int32'))
 
+
+
+
+        self.scalar_field_at_interfaces_values = theano.shared(np.cast[dtype](np.zeros(3)), "List with the interface values")
+
     def input_parameters_list(self):
         """
         Create a list with the symbolic variables to use when we compile the theano function
@@ -952,8 +957,8 @@ class TheanoGraph(object):
         # TODO this may be expensive because I guess that is a sort algorithm. We just need a +inf and -inf... I guess
         #max_pot = 1000
        # min_pot = -1000
-        max_pot = T.max(Z_x)
-        min_pot = T.min(Z_x)
+        max_pot = T.max(Z_x) + 1
+        min_pot = T.min(Z_x) -1
 
         # Value of the potential field at the interfaces of the computed series
         self.scalar_field_at_interfaces_values = Z_x[-2*self.len_points: -self.len_points][self.npf_op]
@@ -962,9 +967,10 @@ class TheanoGraph(object):
 
 
         # A tensor with the values to segment
-        scalar_field_iter = T.concatenate((T.stack([max_pot]),
+        scalar_field_iter = T.concatenate((
+                                           T.stack([max_pot]),
                                            self.scalar_field_at_interfaces_values,
-                                           #T.stack([min_pot]
+                                           T.stack([min_pot])
                                             ))
 
         if "scalar_field_iter" in self.verbose:
@@ -988,9 +994,9 @@ class TheanoGraph(object):
 
             if True:
                 mid_pot = (a - b) / 2 + b
-                mid_pot = b
+                mid_pot = a
                 # The 5 rules the slope of the function
-                sigm = 1. / (1 + T.exp(-500 * (Z_x - mid_pot)))
+                sigm = ((1. / (1 + T.exp(-500 * (Z_x - b))) + 1. / (1 + T.exp(500 * (Z_x - a)))) - 1) * n_formation
                 if True:
                     sigm = theano.printing.Print("middle point")(sigm)
                     return sigm #   * n_formation
@@ -1122,7 +1128,7 @@ class TheanoGraph(object):
                          len_f_0, len_f_1,
                          n_form_per_serie_0, n_form_per_serie_1,
                          u_grade_iter,
-                         final_block, fault_block):
+                         final_block, scalar_field_at_form, fault_block):
 
         """
         Function that loops each series, generating a potential field for each on them with the respective block model
@@ -1146,9 +1152,19 @@ class TheanoGraph(object):
         # ==================
         # Preparing the data
         # ==================
+
+        if 'yet_simulated' in self.verbose:
+            scalar_field_at_form= theano.printing.Print('scalar_field_at_form')(scalar_field_at_form)
+
+        #if 'yet_simulated' in self.verbose:
+        #    self.yet_simulated = theano.printing.Print('yet_simulated')(self.yet_simulated)
+
         # Vector that controls the points that have been simulated in previous iterations
-        self.yet_simulated = T.nonzero(T.lt(final_block[0, :], 0.5))[0]
+        self.yet_simulated = T.nonzero(T.le(final_block[1, :], scalar_field_at_form[n_form_per_serie_0 -1]))[0]
         self.yet_simulated.name = 'Yet simulated LITHOLOGY node'
+        if 'yet_simulated' in self.verbose:
+            self.yet_simulated = theano.printing.Print('yet_simulated')(self.yet_simulated)
+
 
         # Theano shared
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T[n_form_per_serie_0: n_form_per_serie_1]
@@ -1175,7 +1191,7 @@ class TheanoGraph(object):
 
         # Printing
         if 'yet_simulated' in self.verbose:
-            self.yet_simulated = theano.printing.Print(self.yet_simulated.name)(self.yet_simulated)
+            self.yet_simulated = theano.printing.Print('yet1')(self.yet_simulated)
         if 'n_formation' in self.verbose:
             self.n_formation_op = theano.printing.Print('n_formation_series')(self.n_formation_op)
 
@@ -1203,6 +1219,7 @@ class TheanoGraph(object):
         self.final_scalar_field_at_formations_op = T.set_subtensor(
             self.final_scalar_field_at_formations_op[self.n_formation_op - 1],
             self.scalar_field_at_interfaces_values)
+
 
         return final_block, self.final_scalar_field_at_formations_op
 
@@ -1247,7 +1264,7 @@ class TheanoGraph(object):
              # Compute Lithologies
              lith_loop, updates2 = theano.scan(
                  fn=self.compute_a_series,
-                 outputs_info=[self.lith_block_init, None],
+                 outputs_info=[self.lith_block_init, self.final_scalar_field_at_formations_op],
                  sequences=[dict(input=self.len_series_i[n_faults:], taps=[0, 1]),
                             dict(input=self.len_series_f[n_faults:], taps=[0, 1]),
                             dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),
