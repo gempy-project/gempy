@@ -988,11 +988,13 @@ class TheanoGraph(object):
 
             if True:
                 mid_pot = (a - b) / 2 + b
+                mid_pot = b
                 # The 5 rules the slope of the function
-                segm = 1. / (1 + T.exp(-200 * (Z_x - mid_pot)))
+                sigm = 1. / (1 + T.exp(-500 * (Z_x - mid_pot)))
                 if True:
-                    segm = theano.printing.Print("middle point")(segm)
-                    return T.switch(T.le(Zx, a) * T.ge(Zx, b), segm + n_formation +1, 0)
+                    sigm = theano.printing.Print("middle point")(sigm)
+                    return sigm #   * n_formation
+                    #return T.switch(T.le(Zx, a) * T.ge(Zx, b), - sigm + n_formation + 1, 0)
 
             else:
 
@@ -1145,7 +1147,7 @@ class TheanoGraph(object):
         # Preparing the data
         # ==================
         # Vector that controls the points that have been simulated in previous iterations
-        self.yet_simulated = T.nonzero(T.eq(final_block[0, :], 0))[0]
+        self.yet_simulated = T.nonzero(T.lt(final_block[0, :], 0.5))[0]
         self.yet_simulated.name = 'Yet simulated LITHOLOGY node'
 
         # Theano shared

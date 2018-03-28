@@ -611,4 +611,4 @@ for key in bounds:
     c.append(color_lot[key])
 
 cmap = matplotlib.colors.ListedColormap(c)
-norm = matplotlib.colors.BoundaryNorm(bounds, cmap.N)
+norm = matplotlib.colors.BoundaryNorm(np.asarray(bounds) - .5, cmap.N)
