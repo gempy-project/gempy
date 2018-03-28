@@ -172,7 +172,7 @@ class TheanoGraph(object):
 
 
 
-        self.scalar_field_at_interfaces_values = theano.shared(np.cast[dtype](np.zeros(3)), "List with the interface values")
+       # self.scalar_field_at_interfaces_values = theano.shared(np.cast[dtype](np.zeros(3)), "List with the interface values")
 
     def input_parameters_list(self):
         """
@@ -957,8 +957,8 @@ class TheanoGraph(object):
         # TODO this may be expensive because I guess that is a sort algorithm. We just need a +inf and -inf... I guess
         #max_pot = 1000
        # min_pot = -1000
-        max_pot = T.max(Z_x) + 1
-        min_pot = T.min(Z_x) -1
+        max_pot = T.max(Z_x)
+        min_pot = T.min(Z_x)
 
         # Value of the potential field at the interfaces of the computed series
         self.scalar_field_at_interfaces_values = Z_x[-2*self.len_points: -self.len_points][self.npf_op]
@@ -968,16 +968,16 @@ class TheanoGraph(object):
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
-                                           T.stack([max_pot]),
+                                           #T.stack([max_pot]),
                                            self.scalar_field_at_interfaces_values,
-                                           T.stack([min_pot])
+                                         #  T.stack([min_pot])
                                             ))
 
         if "scalar_field_iter" in self.verbose:
             scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
 
         # Loop to segment the distinct lithologies
-        def compare(a, b, n_formation, Zx):
+        def compare(a, n_formation, Zx):
             """
             Treshold of the points to interpolate given 2 potential field values. TODO: This function is the one we
             need to change for a sigmoid function
@@ -993,23 +993,27 @@ class TheanoGraph(object):
             """
 
             if True:
-                mid_pot = (a - b) / 2 + b
-                mid_pot = a
+                # mid_pot = (a - b) / 2 + b
+                # mid_pot = a
+
+                n_formation = theano.printing.Print("n_formation")(n_formation)
                 # The 5 rules the slope of the function
-                sigm = ((1. / (1 + T.exp(-500 * (Z_x - b))) + 1. / (1 + T.exp(500 * (Z_x - a)))) - 1) * n_formation
+               # sigm = ((1. / (1 + T.exp(-100 * (Z_x - b))) + 1. / (1 + T.exp(100 * (Z_x - a)))) - 1) * n_formation
+
+                sigm = 1. / (1 + T.exp(-1000 * (Z_x - a)))
                 if True:
                     sigm = theano.printing.Print("middle point")(sigm)
                     return sigm #   * n_formation
                     #return T.switch(T.le(Zx, a) * T.ge(Zx, b), - sigm + n_formation + 1, 0)
 
-            else:
-
-                return T.le(Zx, a) * T.ge(Zx, b) * n_formation
+            # else:
+            #
+            #     return T.le(Zx, a) * T.ge(Zx, b) * n_formation
 
         partial_block, updates2 = theano.scan(
             fn=compare,
             outputs_info=None,
-            sequences=[dict(input=scalar_field_iter, taps=[0, 1]), self.n_formation_op_float],
+            sequences=[dict(input=scalar_field_iter, taps=[0]), self.n_formation_op_float],
             non_sequences=Z_x,
             name='Looping compare',
             profile=False,
@@ -1154,7 +1158,7 @@ class TheanoGraph(object):
         # ==================
 
         if 'yet_simulated' in self.verbose:
-            scalar_field_at_form= theano.printing.Print('scalar_field_at_form')(scalar_field_at_form)
+            scalar_field_at_form= theano.printing.Print('scalar_field_at_form_out')(scalar_field_at_form)
 
         #if 'yet_simulated' in self.verbose:
         #    self.yet_simulated = theano.printing.Print('yet_simulated')(self.yet_simulated)
@@ -1190,8 +1194,6 @@ class TheanoGraph(object):
         self.len_i_1 = len_i_1
 
         # Printing
-        if 'yet_simulated' in self.verbose:
-            self.yet_simulated = theano.printing.Print('yet1')(self.yet_simulated)
         if 'n_formation' in self.verbose:
             self.n_formation_op = theano.printing.Print('n_formation_series')(self.n_formation_op)
 
