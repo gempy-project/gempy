@@ -98,6 +98,42 @@ def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_
             return lith_matrix, fault_matrix, grav
 
 
+def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None, get_potential_at_interfaces=False):
+    new_grid = GridClass()
+
+    # First Create a new custom grid using the GridClass
+    new_grid = GridClass()
+
+    # Here we can pass the new coordinates as a 2D numpy array XYZ
+    new_grid.create_custom_grid(new_grid_array)
+
+    # Next we rescale the data. For this the main parameters are already stored in interp_data
+    new_grid_res = (new_grid.values - interp_data.centers.as_matrix()) / interp_data.rescaling_factor + 0.5001
+
+    # We stack the input data
+    x_to_interpolate = _np.vstack((new_grid_res,
+                                  interp_data.interpolator.pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix(),
+                                  interp_data.interpolator.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()))
+
+    # And create the drift function matrix. (This step could be done within theano to speed up a bit)
+    universal_matrix = _np.vstack((x_to_interpolate.T,
+                                  (x_to_interpolate ** 2).T,
+                                  x_to_interpolate[:, 0] * x_to_interpolate[:, 1],
+                                  x_to_interpolate[:, 0] * x_to_interpolate[:, 2],
+                                  x_to_interpolate[:, 1] * x_to_interpolate[:, 2],
+                                  ))
+
+    # Last step is to change the variables in the theano graph
+
+    interp_data.interpolator.tg.grid_val_T.set_value(_np.cast[interp_data.interpolator.dtype](x_to_interpolate + 10e-9))
+    interp_data.interpolator.tg.universal_grid_matrix_T.set_value(
+        _np.cast[interp_data.interpolator.dtype](universal_matrix + 1e-10))
+
+    # Now we are good to compute the model agai only in the new point
+    sol = compute_model(interp_data, output=output, u_grade=u_grade, get_potential_at_interfaces=get_potential_at_interfaces)
+    return sol
+
+
 def create_data(extent, resolution=(50, 50, 50), **kwargs):
     """
     Method to create a InputData object. It is analogous to gempy.InputData()
