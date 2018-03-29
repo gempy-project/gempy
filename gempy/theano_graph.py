@@ -1217,6 +1217,10 @@ class TheanoGraph(object):
             final_block[1, self.yet_simulated],
             scalar_field_values)
 
+        final_block = T.set_subtensor(
+            final_block[1, -2 * self.len_points:],
+            0)
+
         # Store the potential field at the interfaces
         self.final_scalar_field_at_formations_op = T.set_subtensor(
             self.final_scalar_field_at_formations_op[self.n_formation_op - 1],
