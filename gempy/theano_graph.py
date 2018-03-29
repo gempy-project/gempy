@@ -957,27 +957,27 @@ class TheanoGraph(object):
         # TODO this may be expensive because I guess that is a sort algorithm. We just need a +inf and -inf... I guess
         #max_pot = 1000
        # min_pot = -1000
-        max_pot = T.max(Z_x)
-        min_pot = T.min(Z_x)
-
+        max_pot = T.max(Z_x) + 1
+        min_pot = T.min(Z_x) - 1
+        max_pot += max_pot * 0.1
+        min_pot -= min_pot * 0.1
         # Value of the potential field at the interfaces of the computed series
         self.scalar_field_at_interfaces_values = Z_x[-2*self.len_points: -self.len_points][self.npf_op]
-       # max_pot = self.scalar_field_at_interfaces_values[0] + 5
-       # min_pot = self.scalar_field_at_interfaces_values[-1] - 5
-
+        #max_pot = self.scalar_field_at_interfaces_values[0] + 5
+       # min_pot = self.scalar_field_at_interfaces_values[-1] - 0.001
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
-                                           #T.stack([max_pot]),
+                                           T.stack([max_pot]),
                                            self.scalar_field_at_interfaces_values,
-                                         #  T.stack([min_pot])
+                                           T.stack([min_pot])
                                             ))
 
         if "scalar_field_iter" in self.verbose:
             scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
 
         # Loop to segment the distinct lithologies
-        def compare(a, n_formation, Zx):
+        def compare(a, b,  n_formation, Zx):
             """
             Treshold of the points to interpolate given 2 potential field values. TODO: This function is the one we
             need to change for a sigmoid function
@@ -998,9 +998,9 @@ class TheanoGraph(object):
 
                 n_formation = theano.printing.Print("n_formation")(n_formation)
                 # The 5 rules the slope of the function
-               # sigm = ((1. / (1 + T.exp(-100 * (Z_x - b))) + 1. / (1 + T.exp(100 * (Z_x - a)))) - 1) * n_formation
+                sigm = ((1. / (1 + T.exp(-500 * (Z_x - b))) + 1. / (1 + T.exp(500 * (Z_x - a)))) - 1) * n_formation
 
-                sigm = 1. / (1 + T.exp(-1000 * (Z_x - a)))
+            #    sigm = 1. / (1 + T.exp(-1000 * (Z_x - a)))
                 if True:
                     sigm = theano.printing.Print("middle point")(sigm)
                     return sigm #   * n_formation
@@ -1013,7 +1013,7 @@ class TheanoGraph(object):
         partial_block, updates2 = theano.scan(
             fn=compare,
             outputs_info=None,
-            sequences=[dict(input=scalar_field_iter, taps=[0]), self.n_formation_op_float],
+            sequences=[dict(input=scalar_field_iter, taps=[0, 1]), self.n_formation_op_float],
             non_sequences=Z_x,
             name='Looping compare',
             profile=False,
@@ -1111,7 +1111,6 @@ class TheanoGraph(object):
         # Update the potential field matrix
         potential_field_values = self.scalar_field_at_all()
 
-
         final_block =  T.set_subtensor(
                     final_block[1, :],
                     potential_field_values)
@@ -1164,7 +1163,7 @@ class TheanoGraph(object):
         #    self.yet_simulated = theano.printing.Print('yet_simulated')(self.yet_simulated)
 
         # Vector that controls the points that have been simulated in previous iterations
-        self.yet_simulated = T.nonzero(T.le(final_block[1, :], scalar_field_at_form[n_form_per_serie_0 -1]))[0]
+        self.yet_simulated = T.nonzero(T.le(final_block[1, :], scalar_field_at_form[n_form_per_serie_0 - 1]))[0]
         self.yet_simulated.name = 'Yet simulated LITHOLOGY node'
         if 'yet_simulated' in self.verbose:
             self.yet_simulated = theano.printing.Print('yet_simulated')(self.yet_simulated)
@@ -1173,7 +1172,7 @@ class TheanoGraph(object):
         # Theano shared
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T[n_form_per_serie_0: n_form_per_serie_1]
         self.n_formation_op = self.n_formation[n_form_per_serie_0: n_form_per_serie_1]
-        self.n_formation_op_float = self.n_formation_float[n_form_per_serie_0: n_form_per_serie_1]
+        self.n_formation_op_float = self.n_formation_float[n_form_per_serie_0: n_form_per_serie_1 + 1]
         self.npf_op = self.npf[n_form_per_serie_0: n_form_per_serie_1]
 
         self.n_universal_eq_T_op = u_grade_iter
