@@ -1,9 +1,7 @@
-# GemPy
+# <p align="left"><img src="docs/logos/gempy1.svg" width="200"></p>
 
 > Open-source, implicit 3D structural geological modeling in Python for uncertainty analysis.
 
-
-<p align="center"><img src="docs/logos/gempy1.svg" width="600"></p>
 
 [![PyPI](https://img.shields.io/badge/python-3-blue.svg)]()
 [![PyPI](https://img.shields.io/badge/pypi-1.0-blue.svg)]()
