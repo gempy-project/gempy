@@ -370,7 +370,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
         assert len(_np.atleast_2d(potential_fault)) is interp_data.geo_data_res.n_faults, 'You need to pass a potential field per fault'
 
         pot_int = interp_data.potential_at_interfaces[:interp_data.geo_data_res.n_faults + 1]
-        for n in interp_data.geo_data_res.interfaces['formation number'][
+        for n in interp_data.geo_data_res.interfaces['formation_number'][
             interp_data.geo_data_res.interfaces['isFault']].unique():
             if n == 0:
                 continue
@@ -386,7 +386,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
         # Compute the vertices of the lithologies
         if n_formation == 'all':
 
-            for n in interp_data.geo_data_res.interfaces['formation number'][~interp_data.geo_data_res.interfaces['isFault']].unique():
+            for n in interp_data.geo_data_res.interfaces['formation_number'][~interp_data.geo_data_res.interfaces['isFault']].unique():
                 if n == 0:
                     continue
                 else:
@@ -412,7 +412,7 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
         vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
         simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
         formations_names_l (list): Name of the formation of the surfaces
-        formation_numbers_l (list): Formation numbers (int)
+        formation_numbers_l (list): formation_numbers (int)
         alpha (float): Opacity
         plot_data (bool): Default True
         size (tuple): Resolution of the window
@@ -550,7 +550,7 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
         vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
         simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
         formations_names_l (list): Name of the formation of the surfaces
-        formation_numbers_l (list): Formation numbers (int)
+        formation_numbers_l (list): formation_numbers (int)
         alpha (float): Opacity
         plot_data (bool): Default True
         size (tuple): Resolution of the window
@@ -741,7 +741,7 @@ def set_series(geo_data, series_distribution=None, order_series=None, order_form
         self.orientations: one extra column with the given series
     """
     geo_data.set_series(series_distribution=series_distribution, order=order_series)
-    geo_data.order_table()
+    #geo_data.order_table()
     if order_formations is not None:
         geo_data.set_formation_number(order_formations)
 

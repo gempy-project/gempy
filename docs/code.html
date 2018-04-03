@@ -519,7 +519,7 @@ specific directions</p>
 <li><strong>vertices_l</strong> (<em>numpy.array</em>) – 2D array (XYZ) with the coordinates of the points</li>
 <li><strong>simplices_l</strong> (<em>numpy.array</em>) – 2D array with the value of the vertices that form every single triangle</li>
 <li><strong>formations_names_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Name of the formation of the surfaces</li>
-<li><strong>formation_numbers_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Formation numbers (int)</li>
+<li><strong>formation_numbers_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – formation_numbers (int)</li>
 <li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Opacity</li>
 <li><strong>plot_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Default True</li>
 <li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)"><em>tuple</em></a>) – Resolution of the window</li>
@@ -549,7 +549,7 @@ may be better to just modify each potential field individually to increase the s
 <li><strong>vertices_l</strong> (<em>numpy.array</em>) – 2D array (XYZ) with the coordinates of the points</li>
 <li><strong>simplices_l</strong> (<em>numpy.array</em>) – 2D array with the value of the vertices that form every single triangle</li>
 <li><strong>formations_names_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Name of the formation of the surfaces</li>
-<li><strong>formation_numbers_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Formation numbers (int)</li>
+<li><strong>formation_numbers_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – formation_numbers (int)</li>
 <li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Opacity</li>
 <li><strong>plot_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Default True</li>
 <li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)"><em>tuple</em></a>) – Resolution of the window</li>
@@ -2272,7 +2272,7 @@ will be displayed.</p>
 <li><strong>X</strong> – X coord</li>
 <li><strong>Y</strong> – Y coord</li>
 <li><strong>Z</strong> – Z corrd</li>
-<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Formation number</li>
+<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – formation_number</li>
 <li><strong>Gx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Component of the gradient x</li>
 <li><strong>Gy</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Component of the gradient y</li>
 <li><strong>Gz</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Component of the gradient z</li>
@@ -2305,7 +2305,7 @@ will be displayed.</p>
 :param X: X coord
 :param Y: Y coord
 :param Z: Z corrd
-:param fn: Formation number
+:param fn: formation_number
 :type fn: int
 :param n_sphere: Number of the sphere
 :type n_sphere: int
@@ -2336,7 +2336,7 @@ will be displayed.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>vertices</strong> (<em>numpy.array</em>) – 2D array (XYZ) with the coordinates of the points</li>
 <li><strong>simplices</strong> (<em>numpy.array</em>) – 2D array with the value of the vertices that form every single triangle</li>
-<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Formation number</li>
+<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – formation_number</li>
 <li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Opacity</li>
 </ul>
 </td>
@@ -2496,7 +2496,7 @@ render_model</p>
 <li><strong>vertices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – list of 3D numpy arrays containing the points that form each plane</li>
 <li><strong>simplices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – list of 3D numpy arrays containing the verticies that form every triangle</li>
 <li><strong>formations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – ordered list of strings containing the name of the formations to represent</li>
-<li><strong>fns</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – ordered list of formation numbers (int)</li>
+<li><strong>fns</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – ordered list of formation_numbers (int)</li>
 <li><strong>alpha</strong> – Opacity of the plane</li>
 </ul>
 </td>

@@ -82,7 +82,7 @@ order the formations (stratigraphic pile).
           <th>azimuth_std</th>
           <th>order_series</th>
           <th>isFault</th>
-          <th>formation number</th>
+          <th>formation_number</th>
           <th>annotations</th>
           <th>group_id</th>
           <th>index</th>

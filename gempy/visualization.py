@@ -73,7 +73,7 @@ class PlotData2D(object):
         self._cmap = cmap
         self._norm = norm
         self.formation_names = self._data.interfaces['formation'].unique()
-        self.formation_numbers = self._data.interfaces['formation number'].unique()
+        self.formation_numbers = self._data.interfaces['formation_number'].unique()
 
         # DEP?
         # if 'scalar_field' in kwargs:
@@ -481,7 +481,7 @@ class vtkVisualization:
         self.C_LOT = color_lot
         # Number of renders
         self.n_ren = 4
-        self.formation_number = geo_data.interfaces['formation number'].unique()
+        self.formation_number = geo_data.interfaces['formation_number'].unique()
         self.formation_name = geo_data.interfaces['formation'].unique()
 
         # Extents
@@ -591,7 +591,7 @@ class vtkVisualization:
         Args:
             vertices (numpy.array): 2D array (XYZ) with the coordinates of the points
             simplices (numpy.array): 2D array with the value of the vertices that form every single triangle
-            fn (int): Formation number
+            fn (int): formation_number
             alpha (float): Opacity
 
         Returns:
@@ -624,7 +624,7 @@ class vtkVisualization:
             X: X coord
             Y: Y coord
             Z: Z corrd
-            fn (int): Formation number
+            fn (int): formation_number
             n_sphere (int): Number of the sphere
             n_render (int): Number of the render where the sphere belongs
             n_index (int): index value in the PandasDataframe of InupData.interfaces
@@ -661,7 +661,7 @@ class vtkVisualization:
             X : X coord
             Y: Y coord
             Z: Z corrd
-            fn (int): Formation number
+            fn (int): formation_number
             Gx (str): Component of the gradient x
             Gy (str): Component of the gradient y
             Gz (str): Component of the gradient z
@@ -715,7 +715,7 @@ class vtkVisualization:
             vertices (list): list of 3D numpy arrays containing the points that form each plane
             simplices (list): list of 3D numpy arrays containing the verticies that form every triangle
             formations (list): ordered list of strings containing the name of the formations to represent
-            fns (list): ordered list of formation numbers (int)
+            fns (list): ordered list of formation_numbers (int)
             alpha: Opacity of the plane
 
         Returns:
@@ -754,13 +754,13 @@ class vtkVisualization:
         for e, val in enumerate(self.geo_data.interfaces.iterrows()):
             index = val[0]
             row = val[1]
-            self.s_rend_1.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation number'],
+            self.s_rend_1.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation_number'],
                                                     n_sphere=e, n_render=0, n_index=index))
-            self.s_rend_2.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation number'],
+            self.s_rend_2.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation_number'],
                                                     n_sphere=e, n_render=1, n_index=index))
-            self.s_rend_3.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation number'],
+            self.s_rend_3.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation_number'],
                                                     n_sphere=e, n_render=2, n_index=index))
-            self.s_rend_4.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation number'],
+            self.s_rend_4.append(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation_number'],
                                                     n_sphere=e, n_render=3, n_index=index))
 
     def set_orientations(self):
@@ -777,16 +777,16 @@ class vtkVisualization:
         for e, val in enumerate(self.geo_data.orientations.iterrows()):
             index = val[0]
             row = val[1]
-            self.f_rend_1.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation number'],
+            self.f_rend_1.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
                                                        row['G_x'], row['G_y'], row['G_z'],
                                                        n_plane=e, n_render=0, n_index=index))
-            self.f_rend_2.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation number'],
+            self.f_rend_2.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
                                                        row['G_x'], row['G_y'], row['G_z'],
                                                        n_plane=e, n_render=1, n_index=index))
-            self.f_rend_3.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation number'],
+            self.f_rend_3.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
                                                        row['G_x'], row['G_y'], row['G_z'],
                                                        n_plane=e, n_render=2, n_index=index))
-            self.f_rend_4.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation number'],
+            self.f_rend_4.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
                                                        row['G_x'], row['G_y'], row['G_z'],
                                                        n_plane=e, n_render=3, n_index=index))
 
@@ -1284,9 +1284,9 @@ class vtkVisualization:
 
 
 def _create_color_lot(geo_data, cd_rgb):
-    """Returns color [r,g,b] LOT for formation numbers."""
-    if "formation number" not in geo_data.interfaces or "formation number" not in geo_data.orientations:
-        geo_data.set_formation_number()  # if not, set formation numbers
+    """Returns color [r,g,b] LOT for formation_numbers."""
+    if "formation_number" not in geo_data.interfaces or "formation_number" not in geo_data.orientations:
+        geo_data.set_formation_number()  # if not, set formation_numbers
 
     c_names = ["indigo", "red", "yellow", "brown", "orange",
                 "green", "blue", "amber", "pink", "light-blue",
@@ -1295,11 +1295,11 @@ def _create_color_lot(geo_data, cd_rgb):
 
     lot = {}
     ci = 0  # use as an independent running variable because of fault formations
-    # get unique formation numbers
-    fmt_numbers = np.unique([val for val in geo_data.interfaces['formation number'].unique()])
-    # get unique fault formation numbers
-    fault_fmt_numbers = np.unique(geo_data.interfaces[geo_data.interfaces["isFault"] == True]["formation number"])
-    # iterate over all unique formation numbers
+    # get unique formation_numbers
+    fmt_numbers = np.unique([val for val in geo_data.interfaces['formation_number'].unique()])
+    # get unique fault formation_numbers
+    fault_fmt_numbers = np.unique(geo_data.interfaces[geo_data.interfaces["isFault"] == True]["formation_number"])
+    # iterate over all unique formation_numbers
     for i, n in enumerate(fmt_numbers):
         # if its a fault formation set it to black by default
         if n in fault_fmt_numbers:

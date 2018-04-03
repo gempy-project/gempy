@@ -169,11 +169,6 @@ class TheanoGraph(object):
             self.weigths_weigths = theano.shared(np.ones(0))
             self.weigths_index = theano.shared(np.ones(0, dtype='int32'))
 
-
-
-
-       # self.scalar_field_at_interfaces_values = theano.shared(np.cast[dtype](np.zeros(3)), "List with the interface values")
-
     def input_parameters_list(self):
         """
         Create a list with the symbolic variables to use when we compile the theano function
@@ -566,47 +561,35 @@ class TheanoGraph(object):
         # First row of matrices
         # Set C_G
         C_matrix = T.set_subtensor(C_matrix[0:length_of_CG, 0:length_of_CG], C_G)
-
         # Set CGI
         C_matrix = T.set_subtensor(C_matrix[0:length_of_CG, length_of_CG:length_of_CG + length_of_CGI], C_GI.T)
-
         # Set UG
         C_matrix = T.set_subtensor(C_matrix[0:length_of_CG,
                                    length_of_CG+length_of_CGI:length_of_CG+length_of_CGI+length_of_U_I], U_G)
-
         # Set FG. I cannot use -index because when is -0 is equivalent to 0
         C_matrix = T.set_subtensor(C_matrix[0:length_of_CG, length_of_CG+length_of_CGI+length_of_U_I:], F_G.T)
-
         # Second row of matrices
         # Set C_IG
         C_matrix = T.set_subtensor(C_matrix[length_of_CG:length_of_CG + length_of_CGI, 0:length_of_CG], C_GI)
-
         # Set C_I
         C_matrix = T.set_subtensor(C_matrix[length_of_CG:length_of_CG + length_of_CGI,
                                    length_of_CG:length_of_CG + length_of_CGI], C_I)
-
         # Set U_I
         #if not self.u_grade_T.get_value() == 0:
         C_matrix = T.set_subtensor(C_matrix[length_of_CG:length_of_CG + length_of_CGI,
                                    length_of_CG+length_of_CGI:length_of_CG+length_of_CGI+length_of_U_I], U_I)
-
         # Set F_I
         C_matrix = T.set_subtensor(C_matrix[length_of_CG:length_of_CG + length_of_CGI, length_of_CG+length_of_CGI+length_of_U_I:], F_I.T)
-
         # Third row of matrices
         # Set U_G
         C_matrix = T.set_subtensor(C_matrix[length_of_CG+length_of_CGI:length_of_CG+length_of_CGI+length_of_U_I, 0:length_of_CG], U_G.T)
-
         # Set U_I
         C_matrix = T.set_subtensor(C_matrix[length_of_CG+length_of_CGI:length_of_CG+length_of_CGI+length_of_U_I, length_of_CG:length_of_CG + length_of_CGI], U_I.T)
-
         # Fourth row of matrices
         # Set F_G
         C_matrix = T.set_subtensor(C_matrix[length_of_CG+length_of_CGI+length_of_U_I:, 0:length_of_CG], F_G)
-
         # Set F_I
         C_matrix = T.set_subtensor(C_matrix[length_of_CG+length_of_CGI+length_of_U_I:, length_of_CG:length_of_CG + length_of_CGI], F_I)
-
         # Add name to the theano node
         C_matrix.name = 'Block Covariance Matrix'
         if str(sys._getframe().f_code.co_name) in self.verbose:
@@ -706,7 +689,7 @@ class TheanoGraph(object):
 
         # Creation of a matrix of dimensions equal to the grid with the weights for every point (big 4D matrix in
         # ravel form)
-        # TODO IMP: Change the tile by a simple dot op
+        # TODO IMP: Change the tile by a simple dot op -> The DOT version in gpu is slowlier
         DK_weights = T.tile(DK_parameters, (grid_val.shape[0], 1)).T
 
         if self.dot_version:
@@ -954,17 +937,13 @@ class TheanoGraph(object):
         Z_x = self.scalar_field_at_all()
 
         # Max and min values of the potential field.
-        # TODO this may be expensive because I guess that is a sort algorithm. We just need a +inf and -inf... I guess
-        #max_pot = 1000
-       # min_pot = -1000
         max_pot = T.max(Z_x) + 1
         min_pot = T.min(Z_x) - 1
         max_pot += max_pot * 0.1
         min_pot -= min_pot * 0.1
+
         # Value of the potential field at the interfaces of the computed series
         self.scalar_field_at_interfaces_values = Z_x[-2*self.len_points: -self.len_points][self.npf_op]
-        #max_pot = self.scalar_field_at_interfaces_values[0] + 5
-       # min_pot = self.scalar_field_at_interfaces_values[-1] - 0.001
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
@@ -993,22 +972,15 @@ class TheanoGraph(object):
             """
 
             if True:
-                # mid_pot = (a - b) / 2 + b
-                # mid_pot = a
-
-                n_formation = theano.printing.Print("n_formation")(n_formation)
                 # The 5 rules the slope of the function
                 sigm = ((1. / (1 + T.exp(-500 * (Z_x - b))) + 1. / (1 + T.exp(500 * (Z_x - a)))) - 1) * n_formation
-
-            #    sigm = 1. / (1 + T.exp(-1000 * (Z_x - a)))
-                if True:
+                if False:
                     sigm = theano.printing.Print("middle point")(sigm)
-                    return sigm #   * n_formation
-                    #return T.switch(T.le(Zx, a) * T.ge(Zx, b), - sigm + n_formation + 1, 0)
+                    n_formation = theano.printing.Print("n_formation")(n_formation)
+                return sigm
 
-            # else:
-            #
-            #     return T.le(Zx, a) * T.ge(Zx, b) * n_formation
+            else:
+                return T.le(Zx, a) * T.ge(Zx, b) * n_formation
 
         partial_block, updates2 = theano.scan(
             fn=compare,
@@ -1017,7 +989,7 @@ class TheanoGraph(object):
             non_sequences=Z_x,
             name='Looping compare',
             profile=False,
-        return_list=False)
+            return_list=False)
 
         # For every formation we get a vector so we need to sum compress them to one dimension
         partial_block = partial_block.sum(axis=0)
@@ -1083,7 +1055,6 @@ class TheanoGraph(object):
         # Updating the interface points involved in the iteration. This is important for the fault drift
         self.len_i_0 = len_i_0
         self.len_i_1 = len_i_1
-
 
         # Extracting a the subset of the fault matrix to the scalar field of the current iterations
         faults_relation_op =  self.fault_relation[:, T.cast(self.n_formation_op-1, 'int8')]
@@ -1156,18 +1127,12 @@ class TheanoGraph(object):
         # Preparing the data
         # ==================
 
-        if 'yet_simulated' in self.verbose:
-            scalar_field_at_form= theano.printing.Print('scalar_field_at_form_out')(scalar_field_at_form)
-
-        #if 'yet_simulated' in self.verbose:
-        #    self.yet_simulated = theano.printing.Print('yet_simulated')(self.yet_simulated)
-
         # Vector that controls the points that have been simulated in previous iterations
-        self.yet_simulated = T.nonzero(T.le(final_block[1, :], scalar_field_at_form[n_form_per_serie_0 - 1]))[0]
+        self.yet_simulated = T.nonzero(T.le(final_block[1, :], scalar_field_at_form[n_form_per_serie_0 - 1]))[0] # This -1 comes to get the last scalar field value (the bottom) of the previous series
         self.yet_simulated.name = 'Yet simulated LITHOLOGY node'
         if 'yet_simulated' in self.verbose:
             self.yet_simulated = theano.printing.Print('yet_simulated')(self.yet_simulated)
-
+            scalar_field_at_form = theano.printing.Print('scalar_field_at_form_out')(scalar_field_at_form)
 
         # Theano shared
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T[n_form_per_serie_0: n_form_per_serie_1]
@@ -1225,7 +1190,6 @@ class TheanoGraph(object):
             self.final_scalar_field_at_formations_op[self.n_formation_op - 1],
             self.scalar_field_at_interfaces_values)
 
-
         return final_block, self.final_scalar_field_at_formations_op
 
     def compute_geological_model(self, n_faults=0):
@@ -1238,8 +1202,6 @@ class TheanoGraph(object):
 
         # Compute Faults
         if n_faults != 0:
-            # --DEP--? Initialize yet simulated
-           # self.yet_simulated = T.nonzero(T.eq(self.fault_block_init[0, :], 0))[0]#T.eq(self.fault_block_init[0, :-2 * self.len_points], 0)
 
             # Looping
             fault_loop, updates3 = theano.scan(
@@ -1266,7 +1228,7 @@ class TheanoGraph(object):
         # Check if there are lithologies to compute
         if len(self.len_series_f.get_value()) - 1 > n_faults:
 
-             # Compute Lithologies
+            # Compute Lithologies
              lith_loop, updates2 = theano.scan(
                  fn=self.compute_a_series,
                  outputs_info=[self.lith_block_init, self.final_scalar_field_at_formations_op],

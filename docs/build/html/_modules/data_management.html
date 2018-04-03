@@ -35,68 +35,9 @@
 
   </head>
   <body>
-  <div class="document">
-    
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">GemPy</a></h1>
+  
 
-
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../theory/motivation.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -195,10 +136,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_grid</span><span class="p">(</span><span class="n">extent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grid_type</span><span class="o">=</span><span class="s2">&quot;regular_3D&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_basement</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">potential_at_interfaces</span> <span class="o">=</span> <span class="mi">0</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">fault_relation</span> <span class="o">=</span> <span class="kc">None</span>
+    
+    <span class="k">def</span> <span class="nf">set_basement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+
+        <span class="n">n_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+
+        <span class="n">drop_basement</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;basement&#39;</span>
+        <span class="n">original_frame</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="o">~</span><span class="n">drop_basement</span><span class="p">]</span>
+        <span class="n">n_formation</span> <span class="o">=</span> <span class="n">original_frame</span><span class="p">[</span><span class="s1">&#39;formation_number&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">l</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;basement&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+
+            <span class="n">columns</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;formation&#39;</span><span class="p">:</span><span class="s1">&#39;basement&#39;</span><span class="p">,</span> <span class="s1">&#39;order_series&#39;</span><span class="p">:</span> <span class="n">n_series</span><span class="p">,</span> <span class="s1">&#39;formation_number&#39;</span><span class="p">:</span> <span class="n">n_formation</span><span class="p">}</span>
+            <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">columns</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="n">columns</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;here&#39;</span><span class="p">)</span>
+           <span class="c1"># sef.add_interface(formation=&#39;basement&#39;, order_series=n_series, formation_number = n_formation)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">modify_interface</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">drop_basement</span><span class="o">.</span><span class="n">values</span><span class="p">)[</span><span class="mi">0</span><span class="p">],</span> <span class="n">formation</span><span class="o">=</span><span class="s1">&#39;basement&#39;</span><span class="p">,</span> <span class="n">order_series</span><span class="o">=</span><span class="n">n_series</span><span class="p">,</span> <span class="n">formation_number</span> <span class="o">=</span> <span class="n">n_formation</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;there&#39;</span><span class="p">)</span>
 
 <div class="viewcode-block" id="InputData.calculate_gradient"><a class="viewcode-back" href="../code.html#data_management.InputData.calculate_gradient">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -321,7 +284,7 @@
 <span class="sd">            Returns:</span>
 <span class="sd">                dict: key the name of the formation and the value their number</span>
 <span class="sd">            &quot;&quot;&quot;</span>
-        <span class="n">pn_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;formation number&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">formation</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        <span class="n">pn_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;formation_number&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">formation</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
         <span class="n">ip_addresses</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">e</span><span class="p">,</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">pn_series</span><span class="p">):</span>
             <span class="n">ip_addresses</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">e</span> <span class="o">+</span> <span class="mi">1</span>
@@ -450,7 +413,7 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;series&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_series</span><span class="p">()</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_basement</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="InputData.drop_interface"><a class="viewcode-back" href="../code.html#data_management.InputData.drop_interface">[docs]</a>    <span class="k">def</span> <span class="nf">drop_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
@@ -542,6 +505,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">calculate_gradient</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calculate_orientations</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_series</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_basement</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="InputData.drop_orientations"><a class="viewcode-back" href="../code.html#data_management.InputData.drop_orientations">[docs]</a>    <span class="k">def</span> <span class="nf">drop_orientations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">index</span><span class="p">):</span>
@@ -762,11 +726,12 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="n">ip_addresses</span> <span class="o">=</span> <span class="n">formation_order</span>
             <span class="n">ip_dict</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">ip_addresses</span><span class="p">,</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">ip_addresses</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span><span class="p">)))</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;formation number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">)</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;formation number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;formation_number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="s1">&#39;formation_number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="n">ip_dict</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
             <span class="k">pass</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_basement</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span></div>
 
 <div class="viewcode-block" id="InputData.set_annotations"><a class="viewcode-back" href="../code.html#data_management.InputData.set_annotations">[docs]</a>    <span class="k">def</span> <span class="nf">set_annotations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -776,13 +741,13 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            None</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="n">point_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;formation number&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">cumcount</span><span class="p">()</span>
+        <span class="n">point_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;formation_number&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">cumcount</span><span class="p">()</span>
         <span class="n">point_l</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;${\bf</span><span class="si">{x}</span><span class="s1">}_{\alpha \,{\bf{&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;}},&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;}$&#39;</span>
-                   <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">point_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">])]</span>
+                   <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">point_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation_number&#39;</span><span class="p">])]</span>
 
-        <span class="n">orientation_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;formation number&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">cumcount</span><span class="p">()</span>
+        <span class="n">orientation_num</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;formation_number&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">cumcount</span><span class="p">()</span>
         <span class="n">foli_l</span> <span class="o">=</span> <span class="p">[</span><span class="sa">r</span><span class="s1">&#39;${\bf</span><span class="si">{x}</span><span class="s1">}_{\beta \,{\bf{&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">f</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;}},&#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;}$&#39;</span>
-                   <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">orientation_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">])]</span>
+                   <span class="k">for</span> <span class="n">p</span><span class="p">,</span> <span class="n">f</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">orientation_num</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;formation_number&#39;</span><span class="p">])]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">point_l</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;annotations&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">foli_l</span></div>
@@ -812,17 +777,17 @@
                                       <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;mergesort&#39;</span><span class="p">,</span>
                                       <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="c1"># Give formation number</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;formation number&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">columns</span> <span class="ow">or</span> <span class="ow">not</span> <span class="s1">&#39;formation number&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+        <span class="c1"># Give formation_number</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;formation_number&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">columns</span> <span class="ow">or</span> <span class="ow">not</span> <span class="s1">&#39;formation_number&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
 
             <span class="bp">self</span><span class="o">.</span><span class="n">set_formation_number</span><span class="p">()</span>
 
         <span class="c1"># We order the pandas table by formation (also by series in case something weird happened)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">,</span> <span class="s1">&#39;formation number&#39;</span><span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">,</span> <span class="s1">&#39;formation_number&#39;</span><span class="p">],</span>
                                                  <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;mergesort&#39;</span><span class="p">,</span>
                                                  <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">,</span> <span class="s1">&#39;formation number&#39;</span><span class="p">],</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">,</span> <span class="s1">&#39;formation_number&#39;</span><span class="p">],</span>
                                                  <span class="n">ascending</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">kind</span><span class="o">=</span><span class="s1">&#39;mergesort&#39;</span><span class="p">,</span>
                                                  <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
@@ -1149,8 +1114,73 @@
           </div>
         </div>
       </div>
-    <div class="clearer"></div>
-  </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/../../../logos/gempy1.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
     <div class="footer">
       &copy;2017, Miguel de la Varga, CGR-Aachen Team.
       

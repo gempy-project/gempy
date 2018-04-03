@@ -105,7 +105,7 @@ Then we use pandas to load the example data stored as csv files:
           <th>Z_std</th>
           <th>annotations</th>
           <th>formation</th>
-          <th>formation number</th>
+          <th>formation_number</th>
           <th>group_id</th>
           <th>isFault</th>
           <th>order_series</th>
@@ -451,7 +451,7 @@ i.e. as distributions.
           <th>dip</th>
           <th>dip_std</th>
           <th>formation</th>
-          <th>formation number</th>
+          <th>formation_number</th>
           <th>group_id</th>
           <th>isFault</th>
           <th>order_series</th>
@@ -852,7 +852,7 @@ operation is deterministic).
           <th>dip</th>
           <th>dip_std</th>
           <th>formation</th>
-          <th>formation number</th>
+          <th>formation_number</th>
           <th>group_id</th>
           <th>isFault</th>
           <th>order_series</th>

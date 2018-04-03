@@ -24,9 +24,9 @@ from gempy.colors import color_lot, cmap, norm
 
 
 def _create_color_lot(geo_data, cd_rgb):
-    """Returns color [r,g,b] LOT for formation numbers."""
-    if "formation number" not in geo_data.interfaces or "formation number" not in geo_data.foliations:
-        geo_data.set_formation_number()  # if not, set formation numbers
+    """Returns color [r,g,b] LOT for formation_numbers."""
+    if "formation_number" not in geo_data.interfaces or "formation_number" not in geo_data.foliations:
+        geo_data.set_formation_number()  # if not, set formation_numbers
 
     c_names = ["indigo", "red", "yellow", "brown", "orange",
                 "green", "blue", "amber", "pink", "light-blue",
@@ -35,11 +35,11 @@ def _create_color_lot(geo_data, cd_rgb):
 
     lot = {}
     ci = 0  # use as an independent running variable because of fault formations
-    # get unique formation numbers
-    fmt_numbers = np.unique([val for val in geo_data.interfaces['formation number'].unique()])
-    # get unique fault formation numbers
-    fault_fmt_numbers = np.unique(geo_data.interfaces[geo_data.interfaces["isFault"] == True]["formation number"])
-    # iterate over all unique formation numbers
+    # get unique formation_numbers
+    fmt_numbers = np.unique([val for val in geo_data.interfaces['formation_number'].unique()])
+    # get unique fault formation_numbers
+    fault_fmt_numbers = np.unique(geo_data.interfaces[geo_data.interfaces["isFault"] == True]["formation_number"])
+    # iterate over all unique formation_numbers
     for i, n in enumerate(fmt_numbers):
         # if its a fault formation set it to black by default
         if n in fault_fmt_numbers:

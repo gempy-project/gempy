@@ -370,8 +370,8 @@ class InterpolatorData:
             try:
                 ip_addresses = self.geo_data_res.interfaces["formation"].unique()
                 ip_dict = dict(zip(ip_addresses, range(1, len(ip_addresses) + 1)))
-                self.geo_data_res.interfaces['formation number'] = self.geo_data_res.interfaces['formation'].replace(ip_dict)
-                self.geo_data_res.orientations['formation number'] = self.geo_data_res.orientations['formation'].replace(ip_dict)
+                self.geo_data_res.interfaces['formation_number'] = self.geo_data_res.interfaces['formation'].replace(ip_dict)
+                self.geo_data_res.orientations['formation_number'] = self.geo_data_res.orientations['formation'].replace(ip_dict)
             except ValueError:
                 pass
 
@@ -382,25 +382,25 @@ class InterpolatorData:
             """
 
             # We order the pandas table by series
-            self.geo_data_res.interfaces.sort_values(by=['order_series'],  # , 'formation number'],
+            self.geo_data_res.interfaces.sort_values(by=['order_series'],  # , 'formation_number'],
                                                      ascending=True, kind='mergesort',
                                                      inplace=True)
 
-            self.geo_data_res.orientations.sort_values(by=['order_series'],  # , 'formation number'],
+            self.geo_data_res.orientations.sort_values(by=['order_series'],  # , 'formation_number'],
                                                      ascending=True, kind='mergesort',
                                                      inplace=True)
 
-            # Give formation number
-            if not 'formation number' in self.geo_data_res.interfaces.columns:
+            # Give formation_number
+            if not 'formation_number' in self.geo_data_res.interfaces.columns:
                 # print('I am here')
                 self.set_formation_number()
 
             # We order the pandas table by formation (also by series in case something weird happened)
-            self.geo_data_res.interfaces.sort_values(by=['order_series', 'formation number'],
+            self.geo_data_res.interfaces.sort_values(by=['order_series', 'formation_number'],
                                                      ascending=True, kind='mergesort',
                                                      inplace=True)
 
-            self.geo_data_res.orientations.sort_values(by=['order_series', 'formation number'],
+            self.geo_data_res.orientations.sort_values(by=['order_series', 'formation_number'],
                                                      ascending=True, kind='mergesort',
                                                      inplace=True)
 
@@ -431,8 +431,8 @@ class InterpolatorData:
             # ==================
             # Array containing the size of every formation. Interfaces
             len_interfaces = np.asarray(
-                [np.sum(self.geo_data_res.interfaces['formation number'] == i)
-                 for i in self.geo_data_res.interfaces['formation number'].unique()])
+                [np.sum(self.geo_data_res.interfaces['formation_number'] == i)
+                 for i in self.geo_data_res.interfaces['formation_number'].unique()])
 
             # Size of every layer in rests. SHARED (for theano)
             len_rest_form = (len_interfaces - 1)
@@ -591,8 +591,8 @@ class InterpolatorData:
             #self.tg.yet_simulated.set_value(np.ones((_grid_rescaled.grid.shape[0]), dtype='int'))
 
             # Unique number assigned to each lithology
-            self.tg.n_formation.set_value(self.geo_data_res.interfaces['formation number'].unique().astype('int32'))
-            self.tg.n_formation_float.set_value(self.geo_data_res.interfaces['formation number'].unique().astype('float32'))
+            self.tg.n_formation.set_value(self.geo_data_res.interfaces['formation_number'].unique().astype('int32'))
+            self.tg.n_formation_float.set_value(self.geo_data_res.interfaces['formation_number'].unique().astype('float32'))
             # Number of formations per series. The function is not pretty but the result is quite clear
             self.tg.n_formations_per_serie.set_value(
                 np.insert(self.geo_data_res.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0).astype('int32'))

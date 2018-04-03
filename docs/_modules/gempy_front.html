@@ -474,7 +474,7 @@
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">potential_fault</span><span class="p">))</span> <span class="ow">is</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">n_faults</span><span class="p">,</span> <span class="s1">&#39;You need to pass a potential field per fault&#39;</span>
 
         <span class="n">pot_int</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span><span class="p">[:</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">n_faults</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">][</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation_number&#39;</span><span class="p">][</span>
             <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">continue</span>
@@ -490,7 +490,7 @@
         <span class="c1"># Compute the vertices of the lithologies</span>
         <span class="k">if</span> <span class="n">n_formation</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
 
-            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">][</span><span class="o">~</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation_number&#39;</span><span class="p">][</span><span class="o">~</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -516,7 +516,7 @@
 <span class="sd">        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points</span>
 <span class="sd">        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle</span>
 <span class="sd">        formations_names_l (list): Name of the formation of the surfaces</span>
-<span class="sd">        formation_numbers_l (list): Formation numbers (int)</span>
+<span class="sd">        formation_numbers_l (list): formation_numbers (int)</span>
 <span class="sd">        alpha (float): Opacity</span>
 <span class="sd">        plot_data (bool): Default True</span>
 <span class="sd">        size (tuple): Resolution of the window</span>
@@ -654,7 +654,7 @@
 <span class="sd">        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points</span>
 <span class="sd">        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle</span>
 <span class="sd">        formations_names_l (list): Name of the formation of the surfaces</span>
-<span class="sd">        formation_numbers_l (list): Formation numbers (int)</span>
+<span class="sd">        formation_numbers_l (list): formation_numbers (int)</span>
 <span class="sd">        alpha (float): Opacity</span>
 <span class="sd">        plot_data (bool): Default True</span>
 <span class="sd">        size (tuple): Resolution of the window</span>

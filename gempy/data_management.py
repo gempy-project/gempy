@@ -91,10 +91,32 @@ class InputData(object):
         self.grid = self.set_grid(extent=None, resolution=None, grid_type="regular_3D", **kwargs)
 
         self.order_table()
+        self.set_basement()
 
         self.potential_at_interfaces = 0
 
         self.fault_relation = None
+    
+    def set_basement(self):
+
+        n_series = self.interfaces['order_series'].unique().max()
+
+        drop_basement = self.interfaces['formation'] == 'basement'
+        original_frame = self.interfaces[~drop_basement]
+        n_formation = original_frame['formation_number'].unique().max() + 1
+        l = len(self.interfaces)
+
+        if not 'basement' in self.interfaces['formation'].values:
+
+            columns = {'formation':'basement', 'order_series': n_series, 'formation_number': n_formation}
+            for key in columns:
+                self.interfaces.ix[l, str(key)] = columns[key]
+                self.order_table()
+            print('here')
+           # sef.add_interface(formation='basement', order_series=n_series, formation_number = n_formation)
+        else:
+            self.modify_interface(np.nonzero(drop_basement.values)[0], formation='basement', order_series=n_series, formation_number = n_formation)
+            print('there')
 
     def calculate_gradient(self):
         """
@@ -217,7 +239,7 @@ class InputData(object):
             Returns:
                 dict: key the name of the formation and the value their number
             """
-        pn_series = self.interfaces.groupby('formation number').formation.unique()
+        pn_series = self.interfaces.groupby('formation_number').formation.unique()
         ip_addresses = {}
         for e, i in enumerate(pn_series):
             ip_addresses[i[0]] = e + 1
@@ -346,7 +368,7 @@ class InputData(object):
             self.interfaces.ix[l, str(key)] = kwargs[key]
         if not 'series' in kwargs:
             self.set_series()
-
+        self.set_basement()
         self.order_table()
 
     def drop_interface(self, index):
@@ -438,6 +460,7 @@ class InputData(object):
         self.calculate_gradient()
         self.calculate_orientations()
         self.set_series()
+        self.set_basement()
         self.order_table()
 
     def drop_orientations(self, index):
@@ -658,11 +681,12 @@ class InputData(object):
         try:
             ip_addresses = formation_order
             ip_dict = dict(zip(ip_addresses, range(1, len(ip_addresses)+1)))
-            self.interfaces.loc[:, 'formation number'] = self.interfaces['formation'].replace(ip_dict)
-            self.orientations.loc[:, 'formation number'] = self.orientations['formation'].replace(ip_dict)
+            self.interfaces.loc[:, 'formation_number'] = self.interfaces['formation'].replace(ip_dict)
+            self.orientations.loc[:, 'formation_number'] = self.orientations['formation'].replace(ip_dict)
         except ValueError:
             pass
 
+        self.set_basement()
         self.order_table()
 
     def set_annotations(self):
@@ -672,13 +696,13 @@ class InputData(object):
         Returns:
             None
         """
-        point_num = self.interfaces.groupby('formation number').cumcount()
+        point_num = self.interfaces.groupby('formation_number').cumcount()
         point_l = [r'${\bf{x}}_{\alpha \,{\bf{' + str(f) + '}},' + str(p) + '}$'
-                   for p, f in zip(point_num, self.interfaces['formation number'])]
+                   for p, f in zip(point_num, self.interfaces['formation_number'])]
 
-        orientation_num = self.orientations.groupby('formation number').cumcount()
+        orientation_num = self.orientations.groupby('formation_number').cumcount()
         foli_l = [r'${\bf{x}}_{\beta \,{\bf{' + str(f) + '}},' + str(p) + '}$'
-                   for p, f in zip(orientation_num, self.orientations['formation number'])]
+                   for p, f in zip(orientation_num, self.orientations['formation_number'])]
 
         self.interfaces['annotations'] = point_l
         self.orientations['annotations'] = foli_l
@@ -708,17 +732,17 @@ class InputData(object):
                                       ascending=True, kind='mergesort',
                                       inplace=True)
 
-        # Give formation number
-        if not 'formation number' in self.interfaces.columns or not 'formation number' in self.orientations.columns:
+        # Give formation_number
+        if not 'formation_number' in self.interfaces.columns or not 'formation_number' in self.orientations.columns:
 
             self.set_formation_number()
 
         # We order the pandas table by formation (also by series in case something weird happened)
-        self.interfaces.sort_values(by=['order_series', 'formation number'],
+        self.interfaces.sort_values(by=['order_series', 'formation_number'],
                                                  ascending=True, kind='mergesort',
                                                  inplace=True)
 
-        self.orientations.sort_values(by=['order_series', 'formation number'],
+        self.orientations.sort_values(by=['order_series', 'formation_number'],
                                                  ascending=True, kind='mergesort',
                                                  inplace=True)
 
