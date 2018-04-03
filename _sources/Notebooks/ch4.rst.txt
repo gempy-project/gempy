@@ -99,7 +99,7 @@ Setting uncertainties adding the values to the Dataframe.
           <th>series</th>
           <th>order_series</th>
           <th>isFault</th>
-          <th>formation number</th>
+          <th>formation_number</th>
           <th>annotations</th>
           <th>G_x</th>
           <th>G_y</th>

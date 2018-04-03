@@ -610,7 +610,7 @@ a:hover tt, a:hover code {
         display: block;
         float: none;
         width: 102.5%;
-        margin: -20px -30px 20px -30px;
+        margin: 50px -30px -20px -30px;
         padding: 10px 20px;
         background: #333;
         color: #FFF;
@@ -665,12 +665,6 @@ a:hover tt, a:hover code {
 
     .github {
         display: none;
-    }
-}
-@media screen and (min-width: 876px) {
-    div.sphinxsidebar {
-        position: fixed;
-        margin-left: 0;
     }
 }
 

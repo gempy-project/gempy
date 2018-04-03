@@ -35,68 +35,9 @@
 
   </head>
   <body>
-  <div class="document">
-    
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">GemPy</a></h1>
+  
 
-
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../theory/motivation.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -474,7 +415,7 @@
         <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">potential_fault</span><span class="p">))</span> <span class="ow">is</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">n_faults</span><span class="p">,</span> <span class="s1">&#39;You need to pass a potential field per fault&#39;</span>
 
         <span class="n">pot_int</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span><span class="p">[:</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">n_faults</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
-        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">][</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation_number&#39;</span><span class="p">][</span>
             <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
             <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                 <span class="k">continue</span>
@@ -490,7 +431,7 @@
         <span class="c1"># Compute the vertices of the lithologies</span>
         <span class="k">if</span> <span class="n">n_formation</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
 
-            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation number&#39;</span><span class="p">][</span><span class="o">~</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation_number&#39;</span><span class="p">][</span><span class="o">~</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
                 <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
                     <span class="k">continue</span>
                 <span class="k">else</span><span class="p">:</span>
@@ -516,7 +457,7 @@
 <span class="sd">        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points</span>
 <span class="sd">        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle</span>
 <span class="sd">        formations_names_l (list): Name of the formation of the surfaces</span>
-<span class="sd">        formation_numbers_l (list): Formation numbers (int)</span>
+<span class="sd">        formation_numbers_l (list): formation_numbers (int)</span>
 <span class="sd">        alpha (float): Opacity</span>
 <span class="sd">        plot_data (bool): Default True</span>
 <span class="sd">        size (tuple): Resolution of the window</span>
@@ -577,9 +518,9 @@
 <span class="sd">        None</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">plot</span> <span class="o">=</span> <span class="n">PlotData2D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
-    <span class="n">plot</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="n">series</span><span class="p">,</span> <span class="n">legend_font_size</span><span class="o">=</span><span class="n">legend_font_size</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
-    <span class="c1"># TODO saving options</span>
 
+    <span class="c1"># TODO saving options</span>
+    <span class="k">return</span> <span class="n">plot</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="n">series</span><span class="p">,</span> <span class="n">legend_font_size</span><span class="o">=</span><span class="n">legend_font_size</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="plot_section"><a class="viewcode-back" href="../code.html#gempy_front.plot_section">[docs]</a><span class="k">def</span> <span class="nf">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">cell_number</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -654,7 +595,7 @@
 <span class="sd">        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points</span>
 <span class="sd">        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle</span>
 <span class="sd">        formations_names_l (list): Name of the formation of the surfaces</span>
-<span class="sd">        formation_numbers_l (list): Formation numbers (int)</span>
+<span class="sd">        formation_numbers_l (list): formation_numbers (int)</span>
 <span class="sd">        alpha (float): Opacity</span>
 <span class="sd">        plot_data (bool): Default True</span>
 <span class="sd">        size (tuple): Resolution of the window</span>
@@ -845,7 +786,7 @@
 <span class="sd">        self.orientations: one extra column with the given series</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="n">geo_data</span><span class="o">.</span><span class="n">set_series</span><span class="p">(</span><span class="n">series_distribution</span><span class="o">=</span><span class="n">series_distribution</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order_series</span><span class="p">)</span>
-    <span class="n">geo_data</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span>
+    <span class="c1">#geo_data.order_table()</span>
     <span class="k">if</span> <span class="n">order_formations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">geo_data</span><span class="o">.</span><span class="n">set_formation_number</span><span class="p">(</span><span class="n">order_formations</span><span class="p">)</span>
 
@@ -1007,8 +948,73 @@
           </div>
         </div>
       </div>
-    <div class="clearer"></div>
-  </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/../../../logos/gempy1.png" alt="Logo"/>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory/motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
     <div class="footer">
       &copy;2017, Miguel de la Varga, CGR-Aachen Team.
       
