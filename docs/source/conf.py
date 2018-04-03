@@ -128,7 +128,7 @@ html_theme_options = {
     'github_user': 'cgre-aachen',
                         'github_repo': 'gempy',
                         'github_type': 'star',
-                        'logo': '../../../logos/gempy1.png',
+                        'logo': '../../../logos/gempy1.svg',
                         'travis_button': True,
                         'page_width':'1200px',
                         'fixed_sidebar': False,
