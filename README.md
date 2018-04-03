@@ -1,4 +1,4 @@
-# <p align="left"><img src="docs/logos/gempy1.svg" width="200"></p>
+# <p align="left"><img src="docs/logos/gempy1.svg" width="300"></p>
 
 > Open-source, implicit 3D structural geological modeling in Python for uncertainty analysis.
 

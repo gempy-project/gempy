@@ -3,6 +3,6 @@ Guide
 
 .. toctree::
 
-   ./theory/core
-   ./theory/assets
-   ./theory/advanced
+   ./_theory/core
+   ./_theory/assets
+   ./_theory/advanced
