@@ -25,9 +25,14 @@ sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import copy
 import numpy as np
 import pandas as pn
-from gempy import theano_graph
-import theano
+# from gempy import theano_graph
+# import theano
 import warnings
+
+try:
+    import qgrid
+except ImportError:
+    warnings.warn('qgrid package is not installed. No interactive dataframes available.')
 
 pn.options.mode.chained_assignment = None  #
 
@@ -108,7 +113,7 @@ class InputData(object):
 
         if not 'basement' in self.interfaces['formation'].values:
 
-            columns = {'formation':'basement', 'order_series': n_series, 'formation_number': n_formation}
+            columns = {'formation':'basement', 'order_series': n_series, 'formation_number': n_formation, 'series': 'Default'}
             for key in columns:
                 self.interfaces.ix[l, str(key)] = columns[key]
                 self.order_table()
@@ -246,67 +251,8 @@ class InputData(object):
         ip_addresses['DefaultBasement'] = 0
         return ip_addresses
 
+    #def interactive_df(self):
 
-    # DEP so far: Changing just a value from the dataframe gives too many problems
-    # def i_open_set_data(self, itype="orientations"):
-    #     """
-    #     Method to have interactive pandas tables in jupyter notebooks. The idea is to use this method to interact with
-    #      the table and i_close_set_data to recompute the parameters that depend on the changes made. I did not find a
-    #      easier solution than calling two different methods.
-    #     Args:
-    #         itype: input_data data type, either 'orientations' or 'interfaces'
-    #
-    #     Returns:
-    #         pandas.core.frame.DataFrame: Data frame with the changed data on real time
-    #     """
-    #     try:
-    #         import qgrid
-    #     except:
-    #         raise ModuleNotFoundError('It is necessary to instal qgrid to have interactive tables')
-    #
-    #     # if the data frame is empty the interactive table is bugged. Therefore I create a default raw when the method
-    #     # is called
-    #     if self.orientations.empty:
-    #         self.orientations = pn.DataFrame(
-    #             np.array([0., 0., 0., 0., 0., 1., 'Default Formation', 'Default series']).reshape(1, 8),
-    #             columns=['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series']).\
-    #             convert_objects(convert_numeric=True)
-    #
-    #     if self.interfaces.empty:
-    #         self.interfaces = pn.DataFrame(
-    #             np.array([0, 0, 0, 'Default Formation', 'Default series']).reshape(1, 5),
-    #             columns=['X', 'Y', 'Z', 'formation', 'series']).convert_objects(convert_numeric=True)
-    #
-    #     # Setting some options
-    #     qgrid.nbinstall(overwrite=True)
-    #     qgrid.set_defaults(show_toolbar=True)
-    #     assert itype is 'orientations' or itype is 'interfaces', 'itype must be either orientations or interfaces'
-    #
-    #     import warnings
-    #     warnings.warn('Remember to call i_close_set_data after the editing.')
-    #
-    #     # We kind of set the show grid to a variable so we can close it afterwards
-    #     self.pandas_frame = qgrid.show_grid(self.get_data(itype=itype))
-    #
-    # def i_close_set_data(self):
-    #
-    #     """
-    #     Method to have interactive pandas tables in jupyter notebooks. The idea is to use this method to interact with
-    #      the table and i_close_set_data to recompute the parameters that depend on the changes made. I did not find a
-    #      easier solution than calling two different methods.
-    #     Args:
-    #         itype: input_data data type, either 'orientations' or 'interfaces'
-    #
-    #     Returns:
-    #         pandas.core.frame.DataFrame: Data frame with the changed data on real time
-    #     """
-    #     # We close it to guarantee that after this method it is not possible further modifications
-    #     self.pandas_frame.close()
-    #
-    #     # Set parameters
-    #     self.series = self.set_series()
-    #     self.calculate_gradient()
-    #     self.order_table()
 
     def import_data_csv(self, path_i, path_o, **kwargs):
         """
@@ -617,6 +563,10 @@ class InputData(object):
         # We create a dataframe with the links
         _series = pn.DataFrame(dict([ (k,pn.Series(v)) for k,v in _series.items() ]), columns=order)
 
+        if 'basement' not in _series.iloc[:, -1].values:
+            _series.loc[_series.shape[0], _series.columns[-1]] = 'basement'
+
+
         # Now we fill the column series in the interfaces and orientations tables with the correspondant series and
         # assigned number to the series
         self.interfaces["series"] = [(i == _series).sum().idxmax() for i in self.interfaces["formation"]]
@@ -675,6 +625,9 @@ class InputData(object):
             formation_order = self.interfaces["formation"].unique()
 
         else:
+            if 'basement' not in formation_order:
+                formation_order.append('basement')
+
             assert self.interfaces['formation'].isin(formation_order).all(), 'Some of the formations given are not in '\
                                                                              'the formations data frame. Check misspells'\
                                                                              'and that you include the name of the faults!'

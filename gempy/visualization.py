@@ -507,6 +507,7 @@ class vtkVisualization:
         # create interactor and set interactor style, assign render window
         self.interactor = vtk.vtkRenderWindowInteractor()
         self.interactor.SetRenderWindow(self.renwin)
+        self.interactor.AddObserver("KeyPressEvent", self.keyCallbacks)
 
         # 3d model camera for the 4 renders
         self.camera_list = self._create_cameras(self.extent, verbose=verbose)
@@ -543,9 +544,18 @@ class vtkVisualization:
         self.interactor.Initialize()
         self.interactor.Start()
 
+    def keyCallbacks(self, obj, event):
+        key = self.interactor.GetKeySym()
+        print(key)
+        if key is 'h' or 'p':
+            self.interactor.ExitCallback()
+
+        if key is 'q':
+           self.close_window()
+
+    def close_window(self):
         # close_window(interactor)
         del self.renwin, self.interactor
-
 
     def create_surface_points(self, vertices):
         """
@@ -807,9 +817,37 @@ class vtkVisualization:
         self.slider_w.SetCurrentRenderer(self.ren_list[0])
         self.slider_w.SetAnimationModeToAnimate()
         self.slider_w.On()
-        self.slider_w.AddObserver('EndInteractionEvent', self.slideCallback)
+        self.slider_w.AddObserver('EndInteractionEvent', self.sliderCallback_traces)
 
-    def slideCallback(self, obj, event):
+    def create_slider_interactor(self, min=0, max=1, val=1):
+
+        slider_rep = vtk.vtkSliderRepresentation2D()
+        slider_rep.SetMinimumValue(min)
+        slider_rep.SetMaximumValue(max)
+        slider_rep.SetValue(val)
+        slider_rep.GetPoint1Coordinate().SetCoordinateSystemToDisplay()
+        slider_rep.GetPoint1Coordinate().SetValue(0, 60)
+        slider_rep.GetPoint2Coordinate().SetCoordinateSystemToDisplay()
+        slider_rep.GetPoint2Coordinate().SetValue(100, 60)
+        slider_rep.SetTitleText('Interactor')
+
+
+        self.slider_w = vtk.vtkSliderWidget()
+        self.slider_w.SetInteractor(self.interactor)
+        self.slider_w.SetRepresentation(slider_rep)
+        self.slider_w.SetCurrentRenderer(self.ren_list[0])
+        self.slider_w.SetAnimationModeToJump()
+
+        self.slider_w.On()
+        self.slider_w.AddObserver('EndInteractionEvent', self.sliderCallback_interactor)
+
+
+    def sliderCallback_interactor(self, obj, event):
+        if int(obj.GetRepresentation().GetValue()) is 0:
+            self.interactor.ExitCallback()
+
+
+    def sliderCallback_traces(self, obj, event):
 
         self.post.change_input_data(self.interp_data, obj.GetRepresentation().GetValue())
         try:
@@ -860,29 +898,9 @@ class vtkVisualization:
         Function that rules what happens when we move a sphere. At the moment we update the other 3 renderers and
         update the pandas data frame.
         """
+        #self.interactor.ExitCallback()
 
-        # Resetting the xy camera when a sphere is moving to be able to change only 2D
-        fp = self.ren_list[1].GetActiveCamera().GetFocalPoint()
-        p = self.ren_list[1].GetActiveCamera().GetPosition()
-        dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
-        self.ren_list[1].GetActiveCamera().SetPosition(fp[0], fp[1], fp[2] + dist)
-        self.ren_list[1].GetActiveCamera().SetViewUp(0.0, 1.0, 0.0)
-
-        # Resetting the yz camera when a sphere is moving to be able to change only 2D
-        fp = self.ren_list[2].GetActiveCamera().GetFocalPoint()
-        p = self.ren_list[2].GetActiveCamera().GetPosition()
-        dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
-        self.ren_list[2].GetActiveCamera().SetPosition(fp[0] + dist, fp[1], fp[2])
-        self.ren_list[2].GetActiveCamera().SetViewUp(0.0, -1.0, 0.0)
-        self.ren_list[2].GetActiveCamera().Roll(90)
-
-        # Resetting the xz camera when a sphere is moving to be able to change only 2D
-        fp = self.ren_list[3].GetActiveCamera().GetFocalPoint()
-        p = self.ren_list[3].GetActiveCamera().GetPosition()
-        dist = np.sqrt((p[0] - fp[0]) ** 2 + (p[1] - fp[1]) ** 2 + (p[2] - fp[2]) ** 2)
-        self.ren_list[3].GetActiveCamera().SetPosition(fp[0], fp[1] - dist, fp[2])
-        self.ren_list[3].GetActiveCamera().SetViewUp(-1.0, 0.0, 0.0)
-        self.ren_list[3].GetActiveCamera().Roll(90)
+        self.Callback_camera_reset()
 
         # Get new position of the sphere
         new_center = obj.GetCenter()
@@ -890,32 +908,17 @@ class vtkVisualization:
         # Get which sphere we are moving
         index = obj.index
 
-        # Modify Pandas DataFrame
-        self.geo_data.modify_interface(index, X=new_center[0], Y=new_center[1], Z=new_center[2])
-
         # Check what render we are working with
         render = obj.n_render
-        r_f = obj.r_f
 
-        # Update the other renderers
-        if render != 0:
-            self.s_rend_1[obj.n_sphere].PlaceWidget(new_center[0] - r_f, new_center[0] + r_f,
-                                                    new_center[1] - r_f, new_center[1] + r_f,
-                                                    new_center[2] - r_f, new_center[2] + r_f)
+        # This must be the radio
+        #r_f = obj.r_f
 
-        if render != 1:
-            self.s_rend_2[obj.n_sphere].PlaceWidget(new_center[0] - r_f, new_center[0] + r_f,
-                                                    new_center[1] - r_f, new_center[1] + r_f,
-                                                    new_center[2] - r_f, new_center[2] + r_f)
-        if render != 2:
-            self.s_rend_3[obj.n_sphere].PlaceWidget(new_center[0] - r_f, new_center[0] + r_f,
-                                                    new_center[1] - r_f, new_center[1] + r_f,
-                                                    new_center[2] - r_f, new_center[2] + r_f)
-        if render != 3:
-            self.s_rend_4[obj.n_sphere].PlaceWidget(new_center[0] - r_f, new_center[0] + r_f,
-                                                    new_center[1] - r_f, new_center[1] + r_f,
-                                                    new_center[2] - r_f, new_center[2] + r_f)
+        print(obj.index)
+        print(obj.n_sphere)
 
+        self.SphereCallback_change_df(index, new_center)
+        self.SphereCallbak_move_changes(index)
 
         if self.real_time:
             for surf in self.surf_rend_1:
@@ -927,11 +930,7 @@ class vtkVisualization:
             vertices, simpleces = self.update_surfaces_real_time(self.interp_data)
             self.set_surfaces(vertices, simpleces)
 
-    def planesCallback(self, obj, event):
-        """
-        Function that rules what happens when we move a plane. At the moment we update the other 3 renderers and
-        update the pandas data frame
-        """
+    def Callback_camera_reset(self):
 
         # Resetting the xy camera when a sphere is moving to be able to change only 2D
         fp = self.ren_list[1].GetActiveCamera().GetFocalPoint()
@@ -956,44 +955,56 @@ class vtkVisualization:
         self.ren_list[3].GetActiveCamera().SetViewUp(-1.0, 0.0, 0.0)
         self.ren_list[3].GetActiveCamera().Roll(90)
 
+    def SphereCallback_change_df(self, index, new_center):
+
+        # Modify Pandas DataFrame
+        self.geo_data.modify_interface(index, X=new_center[0], Y=new_center[1], Z=new_center[2])
+
+    def SphereCallbak_move_changes(self, indeces):
+
+        df_changes = self.geo_data.interfaces.iloc[np.atleast_1d(indeces)][['X', 'Y', 'Z']]
+        for index, new_center_df in df_changes.iterrows():
+            new_center = new_center_df.values
+
+            # Update  renderers
+            s1 = self.s_rend_1[index]
+            print(index, new_center, s1.r_f, s1)
+            s1.PlaceWidget(new_center[0] - s1.r_f, new_center[0] + s1.r_f,
+                           new_center[1] - s1.r_f, new_center[1] + s1.r_f,
+                           new_center[2] - s1.r_f, new_center[2] + s1.r_f)
+
+            s2 = self.s_rend_2[index]
+            s2.PlaceWidget(new_center[0] - s2.r_f, new_center[0] + s2.r_f,
+                           new_center[1] - s2.r_f, new_center[1] + s2.r_f,
+                           new_center[2] - s2.r_f, new_center[2] + s2.r_f)
+
+            s3 = self.s_rend_3[index]
+            s3.PlaceWidget(new_center[0] - s3.r_f, new_center[0] + s3.r_f,
+                           new_center[1] - s3.r_f, new_center[1] + s3.r_f,
+                           new_center[2] - s3.r_f, new_center[2] + s3.r_f)
+
+            s4 = self.s_rend_4[index]
+            s4.PlaceWidget(new_center[0] - s4.r_f, new_center[0] + s4.r_f,
+                           new_center[1] - s4.r_f, new_center[1] + s4.r_f,
+                           new_center[2] - s4.r_f, new_center[2] + s4.r_f)
+
+
+    def planesCallback(self, obj, event):
+        """
+        Function that rules what happens when we move a plane. At the moment we update the other 3 renderers and
+        update the pandas data frame
+        """
+
+        self.Callback_camera_reset()
+
         # Get new position of the plane and GxGyGz
         new_center = obj.GetCenter()
         new_normal = obj.GetNormal()
         # Get which plane we are moving
         index = obj.index
 
-        new_source = vtk.vtkPlaneSource()
-        new_source.SetCenter(new_center)
-        new_source.SetNormal(new_normal)
-        new_source.Update()
-
-        # Modify Pandas DataFrame
-        # update the gradient vector components and its location
-        self.geo_data.modify_orientation(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
-                                       G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
-        # update the dip and azimuth values according to the new gradient
-        self.geo_data.calculate_orientations()
-
-        # Update the other renderers
-        render = obj.n_render
-
-        # TODO: get the plane source, change the stuff there, and then update the widget accordingly?
-        if render != 0:
-            self.f_rend_1[obj.n_plane].SetInputData(new_source.GetOutput())
-            self.f_rend_1[obj.n_plane].SetNormal(new_normal)
-            self.f_rend_1[obj.n_plane].SetCenter(new_center[0], new_center[1], new_center[2])
-        if render != 1:
-            self.f_rend_2[obj.n_plane].SetInputData(new_source.GetOutput())
-            self.f_rend_2[obj.n_plane].SetNormal(new_normal)
-            self.f_rend_2[obj.n_plane].SetCenter(new_center[0], new_center[1], new_center[2])
-        if render != 2:
-            self.f_rend_3[obj.n_plane].SetInputData(new_source.GetOutput())
-            self.f_rend_3[obj.n_plane].SetNormal(new_normal)
-            self.f_rend_3[obj.n_plane].SetCenter(new_center[0], new_center[1], new_center[2])
-        if render != 3:
-            self.f_rend_4[obj.n_plane].SetInputData(new_source.GetOutput())
-            self.f_rend_4[obj.n_plane].SetNormal(new_normal)
-            self.f_rend_4[obj.n_plane].SetCenter(new_center[0], new_center[1], new_center[2])
+        self.planesCallback_change_df(index, new_center, new_normal)
+        self.planesCallback_move_changes(index)
 
         if self.real_time:
             for surf in self.surf_rend_1:
@@ -1006,6 +1017,46 @@ class vtkVisualization:
             #  print(vertices[0][60])
             self.set_surfaces(vertices, simpleces)
 
+    def planesCallback_change_df(self, index, new_center, new_normal):
+
+
+        # Modify Pandas DataFrame
+        # update the gradient vector components and its location
+        self.geo_data.modify_orientation(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
+                                         G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
+        # update the dip and azimuth values according to the new gradient
+        self.geo_data.calculate_orientations()
+
+    def planesCallback_move_changes(self, indeces):
+        df_changes = self.geo_data.orientations.iloc[np.atleast_1d(indeces)][['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']]
+        for index, new_values_df in df_changes.iterrows():
+            new_center = new_values_df[['X', 'Y', 'Z']].values
+            new_normal = new_values_df[['G_x', 'G_y', 'G_z']].values
+            new_source = vtk.vtkPlaneSource()
+            new_source.SetCenter(new_center)
+            new_source.SetNormal(new_normal)
+            new_source.Update()
+
+            plane1 = self.f_rend_1[index]
+            plane1.SetInputData(new_source.GetOutput())
+            plane1.SetNormal(new_normal)
+            plane1.SetCenter(new_center[0], new_center[1], new_center[2])
+
+            plane2 = self.f_rend_2[index]
+            plane2.SetInputData(new_source.GetOutput())
+            plane2.SetNormal(new_normal)
+            plane2.SetCenter(new_center[0], new_center[1], new_center[2])
+
+            plane3 = self.f_rend_3[index]
+            plane3.SetInputData(new_source.GetOutput())
+            plane3.SetNormal(new_normal)
+            plane3.SetCenter(new_center[0], new_center[1], new_center[2])
+
+            plane4 = self.f_rend_4[index]
+            plane4.SetInputData(new_source.GetOutput())
+            plane4.SetNormal(new_normal)
+            plane4.SetCenter(new_center[0], new_center[1], new_center[2])
+            
     def create_ren_list(self):
         """
         Create a list of the 4 renderers we use. One general view and 3 cartersian projections

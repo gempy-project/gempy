@@ -107,7 +107,7 @@ class TheanoGraph(object):
         self.len_series_f = theano.shared(np.arange(2, dtype='int32'), 'Length of foliations in every series')
         self.n_formations_per_serie = theano.shared(np.arange(3, dtype='int32'), 'List with the number of formations')
         self.n_formation = theano.shared(np.arange(2,5, dtype='int32'), "Value of the formation")
-        self.n_formation_float = theano.shared(np.arange(2, 5, dtype='float32'), "Value of the formation to compute")
+        self.n_formation_float = theano.shared(np.arange(2, 5, dtype=dtype), "Value of the formation to compute")
         self.number_of_points_per_formation_T = theano.shared(np.zeros(3, dtype='int32'))
         self.npf = theano.shared(np.zeros(3, dtype='int32'), 'Number of points per formation accumulative')
         # Init fault relation matrix
