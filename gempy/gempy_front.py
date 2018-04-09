@@ -235,20 +235,20 @@ def get_extent(geo_data):
     return geo_data.extent
 
 
-def get_data(geo_data, dtype='all', numeric=False, verbosity=0):
+def get_data(geo_data, itype='all', numeric=False, verbosity=0):
     """
     Method that returns the interfaces and orientations pandas Dataframes. Can return both at the same time or only
     one of the two
 
     Args:
-        dtype(str): input data type, either 'orientations', 'interfaces' or 'all' for both.
+        itype(str): input data type, either 'orientations', 'interfaces' or 'all' for both.
         verbosity (int): Number of properties shown
 
     Returns:
         pandas.core.frame.DataFrame: Data frame with the raw data
 
     """
-    return geo_data.get_data(itype=dtype, numeric=numeric, verbosity=verbosity)
+    return geo_data.get_data(itype=itype, numeric=numeric, verbosity=verbosity)
 
 
 def get_sequential_pile(geo_data):
@@ -520,7 +520,8 @@ def plot_scalar_field(geo_data, potential_field, cell_number, N=20,
                               direction=direction,  plot_data=plot_data, series=series,
                               *args, **kwargs)
 
-def plot_data_3D(geo_data):
+
+def plot_data_3D(geo_data, **kwargs):
     """
     Plot in vtk all the input data of a model
     Args:
@@ -532,9 +533,117 @@ def plot_data_3D(geo_data):
     vv = vtkVisualization(geo_data)
     vv.set_interfaces()
     vv.set_orientations()
-    vv.render_model()
-    return None
+    vv.render_model(**kwargs)
+    return vv
 
+
+def vtk_resume(vtk_plot):
+    vtk_plot.interactor.Start()
+
+def vtk_close(vtk_plot):
+    vtk_plot.close_window()
+
+def vtk_observe_df(geo_data, vtk_plot, itype='all'):
+
+    def callBack(change):
+        print(change)
+        new_df = change['new'][change['new'].columns[1:]]
+        print("i am at the callback", change['new'].columns)
+        # Boolean of changes
+        try:
+         # Modify mode
+
+            b_i = (new_df.xs('interfaces')[geo_data._columns_i_num] != get_data(geo_data, itype='interfaces')[
+                geo_data._columns_i_num]).any(1)
+            # Indices
+            ind_i = new_df.xs('interfaces').index[b_i].tolist()
+
+
+            # Boolean of changes
+            b_o = (new_df.xs('orientations')[geo_data._columns_o_num] != get_data(geo_data, itype='orientations')[
+                geo_data._columns_o_num]).any(1)
+            # Indices
+            ind_o = new_df.xs('orientations').index[b_o].tolist()
+
+            geo_data.set_new_df(new_df)
+
+            vtk_plot.SphereCallbak_move_changes(ind_i)
+            vtk_plot.planesCallback_move_changes(ind_o)
+
+        except KeyError:
+            # Orientations
+            if set(geo_data._columns_o_1).issubset(new_df.columns):
+                # Boolean of changes
+                b_o = (new_df[geo_data._columns_o_num] != get_data(geo_data, itype='orientations')[
+                    geo_data._columns_o_num]).any(1)
+
+                # Indices
+                ind_o = new_df.index[b_o].tolist()
+                print('I am here')
+                geo_data.set_new_df(new_df)
+                vtk_plot.planesCallback_move_changes(ind_o)
+
+            # Interfaces
+            elif set(geo_data._columns_i_1).issubset(new_df.columns):
+                print(new_df.index.shape[0])
+                if new_df.index.shape[0] < geo_data.interfaces.index.shape[0]:  # Delete mode
+                    ind_i = geo_data.interfaces.index.values[~_np.in1d(geo_data.interfaces.index.values,
+                                                                       new_df.index.values,
+                                                                       assume_unique=True)]
+
+                    for i in ind_i:
+                        vtk_plot.s_rend_1.loc[i, 'val'].Off()
+                        vtk_plot.s_rend_2.loc[i, 'val'].Off()
+                        vtk_plot.s_rend_3.loc[i, 'val'].Off()
+                        vtk_plot.s_rend_4.loc[i, 'val'].Off()
+
+                    geo_data.set_new_df(new_df)
+
+                elif new_df.index.shape[0] > geo_data.interfaces.index.shape[0]:  # Add mode
+
+                    print(set(new_df.index).issubset(geo_data._original_df.index))
+                    if set(new_df.index).issubset(geo_data._original_df.index):
+                        ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
+                                                                           geo_data.interfaces.index.values,
+                                                                           assume_unique=True)]
+                        for i in ind_i:
+                            vtk_plot.s_rend_1.loc[i, 'val'].On()
+                            vtk_plot.s_rend_2.loc[i, 'val'].On()
+                            vtk_plot.s_rend_3.loc[i, 'val'].On()
+                            vtk_plot.s_rend_4.loc[i, 'val'].On()
+
+                        geo_data.set_new_df(new_df.loc[ind_i], append=True)
+
+                    else:
+
+                        ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
+                                                              geo_data.interfaces.index.values,
+                                                              assume_unique=True)]
+                        geo_data.set_new_df(new_df.loc[ind_i], append=True)
+                        print(ind_i)
+                        for i in ind_i:
+                            vtk_plot.set_interfaces(indices=i)
+                        print('I am in adding', ind_i)
+                else: # Modify
+
+                    print(geo_data._columns_i_1, new_df.columns)
+                    b_i = (new_df[geo_data._columns_i_num] != get_data(geo_data, itype='interfaces')[
+                        geo_data._columns_i_num]).any(1)
+
+                    # Indices
+                    ind_i = new_df.index[b_i].tolist()
+
+                    print(ind_i)
+                    geo_data.set_new_df(new_df)
+                    vtk_plot.SphereCallbak_move_changes(ind_i)
+
+
+        vtk_plot.interactor.Render()
+
+    geo_data._original_df = get_data(geo_data, itype=itype)
+    qgrid_widget = geo_data.interactive_df_open(itype=itype)
+    qgrid_widget.observe(callBack, names=['_df'])
+    return qgrid_widget
 
 def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
                      #formations_names_l, formation_numbers_l,
