@@ -365,7 +365,7 @@ class InterpolatorData:
         def prepare_data_frame(self, geo_data_res, **kwargs):
 
             self.formation_number = geo_data_res.interfaces['formation_number'].unique().astype('int32')
-            self.formation_value = geo_data_res.interfaces['formation_number'].unique().astype(self.dtype)
+            self.formation_value = geo_data_res.formations['value'].astype(self.dtype)
 
             # We hide the scaled copy of DataManagement object from the user.
             self.geo_data_res_no_basement = geo_data_res
@@ -648,7 +648,7 @@ class InterpolatorData:
 
             # Unique number assigned to each lithology
             self.tg.n_formation.set_value(self.formation_number)
-            self.tg.n_formation_float.set_value(self.formation_value)
+            self.tg.formation_values.set_value(self.formation_value)
             # Number of formations per series. The function is not pretty but the result is quite clear
             self.tg.n_formations_per_serie.set_value(
                 np.insert(self.geo_data_res_no_basement.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0).astype('int32'))
@@ -662,7 +662,7 @@ class InterpolatorData:
             # TODO: Push this condition to the geo_data
             # Set fault relation matrix
             if self.geo_data_res_no_basement.fault_relation is not None:
-                self.tg.fault_relation.set_value(self.geo_data_res_no_basement.fault_relation.astype('int32'))
+                self.tg.fault_relation.set_value(self.geo_data_res_no_basement.fault_relation.values.astype('int32'))
             else:
                 fault_rel = np.zeros((self.geo_data_res_no_basement.interfaces['series'].nunique(),
                                       self.geo_data_res_no_basement.interfaces['series'].nunique()))

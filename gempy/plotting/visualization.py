@@ -479,6 +479,7 @@ class vtkVisualization:
         self.geo_data = geo_data#copy.deepcopy(geo_data)
         self.interp_data = None
         self.C_LOT = color_lot
+        self.ren_name = ren_name
         # Number of renders
         self.n_ren = 4
         self.formation_number = geo_data.interfaces['formation_number'].unique()
@@ -498,6 +499,11 @@ class vtkVisualization:
         self.s_rend_2 = pn.DataFrame(columns=['val'])
         self.s_rend_3 = pn.DataFrame(columns=['val'])
         self.s_rend_4 = pn.DataFrame(columns=['val'])
+
+        self.o_rend_1 = pn.DataFrame(columns=['val'])
+        self.o_rend_2 = pn.DataFrame(columns=['val'])
+        self.o_rend_3 = pn.DataFrame(columns=['val'])
+        self.o_rend_4 = pn.DataFrame(columns=['val'])
 
         # Resolution
         self.res = self.geo_data.resolution
@@ -559,7 +565,31 @@ class vtkVisualization:
             self.interactor.ExitCallback()
 
         if key is 'q':
-           self.close_window()
+            self.close_window()
+            # create render window, settings
+            self.renwin = vtk.vtkRenderWindow()
+            self.renwin.SetWindowName(self.ren_name)
+
+            # Set 4 renderers. ie 3D, X,Y,Z projections
+            self.ren_list = self.create_ren_list()
+
+            # create interactor and set interactor style, assign render window
+            self.interactor = vtk.vtkRenderWindowInteractor()
+            self.interactor.SetRenderWindow(self.renwin)
+            self.interactor.AddObserver("KeyPressEvent", self.keyCallbacks)
+
+            # 3d model camera for the 4 renders
+            self.camera_list = self._create_cameras(self.extent)
+            # Setting the camera and the background color to the renders
+            self.set_camera_backcolor()
+
+            # Creating the axis
+            for e, r in enumerate(self.ren_list):
+                # add axes actor to all renderers
+                axe = self._create_axes(self.camera_list[e])
+
+                r.AddActor(axe)
+                r.ResetCamera()
 
     def close_window(self):
         # close_window(interactor)
@@ -793,32 +823,47 @@ class vtkVisualization:
                 self.s_rend_4.at[index] = (self.create_sphere(row['X'], row['Y'], row['Z'], row['formation_number'],
                                                               n_sphere=e, n_render=3, n_index=index))
 
-    def set_orientations(self):
+    def set_orientations(self, indices=None):
         """
         Create all the orientations and set them to the corresponding renders for their posterior visualization with
         render_model
         Returns:
             None
         """
-        self.f_rend_1 = []
-        self.f_rend_2 = []
-        self.f_rend_3 = []
-        self.f_rend_4 = []
-        for e, val in enumerate(self.geo_data.orientations.iterrows()):
-            index = val[0]
-            row = val[1]
-            self.f_rend_1.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
-                                                       row['G_x'], row['G_y'], row['G_z'],
-                                                       n_plane=e, n_render=0, n_index=index))
-            self.f_rend_2.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
-                                                       row['G_x'], row['G_y'], row['G_z'],
-                                                       n_plane=e, n_render=1, n_index=index))
-            self.f_rend_3.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
-                                                       row['G_x'], row['G_y'], row['G_z'],
-                                                       n_plane=e, n_render=2, n_index=index))
-            self.f_rend_4.append(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
-                                                       row['G_x'], row['G_y'], row['G_z'],
-                                                       n_plane=e, n_render=3, n_index=index))
+
+        if not indices:
+            for e, val in enumerate(self.geo_data.orientations.iterrows()):
+                index = val[0]
+                row = val[1]
+                self.o_rend_1.at[index] = (self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
+                                                           row['G_x'], row['G_y'], row['G_z'],
+                                                           n_plane=e, n_render=0, n_index=index))
+                self.o_rend_2.at[index] = (self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
+                                                           row['G_x'], row['G_y'], row['G_z'],
+                                                           n_plane=e, n_render=1, n_index=index))
+                self.o_rend_3.at[index] = (self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
+                                                           row['G_x'], row['G_y'], row['G_z'],
+                                                           n_plane=e, n_render=2, n_index=index))
+                self.o_rend_4.at[index] = (self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
+                                                           row['G_x'], row['G_y'], row['G_z'],
+                                                           n_plane=e, n_render=3, n_index=index))
+        else:
+            for e, val in enumerate(self.geo_data.orientations.loc[np.atleast_1d(indices)].iterrows()):
+                index = val[0]
+                row = val[1]
+                self.o_rend_1.at[index] = (self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
+                                                           row['G_x'], row['G_y'], row['G_z'],
+                                                           n_plane=e, n_render=0, n_index=index))
+                self.o_rend_2.at[index] = (self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
+                                                           row['G_x'], row['G_y'], row['G_z'],
+                                                           n_plane=e, n_render=1, n_index=index))
+                self.o_rend_3.at[index] = (self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
+                                                           row['G_x'], row['G_y'], row['G_z'],
+                                                           n_plane=e, n_render=2, n_index=index))
+                self.o_rend_4.at[index] =(self.create_foliation(row['X'], row['Y'], row['Z'], row['formation_number'],
+                                                           row['G_x'], row['G_y'], row['G_z'],
+                                                           n_plane=e, n_render=3, n_index=index))
+
 
     def create_slider_rep(self, min=0, max=10, val=0):
 
@@ -1053,7 +1098,8 @@ class vtkVisualization:
         self.geo_data.calculate_orientations()
 
     def planesCallback_move_changes(self, indeces):
-        df_changes = self.geo_data.orientations.iloc[np.atleast_1d(indeces)][['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']]
+
+        df_changes = self.geo_data.orientations.iloc[np.atleast_1d(indeces)][['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'formation_number']]
         for index, new_values_df in df_changes.iterrows():
             new_center = new_values_df[['X', 'Y', 'Z']].values
             new_normal = new_values_df[['G_x', 'G_y', 'G_z']].values
@@ -1062,25 +1108,34 @@ class vtkVisualization:
             new_source.SetNormal(new_normal)
             new_source.Update()
 
-            plane1 = self.f_rend_1[index]
+            plane1 = self.o_rend_1.loc[index, 'val']
             plane1.SetInputData(new_source.GetOutput())
             plane1.SetNormal(new_normal)
             plane1.SetCenter(new_center[0], new_center[1], new_center[2])
+            plane1.GetPlaneProperty().SetColor(self.C_LOT[new_values_df['formation_number']])
+            plane1.GetHandleProperty().SetColor(self.C_LOT[new_values_df['formation_number']])
 
-            plane2 = self.f_rend_2[index]
+            plane2 = self.o_rend_2.loc[index, 'val']
             plane2.SetInputData(new_source.GetOutput())
             plane2.SetNormal(new_normal)
             plane2.SetCenter(new_center[0], new_center[1], new_center[2])
+            plane2.GetPlaneProperty().SetColor(self.C_LOT[new_values_df['formation_number']])
+            plane2.GetHandleProperty().SetColor(self.C_LOT[new_values_df['formation_number']])
 
-            plane3 = self.f_rend_3[index]
+
+            plane3 = self.o_rend_3.loc[index, 'val']
             plane3.SetInputData(new_source.GetOutput())
             plane3.SetNormal(new_normal)
             plane3.SetCenter(new_center[0], new_center[1], new_center[2])
+            plane3.GetPlaneProperty().SetColor(self.C_LOT[new_values_df['formation_number']])
+            plane3.GetHandleProperty().SetColor(self.C_LOT[new_values_df['formation_number']])
 
-            plane4 = self.f_rend_4[index]
+            plane4 = self.o_rend_4.loc[index, 'val']
             plane4.SetInputData(new_source.GetOutput())
             plane4.SetNormal(new_normal)
             plane4.SetCenter(new_center[0], new_center[1], new_center[2])
+            plane4.GetPlaneProperty().SetColor(self.C_LOT[new_values_df['formation_number']])
+            plane4.GetHandleProperty().SetColor(self.C_LOT[new_values_df['formation_number']])
             
     def create_ren_list(self):
         """

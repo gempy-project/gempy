@@ -36,6 +36,7 @@ import pandas as _pn
 
 import copy
 from gempy.visualization import PlotData2D, steno3D, vtkVisualization
+from gempy.plotting import plot
 from gempy.data_management import InputData, GridClass
 from gempy.interpolator import InterpolatorData
 from gempy.sequential_pile import StratigraphicPile
@@ -546,9 +547,9 @@ def vtk_close(vtk_plot):
 def vtk_observe_df(geo_data, vtk_plot, itype='all'):
 
     def callBack(change):
-        print(change)
+     #   print(change)
         new_df = change['new'][change['new'].columns[1:]]
-        print("i am at the callback", change['new'].columns)
+     #   print("i am at the callback", change['new'].columns)
         # Boolean of changes
         try:
          # Modify mode
@@ -598,7 +599,7 @@ def vtk_observe_df(geo_data, vtk_plot, itype='all'):
                         vtk_plot.s_rend_4.loc[i, 'val'].Off()
 
                     geo_data.set_new_df(new_df)
-
+                    print('I am in deleting', ind_i)
                 elif new_df.index.shape[0] > geo_data.interfaces.index.shape[0]:  # Add mode
 
                     print(set(new_df.index).issubset(geo_data._original_df.index))
@@ -613,7 +614,7 @@ def vtk_observe_df(geo_data, vtk_plot, itype='all'):
                             vtk_plot.s_rend_4.loc[i, 'val'].On()
 
                         geo_data.set_new_df(new_df.loc[ind_i], append=True)
-
+                        print('I am getting back', ind_i)
                     else:
 
                         ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
@@ -624,23 +625,27 @@ def vtk_observe_df(geo_data, vtk_plot, itype='all'):
                         for i in ind_i:
                             vtk_plot.set_interfaces(indices=i)
                         print('I am in adding', ind_i)
-                else: # Modify
+                elif new_df.index.shape[0] == geo_data.interfaces.index.shape[0]: # Modify
 
                     print(geo_data._columns_i_1, new_df.columns)
-                    b_i = (new_df[geo_data._columns_i_num] != get_data(geo_data, itype='interfaces')[
-                        geo_data._columns_i_num]).any(1)
+
+                    b_i = (new_df[geo_data._columns_i_1].sort_index() != get_data(geo_data, itype='interfaces')[
+                        geo_data._columns_i_1].sort_index()).any(1)
 
                     # Indices
                     ind_i = new_df.index[b_i].tolist()
 
-                    print(ind_i)
+                    print(print('I am in modifing', ind_i))
                     geo_data.set_new_df(new_df)
                     vtk_plot.SphereCallbak_move_changes(ind_i)
+
+                else:
+                    print('something went wrong')
 
 
         vtk_plot.interactor.Render()
 
-    geo_data._original_df = get_data(geo_data, itype=itype)
+    geo_data._original_df = copy.deepcopy(get_data(geo_data, itype=itype))
     qgrid_widget = geo_data.interactive_df_open(itype=itype)
     qgrid_widget.observe(callBack, names=['_df'])
     return qgrid_widget
@@ -840,19 +845,20 @@ def set_series(geo_data, series_distribution=None, order_series=None, order_form
     Method to define the different series of the project.
 
     Args:
-        series_distribution (dict): with the name of the serie as key and the name of the formations as values.
-        order(Optional[list]): order of the series by default takes the dictionary keys which until python 3.6 are
-           random. This is important to set the erosion relations between the different series
+        series_distribution (dict or dataframe): with the name of the serie as key and the name of the formations as values.
+        order(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
+        dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
 
     Returns:
         self.series: A pandas DataFrame with the series and formations relations
         self.interfaces: one extra column with the given series
         self.orientations: one extra column with the given series
     """
-    geo_data.set_series(series_distribution=series_distribution, order=order_series)
+    geo_data.update_df(series_distribution=series_distribution, order=order_series)
     #geo_data.order_table()
     if order_formations is not None:
         geo_data.set_formation_number(order_formations)
+        geo_data.order_table()
 
     if verbose > 0:
          return get_sequential_pile(geo_data)

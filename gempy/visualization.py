@@ -980,7 +980,7 @@ class vtkVisualization:
 
     def SphereCallbak_move_changes(self, indeces):
 
-        df_changes = self.geo_data.interfaces.iloc[np.atleast_1d(indeces)][['X', 'Y', 'Z', 'formation_number']]
+        df_changes = self.geo_data.interfaces.loc[np.atleast_1d(indeces)][['X', 'Y', 'Z', 'formation_number']]
         for index, df_row in df_changes.iterrows():
             new_center = df_row[['X', 'Y', 'Z']].values
 
@@ -998,7 +998,7 @@ class vtkVisualization:
                            new_center[1] - s2.r_f, new_center[1] + s2.r_f,
                            new_center[2] - s2.r_f, new_center[2] + s2.r_f)
 
-            s1.GetSphereProperty().SetColor(self.C_LOT[df_row['formation_number']])
+            s2.GetSphereProperty().SetColor(self.C_LOT[df_row['formation_number']])
 
             s3 = self.s_rend_3.loc[index, 'val']
             s3.PlaceWidget(new_center[0] - s3.r_f, new_center[0] + s3.r_f,

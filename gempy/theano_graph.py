@@ -107,7 +107,7 @@ class TheanoGraph(object):
         self.len_series_f = theano.shared(np.arange(2, dtype='int32'), 'Length of foliations in every series')
         self.n_formations_per_serie = theano.shared(np.arange(3, dtype='int32'), 'List with the number of formations')
         self.n_formation = theano.shared(np.arange(2,5, dtype='int32'), "Value of the formation")
-        self.n_formation_float = theano.shared(np.arange(2, 5, dtype=dtype), "Value of the formation to compute")
+        self.formation_values = theano.shared(np.arange(2, 5, dtype=dtype), "Value of the formation to compute")
         self.number_of_points_per_formation_T = theano.shared(np.zeros(3, dtype='int32'))
         self.npf = theano.shared(np.zeros(3, dtype='int32'), 'Number of points per formation accumulative')
         # Init fault relation matrix
@@ -272,7 +272,7 @@ class TheanoGraph(object):
               7 / 2 * (sed_ref_ref / self.a_T) ** 5 +
               3 / 4 * (sed_ref_ref / self.a_T) ** 7))))
 
-        C_I += T.eye(C_I.shape[0])*self.nugget_effect_scalar_T
+        C_I += T.eye(C_I.shape[0]) * 2 * self.nugget_effect_scalar_T
         # Add name to the theano node
         C_I.name = 'Covariance Interfaces'
 
@@ -1034,7 +1034,7 @@ class TheanoGraph(object):
         # Theano shared
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T[n_form_per_serie_0: n_form_per_serie_1]
         self.n_formation_op = self.n_formation[n_form_per_serie_0: n_form_per_serie_1]
-        self.n_formation_op_float = self.n_formation_float[n_form_per_serie_0: n_form_per_serie_1]
+        self.n_formation_op_float = self.formation_values[n_form_per_serie_0: n_form_per_serie_1]
         self.npf_op = self.npf[n_form_per_serie_0: n_form_per_serie_1]
         if 'n_formation' in self.verbose:
             self.n_formation_op = theano.printing.Print('n_formation_fault')(self.n_formation_op)
@@ -1137,7 +1137,7 @@ class TheanoGraph(object):
         # Theano shared
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T[n_form_per_serie_0: n_form_per_serie_1]
         self.n_formation_op = self.n_formation[n_form_per_serie_0: n_form_per_serie_1]
-        self.n_formation_op_float = self.n_formation_float[n_form_per_serie_0: n_form_per_serie_1 + 1]
+        self.n_formation_op_float = self.formation_values[n_form_per_serie_0: n_form_per_serie_1 + 1]
         self.npf_op = self.npf[n_form_per_serie_0: n_form_per_serie_1]
 
         self.n_universal_eq_T_op = u_grade_iter
