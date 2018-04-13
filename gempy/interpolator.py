@@ -158,10 +158,10 @@ class InterpolatorData:
 
         # Compute rescalin factor if not given
         if not rescaling_factor:
-            rescaling_factor = 2 * np.max(max_coord - min_coord)
+            rescaling_factor = (2 * np.max(max_coord - min_coord))
 
         # Get the centers of every axis
-        centers = (max_coord + min_coord) / 2
+        centers = ((max_coord + min_coord) / 2).astype(float)
 
         # Change the coordinates of interfaces
         new_coord_interfaces = (geo_data.interfaces[['X', 'Y', 'Z']] -
@@ -175,7 +175,9 @@ class InterpolatorData:
         # Updating properties
         new_coord_extent = (geo_data.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
 
-        geo_data_rescaled = copy.deepcopy(geo_data)
+        geo_data_rescaled = copy.copy(geo_data)
+        geo_data_rescaled.interfaces = copy.copy(geo_data.interfaces)
+        geo_data_rescaled.orientations = copy.copy(geo_data.orientations)
         geo_data_rescaled.interfaces[['X', 'Y', 'Z']] = new_coord_interfaces
         geo_data_rescaled.orientations[['X', 'Y', 'Z']] = new_coord_orientations
 
@@ -187,9 +189,10 @@ class InterpolatorData:
         except KeyError:
             pass
 
-        geo_data_rescaled.extent = new_coord_extent.as_matrix()
+        geo_data_rescaled.extent = copy.copy(new_coord_extent.as_matrix())
 
-        geo_data_rescaled.grid.values = (geo_data.grid.values - centers.as_matrix()) / rescaling_factor + 0.5001
+        geo_data_rescaled.x_to_interp_given = copy.copy(geo_data.grid.values)
+        geo_data_rescaled.x_to_interp_given = (geo_data.grid.values - centers.as_matrix()) / rescaling_factor + 0.5001
 
         # Saving useful values for later
         self.rescaling_factor = rescaling_factor
@@ -365,7 +368,7 @@ class InterpolatorData:
         def prepare_data_frame(self, geo_data_res, **kwargs):
 
             self.formation_number = geo_data_res.interfaces['formation_number'].unique().astype('int32')
-            self.formation_value = geo_data_res.formations['value'].astype(self.dtype)
+            self.formation_value = geo_data_res.formations['value'].values.squeeze().astype(self.dtype)
 
             # We hide the scaled copy of DataManagement object from the user.
             self.geo_data_res_no_basement = geo_data_res
@@ -605,7 +608,7 @@ class InterpolatorData:
             if not c_o:
                 c_o = range_var ** 2 / 14 / 3
 
-            x_to_interpolate = np.vstack((self.geo_data_res_no_basement.grid.values,
+            x_to_interpolate = np.vstack((self.geo_data_res_no_basement.x_to_interp_given,
                                           self.pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix(),
                                           self.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()))
 
@@ -639,7 +642,7 @@ class InterpolatorData:
             self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](universal_matrix + 1e-10))
 
             # Initialization of the block model
-            self.tg.final_block.set_value(np.zeros((1, self.geo_data_res_no_basement.grid.values.shape[0]), dtype=self.dtype))
+            self.tg.final_block.set_value(np.zeros((1, self.geo_data_res_no_basement.x_to_interp_given.shape[0]), dtype=self.dtype))
 
             # TODO DEP?
             # Initialization of the boolean array that represent the areas of the block model to be computed in the
