@@ -161,6 +161,8 @@ class TheanoGraph(object):
         self.pfai_fault = T.zeros((0, self.n_formations_per_serie[-1]))
         self.pfai_lith = T.zeros((0, self.n_formations_per_serie[-1]))
 
+        self.fault_matrix = T.zeros((0, self.grid_val_T.shape[0]))
+
         if output is 'gravity':
             self.densities = theano.shared(np.cast[dtype](np.zeros(3)), "List with the densities")
             self.tz = theano.shared(np.cast[dtype](np.zeros((1, 3))), "Component z")
@@ -198,7 +200,7 @@ class TheanoGraph(object):
         sqd = T.sqrt(T.maximum(
             (x_1**2).sum(1).reshape((x_1.shape[0], 1)) +
             (x_2**2).sum(1).reshape((1, x_2.shape[0])) -
-            2 * x_1.dot(x_2.T), 1e-21
+            2 * x_1.dot(x_2.T), 1e-12
         ))
 
         if False:
@@ -1264,26 +1266,26 @@ class TheanoGraph(object):
         # Compute the geological model
         lith_matrix, fault_matrix, pfai = self.compute_geological_model(n_faults=n_faults)
 
-        if n_faults == 0:
-            formations = T.concatenate([self.n_formation[::-1], T.stack([0])])
-        else:
-            formations = T.concatenate([self.n_formation[:n_faults-1:-1], T.stack([0])])
+        # if n_faults == 0:
+        #     formations = T.concatenate([self.n_formation[::-1], T.stack([0])])
+        # else:
+        #     formations = T.concatenate([self.n_formation[:n_faults-1:-1], T.stack([0])])
+        #
+        #     if False:
+        #         formations = theano.printing.Print('formations')(formations)
+        #
+        # # Substitue lithologies by its density
+        # density_block_loop, updates4 = theano.scan(self.switch_densities,
+        #                             outputs_info=[lith_matrix[0]],
+        #                              sequences=[formations, self.densities],
+        #                             return_list = True
+        # )
 
-            if False:
-                formations = theano.printing.Print('formations')(formations)
-
-        # Substitue lithologies by its density
-        density_block_loop, updates4 = theano.scan(self.switch_densities,
-                                    outputs_info=[lith_matrix[0]],
-                                     sequences=[formations, self.densities],
-                                    return_list = True
-        )
-
-        if False:
-            density_block_loop_f = T.set_subtensor(density_block_loop[-1][-1][self.weigths_index], self.weigths_weigths)
-
-        else:
-            density_block_loop_f = lith_matrix[0]
+        # if False:
+        #     density_block_loop_f = T.set_subtensor(density_block_loop[-1][-1][self.weigths_index], self.weigths_weigths)
+        #
+        # else:
+        density_block_loop_f = lith_matrix[0]
 
 
         if 'density_block' in self.verbose:
@@ -1303,5 +1305,6 @@ class TheanoGraph(object):
 
         #return [lith_matrix, self.fault_matrix, pfai, grav.sum(axis=1)]
         return [lith_matrix, fault_matrix, pfai, grav.sum(axis=1)]
+
 
 

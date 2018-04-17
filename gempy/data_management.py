@@ -194,7 +194,7 @@ class InputData(object):
 
     def create_orientation_from_interfaces(self, indices):
 
-        selected_points = self.interfaces[['X', 'Y', 'Z']].iloc[indices].values.T
+        selected_points = self.interfaces[['X', 'Y', 'Z']].loc[indices].values.T
 
         center, normal = self.plane_fit(selected_points)
         orientation = get_orientation(normal)
@@ -836,7 +836,7 @@ class InputData(object):
                 self.formations['formation_number'] = self.interfaces['formation_number'].unique()
 
             elif type(np.ndarray):
-                self.formations['values'] = formation_values
+                self.formations['value'] = formation_values
             else:
                 raise AttributeError('formation_values must be a dictionary, a Dataframe or array, see Docstring for more information')
 
