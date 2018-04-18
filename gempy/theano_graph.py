@@ -955,16 +955,16 @@ class TheanoGraph(object):
         self.scalar_field_at_interfaces_values = Z_x[-2*self.len_points: -self.len_points][self.npf_op]
 
         max_pot = T.max(Z_x)
-        max_pot = theano.printing.Print("max_pot")(max_pot)
+        #max_pot = theano.printing.Print("max_pot")(max_pot)
 
         min_pot = T.min(Z_x)
-        min_pot = theano.printing.Print("min_pot")(min_pot)
+   #     min_pot = theano.printing.Print("min_pot")(min_pot)
 
 
         max_pot_sigm = 2*max_pot - self.scalar_field_at_interfaces_values[0]
         min_pot_sigm = 2*min_pot - self.scalar_field_at_interfaces_values[-1]
         l = 100 / (max_pot_sigm - min_pot_sigm)
-        l = theano.printing.Print("l")(l)
+      #  l = theano.printing.Print("l")(l)
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
@@ -997,7 +997,7 @@ class TheanoGraph(object):
                 b = theano.printing.Print("b")(b)
                # l = 200/ (a - b)
 
-                n_formation = theano.printing.Print("n_formation")(n_formation)
+                #n_formation = theano.printing.Print("n_formation")(n_formation)
                 # The 5 rules the slope of the function
                 sigm = ((1. / (1 + T.exp(-l * (Z_x - b))) + 1. / (1 + T.exp(l * (Z_x - a)))) - 1) * n_formation
                 if False:

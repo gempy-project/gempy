@@ -452,38 +452,6 @@ def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None
         vtkVisualization.export_vtk_surfaces(vertices, simplices, path=path+str('s'), name=name)
 
 
-# def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
-#                      #formations_names_l, formation_numbers_l,
-#                      alpha=1, plot_data=True,
-#                      size=(1920, 1080), fullscreen=False, bg_color=None):
-#     """
-#     Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
-#
-#     Args:
-#         vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
-#         simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
-#         formations_names_l (list): Name of the formation of the surfaces
-#         formation_numbers_l (list): formation_numbers (int)
-#         alpha (float): Opacity
-#         plot_data (bool): Default True
-#         size (tuple): Resolution of the window
-#         fullscreen (bool): Launch window in full screen or not
-#
-#     Returns:
-#         None
-#     """
-#     w = vtkVisualization(geo_data, bg_color=bg_color)
-#     w.set_surfaces(vertices_l, simplices_l,
-#                    #formations_names_l, formation_numbers_l,
-#                     alpha)
-#
-#     if plot_data:
-#         w.set_interfaces()
-#         w.set_orientations()
-#     w.render_model(size=size, fullscreen=fullscreen)
-#     return w
-#
-
 def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
     """
     Plot the projection of the raw data (interfaces and orientations) in 2D following a

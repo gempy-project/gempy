@@ -119,7 +119,6 @@ class PlotData2D(object):
         else:
             min_axis = 'height'
 
-
         if series == "all":
             series_to_plot_i = self._data.interfaces[self._data.interfaces["series"].
                 isin(self._data.series.columns.values)]
@@ -136,6 +135,9 @@ class PlotData2D(object):
             self._color_lot[i[0]] = self._color_lot[i[1]]
 
         #fig, ax = plt.subplots()
+
+        series_to_plot_i['formation'] = series_to_plot_i['formation'].cat.remove_unused_categories()
+        series_to_plot_f['formation'] = series_to_plot_f['formation'].cat.remove_unused_categories()
 
         if data_type == 'all':
             p = sns.lmplot(x, y,
@@ -167,7 +169,7 @@ class PlotData2D(object):
                            **kwargs)
 
         if data_type == 'orientations':
-            ax.quiver(series_to_plot_f[x], series_to_plot_f[y],
+            plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
                        pivot="tail", scale_units=min_axis, scale=15)
 

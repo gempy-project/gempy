@@ -550,7 +550,6 @@ class InputData(object):
         assert set(self._columns_i_1).issubset(interf_Dataframe.columns), \
             "One or more columns do not match with the expected values " + str(interf_Dataframe.columns)
 
-        #print(interf_Dataframe, 'I am in set')
         interf_Dataframe[self._columns_i_num] = interf_Dataframe[self._columns_i_num].astype(float, copy=True)
         interf_Dataframe[['formation_number', 'order_series']] = interf_Dataframe[['formation_number', 'order_series']].astype(int, copy=True)
         interf_Dataframe['formation'] = interf_Dataframe['formation'].astype('category', copy=True)
@@ -597,8 +596,6 @@ class InputData(object):
         else:
             self.orientations[self._columns_o_1] = foliat_Dataframe[self._columns_o_1]
 
-
-      #  print( self.orientations)
         # self.calculate_orientations()
         self.calculate_gradient()
 
@@ -783,8 +780,7 @@ class InputData(object):
         self.interfaces['formation_value'] = self.interfaces['formation'].map(self.formations.iloc[:, 0])
         self.orientations['formation_value'] = self.orientations['formation'].map(self.formations.iloc[:, 0])
 
-
-    def set_formation_number(self, formation_order=None):
+    def _set_formation_number(self, formation_order=None):
         """
         Set a unique number to each formation. NOTE: this method is getting deprecated since the user does not need
         to know it and also now the numbers must be set in the order of the series as well. Therefore this method
@@ -802,7 +798,6 @@ class InputData(object):
                 formation_order = self.interfaces['formation'].unique()
         if 'basement' not in formation_order:
             formation_order = np.append(formation_order, 'basement')
-        print('i am formation number', formation_order)
 
         self.interfaces['formation'] = self.interfaces['formation'].astype('category')
         self.orientations['formation'] = self.orientations['formation'].astype('category')
@@ -819,7 +814,7 @@ class InputData(object):
 
         self.set_formation_values()
 
-    def set_formation_values(self, formation_values = None,):
+    def _set_formation_values(self, formation_values = None,):
 
         if formation_values is None:
         #     try:
@@ -827,14 +822,12 @@ class InputData(object):
         #         self.formations
         #         print('I am changing formations1')
         #     except AttributeError:
-            print('I am changing formations2', self.interfaces['formation'].cat.categories)
             # set to default series
             self.formations = pn.DataFrame(index=self.interfaces['formation'].cat.categories, columns=[['value', 'formation_number']])
             self.formations['value'] = self.interfaces['formation_number'].unique()
             self.formations['formation_number'] = self.interfaces['formation_number'].unique()
 
         else:
-            print('I am changing formations3')
             if type(formation_values) is dict:
                 self.formations = pn.DataFrame(formation_values)
                 self.formations['formation_number'] = self.interfaces['formation_number'].unique()
@@ -872,11 +865,9 @@ class InputData(object):
             if series_name:
                 self.faults['isFault'] = self.faults.index.isin(series_name)
 
-            print('1')
         except AttributeError:
-            print('2')
+
             if not series_name:
-                print('3')
                 series_name = self.count_faults()
                 self.faults = pn.DataFrame(index=self.series.columns, columns=['isFault'])
                 self.faults['isFault'] = self.faults.index.isin(series_name)
@@ -1059,8 +1050,6 @@ def get_orientation(normal):
     # calculate dip
     dip = np.arccos(normal[2]) / np.pi * 180.
 
-    print(normal)
-
     # calculate dip direction
     # +/+
     if normal[0] >= 0 and normal[1] > 0:
@@ -1138,141 +1127,3 @@ class GridClass(object):
 
         self.values = np.vstack(map(np.ravel, g)).T.astype("float32")
         return self.values
-
-
-
-# DEP
-# # TODO: @Alex documentation
-# class FoliaitionsFromInterfaces:
-#     def __init__(self, geo_data, group_id, mode, verbose=False):
-#         """
-#
-#         Args:
-#             geo_data: InputData object
-#             group_id: (str) identifier for the data group
-#             mode: (str), either 'interf_to_fol' or 'fol_to_interf'
-#             verbose: (bool) adjusts verbosity, default False
-#         """
-#         self.geo_data = geo_data
-#         self.group_id = group_id
-#
-#         if mode is "interf_to_fol":
-#             # df bool filter
-#             self._f = self.geo_data.interfaces["group_id"] == self.group_id
-#             # get formation string
-#             self.formation = self.geo_data.interfaces[self._f]["formation"].values[0]
-#             # df indices
-#             self.interf_i = self.geo_data.interfaces[self._f].index
-#             # get point coordinates from df
-#             self.interf_p = self._get_points()
-#             # get point cloud centroid and normal vector of plane
-#             self.centroid, self.normal = self._fit_plane_svd()
-#             # get dip and azimuth of plane from normal vector
-#             self.dip, self.azimuth, self.polarity = self._get_dip()
-#
-#         elif mode == "fol_to_interf":
-#             self._f = self.geo_data.orientations["group_id"] == self.group_id
-#             self.formation = self.geo_data.orientations[self._f]["formation"].values[0]
-#
-#             # get interface indices
-#             self.interf_i = self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].index
-#             # get interface point coordinates from df
-#             self.interf_p = self._get_points()
-#             self.normal = [self.geo_data.orientations[self._f]["G_x"],
-#                            self.geo_data.orientations[self._f]["G_y"],
-#                            self.geo_data.orientations[self._f]["G_z"]]
-#             self.centroid = [self.geo_data.orientations[self._f]["X"],
-#                              self.geo_data.orientations[self._f]["Y"],
-#                              self.geo_data.orientations[self._f]["Z"]]
-#             # modify all Z of interface points belonging to group_id to fit plane
-#             self._fol_to_p()
-#
-#         else:
-#             print("Mode must be either 'interf_to_fol' or 'fol_to_interf'.")
-#
-#     def _fol_to_p(self):
-#         a, b, c = self.normal
-#         d = -a * self.centroid[0] - b * self.centroid[1] - c * self.centroid[2]
-#         for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"] == self.group_id].iterrows():
-#             # iterate over each point and recalculate Z, set Z
-#             # x, y, z = row["X"], row["Y"], row["Z"]
-#             Z = (a*row["X"] + b*row["Y"] + d)/-c
-#             self.geo_data.interfaces.set_value(i, "Z", Z)
-#
-#     def _get_points(self):
-#         """Returns n points from geo_data.interfaces matching group_id in np.array shape (n, 3)."""
-#         # TODO: zip
-#         x = []
-#         y = []
-#         z = []
-#         for i, row in self.geo_data.interfaces[self.geo_data.interfaces["group_id"]==self.group_id].iterrows():
-#             x.append(float(row["X"]))
-#             y.append(float(row["Y"]))
-#             z.append(float(row["Z"]))
-#         return np.array([x, y, z])
-#
-#     def _fit_plane_svd(self):
-#         """Fit plane to points using singular value decomposition (svd). Returns point cloud centroid [x,y,z] and
-#         normal vector of plane [x,y,z]."""
-#         from numpy.linalg import svd
-#         # https://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points
-#         ctr = self.interf_p.mean(axis=1)  # calculate point cloud centroid [x,y,z]
-#         x = self.interf_p - ctr[:, np.newaxis]
-#         m = np.dot(x, x.T)  # np.cov(x)
-#         return ctr, svd(m)[0][:, -1]
-#
-#     def _get_dip(self):
-#         """Returns dip angle and azimuth of normal vector [x,y,z]."""
-#         dip = np.arccos(self.normal[2] / np.linalg.norm(self.normal)) / np.pi * 180.
-#
-#         azimuth = None
-#         if self.normal[0] >= 0 and self.normal[1] > 0:
-#             azimuth = np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
-#         # border cases where arctan not defined:
-#         elif self.normal[0] > 0 and self.normal[1] == 0:
-#             azimuth = 90
-#         elif self.normal[0] < 0 and self.normal[1] == 0:
-#             azimuth = 270
-#         elif self.normal[1] < 0:
-#             azimuth = 180 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
-#         elif self.normal[1] >= 0 < self.normal[0]:
-#             azimuth = 360 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
-#
-#         if -90 < dip < 90:
-#             polarity = 1
-#         else:
-#             polarity = -1
-#
-#         return dip, azimuth, polarity
-#
-#     def set_fol(self):
-#         """Appends orientation data point for group_id to geo_data.orientations."""
-#         if "group_id" not in self.geo_data.orientations.columns:
-#             self.geo_data.orientations["group_id"] = "NaN"
-#         fol = [self.centroid[0], self.centroid[1], self.centroid[2],
-#                self.dip, self.azimuth, self.polarity,
-#                self.formation, self.group_id]
-#         fol_series = pn.Series(fol, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'group_id'])
-#         fol_df = fol_series.to_frame().transpose()
-#         self.geo_data.set_orientations(fol_df, append=True)
-#
-#     def _get_plane_normal(A, B, C, verbose=False):
-#         """Returns normal vector of plane defined by points A,B,C as [x,y,z]."""
-#         A = np.array(A)
-#         B = np.array(B)
-#         C = np.array(C)
-#
-#         v1 = C - A
-#         v2 = B - A
-#         if verbose:
-#             print("vector C-A", v1)
-#             print("vector B-A", v2)
-#
-#         return np.cross(v1, v2)
-#
-#     def _get_centroid(A, B, C):
-#         """Returns centroid (x,y,z) of three points 3x[x,y,z]."""
-#         X = (A[0] + B[0] + C[0]) / 3
-#         Y = (A[1] + B[1] + C[1]) / 3
-#         Z = (A[2] + B[2] + C[2]) / 3
-#         return X, Y, Z
