@@ -260,7 +260,7 @@ class PlotData2D(object):
             kwargs['cmap'] = self._cmap
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
-        print(plot_block[_a, _b, _c].T, type(plot_block[_a, _b, _c].T))
+     #   print(plot_block[_a, _b, _c].T, type(plot_block[_a, _b, _c].T))
         im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
                    extent=extent_val,
                    interpolation=interpolation, **kwargs)
@@ -795,7 +795,7 @@ class vtkVisualization:
             vertices) is list, 'vertices and simpleces have to be a list of arrays even when only one formation' \
                                'is passed'
         assert 'DefaultBasement' not in formations, 'Remove DefaultBasement from the list of formations'
-        print('I am in set surfaces')
+     #   print('I am in set surfaces')
         for v, s, fn in zip(vertices, simplices, fns):
             act, map, pol = self.create_surface(v, s, fn, alpha)
             self.surf_rend_1.append(act)

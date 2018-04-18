@@ -963,7 +963,7 @@ class TheanoGraph(object):
 
         max_pot_sigm = 2*max_pot - self.scalar_field_at_interfaces_values[0]
         min_pot_sigm = 2*min_pot - self.scalar_field_at_interfaces_values[-1]
-        l = 100 / (max_pot_sigm - min_pot_sigm)
+        l = 1000 / (max_pot_sigm - min_pot_sigm)
       #  l = theano.printing.Print("l")(l)
 
         # A tensor with the values to segment
@@ -977,7 +977,7 @@ class TheanoGraph(object):
             scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
 
         # Loop to segment the distinct lithologies
-        def compare(a, b, n_formation, Zx, l):
+        def compare(a, b, slice_init, Zx, l, n_formation):
             """
             Treshold of the points to interpolate given 2 potential field values. TODO: This function is the one we
             need to change for a sigmoid function
@@ -993,26 +993,30 @@ class TheanoGraph(object):
             """
 
             if True:
-                a = theano.printing.Print("a")(a)
-                b = theano.printing.Print("b")(b)
+              #  a = theano.printing.Print("a")(a)
+              #  b = theano.printing.Print("b")(b)
                # l = 200/ (a - b)
-
-                #n_formation = theano.printing.Print("n_formation")(n_formation)
+                slice_init = theano.printing.Print("slice_init")(slice_init)
+                n_formation_0 = theano.printing.Print("n_formation_0")(n_formation[slice_init:slice_init+1])
+                n_formation_1 = theano.printing.Print("n_formation_1")(n_formation[slice_init+1:slice_init+2])
                 # The 5 rules the slope of the function
-                sigm = ((1. / (1 + T.exp(-l * (Z_x - b))) + 1. / (1 + T.exp(l * (Z_x - a)))) - 1) * n_formation
+                sigm = (1. / (1 + T.exp(-l * (Z_x - a)))) * n_formation_0[0] +\
+                       ((1. / (1 + T.exp(l * (Z_x - b)))) - 1) * n_formation_1[0]
                 if False:
                     sigm = theano.printing.Print("middle point")(sigm)
-                    n_formation = theano.printing.Print("n_formation")(n_formation)
+              #      n_formation = theano.printing.Print("n_formation")(n_formation)
                 return sigm
 
             else:
-                return T.le(Zx, a) * T.ge(Zx, b) * n_formation
+                return T.le(Zx, a) * T.ge(Zx, b) * n_formation_0
+
+        self.n_formation_op_float = theano.printing.Print("n_formation_op")(self.n_formation_op_float)
 
         partial_block, updates2 = theano.scan(
             fn=compare,
             outputs_info=None,
-            sequences=[dict(input=scalar_field_iter, taps=[0, 1]), self.n_formation_op_float],
-            non_sequences=[Z_x, l],
+            sequences=[dict(input=scalar_field_iter, taps=[0, 1]), T.arange(0, 20, 2, dtype='int64')],
+            non_sequences=[Z_x, l, self.n_formation_op_float],
             name='Looping compare',
             profile=False,
             return_list=False)
@@ -1163,7 +1167,7 @@ class TheanoGraph(object):
         # Theano shared
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T[n_form_per_serie_0: n_form_per_serie_1]
         self.n_formation_op = self.n_formation[n_form_per_serie_0: n_form_per_serie_1]
-        self.n_formation_op_float = self.formation_values[n_form_per_serie_0: n_form_per_serie_1 + 1]
+        self.n_formation_op_float = self.formation_values[n_form_per_serie_0*2: (n_form_per_serie_1 + 1)*2]
         self.npf_op = self.npf[n_form_per_serie_0: n_form_per_serie_1]
 
         self.n_universal_eq_T_op = u_grade_iter

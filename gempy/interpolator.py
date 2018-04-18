@@ -654,7 +654,11 @@ class InterpolatorData:
 
             # Unique number assigned to each lithology
             self.tg.n_formation.set_value(self.formation_number)
-            self.tg.formation_values.set_value(self.formation_value)
+
+            formation_value_T = self.formation_value.repeat(2)
+          #  formation_value_T[0] = 0
+            formation_value_T[-1] = 0
+            self.tg.formation_values.set_value(formation_value_T)
             # Number of formations per series. The function is not pretty but the result is quite clear
             self.tg.n_formations_per_serie.set_value(
                 np.insert(self.geo_data_res_no_basement.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0).astype('int32'))
