@@ -532,6 +532,7 @@ class vtkVisualization:
 
             r.AddActor(axe)
             r.ResetCamera()
+        self.set_text()
 
     def render_model(self, **kwargs):
         """
@@ -558,13 +559,28 @@ class vtkVisualization:
         self.interactor.Initialize()
         self.interactor.Start()
 
+    def set_text(self):
+        txt = vtk.vtkTextActor()
+        txt.SetInput("Press H or P to go back to Python \n"
+                     "Press Q to quit")
+        txtprop = txt.GetTextProperty()
+        txtprop.SetFontFamilyToArial()
+        txtprop.SetFontSize(18)
+        txtprop.SetColor(1, 1, 1)
+        txt.SetDisplayPosition(20, 60)
+
+        # assign actor to the renderer
+        self.ren_list[0].AddActor(txt)
+
     def keyCallbacks(self, obj, event):
         key = self.interactor.GetKeySym()
-        print(key)
-        if key is 'h' or 'p':
+
+        if key is 'h' or key is 'p':
+            print('holding... Use vtk.resume to go back to the interactive window')
             self.interactor.ExitCallback()
 
         if key is 'q':
+            print('closing vtk')
             self.close_window()
             # create render window, settings
             self.renwin = vtk.vtkRenderWindow()
@@ -777,7 +793,7 @@ class vtkVisualization:
             vertices) is list, 'vertices and simpleces have to be a list of arrays even when only one formation' \
                                'is passed'
         assert 'DefaultBasement' not in formations, 'Remove DefaultBasement from the list of formations'
-
+        print('I am in set surfaces')
         for v, s, fn in zip(vertices, simplices, fns):
             act, map, pol = self.create_surface(v, s, fn, alpha)
             self.surf_rend_1.append(act)
@@ -990,7 +1006,7 @@ class vtkVisualization:
                 self.ren_list[2].RemoveActor(surf)
                 self.ren_list[3].RemoveActor(surf)
 
-            vertices, simpleces = self.update_surfaces_real_time(self.interp_data)
+            vertices, simpleces = self.update_surfaces_real_time(self.geo_data)
             self.set_surfaces(vertices, simpleces)
 
     def Callback_camera_reset(self):
@@ -1025,7 +1041,7 @@ class vtkVisualization:
 
     def SphereCallbak_move_changes(self, indeces):
 
-        df_changes = self.geo_data.interfaces.iloc[np.atleast_1d(indeces)][['X', 'Y', 'Z', 'formation_number']]
+        df_changes = self.geo_data.interfaces.loc[np.atleast_1d(indeces)][['X', 'Y', 'Z', 'formation_number']]
         for index, df_row in df_changes.iterrows():
             new_center = df_row[['X', 'Y', 'Z']].values
 
@@ -1099,7 +1115,7 @@ class vtkVisualization:
 
     def planesCallback_move_changes(self, indeces):
 
-        df_changes = self.geo_data.orientations.iloc[np.atleast_1d(indeces)][['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'formation_number']]
+        df_changes = self.geo_data.orientations.loc[np.atleast_1d(indeces)][['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'formation_number']]
         for index, new_values_df in df_changes.iterrows():
             new_center = new_values_df[['X', 'Y', 'Z']].values
             new_normal = new_values_df[['G_x', 'G_y', 'G_z']].values
@@ -1291,14 +1307,17 @@ class vtkVisualization:
 
         return cube_axes_actor
 
-    @staticmethod
-    def update_surfaces_real_time(interp_data):
+    def update_surfaces_real_time(self, geo_data):
 
-        lith_block, fault_block = gp.compute_model(interp_data)
+        self.interp_data.update_interpolator(geo_data)
+        lith_block, fault_block = gp.compute_model(self.interp_data, get_potential_at_interfaces=False)
+        print(lith_block)
+        print(fault_block)
+
         try:
-            v_l, s_l = gp.get_surfaces(interp_data, lith_block[1], fault_block[1::2], original_scale=False)
+            v_l, s_l = gp.get_surfaces(self.interp_data, lith_block[1], fault_block[1::2], original_scale=True)
         except IndexError:
-            v_l, s_l = gp.get_surfaces(interp_data, lith_block[1], None, original_scale=False)
+            v_l, s_l = gp.get_surfaces(self.interp_data, lith_block[1], None, original_scale=True)
         return v_l, s_l
 
     @staticmethod
@@ -1427,9 +1446,9 @@ def _create_color_lot(geo_data, cd_rgb):
     lot = {}
     ci = 0  # use as an independent running variable because of fault formations
     # get unique formation_numbers
-    fmt_numbers = np.unique([val for val in geo_data.interfaces['formation_number'].unique()])
+    fmt_numbers = np.unique([val for val in geo_data.interfaces['formation_values'].unique()])
     # get unique fault formation_numbers
-    fault_fmt_numbers = np.unique(geo_data.interfaces[geo_data.interfaces["isFault"] == True]["formation_number"])
+    fault_fmt_numbers = np.unique(geo_data.interfaces[geo_data.interfaces["isFault"] == True]["formation_values"])
     # iterate over all unique formation_numbers
     for i, n in enumerate(fmt_numbers):
         # if its a fault formation set it to black by default

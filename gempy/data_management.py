@@ -101,10 +101,11 @@ class InputData(object):
         self.interfaces['formation'] = self.interfaces['formation'].astype('category')
         self.orientations['formation'] = self.orientations['formation'].astype('category')
 
-        self.set_basement()
 
         # If not provided set default series
         self.update_df()
+
+        self.set_basement()
 
         # Compute gradients given azimuth and dips to plot data
         self.calculate_gradient()
@@ -146,14 +147,17 @@ class InputData(object):
 
         if not 'basement' in self.interfaces['formation'].values:
 
-            columns = {'X': self.extent[0], 'Y': self.extent[2], 'Z': self.extent[4], 'formation':'basement', 'order_series': n_series, 'formation_number': n_formation, 'series': 'Default series'}
+            try:
+                columns = {'X': self.extent[0], 'Y': self.extent[2], 'Z': self.extent[4], 'formation':'basement', 'order_series': n_series, 'formation_number': n_formation, 'series': self.series.columns[-1]}
+            except AttributeError:
+                columns = {'X': self.extent[0], 'Y': self.extent[2], 'Z': self.extent[4], 'formation':'basement', 'order_series': n_series, 'formation_number': n_formation, 'series': 'Default series'}
             for key in columns:
                 self.interfaces.ix[l, str(key)] = columns[key]
                 self.order_table()
             print('here')
            # sef.add_interface(formation='basement', order_series=n_series, formation_number = n_formation)
         else:
-            self.modify_interface(np.nonzero(drop_basement.values)[0], formation='basement', order_series=n_series, formation_number = n_formation)
+            self.modify_interface((drop_basement.index[drop_basement])[0], formation='basement', order_series=n_series, formation_number = n_formation)
             print('there')
 
     def calculate_gradient(self):
@@ -194,7 +198,7 @@ class InputData(object):
 
     def create_orientation_from_interfaces(self, indices):
 
-        selected_points = self.interfaces[['X', 'Y', 'Z']].iloc[indices].values.T
+        selected_points = self.interfaces[['X', 'Y', 'Z']].loc[indices].values.T
 
         center, normal = self.plane_fit(selected_points)
         orientation = get_orientation(normal)
@@ -559,11 +563,8 @@ class InputData(object):
 
         self.interfaces = self.interfaces[~self.interfaces[['X', 'Y', 'Z']].isna().any(1)]
 
-        self.set_formation_number()
+
        # self.set_annotations()
-
-
-
 
         self.set_faults()
         #self.set_annotations()
@@ -573,6 +574,7 @@ class InputData(object):
             self.set_series()
             self.order_table()
 
+        self.set_formations()
         self.interfaces.sort_index()
 
     def set_orientations(self, foliat_Dataframe, append=False, order_table=True):
@@ -602,7 +604,7 @@ class InputData(object):
 
         self.orientations = self.orientations[~self.orientations[['X', 'Y', 'Z']].isna().any(1)]
 
-        self.set_formation_number()
+        self.set_formations()
         self.set_faults()
        # self.set_annotations()
 
@@ -726,7 +728,7 @@ class InputData(object):
         return self.series
 
     def update_df(self, series_distribution=None, order=None):
-
+        self.set_basement()
         self.set_series(series_distribution=series_distribution, order=order)
 
         faults_series = self.count_faults()
@@ -734,29 +736,105 @@ class InputData(object):
 
         self.reset_indices()
 
-        self.set_formation_number()
-
-        self.set_basement()
 
         self.order_table()
-
+        self.set_formations()
         self.set_fault_relation()
 
         #self.set_annotations()
 
-    def set_formation_values(self, formation_values = None,):
+
+    def set_formations(self, formation_values = None, formation_order = None):
+
+        self.interfaces['formation'] = self.interfaces['formation'].astype('category')
+        self.orientations['formation'] = self.orientations['formation'].astype('category')
+
+        if formation_order is None:
+            try:
+                # Check if there is already a df
+                formation_order = self.formations.index
+
+            except AttributeError:
+                formation_order = self.interfaces['formation'].cat.categories
+
+        if 'basement' not in formation_order:
+            formation_order = np.append(formation_order, 'basement')
 
         if formation_values is None:
             try:
                 # Check if there is already a df
-                self.formations
+                formation_values = self.formations['value'].squeeze()
+
             except AttributeError:
-                # set to default series
-                self.formations = pn.DataFrame(index=self.interfaces['formation'].cat.categories, columns=[['value', 'formation_number']])
-                self.formations['value'] = self.interfaces['formation_number'].unique()
-                self.formations['formation_number'] = self.interfaces['formation_number'].unique()
+                formation_values = np.arange(1, formation_order.shape[0]+1)
+
+        if np.atleast_1d(formation_values).shape[0] < np.atleast_1d(formation_order).shape[0]:
+            formation_values = np.append(formation_values, formation_values.max()+1)
+
+        self.formations = pn.DataFrame(index=formation_order,
+                                       columns=[['value', 'formation_number']])
+
+        self.formations['value'] = formation_values
+        self.formations['formation_number'] = np.arange(1, self.formations.shape[0]+1)
+
+        self.interfaces['formation_number'] = self.interfaces['formation'].map(self.formations.iloc[:, 1])
+        self.orientations['formation_number'] = self.orientations['formation'].map(self.formations.iloc[:, 1])
+
+        self.interfaces['formation_value'] = self.interfaces['formation'].map(self.formations.iloc[:, 0])
+        self.orientations['formation_value'] = self.orientations['formation'].map(self.formations.iloc[:, 0])
+
+
+    def set_formation_number(self, formation_order=None):
+        """
+        Set a unique number to each formation. NOTE: this method is getting deprecated since the user does not need
+        to know it and also now the numbers must be set in the order of the series as well. Therefore this method
+        has been moved to the interpolator class as preprocessing
+
+        Returns:
+            Column in the interfaces and orientations dataframes
+        """
+        #
+
+        if formation_order is None:
+            try:
+                formation_order = self.formations.index
+            except AttributeError:
+                formation_order = self.interfaces['formation'].unique()
+        if 'basement' not in formation_order:
+            formation_order = np.append(formation_order, 'basement')
+        print('i am formation number', formation_order)
+
+        self.interfaces['formation'] = self.interfaces['formation'].astype('category')
+        self.orientations['formation'] = self.orientations['formation'].astype('category')
+
+        # formation_order = self.interfaces["formation"].unique()
+        self.interfaces['formation'].cat.reorder_categories(formation_order, inplace=True)
+
+        self.orientations['formation'].cat.reorder_categories(
+            formation_order[np.in1d(formation_order, self.orientations['formation'].cat.categories)],
+            inplace=True)
+
+        self.interfaces['formation_number'] = self.interfaces['formation'].cat.codes + 1
+        self.orientations['formation_number'] = self.orientations['formation'].cat.codes + 1
+
+        self.set_formation_values()
+
+    def set_formation_values(self, formation_values = None,):
+
+        if formation_values is None:
+        #     try:
+        #         # Check if there is already a df
+        #         self.formations
+        #         print('I am changing formations1')
+        #     except AttributeError:
+            print('I am changing formations2', self.interfaces['formation'].cat.categories)
+            # set to default series
+            self.formations = pn.DataFrame(index=self.interfaces['formation'].cat.categories, columns=[['value', 'formation_number']])
+            self.formations['value'] = self.interfaces['formation_number'].unique()
+            self.formations['formation_number'] = self.interfaces['formation_number'].unique()
 
         else:
+            print('I am changing formations3')
             if type(formation_values) is dict:
                 self.formations = pn.DataFrame(formation_values)
                 self.formations['formation_number'] = self.interfaces['formation_number'].unique()
@@ -765,7 +843,7 @@ class InputData(object):
                 self.formations['formation_number'] = self.interfaces['formation_number'].unique()
 
             elif type(np.ndarray):
-                self.formations['values'] = formation_values
+                self.formations['value'] = formation_values
             else:
                 raise AttributeError('formation_values must be a dictionary, a Dataframe or array, see Docstring for more information')
 
@@ -807,40 +885,6 @@ class InputData(object):
         self.orientations.loc[:, 'isFault'] = self.orientations['series'].isin(self.faults.index[self.faults['isFault']])
 
         self.n_faults = self.faults['isFault'].sum()
-
-    def set_formation_number(self, formation_order=None):
-        """
-        Set a unique number to each formation. NOTE: this method is getting deprecated since the user does not need
-        to know it and also now the numbers must be set in the order of the series as well. Therefore this method
-        has been moved to the interpolator class as preprocessing
-
-        Returns:
-            Column in the interfaces and orientations dataframes
-        """
-        #
-
-        if formation_order is None:
-            try:
-                formation_order = self.formations.index
-            except AttributeError:
-                formation_order = self.interfaces['formation'].unique()
-        if 'basement' not in formation_order:
-            formation_order = np.append(formation_order, 'basement')
-
-        self.interfaces['formation'] = self.interfaces['formation'].astype('category')
-        self.orientations['formation'] = self.orientations['formation'].astype('category')
-
-        # formation_order = self.interfaces["formation"].unique()
-        self.interfaces['formation'].cat.reorder_categories(formation_order, inplace=True)
-
-        self.orientations['formation'].cat.reorder_categories(
-            formation_order[np.in1d(formation_order, self.orientations['formation'].cat.categories)],
-            inplace=True)
-
-        self.interfaces['formation_number'] = self.interfaces['formation'].cat.codes + 1
-        self.orientations['formation_number'] = self.orientations['formation'].cat.codes + 1
-
-        self.set_formation_values()
 
     def set_annotations(self):
         """
@@ -900,7 +944,7 @@ class InputData(object):
         # Give formation_number
         if not 'formation_number' in self.interfaces.columns or not 'formation_number' in self.orientations.columns:
 
-            self.set_formation_number()
+            self.set_formations()
 
         # We order the pandas table by formation (also by series in case something weird happened)
         self.interfaces.sort_values(by=['order_series', 'formation_number'],

@@ -58,17 +58,18 @@ class vtk_plot():
     def get_original_geo_data(self):
         return self._original_df
 
-    def vtk_resume(self):
+    def resume(self):
         self.vv.interactor.Start()
 
-    def vtk_close(self):
+    def close(self):
         self.vv.close_window()
 
-    def vtk_restart(self):
+    def restart(self):
         self.vv.close_window()
+
         self.vv = vtkVisualization(self.geo_data, bg_color=self.bg_color)
 
-    def vtk_set_geo_data(self, geo_data):
+    def set_geo_data(self, geo_data):
         self.geo_data = geo_data
 
     def plot_surfaces_3D(self, vertices_l, simplices_l,
@@ -117,16 +118,16 @@ class vtk_plot():
 
     def set_real_time_on(self, interp_data):
 
-        self.vtk_restart()
-
-        self.geo_data = interp_data.geo_data_res
-        self.real_time = True
+        #self.geo_data = interp_data.geo_data_res
+        self.restart()
+        #self.vv.geo_data = interp_data.geo_data_res
         self.vv.interp_data = interp_data
+        self.vv.real_time = True
 
     def plot_surfaces_3D_real_time(self, interp_data, vertices_l, simplices_l,
                                    # formations_names_l, formation_numbers_l,
                                     plot_data=True, posterior=None, samples=None,
-                                   ):
+                                   **kwargs):
         """
         Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.
         IMPORTANT NOTE it is highly recommended to have the flag fast_run in the theano optimization. Also note that the
@@ -147,6 +148,14 @@ class vtk_plot():
             None
         """
         assert isinstance(interp_data, gempy.InterpolatorData), 'The object has to be instance of the InterpolatorInput'
+      #  self.set_real_time_on(interp_data)
+
+       # assert _np.max(vertices_l[0]) < 1.5, 'Real time plot only works with rescaled data. Change the original scale flag' \
+       #                                      'in get surfaces to False'
+
+        # self.interp_data = interp_data
+        # self.geo_data = interp_data.geo_data_res
+        # self.real_time = True
         self.set_real_time_on(interp_data)
 
         self.vv.set_surfaces(vertices_l, simplices_l,
@@ -165,11 +174,11 @@ class vtk_plot():
 
             self.vv.create_slider_rep(samp_i, samp_f, samp_f)
 
-        self.interp_data = interp_data
         if plot_data:
             self.vv.set_interfaces()
             self.vv.set_orientations()
-        self.vv.render_model(size=self.size, fullscreen=self.fullscreen)
+
+        self.vv.render_model(**kwargs)
 
     def move_interface(self, new_df, ):
 
@@ -403,12 +412,24 @@ class vtk_plot():
                 else:
                     print('something went wrong')
 
+        for surf in self.vv.surf_rend_1:
+            self.vv.ren_list[0].RemoveActor(surf)
+            self.vv.ren_list[1].RemoveActor(surf)
+            self.vv.ren_list[2].RemoveActor(surf)
+            self.vv.ren_list[3].RemoveActor(surf)
+
+        #self.vv.interp_data.update_interpolator(self.geo_data)
+        vertices, simpleces = self.vv.update_surfaces_real_time(self.vv.geo_data)
+        self.vv.set_surfaces(vertices, simpleces)
+
         self.vv.interactor.Render()
 
-    def vtk_observe_df(self, itype='all'):
+    def observe_df(self, geo_data = None, itype='all'):
+        if not geo_data:
+            geo_data = self.geo_data
 
-        self._original_df = copy.deepcopy(gempy.get_data(self.geo_data, itype=itype))
-        qgrid_widget = self.geo_data.interactive_df_open(itype=itype)
+        self._original_df = copy.deepcopy(gempy.get_data(geo_data, itype=itype))
+        qgrid_widget = geo_data.interactive_df_open(itype=itype)
         qgrid_widget.observe(self.qgrid_callBack, names=['_df'])
         return qgrid_widget
 
