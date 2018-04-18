@@ -1,0 +1,1034 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>gempy_front &#8212; GemPy rc documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'rc',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/gempy_squared.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for gempy_front</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This file is part of gempy.</span>
+
+<span class="sd">    gempy is free software: you can redistribute it and/or modify</span>
+<span class="sd">    it under the terms of the GNU General Public License as published by</span>
+<span class="sd">    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">    (at your option) any later version.</span>
+
+<span class="sd">    Foobar is distributed in the hope that it will be useful,</span>
+<span class="sd">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">    GNU General Public License for more details.</span>
+
+<span class="sd">    You should have received a copy of the GNU General Public License</span>
+<span class="sd">    along with gempy.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+
+<span class="sd">    Module with classes and methods to perform implicit regional modelling based on</span>
+<span class="sd">    the potential field method.</span>
+<span class="sd">    Tested on Ubuntu 14</span>
+
+<span class="sd">    Created on 10/10 /2016</span>
+
+<span class="sd">    @author: Miguel de la Varga</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">os</span> <span class="k">import</span> <span class="n">path</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+
+<span class="c1"># This is for sphenix to find the packages</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span> <span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span> <span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">)</span> <span class="p">)</span> <span class="p">)</span> <span class="p">)</span>
+
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">_np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">_pn</span>
+
+<span class="kn">import</span> <span class="nn">copy</span>
+<span class="kn">from</span> <span class="nn">gempy.visualization</span> <span class="k">import</span> <span class="n">PlotData2D</span><span class="p">,</span> <span class="n">steno3D</span><span class="p">,</span> <span class="n">vtkVisualization</span>
+<span class="kn">from</span> <span class="nn">gempy.data_management</span> <span class="k">import</span> <span class="n">InputData</span><span class="p">,</span> <span class="n">GridClass</span>
+<span class="kn">from</span> <span class="nn">gempy.interpolator</span> <span class="k">import</span> <span class="n">InterpolatorData</span>
+<span class="kn">from</span> <span class="nn">gempy.sequential_pile</span> <span class="k">import</span> <span class="n">StratigraphicPile</span>
+<span class="kn">from</span> <span class="nn">gempy.topology</span> <span class="k">import</span> <span class="n">topology_analyze</span> <span class="k">as</span> <span class="n">_topology_analyze</span>
+<span class="kn">from</span> <span class="nn">gempy.utils.geomodeller_integration</span> <span class="k">import</span> <span class="n">ReadGeoModellerXML</span> <span class="k">as</span> <span class="n">_ReadGeoModellerXML</span>
+<span class="kn">import</span> <span class="nn">gempy.posterior_analysis</span> <span class="k">as</span> <span class="nn">pa</span> <span class="c1"># So far we use this type of import because the other one makes a copy and blows up some asserts</span>
+
+
+<div class="viewcode-block" id="compute_model"><a class="viewcode-back" href="../code.html#gempy_front.compute_model">[docs]</a><span class="k">def</span> <span class="nf">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;geology&#39;</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">get_potential_at_interfaces</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes the geological model.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interp_data (gempy.DataManagement.InterpolatorInput): Rescaled data.</span>
+<span class="sd">        u_grade (list): grade of the polynomial for the universal part of the Kriging interpolations. The value has to</span>
+<span class="sd">        be either 0, 3 or 9 (number of equations) and the length has to be the number of series. By default the value</span>
+<span class="sd">        depends on the number of points given as input to try to avoid singular matrix. NOTE: if during the computation</span>
+<span class="sd">        of the model a singular matrix is returned try to reduce the u_grade of the series.</span>
+<span class="sd">        get_potential_at_interfaces (bool): Get potential at interfaces</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        numpy.array: if compute_all was chosen in gempy.DataManagement.InterpolatorInput, the first</span>
+<span class="sd">        row will be the lithology block model, the second the potential field and the third the fault</span>
+<span class="sd">        network block. if compute_all was False only the lithology block model will be computed. In</span>
+<span class="sd">        addition if get_potential_at_interfaces is True, the value of the potential field at each of</span>
+<span class="sd">        the interfaces is given as well</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="s1">&#39;th_fn&#39;</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">th_fn</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">compile_th_fn</span><span class="p">(</span><span class="n">output</span><span class="o">=</span><span class="n">output</span><span class="p">)</span>
+
+    <span class="n">i</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">get_input_data</span><span class="p">(</span><span class="n">u_grade</span><span class="o">=</span><span class="n">u_grade</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="s1">&#39;geology&#39;</span><span class="p">:</span>
+        <span class="n">lith_matrix</span><span class="p">,</span> <span class="n">fault_matrix</span><span class="p">,</span> <span class="n">potential_at_interfaces</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">th_fn</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span>
+        <span class="c1"># TODO check if this is necessary yet</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lith_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">_np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">lith_matrix</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">_np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">fault_matrix</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span> <span class="o">=</span> <span class="n">potential_at_interfaces</span>
+
+        <span class="k">if</span> <span class="n">get_potential_at_interfaces</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lith_matrix</span><span class="p">,</span> <span class="n">fault_matrix</span><span class="p">,</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lith_matrix</span><span class="p">,</span> <span class="n">fault_matrix</span>
+
+    <span class="c1"># TODO this should be a flag read from the compilation I guess</span>
+    <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="s1">&#39;gravity&#39;</span><span class="p">:</span>
+        <span class="c1"># TODO make asserts</span>
+        <span class="n">lith_matrix</span><span class="p">,</span> <span class="n">fault_matrix</span><span class="p">,</span> <span class="n">potential_at_interfaces</span><span class="p">,</span> <span class="n">grav</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">th_fn</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">lith_matrix</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="n">_np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">lith_matrix</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">_np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">fault_matrix</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span> <span class="o">=</span> <span class="n">potential_at_interfaces</span>
+
+        <span class="k">if</span> <span class="n">get_potential_at_interfaces</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lith_matrix</span><span class="p">,</span> <span class="n">fault_matrix</span><span class="p">,</span> <span class="n">grav</span><span class="p">,</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">lith_matrix</span><span class="p">,</span> <span class="n">fault_matrix</span><span class="p">,</span> <span class="n">grav</span></div>
+
+
+<div class="viewcode-block" id="create_data"><a class="viewcode-back" href="../code.html#gempy_front.create_data">[docs]</a><span class="k">def</span> <span class="nf">create_data</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Method to create a InputData object. It is analogous to gempy.InputData()</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        extent (list or array):  [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data</span>
+<span class="sd">         and default of for the grid class.</span>
+<span class="sd">        resolution (list or array): [nx, ny, nz]. Resolution for the visualization of data</span>
+<span class="sd">         and default of for the grid class.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        Resolution ((Optional[list])): [nx, ny, nz]. Defaults to 50</span>
+<span class="sd">        path_i: Path to the data bases of interfaces. Default os.getcwd(),</span>
+<span class="sd">        path_f: Path to the data bases of orientations. Default os.getcwd()</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        GeMpy.DataManagement: Object that encapsulate all raw data of the project</span>
+
+
+<span class="sd">        dep: self.Plot(GeMpy_core.PlotData): Object to visualize data and results</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">InputData</span><span class="p">(</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="create_from_geomodeller_xml"><a class="viewcode-back" href="../code.html#gempy_front.create_from_geomodeller_xml">[docs]</a><span class="k">def</span> <span class="nf">create_from_geomodeller_xml</span><span class="p">(</span><span class="n">fp</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="n">return_xml</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Creates InputData object from a GeoModeller xml file. Automatically extracts and sets model extent, interface</span>
+<span class="sd">    and orientation data as well as the stratigraphic pile.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        fp (str): Filepath for the GeoModeller xml file to be read.</span>
+<span class="sd">        resolution (tuple, optional): Tuple containing the number of voxels in dimensions (x,y,z). Defaults to 50.</span>
+<span class="sd">        return_xml (bool, optional): Toggles returning the ReadGeoModellerXML instance to leverage further info from the</span>
+<span class="sd">            xml file (e.g. for stratigraphic pile ordering). Defaults to True.</span>
+<span class="sd">        **kwargs: Keyword arguments for create_data function.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        gp.data_management.InputData</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gmx</span> <span class="o">=</span> <span class="n">_ReadGeoModellerXML</span><span class="p">(</span><span class="n">fp</span><span class="p">)</span>  <span class="c1"># instantiate parser class with filepath of xml</span>
+
+    <span class="c1"># instantiate InputData object with extent and resolution</span>
+    <span class="n">geo_data</span> <span class="o">=</span> <span class="n">create_data</span><span class="p">(</span><span class="n">gmx</span><span class="o">.</span><span class="n">extent</span><span class="p">,</span> <span class="n">resolution</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+    <span class="c1"># set interface and orientation dataframes</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span> <span class="o">=</span> <span class="n">gmx</span><span class="o">.</span><span class="n">interfaces</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">orientations</span> <span class="o">=</span> <span class="n">gmx</span><span class="o">.</span><span class="n">orientations</span>
+
+    <span class="c1"># interf = gmx.get_interfaces_df()</span>
+    <span class="c1"># orient = gmx.get_orientation_df()</span>
+    <span class="c1"># if interf is None or orient is None:</span>
+    <span class="c1">#     raise ValueError(&quot;No 3D data stored in given XML file, can&#39;t extract interfaces or orientations.&quot;)</span>
+    <span class="c1"># else:</span>
+    <span class="c1">#     geo_data.interfaces = interf</span>
+    <span class="c1">#     geo_data.orientations = orient</span>
+    <span class="c1">#</span>
+    <span class="c1"># # this seems to fuck things up so far:</span>
+    <span class="c1"># for f in gmx.faults:</span>
+    <span class="c1">#     gmx.series_distribution[f] = f</span>
+    <span class="c1">#</span>
+    <span class="c1"># try:  # try to set series ordering and stuff, if fails (because the xml files are fucked up) tell user to do it manually</span>
+    <span class="c1">#     set_series(geo_data, gmx.series_distribution,</span>
+    <span class="c1">#                order_series=list(gmx.faults + gmx.stratigraphic_column),</span>
+    <span class="c1">#                order_formations=gmx.get_order_formations())</span>
+    <span class="c1"># except AssertionError:</span>
+    <span class="c1">#     print(&quot;Some of the formations given are not in the formations data frame. Therefore, you have to set the series&quot;</span>
+    <span class="c1">#           &quot; order manually.&quot;)</span>
+
+    <span class="k">if</span> <span class="n">return_xml</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">geo_data</span><span class="p">,</span> <span class="n">gmx</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">geo_data</span></div>
+
+
+<div class="viewcode-block" id="data_to_pickle"><a class="viewcode-back" href="../code.html#gempy_front.data_to_pickle">[docs]</a><span class="k">def</span> <span class="nf">data_to_pickle</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies</span>
+<span class="sd">     versions used to export and import the pickle differ it may give problems</span>
+
+<span class="sd">     Args:</span>
+<span class="sd">         path (str): path where save the pickle</span>
+
+<span class="sd">     Returns:</span>
+<span class="sd">         None</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">data_to_pickle</span><span class="p">(</span><span class="n">path</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="export_to_vtk"><a class="viewcode-back" href="../code.html#gempy_front.export_to_vtk">[docs]</a><span class="k">def</span> <span class="nf">export_to_vtk</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">lith_block</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">vertices</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">simplices</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">      Export data to a vtk file for posterior visualizations</span>
+
+<span class="sd">      Args:</span>
+<span class="sd">          geo_data(gempy.InputData): All values of a DataManagement object</span>
+<span class="sd">          block(numpy.array): 3D array containing the lithology block</span>
+<span class="sd">          path (str): path to the location of the vtk</span>
+
+<span class="sd">      Returns:</span>
+<span class="sd">          None</span>
+<span class="sd">      &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">lith_block</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">vtkVisualization</span><span class="o">.</span><span class="n">export_vtk_lith_block</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="s1">&#39;v&#39;</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">vertices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">simplices</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">vtkVisualization</span><span class="o">.</span><span class="n">export_vtk_surfaces</span><span class="p">(</span><span class="n">vertices</span><span class="p">,</span> <span class="n">simplices</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="o">+</span><span class="nb">str</span><span class="p">(</span><span class="s1">&#39;s&#39;</span><span class="p">),</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_series"><a class="viewcode-back" href="../code.html#gempy_front.get_series">[docs]</a><span class="k">def</span> <span class="nf">get_series</span><span class="p">(</span><span class="n">geo_gata</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Args:</span>
+<span class="sd">         geo_data (gempy.DataManagement.InputData object)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Pandas.DataFrame: Return series and formations relations</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">geo_gata</span><span class="o">.</span><span class="n">series</span></div>
+
+
+<div class="viewcode-block" id="get_grid"><a class="viewcode-back" href="../code.html#gempy_front.get_grid">[docs]</a><span class="k">def</span> <span class="nf">get_grid</span><span class="p">(</span><span class="n">geo_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Args:</span>
+<span class="sd">          geo_data (gempy.DataManagement.InputData object)</span>
+
+<span class="sd">     Returns:</span>
+<span class="sd">         numpy.array: Return series and formations relations</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">values</span></div>
+
+
+<span class="k">def</span> <span class="nf">get_resolution</span><span class="p">(</span><span class="n">geo_data</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span>
+
+
+<span class="k">def</span> <span class="nf">get_extent</span><span class="p">(</span><span class="n">geo_data</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span>
+
+
+<div class="viewcode-block" id="get_data"><a class="viewcode-back" href="../code.html#gempy_front.get_data">[docs]</a><span class="k">def</span> <span class="nf">get_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">numeric</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Method that returns the interfaces and orientations pandas Dataframes. Can return both at the same time or only</span>
+<span class="sd">    one of the two</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dtype(str): input data type, either &#39;orientations&#39;, &#39;interfaces&#39; or &#39;all&#39; for both.</span>
+<span class="sd">        verbosity (int): Number of properties shown</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        pandas.core.frame.DataFrame: Data frame with the raw data</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">itype</span><span class="o">=</span><span class="n">dtype</span><span class="p">,</span> <span class="n">numeric</span><span class="o">=</span><span class="n">numeric</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_sequential_pile"><a class="viewcode-back" href="../code.html#gempy_front.get_sequential_pile">[docs]</a><span class="k">def</span> <span class="nf">get_sequential_pile</span><span class="p">(</span><span class="n">geo_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Visualize an interactive stratigraphic pile to move around the formations and the series. IMPORTANT NOTE:</span>
+<span class="sd">    To have the interactive properties it is necessary the use of qt as interactive backend. (In notebook use:</span>
+<span class="sd">    %matplotlib qt5)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_data: gempy.DataManagement.InputData object</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        interactive Matplotlib figure</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">StratigraphicPile</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_kriging_parameters"><a class="viewcode-back" href="../code.html#gempy_front.get_kriging_parameters">[docs]</a><span class="k">def</span> <span class="nf">get_kriging_parameters</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Print the kringing parameters</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interp_data (gempy.DataManagement.InterpolatorInput)</span>
+<span class="sd">        verbose (int): if &gt; 0 print all the shape values as well.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">get_kriging_parameters</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="n">verbose</span><span class="p">)</span></div>
+
+<span class="c1"># =====================================</span>
+<span class="c1"># Functions for the InterpolatorData</span>
+<span class="c1"># =====================================</span>
+<span class="c1"># TODO check that is a interp_data object and if not try to create within the function one from the geo_data</span>
+
+
+<div class="viewcode-block" id="get_th_fn"><a class="viewcode-back" href="../code.html#gempy_front.get_th_fn">[docs]</a><span class="k">def</span> <span class="nf">get_th_fn</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">compute_all</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get theano function</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interp_data (gempy.DataManagement.InterpolatorInput): Rescaled data.</span>
+<span class="sd">         compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and</span>
+<span class="sd">         the block model of faults. If False only return the block model of lithologies. This may be important to speed</span>
+<span class="sd">          up the computation. Default True</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        theano.function: Compiled function if C or CUDA which computes the interpolation given the input data</span>
+<span class="sd">            (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">compile_th_fn</span><span class="p">(</span><span class="n">compute_all</span><span class="o">=</span><span class="n">compute_all</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="get_surfaces"><a class="viewcode-back" href="../code.html#gempy_front.get_surfaces">[docs]</a><span class="k">def</span> <span class="nf">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">potential_lith</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">potential_fault</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">n_formation</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">step_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">original_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    compute vertices and simplices of the interfaces for its vtk visualization or further</span>
+<span class="sd">    analysis</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        potential_lith (numpy.array): 1D numpy array with the solution of the computation of the model</span>
+<span class="sd">         containing the scalar field of potentials (second row of solution)</span>
+<span class="sd">        interp_data (gempy.DataManagement.InterpolatorInput): Interpolator object.</span>
+<span class="sd">        n_formation (int or &#39;all&#39;): Positive integer with the number of the formation of which the surface is returned.</span>
+<span class="sd">         use method get_formation_number() to get a dictionary back with the values</span>
+<span class="sd">        step_size (int): resolution of the method. This is every how many voxels the marching cube method is applied</span>
+<span class="sd">        original_scale (bool): choosing if the coordinates of the vertices are given in the original or the rescaled</span>
+<span class="sd">         coordinates</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        vertices, simpleces</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="s1">&#39;potential_at_interfaces&#39;</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;You need to compute the model first&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_surface</span><span class="p">(</span><span class="n">potential_block</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">pot_int</span><span class="p">,</span> <span class="n">n_formation</span><span class="p">,</span> <span class="n">step_size</span><span class="p">,</span> <span class="n">original_scale</span><span class="p">):</span>
+        <span class="k">assert</span> <span class="n">n_formation</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">,</span> <span class="s1">&#39;Number of the formation has to be positive&#39;</span>
+
+        <span class="c1"># In case the values are separated by series I put all in a vector</span>
+        <span class="n">pot_int</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="kn">from</span> <span class="nn">skimage</span> <span class="k">import</span> <span class="n">measure</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">potential_block</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">pot_int</span><span class="p">[</span><span class="n">n_formation</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="n">pot_int</span><span class="p">[</span><span class="n">n_formation</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">potential_block</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Potential field of the surface is outside the block. Probably is due to float errors&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">potential_block</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;</span> <span class="n">pot_int</span><span class="p">[</span><span class="n">n_formation</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]:</span>
+            <span class="n">pot_int</span><span class="p">[</span><span class="n">n_formation</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">potential_block</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Potential field of the surface is outside the block. Probably is due to float errors&#39;</span><span class="p">)</span>
+
+        <span class="n">vertices_p</span><span class="p">,</span> <span class="n">simplices_p</span><span class="p">,</span> <span class="n">normals</span><span class="p">,</span> <span class="n">values</span> <span class="o">=</span> <span class="n">measure</span><span class="o">.</span><span class="n">marching_cubes_lewiner</span><span class="p">(</span>
+            <span class="n">potential_block</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                    <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                                    <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">]),</span>
+            <span class="n">pot_int</span><span class="p">[</span><span class="n">n_formation</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span>
+            <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span>
+            <span class="n">spacing</span><span class="o">=</span><span class="p">((</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                     <span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                     <span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="o">/</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">]))</span>
+
+        <span class="k">if</span> <span class="n">original_scale</span><span class="p">:</span>
+            <span class="n">vertices_p</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">rescaling_factor</span> <span class="o">*</span> <span class="n">vertices_p</span> <span class="o">+</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">interp_data</span><span class="o">.</span><span class="n">_geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                                                            <span class="n">interp_data</span><span class="o">.</span><span class="n">_geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                                                                            <span class="n">interp_data</span><span class="o">.</span><span class="n">_geo_data</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">]])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vertices_p</span> <span class="o">+=</span> <span class="n">_np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                                   <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                                   <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">]])</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">vertices_p</span><span class="p">,</span> <span class="n">simplices_p</span>
+
+    <span class="n">vertices</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">simplices</span> <span class="o">=</span> <span class="p">[]</span>
+
+    <span class="k">if</span> <span class="n">potential_fault</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="k">assert</span> <span class="nb">len</span><span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">potential_fault</span><span class="p">))</span> <span class="ow">is</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">n_faults</span><span class="p">,</span> <span class="s1">&#39;You need to pass a potential field per fault&#39;</span>
+
+        <span class="n">pot_int</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span><span class="p">[:</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">n_faults</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation_number&#39;</span><span class="p">][</span>
+            <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">v</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">get_surface</span><span class="p">(</span><span class="n">_np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">potential_fault</span><span class="p">)[</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">pot_int</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                                   <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">original_scale</span><span class="o">=</span><span class="n">original_scale</span><span class="p">)</span>
+                <span class="n">vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                <span class="n">simplices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">potential_lith</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">pot_int</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">potential_at_interfaces</span><span class="p">[</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">n_faults</span><span class="p">:]</span>
+
+        <span class="c1"># Compute the vertices of the lithologies</span>
+        <span class="k">if</span> <span class="n">n_formation</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation_number&#39;</span><span class="p">][</span><span class="o">~</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">unique</span><span class="p">():</span>
+                <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">v</span><span class="p">,</span> <span class="n">s</span> <span class="o">=</span> <span class="n">get_surface</span><span class="p">(</span><span class="n">potential_lith</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">pot_int</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span>
+                                       <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">original_scale</span><span class="o">=</span><span class="n">original_scale</span><span class="p">)</span>
+                    <span class="n">vertices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+                    <span class="n">simplices</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">s</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">vertices</span><span class="p">,</span> <span class="n">simplices</span> <span class="o">=</span> <span class="n">get_surface</span><span class="p">(</span><span class="n">potential_lith</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">pot_int</span><span class="p">,</span> <span class="n">n_formation</span><span class="p">,</span>
+                                              <span class="n">step_size</span><span class="o">=</span><span class="n">step_size</span><span class="p">,</span> <span class="n">original_scale</span><span class="o">=</span><span class="n">original_scale</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">vertices</span><span class="p">,</span> <span class="n">simplices</span></div>
+
+
+<div class="viewcode-block" id="plot_surfaces_3D"><a class="viewcode-back" href="../code.html#gempy_front.plot_surfaces_3D">[docs]</a><span class="k">def</span> <span class="nf">plot_surfaces_3D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">vertices_l</span><span class="p">,</span> <span class="n">simplices_l</span><span class="p">,</span>
+                     <span class="c1">#formations_names_l, formation_numbers_l,</span>
+                     <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                     <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1080</span><span class="p">),</span> <span class="n">fullscreen</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">bg_color</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points</span>
+<span class="sd">        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle</span>
+<span class="sd">        formations_names_l (list): Name of the formation of the surfaces</span>
+<span class="sd">        formation_numbers_l (list): formation_numbers (int)</span>
+<span class="sd">        alpha (float): Opacity</span>
+<span class="sd">        plot_data (bool): Default True</span>
+<span class="sd">        size (tuple): Resolution of the window</span>
+<span class="sd">        fullscreen (bool): Launch window in full screen or not</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">vtkVisualization</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">bg_color</span><span class="o">=</span><span class="n">bg_color</span><span class="p">)</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">set_surfaces</span><span class="p">(</span><span class="n">vertices_l</span><span class="p">,</span> <span class="n">simplices_l</span><span class="p">,</span>
+                   <span class="c1">#formations_names_l, formation_numbers_l,</span>
+                    <span class="n">alpha</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">plot_data</span><span class="p">:</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">set_interfaces</span><span class="p">()</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">set_orientations</span><span class="p">()</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">render_model</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">fullscreen</span><span class="o">=</span><span class="n">fullscreen</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">w</span></div>
+
+
+<span class="k">def</span> <span class="nf">set_orientation_from_interfaces</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">indices_array</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+    <span class="k">if</span> <span class="n">_np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">indices_array</span><span class="p">)</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">indices</span> <span class="o">=</span> <span class="n">indices_array</span>
+        <span class="n">form</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+        <span class="k">assert</span> <span class="n">form</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;The interface points must belong to the same formation&#39;</span>
+
+        <span class="n">ori_parameters</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">create_orientation_from_interfaces</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+        <span class="n">geo_data</span><span class="o">.</span><span class="n">add_orientation</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Y</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Z</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                                 <span class="n">dip</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">azimuth</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">polarity</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                                 <span class="n">G_x</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">G_y</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">G_z</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span>
+                                 <span class="n">formation</span><span class="o">=</span><span class="n">form</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">_np</span><span class="o">.</span><span class="n">ndim</span><span class="p">(</span><span class="n">indices_array</span><span class="p">)</span> <span class="ow">is</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">indices</span> <span class="ow">in</span> <span class="n">indices_array</span><span class="p">:</span>
+            <span class="n">form</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">indices</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+            <span class="k">assert</span> <span class="n">form</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;The interface points must belong to the same formation&#39;</span>
+
+            <span class="n">ori_parameters</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">create_orientation_from_interfaces</span><span class="p">(</span><span class="n">indices</span><span class="p">)</span>
+            <span class="n">geo_data</span><span class="o">.</span><span class="n">add_orientation</span><span class="p">(</span><span class="n">X</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">Y</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">Z</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span>
+                                     <span class="n">dip</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">3</span><span class="p">],</span> <span class="n">azimuth</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">4</span><span class="p">],</span> <span class="n">polarity</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">5</span><span class="p">],</span>
+                                     <span class="n">G_x</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">6</span><span class="p">],</span> <span class="n">G_y</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">7</span><span class="p">],</span> <span class="n">G_z</span><span class="o">=</span><span class="n">ori_parameters</span><span class="p">[</span><span class="mi">8</span><span class="p">],</span>
+                                     <span class="n">formation</span><span class="o">=</span><span class="n">form</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="n">get_data</span><span class="p">()</span>
+
+
+<div class="viewcode-block" id="plot_data"><a class="viewcode-back" href="../code.html#gempy_front.plot_data">[docs]</a><span class="k">def</span> <span class="nf">plot_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">data_type</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="n">legend_font_size</span><span class="o">=</span><span class="mi">6</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the projection of the raw data (interfaces and orientations) in 2D following a</span>
+<span class="sd">    specific directions</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        direction(str): xyz. Caartesian direction to be plotted</span>
+<span class="sd">        series(str): series to plot</span>
+<span class="sd">        **kwargs: seaborn lmplot key arguments. (TODO: adding the link to them)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">PlotData2D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+
+    <span class="c1"># TODO saving options</span>
+    <span class="k">return</span> <span class="n">plot</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span> <span class="n">data_type</span><span class="o">=</span><span class="n">data_type</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="n">series</span><span class="p">,</span> <span class="n">legend_font_size</span><span class="o">=</span><span class="n">legend_font_size</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="plot_section"><a class="viewcode-back" href="../code.html#gempy_front.plot_section">[docs]</a><span class="k">def</span> <span class="nf">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">cell_number</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a section of the block model</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cell_number(int): position of the array to plot</span>
+<span class="sd">        direction(str): xyz. Caartesian direction to be plotted</span>
+<span class="sd">        interpolation(str): Type of interpolation of plt.imshow. Default &#39;none&#39;.  Acceptable values are &#39;none&#39;</span>
+<span class="sd">        ,&#39;nearest&#39;, &#39;bilinear&#39;, &#39;bicubic&#39;,</span>
+<span class="sd">        &#39;spline16&#39;, &#39;spline36&#39;, &#39;hanning&#39;, &#39;hamming&#39;, &#39;hermite&#39;, &#39;kaiser&#39;,</span>
+<span class="sd">        &#39;quadric&#39;, &#39;catrom&#39;, &#39;gaussian&#39;, &#39;bessel&#39;, &#39;mitchell&#39;, &#39;sinc&#39;,</span>
+<span class="sd">        &#39;lanczos&#39;</span>
+<span class="sd">       **kwargs: imshow keywargs</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">PlotData2D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+    <span class="n">plot</span><span class="o">.</span><span class="n">plot_block_section</span><span class="p">(</span><span class="n">cell_number</span><span class="p">,</span> <span class="n">block</span><span class="o">=</span><span class="n">block</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+    <span class="c1"># TODO saving options</span>
+
+
+<div class="viewcode-block" id="plot_scalar_field"><a class="viewcode-back" href="../code.html#gempy_front.plot_scalar_field">[docs]</a><span class="k">def</span> <span class="nf">plot_scalar_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">potential_field</span><span class="p">,</span> <span class="n">cell_number</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+                      <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="s2">&quot;all&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot a potential field in a given direction.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        cell_number(int): position of the array to plot</span>
+<span class="sd">        potential_field(str): name of the potential field (or series) to plot</span>
+<span class="sd">        n_pf(int): number of the  potential field (or series) to plot</span>
+<span class="sd">        direction(str): xyz. Caartesian direction to be plotted</span>
+<span class="sd">        serie: *Deprecated*</span>
+<span class="sd">        **kwargs: plt.contour kwargs</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">plot</span> <span class="o">=</span> <span class="n">PlotData2D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+    <span class="n">plot</span><span class="o">.</span><span class="n">plot_scalar_field</span><span class="p">(</span><span class="n">potential_field</span><span class="p">,</span> <span class="n">cell_number</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="n">N</span><span class="p">,</span>
+                              <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">,</span>  <span class="n">plot_data</span><span class="o">=</span><span class="n">plot_data</span><span class="p">,</span> <span class="n">series</span><span class="o">=</span><span class="n">series</span><span class="p">,</span>
+                              <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="plot_data_3D"><a class="viewcode-back" href="../code.html#gempy_front.plot_data_3D">[docs]</a><span class="k">def</span> <span class="nf">plot_data_3D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot in vtk all the input data of a model</span>
+<span class="sd">    Args:</span>
+<span class="sd">        geo_data (gempy.DataManagement.InputData): Input data of the model</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">vv</span> <span class="o">=</span> <span class="n">vtkVisualization</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+    <span class="n">vv</span><span class="o">.</span><span class="n">set_interfaces</span><span class="p">()</span>
+    <span class="n">vv</span><span class="o">.</span><span class="n">set_orientations</span><span class="p">()</span>
+    <span class="n">vv</span><span class="o">.</span><span class="n">render_model</span><span class="p">()</span>
+    <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<div class="viewcode-block" id="plot_surfaces_3D_real_time"><a class="viewcode-back" href="../code.html#gempy_front.plot_surfaces_3D_real_time">[docs]</a><span class="k">def</span> <span class="nf">plot_surfaces_3D_real_time</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">vertices_l</span><span class="p">,</span> <span class="n">simplices_l</span><span class="p">,</span>
+                     <span class="c1">#formations_names_l, formation_numbers_l,</span>
+                     <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">posterior</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">samples</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">1920</span><span class="p">,</span> <span class="mi">1080</span><span class="p">),</span> <span class="n">fullscreen</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.</span>
+<span class="sd">    IMPORTANT NOTE it is highly recommended to have the flag fast_run in the theano optimization. Also note that the</span>
+<span class="sd">    time needed to compute each model increases linearly with every potential field (i.e. fault or discontinuity). It</span>
+<span class="sd">    may be better to just modify each potential field individually to increase the speed (See gempy.select_series).</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points</span>
+<span class="sd">        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle</span>
+<span class="sd">        formations_names_l (list): Name of the formation of the surfaces</span>
+<span class="sd">        formation_numbers_l (list): formation_numbers (int)</span>
+<span class="sd">        alpha (float): Opacity</span>
+<span class="sd">        plot_data (bool): Default True</span>
+<span class="sd">        size (tuple): Resolution of the window</span>
+<span class="sd">        fullscreen (bool): Launch window in full screen or not</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">InterpolatorData</span><span class="p">),</span> <span class="s1">&#39;The object has to be instance of the InterpolatorInput&#39;</span>
+    <span class="n">w</span> <span class="o">=</span> <span class="n">vtkVisualization</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="p">,</span> <span class="n">real_time</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">set_surfaces</span><span class="p">(</span><span class="n">vertices_l</span><span class="p">,</span> <span class="n">simplices_l</span><span class="p">,</span>
+                   <span class="c1">#formations_names_l, formation_numbers_l,</span>
+                    <span class="n">alpha</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">posterior</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">posterior</span><span class="p">,</span> <span class="n">pa</span><span class="o">.</span><span class="n">Posterior</span><span class="p">),</span> <span class="s1">&#39;The object has to be instance of the Posterior class&#39;</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">post</span> <span class="o">=</span> <span class="n">posterior</span>
+        <span class="k">if</span> <span class="n">samples</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">samp_i</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">samp_f</span> <span class="o">=</span> <span class="n">samples</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">samp_i</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="n">samp_f</span> <span class="o">=</span> <span class="n">posterior</span><span class="o">.</span><span class="n">n_iter</span>
+
+        <span class="n">w</span><span class="o">.</span><span class="n">create_slider_rep</span><span class="p">(</span><span class="n">samp_i</span><span class="p">,</span> <span class="n">samp_f</span><span class="p">,</span> <span class="n">samp_f</span><span class="p">)</span>
+
+    <span class="n">w</span><span class="o">.</span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">interp_data</span>
+    <span class="k">if</span> <span class="n">plot_data</span><span class="p">:</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">set_interfaces</span><span class="p">()</span>
+        <span class="n">w</span><span class="o">.</span><span class="n">set_orientations</span><span class="p">()</span>
+    <span class="n">w</span><span class="o">.</span><span class="n">render_model</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="n">size</span><span class="p">,</span> <span class="n">fullscreen</span><span class="o">=</span><span class="n">fullscreen</span><span class="p">)</span></div>
+
+
+<span class="k">def</span> <span class="nf">precomputations_gravity</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">n_chunck</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">densities</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="nb">getattr</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="s1">&#39;geophy&#39;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;You need to set a geophysical object first. See set_geophysics_obj&#39;</span><span class="p">)</span>
+
+    <span class="n">tz</span><span class="p">,</span> <span class="n">select</span> <span class="o">=</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geophy</span><span class="o">.</span><span class="n">compute_gravity</span><span class="p">(</span><span class="n">n_chunck</span><span class="p">)</span>
+    <span class="n">interp_data</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">set_z_comp</span><span class="p">(</span><span class="n">tz</span><span class="p">,</span> <span class="n">select</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">densities</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">set_densities</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">densities</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">tz</span><span class="p">,</span> <span class="n">select</span>
+
+
+<div class="viewcode-block" id="read_pickle"><a class="viewcode-back" href="../code.html#gempy_front.read_pickle">[docs]</a><span class="k">def</span> <span class="nf">read_pickle</span><span class="p">(</span><span class="n">path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read InputData object from python pickle.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">       path (str): path where save the pickle</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        gempy.DataManagement.InputData: Input Data object</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="kn">import</span> <span class="nn">pickle</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="s1">&#39;rb&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="c1"># The protocol version used is detected automatically, so we do not</span>
+        <span class="c1"># have to specify it.</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">f</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">data</span></div>
+
+
+<div class="viewcode-block" id="rescale_factor_default"><a class="viewcode-back" href="../code.html#gempy_front.rescale_factor_default">[docs]</a><span class="k">def</span> <span class="nf">rescale_factor_default</span><span class="p">(</span><span class="n">geo_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Gives the default rescaling factor for a given geo_data</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_data: Original gempy.DataManagement.InputData object</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        float: rescaling factor</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Check which axis is the largest</span>
+    <span class="n">max_coord</span> <span class="o">=</span> <span class="n">_pn</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">geo_data</span><span class="o">.</span><span class="n">orientations</span><span class="p">,</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span>
+    <span class="n">min_coord</span> <span class="o">=</span> <span class="n">_pn</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">geo_data</span><span class="o">.</span><span class="n">orientations</span><span class="p">,</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">])</span><span class="o">.</span><span class="n">min</span><span class="p">()[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span>
+
+    <span class="c1"># Compute rescaling factor if not given</span>
+    <span class="n">rescaling_factor</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">max_coord</span> <span class="o">-</span> <span class="n">min_coord</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">rescaling_factor</span></div>
+
+
+<div class="viewcode-block" id="rescale_data"><a class="viewcode-back" href="../code.html#gempy_front.rescale_data">[docs]</a><span class="k">def</span> <span class="nf">rescale_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">rescaling_factor</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Rescale the data of a DataManagement object between 0 and 1 due to stability problem of the float32.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_data: Original gempy.DataManagement.InputData object</span>
+<span class="sd">        rescaling_factor(float): factor of the rescaling. Default to maximum distance in one the axis</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        gempy.data_management.InputData: Rescaled data</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># TODO split this function in compute rescaling factor and rescale z</span>
+
+    <span class="c1"># Check which axis is the largest</span>
+    <span class="n">max_coord</span> <span class="o">=</span> <span class="n">_pn</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">geo_data</span><span class="o">.</span><span class="n">orientations</span><span class="p">,</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">])</span><span class="o">.</span><span class="n">max</span><span class="p">()[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span>
+    <span class="n">min_coord</span> <span class="o">=</span> <span class="n">_pn</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">geo_data</span><span class="o">.</span><span class="n">orientations</span><span class="p">,</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">])</span><span class="o">.</span><span class="n">min</span><span class="p">()[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span>
+
+    <span class="c1"># Compute rescalin factor if not given</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">rescaling_factor</span><span class="p">:</span>
+        <span class="n">rescaling_factor</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">_np</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">max_coord</span> <span class="o">-</span> <span class="n">min_coord</span><span class="p">)</span>
+
+    <span class="c1"># Get the centers of every axis</span>
+    <span class="n">centers</span> <span class="o">=</span> <span class="p">(</span><span class="n">max_coord</span> <span class="o">+</span> <span class="n">min_coord</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span>
+
+    <span class="c1"># Change the coordinates of interfaces</span>
+    <span class="n">new_coord_interfaces</span> <span class="o">=</span> <span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span> <span class="o">-</span>
+                            <span class="n">centers</span><span class="p">)</span> <span class="o">/</span> <span class="n">rescaling_factor</span> <span class="o">+</span> <span class="mf">0.5001</span>
+
+    <span class="c1"># Change the coordinates of orientations</span>
+    <span class="n">new_coord_orientations</span> <span class="o">=</span> <span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span> <span class="o">-</span>
+                              <span class="n">centers</span><span class="p">)</span> <span class="o">/</span> <span class="n">rescaling_factor</span> <span class="o">+</span> <span class="mf">0.5001</span>
+
+    <span class="c1"># Rescaling the std in case of stochastic values</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[[</span><span class="s1">&#39;X_std&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_std&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_std&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span>
+            <span class="p">[</span><span class="s1">&#39;X_std&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_std&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_std&#39;</span><span class="p">]])</span> <span class="o">/</span> <span class="n">rescaling_factor</span>
+        <span class="n">geo_data</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s1">&#39;X_std&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_std&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_std&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span>
+            <span class="p">[</span><span class="s1">&#39;X_std&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_std&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_std&#39;</span><span class="p">]])</span> <span class="o">/</span> <span class="n">rescaling_factor</span>
+    <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="c1"># Updating properties</span>
+    <span class="n">new_coord_extent</span> <span class="o">=</span> <span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span> <span class="o">-</span> <span class="n">_np</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">centers</span><span class="p">,</span> <span class="mi">2</span><span class="p">))</span> <span class="o">/</span> <span class="n">rescaling_factor</span> <span class="o">+</span> <span class="mf">0.5001</span>
+
+    <span class="n">geo_data_rescaled</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+    <span class="n">geo_data_rescaled</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">new_coord_interfaces</span>
+    <span class="n">geo_data_rescaled</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">new_coord_orientations</span>
+    <span class="n">geo_data_rescaled</span><span class="o">.</span><span class="n">extent</span> <span class="o">=</span> <span class="n">new_coord_extent</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">()</span>
+
+    <span class="n">geo_data_rescaled</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">grid</span><span class="o">.</span><span class="n">values</span> <span class="o">-</span> <span class="n">centers</span><span class="o">.</span><span class="n">as_matrix</span><span class="p">())</span> <span class="o">/</span> <span class="n">rescaling_factor</span> <span class="o">+</span> <span class="mf">0.5001</span>
+
+    <span class="c1"># Saving useful values for later</span>
+    <span class="n">geo_data_rescaled</span><span class="o">.</span><span class="n">rescaling_factor</span> <span class="o">=</span> <span class="n">rescaling_factor</span>
+
+    <span class="k">return</span> <span class="n">geo_data_rescaled</span></div>
+
+
+<div class="viewcode-block" id="select_series"><a class="viewcode-back" href="../code.html#gempy_front.select_series">[docs]</a><span class="k">def</span> <span class="nf">select_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">series</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Return the formations of a given serie in string</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        series: list of int or list of str</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">         formations of a given serie in string separeted by |</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">new_geo_data</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">series</span><span class="p">)</span> <span class="o">==</span> <span class="nb">int</span> <span class="ow">or</span> <span class="nb">type</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="n">new_geo_data</span><span class="o">.</span><span class="n">interfaces</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">series</span><span class="p">)]</span>
+        <span class="n">new_geo_data</span><span class="o">.</span><span class="n">orientations</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="n">geo_data</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;order_series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">series</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">series</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">==</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="n">new_geo_data</span><span class="o">.</span><span class="n">interfaces</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">series</span><span class="p">)]</span>
+        <span class="n">new_geo_data</span><span class="o">.</span><span class="n">orientations</span> <span class="o">=</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="n">geo_data</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">series</span><span class="p">)]</span>
+
+    <span class="c1"># Count faults</span>
+    <span class="n">new_geo_data</span><span class="o">.</span><span class="n">set_faults</span><span class="p">(</span><span class="n">new_geo_data</span><span class="o">.</span><span class="n">count_faults</span><span class="p">())</span>
+
+    <span class="c1"># Change the dataframe with the series</span>
+    <span class="n">new_geo_data</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="n">new_geo_data</span><span class="o">.</span><span class="n">series</span><span class="p">[</span><span class="n">new_geo_data</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()]</span>
+    <span class="n">new_geo_data</span><span class="o">.</span><span class="n">set_formation_number</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">new_geo_data</span></div>
+
+
+<div class="viewcode-block" id="set_series"><a class="viewcode-back" href="../code.html#gempy_front.set_series">[docs]</a><span class="k">def</span> <span class="nf">set_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">series_distribution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order_series</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">order_formations</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+               <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Method to define the different series of the project.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        series_distribution (dict): with the name of the serie as key and the name of the formations as values.</span>
+<span class="sd">        order(Optional[list]): order of the series by default takes the dictionary keys which until python 3.6 are</span>
+<span class="sd">           random. This is important to set the erosion relations between the different series</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        self.series: A pandas DataFrame with the series and formations relations</span>
+<span class="sd">        self.interfaces: one extra column with the given series</span>
+<span class="sd">        self.orientations: one extra column with the given series</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">set_series</span><span class="p">(</span><span class="n">series_distribution</span><span class="o">=</span><span class="n">series_distribution</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order_series</span><span class="p">)</span>
+    <span class="c1">#geo_data.order_table()</span>
+    <span class="k">if</span> <span class="n">order_formations</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">geo_data</span><span class="o">.</span><span class="n">set_formation_number</span><span class="p">(</span><span class="n">order_formations</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">verbose</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+         <span class="k">return</span> <span class="n">get_sequential_pile</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="kc">None</span></div>
+
+
+<span class="k">def</span> <span class="nf">set_order_formations</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">order_formations</span><span class="p">):</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">set_formation_number</span><span class="p">(</span><span class="n">order_formations</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="set_interfaces"><a class="viewcode-back" href="../code.html#gempy_front.set_interfaces">[docs]</a><span class="k">def</span> <span class="nf">set_interfaces</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">interf_Dataframe</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">     Method to change or append a Dataframe to interfaces in place.</span>
+
+<span class="sd">     Args:</span>
+<span class="sd">         interf_Dataframe: pandas.core.frame.DataFrame with the data</span>
+<span class="sd">         append: Bool: if you want to append the new data frame or substitute it</span>
+<span class="sd">     &quot;&quot;&quot;</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">set_interfaces</span><span class="p">(</span><span class="n">interf_Dataframe</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="n">append</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="set_orientations"><a class="viewcode-back" href="../code.html#gempy_front.set_orientations">[docs]</a><span class="k">def</span> <span class="nf">set_orientations</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">orient_Dataframe</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Method to change or append a Dataframe to orientations in place.  A equivalent Pandas Dataframe with</span>
+<span class="sd">    [&#39;X&#39;, &#39;Y&#39;, &#39;Z&#39;, &#39;dip&#39;, &#39;azimuth&#39;, &#39;polarity&#39;, &#39;formation&#39;] has to be passed.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interf_Dataframe: pandas.core.frame.DataFrame with the data</span>
+<span class="sd">        append: Bool: if you want to append the new data frame or substitute it</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">set_orientations</span><span class="p">(</span><span class="n">orient_Dataframe</span><span class="p">,</span> <span class="n">append</span><span class="o">=</span><span class="n">append</span><span class="p">)</span></div>
+
+
+<span class="c1"># TODO:</span>
+<span class="k">def</span> <span class="nf">set_grid</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">grid</span><span class="p">):</span>
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">grid</span><span class="p">,</span> <span class="n">GridClass</span><span class="p">)</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="n">grid</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">extent</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">_grid_ext</span>
+    <span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">grid</span><span class="o">.</span><span class="n">_grid_res</span>
+
+
+<div class="viewcode-block" id="set_interpolation_data"><a class="viewcode-back" href="../code.html#gempy_front.set_interpolation_data">[docs]</a><span class="k">def</span> <span class="nf">set_interpolation_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    InterpolatorInput is a class that contains all the preprocessing operations to prepare the data to compute the model.</span>
+<span class="sd">    Also is the object that has to be manipulated to vary the data without recompile the modeling function.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_data(gempy.DataManagement.InputData): All values of a DataManagement object</span>
+<span class="sd">        compile_theano (bool): select if the theano function is compiled during the initialization. Default: True</span>
+<span class="sd">        compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and</span>
+<span class="sd">         the block model of faults. If False only return the block model of lithologies. This may be important to speed</span>
+<span class="sd">          up the computation. Default True</span>
+<span class="sd">        u_grade (list): grade of the polynomial for the universal part of the Kriging interpolations. The value has to</span>
+<span class="sd">        be either 0, 3 or 9 (number of equations) and the length has to be the number of series. By default the value</span>
+<span class="sd">        depends on the number of points given as input to try to avoid singular matrix. NOTE: if during the computation</span>
+<span class="sd">        of the model a singular matrix is returned try to reduce the u_grade of the series.</span>
+<span class="sd">        rescaling_factor (float): rescaling factor of the input data to improve the stability when float32 is used. By</span>
+<span class="sd">        defaut the rescaling factor is calculated to obtein values between 0 and 1.</span>
+
+<span class="sd">    Keyword Args:</span>
+<span class="sd">         dtype (&#39;str&#39;): Choosing if using float32 or float64. This is important if is intended to use the GPU</span>
+<span class="sd">         See Also InterpolatorClass kwargs</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        geo_data: Original gempy.DataManagement.InputData object</span>
+<span class="sd">        geo_data_res: Rescaled data. It has the same structure has gempy.InputData</span>
+<span class="sd">        interpolator: Instance of the gempy.DataManagement.InterpolaorInput.InterpolatorClass. See Also</span>
+<span class="sd">         gempy.DataManagement.InterpolaorInput.InterpolatorClass docs</span>
+<span class="sd">         th_fn: Theano function which compute the interpolation</span>
+<span class="sd">        dtype:  type of float</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">in_data</span> <span class="o">=</span> <span class="n">InterpolatorData</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">in_data</span></div>
+
+
+<span class="k">def</span> <span class="nf">set_geophysics_obj</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">ai_extent</span><span class="p">,</span> <span class="n">ai_resolution</span><span class="p">,</span> <span class="n">ai_z</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">range_max</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+    <span class="k">assert</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">InterpolatorData</span><span class="p">),</span> <span class="s1">&#39;The object has to be instance of the InterpolatorInput&#39;</span>
+    <span class="n">interp_data</span><span class="o">.</span><span class="n">create_geophysics_obj</span><span class="p">(</span><span class="n">ai_extent</span><span class="p">,</span> <span class="n">ai_resolution</span><span class="p">,</span> <span class="n">ai_z</span><span class="o">=</span><span class="n">ai_z</span><span class="p">,</span> <span class="n">range_max</span><span class="o">=</span><span class="n">range_max</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">interp_data</span><span class="o">.</span><span class="n">geophy</span>
+
+
+<span class="c1"># =====================================</span>
+<span class="c1"># Functions for Geophysics</span>
+<span class="c1"># =====================================</span>
+<span class="k">def</span> <span class="nf">set_densities</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">densities</span><span class="p">):</span>
+
+    <span class="n">interp_data</span><span class="o">.</span><span class="n">interpolator</span><span class="o">.</span><span class="n">set_densities</span><span class="p">(</span><span class="n">densities</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="topology_compute"><a class="viewcode-back" href="../code.html#gempy_front.topology_compute">[docs]</a><span class="k">def</span> <span class="nf">topology_compute</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">,</span> <span class="n">fault_block</span><span class="p">,</span>
+                     <span class="n">cell_number</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                     <span class="n">compute_areas</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">return_label_block</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Computes model topology and returns graph, centroids and look-up-tables.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_data (gempy.data_management.InputData): GemPy&#39;s data object for the model.</span>
+<span class="sd">        lith_block (np.ndarray): Lithology block model.</span>
+<span class="sd">        fault_block (np.ndarray): Fault block model.</span>
+<span class="sd">    Keyword Args:</span>
+<span class="sd">        cell_number (int): Cell number for 2-D slice topology analysis. Default None.</span>
+<span class="sd">        direction (str): &quot;x&quot;, &quot;y&quot; or &quot;z&quot; specifying the slice direction for 2-D topology analysis. Default None.</span>
+<span class="sd">        compute_areas (bool): If True computes adjacency areas for connected nodes in voxel number. Default False.</span>
+<span class="sd">        return_label_block (bool): If True additionally returns the uniquely labeled block model as np.ndarray. Default False.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        tuple:</span>
+<span class="sd">            G: Region adjacency graph object (skimage.future.graph.rag.RAG) containing the adjacency topology graph</span>
+<span class="sd">                (G.adj).</span>
+<span class="sd">            centroids (dict): Centroid node coordinates as a dictionary with node id&#39;s (int) as keys and (x,y,z) coordinates</span>
+<span class="sd">                as values. {node id (int): tuple(x,y,z)}</span>
+<span class="sd">            labels_unique (np.array): List of all labels used.</span>
+<span class="sd">            lith_to_labels_lot (dict): Dictionary look-up-table to go from lithology id to node id.</span>
+<span class="sd">            labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithology id.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">fault_block</span> <span class="o">=</span> <span class="n">_np</span><span class="o">.</span><span class="n">atleast_2d</span><span class="p">(</span><span class="n">fault_block</span><span class="p">)[::</span><span class="mi">2</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">cell_number</span> <span class="ow">is</span> <span class="kc">None</span> <span class="ow">or</span> <span class="n">direction</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>  <span class="c1"># topology of entire block</span>
+        <span class="n">lb</span> <span class="o">=</span> <span class="n">lith_block</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+        <span class="n">fb</span> <span class="o">=</span> <span class="n">fault_block</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;x&quot;</span><span class="p">:</span>
+        <span class="n">lb</span> <span class="o">=</span> <span class="n">lith_block</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">)[</span><span class="n">cell_number</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+        <span class="n">fb</span> <span class="o">=</span> <span class="n">fault_block</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">)[</span><span class="n">cell_number</span><span class="p">,</span> <span class="p">:,</span> <span class="p">:]</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span>
+        <span class="n">lb</span> <span class="o">=</span> <span class="n">lith_block</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">)[:,</span> <span class="n">cell_number</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="n">fb</span> <span class="o">=</span> <span class="n">fault_block</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">)[:,</span> <span class="n">cell_number</span><span class="p">,</span> <span class="p">:]</span>
+    <span class="k">elif</span> <span class="n">direction</span> <span class="o">==</span> <span class="s2">&quot;z&quot;</span><span class="p">:</span>
+        <span class="n">lb</span> <span class="o">=</span> <span class="n">lith_block</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="n">cell_number</span><span class="p">]</span>
+        <span class="n">fb</span> <span class="o">=</span> <span class="n">fault_block</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">geo_data</span><span class="o">.</span><span class="n">resolution</span><span class="p">)[:,</span> <span class="p">:,</span> <span class="n">cell_number</span><span class="p">]</span>
+
+    <span class="k">return</span> <span class="n">_topology_analyze</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="n">fb</span><span class="p">,</span> <span class="n">geo_data</span><span class="o">.</span><span class="n">n_faults</span><span class="p">,</span> <span class="n">areas_bool</span><span class="o">=</span><span class="n">compute_areas</span><span class="p">,</span> <span class="n">return_block</span><span class="o">=</span><span class="n">return_label_block</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="plot_topology"><a class="viewcode-back" href="../code.html#gempy_front.plot_topology">[docs]</a><span class="k">def</span> <span class="nf">plot_topology</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">centroids</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Plot the topology adjacency graph in 2-D.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        geo_data (gempy.data_management.InputData):</span>
+<span class="sd">        G (skimage.future.graph.rag.RAG):</span>
+<span class="sd">        centroids (dict): Centroid node coordinates as a dictionary with node id&#39;s (int) as keys and (x,y,z) coordinates</span>
+<span class="sd">                as values.</span>
+<span class="sd">    Keyword Args</span>
+<span class="sd">        direction (str): &quot;x&quot;, &quot;y&quot; or &quot;z&quot; specifying the slice direction for 2-D topology analysis. Default None.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Nothing, it just plots.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">PlotData2D</span><span class="o">.</span><span class="n">plot_topo_g</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">G</span><span class="p">,</span> <span class="n">centroids</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="n">direction</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy2.svg" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_theory/motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

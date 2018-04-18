@@ -1,16 +1,33 @@
 Code
-=================
+====
 
 .. toctree::
 
-.. automodule:: GemPy_f
+Gempy Front
+----
+.. automodule:: gempy_front
     :members:
-.. automodule:: DataManagement
+Data Management
+---------------
+.. automodule:: data_management
     :members:
-.. automodule:: theanograf
+Theano Graph
+------------
+.. automodule:: theano_graph
     :members:
-.. automodule:: GeoPhysics
+Geophysics
+----------
+.. automodule:: geophysics
     :members:
-.. automodule:: Visualization
+Topology
+--------
+.. automodule:: topology
     :members:
-
+Posterior Analysis
+------------------
+.. automodule:: posterior_analysis
+    :members:
+Visualization
+-------------
+.. automodule:: visualization
+    :members:

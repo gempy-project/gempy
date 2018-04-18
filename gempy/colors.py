@@ -27,11 +27,12 @@ color_subnames = ['400', '700', '100', '200', '300', '500', '600', '50', '800', 
 
 
 def _create_color_lot(color_names, color_subnames, color_dict_rgb):
-    """Returns color [r,g,b] LOT for formation numbers."""
+    """Returns color [r,g,b] LOT for formation_numbers."""
     lot = {}
     i = 0
     for sn in np.arange(len(color_subnames)):
         for n in np.arange(len(color_names)):
+            #lot[i] = color_dict_rgb[color_names[n]][color_subnames[sn]]
             lot[i] = color_dict_rgb[color_names[n]][color_subnames[sn]]
             i += 1
 
@@ -610,4 +611,4 @@ for key in bounds:
     c.append(color_lot[key])
 
 cmap = matplotlib.colors.ListedColormap(c)
-norm = matplotlib.colors.BoundaryNorm(bounds, cmap.N)
+norm = matplotlib.colors.BoundaryNorm(np.asarray(bounds) - .5, cmap.N)

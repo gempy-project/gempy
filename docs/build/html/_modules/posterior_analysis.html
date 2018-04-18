@@ -1,0 +1,545 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>posterior_analysis &#8212; GemPy rc documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'rc',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/gempy_squared.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for posterior_analysis</h1><div class="highlight"><pre>
+<span></span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    This file is part of gempy.</span>
+
+<span class="sd">    gempy is free software: you can redistribute it and/or modify</span>
+<span class="sd">    it under the terms of the GNU General Public License as published by</span>
+<span class="sd">    the Free Software Foundation, either version 3 of the License, or</span>
+<span class="sd">    (at your option) any later version.</span>
+
+<span class="sd">    gempy is distributed in the hope that it will be useful,</span>
+<span class="sd">    but WITHOUT ANY WARRANTY; without even the implied warranty of</span>
+<span class="sd">    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the</span>
+<span class="sd">    GNU General Public License for more details.</span>
+
+<span class="sd">    You should have received a copy of the GNU General Public License</span>
+<span class="sd">    along with gempy.  If not, see &lt;http://www.gnu.org/licenses/&gt;.</span>
+
+<span class="sd">@author: Alexander Schaaf, Miguel de la Varga</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">warnings</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">pymc</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;pymc (v2) package is not installed. No support for stochastic simulation posterior analysis.&quot;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pn</span>
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">tqdm</span>
+<span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s2">&quot;tqdm package not installed. No support for dynamic progress bars.&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="change_input_data"><a class="viewcode-back" href="../code.html#posterior_analysis.change_input_data">[docs]</a><span class="k">def</span> <span class="nf">change_input_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Changes input data in interp_data to posterior input data at iteration i.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interp_data (gempy.data_management.InterpolationData): An interp_data object with the structure we want to</span>
+<span class="sd">        compute.</span>
+<span class="sd">        i (int): Iteration we want to recompute</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">         gempy.data_management.InterpolationData: interp_data with the data of the given iteration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="c1"># replace interface data</span>
+    <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;input_interf&quot;</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span>
+    <span class="c1"># replace foliation data</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;dip&quot;</span><span class="p">,</span> <span class="s2">&quot;azimuth&quot;</span><span class="p">,</span> <span class="s2">&quot;polarity&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;input_orient&quot;</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s2">&quot;G_x&quot;</span><span class="p">,</span> <span class="s2">&quot;G_y&quot;</span><span class="p">,</span> <span class="s2">&quot;G_z&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;dip&quot;</span><span class="p">,</span> <span class="s2">&quot;azimuth&quot;</span><span class="p">,</span> <span class="s2">&quot;polarity&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="s2">&quot;input_orient&quot;</span><span class="p">)[</span><span class="n">i</span><span class="p">]</span>
+
+    <span class="n">recalc_gradients</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">)</span>
+
+    <span class="c1"># interp_data.geo_data_res = interp_data.rescale_data(interp_data.geo_data_res)</span>
+
+    <span class="c1"># update interpolator</span>
+    <span class="n">interp_data</span><span class="o">.</span><span class="n">update_interpolator</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">interp_data</span></div>
+
+
+<span class="k">def</span> <span class="nf">_change_input_data_old</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">tracename</span><span class="o">=</span><span class="s2">&quot;input_data&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Changes input data in interp_data to posterior input data at iteration i.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        interp_data (gempy.data_management.InterpolationData): An interp_data object with the structure we want to</span>
+<span class="sd">        compute.</span>
+<span class="sd">        i (int): Iteration we want to recompute</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">         gempy.data_management.InterpolationData: interp_data with the data of the given iteration</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="c1"># replace interface data</span>
+    <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">tracename</span><span class="p">)[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+    <span class="c1"># replace foliation data</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;dip&quot;</span><span class="p">,</span> <span class="s2">&quot;azimuth&quot;</span><span class="p">,</span> <span class="s2">&quot;polarity&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">tracename</span><span class="p">)[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s2">&quot;G_x&quot;</span><span class="p">,</span> <span class="s2">&quot;G_y&quot;</span><span class="p">,</span> <span class="s2">&quot;G_z&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;dip&quot;</span><span class="p">,</span> <span class="s2">&quot;azimuth&quot;</span><span class="p">,</span> <span class="s2">&quot;polarity&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">tracename</span><span class="p">)[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">recalc_gradients</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">)</span>
+
+    <span class="c1"># interp_data.geo_data_res = interp_data.rescale_data(interp_data.geo_data_res)</span>
+
+    <span class="c1"># update interpolator</span>
+    <span class="n">interp_data</span><span class="o">.</span><span class="n">update_interpolator</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">interp_data</span>
+
+
+<div class="viewcode-block" id="compute_posterior_models_all"><a class="viewcode-back" href="../code.html#posterior_analysis.compute_posterior_models_all">[docs]</a><span class="k">def</span> <span class="nf">compute_posterior_models_all</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">get_potential_at_interfaces</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes block models from stored input parameters for all iterations.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        db (): loaded pymc database (e.g. hdf5)</span>
+<span class="sd">        interp_data  (gp.data_management.InterpolatorData): GemPy interpolator object</span>
+<span class="sd">        indices (list or np.array): Trace indices specifying which models from the database will be calculated.</span>
+<span class="sd">        u_grade (list, optional):</span>
+<span class="sd">        get_potential_at_interfaces:</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tqdm</span><span class="o">.</span><span class="n">tqdm</span><span class="p">(</span><span class="n">indices</span><span class="p">):</span>
+        <span class="n">interp_data_loop</span> <span class="o">=</span> <span class="n">change_input_data</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+        <span class="n">lb</span><span class="p">,</span> <span class="n">fb</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data_loop</span><span class="p">,</span> <span class="n">output</span><span class="o">=</span><span class="s2">&quot;geology&quot;</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="n">u_grade</span><span class="p">,</span> <span class="n">get_potential_at_interfaces</span><span class="o">=</span><span class="n">get_potential_at_interfaces</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">or</span> <span class="n">i</span> <span class="o">==</span> <span class="n">indices</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+            <span class="n">lbs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">fbs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">fb</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">lbs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">lbs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">lb</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">fbs</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">fbs</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span><span class="n">fb</span><span class="p">,</span> <span class="mi">0</span><span class="p">)),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">lbs</span><span class="p">,</span> <span class="n">fbs</span></div>
+
+
+<div class="viewcode-block" id="compute_probability_lithology"><a class="viewcode-back" href="../code.html#posterior_analysis.compute_probability_lithology">[docs]</a><span class="k">def</span> <span class="nf">compute_probability_lithology</span><span class="p">(</span><span class="n">lith_blocks</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Blocks must be just the lith blocks!&quot;&quot;&quot;</span>
+    <span class="n">lith_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">lith_blocks</span><span class="p">)</span>
+    <span class="c1"># lith_count = np.zeros_like(lith_blocks[0:len(lith_id)])</span>
+    <span class="n">lith_count</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">lith_blocks</span><span class="p">)),</span> <span class="n">lith_blocks</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">l_id</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">lith_id</span><span class="p">):</span>
+        <span class="n">lith_count</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">lith_blocks</span> <span class="o">==</span> <span class="n">l_id</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">lith_prob</span> <span class="o">=</span> <span class="n">lith_count</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">lith_blocks</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">lith_prob</span></div>
+
+
+<div class="viewcode-block" id="calcualte_information_entropy"><a class="viewcode-back" href="../code.html#posterior_analysis.calcualte_information_entropy">[docs]</a><span class="k">def</span> <span class="nf">calcualte_information_entropy</span><span class="p">(</span><span class="n">lith_prob</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates information entropy for the given probability array.&quot;&quot;&quot;</span>
+    <span class="n">ie</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">lith_prob</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lith_prob</span><span class="p">:</span>
+        <span class="n">pm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">masked_equal</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>  <span class="c1"># mask where layer prob is 0</span>
+        <span class="n">ie</span> <span class="o">-=</span> <span class="p">(</span><span class="n">pm</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">ma</span><span class="o">.</span><span class="n">log2</span><span class="p">(</span><span class="n">pm</span><span class="p">))</span><span class="o">.</span><span class="n">filled</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">ie</span></div>
+
+
+<div class="viewcode-block" id="calculate_information_entropy_total"><a class="viewcode-back" href="../code.html#posterior_analysis.calculate_information_entropy_total">[docs]</a><span class="k">def</span> <span class="nf">calculate_information_entropy_total</span><span class="p">(</span><span class="n">ie</span><span class="p">,</span> <span class="n">absolute</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculate total information entropy (float) from an information entropy array.&quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="n">absolute</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ie</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ie</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">ie</span><span class="p">)</span></div>
+
+
+<span class="k">class</span> <span class="nc">Posterior</span><span class="p">:</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dbname</span><span class="p">,</span> <span class="n">pymc_model_f</span><span class="o">=</span><span class="s2">&quot;gempy_model&quot;</span><span class="p">,</span> <span class="n">pymc_topo_f</span><span class="o">=</span><span class="s2">&quot;gempy_topo&quot;</span><span class="p">,</span>
+                 <span class="n">topology</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Posterior database analysis for GemPy-pymc2 hdf5 databases.</span>
+<span class="sd">        Args:</span>
+<span class="sd">            dbname (str): Path of the hdf5 database.</span>
+<span class="sd">            pymc_model_f (str, optional): name of the model output function used (default: &quot;gempy_model).</span>
+<span class="sd">            pymc_topo_f (str, optional): name of the topology output function used (default: &quot;gempy_topo).</span>
+<span class="sd">            topology (bool, optional):  if a topology trace should be loaded from the database (default: False).</span>
+<span class="sd">            verbose (bool, optional): Verbosity switch.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># TODO: Add a method to set the lith_block and fault_block</span>
+
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span> <span class="o">=</span> <span class="n">verbose</span>
+        <span class="c1"># load db</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">db</span> <span class="o">=</span> <span class="n">pymc</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">hdf5</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">dbname</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">getstate</span><span class="p">()[</span><span class="s1">&#39;sampler&#39;</span><span class="p">][</span><span class="s1">&#39;_iter&#39;</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">getstate</span><span class="p">()[</span><span class="s2">&quot;sampler&quot;</span><span class="p">][</span><span class="s2">&quot;_burn&quot;</span><span class="p">]</span>
+        <span class="c1"># get trace names</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">trace_names</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">trace_names</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="c1"># TODO DEP</span>
+        <span class="c1"># get gempy block models</span>
+        <span class="c1"># try:</span>
+        <span class="c1">#     self.lb = self.db.trace(pymc_model_f)[:, :2, :]</span>
+        <span class="c1">#     self.fb = self.db.trace(pymc_model_f)[:, 2:, :]</span>
+        <span class="c1"># except KeyError:</span>
+        <span class="c1">#     print(&quot;No GemPy model trace tallied.&quot;)</span>
+        <span class="c1">#     self.lb = None</span>
+        <span class="c1">#     self.fb = None</span>
+
+        <span class="k">if</span> <span class="n">topology</span><span class="p">:</span>  <span class="c1"># load topology data from database</span>
+            <span class="n">topo_trace</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">trace</span><span class="p">(</span><span class="n">pymc_topo_f</span><span class="p">)[:]</span>
+            <span class="c1"># load graphs</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topo_graphs</span> <span class="o">=</span> <span class="n">topo_trace</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">]</span>
+            <span class="c1"># load centroids</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topo_centroids</span> <span class="o">=</span> <span class="n">topo_trace</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+            <span class="c1"># unique labels</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topo_labels_unique</span> <span class="o">=</span> <span class="n">topo_trace</span><span class="p">[:,</span> <span class="mi">2</span><span class="p">]</span>
+            <span class="c1"># get the look-up-tables</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topo_lith_to_labels_lot</span> <span class="o">=</span> <span class="n">topo_trace</span><span class="p">[:,</span> <span class="mi">3</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topo_labels_to_lith_lot</span> <span class="o">=</span> <span class="n">topo_trace</span><span class="p">[:,</span> <span class="mi">4</span><span class="p">]</span>
+            <span class="k">del</span> <span class="n">topo_trace</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">topo_unique</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topo_unique_freq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topo_unique_ids</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topo_unique_prob</span> <span class="o">=</span> <span class="p">(</span><span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">topo_count_dict</span> <span class="o">=</span> <span class="kc">None</span>
+
+            <span class="bp">self</span><span class="o">.</span><span class="n">topo_analyze</span><span class="p">()</span>
+
+        <span class="c1"># load input data</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">input_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">db</span><span class="o">.</span><span class="n">input_data</span><span class="o">.</span><span class="n">gettrace</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lith_prob</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ie</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ie_total</span> <span class="o">=</span> <span class="kc">None</span>
+
+    <span class="k">def</span> <span class="nf">change_input_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">,</span> <span class="n">i</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Changes input data in interp_data to posterior input data at iteration i.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            interp_data (gempy.data_management.InterpolationData): An interp_data object with the structure we want to</span>
+<span class="sd">            compute.</span>
+<span class="sd">            i (int): Iteration we want to recompute</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">             gempy.data_management.InterpolationData: interp_data with the data of the given iteration</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="c1"># replace interface data</span>
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># replace foliation data</span>
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s2">&quot;G_x&quot;</span><span class="p">,</span> <span class="s2">&quot;G_y&quot;</span><span class="p">,</span> <span class="s2">&quot;G_z&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;dip&quot;</span><span class="p">,</span> <span class="s2">&quot;azimuth&quot;</span><span class="p">,</span> <span class="s2">&quot;polarity&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">recalc_gradients</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">)</span>
+
+        <span class="c1"># update interpolator</span>
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">update_interpolator</span><span class="p">()</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;interp_data parameters changed.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">interp_data</span>
+
+    <span class="c1"># TODO: DEP Use gp.compute_model instead</span>
+    <span class="c1"># def compute_posterior_model(self, interp_data, i):</span>
+    <span class="c1">#     &quot;&quot;&quot;Computes the model with the respective posterior input data. Returns lith block, fault block.&quot;&quot;&quot;</span>
+    <span class="c1">#     self.change_input_data(interp_data, i)</span>
+    <span class="c1">#     return gp.compute_model(interp_data)</span>
+
+
+
+    <span class="k">def</span> <span class="nf">compute_posterior_model_avrg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Computes average posterior model.&quot;&quot;&quot;</span>
+        <span class="n">list_interf</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">list_fol</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span><span class="p">):</span>
+            <span class="n">list_interf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
+            <span class="n">list_fol</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
+
+        <span class="n">interf_avrg</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">list_interf</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">fol_avrg</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">list_fol</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">interf_avrg</span>
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s2">&quot;G_x&quot;</span><span class="p">,</span> <span class="s2">&quot;G_y&quot;</span><span class="p">,</span> <span class="s2">&quot;G_z&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;dip&quot;</span><span class="p">,</span> <span class="s2">&quot;azimuth&quot;</span><span class="p">,</span> <span class="s2">&quot;polarity&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">fol_avrg</span>
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">update_interpolator</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">compute_entropy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Computes the voxel information entropy of stored block models.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">lb</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;No models stored in self.lb, please run &#39;self.compute_posterior_models_all&#39; to generate block&quot;</span> \
+                   <span class="s2">&quot; models for all iterations.&quot;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">lith_prob</span> <span class="o">=</span> <span class="n">compute_probability_lithology</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lb</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ie</span> <span class="o">=</span> <span class="n">calcualte_information_entropy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lith_prob</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ie_total</span> <span class="o">=</span> <span class="n">calculate_information_entropy_total</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ie</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Information Entropy successfully calculated. Stored in self.ie and self.ie_total&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">topo_count_connection</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Counts the amount of times connection between nodes n1 and n2 in all of the topology graphs.&quot;&quot;&quot;</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">for</span> <span class="n">G</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topo_graphs</span><span class="p">:</span>
+            <span class="n">count</span> <span class="o">+=</span> <span class="n">gp</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">check_adjacency</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">count</span>
+
+    <span class="k">def</span> <span class="nf">topo_count_connection_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">):</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">G</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topo_graphs</span><span class="p">:</span>
+            <span class="n">count</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gp</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">check_adjacency</span><span class="p">(</span><span class="n">G</span><span class="p">,</span> <span class="n">n1</span><span class="p">,</span> <span class="n">n2</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">count</span>
+
+    <span class="k">def</span> <span class="nf">topo_count_total_number_of_nodes</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Counts the amount of topology graphs with a certain amount of total nodes.&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topo_count_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topo_graphs</span><span class="p">:</span>
+            <span class="n">c</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">g</span><span class="o">.</span><span class="n">adj</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
+            <span class="k">if</span> <span class="n">c</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">topo_count_dict</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">topo_count_dict</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">topo_count_dict</span><span class="p">[</span><span class="n">c</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+
+    <span class="k">def</span> <span class="nf">topo_analyze</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Analysis of the tallied topology distribution.&quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starting topology analysis. This could take a while (depending on # iterations).&quot;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topo_unique</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topo_unique_freq</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">topo_unique_ids</span> <span class="o">=</span> <span class="n">get_unique_topo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topo_graphs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topo_unique_prob</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">topo_unique_freq</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topo_unique_freq</span><span class="p">)</span>
+        <span class="c1"># count unique node numbers</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">topo_count_total_number_of_nodes</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">topo_sort</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">topo_unique_freq</span><span class="p">)[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Topology analysis completed.&quot;</span><span class="p">)</span>
+
+
+
+
+
+<span class="k">def</span> <span class="nf">find_first_match</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">topo_u</span><span class="p">):</span>
+    <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">t2</span> <span class="ow">in</span> <span class="n">topo_u</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">gp</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">compare_graphs</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">t2</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">index</span>  <span class="c1"># the models match</span>
+        <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+
+
+<span class="k">def</span> <span class="nf">get_unique_topo</span><span class="p">(</span><span class="n">topo_l</span><span class="p">):</span>
+    <span class="c1"># create list for our unique topologies</span>
+    <span class="n">topo_u</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">topo_u_freq</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">topo_u_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty_like</span><span class="p">(</span><span class="n">topo_l</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">n</span><span class="p">,</span> <span class="n">t</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">topo_l</span><span class="p">):</span>
+        <span class="n">i</span> <span class="o">=</span> <span class="n">find_first_match</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">topo_u</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">i</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>  <span class="c1"># is a yet unobserved topology, so append it and initiate frequency</span>
+            <span class="n">topo_u</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+            <span class="n">topo_u_freq</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+            <span class="n">topo_u_ids</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">topo_u</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="k">else</span><span class="p">:</span>  <span class="c1"># is a known topology</span>
+            <span class="n">topo_u_freq</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># 1-up the corresponding frequency</span>
+            <span class="n">topo_u_ids</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="n">i</span>
+
+    <span class="k">return</span> <span class="n">topo_u</span><span class="p">,</span> <span class="n">topo_u_freq</span><span class="p">,</span> <span class="n">topo_u_ids</span>
+
+
+<span class="k">def</span> <span class="nf">get_unique_jaccard</span><span class="p">(</span><span class="n">js</span><span class="p">):</span>
+    <span class="n">j_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">js</span><span class="p">)</span>  <span class="c1"># unique topology states</span>
+
+
+
+<div class="viewcode-block" id="modify_plane_dip"><a class="viewcode-back" href="../code.html#posterior_analysis.modify_plane_dip">[docs]</a><span class="k">def</span> <span class="nf">modify_plane_dip</span><span class="p">(</span><span class="n">dip</span><span class="p">,</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">data_obj</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Modify a dip angle of a plane identified by a group_id, recalculate the gradient and move the points vertically.</span>
+<span class="sd">    Currently only supports the modification of dip angle - azimuth and polarity will stay the same.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        dip (float): Desired dip angle of the plane.</span>
+<span class="sd">        group_id (str): Group id identifying the data points belonging to the plane.</span>
+<span class="sd">        data_obj (:obj:): Data object to be modified (geo_data or interp_data.geo_data_res)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Directly modifies the given data object.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># get foliation and interface data points ids</span>
+    <span class="n">fol_f</span> <span class="o">=</span> <span class="n">data_obj</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;group_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">group_id</span>
+    <span class="n">interf_f</span> <span class="o">=</span> <span class="n">data_obj</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;group_id&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">group_id</span>
+
+    <span class="c1"># get indices</span>
+    <span class="n">interf_i</span> <span class="o">=</span> <span class="n">data_obj</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">interf_f</span><span class="p">]</span><span class="o">.</span><span class="n">index</span>
+    <span class="n">fol_i</span> <span class="o">=</span> <span class="n">data_obj</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="n">fol_f</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+    <span class="c1"># update dip value for orientations</span>
+    <span class="n">data_obj</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">fol_i</span><span class="p">,</span> <span class="s2">&quot;dip&quot;</span><span class="p">,</span> <span class="n">dip</span><span class="p">)</span>
+    <span class="c1"># get azimuth and polarity</span>
+    <span class="n">az</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">fol_i</span><span class="p">][</span><span class="s2">&quot;azimuth&quot;</span><span class="p">])</span>
+    <span class="n">pol</span> <span class="o">=</span> <span class="n">data_obj</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">fol_i</span><span class="p">][</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span>
+
+    <span class="c1"># calculate gradient/normal and modify</span>
+    <span class="n">gx</span><span class="p">,</span> <span class="n">gy</span><span class="p">,</span> <span class="n">gz</span> <span class="o">=</span> <span class="n">calculate_gradient</span><span class="p">(</span><span class="n">dip</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">pol</span><span class="p">)</span>
+    <span class="n">data_obj</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">fol_i</span><span class="p">,</span> <span class="s2">&quot;G_x&quot;</span><span class="p">,</span> <span class="n">gx</span><span class="p">)</span>
+    <span class="n">data_obj</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">fol_i</span><span class="p">,</span> <span class="s2">&quot;G_y&quot;</span><span class="p">,</span> <span class="n">gy</span><span class="p">)</span>
+    <span class="n">data_obj</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">fol_i</span><span class="p">,</span> <span class="s2">&quot;G_z&quot;</span><span class="p">,</span> <span class="n">gz</span><span class="p">)</span>
+
+    <span class="n">normal</span> <span class="o">=</span> <span class="p">[</span><span class="n">gx</span><span class="p">,</span> <span class="n">gy</span><span class="p">,</span> <span class="n">gz</span><span class="p">]</span>
+    <span class="n">centroid</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">float</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="n">fol_f</span><span class="p">][</span><span class="s2">&quot;X&quot;</span><span class="p">]),</span>
+                         <span class="nb">float</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="n">fol_f</span><span class="p">][</span><span class="s2">&quot;Y&quot;</span><span class="p">]),</span>
+                         <span class="nb">float</span><span class="p">(</span><span class="n">data_obj</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="n">fol_f</span><span class="p">][</span><span class="s2">&quot;Z&quot;</span><span class="p">])])</span>
+    <span class="c1"># move points vertically to fit plane</span>
+    <span class="n">move_plane_points</span><span class="p">(</span><span class="n">normal</span><span class="p">,</span> <span class="n">centroid</span><span class="p">,</span> <span class="n">data_obj</span><span class="p">,</span> <span class="n">interf_f</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="move_plane_points"><a class="viewcode-back" href="../code.html#posterior_analysis.move_plane_points">[docs]</a><span class="k">def</span> <span class="nf">move_plane_points</span><span class="p">(</span><span class="n">normal</span><span class="p">,</span> <span class="n">centroid</span><span class="p">,</span> <span class="n">data_obj</span><span class="p">,</span> <span class="n">interf_f</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Moves interface points to fit plane of given normal and centroid in data object.&quot;&quot;&quot;</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">c</span> <span class="o">=</span> <span class="n">normal</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="o">-</span><span class="n">a</span> <span class="o">*</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="n">b</span> <span class="o">*</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">c</span> <span class="o">*</span> <span class="n">centroid</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">data_obj</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">interf_f</span><span class="p">]</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="c1"># iterate over each point and recalculate Z, set Z</span>
+        <span class="n">Z</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;X&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">row</span><span class="p">[</span><span class="s2">&quot;Y&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span> <span class="o">/</span> <span class="o">-</span><span class="n">c</span>
+        <span class="n">data_obj</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="n">Z</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calculate_gradient"><a class="viewcode-back" href="../code.html#posterior_analysis.calculate_gradient">[docs]</a><span class="k">def</span> <span class="nf">calculate_gradient</span><span class="p">(</span><span class="n">dip</span><span class="p">,</span> <span class="n">az</span><span class="p">,</span> <span class="n">pol</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates the gradient from dip, azimuth and polarity values.&quot;&quot;&quot;</span>
+    <span class="n">g_x</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">dip</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">az</span><span class="p">))</span> <span class="o">*</span> <span class="n">pol</span>
+    <span class="n">g_y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">dip</span><span class="p">))</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">az</span><span class="p">))</span> <span class="o">*</span> <span class="n">pol</span>
+    <span class="n">g_z</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">dip</span><span class="p">))</span> <span class="o">*</span> <span class="n">pol</span>
+    <span class="k">return</span> <span class="n">g_x</span><span class="p">,</span> <span class="n">g_y</span><span class="p">,</span> <span class="n">g_z</span></div>
+
+
+<span class="k">def</span> <span class="nf">recalc_gradients</span><span class="p">(</span><span class="n">folations_dataframe</span><span class="p">):</span>
+    <span class="n">folations_dataframe</span><span class="p">[</span><span class="s2">&quot;G_x&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">folations_dataframe</span><span class="p">[</span><span class="s2">&quot;dip&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)))</span> <span class="o">*</span> \
+                             <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">folations_dataframe</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)))</span> <span class="o">*</span> \
+                             <span class="n">folations_dataframe</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+    <span class="n">folations_dataframe</span><span class="p">[</span><span class="s2">&quot;G_y&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">folations_dataframe</span><span class="p">[</span><span class="s2">&quot;dip&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)))</span> <span class="o">*</span> \
+                             <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">folations_dataframe</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)))</span> <span class="o">*</span>\
+                             <span class="n">folations_dataframe</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+    <span class="n">folations_dataframe</span><span class="p">[</span><span class="s2">&quot;G_z&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="n">folations_dataframe</span><span class="p">[</span><span class="s2">&quot;dip&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)))</span> <span class="o">*</span>\
+                             <span class="n">folations_dataframe</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy2.svg" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_theory/motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
