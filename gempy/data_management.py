@@ -101,10 +101,11 @@ class InputData(object):
         self.interfaces['formation'] = self.interfaces['formation'].astype('category')
         self.orientations['formation'] = self.orientations['formation'].astype('category')
 
-        self.set_basement()
 
         # If not provided set default series
         self.update_df()
+
+        self.set_basement()
 
         # Compute gradients given azimuth and dips to plot data
         self.calculate_gradient()
@@ -146,14 +147,17 @@ class InputData(object):
 
         if not 'basement' in self.interfaces['formation'].values:
 
-            columns = {'X': self.extent[0], 'Y': self.extent[2], 'Z': self.extent[4], 'formation':'basement', 'order_series': n_series, 'formation_number': n_formation, 'series': 'Default series'}
+            try:
+                columns = {'X': self.extent[0], 'Y': self.extent[2], 'Z': self.extent[4], 'formation':'basement', 'order_series': n_series, 'formation_number': n_formation, 'series': self.series.columns[-1]}
+            except AttributeError:
+                columns = {'X': self.extent[0], 'Y': self.extent[2], 'Z': self.extent[4], 'formation':'basement', 'order_series': n_series, 'formation_number': n_formation, 'series': 'Default series'}
             for key in columns:
                 self.interfaces.ix[l, str(key)] = columns[key]
                 self.order_table()
             print('here')
            # sef.add_interface(formation='basement', order_series=n_series, formation_number = n_formation)
         else:
-            self.modify_interface(np.nonzero(drop_basement.values)[0], formation='basement', order_series=n_series, formation_number = n_formation)
+            self.modify_interface((drop_basement.index[drop_basement])[0], formation='basement', order_series=n_series, formation_number = n_formation)
             print('there')
 
     def calculate_gradient(self):
@@ -724,7 +728,7 @@ class InputData(object):
         return self.series
 
     def update_df(self, series_distribution=None, order=None):
-
+        self.set_basement()
         self.set_series(series_distribution=series_distribution, order=order)
 
         faults_series = self.count_faults()
@@ -732,7 +736,7 @@ class InputData(object):
 
         self.reset_indices()
 
-        self.set_basement()
+
         self.order_table()
         self.set_formations()
         self.set_fault_relation()
@@ -763,6 +767,9 @@ class InputData(object):
 
             except AttributeError:
                 formation_values = np.arange(1, formation_order.shape[0]+1)
+
+        if np.atleast_1d(formation_values).shape[0] < np.atleast_1d(formation_order).shape[0]:
+            formation_values = np.append(formation_values, formation_values.max()+1)
 
         self.formations = pn.DataFrame(index=formation_order,
                                        columns=[['value', 'formation_number']])

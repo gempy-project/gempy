@@ -109,6 +109,7 @@ class InterpolatorData:
             (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
         """
 
+        from theano.compile.nanguardmode import NanGuardMode
 
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.interpolator.tg.input_parameters_list()
@@ -119,6 +120,7 @@ class InterpolatorData:
             # then we compile we have to pass the number of formations that are faults!!
             th_fn = theano.function(input_data_T,
                                     self.interpolator.tg.compute_geological_model(self.geo_data_res.n_faults),
+                                    mode=NanGuardMode(nan_is_error=True),
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
                                     profile=False)
@@ -127,6 +129,7 @@ class InterpolatorData:
             # then we compile we have to pass the number of formations that are faults!!
             th_fn = theano.function(input_data_T,
                                     self.interpolator.tg.compute_forward_gravity(self.geo_data_res.n_faults),
+                                    mode=NanGuardMode(nan_is_error=True),
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
                                     profile=False)

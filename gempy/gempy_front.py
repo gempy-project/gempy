@@ -549,8 +549,9 @@ def select_series(geo_data, series):
     new_geo_data.set_faults(new_geo_data.count_faults())
 
     # Change the dataframe with the series
-    new_geo_data.series = new_geo_data.series[new_geo_data.interfaces['series'].unique()]
-    new_geo_data.set_formation_number()
+    new_geo_data.series = new_geo_data.series[new_geo_data.interfaces['series'].unique().categories].dropna(how='all')
+    new_geo_data.formations = new_geo_data.formations.loc[new_geo_data.interfaces['formation'].unique().categories]
+    new_geo_data.update_df()
     return new_geo_data
 
 
@@ -582,7 +583,7 @@ def set_series(geo_data, series_distribution=None, order_series=None, order_form
 
 
 def set_order_formations(geo_data, order_formations):
-    geo_data.set_formation_number(order_formations)
+    geo_data.set_formation(order_formations)
 
 
 def set_interfaces(geo_data, interf_Dataframe, append=False):
