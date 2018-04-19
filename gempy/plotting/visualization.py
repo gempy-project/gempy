@@ -257,7 +257,9 @@ class PlotData2D(object):
         # TODO: plot_topo option - need fault_block for that
 
         if 'cmap' not in kwargs:
-            kwargs['cmap'] = self._cmap
+            from matplotlib.colors import ListedColormap
+
+            kwargs['cmap'] = ListedColormap(np.asarray([tuple(i) for i in self._color_lot.values()])) #self._cmap #
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
      #   print(plot_block[_a, _b, _c].T, type(plot_block[_a, _b, _c].T))
