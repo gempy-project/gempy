@@ -148,7 +148,7 @@ class PlotData2D(object):
                            #scatter_kws=scatter_kws,
                            legend=False,
                            legend_out=False,
-                           palette=np.asarray([tuple(i) for i in self._color_lot.values()]),
+                           palette= self._color_lot,#np.asarray([tuple(i) for i in self._color_lot.values()]),
                            **kwargs)
 
             # Plotting orientations
@@ -489,7 +489,10 @@ class vtkVisualization:
         self.real_time = real_time
         self.geo_data = geo_data#copy.deepcopy(geo_data)
         self.interp_data = None
+      #  for e, i in enumerate( np.squeeze(geo_data.formations['value'].values)):
+      #      color_lot[e] = color_lot[i]
         self.C_LOT = color_lot
+
         self.ren_name = ren_name
         # Number of renders
         self.n_ren = 4
@@ -1443,31 +1446,32 @@ class vtkVisualization:
                 writer.SetInputData(polydata)
             writer.Write()
 
+#
+# def _create_color_lot(geo_data, cd_rgb):
+#     """Returns color [r,g,b] LOT for formation_numbers."""
+#     if "formation_number" not in geo_data.interfaces or "formation_number" not in geo_data.orientations:
+#         geo_data.set_formation_number()  # if not, set formation_numbers
+#
+#     c_names = ["indigo", "red", "yellow", "brown", "orange",
+#                 "green", "blue", "amber", "pink", "light-blue",
+#                 "lime", "blue-grey", "deep-orange", "grey", "cyan",
+#                 "deep-purple", "purple", "teal", "light-green"]
+#
+#     lot = {}
+#     ci = 0  # use as an independent running variable because of fault formations
+#     # get unique formation_numbers
+#     fmt_numbers = np.unique([val for val in geo_data.interfaces['formation_values'].unique()])
+#     # get unique fault formation_numbers
+#     fault_fmt_numbers = np.unique(geo_data.interfaces[geo_data.interfaces["isFault"] == True]["formation_values"])
+#     # iterate over all unique formation_numbers
+#     for i, n in enumerate(fmt_numbers):
+#         # if its a fault formation set it to black by default
+#         if n in fault_fmt_numbers:
+#             lot[n] = cd_rgb["black"]["400"]
+#         # if not, just go through
+#         else:
+#             lot[n] = cd_rgb[c_names[ci]]["400"]
+#             ci += 1
+#
+#     return lot
 
-def _create_color_lot(geo_data, cd_rgb):
-    """Returns color [r,g,b] LOT for formation_numbers."""
-    if "formation_number" not in geo_data.interfaces or "formation_number" not in geo_data.orientations:
-        geo_data.set_formation_number()  # if not, set formation_numbers
-
-    c_names = ["indigo", "red", "yellow", "brown", "orange",
-                "green", "blue", "amber", "pink", "light-blue",
-                "lime", "blue-grey", "deep-orange", "grey", "cyan",
-                "deep-purple", "purple", "teal", "light-green"]
-
-    lot = {}
-    ci = 0  # use as an independent running variable because of fault formations
-    # get unique formation_numbers
-    fmt_numbers = np.unique([val for val in geo_data.interfaces['formation_values'].unique()])
-    # get unique fault formation_numbers
-    fault_fmt_numbers = np.unique(geo_data.interfaces[geo_data.interfaces["isFault"] == True]["formation_values"])
-    # iterate over all unique formation_numbers
-    for i, n in enumerate(fmt_numbers):
-        # if its a fault formation set it to black by default
-        if n in fault_fmt_numbers:
-            lot[n] = cd_rgb["black"]["400"]
-        # if not, just go through
-        else:
-            lot[n] = cd_rgb[c_names[ci]]["400"]
-            ci += 1
-
-    return lot
