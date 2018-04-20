@@ -963,15 +963,17 @@ class TheanoGraph(object):
 
         max_pot_sigm = 2*max_pot - self.scalar_field_at_interfaces_values[0]
         min_pot_sigm = 2*min_pot - self.scalar_field_at_interfaces_values[-1]
+
+        boundaty_pad = (max_pot - min_pot)*0.01
         l = 50 / (max_pot - min_pot) #(max_pot - min_pot)
 
       #  l = theano.printing.Print("l")(l)
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
-                                           T.stack([max_pot]),
+                                           T.stack([max_pot + boundaty_pad]),
                                            self.scalar_field_at_interfaces_values,
-                                           T.stack([min_pot])
+                                           T.stack([min_pot - boundaty_pad])
                                             ))
 
         if "scalar_field_iter" in self.verbose:

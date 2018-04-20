@@ -100,7 +100,7 @@ class InputData(object):
 
         self.interfaces['formation'] = self.interfaces['formation'].astype('category')
         self.orientations['formation'] = self.orientations['formation'].astype('category')
-
+        self._formation_values_set = False
 
         # If not provided set default series
         self.update_df()
@@ -130,7 +130,8 @@ class InputData(object):
 
         self.interfaces['isFault'] = self.interfaces['isFault'].astype('bool')
         self.orientations['isFault'] = self.orientations['isFault'].astype('bool')
-    
+
+
     def set_basement(self):
 
         try:
@@ -758,12 +759,13 @@ class InputData(object):
             formation_order = np.append(formation_order, 'basement')
 
         if formation_values is None:
-            try:
+            if self._formation_values_set:
                 # Check if there is already a df
                 formation_values = self.formations['value'].squeeze()
-
-            except AttributeError:
+            else:
                 formation_values = np.arange(1, formation_order.shape[0]+1)
+        else:
+            self._formation_values_set = True
 
         if np.atleast_1d(formation_values).shape[0] < np.atleast_1d(formation_order).shape[0]:
             formation_values = np.append(formation_values, formation_values.max()+1)
