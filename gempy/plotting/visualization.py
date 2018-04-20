@@ -148,7 +148,7 @@ class PlotData2D(object):
                            #scatter_kws=scatter_kws,
                            legend=False,
                            legend_out=False,
-                           palette=self._color_lot,
+                           palette=np.asarray([tuple(i) for i in self._color_lot.values()]),
                            **kwargs)
 
             # Plotting orientations
@@ -261,7 +261,14 @@ class PlotData2D(object):
 
             kwargs['cmap'] = ListedColormap(np.asarray([tuple(i) for i in self._color_lot.values()])) #self._cmap #
         if 'norm' not in kwargs:
-            kwargs['norm'] = self._norm
+            import matplotlib.colors as colors
+            val = np.squeeze(self._data.formations['value'].values)
+            val.sort()
+            bounds = np.insert(val, 0, 0) + 0.5
+
+            norm = colors.BoundaryNorm(boundaries=bounds, ncolors=bounds.shape[0]-1)
+
+            kwargs['norm'] = norm
      #   print(plot_block[_a, _b, _c].T, type(plot_block[_a, _b, _c].T))
         im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
                    extent=extent_val,
