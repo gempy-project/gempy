@@ -18,9 +18,9 @@
 import numpy as np
 import pandas as pn
 import matplotlib.pyplot as plt
-from gempy.colors import *
+from gempy.plotting.colors import *
 import matplotlib.cm as cm
-from gempy.colors import color_lot, cmap, norm
+from gempy.plotting.colors import color_lot, cmap, norm
 
 
 def _create_color_lot(geo_data, cd_rgb):

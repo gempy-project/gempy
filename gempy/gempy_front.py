@@ -24,7 +24,6 @@
     @author: Miguel de la Varga
 """
 
-import os
 from os import path
 import sys
 
@@ -37,11 +36,10 @@ import pandas as _pn
 import copy
 import warnings
 
-from gempy.plotting.visualization import PlotData2D, steno3D, vtkVisualization
-from gempy.plotting import plot
+from gempy.plotting.visualization import PlotData2D, vtkVisualization
 from gempy.data_management import InputData, GridClass
 from gempy.interpolator import InterpolatorData
-from gempy.sequential_pile import StratigraphicPile
+from gempy.plotting.sequential_pile import StratigraphicPile
 from gempy.topology import topology_analyze as _topology_analyze
 from gempy.utils.geomodeller_integration import ReadGeoModellerXML as _ReadGeoModellerXML
 import gempy.posterior_analysis as pa # So far we use this type of import because the other one makes a copy and blows up some asserts

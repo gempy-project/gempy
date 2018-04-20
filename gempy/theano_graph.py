@@ -965,7 +965,7 @@ class TheanoGraph(object):
         min_pot_sigm = 2*min_pot - self.scalar_field_at_interfaces_values[-1]
 
         boundaty_pad = (max_pot - min_pot)*0.01
-        l = 50 / (max_pot - min_pot) #(max_pot - min_pot)
+        l = 5000 / (max_pot - min_pot) #(max_pot - min_pot)
 
       #  l = theano.printing.Print("l")(l)
 
@@ -1032,6 +1032,8 @@ class TheanoGraph(object):
 
         drift = T.set_subtensor(n_formation_op_float_sigmoid[0], n_formation_op_float_sigmoid[1])
 
+        n_formation_op_float_sigmoid = theano.printing.Print("n_formation_op_float_sigmoid")(n_formation_op_float_sigmoid)
+
         partial_block, updates2 = theano.scan(
             fn=compare,
             outputs_info=None,
@@ -1084,7 +1086,7 @@ class TheanoGraph(object):
         # Theano shared
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T[n_form_per_serie_0: n_form_per_serie_1]
         self.n_formation_op = self.n_formation[n_form_per_serie_0: n_form_per_serie_1]
-        self.n_formation_op_float = self.formation_values[n_form_per_serie_0: n_form_per_serie_1]
+        self.n_formation_op_float = self.formation_values[n_form_per_serie_0: n_form_per_serie_1 + 1]
         self.npf_op = self.npf[n_form_per_serie_0: n_form_per_serie_1]
         if 'n_formation' in self.verbose:
             self.n_formation_op = theano.printing.Print('n_formation_fault')(self.n_formation_op)

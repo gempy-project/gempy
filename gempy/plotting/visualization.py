@@ -44,7 +44,7 @@ from os import path
 import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-from gempy.colors import color_lot, cmap, norm
+from gempy.plotting.colors import color_lot, cmap, norm
 import gempy as gp
 import copy
 
@@ -257,18 +257,9 @@ class PlotData2D(object):
         # TODO: plot_topo option - need fault_block for that
 
         if 'cmap' not in kwargs:
-            from matplotlib.colors import ListedColormap
-
-            kwargs['cmap'] = ListedColormap(np.asarray([tuple(i) for i in self._color_lot.values()])) #self._cmap #
+            kwargs['cmap'] = self._cmap #
         if 'norm' not in kwargs:
-            import matplotlib.colors as colors
-            val = np.squeeze(self._data.formations['value'].values)
-            val.sort()
-            bounds = np.insert(val, 0, 0) + 0.5
-
-            norm = colors.BoundaryNorm(boundaries=bounds, ncolors=bounds.shape[0]-1)
-
-            kwargs['norm'] = norm
+            kwargs['norm'] = self._norm
      #   print(plot_block[_a, _b, _c].T, type(plot_block[_a, _b, _c].T))
         im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
                    extent=extent_val,
