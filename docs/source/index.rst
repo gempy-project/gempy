@@ -3,10 +3,13 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-GemPy's (v 1.0) documentation
-=============================
+GemPy's documentation
+=====================
 Software for 3D structural geologic implicit modeling in Python.
 ****************************************************************
+
+.. image:: ../logos/gempy1.svg
+   :width: 40%
 
 GemPy is an open-source tool for generating 3D structural geological models in Python (GemPy's code can be viewed in its repository: https://github.com/cgre-aachen/gempy.)
 It is capable of creating complex 3D geological models,
@@ -26,7 +29,7 @@ Contents:
    :maxdepth: 2
 
    self
-   ./theory/motivation
+   ./_theory/motivation
    tutorial
    theory
    code

@@ -1,8 +1,0 @@
-Guide
-=====
-
-.. toctree::
-
-   ./theory/core
-   ./theory/assets
-   ./theory/advanced

@@ -16,9 +16,9 @@ def topo_geodata():
     geo_data.import_data_csv(path_i=TEST_DIR+"/input_data/ch6_data_interf.csv",
                              path_o=TEST_DIR+"/input_data/ch6_data_fol.csv")
 
-    gp.set_series(geo_data, {"fault": geo_data.get_formations()[np.where(geo_data.get_formations() == "Fault")[0][0]],
-                             "Rest": np.delete(geo_data.get_formations(),
-                                               np.where(geo_data.get_formations() == "Fault")[0][0])},
+    gp.set_series(geo_data, {"fault": geo_data.get_formations().categories[np.where(geo_data.get_formations().categories == "Fault")[0][0]],
+                             "Rest": np.delete(geo_data.get_formations().categories,
+                                               np.where(geo_data.get_formations().categories == "Fault")[0][0])},
                   order_series=["fault", "Rest"], verbose=0,
                   order_formations=['Fault', 'Layer 2', 'Layer 3', 'Layer 4', 'Layer 5'])
 

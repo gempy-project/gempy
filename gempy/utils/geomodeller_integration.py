@@ -394,7 +394,7 @@ def read_vox(geo_data, path):
 
     # ip_addresses = geo_res['nx 50'].unique()  # geo_data.interfaces["formation"].unique()
     ip_dict = geo_data.get_formation_number()
-  #  ip_dict = geo_data.interfaces['formation number'].unique()
+  #  ip_dict = geo_data.interfaces['formation_number'].unique()
 
     geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
     block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
@@ -508,7 +508,7 @@ class GeomodellerClass:
 
     def get_stratigraphy_list(self, **kwds):
         """get project stratigraphy and return as list; lowermost formation: 1
-        for GeoModeller dll access (this ist the formation number that is returned with
+        for GeoModeller dll access (this ist the formation_number that is returned with
         the GetComputedLithologyXYZ function in the geomodeller dll
         optional keywords:
         out = string : set 'out' formation to this name (might be necessary for TOUGH2 simulation!)

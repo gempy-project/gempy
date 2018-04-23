@@ -1,0 +1,1627 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Chapter 1: Basics of geological modeling with GemPy &#8212; GemPy rc documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'rc',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/gempy_squared.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="chapter-1-basics-of-geological-modeling-with-gempy">
+<h1>Chapter 1: Basics of geological modeling with GemPy<a class="headerlink" href="#chapter-1-basics-of-geological-modeling-with-gempy" title="Permalink to this headline">¶</a></h1>
+<hr class="docutils" />
+<p>In this first chapter, we will guide through the most important steps of
+modeling with GemPy on the base of a relatively simple geological model,
+while introducing essential objects and functions. We will illustrate
+how to: - import and create input data for modeling in GemPy - return
+and visualize input data - generate a 3D geological model in GemPy -
+visualize a model directly in GemPy ***</p>
+<div class="section" id="the-example-model-simple-stratigraphy-and-one-fault">
+<h2>The example model: Simple stratigraphy and one fault<a class="headerlink" href="#the-example-model-simple-stratigraphy-and-one-fault" title="Permalink to this headline">¶</a></h2>
+<p>Our synthetic example model is defined to be cubic, with an extent of
+2000 m in every direction of the 3D space. Lithologically, it includes
+five stratigraphic units of sedimentary origin. Here, we list them from
+top (youngest) to bottom (oldest):</p>
+<ul class="simple">
+<li>Sandstone (2)</li>
+<li>Siltstone</li>
+<li>Shale</li>
+<li>Sandstone (1)</li>
+<li>Basement (undefined, default by GemPy)</li>
+</ul>
+<p>We assume that these were simply deposited in consequential order and
+deformed (tilted and folded) afterwards. Additionally, they are
+displaced by a continuous normal fault. The final modeling results
+should look somewhat like this, depending on the type of visualization:</p>
+<div class="figure" id="id1">
+<img alt="2D and 3D visualizations of our example model" src="../_images/model_example_duo.png" />
+<p class="caption"><span class="caption-text">2D and 3D visualizations of our example model.</span></p>
+</div>
+<p>As this example involves a simple sequence of layers and only one fault,
+it provides an adequate level of complexity to introduce the basics of
+modeling with GemPy. At the end of this chapter, we will show some model
+variations and how the modeling workflow has to be adapted accordingly.</p>
+</div>
+<div class="section" id="preparing-the-python-environment">
+<h2>Preparing the Python environment<a class="headerlink" href="#preparing-the-python-environment" title="Permalink to this headline">¶</a></h2>
+<p>For modeling with GemPy, we first need to import it. We should also
+import any other packages we want to utilize in our Python
+environment.Typically, we will also require <code class="docutils literal"><span class="pre">NumPy</span></code> and <code class="docutils literal"><span class="pre">Matplotlib</span></code>
+when working with GemPy. At this point, we can further customize some
+settings as desired, e.g. the size of figures or, as we do here, the way
+that <code class="docutils literal"><span class="pre">Matplotlib</span></code> figures are displayed in our notebook
+(<code class="docutils literal"><span class="pre">%matplotlib</span> <span class="pre">inline</span></code>).</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># These two lines are necessary only if GemPy is not installed</span>
+<span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span>
+<span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">&quot;../..&quot;</span><span class="p">)</span>
+<span class="n">os</span><span class="o">.</span><span class="n">environ</span><span class="p">[</span><span class="s1">&#39;CUDA_LAUNCH_BLOCKING&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;1&#39;</span>
+
+<span class="c1"># Importing GemPy</span>
+<span class="kn">import</span> <span class="nn">gempy</span> <span class="kn">as</span> <span class="nn">gp</span>
+
+<span class="c1"># Embedding matplotlib figures in the notebooks</span>
+<span class="o">%</span><span class="k">matplotlib</span> inline
+
+<span class="c1"># Importing auxiliary libraries</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="kn">as</span> <span class="nn">plt</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">WARNING</span> <span class="p">(</span><span class="n">theano</span><span class="o">.</span><span class="n">tensor</span><span class="o">.</span><span class="n">blas</span><span class="p">):</span> <span class="n">Using</span> <span class="n">NumPy</span> <span class="n">C</span><span class="o">-</span><span class="n">API</span> <span class="n">based</span> <span class="n">implementation</span> <span class="k">for</span> <span class="n">BLAS</span> <span class="n">functions</span><span class="o">.</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="importing-and-creating-a-set-of-input-data">
+<h2>Importing and creating a set of input data<a class="headerlink" href="#importing-and-creating-a-set-of-input-data" title="Permalink to this headline">¶</a></h2>
+<p>The data used for the construction of a model in GemPy is stored in a
+Python object called <code class="docutils literal"><span class="pre">InputData</span></code>.</p>
+<p>In principle, the input data can be stored in the form of a Python
+<a class="reference external" href="https://docs.python.org/3/library/pickle.html">pickle</a>. However,
+module version consistency is required. For loading a pickle into GemPy,
+you have to make sure that you are using the same version of pickle and
+dependent modules (e.g.: <code class="docutils literal"><span class="pre">Pandas</span></code>, <code class="docutils literal"><span class="pre">NumPy</span></code>) as were used when the
+data was originally stored.</p>
+<p><code class="docutils literal"><span class="pre">InputData</span></code> can also be generated from raw data that comes in the form
+of CSV-files (CSV = comma-separated values). Such files might be
+attained by exporting model data from a different program such as
+GeoModeller or by simply creating it in spreadsheet software such as
+Microsoft Excel or LibreOffice Calc.</p>
+<p>In this tutorial, all input data is created by importing such CSV-files.
+These exemplary files can be found in the <code class="docutils literal"><span class="pre">input_data</span></code> folder in the
+root folder of GemPy. The data comprises <span class="math">\(x\)</span>-, <span class="math">\(y\)</span>- and
+<span class="math">\(z\)</span>-positional values for all surface points and orientation
+measurements. For the latter, poles, azimuth and polarity are
+additionally included. Surface points are furthermore assigned a
+formation. This might be a lithological unit such as “Sandstone” or a
+structural feature such as “Main Fault”. It is decisive to remember
+that, in GemPy, interface position points mark the <strong>bottom</strong> of a
+layer. If such points are needed to resemble a top of a formation (e.g.
+when modeling an intrusion), this can be achieved by defining a
+respectively inverted orientation measurement.</p>
+<p>As we generate our <code class="docutils literal"><span class="pre">InputData</span></code> from CSV-files, we also have to define
+our model’s real extent in <span class="math">\(x\)</span>, <span class="math">\(y\)</span> and <span class="math">\(z\)</span>, as well
+as declare a desired resolution for each axis. This resolution will in
+turn determine the number of voxels used during modeling. Here, we rely
+on a medium resolution of 50x50x50, amounting to 125,000 voxels. The
+model extent should be chosen in a way that it contains all relevant
+data in a representative space. As our model voxels are not cubes, but
+prisms, the resolution can take a different shape than the extent. We
+don’t recommend going much higher than 100 cells in every direction
+(1,000,000 voxels), as higher resolutions will become increasingly
+difficult to compute.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Importing the data from CSV-files and setting extent and resolution</span>
+<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">2000</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2000</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">2000</span><span class="p">],[</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">,</span><span class="mi">100</span><span class="p">],</span>
+                          <span class="n">path_o</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/tut_chapter1/simple_fault_model_orientations.csv&quot;</span><span class="p">,</span> <span class="c1"># importing orientation (foliation) data</span>
+                          <span class="n">path_i</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">pardir</span><span class="o">+</span><span class="s2">&quot;/input_data/tut_chapter1/simple_fault_model_points.csv&quot;</span><span class="p">)</span> <span class="c1"># importing point-positional interface data</span>
+</pre></div>
+</div>
+<p>The input data can then be listed using the command <code class="docutils literal"><span class="pre">get_data</span></code>. Note
+that the order of formations and respective allocation to series is
+still completely arbitrary. We will fix this in the following.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th></th>
+      <th>G_x</th>
+      <th>G_y</th>
+      <th>G_z</th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>azimuth</th>
+      <th>dip</th>
+      <th>formation</th>
+      <th>polarity</th>
+      <th>series</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th rowspan="57" valign="top">interfaces</th>
+      <th>0</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>50</td>
+      <td>750</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>150</td>
+      <td>700</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>300</td>
+      <td>700</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>500</td>
+      <td>800</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>1000</td>
+      <td>1000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>5</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>1500</td>
+      <td>700</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>6</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>1700</td>
+      <td>600</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>7</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>1950</td>
+      <td>650</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>8</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>1000</td>
+      <td>1100</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>9</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>300</td>
+      <td>1000</td>
+      <td>1000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>10</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>450</td>
+      <td>1000</td>
+      <td>950</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>11</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1100</td>
+      <td>1000</td>
+      <td>900</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>12</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1400</td>
+      <td>1000</td>
+      <td>850</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>13</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1700</td>
+      <td>1000</td>
+      <td>900</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>14</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1500</td>
+      <td>500</td>
+      <td>800</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>15</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1500</td>
+      <td>1500</td>
+      <td>750</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Shale</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>16</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1500</td>
+      <td>1500</td>
+      <td>450</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>17</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1500</td>
+      <td>500</td>
+      <td>500</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>18</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1700</td>
+      <td>1000</td>
+      <td>600</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>19</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1100</td>
+      <td>1000</td>
+      <td>600</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>20</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>50</td>
+      <td>450</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>21</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>150</td>
+      <td>400</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>22</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>300</td>
+      <td>400</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>23</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>500</td>
+      <td>500</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>24</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>1000</td>
+      <td>700</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>25</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>1500</td>
+      <td>400</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>26</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>1700</td>
+      <td>300</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>27</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>1950</td>
+      <td>350</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>28</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>1000</td>
+      <td>800</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>29</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>300</td>
+      <td>1000</td>
+      <td>700</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>30</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1400</td>
+      <td>1000</td>
+      <td>550</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_1</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>31</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>900</td>
+      <td>150</td>
+      <td>920</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Siltstone</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>32</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>900</td>
+      <td>300</td>
+      <td>920</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Siltstone</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>33</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>900</td>
+      <td>1500</td>
+      <td>920</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Siltstone</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>34</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>900</td>
+      <td>1700</td>
+      <td>820</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Siltstone</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>35</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>900</td>
+      <td>1950</td>
+      <td>870</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Siltstone</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>36</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>1000</td>
+      <td>1300</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Siltstone</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>37</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>300</td>
+      <td>1000</td>
+      <td>1200</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Siltstone</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>38</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>600</td>
+      <td>1000</td>
+      <td>1100</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Siltstone</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>39</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1100</td>
+      <td>1000</td>
+      <td>1100</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Siltstone</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>40</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1400</td>
+      <td>1000</td>
+      <td>1050</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Siltstone</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>41</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1700</td>
+      <td>1000</td>
+      <td>1100</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Siltstone</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>42</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1500</td>
+      <td>500</td>
+      <td>1000</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Siltstone</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>43</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1500</td>
+      <td>1500</td>
+      <td>950</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Siltstone</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>44</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>0</td>
+      <td>1000</td>
+      <td>1500</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_2</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>45</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>300</td>
+      <td>1000</td>
+      <td>1400</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_2</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>46</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>600</td>
+      <td>1000</td>
+      <td>1300</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_2</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>47</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1100</td>
+      <td>1000</td>
+      <td>1300</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_2</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>48</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1400</td>
+      <td>1000</td>
+      <td>1250</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_2</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>49</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1700</td>
+      <td>1000</td>
+      <td>1300</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_2</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>50</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1500</td>
+      <td>500</td>
+      <td>1200</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_2</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>51</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>1500</td>
+      <td>1500</td>
+      <td>1150</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Sandstone_2</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>52</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>700</td>
+      <td>1000</td>
+      <td>900</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Main_Fault</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>53</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>600</td>
+      <td>1000</td>
+      <td>600</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Main_Fault</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>54</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>500</td>
+      <td>1000</td>
+      <td>300</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Main_Fault</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>55</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>800</td>
+      <td>1000</td>
+      <td>1200</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Main_Fault</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>56</th>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>900</td>
+      <td>1000</td>
+      <td>1500</td>
+      <td>NaN</td>
+      <td>NaN</td>
+      <td>Main_Fault</td>
+      <td>NaN</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th rowspan="3" valign="top">orientations</th>
+      <th>0</th>
+      <td>0.316229</td>
+      <td>1e-07</td>
+      <td>0.948683</td>
+      <td>1000</td>
+      <td>1000</td>
+      <td>950</td>
+      <td>90</td>
+      <td>18.435</td>
+      <td>Shale</td>
+      <td>1</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>0.316229</td>
+      <td>1e-07</td>
+      <td>0.948683</td>
+      <td>400</td>
+      <td>1000</td>
+      <td>1400</td>
+      <td>90</td>
+      <td>18.435</td>
+      <td>Sandstone_2</td>
+      <td>1</td>
+      <td>Default serie</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>-0.948683</td>
+      <td>1e-07</td>
+      <td>0.316229</td>
+      <td>500</td>
+      <td>1000</td>
+      <td>864.602</td>
+      <td>270</td>
+      <td>71.565</td>
+      <td>Main_Fault</td>
+      <td>1</td>
+      <td>Default serie</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+<div class="section" id="declaring-the-sequential-order-of-geological-formations">
+<h2>Declaring the sequential order of geological formations<a class="headerlink" href="#declaring-the-sequential-order-of-geological-formations" title="Permalink to this headline">¶</a></h2>
+<p>We want our geological units to appear in the correct order relative to
+age. Such order might for example be given by a depositional sequence of
+stratigraphy, unconformities due to erosion or other lithological
+genesis events such as igneous intrusions. A similar age-related order
+is to be declared for the faults in our model. In GemPy, the function
+<em>set_series</em> is used to assign formations to different sequential
+series via declaration in a Python dictionary.</p>
+<p>Defining the correct order of series is vital to the construction of the
+model! If you are using Python 3.6, the age-related order will already
+be defined by the order of key entries, i.e. the first entry is the
+youngest series, the last one the oldest. For older versions of Python,
+you will have to specify the correct order as a separate list attribute
+“<em>order_series</em>” (see cell below).</p>
+<p>You can assign several formations to one series. The order of the units
+within such as series is only relevant for the color code, thus we
+recommend to be consistent. You can define this order via another
+attribute “<em>order_formations</em>” or by using the specific command
+<em>set_order_formations</em>. (If the order of the pile differs from the
+final result the color of the interfaces and input data will be
+different. ?)</p>
+<p>Every fault is treated as an independent series and have to be at set at
+the <strong>top of the pile</strong>. The relative order between the distinct faults
+defines the tectonic relation between them (first entry is the
+youngest).</p>
+<p>In a model with simple sequential stratigraphy, all layer formations can
+be assigned to one single series without a problem. All unit boundaries
+and their order would then be given by interface points. However, to
+model more complex lithostratigraphical relations and interactions, the
+definition of separate series becomes important. For example, you would
+need to declare a “newer” series to model an unconformity or an
+intrusion that disturbs older stratigraphy.</p>
+<p>Our example model comprises four main layers (plus an underlying
+basement that is automatically generated by GemPy) and one main normal
+fault displacing those layers. Assuming a simple stratigraphy where each
+younger unit was deposited onto the underlying older one, we can assign
+these layer formations to one series called “Strat_Series”. For the
+fault, we declare a respective “Fault_Series” as the first key entry in
+the <code class="docutils literal"><span class="pre">set_series</span></code> dictionary. We could give any other names to these
+series, the formations however have to be referred to as named in the
+input data.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Assigning series to formations as well as their order (timewise)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">set_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="p">{</span><span class="s2">&quot;Fault_Series&quot;</span><span class="p">:</span><span class="s1">&#39;Main_Fault&#39;</span><span class="p">,</span>
+                      <span class="s2">&quot;Strat_Series&quot;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Sandstone_2&#39;</span><span class="p">,</span><span class="s1">&#39;Siltstone&#39;</span><span class="p">,</span> <span class="s1">&#39;Shale&#39;</span><span class="p">,</span> <span class="s1">&#39;Sandstone_1&#39;</span><span class="p">)},</span>
+                       <span class="n">order_series</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;Fault_Series&quot;</span><span class="p">,</span> <span class="s1">&#39;Strat_Series&#39;</span><span class="p">],</span>
+                       <span class="n">order_formations</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;Main_Fault&#39;</span><span class="p">,</span>
+                                         <span class="s1">&#39;Sandstone_2&#39;</span><span class="p">,</span><span class="s1">&#39;Siltstone&#39;</span><span class="p">,</span> <span class="s1">&#39;Shale&#39;</span><span class="p">,</span> <span class="s1">&#39;Sandstone_1&#39;</span><span class="p">,</span>
+                                         <span class="p">],</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="c1"># unconformity model:</span>
+<span class="c1">#gp.set_series(geo_data, {&quot;Fault_Series&quot;:&#39;Main_Fault&#39;, &quot;Unconf_Series&quot;:&#39;Carbonate&#39;,</span>
+<span class="c1">#                      &quot;Strat_Series&quot;: (&#39;Sandstone_2&#39;,&#39;Siltstone&#39;, &#39;Shale&#39;, &#39;Sandstone_1&#39;)},</span>
+<span class="c1">#                       order_series = [&quot;Fault_Series&quot;, &quot;Unconf_Series&quot;, &#39;Strat_Series&#39;],</span>
+<span class="c1">#                       order_formations=[&#39;Main_Fault&#39;, &#39;Carbonate&#39;,</span>
+<span class="c1">#                                         &#39;Sandstone_2&#39;,&#39;Siltstone&#39;, &#39;Shale&#39;, &#39;Sandstone_1&#39;,</span>
+<span class="c1">#                                         ], verbose=0)</span>
+</pre></div>
+</div>
+<p>The sequence of geoligical series and assigned formations can be
+visualized using the function <code class="docutils literal"><span class="pre">get_sequential_pile</span></code>. Using a backend
+such as <code class="docutils literal"><span class="pre">%matplotlib</span> <span class="pre">notebook</span></code> or <code class="docutils literal"><span class="pre">%matplotlib</span> <span class="pre">qt5</span></code>, the figure
+generated by this function becomes interactive, i.e. you can change the
+order of series and formations by hand (via <code class="docutils literal"><span class="pre">%matplotlib</span> <span class="pre">inline</span></code>, the
+figure remains static). You can also re-assign a formation to a
+different series.</p>
+<p>If the backend doen’t seem to work properly right away, try executing
+the cell twice.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">gp</span><span class="o">.</span><span class="n">get_sequential_pile</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">sequential_pile</span><span class="o">.</span><span class="n">StratigraphicPile</span> <span class="n">at</span> <span class="mh">0x7f3eafc59898</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1_9_1.png" src="../_images/ch1_9_1.png" />
+<p>Notice that the colors are order-dependent, i.e. they will remain in the
+same order every time the cell is executed, irrespective of
+re-assignment of formations. To make sure that every unit is in its
+right place, take a look at the legend on the right. If it doesn’t show
+at first, try dragging the right edge to resize the figure. The legend
+will always show you the color currently assigned to a formation (in the
+future, every color will have the annotation within its rectangle to
+avoid confusion).</p>
+<div class="section" id="returning-information-from-our-input-data">
+<h3>Returning information from our input data<a class="headerlink" href="#returning-information-from-our-input-data" title="Permalink to this headline">¶</a></h3>
+<p>Our model input data, here named “<em>geo_data</em>”, contains all the
+information that is essential for the construction of our model. You can
+access different types of information by using correspondent “<em>get</em>”
+functions.</p>
+<p>We can, for example, return the coordinates of our modeling grid via
+<em>get_grid</em>:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">gp</span><span class="o">.</span><span class="n">get_grid</span><span class="p">(</span><span class="n">geo_data</span><span class="p">))</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[[</span>   <span class="mf">10.</span>    <span class="mf">10.</span>    <span class="mf">10.</span><span class="p">]</span>
+ <span class="p">[</span>   <span class="mf">10.</span>    <span class="mf">10.</span>    <span class="mf">30.</span><span class="p">]</span>
+ <span class="p">[</span>   <span class="mf">10.</span>    <span class="mf">10.</span>    <span class="mf">50.</span><span class="p">]</span>
+ <span class="o">...</span><span class="p">,</span>
+ <span class="p">[</span> <span class="mf">1990.</span>  <span class="mf">1990.</span>  <span class="mf">1950.</span><span class="p">]</span>
+ <span class="p">[</span> <span class="mf">1990.</span>  <span class="mf">1990.</span>  <span class="mf">1970.</span><span class="p">]</span>
+ <span class="p">[</span> <span class="mf">1990.</span>  <span class="mf">1990.</span>  <span class="mf">1990.</span><span class="p">]]</span>
+</pre></div>
+</div>
+<p>As mentioned before, GemPy’s core algorithm is based on interpolation of
+two types of data: - interface (or surface) points and - orientation
+measurements</p>
+<p>(if you want to know more on how this this interpolation algorithm
+works, checkout our chapter on the theory behind GemPy).</p>
+<p>We introduced the function <em>get_data</em> above. You can also specify which
+kind of data you want to call, by declaring the string attribute
+“<em>dtype</em>” to be either “interfaces” (surface points) or “foliations”
+(orientation measurements).</p>
+<div class="section" id="interfaces-dataframe">
+<h4>Interfaces Dataframe:<a class="headerlink" href="#interfaces-dataframe" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="s1">&#39;interfaces&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">head</span><span class="p">()</span>
+</pre></div>
+</div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>formation</th>
+      <th>series</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>900</td>
+      <td>1000</td>
+      <td>1500</td>
+      <td>Main_Fault</td>
+      <td>Fault_Series</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>700</td>
+      <td>1000</td>
+      <td>900</td>
+      <td>Main_Fault</td>
+      <td>Fault_Series</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>800</td>
+      <td>1000</td>
+      <td>1200</td>
+      <td>Main_Fault</td>
+      <td>Fault_Series</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>500</td>
+      <td>1000</td>
+      <td>300</td>
+      <td>Main_Fault</td>
+      <td>Fault_Series</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>600</td>
+      <td>1000</td>
+      <td>600</td>
+      <td>Main_Fault</td>
+      <td>Fault_Series</td>
+    </tr>
+  </tbody>
+</table>
+</div></div>
+<div class="section" id="foliations-dataframe">
+<h4>Foliations Dataframe:<a class="headerlink" href="#foliations-dataframe" title="Permalink to this headline">¶</a></h4>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="s1">&#39;orientations&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>X</th>
+      <th>Y</th>
+      <th>Z</th>
+      <th>G_x</th>
+      <th>G_y</th>
+      <th>G_z</th>
+      <th>dip</th>
+      <th>azimuth</th>
+      <th>polarity</th>
+      <th>formation</th>
+      <th>series</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>500</td>
+      <td>1000</td>
+      <td>864.602</td>
+      <td>-0.948683</td>
+      <td>1e-07</td>
+      <td>0.316229</td>
+      <td>71.565</td>
+      <td>270</td>
+      <td>1</td>
+      <td>Main_Fault</td>
+      <td>Fault_Series</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>400</td>
+      <td>1000</td>
+      <td>1400</td>
+      <td>0.316229</td>
+      <td>1e-07</td>
+      <td>0.948683</td>
+      <td>18.435</td>
+      <td>90</td>
+      <td>1</td>
+      <td>Sandstone_2</td>
+      <td>Strat_Series</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>1000</td>
+      <td>1000</td>
+      <td>950</td>
+      <td>0.316229</td>
+      <td>1e-07</td>
+      <td>0.948683</td>
+      <td>18.435</td>
+      <td>90</td>
+      <td>1</td>
+      <td>Shale</td>
+      <td>Strat_Series</td>
+    </tr>
+  </tbody>
+</table>
+</div><p>Notice that now all <strong>formations</strong> have been assigned to a <strong>series</strong>
+and are displayed in the correct order (from young to old).</p>
+</div>
+</div>
+<div class="section" id="visualizing-input-data">
+<h3>Visualizing input data<a class="headerlink" href="#visualizing-input-data" title="Permalink to this headline">¶</a></h3>
+<p>We can also visualize our input data. This might for example be useful
+to check if all points and measurements are defined the way we want them
+to. Using the function <em>plot_data</em>, we attain a 2D projection of our
+data points onto a plane of chosen <em>direction</em> (we can choose this
+attribute to be either <span class="math">\(x\)</span>, <span class="math">\(y\)</span> or <span class="math">\(z\)</span>).</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_data</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1_18_0.png" src="../_images/ch1_18_0.png" />
+<p>Using <em>plot_data_3D</em>, we can also visualize this data in 3D. Note that
+direct 3D visualization in GemPy requires <a class="reference external" href="https://www.vtk.org/">the Visualization
+Toolkit</a> (VTK) to be installed.</p>
+<p>All 3D VTK plots in GemPy are interactive. This means that we can drag
+and drop any data poit and measurement. The perpendicular axis views in
+VTK are particularly useful to move points solely on a desired 2D plane.
+Any changes will then be stored permanently in the “InputData”
+dataframe. If we want to reset our data points, we will then need to
+reload our original input data.</p>
+<p>Executing the cell below will open a new window with a 3D interactive
+plot of our data.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_data_3D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="model-generation">
+<h3>Model generation<a class="headerlink" href="#model-generation" title="Permalink to this headline">¶</a></h3>
+<p>Once we have made sure that we have defined all our primary information
+as desired in our object <code class="docutils literal"><span class="pre">DataManagement.InputData</span></code> (named
+<code class="docutils literal"><span class="pre">geo_data</span></code> in these tutorials), we can continue with the next step
+towards creating our geological model: preparing the input data for
+interpolation.</p>
+<p>This is done by generating an <code class="docutils literal"><span class="pre">InterpolatorInput</span></code> object (named
+<code class="docutils literal"><span class="pre">interp_data</span></code> in these tutorials) from our <code class="docutils literal"><span class="pre">InputData</span></code> object via
+the following function:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorData</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">u_grade</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">output</span><span class="o">=</span><span class="s1">&#39;geology&#39;</span><span class="p">,</span> <span class="n">compile_theano</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">theano_optimizer</span><span class="o">=</span><span class="s1">&#39;fast_compile&#39;</span><span class="p">)</span>
+<span class="c1">#print(interp_data)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span>Compiling theano function...
+Compilation Done!
+Level of Optimization:  fast_compile
+Device:  cpu
+Precision:  float32
+Number of faults:  1
+</pre></div>
+</div>
+<p>This function rescales the extent and coordinates of the original data
+and adds mathematical parameters that are needed for conducting the
+interpolation. The computation of this step may take a while, as it also
+compiles a theano function which is required for the model computation.
+However, should this not be needed, we can skip it by declaring
+<code class="docutils literal"><span class="pre">compile_theano</span> <span class="pre">=</span> <span class="pre">False</span></code> in the function.</p>
+<p>Furthermore, this preparation process includes an assignment of numbers
+to each formation. Note that GemPy’s always creates a default basement
+formation as “0”. Afterwards, numbers are allocated from youngest to
+oldest as defined by the sequence of series and formations. Using
+<code class="docutils literal"><span class="pre">get_formation_number()</span></code> on our interpolation data, we can find out
+which number has been assigned to which formation:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">get_formation_number</span><span class="p">()</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">{</span><span class="s1">&#39;DefaultBasement&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+ <span class="s1">&#39;Main_Fault&#39;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span>
+ <span class="s1">&#39;Sandstone_1&#39;</span><span class="p">:</span> <span class="mi">5</span><span class="p">,</span>
+ <span class="s1">&#39;Sandstone_2&#39;</span><span class="p">:</span> <span class="mi">2</span><span class="p">,</span>
+ <span class="s1">&#39;Shale&#39;</span><span class="p">:</span> <span class="mi">4</span><span class="p">,</span>
+ <span class="s1">&#39;Siltstone&#39;</span><span class="p">:</span> <span class="mi">3</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>The parameters used for the interpolation can be returned using the
+function <code class="docutils literal"><span class="pre">get_kriging_parameters</span></code>. These are generated automatically
+from the orginal data, but can be changed if needed. However, users
+should be careful doing so, if they do not fully understand their
+significance.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">get_kriging_parameters</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span> <span class="c1"># Maybe move this to an extra part?</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="nb">range</span> <span class="mf">0.911605715751648</span> <span class="mf">3464.10171986</span>
+<span class="n">Number</span> <span class="n">of</span> <span class="n">drift</span> <span class="n">equations</span> <span class="p">[</span><span class="mi">0</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">Covariance</span> <span class="n">at</span> <span class="mi">0</span> <span class="mf">0.019786307588219643</span>
+<span class="n">orientations</span> <span class="n">nugget</span> <span class="n">effect</span> <span class="mf">0.009999999776482582</span>
+<span class="n">scalar</span> <span class="n">nugget</span> <span class="n">effect</span> <span class="mf">9.999999974752427e-07</span>
+</pre></div>
+</div>
+<p>At this point, we have all we need to compute our full model via
+<code class="docutils literal"><span class="pre">compute_model</span></code>. By default, this will return two separate solutions
+in the form of arrays. The first gives information on the lithological
+formations, the second on the fault network in the model. These arrays
+consist of two subarrays as entries each:</p>
+<ol class="arabic simple">
+<li>Lithology block model solution:<ul>
+<li>Entry [0]: This array shows what kind of lithological formation is
+found in each voxel, as indicated by a respective formation
+number.</li>
+<li>Entry [1]: Potential field array that represents the orientation
+of lithological units and layers in the block model.</li>
+</ul>
+</li>
+<li>Fault network block model solution:<ul>
+<li>Entry [0]: Array in which all fault-separated areas of the model
+are represented by a distinct number contained in each voxel.</li>
+<li>Entry [1}: Potential field array related to the fault network in
+the block model.</li>
+</ul>
+</li>
+</ol>
+<p>Below, we illustrate these different model solutions and how they can be
+used.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">lith_block</span><span class="p">,</span> <span class="n">fault_block</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="direct-model-visualization-in-gempy">
+<h3>Direct model visualization in GemPy<a class="headerlink" href="#direct-model-visualization-in-gempy" title="Permalink to this headline">¶</a></h3>
+<p>Model solutions can be easily visualized in 2D sections in GemPy
+directly. Let’s take a look at our lithology block:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cell_number</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span>  <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1_30_0.png" src="../_images/ch1_30_0.png" />
+<p>With <code class="docutils literal"><span class="pre">cell_number=25</span></code> and remembering that we defined our resolution
+to be 50 cells in each direction, we have chosen a section going through
+the middle of our block. We have moved 25 cells in <code class="docutils literal"><span class="pre">direction='y'</span></code>,
+the plot thus depicts a plane parallel to the <span class="math">\(x\)</span>- and
+<span class="math">\(y\)</span>-axes. Setting <code class="docutils literal"><span class="pre">plot_data=True</span></code>, we could plot original data
+together with the results. Changing the values for <code class="docutils literal"><span class="pre">cell_number</span></code>and
+<code class="docutils literal"><span class="pre">direction</span></code>, we can move through our 3D block model and explore it by
+looking at different 2D planes.</p>
+<p>We can do the same with out lithological scalar-field solution:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_scalar_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cell_number</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+                        <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1_32_0.png" src="../_images/ch1_32_0.png" />
+<p>Here, <code class="docutils literal"><span class="pre">N</span></code> defines the number of lines plotted to indicate the scalar
+field (default is 20).</p>
+<p>For this example, is it interesting to look at the scalar field from
+direction of the <span class="math">\(z\)</span>-axis:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_scalar_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cell_number</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">15</span><span class="p">,</span>
+                        <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1_34_0.png" src="../_images/ch1_34_0.png" />
+<p>This illustrates well the fold-related deformation of the stratigraphy,
+as well as the way the layers are influenced by the fault.</p>
+<p>The fault network modeling solutions can be visualized in the same way:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">fault_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">cell_number</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1_36_0.png" src="../_images/ch1_36_0.png" />
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_scalar_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">fault_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">cell_number</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">N</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span>
+                        <span class="n">direction</span><span class="o">=</span><span class="s1">&#39;y&#39;</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1_37_0.png" src="../_images/ch1_37_0.png" />
+<p>In the end, it is the combination of lithological and fault network
+solutions that provides us with a full geological model.</p>
+<p>Surfaces can be visualized as 3D triangle complexes in VTK (see function
+<code class="docutils literal"><span class="pre">plot_surfaces_3D</span></code> below). To create these triangles, we need to
+extract respective vertices and simplices from the potential fields of
+lithologies and faults. This process is automatized in GemPy with the
+function <code class="docutils literal"><span class="pre">get_surfaces</span></code>:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">ver</span><span class="p">,</span> <span class="n">sim</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span><span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">fault_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">original_scale</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+<span class="c1"># In python is very easy to export data using for example:</span>
+<span class="c1"># np.save(&#39;ver_fabian&#39;, ver)</span>
+<span class="c1"># np.save(&#39;sim_fabian&#39;, sim)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_surfaces_3D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">ver</span><span class="p">,</span> <span class="n">sim</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="o">&lt;</span><span class="n">gempy</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">vtkVisualization</span> <span class="n">at</span> <span class="mh">0x7fdf66dde0f0</span><span class="o">&gt;</span>
+</pre></div>
+</div>
+<p>The vertices always cut the edges of the voxels. In the next cell we can
+see how vertices and voxels relate:</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="c1"># Cropping a cross-section to visualize in 2D #REDO this part?</span>
+<span class="n">bool_b</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ver</span><span class="p">[</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">999</span><span class="p">)</span><span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ver</span><span class="p">[</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1001</span><span class="p">)</span>
+<span class="n">bool_r</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ver</span><span class="p">[</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">1039</span><span class="p">)</span><span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">ver</span><span class="p">[</span><span class="mi">1</span><span class="p">][:,</span><span class="mi">1</span><span class="p">]</span> <span class="o">&lt;</span> <span class="mi">1041</span><span class="p">)</span>
+
+<span class="c1"># Plotting section</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith_block</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">50</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="n">ax</span> <span class="o">=</span> <span class="n">plt</span><span class="o">.</span><span class="n">gca</span><span class="p">()</span>
+
+<span class="c1"># Adding grid</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_xticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">set_yticks</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2000</span><span class="p">,</span> <span class="mi">100</span><span class="p">,</span> <span class="n">endpoint</span><span class="o">=</span><span class="bp">False</span><span class="p">))</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">grid</span><span class="p">()</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">ylim</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span><span class="mi">1600</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlim</span><span class="p">(</span><span class="mi">500</span><span class="p">,</span><span class="mi">1100</span><span class="p">)</span>
+<span class="c1"># Plotting vertices</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">ver</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">bool_r</span><span class="p">][:,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">ver</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="n">bool_r</span><span class="p">][:,</span> <span class="mi">2</span><span class="p">],</span> <span class="s1">&#39;.&#39;</span><span class="p">,</span> <span class="n">color</span><span class="o">=</span><span class="s1">&#39;b&#39;</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=.</span><span class="mi">9</span><span class="p">)</span>
+<span class="n">ax</span><span class="o">.</span><span class="n">get_xaxis</span><span class="p">()</span><span class="o">.</span><span class="n">set_ticklabels</span><span class="p">([])</span>
+</pre></div>
+</div>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="p">[]</span>
+</pre></div>
+</div>
+<img alt="../_images/ch1_42_1.png" src="../_images/ch1_42_1.png" />
+</div>
+<div class="section" id="interactive-3d-visualization">
+<h3>Interactive 3D visualization<a class="headerlink" href="#interactive-3d-visualization" title="Permalink to this headline">¶</a></h3>
+<p>Using the rescaled interpolation data, we can also run our 3D VTK
+visualization in an interactive mode which allows us to alter and update
+our model in real time. Similarly to the interactive 3D visualization of
+our input data, the changes are permamently saved (in the
+<code class="docutils literal"><span class="pre">InterpolationInput</span></code> dataframe object). Addtionally, the resulting
+changes in the geological models are re-computed in real time.</p>
+<p>Important: To get a smooth response, it is important to have the Theano
+optimization in <code class="docutils literal"><span class="pre">fast_run</span></code>-mode (you can change this in the GemPy file
+<code class="docutils literal"><span class="pre">theanograf.py</span></code>) and to run Theano in the GPU. This can speed up the
+modeling time by a factor of 20.</p>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">ver_s</span><span class="p">,</span> <span class="n">sim_s</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span><span class="n">lith_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                               <span class="n">fault_block</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span>
+                               <span class="n">original_scale</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="highlight-ipython3"><div class="highlight"><pre><span></span><span class="n">gp</span><span class="o">.</span><span class="n">plot_surfaces_3D_real_time</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">ver_s</span><span class="p">,</span> <span class="n">sim_s</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy2.svg" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_theory/motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/_notebooks/ch1.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

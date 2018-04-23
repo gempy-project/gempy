@@ -24,7 +24,6 @@
     @author: Miguel de la Varga
 """
 
-import os
 from os import path
 import sys
 
@@ -35,10 +34,12 @@ import numpy as _np
 import pandas as _pn
 
 import copy
-from gempy.visualization import PlotData2D, steno3D, vtkVisualization
+import warnings
+
+from gempy.plotting.visualization import PlotData2D, vtkVisualization
 from gempy.data_management import InputData, GridClass
 from gempy.interpolator import InterpolatorData
-from gempy.sequential_pile import StratigraphicPile
+from gempy.plotting.sequential_pile import StratigraphicPile
 from gempy.topology import topology_analyze as _topology_analyze
 from gempy.utils.geomodeller_integration import ReadGeoModellerXML as _ReadGeoModellerXML
 import gempy.posterior_analysis as pa # So far we use this type of import because the other one makes a copy and blows up some asserts
@@ -223,23 +224,6 @@ def data_to_pickle(geo_data, path=False):
     geo_data.data_to_pickle(path)
 
 
-def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None, simplices=None):
-    """
-      Export data to a vtk file for posterior visualizations
-
-      Args:
-          geo_data(gempy.InputData): All values of a DataManagement object
-          block(numpy.array): 3D array containing the lithology block
-          path (str): path to the location of the vtk
-
-      Returns:
-          None
-      """
-    if lith_block is not None:
-        vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path+str('v'))
-    if vertices is not None and simplices is not None:
-        vtkVisualization.export_vtk_surfaces(vertices, simplices, path=path+str('s'), name=name)
-
 
 def get_series(geo_gata):
     """
@@ -271,20 +255,20 @@ def get_extent(geo_data):
     return geo_data.extent
 
 
-def get_data(geo_data, dtype='all', numeric=False, verbosity=0):
+def get_data(geo_data, itype='all', numeric=False, verbosity=0):
     """
     Method that returns the interfaces and orientations pandas Dataframes. Can return both at the same time or only
     one of the two
 
     Args:
-        dtype(str): input data type, either 'orientations', 'interfaces' or 'all' for both.
+        itype(str): input data type, either 'orientations', 'interfaces' or 'all' for both.
         verbosity (int): Number of properties shown
 
     Returns:
         pandas.core.frame.DataFrame: Data frame with the raw data
 
     """
-    return geo_data.get_data(itype=dtype, numeric=numeric, verbosity=verbosity)
+    return geo_data.get_data(itype=itype, numeric=numeric, verbosity=verbosity)
 
 
 def get_sequential_pile(geo_data):
@@ -403,10 +387,10 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
 
     if potential_fault is not None:
 
-        assert len(_np.atleast_2d(potential_fault)) is interp_data.geo_data_res.n_faults, 'You need to pass a potential field per fault'
+        assert len(_np.atleast_2d(potential_fault)) == interp_data.geo_data_res.n_faults, 'You need to pass a potential field per fault'
 
         pot_int = interp_data.potential_at_interfaces[:interp_data.geo_data_res.n_faults + 1]
-        for n in interp_data.geo_data_res.interfaces['formation number'][
+        for n in interp_data.geo_data_res.interfaces['formation_number'][
             interp_data.geo_data_res.interfaces['isFault']].unique():
             if n == 0:
                 continue
@@ -422,7 +406,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
         # Compute the vertices of the lithologies
         if n_formation == 'all':
 
-            for n in interp_data.geo_data_res.interfaces['formation number'][~interp_data.geo_data_res.interfaces['isFault']].unique():
+            for n in interp_data.geo_data_res.interfaces['formation_number'][~interp_data.geo_data_res.interfaces['isFault']].unique():
                 if n == 0:
                     continue
                 else:
@@ -435,38 +419,6 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
                                               step_size=step_size, original_scale=original_scale)
 
     return vertices, simplices
-
-
-def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
-                     #formations_names_l, formation_numbers_l,
-                     alpha=1, plot_data=True,
-                     size=(1920, 1080), fullscreen=False, bg_color=None):
-    """
-    Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
-
-    Args:
-        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
-        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
-        formations_names_l (list): Name of the formation of the surfaces
-        formation_numbers_l (list): Formation numbers (int)
-        alpha (float): Opacity
-        plot_data (bool): Default True
-        size (tuple): Resolution of the window
-        fullscreen (bool): Launch window in full screen or not
-
-    Returns:
-        None
-    """
-    w = vtkVisualization(geo_data, bg_color=bg_color)
-    w.set_surfaces(vertices_l, simplices_l,
-                   #formations_names_l, formation_numbers_l,
-                    alpha)
-
-    if plot_data:
-        w.set_interfaces()
-        w.set_orientations()
-    w.render_model(size=size, fullscreen=fullscreen)
-    return w
 
 
 def set_orientation_from_interfaces(geo_data, indices_array, verbose=0):
@@ -493,131 +445,6 @@ def set_orientation_from_interfaces(geo_data, indices_array, verbose=0):
                                      formation=form[0])
     if verbose:
         get_data()
-
-
-def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
-    """
-    Plot the projection of the raw data (interfaces and orientations) in 2D following a
-    specific directions
-
-    Args:
-        direction(str): xyz. Caartesian direction to be plotted
-        series(str): series to plot
-        **kwargs: seaborn lmplot key arguments. (TODO: adding the link to them)
-
-    Returns:
-        None
-    """
-    plot = PlotData2D(geo_data)
-    plot.plot_data(direction=direction, data_type=data_type, series=series, legend_font_size=legend_font_size, **kwargs)
-    # TODO saving options
-
-
-def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
-    """
-    Plot a section of the block model
-
-    Args:
-        cell_number(int): position of the array to plot
-        direction(str): xyz. Caartesian direction to be plotted
-        interpolation(str): Type of interpolation of plt.imshow. Default 'none'.  Acceptable values are 'none'
-        ,'nearest', 'bilinear', 'bicubic',
-        'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser',
-        'quadric', 'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc',
-        'lanczos'
-       **kwargs: imshow keywargs
-
-    Returns:
-        None
-    """
-    plot = PlotData2D(geo_data)
-    plot.plot_block_section(cell_number, block=block, direction=direction, **kwargs)
-    # TODO saving options
-
-
-def plot_scalar_field(geo_data, potential_field, cell_number, N=20,
-                      direction="y", plot_data=True, series="all", *args, **kwargs):
-    """
-    Plot a potential field in a given direction.
-
-    Args:
-        cell_number(int): position of the array to plot
-        potential_field(str): name of the potential field (or series) to plot
-        n_pf(int): number of the  potential field (or series) to plot
-        direction(str): xyz. Caartesian direction to be plotted
-        serie: *Deprecated*
-        **kwargs: plt.contour kwargs
-
-    Returns:
-        None
-    """
-    plot = PlotData2D(geo_data)
-    plot.plot_scalar_field(potential_field, cell_number, N=N,
-                              direction=direction,  plot_data=plot_data, series=series,
-                              *args, **kwargs)
-
-def plot_data_3D(geo_data):
-    """
-    Plot in vtk all the input data of a model
-    Args:
-        geo_data (gempy.DataManagement.InputData): Input data of the model
-
-    Returns:
-        None
-    """
-    vv = vtkVisualization(geo_data)
-    vv.set_interfaces()
-    vv.set_orientations()
-    vv.render_model()
-    return None
-
-
-def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
-                     #formations_names_l, formation_numbers_l,
-                     alpha=1, plot_data=True, posterior=None, samples=None,
-                     size=(1920, 1080), fullscreen=False):
-    """
-    Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.
-    IMPORTANT NOTE it is highly recommended to have the flag fast_run in the theano optimization. Also note that the
-    time needed to compute each model increases linearly with every potential field (i.e. fault or discontinuity). It
-    may be better to just modify each potential field individually to increase the speed (See gempy.select_series).
-
-    Args:
-        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
-        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
-        formations_names_l (list): Name of the formation of the surfaces
-        formation_numbers_l (list): Formation numbers (int)
-        alpha (float): Opacity
-        plot_data (bool): Default True
-        size (tuple): Resolution of the window
-        fullscreen (bool): Launch window in full screen or not
-
-    Returns:
-        None
-    """
-    assert isinstance(interp_data, InterpolatorData), 'The object has to be instance of the InterpolatorInput'
-    w = vtkVisualization(interp_data.geo_data_res, real_time=True)
-    w.set_surfaces(vertices_l, simplices_l,
-                   #formations_names_l, formation_numbers_l,
-                    alpha)
-
-    if posterior is not None:
-        assert isinstance(posterior, pa.Posterior), 'The object has to be instance of the Posterior class'
-        w.post = posterior
-        if samples is not None:
-            samp_i = samples[0]
-            samp_f = samples[1]
-        else:
-            samp_i = 0
-            samp_f = posterior.n_iter
-
-        w.create_slider_rep(samp_i, samp_f, samp_f)
-
-    w.interp_data = interp_data
-    if plot_data:
-        w.set_interfaces()
-        w.set_orientations()
-    w.render_model(size=size, fullscreen=fullscreen)
 
 
 def precomputations_gravity(interp_data, n_chunck=25, densities=None):
@@ -756,8 +583,9 @@ def select_series(geo_data, series):
     new_geo_data.set_faults(new_geo_data.count_faults())
 
     # Change the dataframe with the series
-    new_geo_data.series = new_geo_data.series[new_geo_data.interfaces['series'].unique()]
-    new_geo_data.set_formation_number()
+    new_geo_data.series = new_geo_data.series[new_geo_data.interfaces['series'].unique().categories].dropna(how='all')
+    new_geo_data.formations = new_geo_data.formations.loc[new_geo_data.interfaces['formation'].unique().categories]
+    new_geo_data.update_df()
     return new_geo_data
 
 
@@ -767,19 +595,20 @@ def set_series(geo_data, series_distribution=None, order_series=None, order_form
     Method to define the different series of the project.
 
     Args:
-        series_distribution (dict): with the name of the serie as key and the name of the formations as values.
-        order(Optional[list]): order of the series by default takes the dictionary keys which until python 3.6 are
-           random. This is important to set the erosion relations between the different series
+        series_distribution (dict or dataframe): with the name of the serie as key and the name of the formations as values.
+        order(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
+        dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
 
     Returns:
         self.series: A pandas DataFrame with the series and formations relations
         self.interfaces: one extra column with the given series
         self.orientations: one extra column with the given series
     """
-    geo_data.set_series(series_distribution=series_distribution, order=order_series)
-    geo_data.order_table()
+    geo_data.update_df(series_distribution=series_distribution, order=order_series)
+    #geo_data.order_table()
     if order_formations is not None:
-        geo_data.set_formation_number(order_formations)
+        geo_data.set_formations(formation_order=order_formations)
+        geo_data.order_table()
 
     if verbose > 0:
          return get_sequential_pile(geo_data)
@@ -788,7 +617,7 @@ def set_series(geo_data, series_distribution=None, order_series=None, order_form
 
 
 def set_order_formations(geo_data, order_formations):
-    geo_data.set_formation_number(order_formations)
+    geo_data.set_formation(order_formations)
 
 
 def set_interfaces(geo_data, interf_Dataframe, append=False):
@@ -815,7 +644,6 @@ def set_orientations(geo_data, orient_Dataframe, append=False):
     geo_data.set_orientations(orient_Dataframe, append=append)
 
 
-# TODO:
 def set_grid(geo_data, grid):
     assert isinstance(grid, GridClass)
     geo_data.grid = grid
@@ -823,6 +651,7 @@ def set_grid(geo_data, grid):
     geo_data.resolution = grid._grid_res
 
 
+# TODO:
 def set_interpolation_data(geo_data, **kwargs):
     """
     InterpolatorInput is a class that contains all the preprocessing operations to prepare the data to compute the model.
@@ -865,14 +694,14 @@ def set_geophysics_obj(interp_data, ai_extent, ai_resolution, ai_z=None, range_m
     return interp_data.geophy
 
 
-# =====================================
-# Functions for Geophysics
-# =====================================
 def set_densities(interp_data, densities):
 
     interp_data.interpolator.set_densities(densities)
 
 
+# =====================================
+# Functions for Geophysics
+# =====================================
 def topology_compute(geo_data, lith_block, fault_block,
                      cell_number=None, direction=None,
                      compute_areas=False, return_label_block=False):
@@ -918,6 +747,204 @@ def topology_compute(geo_data, lith_block, fault_block,
     return _topology_analyze(lb, fb, geo_data.n_faults, areas_bool=compute_areas, return_block=return_label_block)
 
 
+
+# +++++++
+# DEP visualization
+#
+def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None, simplices=None):
+    """
+      Export data to a vtk file for posterior visualizations
+
+      Args:
+          geo_data(gempy.InputData): All values of a DataManagement object
+          block(numpy.array): 3D array containing the lithology block
+          path (str): path to the location of the vtk
+
+      Returns:
+          None
+      """
+
+    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
+    if lith_block is not None:
+        vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path+str('v'))
+    if vertices is not None and simplices is not None:
+        vtkVisualization.export_vtk_surfaces(vertices, simplices, path=path+str('s'), name=name)
+
+
+def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
+                     #formations_names_l, formation_numbers_l,
+                     alpha=1, plot_data=True,
+                     size=(1920, 1080), fullscreen=False, bg_color=None):
+    """
+    Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
+
+    Args:
+        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
+        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
+        formations_names_l (list): Name of the formation of the surfaces
+        formation_numbers_l (list): formation_numbers (int)
+        alpha (float): Opacity
+        plot_data (bool): Default True
+        size (tuple): Resolution of the window
+        fullscreen (bool): Launch window in full screen or not
+
+    Returns:
+        None
+    """
+
+    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
+
+    w = vtkVisualization(geo_data, bg_color=bg_color)
+    w.set_surfaces(vertices_l, simplices_l,
+                   #formations_names_l, formation_numbers_l,
+                    alpha)
+
+    if plot_data:
+        w.set_interfaces()
+        w.set_orientations()
+    w.render_model(size=size, fullscreen=fullscreen)
+    return w
+
+
+def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
+    """
+    Plot the projection of the raw data (interfaces and orientations) in 2D following a
+    specific directions
+
+    Args:
+        direction(str): xyz. Caartesian direction to be plotted
+        series(str): series to plot
+        **kwargs: seaborn lmplot key arguments. (TODO: adding the link to them)
+
+    Returns:
+        None
+    """
+
+    warnings.warn("gempy plotting functionality will be moved in version 1.2, use gempy.plot module instead", FutureWarning)
+
+    plot = PlotData2D(geo_data)
+
+    # TODO saving options
+    return plot.plot_data(direction=direction, data_type=data_type, series=series, legend_font_size=legend_font_size, **kwargs)
+
+
+def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
+    """
+    Plot a section of the block model
+
+    Args:
+        cell_number(int): position of the array to plot
+        direction(str): xyz. Caartesian direction to be plotted
+        interpolation(str): Type of interpolation of plt.imshow. Default 'none'.  Acceptable values are 'none'
+        ,'nearest', 'bilinear', 'bicubic',
+        'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser',
+        'quadric', 'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc',
+        'lanczos'
+       **kwargs: imshow keywargs
+
+    Returns:
+        None
+    """
+    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
+    plot = PlotData2D(geo_data)
+    plot.plot_block_section(cell_number, block=block, direction=direction, **kwargs)
+    # TODO saving options
+
+def plot_scalar_field(geo_data, potential_field, cell_number, N=20,
+                      direction="y", plot_data=True, series="all", *args, **kwargs):
+    """
+    Plot a potential field in a given direction.
+
+    Args:
+        cell_number(int): position of the array to plot
+        potential_field(str): name of the potential field (or series) to plot
+        n_pf(int): number of the  potential field (or series) to plot
+        direction(str): xyz. Caartesian direction to be plotted
+        serie: *Deprecated*
+        **kwargs: plt.contour kwargs
+
+    Returns:
+        None
+    """
+    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
+    plot = PlotData2D(geo_data)
+    plot.plot_scalar_field(potential_field, cell_number, N=N,
+                              direction=direction,  plot_data=plot_data, series=series,
+                              *args, **kwargs)
+
+
+def plot_data_3D(geo_data, **kwargs):
+    """
+    Plot in vtk all the input data of a model
+    Args:
+        geo_data (gempy.DataManagement.InputData): Input data of the model
+
+    Returns:
+        None
+    """
+    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
+    vv = vtkVisualization(geo_data)
+    vv.set_interfaces()
+    vv.set_orientations()
+    vv.render_model(**kwargs)
+    return vv
+
+
+def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
+                     #formations_names_l, formation_numbers_l,
+                     alpha=1, plot_data=True, posterior=None, samples=None,
+                     size=(1920, 1080), fullscreen=False):
+    """
+    Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.
+    IMPORTANT NOTE it is highly recommended to have the flag fast_run in the theano optimization. Also note that the
+    time needed to compute each model increases linearly with every potential field (i.e. fault or discontinuity). It
+    may be better to just modify each potential field individually to increase the speed (See gempy.select_series).
+
+    Args:
+        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
+        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
+        formations_names_l (list): Name of the formation of the surfaces
+        formation_numbers_l (list): formation_numbers (int)
+        alpha (float): Opacity
+        plot_data (bool): Default True
+        size (tuple): Resolution of the window
+        fullscreen (bool): Launch window in full screen or not
+
+    Returns:
+        None
+    """
+    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
+    assert isinstance(interp_data, InterpolatorData), 'The object has to be instance of the InterpolatorInput'
+    w = vtkVisualization(interp_data.geo_data_res, real_time=True)
+    w.set_surfaces(vertices_l, simplices_l,
+                   #formations_names_l, formation_numbers_l,
+                    alpha)
+
+    if posterior is not None:
+        assert isinstance(posterior, pa.Posterior), 'The object has to be instance of the Posterior class'
+        w.post = posterior
+        if samples is not None:
+            samp_i = samples[0]
+            samp_f = samples[1]
+        else:
+            samp_i = 0
+            samp_f = posterior.n_iter
+
+        w.create_slider_rep(samp_i, samp_f, samp_f)
+
+    w.interp_data = interp_data
+    if plot_data:
+        w.set_interfaces()
+        w.set_orientations()
+    w.render_model(size=size, fullscreen=fullscreen)
+
+
 def plot_topology(geo_data, G, centroids, direction="y"):
     """
     Plot the topology adjacency graph in 2-D.
@@ -933,4 +960,6 @@ def plot_topology(geo_data, G, centroids, direction="y"):
     Returns:
         Nothing, it just plots.
     """
+    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
     PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)

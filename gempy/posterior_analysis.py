@@ -54,7 +54,7 @@ def change_input_data(db, interp_data, i):
 
     recalc_gradients(interp_data.geo_data_res.orientations)
 
-    # interp_data.geo_data_res = interp_data.rescale_data(interp_data.geo_data_res)
+    # interp_data.geo_data_res_no_basement = interp_data.rescale_data(interp_data.geo_data_res_no_basement)
 
     # update interpolator
     interp_data.update_interpolator()
@@ -85,7 +85,7 @@ def _change_input_data_old(db, interp_data, i, tracename="input_data"):
 
     recalc_gradients(interp_data.geo_data_res.orientations)
 
-    # interp_data.geo_data_res = interp_data.rescale_data(interp_data.geo_data_res)
+    # interp_data.geo_data_res_no_basement = interp_data.rescale_data(interp_data.geo_data_res_no_basement)
 
     # update interpolator
     interp_data.update_interpolator()
@@ -349,7 +349,7 @@ def modify_plane_dip(dip, group_id, data_obj):
     Args:
         dip (float): Desired dip angle of the plane.
         group_id (str): Group id identifying the data points belonging to the plane.
-        data_obj (:obj:): Data object to be modified (geo_data or interp_data.geo_data_res)
+        data_obj (:obj:): Data object to be modified (geo_data or interp_data.geo_data_res_no_basement)
 
     Returns:
         Directly modifies the given data object.
