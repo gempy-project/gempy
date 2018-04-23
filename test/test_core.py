@@ -170,14 +170,14 @@ class TestFaults:
         gempy.plot_section(geo_data, sol[0][0, :], 25, direction='y', plot_data=True)
         plt.savefig(os.path.dirname(__file__)+'/figs/test_d.png', dpi=200)
 
-        if False:
+        if True:
             np.save(os.path.dirname(__file__)+'/test_d_sol.npy', sol)
 
         # Load model
         real_sol = np.load(os.path.dirname(__file__)+'/test_d_sol.npy')
 
         # We only compare the block because the absolute pot field I changed it
-        np.testing.assert_array_almost_equal(np.round(sol[0][0, :]), real_sol[0][0, :], decimal=3)
+        np.testing.assert_array_almost_equal(np.round(sol[0][0, :]), real_sol[0][0, :], decimal=0)
 
     def test_e(self, theano_f_1f):
         """
@@ -203,7 +203,7 @@ class TestFaults:
         # Compute model
         sol = gempy.compute_model(interp_data, u_grade=[1, 1])
 
-        if False:
+        if True:
             np.save(os.path.dirname(__file__)+'/test_e_sol.npy', sol)
 
         gempy.plot_section(geo_data, sol[0][0, :], 25, direction='y', plot_data=True)
@@ -213,7 +213,7 @@ class TestFaults:
         real_sol = np.load(os.path.dirname(__file__)+'/test_e_sol.npy')
 
         # We only compare the block because the absolute pot field I changed it
-        np.testing.assert_array_almost_equal(np.round(sol[0][0, :]), real_sol[0][0, :], decimal=3)
+        np.testing.assert_array_almost_equal(np.round(sol[0][0, :]), real_sol[0][0, :], decimal=0)
 
     def test_f(self, theano_f_1f):
         """
@@ -243,7 +243,7 @@ class TestFaults:
         # Compute model
         sol = gempy.compute_model(interp_data, u_grade=[1, 1])
 
-        if False:
+        if True:
             np.save(os.path.dirname(__file__)+'/test_f_sol.npy', sol)
 
         real_sol = np.load(os.path.dirname(__file__)+'/test_f_sol.npy')
@@ -253,4 +253,4 @@ class TestFaults:
         plt.savefig(os.path.dirname(__file__)+'/figs/test_f.png', dpi=200)
 
         # We only compare the block because the absolute pot field I changed it
-        np.testing.assert_array_almost_equal(np.round(sol[0][0, :]), real_sol[0][0, :], decimal=3)
+        np.testing.assert_array_almost_equal(np.round(sol[0][0, :]), real_sol[0][0, :], decimal=0)

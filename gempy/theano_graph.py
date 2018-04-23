@@ -934,7 +934,7 @@ class TheanoGraph(object):
 
         return Z_x
 
-    def block_series(self):
+    def block_series(self, slope=50):
         """
         Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
 
@@ -965,7 +965,7 @@ class TheanoGraph(object):
         min_pot_sigm = 2*min_pot - self.scalar_field_at_interfaces_values[-1]
 
         boundaty_pad = (max_pot - min_pot)*0.01
-        l = 5000 / (max_pot - min_pot) #(max_pot - min_pot)
+        l = slope / (max_pot - min_pot) #(max_pot - min_pot)
 
       #  l = theano.printing.Print("l")(l)
 
@@ -1124,7 +1124,7 @@ class TheanoGraph(object):
         # Computing the fault scalar field
         # ================================
 
-        faults_matrix = self.block_series()
+        faults_matrix = self.block_series(slope=1000)
 
         # Update the block matrix
         final_block = T.set_subtensor(

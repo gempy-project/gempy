@@ -139,11 +139,18 @@ class InputData(object):
         except ValueError:
             pass
 
-        n_series = self.interfaces['order_series'].unique().max()
+        try:
+            n_series = self.interfaces['order_series'].unique().max()
+        except ValueError:
+            n_series = 0
 
         drop_basement = self.interfaces['formation'] == 'basement'
         original_frame = self.interfaces[~drop_basement]
-        n_formation = original_frame['formation_number'].unique().max() + 1
+
+        try:
+            n_formation = original_frame['formation_number'].unique().max() + 1
+        except ValueError:
+            n_formation = 1
         l = len(self.interfaces)
 
         if not 'basement' in self.interfaces['formation'].values:

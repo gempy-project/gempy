@@ -15,6 +15,7 @@ class TestPerfomance:
 
         # Importing the data from csv files and settign extent and resolution
         geo_data = gempy.read_pickle(os.path.dirname(__file__)+"/input_data/geo_data.pickle")
+        geo_data.interfaces['formation'] = geo_data.interfaces['formation'].astype('category')
         geo_data.add_orientation(X=-2.88043478e+04, Y=6.21413043e+06, Z=-1.17648965e+02, dip=0, azimuth=0, polarity=1,
                                  formation='basement')
 
