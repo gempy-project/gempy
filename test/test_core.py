@@ -45,7 +45,7 @@ class TestNoFaults:
         # Compute model
         sol = gempy.compute_model(interp_data, u_grade=[1])
 
-        if True:
+        if False:
             np.save(os.path.dirname(__file__)+'/test_a_sol.npy', sol)
 
         # Load model
@@ -82,7 +82,7 @@ class TestNoFaults:
         gempy.plot_section(geo_data, sol[0][0, :], 25, direction='y', plot_data=True)
         plt.savefig(os.path.dirname(__file__)+'/figs/test_b.png', dpi=200)
 
-        if True:
+        if False:
             np.save(os.path.dirname(__file__)+'/test_b_sol.npy', sol)
 
         # Load model
@@ -116,7 +116,7 @@ class TestNoFaults:
         gempy.plot_section(geo_data, sol[0][0, :], 25, direction='y', plot_data=True)
         plt.savefig(os.path.dirname(__file__)+'/figs/test_c.png', dpi=200)
 
-        if True:
+        if False:
             np.save(os.path.dirname(__file__)+'/test_c_sol.npy', sol)
 
         # Load model
@@ -170,7 +170,7 @@ class TestFaults:
         gempy.plot_section(geo_data, sol[0][0, :], 25, direction='y', plot_data=True)
         plt.savefig(os.path.dirname(__file__)+'/figs/test_d.png', dpi=200)
 
-        if True:
+        if False:
             np.save(os.path.dirname(__file__)+'/test_d_sol.npy', sol)
 
         # Load model
@@ -203,7 +203,7 @@ class TestFaults:
         # Compute model
         sol = gempy.compute_model(interp_data, u_grade=[1, 1])
 
-        if True:
+        if False:
             np.save(os.path.dirname(__file__)+'/test_e_sol.npy', sol)
 
         gempy.plot_section(geo_data, sol[0][0, :], 25, direction='y', plot_data=True)
@@ -243,7 +243,7 @@ class TestFaults:
         # Compute model
         sol = gempy.compute_model(interp_data, u_grade=[1, 1])
 
-        if True:
+        if False:
             np.save(os.path.dirname(__file__)+'/test_f_sol.npy', sol)
 
         real_sol = np.load(os.path.dirname(__file__)+'/test_f_sol.npy')

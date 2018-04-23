@@ -62,6 +62,8 @@ class InputData(object):
                  path_i=None, path_o=None, path_f =None,
                  **kwargs):
 
+        self._formation_values_set = False
+
         if path_f and path_o is None:
             warnings.warn('path_f is deprecated use instead path_o')
             path_o = path_f
@@ -98,9 +100,8 @@ class InputData(object):
         if path_o or path_i:
             self.import_data_csv(path_i=path_i, path_o=path_o)
 
-        self.interfaces['formation'] = self.interfaces['formation'].astype('category')
-        self.orientations['formation'] = self.orientations['formation'].astype('category')
-        self._formation_values_set = False
+
+
 
         # If not provided set default series
         self.update_df()
@@ -159,9 +160,11 @@ class InputData(object):
                 columns = {'X': self.extent[0], 'Y': self.extent[2], 'Z': self.extent[4], 'formation':'basement', 'order_series': n_series, 'formation_number': n_formation, 'series': self.series.columns[-1]}
             except AttributeError:
                 columns = {'X': self.extent[0], 'Y': self.extent[2], 'Z': self.extent[4], 'formation':'basement', 'order_series': n_series, 'formation_number': n_formation, 'series': 'Default series'}
+
             for key in columns:
-                self.interfaces.ix[l, str(key)] = columns[key]
-                self.order_table()
+                self.interfaces.at[l, str(key)] = columns[key]
+
+            self.order_table()
             print('here')
            # sef.add_interface(formation='basement', order_series=n_series, formation_number = n_formation)
         else:
@@ -343,6 +346,8 @@ class InputData(object):
 
             self.interfaces[interfaces_read.columns] = interfaces_read[interfaces_read.columns]
 
+        self.update_df()
+
     def modify_interface(self, index, **kwargs):
         """
         Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
@@ -460,8 +465,13 @@ class InputData(object):
 
         """
         l = len(self.orientations)
-        for key in kwargs:
-            self.orientations.ix[l, str(key)] = kwargs[key]
+        try:
+            for key in kwargs:
+                self.orientations.ix[l, str(key)] = kwargs[key]
+        except ValueError:
+            self.orientations['formation'].cat.add_categories(kwargs['formation'], inplace=True)
+            for key in kwargs:
+                self.orientations.ix[l, str(key)] = kwargs[key]
         self.calculate_gradient()
         self.calculate_orientations()
         if not 'series' in kwargs:
@@ -733,6 +743,11 @@ class InputData(object):
         return self.series
 
     def update_df(self, series_distribution=None, order=None):
+
+        self.interfaces['formation'] = self.interfaces['formation'].astype('category')
+        self.orientations['formation'] = self.orientations['formation'].astype('category')
+
+
         self.set_basement()
         self.set_series(series_distribution=series_distribution, order=order)
 
