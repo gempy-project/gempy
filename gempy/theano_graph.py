@@ -996,13 +996,20 @@ class TheanoGraph(object):
             """
 
             if True:
-                a = theano.printing.Print("a")(a)
-                b = theano.printing.Print("b")(b)
-               # l = 200/ (a - b)
-                slice_init = theano.printing.Print("slice_init")(slice_init)
-                n_formation_0 = theano.printing.Print("n_formation_0")(n_formation[slice_init:slice_init+1])
-                n_formation_1 = theano.printing.Print("n_formation_1")(n_formation[slice_init+1:slice_init+2])
-                drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift[slice_init:slice_init+1][0])
+
+                slice_init = slice_init
+                n_formation_0 = n_formation[slice_init:slice_init + 1]
+                n_formation_1 = n_formation[slice_init + 1:slice_init + 2]
+                drift = drift[slice_init:slice_init + 1][0]
+
+                if 'compare' in self.verbose:
+                    a = theano.printing.Print("a")(a)
+                    b = theano.printing.Print("b")(b)
+                   # l = 200/ (a - b)
+                    slice_init = theano.printing.Print("slice_init")(slice_init)
+                    n_formation_0 = theano.printing.Print("n_formation_0")(n_formation[slice_init:slice_init+1])
+                    n_formation_1 = theano.printing.Print("n_formation_1")(n_formation[slice_init+1:slice_init+2])
+                    drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift[slice_init:slice_init+1][0])
 
                 #drift = T.switch(slice_init == 0, n_formation_1, n_formation_0)
             #    drift = T.set_subtensor(n_formation[0], n_formation[1])
@@ -1018,7 +1025,6 @@ class TheanoGraph(object):
             else:
                 return T.le(Zx, a) * T.ge(Zx, b) * n_formation_0
 
-        self.n_formation_op_float = theano.printing.Print("n_formation_op")(self.n_formation_op_float)
 
         n_formation_op_float_sigmoid = T.repeat(self.n_formation_op_float, 2)
 
@@ -1032,7 +1038,9 @@ class TheanoGraph(object):
 
         drift = T.set_subtensor(n_formation_op_float_sigmoid[0], n_formation_op_float_sigmoid[1])
 
-        n_formation_op_float_sigmoid = theano.printing.Print("n_formation_op_float_sigmoid")(n_formation_op_float_sigmoid)
+        if 'n_formation_op_float_sigmoid' in self.verbose:
+            n_formation_op_float_sigmoid = theano.printing.Print("n_formation_op_float_sigmoid")\
+                (n_formation_op_float_sigmoid)
 
         partial_block, updates2 = theano.scan(
             fn=compare,
@@ -1154,7 +1162,9 @@ class TheanoGraph(object):
                          len_f_0, len_f_1,
                          n_form_per_serie_0, n_form_per_serie_1,
                          u_grade_iter,
-                         final_block, scalar_field_at_form, fault_block):
+                         final_block, scalar_field_at_form,
+                         #fault_block
+                         ):
 
         """
         Function that loops each series, generating a potential field for each on them with the respective block model
@@ -1172,7 +1182,7 @@ class TheanoGraph(object):
         """
 
         # Setting the fault contribution to kriging from the previous loop
-        self.fault_matrix = fault_block
+       # self.fault_matrix = fault_block
 
         # THIS IS THE FINAL BLOCK. (DO I NEED TO LOOP THE FAULTS FIRST? Yes you do)
         # ==================
@@ -1273,7 +1283,7 @@ class TheanoGraph(object):
 
             # We return the last iteration of the fault matrix
             self.fault_matrix = fault_loop[0][-1]
-
+          #  fault_block = self.fault_matrix[:, :-2 * self.len_points]
             # For this we return every iteration since is each potential field at interface
             self.pfai_fault = fault_loop[1]
 
@@ -1281,24 +1291,23 @@ class TheanoGraph(object):
         if len(self.len_series_f.get_value()) - 1 > n_faults:
 
             # Compute Lithologies
-             lith_loop, updates2 = theano.scan(
+            lith_loop, updates2 = theano.scan(
                  fn=self.compute_a_series,
                  outputs_info=[self.lith_block_init, self.final_scalar_field_at_formations_op],
                  sequences=[dict(input=self.len_series_i[n_faults:], taps=[0, 1]),
                             dict(input=self.len_series_f[n_faults:], taps=[0, 1]),
                             dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),
                             dict(input=self.n_universal_eq_T[n_faults:], taps=[0])],
-                 non_sequences=[self.fault_matrix],
+                # non_sequences=[self.fault_matrix],
                  name='Looping interfaces',
                  profile=False,
                  return_list=True
-             )
+            )
 
-             lith_matrix = lith_loop[0][-1]
-             self.pfai_lith = lith_loop[1]
+            lith_matrix = lith_loop[0][-1]
+            self.pfai_lith = lith_loop[1]
 
         pfai = T.vertical_stack(self.pfai_fault, self.pfai_lith)
-
         return [lith_matrix[:, :-2 * self.len_points], self.fault_matrix[:, :-2 * self.len_points], pfai]
 
     # ==================================

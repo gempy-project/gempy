@@ -165,11 +165,9 @@ class InputData(object):
                 self.interfaces.at[l, str(key)] = columns[key]
 
             self.order_table()
-            print('here')
            # sef.add_interface(formation='basement', order_series=n_series, formation_number = n_formation)
         else:
             self.modify_interface((drop_basement.index[drop_basement])[0], formation='basement', order_series=n_series, formation_number = n_formation)
-            print('there')
 
     def calculate_gradient(self):
         """
@@ -770,12 +768,14 @@ class InputData(object):
         self.orientations['formation'] = self.orientations['formation'].astype('category')
 
         if formation_order is None:
-            try:
-                # Check if there is already a df
-                formation_order = self.formations.index
-
-            except AttributeError:
+            if self._formation_values_set is False:
                 formation_order = self.interfaces['formation'].cat.categories
+            # try:
+            #     # Check if there is already a df
+            #     formation_order = self.formations.index
+            #
+            # except AttributeError:
+            #
 
         if 'basement' not in formation_order:
             formation_order = np.append(formation_order, 'basement')

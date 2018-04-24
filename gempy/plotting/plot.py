@@ -40,7 +40,7 @@ from .visualization import PlotData2D, steno3D, vtkVisualization
 import gempy
 
 
-class vtk_plot():
+class vtkPlot():
     def __init__(self, geo_data, alpha=1,
                      size=(1920, 1080), fullscreen=False, bg_color=None):
 
@@ -433,6 +433,124 @@ class vtk_plot():
         qgrid_widget.observe(self.qgrid_callBack, names=['_df'])
         return qgrid_widget
 
+def plot_data_3D(geo_data, **kwargs):
+    """
+    Plot in vtk all the input data of a model
+    Args:
+        geo_data (gempy.DataManagement.InputData): Input data of the model
+
+    Returns:
+        None
+    """
+    vv = vtkPlot(geo_data, **kwargs)
+    vv.plot_data_3D(**kwargs)
+    # vv = vtkVisualization(geo_data)
+    # vv.set_interfaces()
+    # vv.set_orientations()
+    # vv.render_model(**kwargs)
+    #
+    # vv.close_window()
+
+    return vv
+
+
+def plot_surfaces_3D_real_time(geo_data, interp_data, vertices_l, simplices_l,
+                              plot_data=True, posterior=None, samples=None, **kwargs):
+                     #formations_names_l, formation_numbers_l,
+                   #  ,
+                   #  size=(1920, 1080), fullscreen=False):
+    """
+    Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.
+    IMPORTANT NOTE it is highly recommended to have the flag fast_run in the theano optimization. Also note that the
+    time needed to compute each model increases linearly with every potential field (i.e. fault or discontinuity). It
+    may be better to just modify each potential field individually to increase the speed (See gempy.select_series).
+
+    Args:
+        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
+        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
+        formations_names_l (list): Name of the formation of the surfaces
+        formation_numbers_l (list): formation_numbers (int)
+        alpha (float): Opacity
+        plot_data (bool): Default True
+        size (tuple): Resolution of the window
+        fullscreen (bool): Launch window in full screen or not
+
+    Returns:
+        None
+    """
+
+    assert isinstance(interp_data, gempy.InterpolatorData), 'The object has to be instance of the InterpolatorInput'
+    vv = vtkPlot(geo_data, **kwargs)
+    vv.plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l, plot_data=plot_data, posterior=posterior,
+                                  samples=samples, **kwargs)
+
+    return vv
+
+    # w = vtkVisualization(interp_data.geo_data_res, real_time=True)
+    # w.set_surfaces(vertices_l, simplices_l,
+    #                #formations_names_l, formation_numbers_l,
+    #                 alpha)
+    #
+    # if posterior is not None:
+    #     assert isinstance(posterior, gempy.Posterior), 'The object has to be instance of the Posterior class'
+    #     w.post = posterior
+    #     if samples is not None:
+    #         samp_i = samples[0]
+    #         samp_f = samples[1]
+    #     else:
+    #         samp_i = 0
+    #         samp_f = posterior.n_iter
+    #
+    #     w.create_slider_rep(samp_i, samp_f, samp_f)
+    #
+    # w.interp_data = interp_data
+    # if plot_data:
+    #     w.set_interfaces()
+    #     w.set_orientations()
+    # w.render_model(size=size, fullscreen=fullscreen)
+    #
+    # w.close_window()
+
+
+def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
+                     # formations_names_l, formation_numbers_l,
+                     alpha=1, plot_data=True,
+                     #size=(1920, 1080), fullscreen=False, bg_color=None
+                     **kwargs):
+    """
+    Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
+
+    Args:
+        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
+        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
+        formations_names_l (list): Name of the formation of the surfaces
+        formation_numbers_l (list): formation_numbers (int)
+        alpha (float): Opacity
+        plot_data (bool): Default True
+        size (tuple): Resolution of the window
+        fullscreen (bool): Launch window in full screen or not
+
+    Returns:
+        None
+    """
+    vv =  vtkPlot(geo_data, **kwargs)
+
+    vv.plot_surfaces_3D( vertices_l, simplices_l,
+                     #formations_names_l, formation_numbers_l,
+                      plot_data=plot_data)
+    # w = vtkVisualization(geo_data, bg_color=bg_color)
+    # w.set_surfaces(vertices_l, simplices_l,
+    #                # formations_names_l, formation_numbers_l,
+    #                alpha)
+    #
+    # if plot_data:
+    #     w.set_interfaces()
+    #     w.set_orientations()
+    # w.render_model(size=size, fullscreen=fullscreen)
+    #
+    # w.close_window()
+
+    return vv
 
 def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None, simplices=None):
     """
@@ -447,9 +565,9 @@ def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None
           None
       """
     if lith_block is not None:
-        vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path+str('v'))
+        vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path)
     if vertices is not None and simplices is not None:
-        vtkVisualization.export_vtk_surfaces(vertices, simplices, path=path+str('s'), name=name)
+        vtkVisualization.export_vtk_surfaces(vertices, simplices, path=path, name=name)
 
 
 def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):

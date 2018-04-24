@@ -375,7 +375,7 @@ class InterpolatorData:
 
             # We hide the scaled copy of DataManagement object from the user.
             self.geo_data_res_no_basement = geo_data_res
-            self.geo_data_res_no_basement.interfaces = self.geo_data_res_no_basement.interfaces[:-1]
+            self.geo_data_res_no_basement.interfaces = geo_data_res.interfaces[~(geo_data_res.interfaces['formation'].values == 'basement')]#self.geo_data_res_no_basement.interfaces[:-1]
             # Sorting data in case the user provides it unordered
             self.order_table()
 
