@@ -46,7 +46,7 @@ class TestPerfomance:
                                    *interp_data.interpolator.tg.n_universal_eq_T.get_value()[n_faults:],
                                    interp_data.interpolator.tg.lith_block_init,
                                    interp_data.interpolator.tg.final_scalar_field_at_formations_op,
-                                   interp_data.interpolator.tg.fault_matrix
+                                  # interp_data.interpolator.tg.fault_matrix
                                ),
                                on_unused_input='ignore',
                                allow_input_downcast=True,

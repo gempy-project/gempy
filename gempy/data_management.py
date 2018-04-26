@@ -201,8 +201,11 @@ class InputData(object):
         """
         faults_series = []
         for i in self.interfaces['series'].unique():
-            if ('fault' in i or 'Fault' in i) and 'Default' not in i:
-                faults_series.append(i)
+            try:
+                if ('fault' in i or 'Fault' in i) and 'Default' not in i:
+                    faults_series.append(i)
+            except TypeError:
+                pass
         return faults_series
 
     def create_orientation_from_interfaces(self, indices):
@@ -211,7 +214,7 @@ class InputData(object):
 
         center, normal = self.plane_fit(selected_points)
         orientation = get_orientation(normal)
-        return [*center, *orientation, *normal]
+        return np.array([*center, *orientation, *normal])
 
     def data_to_pickle(self, path=False):
         """
@@ -342,8 +345,11 @@ class InputData(object):
             assert set(['X', 'Y', 'Z', 'formation']).issubset(interfaces_read.columns), \
                 "One or more columns do not match with the expected values " + str(interfaces_read.columns)
 
-            self.interfaces[interfaces_read.columns] = interfaces_read[interfaces_read.columns]
-
+            c = np.array(self._columns_i_1)
+            interfaces_read = interfaces_read.assign(**dict.fromkeys(c[~np.in1d(c, interfaces_read.columns)], False))
+            self.set_interfaces(interfaces_read, append=True)
+            #self.interfaces[interfaces_read.columns] = interfaces_read[interfaces_read.columns]
+            #gagag
         self.update_df()
 
     def modify_interface(self, index, **kwargs):
@@ -578,11 +584,12 @@ class InputData(object):
 
         self.interfaces = self.interfaces[~self.interfaces[['X', 'Y', 'Z']].isna().any(1)]
 
-
        # self.set_annotations()
 
-        self.set_faults()
+
         #self.set_annotations()
+        if not self.interfaces.index.is_unique:
+            self.interfaces.reset_index(drop=True, inplace=True)
 
         if order_table:
 
@@ -590,6 +597,7 @@ class InputData(object):
             self.order_table()
 
         self.set_formations()
+        self.set_faults()
         self.interfaces.sort_index()
 
     def set_orientations(self, foliat_Dataframe, append=False, order_table=True):
@@ -998,72 +1006,6 @@ class InputData(object):
         block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
                                         self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
         return block_geomodeller
-
-    # # TODO Alex: Documentation
-    # def set_triangle_orientations(self, verbose=False):
-    #     # next we need to iterate over every unique triangle id to create a orientation from each triplet
-    #     # of points and assign the same triange_id to it
-    #     tri_ids = np.unique(self.interfaces["triangle_id"])
-    #
-    #     # check if column in orientations too, else create it
-    #     if "triangle_id" not in self.orientations.columns:
-    #         self.orientations["triangle_id"] = "NaN"
-    #         if verbose:
-    #             print("Setting triangle_id column in geo_data.orientations.")
-    #
-    #     # loop over all triangle_id's
-    #     for tri_id in tri_ids[tri_ids != "NaN"]:
-    #         # get the three points dataframe
-    #         _filter = self.interfaces["triangle_id"] == tri_id
-    #
-    #         # check if triangle orientation value already exists
-    #         if tri_id in np.unique(self.orientations["triangle_id"]):
-    #             if verbose:
-    #                 print("triangle_id already in geo_data.orientations - skipping it.")
-    #             continue  # if yes, continue with the next iteration not not double append
-    #
-    #         if verbose:
-    #             print("tri_id: "+tri_id)
-    #         if len(self.interfaces[_filter]) == 3:
-    #             # get points as [x,y,z]
-    #             _points = []
-    #             for i, interf in self.interfaces[_filter].iterrows():
-    #                 _points.append([interf["X"], interf["Y"], interf["Z"]])
-    #             if verbose:
-    #                 print("3 points xyz:",_points)
-    #
-    #             # get plane normal from three points
-    #             _normal = _get_plane_normal(_points[0], _points[1], _points[2], verbose=verbose)
-    #             # get dip and azimuth
-    #             _dip, _az = _get_dip(_normal)
-    #             # now get centroid of three points
-    #             _centroid = _get_centroid(_points[0], _points[1], _points[2])
-    #             # set polarity according to overturned or not
-    #             if -90 < _dip < 90:
-    #                 _pol = 1
-    #             else:
-    #                 _pol = -1
-    #
-    #             _fmt = np.unique(self.interfaces[_filter]["formation"])[0]
-    #             # _series = np.unique(self.interfaces[_filter]["series"])[0]
-    #
-    #             if verbose:
-    #                 print("plane normal:", _normal)
-    #                 print("dip", _dip)
-    #                 print("az", _az)
-    #                 print("centroid x,y,z:", _centroid)
-    #
-    #             _f = [_centroid[0], _centroid[1], _centroid[2], _dip, _az, _pol, _fmt, tri_id]
-    #             _fs = pn.Series(_f, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'triangle_id'])
-    #             _df = _fs.to_frame().transpose()
-    #             self.set_orientations(_df, append=True)
-    #         elif len(self.interfaces[_filter]) > 3:
-    #             print("More than three points share the same triangle-id: " + str(
-    #                 tri_id) + ". Only exactly 3 points are supported.")
-    #         elif len(self.interfaces[_filter]) < 3:
-    #             print("Less than three points share the same triangle-id: " + str(
-    #                 tri_id) + ". Only exactly 3 points are supported.")
-    #
 
 
 def get_orientation(normal):

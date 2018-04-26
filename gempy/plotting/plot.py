@@ -163,7 +163,7 @@ class vtkPlot():
                        self.alpha)
 
         if posterior is not None:
-            assert isinstance(posterior, gempy.posterior_analysis), 'The object has to be instance of the Posterior class'
+            assert isinstance(posterior, gempy.posterior_analysis.Posterior), 'The object has to be instance of the Posterior class'
             self.vv.post = posterior
             if samples is not None:
                 samp_i = samples[0]
