@@ -934,6 +934,70 @@ class TheanoGraph(object):
 
         return Z_x
 
+    def compare(self, a, b, slice_init, Z_x, l, n_formation, drift):
+        """
+        Treshold of the points to interpolate given 2 potential field values. TODO: This function is the one we
+        need to change for a sigmoid function
+
+        Args:
+            a (scalar): Upper limit of the potential field
+            b (scalar): Lower limit of the potential field
+            n_formation (scalar): Value given to the segmentation, i.e. lithology number
+            Zx (vector): Potential field values at all the interpolated points
+
+        Returns:
+            theano.tensor.vector: segmented values
+        """
+
+        if True:
+
+            slice_init = slice_init
+            n_formation_0 = n_formation[slice_init:slice_init + 1]
+            n_formation_1 = n_formation[slice_init + 1:slice_init + 2]
+            drift = drift[slice_init:slice_init + 1][0]
+
+            if 'compare' in self.verbose:
+                a = theano.printing.Print("a")(a)
+                b = theano.printing.Print("b")(b)
+                # l = 200/ (a - b)
+                slice_init = theano.printing.Print("slice_init")(slice_init)
+                n_formation_0 = theano.printing.Print("n_formation_0")(n_formation[slice_init:slice_init + 1])
+                n_formation_1 = theano.printing.Print("n_formation_1")(n_formation[slice_init + 1:slice_init + 2])
+                drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift[slice_init:slice_init + 1][0])
+
+            # drift = T.switch(slice_init == 0, n_formation_1, n_formation_0)
+            #    drift = T.set_subtensor(n_formation[0], n_formation[1])
+
+            # The 5 rules the slope of the function
+            sigm = (-n_formation_0[0] / (1 + T.exp(-l * (Z_x - a)))) - \
+                   ((n_formation_1[0] / (1 + T.exp(l * (Z_x - b))))) + drift
+            if False:
+                sigm = theano.printing.Print("middle point")(sigm)
+            #      n_formation = theano.printing.Print("n_formation")(n_formation)
+            return sigm
+
+        else:
+            return T.le(Zx, a) * T.ge(Zx, b) * n_formation_0
+
+    def select_finite_faults(self):
+        fault_points = T.vertical_stack(T.stack(self.ref_layer_points[0]), self.rest_layer_points).T
+        ctr = T.mean(fault_points, axis=1)
+        x = fault_points - ctr.reshape((-1, 1))
+        M = T.dot(x, x.T)
+        U = T.nlinalg.svd(M)[0]
+        rotated_x = T.dot(self.x_to_interpolate(), U)
+        rotated_fault_points = T.dot(fault_points.T, U)
+        rotated_ctr = T.mean(rotated_fault_points, axis=0)
+        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min())/2
+        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min())/2
+        sel = T.lt((rotated_x[:, 0] - rotated_ctr[0])**2/a_radio**2 + (rotated_x[:, 1] - rotated_ctr[1])**2/b_radio**2,
+                   1)
+
+        if "select_finite_faults" in self.verbose:
+            sel = theano.printing.Print("scalar_field_iter")(sel)
+
+        return sel
+
     def block_series(self, slope=50):
         """
         Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
@@ -965,9 +1029,7 @@ class TheanoGraph(object):
         min_pot_sigm = 2*min_pot - self.scalar_field_at_interfaces_values[-1]
 
         boundaty_pad = (max_pot - min_pot)*0.01
-        l = slope / (max_pot - min_pot) #(max_pot - min_pot)
-
-      #  l = theano.printing.Print("l")(l)
+        l = slope / (max_pot - min_pot)
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
@@ -980,51 +1042,6 @@ class TheanoGraph(object):
             scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
 
         # Loop to segment the distinct lithologies
-        def compare(a, b, slice_init, Zx, l, n_formation, drift):
-            """
-            Treshold of the points to interpolate given 2 potential field values. TODO: This function is the one we
-            need to change for a sigmoid function
-
-            Args:
-                a (scalar): Upper limit of the potential field
-                b (scalar): Lower limit of the potential field
-                n_formation (scalar): Value given to the segmentation, i.e. lithology number
-                Zx (vector): Potential field values at all the interpolated points
-
-            Returns:
-                theano.tensor.vector: segmented values
-            """
-
-            if True:
-
-                slice_init = slice_init
-                n_formation_0 = n_formation[slice_init:slice_init + 1]
-                n_formation_1 = n_formation[slice_init + 1:slice_init + 2]
-                drift = drift[slice_init:slice_init + 1][0]
-
-                if 'compare' in self.verbose:
-                    a = theano.printing.Print("a")(a)
-                    b = theano.printing.Print("b")(b)
-                   # l = 200/ (a - b)
-                    slice_init = theano.printing.Print("slice_init")(slice_init)
-                    n_formation_0 = theano.printing.Print("n_formation_0")(n_formation[slice_init:slice_init+1])
-                    n_formation_1 = theano.printing.Print("n_formation_1")(n_formation[slice_init+1:slice_init+2])
-                    drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift[slice_init:slice_init+1][0])
-
-                #drift = T.switch(slice_init == 0, n_formation_1, n_formation_0)
-            #    drift = T.set_subtensor(n_formation[0], n_formation[1])
-
-                # The 5 rules the slope of the function
-                sigm =  (-n_formation_0[0] / (1 + T.exp(-l * (Z_x - a)))) -\
-                       (( n_formation_1[0] / (1 + T.exp(l * (Z_x - b))))) + drift
-                if False:
-                    sigm = theano.printing.Print("middle point")(sigm)
-              #      n_formation = theano.printing.Print("n_formation")(n_formation)
-                return sigm
-
-            else:
-                return T.le(Zx, a) * T.ge(Zx, b) * n_formation_0
-
 
         n_formation_op_float_sigmoid = T.repeat(self.n_formation_op_float, 2)
 
@@ -1043,9 +1060,88 @@ class TheanoGraph(object):
                 (n_formation_op_float_sigmoid)
 
         partial_block, updates2 = theano.scan(
-            fn=compare,
+            fn=self.compare,
             outputs_info=None,
             sequences=[dict(input=scalar_field_iter, taps=[0, 1]), T.arange(0, n_formation_op_float_sigmoid.shape[0], 2, dtype='int64')],
+            non_sequences=[Z_x, l, n_formation_op_float_sigmoid, drift],
+            name='Looping compare',
+            profile=False,
+            return_list=False)
+
+        # For every formation we get a vector so we need to sum compress them to one dimension
+        partial_block = partial_block.sum(axis=0)
+
+        # Add name to the theano node
+        partial_block.name = 'The chunk of block model of a specific series'
+        if str(sys._getframe().f_code.co_name) in self.verbose:
+            partial_block = theano.printing.Print(partial_block.name)(partial_block)
+
+        return partial_block
+
+    def block_fault(self, slope=50):
+        """
+        Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
+
+        Returns:
+            theano.tensor.vector: Value of lithology at every interpolated point
+        """
+
+        # Graph to compute the potential field
+        Z_x = self.scalar_field_at_all()
+
+        # Max and min values of the potential field.
+        # max_pot = T.max(Z_x) + 1
+        # min_pot = T.min(Z_x) - 1
+        # max_pot += max_pot * 0.1
+        # min_pot -= min_pot * 0.1
+
+        # Value of the potential field at the interfaces of the computed series
+        self.scalar_field_at_interfaces_values = Z_x[-2 * self.len_points: -self.len_points][self.npf_op]
+
+        max_pot = T.max(Z_x)
+        # max_pot = theano.printing.Print("max_pot")(max_pot)
+
+        min_pot = T.min(Z_x)
+        #     min_pot = theano.printing.Print("min_pot")(min_pot)
+
+       # max_pot_sigm = 2 * max_pot - self.scalar_field_at_interfaces_values[0]
+        #min_pot_sigm = 2 * min_pot - self.scalar_field_at_interfaces_values[-1]
+
+        boundaty_pad = (max_pot - min_pot) * 0.01
+        #l = slope / (max_pot - min_pot)  # (max_pot - min_pot)
+        l = T.switch(self.select_finite_faults(), 5000 / (max_pot - min_pot), 50/ (max_pot - min_pot))
+        #  l = theano.printing.Print("l")(l)
+
+        # A tensor with the values to segment
+        scalar_field_iter = T.concatenate((
+            T.stack([max_pot + boundaty_pad]),
+            self.scalar_field_at_interfaces_values,
+            T.stack([min_pot - boundaty_pad])
+        ))
+
+        if "scalar_field_iter" in self.verbose:
+            scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
+
+        n_formation_op_float_sigmoid = T.repeat(self.n_formation_op_float, 2)
+
+        # TODO: instead -1 at the border look for the average distance of the input!
+        n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[0], -1)
+        # - T.sqrt(T.square(n_formation_op_float_sigmoid[0] - n_formation_op_float_sigmoid[2])))
+
+        n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[-1], -1)
+        # - T.sqrt(T.square(n_formation_op_float_sigmoid[3] - n_formation_op_float_sigmoid[-1])))
+
+        drift = T.set_subtensor(n_formation_op_float_sigmoid[0], n_formation_op_float_sigmoid[1])
+
+        if 'n_formation_op_float_sigmoid' in self.verbose:
+            n_formation_op_float_sigmoid = theano.printing.Print("n_formation_op_float_sigmoid") \
+                (n_formation_op_float_sigmoid)
+
+        partial_block, updates2 = theano.scan(
+            fn=self.compare,
+            outputs_info=None,
+            sequences=[dict(input=scalar_field_iter, taps=[0, 1]),
+                       T.arange(0, n_formation_op_float_sigmoid.shape[0], 2, dtype='int64')],
             non_sequences=[Z_x, l, n_formation_op_float_sigmoid, drift],
             name='Looping compare',
             profile=False,
@@ -1132,7 +1228,7 @@ class TheanoGraph(object):
         # Computing the fault scalar field
         # ================================
 
-        faults_matrix = self.block_series(slope=1000)
+        faults_matrix = self.block_fault(slope=1000)
 
         # Update the block matrix
         final_block = T.set_subtensor(
