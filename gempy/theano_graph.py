@@ -115,6 +115,8 @@ class TheanoGraph(object):
                                                       [0, 0, 1, 1],
                                                       [0, 0, 0, 1],
                                                       [0, 0, 0, 0]]), 'fault relation matrix')
+        self.inf_factor = theano.shared(np.ones(200, dtype='int32') * 10, 'Arbitrary scalar to make faults infinite')
+
 
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T
         self.n_formation_op = self.n_formation
@@ -988,8 +990,8 @@ class TheanoGraph(object):
         rotated_x = T.dot(self.x_to_interpolate(), U)
         rotated_fault_points = T.dot(fault_points.T, U)
         rotated_ctr = T.mean(rotated_fault_points, axis=0)
-        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min())/2
-        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min())/2
+        a_radio = ((rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()))/2 + self.inf_factor[self.n_formation_op[0]]
+        b_radio = ((rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()))/2 + self.inf_factor[self.n_formation_op[0]]
         sel = T.lt((rotated_x[:, 0] - rotated_ctr[0])**2/a_radio**2 + (rotated_x[:, 1] - rotated_ctr[1])**2/b_radio**2,
                    1)
 
@@ -1215,6 +1217,8 @@ class TheanoGraph(object):
         # Extracting a the subset of the fault matrix to the scalar field of the current iterations
         faults_relation_op =  self.fault_relation[:, T.cast(self.n_formation_op-1, 'int8')]
         faults_relation_rep = T.repeat(faults_relation_op, 2)
+
+
 
         if 'faults_relation' in self.verbose:
             faults_relation_rep = theano.printing.Print('SELECT')(faults_relation_rep)
