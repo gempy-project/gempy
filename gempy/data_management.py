@@ -769,7 +769,6 @@ class InputData(object):
 
         #self.set_annotations()
 
-
     def set_formations(self, formation_values = None, formation_order = None):
 
         self.interfaces['formation'] = self.interfaces['formation'].astype('category')
