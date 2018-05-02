@@ -777,7 +777,7 @@ class InputData(object):
 
         if formation_order is None:
             if self._formation_values_set is False:
-                formation_order = self.interfaces['formation'].cat.categories
+                formation_order = self.interfaces['formation'].cat.remove_unused_categories().cat.categories
             # try:
             #     # Check if there is already a df
             #     formation_order = self.formations.index

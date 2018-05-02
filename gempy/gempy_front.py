@@ -583,8 +583,10 @@ def select_series(geo_data, series):
     new_geo_data.set_faults(new_geo_data.count_faults())
 
     # Change the dataframe with the series
-    new_geo_data.series = new_geo_data.series[new_geo_data.interfaces['series'].unique().categories].dropna(how='all')
-    new_geo_data.formations = new_geo_data.formations.loc[new_geo_data.interfaces['formation'].unique().categories]
+    new_geo_data.series = new_geo_data.series[new_geo_data.interfaces['series'].unique().
+        remove_unused_categories().categories].dropna(how='all')
+    new_geo_data.formations = new_geo_data.formations.loc[new_geo_data.interfaces['formation'].unique().
+        remove_unused_categories().categories]
     new_geo_data.update_df()
     return new_geo_data
 

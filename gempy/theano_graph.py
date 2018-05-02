@@ -1111,7 +1111,7 @@ class TheanoGraph(object):
 
         boundaty_pad = (max_pot - min_pot) * 0.01
         #l = slope / (max_pot - min_pot)  # (max_pot - min_pot)
-        l = T.switch(self.select_finite_faults(), 5000 / (max_pot - min_pot), 50/ (max_pot - min_pot))
+        l = T.switch(self.select_finite_faults(), 5000 / (max_pot - min_pot), 50 / (max_pot - min_pot))
         #  l = theano.printing.Print("l")(l)
 
         # A tensor with the values to segment
