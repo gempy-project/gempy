@@ -90,7 +90,7 @@ class PlotData2D(object):
         plt.style.use(['seaborn-white', 'seaborn-talk'])
         sns.set_context("talk")
 
-    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, **kwargs):
+    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1, **kwargs):
         """
         Plot the projecton of the raw data (interfaces and orientations) in 2D following a
         specific directions
@@ -99,6 +99,7 @@ class PlotData2D(object):
             direction(str): xyz. Caartesian direction to be plotted
             data_type (str): type of data to plot. 'all', 'interfaces' or 'orientations'
             series(str): series to plot
+            ve(float): Vertical exageration
             **kwargs: seaborn lmplot key arguments. (TODO: adding the link to them)
 
         Returns:
@@ -114,6 +115,11 @@ class PlotData2D(object):
         x, y, Gx, Gy = self._slice(direction)[4:]
         extent = self._slice(direction)[3]
         aspect = (extent[1] - extent[0])/(extent[3] - extent[2])
+
+        # apply vertical exageration
+        if direction == 'x' or direction == 'y':
+            aspect /= ve
+
         if aspect < 1:
             min_axis = 'width'
         else:
@@ -216,7 +222,7 @@ class PlotData2D(object):
         return _a, _b, _c, extent_val, x, y, Gx, Gy
 
     def plot_block_section(self, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data=False, **kwargs):
+                           plot_data=False, ve=1, **kwargs):
         """
         Plot a section of the block model
 
@@ -228,6 +234,7 @@ class PlotData2D(object):
             'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser',
             'quadric', 'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc',
             'lanczos'
+            ve(float): Vertical exageration
             **kwargs: imshow keywargs
 
         Returns:
@@ -256,14 +263,22 @@ class PlotData2D(object):
             self.plot_data(direction, 'all')
         # TODO: plot_topo option - need fault_block for that
 
+        # apply vertical exageration
+        if direction == 'x' or direction == 'y':
+            aspect = ve
+        else:
+            aspect = 1
+
         if 'cmap' not in kwargs:
             kwargs['cmap'] = self._cmap #
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
      #   print(plot_block[_a, _b, _c].T, type(plot_block[_a, _b, _c].T))
         im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
-                   extent=extent_val,
-                   interpolation=interpolation, **kwargs)
+                        extent=extent_val,
+                        interpolation=interpolation,
+                        aspect=aspect,
+                        **kwargs)
 
         import matplotlib.patches as mpatches
         colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]

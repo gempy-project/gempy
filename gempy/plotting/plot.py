@@ -578,6 +578,7 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     Args:
         direction(str): xyz. Caartesian direction to be plotted
         series(str): series to plot
+        ve(float): Vertical exageration
         **kwargs: seaborn lmplot key arguments. (TODO: adding the link to them)
 
     Returns:
@@ -601,7 +602,8 @@ def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
         'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser',
         'quadric', 'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc',
         'lanczos'
-       **kwargs: imshow keywargs
+        ve(float): Vertical exageration
+        **kwargs: imshow keywargs
 
     Returns:
         None
