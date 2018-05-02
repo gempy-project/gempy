@@ -137,15 +137,15 @@ class GravityPreprocessing(object):
     @staticmethod
     def compile_eu_f():
         # Compile Theano function
-        x_1 = T.matrix()
-        x_2 = T.matrix()
+        x_1 = T.dmatrix()
+        x_2 = T.dmatrix()
 
         sqd = T.sqrt(T.maximum(
             (x_1 ** 2).sum(1).reshape((x_1.shape[0], 1)) +
             (x_2 ** 2).sum(1).reshape((1, x_2.shape[0])) -
             2 * x_1.dot(x_2.T), 0
         ))
-        eu = theano.function([x_1, x_2], sqd, allow_input_downcast=True)
+        eu = theano.function([x_1, x_2], sqd, allow_input_downcast=False)
         return eu
 
     def set_airborne_plane(self, z, ai_resolution):

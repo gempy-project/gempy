@@ -480,6 +480,7 @@ class vtkVisualization:
         self.real_time = real_time
         self.geo_data = geo_data#copy.deepcopy(geo_data)
         self.interp_data = None
+        self.layer_visualization = True
       #  for e, i in enumerate( np.squeeze(geo_data.formations['value'].values)):
       #      color_lot[e] = color_lot[i]
         self.C_LOT = color_lot
@@ -566,7 +567,8 @@ class vtkVisualization:
 
     def set_text(self):
         txt = vtk.vtkTextActor()
-        txt.SetInput("Press H or P to go back to Python \n"
+        txt.SetInput("Press L to toggle layers visibility \n"
+                     "Press H or P to go back to Python \n"
                      "Press Q to quit")
         txtprop = txt.GetTextProperty()
         txtprop.SetFontFamilyToArial()
@@ -584,6 +586,17 @@ class vtkVisualization:
             print('holding... Use vtk.resume to go back to the interactive window')
             self.interactor.ExitCallback()
 
+        if key is 'l':
+            if self.layer_visualization is True:
+                for layer in self.surf_rend_1:
+                    layer.VisibilityOff()
+                self.layer_visualization = False
+                self.interactor.Render()
+            elif self.layer_visualization is False:
+                for layer in self.surf_rend_1:
+                    layer.VisibilityOn()
+                self.layer_visualization = True
+                self.interactor.Render()
         if key is 'q':
             print('closing vtk')
             self.close_window()
@@ -715,6 +728,7 @@ class vtkVisualization:
         s.n_render = n_render
         s.index = n_index
         s.AddObserver("EndInteractionEvent", self.sphereCallback)  # EndInteractionEvent
+        s.AddObserver("InteractionEvent", self.Callback_camera_reset)
 
         s.On()
 
@@ -987,7 +1001,7 @@ class vtkVisualization:
         """
         #self.interactor.ExitCallback()
 
-        self.Callback_camera_reset()
+     #   self.Callback_camera_reset()
 
         # Get new position of the sphere
         new_center = obj.GetCenter()
@@ -1014,7 +1028,7 @@ class vtkVisualization:
             vertices, simpleces = self.update_surfaces_real_time(self.geo_data)
             self.set_surfaces(vertices, simpleces)
 
-    def Callback_camera_reset(self):
+    def Callback_camera_reset(self,  obj, event):
 
         # Resetting the xy camera when a sphere is moving to be able to change only 2D
         fp = self.ren_list[1].GetActiveCamera().GetFocalPoint()

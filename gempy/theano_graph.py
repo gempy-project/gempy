@@ -115,6 +115,8 @@ class TheanoGraph(object):
                                                       [0, 0, 1, 1],
                                                       [0, 0, 0, 1],
                                                       [0, 0, 0, 0]]), 'fault relation matrix')
+        self.inf_factor = theano.shared(np.ones(200, dtype='int32') * 10, 'Arbitrary scalar to make faults infinite')
+
 
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T
         self.n_formation_op = self.n_formation
@@ -706,7 +708,7 @@ class TheanoGraph(object):
 
         return DK_weights
 
-    def gradient_contribution(self, grid_val=None, weights=None):
+    def interface_gradient_contribution(self, grid_val=None, weights=None):
         """
         Computation of the contribution of the foliations at every point to interpolate
 
@@ -813,6 +815,57 @@ class TheanoGraph(object):
 
         return sigma_0_interf
 
+    def gradient_contribution(self, grid_val=None, weights=None):
+        if weights is None:
+            weights = self.extend_dual_kriging()
+        if grid_val is None:
+            grid_val = self.x_to_interpolate()
+
+        length_of_CG = self.matrices_shapes()[0]
+
+        # Cartesian distances between the point to simulate and the dips
+        hu_SimPoint = T.vertical_stack(
+            (self.dips_position[:, 0] - grid_val[:, 0].reshape((grid_val[:, 0].shape[0], 1))).T,
+            (self.dips_position[:, 1] - grid_val[:, 1].reshape((grid_val[:, 1].shape[0], 1))).T,
+            (self.dips_position[:, 2] - grid_val[:, 2].reshape((grid_val[:, 2].shape[0], 1))).T
+        )
+
+        # TODO optimize to compute this only once?
+        # Euclidean distances
+        sed_dips_SimPoint = self.squared_euclidean_distances(self.dips_position_tiled, grid_val)
+
+        if 'sed_dips_SimPoint' in self.verbose:
+            sed_dips_SimPoint = theano.printing.Print('sed_dips_SimPoint')(sed_dips_SimPoint)
+
+        # Cartesian distances between dips positions
+        h_u = T.vertical_stack(
+            T.tile(self.dips_position[:, 0] - grid_val[:, 0].reshape((grid_val[:, 0].shape[0], 1)),
+                   self.n_dimensions),
+            T.tile(self.dips_position[:, 1] - grid_val[:, 1].reshape((grid_val[:, 1].shape[0], 1)),
+                   self.n_dimensions),
+            T.tile(self.dips_position[:, 2] - grid_val[:, 2].reshape((grid_val[:, 2].shape[0], 1)),
+                   self.n_dimensions))
+
+        # Transpose
+        h_v = h_u.T
+
+        sigma_0_grad = T.sum(
+            (weights[:length_of_CG] *
+             self.gi_reescale *
+             (h_u * h_v / sed_dips_SimPoint ** 2) *
+             ((
+                      (sed_dips_SimPoint < self.a_T) *  # first derivative
+                      (-self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_SimPoint / self.a_T ** 3 -
+                                      35 / 2 * sed_dips_SimPoint ** 3 / self.a_T ** 5 +
+                                      21 / 4 * sed_dips_SimPoint ** 5 / self.a_T ** 7))) +
+              (sed_dips_SimPoint < self.a_T) *  # Second derivative
+              self.c_o_T * 7 * (9 * sed_dips_SimPoint ** 5 - 20 * self.a_T ** 2 * sed_dips_SimPoint ** 3
+        )))
+        ,axis=0)
+
+
+        return sigma_0_grad
+
     def universal_drift_contribution(self, grid_val=None, weights=None, a=0, b=100000000):
         """
         Computation of the contribution of the universal drift at every point to interpolate
@@ -830,9 +883,9 @@ class TheanoGraph(object):
         universal_grid_interfaces_matrix = self.universal_grid_matrix_T[:, self.yet_simulated[a: b]]
 
         # These are the magic terms to get the same as geomodeller
-        gi_rescale_aux = T.repeat(self.gi_reescale, 9)
-        gi_rescale_aux = T.set_subtensor(gi_rescale_aux[:3], 1)
-        _aux_magic_term = T.tile(gi_rescale_aux[:self.n_universal_eq_T_op], (grid_val.shape[0], 1)).T
+        i_rescale_aux = T.repeat(self.gi_reescale, 9)
+        i_rescale_aux = T.set_subtensor(i_rescale_aux[:3], 1)
+        _aux_magic_term = T.tile(i_rescale_aux[:self.n_universal_eq_T_op], (grid_val.shape[0], 1)).T
 
         # Drif contribution
         f_0 = (T.sum(
@@ -850,6 +903,53 @@ class TheanoGraph(object):
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
             f_0 = theano.printing.Print('Universal terms contribution')(f_0)
+
+        return f_0
+
+    def universal_drift_d_contribution(self, grid_val=None, weights=None, a=0, b=100000000):
+        if weights is None:
+            weights = self.extend_dual_kriging()
+        if grid_val is None:
+            grid_val = self.x_to_interpolate()
+
+        length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C = self.matrices_shapes()
+
+        # These are the magic terms to get the same as geomodeller
+        i_rescale_aux = T.repeat(self.gi_reescale, 9)
+        i_rescale_aux = T.set_subtensor(i_rescale_aux[:3], 1)
+        _aux_magic_term = T.tile(i_rescale_aux[:self.n_universal_eq_T_op], (grid_val.shape[0], 1)).T
+
+
+        n = grid_val.shape[0]
+        U_G = T.zeros((n * self.n_dimensions, 3 * self.n_dimensions))
+        # x
+        U_G = T.set_subtensor(U_G[:n, 0], 1)
+        # y
+        U_G = T.set_subtensor(U_G[n * 1:n * 2, 1], 1)
+        # z
+        U_G = T.set_subtensor(U_G[n * 2: n * 3, 2], 1)
+        # x**2
+        U_G = T.set_subtensor(U_G[:n, 3], 2 * self.gi_reescale * grid_val[:, 0])
+        # y**2
+        U_G = T.set_subtensor(U_G[n * 1:n * 2, 4], 2 * self.gi_reescale * grid_val[:, 1])
+        # z**2
+        U_G = T.set_subtensor(U_G[n * 2: n * 3, 5], 2 * self.gi_reescale * grid_val[:, 2])
+        # xy
+        U_G = T.set_subtensor(U_G[:n, 6], self.gi_reescale * grid_val[:, 1])  # This is y
+        U_G = T.set_subtensor(U_G[n * 1:n * 2, 6], self.gi_reescale * grid_val[:, 0])  # This is x
+        # xz
+        U_G = T.set_subtensor(U_G[:n, 7], self.gi_reescale * grid_val[:, 2])  # This is z
+        U_G = T.set_subtensor(U_G[n * 2: n * 3, 7], self.gi_reescale * grid_val[:, 0])  # This is x
+        # yz
+        U_G = T.set_subtensor(U_G[n * 1:n * 2, 8], self.gi_reescale * grid_val[:, 2])  # This is z
+        U_G = T.set_subtensor(U_G[n * 2:n * 3, 8], self.gi_reescale * grid_val[:, 1])  # This is y
+
+        # Drif contribution
+        f_0 = (T.sum(
+            weights[
+            length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I] * self.gi_reescale * _aux_magic_term *
+            U_G[:self.n_universal_eq_T_op]
+            , axis=0))
 
         return f_0
 
@@ -884,7 +984,7 @@ class TheanoGraph(object):
 
     def scalar_field_loop(self, a, b, Z_x, grid_val, weights, val):
 
-        sigma_0_grad = self.gradient_contribution(grid_val[a:b], weights[:, a:b])
+        sigma_0_grad = self.interface_gradient_contribution(grid_val[a:b], weights[:, a:b])
         sigma_0_interf = self.interface_contribution(grid_val[a:b], weights[:, a:b])
         f_0 = self.universal_drift_contribution(grid_val[a:b],weights[:, a:b], a, b)
         f_1 = self.faults_contribution(weights[:, a:b], a, b)
@@ -896,6 +996,8 @@ class TheanoGraph(object):
 
         return Z_x
 
+    def gradient_field_loop(self):
+        pass
     def scalar_field_at_all(self):
         """
         Compute the potential field at all the interpolation points, i.e. grid plus rest plus ref
@@ -934,6 +1036,104 @@ class TheanoGraph(object):
 
         return Z_x
 
+    def gradient_field_at_all(self):
+
+        grid_val = self.x_to_interpolate()
+        weights = self.extend_dual_kriging()
+
+        grid_shape = T.stack(grid_val.shape[0])
+        Z_x_init = T.zeros(grid_shape, dtype='float32')
+        if 'grid_shape' in self.verbose:
+            grid_shape = theano.printing.Print('grid_shape')(grid_shape)
+
+        steps = 1e13 / self.matrices_shapes()[-1] / grid_shape
+        slices = T.concatenate((T.arange(0, grid_shape[0], steps[0], dtype='int64'), grid_shape))
+
+        if 'slices' in self.verbose:
+            slices = theano.printing.Print('slices')(slices)
+
+        Z_x_loop, updates3 = theano.scan(
+            fn=self.scalar_field_loop,
+            outputs_info=[Z_x_init],
+            sequences=[dict(input=slices, taps=[0, 1])],
+            non_sequences=[grid_val, weights, self.n_formation_op],
+            profile=False,
+            name='Looping grid',
+            return_list=True)
+
+        Z_x = Z_x_loop[-1][-1]
+        Z_x.name = 'Value of the potential field at every point'
+
+        if str(sys._getframe().f_code.co_name) in self.verbose:
+            Z_x = theano.printing.Print('Potential field at all points')(Z_x)
+
+        return Z_x
+
+
+    def compare(self, a, b, slice_init, Z_x, l, n_formation, drift):
+        """
+        Treshold of the points to interpolate given 2 potential field values. TODO: This function is the one we
+        need to change for a sigmoid function
+
+        Args:
+            a (scalar): Upper limit of the potential field
+            b (scalar): Lower limit of the potential field
+            n_formation (scalar): Value given to the segmentation, i.e. lithology number
+            Zx (vector): Potential field values at all the interpolated points
+
+        Returns:
+            theano.tensor.vector: segmented values
+        """
+
+        if True:
+
+            slice_init = slice_init
+            n_formation_0 = n_formation[slice_init:slice_init + 1]
+            n_formation_1 = n_formation[slice_init + 1:slice_init + 2]
+            drift = drift[slice_init:slice_init + 1][0]
+
+            if 'compare' in self.verbose:
+                a = theano.printing.Print("a")(a)
+                b = theano.printing.Print("b")(b)
+                # l = 200/ (a - b)
+                slice_init = theano.printing.Print("slice_init")(slice_init)
+                n_formation_0 = theano.printing.Print("n_formation_0")(n_formation[slice_init:slice_init + 1])
+                n_formation_1 = theano.printing.Print("n_formation_1")(n_formation[slice_init + 1:slice_init + 2])
+                drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift[slice_init:slice_init + 1][0])
+
+            # drift = T.switch(slice_init == 0, n_formation_1, n_formation_0)
+            #    drift = T.set_subtensor(n_formation[0], n_formation[1])
+
+            # The 5 rules the slope of the function
+            sigm = (-n_formation_0[0] / (1 + T.exp(-l * (Z_x - a)))) - \
+                   ((n_formation_1[0] / (1 + T.exp(l * (Z_x - b))))) + drift
+            if False:
+                sigm = theano.printing.Print("middle point")(sigm)
+            #      n_formation = theano.printing.Print("n_formation")(n_formation)
+            return sigm
+
+        else:
+            return T.le(Zx, a) * T.ge(Zx, b) * n_formation_0
+
+    def select_finite_faults(self):
+        fault_points = T.vertical_stack(T.stack(self.ref_layer_points[0]), self.rest_layer_points).T
+        ctr = T.mean(fault_points, axis=1)
+        x = fault_points - ctr.reshape((-1, 1))
+        M = T.dot(x, x.T)
+        U = T.nlinalg.svd(M)[0]
+        rotated_x = T.dot(self.x_to_interpolate(), U)
+        rotated_fault_points = T.dot(fault_points.T, U)
+        rotated_ctr = T.mean(rotated_fault_points, axis=0)
+        a_radio = ((rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()))/2 + self.inf_factor[self.n_formation_op[0]]
+        b_radio = ((rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()))/2 + self.inf_factor[self.n_formation_op[0]]
+        sel = T.lt((rotated_x[:, 0] - rotated_ctr[0])**2/a_radio**2 + (rotated_x[:, 1] - rotated_ctr[1])**2/b_radio**2,
+                   1)
+
+        if "select_finite_faults" in self.verbose:
+            sel = theano.printing.Print("scalar_field_iter")(sel)
+
+        return sel
+
     def block_series(self, slope=50):
         """
         Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
@@ -965,9 +1165,7 @@ class TheanoGraph(object):
         min_pot_sigm = 2*min_pot - self.scalar_field_at_interfaces_values[-1]
 
         boundaty_pad = (max_pot - min_pot)*0.01
-        l = slope / (max_pot - min_pot) #(max_pot - min_pot)
-
-      #  l = theano.printing.Print("l")(l)
+        l = slope / (max_pot - min_pot)
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
@@ -980,45 +1178,6 @@ class TheanoGraph(object):
             scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
 
         # Loop to segment the distinct lithologies
-        def compare(a, b, slice_init, Zx, l, n_formation, drift):
-            """
-            Treshold of the points to interpolate given 2 potential field values. TODO: This function is the one we
-            need to change for a sigmoid function
-
-            Args:
-                a (scalar): Upper limit of the potential field
-                b (scalar): Lower limit of the potential field
-                n_formation (scalar): Value given to the segmentation, i.e. lithology number
-                Zx (vector): Potential field values at all the interpolated points
-
-            Returns:
-                theano.tensor.vector: segmented values
-            """
-
-            if True:
-                a = theano.printing.Print("a")(a)
-                b = theano.printing.Print("b")(b)
-               # l = 200/ (a - b)
-                slice_init = theano.printing.Print("slice_init")(slice_init)
-                n_formation_0 = theano.printing.Print("n_formation_0")(n_formation[slice_init:slice_init+1])
-                n_formation_1 = theano.printing.Print("n_formation_1")(n_formation[slice_init+1:slice_init+2])
-                drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift[slice_init:slice_init+1][0])
-
-                #drift = T.switch(slice_init == 0, n_formation_1, n_formation_0)
-            #    drift = T.set_subtensor(n_formation[0], n_formation[1])
-
-                # The 5 rules the slope of the function
-                sigm =  (-n_formation_0[0] / (1 + T.exp(-l * (Z_x - a)))) -\
-                       (( n_formation_1[0] / (1 + T.exp(l * (Z_x - b))))) + drift
-                if False:
-                    sigm = theano.printing.Print("middle point")(sigm)
-              #      n_formation = theano.printing.Print("n_formation")(n_formation)
-                return sigm
-
-            else:
-                return T.le(Zx, a) * T.ge(Zx, b) * n_formation_0
-
-        self.n_formation_op_float = theano.printing.Print("n_formation_op")(self.n_formation_op_float)
 
         n_formation_op_float_sigmoid = T.repeat(self.n_formation_op_float, 2)
 
@@ -1032,12 +1191,93 @@ class TheanoGraph(object):
 
         drift = T.set_subtensor(n_formation_op_float_sigmoid[0], n_formation_op_float_sigmoid[1])
 
-        n_formation_op_float_sigmoid = theano.printing.Print("n_formation_op_float_sigmoid")(n_formation_op_float_sigmoid)
+        if 'n_formation_op_float_sigmoid' in self.verbose:
+            n_formation_op_float_sigmoid = theano.printing.Print("n_formation_op_float_sigmoid")\
+                (n_formation_op_float_sigmoid)
 
         partial_block, updates2 = theano.scan(
-            fn=compare,
+            fn=self.compare,
             outputs_info=None,
             sequences=[dict(input=scalar_field_iter, taps=[0, 1]), T.arange(0, n_formation_op_float_sigmoid.shape[0], 2, dtype='int64')],
+            non_sequences=[Z_x, l, n_formation_op_float_sigmoid, drift],
+            name='Looping compare',
+            profile=False,
+            return_list=False)
+
+        # For every formation we get a vector so we need to sum compress them to one dimension
+        partial_block = partial_block.sum(axis=0)
+
+        # Add name to the theano node
+        partial_block.name = 'The chunk of block model of a specific series'
+        if str(sys._getframe().f_code.co_name) in self.verbose:
+            partial_block = theano.printing.Print(partial_block.name)(partial_block)
+
+        return partial_block
+
+    def block_fault(self, slope=50):
+        """
+        Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
+
+        Returns:
+            theano.tensor.vector: Value of lithology at every interpolated point
+        """
+
+        # Graph to compute the potential field
+        Z_x = self.scalar_field_at_all()
+
+        # Max and min values of the potential field.
+        # max_pot = T.max(Z_x) + 1
+        # min_pot = T.min(Z_x) - 1
+        # max_pot += max_pot * 0.1
+        # min_pot -= min_pot * 0.1
+
+        # Value of the potential field at the interfaces of the computed series
+        self.scalar_field_at_interfaces_values = Z_x[-2 * self.len_points: -self.len_points][self.npf_op]
+
+        max_pot = T.max(Z_x)
+        # max_pot = theano.printing.Print("max_pot")(max_pot)
+
+        min_pot = T.min(Z_x)
+        #     min_pot = theano.printing.Print("min_pot")(min_pot)
+
+       # max_pot_sigm = 2 * max_pot - self.scalar_field_at_interfaces_values[0]
+        #min_pot_sigm = 2 * min_pot - self.scalar_field_at_interfaces_values[-1]
+
+        boundaty_pad = (max_pot - min_pot) * 0.01
+        #l = slope / (max_pot - min_pot)  # (max_pot - min_pot)
+        l = T.switch(self.select_finite_faults(), 5000 / (max_pot - min_pot), 50 / (max_pot - min_pot))
+        #  l = theano.printing.Print("l")(l)
+
+        # A tensor with the values to segment
+        scalar_field_iter = T.concatenate((
+            T.stack([max_pot + boundaty_pad]),
+            self.scalar_field_at_interfaces_values,
+            T.stack([min_pot - boundaty_pad])
+        ))
+
+        if "scalar_field_iter" in self.verbose:
+            scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
+
+        n_formation_op_float_sigmoid = T.repeat(self.n_formation_op_float, 2)
+
+        # TODO: instead -1 at the border look for the average distance of the input!
+        n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[0], -1)
+        # - T.sqrt(T.square(n_formation_op_float_sigmoid[0] - n_formation_op_float_sigmoid[2])))
+
+        n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[-1], -1)
+        # - T.sqrt(T.square(n_formation_op_float_sigmoid[3] - n_formation_op_float_sigmoid[-1])))
+
+        drift = T.set_subtensor(n_formation_op_float_sigmoid[0], n_formation_op_float_sigmoid[1])
+
+        if 'n_formation_op_float_sigmoid' in self.verbose:
+            n_formation_op_float_sigmoid = theano.printing.Print("n_formation_op_float_sigmoid") \
+                (n_formation_op_float_sigmoid)
+
+        partial_block, updates2 = theano.scan(
+            fn=self.compare,
+            outputs_info=None,
+            sequences=[dict(input=scalar_field_iter, taps=[0, 1]),
+                       T.arange(0, n_formation_op_float_sigmoid.shape[0], 2, dtype='int64')],
             non_sequences=[Z_x, l, n_formation_op_float_sigmoid, drift],
             name='Looping compare',
             profile=False,
@@ -1112,6 +1352,8 @@ class TheanoGraph(object):
         faults_relation_op =  self.fault_relation[:, T.cast(self.n_formation_op-1, 'int8')]
         faults_relation_rep = T.repeat(faults_relation_op, 2)
 
+
+
         if 'faults_relation' in self.verbose:
             faults_relation_rep = theano.printing.Print('SELECT')(faults_relation_rep)
 
@@ -1124,7 +1366,7 @@ class TheanoGraph(object):
         # Computing the fault scalar field
         # ================================
 
-        faults_matrix = self.block_series(slope=1000)
+        faults_matrix = self.block_fault(slope=1000)
 
         # Update the block matrix
         final_block = T.set_subtensor(
@@ -1154,7 +1396,9 @@ class TheanoGraph(object):
                          len_f_0, len_f_1,
                          n_form_per_serie_0, n_form_per_serie_1,
                          u_grade_iter,
-                         final_block, scalar_field_at_form, fault_block):
+                         final_block, scalar_field_at_form,
+                         #fault_block
+                         ):
 
         """
         Function that loops each series, generating a potential field for each on them with the respective block model
@@ -1172,7 +1416,7 @@ class TheanoGraph(object):
         """
 
         # Setting the fault contribution to kriging from the previous loop
-        self.fault_matrix = fault_block
+       # self.fault_matrix = fault_block
 
         # THIS IS THE FINAL BLOCK. (DO I NEED TO LOOP THE FAULTS FIRST? Yes you do)
         # ==================
@@ -1273,7 +1517,7 @@ class TheanoGraph(object):
 
             # We return the last iteration of the fault matrix
             self.fault_matrix = fault_loop[0][-1]
-
+          #  fault_block = self.fault_matrix[:, :-2 * self.len_points]
             # For this we return every iteration since is each potential field at interface
             self.pfai_fault = fault_loop[1]
 
@@ -1281,24 +1525,23 @@ class TheanoGraph(object):
         if len(self.len_series_f.get_value()) - 1 > n_faults:
 
             # Compute Lithologies
-             lith_loop, updates2 = theano.scan(
+            lith_loop, updates2 = theano.scan(
                  fn=self.compute_a_series,
                  outputs_info=[self.lith_block_init, self.final_scalar_field_at_formations_op],
                  sequences=[dict(input=self.len_series_i[n_faults:], taps=[0, 1]),
                             dict(input=self.len_series_f[n_faults:], taps=[0, 1]),
                             dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),
                             dict(input=self.n_universal_eq_T[n_faults:], taps=[0])],
-                 non_sequences=[self.fault_matrix],
+                # non_sequences=[self.fault_matrix],
                  name='Looping interfaces',
                  profile=False,
                  return_list=True
-             )
+            )
 
-             lith_matrix = lith_loop[0][-1]
-             self.pfai_lith = lith_loop[1]
+            lith_matrix = lith_loop[0][-1]
+            self.pfai_lith = lith_loop[1]
 
         pfai = T.vertical_stack(self.pfai_fault, self.pfai_lith)
-
         return [lith_matrix[:, :-2 * self.len_points], self.fault_matrix[:, :-2 * self.len_points], pfai]
 
     # ==================================

@@ -427,7 +427,7 @@ def set_orientation_from_interfaces(geo_data, indices_array, verbose=0):
         indices = indices_array
         form = geo_data.interfaces['formation'].iloc[indices].unique()
         assert form.shape[0] is 1, 'The interface points must belong to the same formation'
-
+        form = form[0]
         ori_parameters = geo_data.create_orientation_from_interfaces(indices)
         geo_data.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                  dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
@@ -435,9 +435,9 @@ def set_orientation_from_interfaces(geo_data, indices_array, verbose=0):
                                  formation=form)
     elif _np.ndim(indices_array) is 2:
         for indices in indices_array:
-            form = geo_data.interfaces['formation'].iloc[indices].unique()
+            form = geo_data.interfaces['formation'].iloc[indices].unique()[0]
             assert form.shape[0] is 1, 'The interface points must belong to the same formation'
-
+            form = form[0]
             ori_parameters = geo_data.create_orientation_from_interfaces(indices)
             geo_data.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                      dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
@@ -583,8 +583,10 @@ def select_series(geo_data, series):
     new_geo_data.set_faults(new_geo_data.count_faults())
 
     # Change the dataframe with the series
-    new_geo_data.series = new_geo_data.series[new_geo_data.interfaces['series'].unique().categories].dropna(how='all')
-    new_geo_data.formations = new_geo_data.formations.loc[new_geo_data.interfaces['formation'].unique().categories]
+    new_geo_data.series = new_geo_data.series[new_geo_data.interfaces['series'].unique().
+        remove_unused_categories().categories].dropna(how='all')
+    new_geo_data.formations = new_geo_data.formations.loc[new_geo_data.interfaces['formation'].unique().
+        remove_unused_categories().categories]
     new_geo_data.update_df()
     return new_geo_data
 
@@ -617,7 +619,7 @@ def set_series(geo_data, series_distribution=None, order_series=None, order_form
 
 
 def set_order_formations(geo_data, order_formations):
-    geo_data.set_formation(order_formations)
+    geo_data.set_formations(formation_order=order_formations)
 
 
 def set_interfaces(geo_data, interf_Dataframe, append=False):
@@ -765,11 +767,11 @@ def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None
       """
 
     warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plot module instead", FutureWarning)
+                  "use gempy.plotting module instead", FutureWarning)
     if lith_block is not None:
-        vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path+str('v'))
+        vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path)
     if vertices is not None and simplices is not None:
-        vtkVisualization.export_vtk_surfaces(vertices, simplices, path=path+str('s'), name=name)
+        vtkVisualization.export_vtk_surfaces(vertices, simplices, path=path, name=name)
 
 
 def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
@@ -794,7 +796,7 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
     """
 
     warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plot module instead", FutureWarning)
+                  "use gempy.plotting module instead", FutureWarning)
 
     w = vtkVisualization(geo_data, bg_color=bg_color)
     w.set_surfaces(vertices_l, simplices_l,
@@ -822,7 +824,7 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
         None
     """
 
-    warnings.warn("gempy plotting functionality will be moved in version 1.2, use gempy.plot module instead", FutureWarning)
+    warnings.warn("gempy plotting functionality will be moved in version 1.2, use gempy.plotting module instead", FutureWarning)
 
     plot = PlotData2D(geo_data)
 
@@ -848,7 +850,7 @@ def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
         None
     """
     warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plot module instead", FutureWarning)
+                  "use gempy.plotting module instead", FutureWarning)
     plot = PlotData2D(geo_data)
     plot.plot_block_section(cell_number, block=block, direction=direction, **kwargs)
     # TODO saving options
@@ -870,7 +872,7 @@ def plot_scalar_field(geo_data, potential_field, cell_number, N=20,
         None
     """
     warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plot module instead", FutureWarning)
+                  "use gempy.plotting module instead", FutureWarning)
     plot = PlotData2D(geo_data)
     plot.plot_scalar_field(potential_field, cell_number, N=N,
                               direction=direction,  plot_data=plot_data, series=series,
@@ -887,7 +889,7 @@ def plot_data_3D(geo_data, **kwargs):
         None
     """
     warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plot module instead", FutureWarning)
+                  "use gempy.plotting module instead", FutureWarning)
     vv = vtkVisualization(geo_data)
     vv.set_interfaces()
     vv.set_orientations()
@@ -919,7 +921,7 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
         None
     """
     warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plot module instead", FutureWarning)
+                  "use gempy.plotting module instead", FutureWarning)
     assert isinstance(interp_data, InterpolatorData), 'The object has to be instance of the InterpolatorInput'
     w = vtkVisualization(interp_data.geo_data_res, real_time=True)
     w.set_surfaces(vertices_l, simplices_l,
@@ -961,5 +963,5 @@ def plot_topology(geo_data, G, centroids, direction="y"):
         Nothing, it just plots.
     """
     warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plot module instead", FutureWarning)
+                  "use gempy.plotting module instead", FutureWarning)
     PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)
