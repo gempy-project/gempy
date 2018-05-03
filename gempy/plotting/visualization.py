@@ -322,7 +322,7 @@ class PlotData2D(object):
         plt.contourf(scalar_field.reshape(
             self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[_a, _b, _c].T,
                     N,
-                    extent=extent_val, *args,
+                    extent=extent_val, alpha=0.6, *args,
                     **kwargs)
 
         if 'colorbar' in kwargs:

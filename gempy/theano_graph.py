@@ -708,7 +708,7 @@ class TheanoGraph(object):
 
         return DK_weights
 
-    def interface_gradient_contribution(self, grid_val=None, weights=None):
+    def gradient_interface_contribution(self, grid_val=None, weights=None):
         """
         Computation of the contribution of the foliations at every point to interpolate
 
@@ -732,7 +732,6 @@ class TheanoGraph(object):
 
         # Euclidian distances
         sed_dips_SimPoint = self.squared_euclidean_distances(self.dips_position_tiled, grid_val)
-
         # Gradient contribution
         sigma_0_grad = T.sum(
             (weights[:length_of_CG] *
@@ -758,7 +757,86 @@ class TheanoGraph(object):
         sigma_0_grad.name = 'Contribution of the foliations to the potential field at every point of the grid'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
-            sigma_0_grad = theano.printing.Print('Universal terms contribution')(sigma_0_grad)
+            sigma_0_grad = theano.printing.Print('interface_gradient_contribution')(sigma_0_grad)
+
+        return sigma_0_grad
+
+    def interface_gradient_contribution(self, grid_val=None, weights=None):
+        """
+        Computation of the contribution of the foliations at every point to interpolate
+
+        Returns:
+            theano.tensor.vector: Contribution of all foliations (input) at every point to interpolate
+        """
+
+        if weights is None:
+            weights = self.extend_dual_kriging()
+        if grid_val is None:
+            grid_val = self.x_to_interpolate()
+
+        length_of_CGI = self.matrices_shapes()[1]
+
+        # Cartesian distances between the point to simulate and the dips
+        # hu_SimPoint = T.vertical_stack(
+        #     (self.dips_position[:, 0] - grid_val[:, 0].reshape((grid_val[:, 0].shape[0], 1))).T,
+        #     (self.dips_position[:, 1] - grid_val[:, 1].reshape((grid_val[:, 1].shape[0], 1))).T,
+        #     (self.dips_position[:, 2] - grid_val[:, 2].reshape((grid_val[:, 2].shape[0], 1))).T
+        # )
+        #
+        # # Euclidian distances
+        # sed_dips_SimPoint = self.squared_euclidean_distances(self.dips_position_tiled, grid_val)
+        #
+        hu_rest = (-self.rest_layer_points[:, 0] + grid_val[:, 0].reshape((grid_val[:, 0].shape[0], 1)))
+        sed_grid_rest = self.squared_euclidean_distances(grid_val, self.rest_layer_points)
+        sed_grid_ref = self.squared_euclidean_distances(grid_val, self.ref_layer_points)
+        hu_ref = (-self.ref_layer_points[:, 0] + grid_val[:, 0].reshape((grid_val[:, 0].shape[0], 1)))
+
+        #
+        # # Gradient contribution
+        # sigma_0_grad = T.sum(
+        #     (weights[:length_of_CG] *
+        #      self.gi_reescale *
+        #      (-hu_SimPoint *
+        #       (sed_dips_SimPoint < self.a_T) *  # first derivative
+        #       (- self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_SimPoint / self.a_T ** 3 -
+        #                        35 / 2 * sed_dips_SimPoint ** 3 / self.a_T ** 5 +
+        #                        21 / 4 * sed_dips_SimPoint ** 5 / self.a_T ** 7)))),
+        #     axis=0)
+
+        sigma_0_grad = T.sum(
+            (weights[:length_of_CGI] *
+             self.gi_reescale * (
+                 (hu_rest *
+                  (sed_grid_rest < self.a_T) *  # first derivative
+                  (- self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_grid_rest / self.a_T ** 3 -
+                                   35 / 2 * sed_grid_rest ** 3 / self.a_T ** 5 +
+                                   21 / 4 * sed_grid_rest ** 5 / self.a_T ** 7))) -
+                 (hu_ref *
+                  (sed_grid_ref < self.a_T) *  # first derivative
+                  (- self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_grid_ref / self.a_T ** 3 -
+                                   35 / 2 * sed_grid_ref ** 3 / self.a_T ** 5 +
+                                   21 / 4 * sed_grid_ref ** 5 / self.a_T ** 7)))).T),
+            axis=0)
+
+        # Cross-Covariance gradients-interfaces
+        # C_GI = self.gi_reescale * (
+        #         (hu_rest *
+        #          (sed_grid_rest < self.a_T) *  # first derivative
+        #          (- self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_grid_rest / self.a_T ** 3 -
+        #                           35 / 2 * sed_grid_rest ** 3 / self.a_T ** 5 +
+        #                           21 / 4 * sed_grid_rest ** 5 / self.a_T ** 7))) -
+        #         (hu_ref *
+        #          (sed_grid_ref < self.a_T) *  # first derivative
+        #          (- self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_grid_ref / self.a_T ** 3 -
+        #                           35 / 2 * sed_grid_ref ** 3 / self.a_T ** 5 +
+        #                           21 / 4 * sed_grid_ref ** 5 / self.a_T ** 7)))
+        # ).T
+
+        # Add name to the theano node
+        # sigma_0_grad.name = 'Contribution of the foliations to the potential field at every point of the grid'
+        #
+        # if str(sys._getframe().f_code.co_name) in self.verbose:
+        #     sigma_0_grad = theano.printing.Print('interface_gradient_contribution')(sigma_0_grad)
 
         return sigma_0_grad
 
@@ -824,11 +902,11 @@ class TheanoGraph(object):
         length_of_CG = self.matrices_shapes()[0]
 
         # Cartesian distances between the point to simulate and the dips
-        hu_SimPoint = T.vertical_stack(
-            (self.dips_position[:, 0] - grid_val[:, 0].reshape((grid_val[:, 0].shape[0], 1))).T,
-            (self.dips_position[:, 1] - grid_val[:, 1].reshape((grid_val[:, 1].shape[0], 1))).T,
-            (self.dips_position[:, 2] - grid_val[:, 2].reshape((grid_val[:, 2].shape[0], 1))).T
-        )
+        # hu_SimPoint = T.vertical_stack(
+        #     (self.dips_position[:, 0] - grid_val[:, 0].reshape((grid_val[:, 0].shape[0], 1))).T,
+        #     (self.dips_position[:, 1] - grid_val[:, 1].reshape((grid_val[:, 1].shape[0], 1))).T,
+        #     (self.dips_position[:, 2] - grid_val[:, 2].reshape((grid_val[:, 2].shape[0], 1))).T
+        # )
 
         # TODO optimize to compute this only once?
         # Euclidean distances
@@ -838,31 +916,54 @@ class TheanoGraph(object):
             sed_dips_SimPoint = theano.printing.Print('sed_dips_SimPoint')(sed_dips_SimPoint)
 
         # Cartesian distances between dips positions
-        h_u = T.vertical_stack(
-            T.tile(self.dips_position[:, 0] - grid_val[:, 0].reshape((grid_val[:, 0].shape[0], 1)),
-                   self.n_dimensions),
-            T.tile(self.dips_position[:, 1] - grid_val[:, 1].reshape((grid_val[:, 1].shape[0], 1)),
-                   self.n_dimensions),
-            T.tile(self.dips_position[:, 2] - grid_val[:, 2].reshape((grid_val[:, 2].shape[0], 1)),
-                   self.n_dimensions))
+        # h_u = T.horizontal_stack(
+        #     T.tile(self.dips_position[:, 0] - grid_val[:, 0].reshape((grid_val[:, 0].shape[0], 1)),
+        #            1),
+        #     T.tile(self.dips_position[:, 1] - grid_val[:, 1].reshape((grid_val[:, 1].shape[0], 1)),
+        #            1),
+        #     T.tile(self.dips_position[:, 2] - grid_val[:, 2].reshape((grid_val[:, 2].shape[0], 1)),
+        #            1))
+        #
+        # # Transpose
+        # h_v = T.horizontal_stack(
+        #     T.tile(-self.dips_position[:, 0] + grid_val[:, 0].reshape((grid_val[:, 0].shape[0], 1)),
+        #            1),
+        #     T.tile(-self.dips_position[:, 1] + grid_val[:, 1].reshape((grid_val[:, 1].shape[0], 1)),
+        #            1),
+        #     T.tile(-self.dips_position[:, 2] + grid_val[:, 2].reshape((grid_val[:, 2].shape[0], 1)),
+        #           1))
 
-        # Transpose
-        h_v = h_u.T
+        h_u = T.tile(self.dips_position[:, 0] - grid_val[:, 0].reshape((grid_val[:, 0].shape[0], 1)), 3)
+        h_v = T.horizontal_stack(
+            T.tile(-self.dips_position[:, 0] + grid_val[:, 0].reshape((grid_val[:, 0].shape[0], 1)),
+                   1),
+            T.tile(-self.dips_position[:, 1] + grid_val[:, 1].reshape((grid_val[:, 1].shape[0], 1)),
+                   1),
+            T.tile(-self.dips_position[:, 2] + grid_val[:, 2].reshape((grid_val[:, 2].shape[0], 1)),
+                   1))
+
+        perpendicularity_vector = T.zeros(T.stack(length_of_CG))
+        perpendicularity_vector = T.set_subtensor(perpendicularity_vector[0:self.dips_position.shape[0]], 1)
 
         sigma_0_grad = T.sum(
             (weights[:length_of_CG] *
              self.gi_reescale *
-             (h_u * h_v / sed_dips_SimPoint ** 2) *
+             ((h_u * h_v).T/ sed_dips_SimPoint ** 2) *
              ((
                       (sed_dips_SimPoint < self.a_T) *  # first derivative
                       (-self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_SimPoint / self.a_T ** 3 -
                                       35 / 2 * sed_dips_SimPoint ** 3 / self.a_T ** 5 +
                                       21 / 4 * sed_dips_SimPoint ** 5 / self.a_T ** 7))) +
               (sed_dips_SimPoint < self.a_T) *  # Second derivative
-              self.c_o_T * 7 * (9 * sed_dips_SimPoint ** 5 - 20 * self.a_T ** 2 * sed_dips_SimPoint ** 3
-        )))
+              self.c_o_T * 7 * (9 * sed_dips_SimPoint ** 5 - 20 * self.a_T ** 2 * sed_dips_SimPoint ** 3-
+                (perpendicularity_vector.reshape((-1,1)) *
+                 (sed_dips_SimPoint < self.a_T) *  # first derivative
+                 self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_SimPoint / self.a_T ** 3 -
+                               35 / 2 * sed_dips_SimPoint ** 3 / self.a_T ** 5 +
+                               21 / 4 * sed_dips_SimPoint ** 5 / self.a_T ** 7)))
+        )
+        )
         ,axis=0)
-
 
         return sigma_0_grad
 
@@ -917,38 +1018,38 @@ class TheanoGraph(object):
         # These are the magic terms to get the same as geomodeller
         i_rescale_aux = T.repeat(self.gi_reescale, 9)
         i_rescale_aux = T.set_subtensor(i_rescale_aux[:3], 1)
-        _aux_magic_term = T.tile(i_rescale_aux[:self.n_universal_eq_T_op], (grid_val.shape[0], 1)).T
+        _aux_magic_term = T.tile(i_rescale_aux[:self.n_universal_eq_T_op], (grid_val.shape[0], 1))
 
-
+        n = self.dips_position.shape[0]
         n = grid_val.shape[0]
-        U_G = T.zeros((n * self.n_dimensions, 3 * self.n_dimensions))
+        U_G = T.zeros((n, 9))
         # x
-        U_G = T.set_subtensor(U_G[:n, 0], 1)
+        U_G = T.set_subtensor(U_G[:, 0], 1)
         # y
-        U_G = T.set_subtensor(U_G[n * 1:n * 2, 1], 1)
+        #U_G = T.set_subtensor(U_G[n * 1:n * 2, 1], 1)
         # z
-        U_G = T.set_subtensor(U_G[n * 2: n * 3, 2], 1)
+        #U_G = T.set_subtensor(U_G[n * 2: n * 3, 2], 1)
         # x**2
-        U_G = T.set_subtensor(U_G[:n, 3], 2 * self.gi_reescale * grid_val[:, 0])
+        U_G = T.set_subtensor(U_G[:, 3], 2 * self.gi_reescale * grid_val[:, 0])
         # y**2
-        U_G = T.set_subtensor(U_G[n * 1:n * 2, 4], 2 * self.gi_reescale * grid_val[:, 1])
+        #U_G = T.set_subtensor(U_G[n * 1:n * 2, 4], 2 * self.gi_reescale * grid_val[:, 1])
         # z**2
-        U_G = T.set_subtensor(U_G[n * 2: n * 3, 5], 2 * self.gi_reescale * grid_val[:, 2])
+        #U_G = T.set_subtensor(U_G[n * 2: n * 3, 5], 2 * self.gi_reescale * grid_val[:, 2])
         # xy
-        U_G = T.set_subtensor(U_G[:n, 6], self.gi_reescale * grid_val[:, 1])  # This is y
-        U_G = T.set_subtensor(U_G[n * 1:n * 2, 6], self.gi_reescale * grid_val[:, 0])  # This is x
+        U_G = T.set_subtensor(U_G[:, 6], self.gi_reescale * grid_val[:, 1])  # This is y
+        #U_G = T.set_subtensor(U_G[n * 1:n * 2, 6], self.gi_reescale * grid_val[:, 0])  # This is x
         # xz
-        U_G = T.set_subtensor(U_G[:n, 7], self.gi_reescale * grid_val[:, 2])  # This is z
-        U_G = T.set_subtensor(U_G[n * 2: n * 3, 7], self.gi_reescale * grid_val[:, 0])  # This is x
+        U_G = T.set_subtensor(U_G[:, 7], self.gi_reescale * grid_val[:, 2])  # This is z
+      #  U_G = T.set_subtensor(U_G[n * 2: n * 3, 7], self.gi_reescale * grid_val[:, 0])  # This is x
         # yz
-        U_G = T.set_subtensor(U_G[n * 1:n * 2, 8], self.gi_reescale * grid_val[:, 2])  # This is z
-        U_G = T.set_subtensor(U_G[n * 2:n * 3, 8], self.gi_reescale * grid_val[:, 1])  # This is y
+     #   U_G = T.set_subtensor(U_G[n * 1:n * 2, 8], self.gi_reescale * grid_val[:, 2])  # This is z
+     #   U_G = T.set_subtensor(U_G[n * 2:n * 3, 8], self.gi_reescale * grid_val[:, 1])  # This is y
 
         # Drif contribution
         f_0 = (T.sum(
             weights[
-            length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I] * self.gi_reescale * _aux_magic_term *
-            U_G[:self.n_universal_eq_T_op]
+            length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I] * #self.gi_reescale * _aux_magic_term *
+            U_G.T[:self.n_universal_eq_T_op]
             , axis=0))
 
         return f_0
@@ -984,7 +1085,7 @@ class TheanoGraph(object):
 
     def scalar_field_loop(self, a, b, Z_x, grid_val, weights, val):
 
-        sigma_0_grad = self.interface_gradient_contribution(grid_val[a:b], weights[:, a:b])
+        sigma_0_grad = self.gradient_interface_contribution(grid_val[a:b], weights[:, a:b])
         sigma_0_interf = self.interface_contribution(grid_val[a:b], weights[:, a:b])
         f_0 = self.universal_drift_contribution(grid_val[a:b],weights[:, a:b], a, b)
         f_1 = self.faults_contribution(weights[:, a:b], a, b)
@@ -996,8 +1097,19 @@ class TheanoGraph(object):
 
         return Z_x
 
-    def gradient_field_loop(self):
-        pass
+    def gradient_field_loop(self, a, b, Z_x, grid_val, weights, val):
+        sigma_0_grad = self.gradient_contribution(grid_val[a:b], weights[:, a:b])
+        sigma_0_interf_gradient = self.interface_gradient_contribution(grid_val[a:b], weights[:, a:b])
+        f_0 = self.universal_drift_d_contribution(grid_val[a:b], weights[:, a:b], a, b)
+        #f_1 = self.faults_contribution(weights[:, a:b], a, b)
+
+        # Add an arbitrary number at the potential field to get unique values for each of them
+        partial_Z_x = (sigma_0_grad  + f_0)
+
+        Z_x = T.set_subtensor(Z_x[a:b], partial_Z_x)
+
+        return Z_x
+
     def scalar_field_at_all(self):
         """
         Compute the potential field at all the interpolation points, i.e. grid plus rest plus ref
@@ -1053,7 +1165,7 @@ class TheanoGraph(object):
             slices = theano.printing.Print('slices')(slices)
 
         Z_x_loop, updates3 = theano.scan(
-            fn=self.scalar_field_loop,
+            fn=self.gradient_field_loop,
             outputs_info=[Z_x_init],
             sequences=[dict(input=slices, taps=[0, 1])],
             non_sequences=[grid_val, weights, self.n_formation_op],

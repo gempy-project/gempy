@@ -523,7 +523,7 @@ class InterpolatorData:
 
             # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
 
-            assert len_series_f.shape[0] is len_series_i.shape[0], 'You need at least one orientation per series'
+            #assert len_series_f.shape[0] is len_series_i.shape[0], 'You need at least one orientation per series'
             self.tg.len_series_f.set_value(np.insert(len_series_f, 0, 0).cumsum().astype('int32'))
 
             # =========================
@@ -539,7 +539,7 @@ class InterpolatorData:
             if 'u_grade' in verbose:
                 print(u_grade)
 
-            n_universal_eq = np.zeros_like(len_series_i)
+            n_universal_eq = np.zeros_like(len_series_f)
             n_universal_eq[u_grade == 0] = 0
             n_universal_eq[u_grade == 1] = 3
             n_universal_eq[u_grade == 2] = 9
