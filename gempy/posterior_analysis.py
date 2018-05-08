@@ -232,21 +232,18 @@ class Posterior:
             print("interp_data parameters changed.")
         return interp_data
 
-    def compute_posterior_model_avrg(self, interp_data):
-        """Computes average posterior model."""
-        list_interf = []
-        list_fol = []
-        for i in range(self.n_iter):
-            list_interf.append(self.input_data[i][0])
-            list_fol.append(self.input_data[i][1])
+    def change_input_data_avrg(self, interp_data):
+        """Calculates average posterior parameters and updates interp_data.geo_data_res dataframes."""
 
-        interf_avrg = pn.concat(list_interf).groupby(level=0).mean()
-        fol_avrg = pn.concat(list_fol).groupby(level=0).mean()
-
+        # average input data
+        interf_avrg = self.input_data[:, 0][:].mean(axis=0)
+        orient_avrg = self.input_data[:, 1][:].mean(axis=0)
+        # set average in df
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = interf_avrg
-        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = fol_avrg
-        interp_data.update_interpolator()
-        return gp.compute_model(interp_data)
+        interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = orient_avrg
+        recalc_gradients(interp_data.geo_data_res.orientations)  # recalc gradients
+        interp_data.update_interpolator()  # update interpolator
+        return interp_data
 
     def compute_entropy(self):
         """Computes the voxel information entropy of stored block models."""
