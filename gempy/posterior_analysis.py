@@ -232,14 +232,6 @@ class Posterior:
             print("interp_data parameters changed.")
         return interp_data
 
-    # TODO: DEP Use gp.compute_model instead
-    # def compute_posterior_model(self, interp_data, i):
-    #     """Computes the model with the respective posterior input data. Returns lith block, fault block."""
-    #     self.change_input_data(interp_data, i)
-    #     return gp.compute_model(interp_data)
-
-
-
     def compute_posterior_model_avrg(self, interp_data):
         """Computes average posterior model."""
         list_interf = []
