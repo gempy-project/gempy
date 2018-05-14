@@ -1,0 +1,915 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>CORE - Geological modeling with GemPy &#8212; GemPy rc documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'rc',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/gempy_squared.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="ASSETS – Model analysis and further use" href="assets.html" />
+    <link rel="prev" title="Guide" href="../theory.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="core-geological-modeling-with-gempy">
+<h1>CORE - Geological modeling with GemPy<a class="headerlink" href="#core-geological-modeling-with-gempy" title="Permalink to this headline">¶</a></h1>
+<p>In this section, we describe the core functionality of <em>GemPy</em>: the
+construction of 3-D geological models from geological input data
+(surface contact points and orientation measurements) and defined
+topological relationships (stratigraphic sequences and fault networks).
+We begin with a brief review of the theory underlying the implemented
+interpolation algorithm. We then describe the translation of this
+algorithm and the subsequent model generation and visualisation using
+the Python front-end of <em>GemPy</em> and how an entire model can be
+constructed by calling only a few functions. Across the text, we include
+code snippets with minimal working examples to demonstrate the use of
+the library.</p>
+<p>After describing the simple functionality required to construct models,
+we go deeper into the underlying architecture of <em>GemPy</em>. This part is
+not only relevant for advanced users and potential developers, but also
+highlights a key aspect: the link to <em>Theano</em>
+<a class="reference internal" href="#b-2016theano" id="id1">[B1]</a>, a highly evolved Python library for
+efficient vector algebra and machine learning, which is an essential
+aspect required for making use of the more advanced aspects of
+stochastic geomodeling and Bayesian inversion, which will also be
+explained in the subsequent sections.</p>
+<div class="section" id="geological-modeling-and-the-potential-field-approach">
+<h2>Geological modeling and the potential-field approach<a class="headerlink" href="#geological-modeling-and-the-potential-field-approach" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="concept-of-the-potential-field-method">
+<h3>Concept of the potential-field method<a class="headerlink" href="#concept-of-the-potential-field-method" title="Permalink to this headline">¶</a></h3>
+<p>The potential-field method developed by
+<a class="reference internal" href="#b-lajaunie-1997" id="id2">[B2]</a> is the central method to generate the
+3D geological models in <em>GemPy</em>, which has already been successfully
+deployed in the modeling software GeoModeller 3-D see
+<a class="reference internal" href="#b-calcagno-2008" id="id3">[B3]</a>. The general idea is to
+construct an interpolation function <span class="math">\(\textbf{Z}({\bf{x}}_{0})\)</span>
+where <span class="math">\(\text{x}\)</span> is any point in the continuous three-dimensional
+space (<span class="math">\(x, y, z\)</span>) <span class="math">\(\in \mathbb{R}^3\)</span> which describes the
+domain <span class="math">\(\mathcal{D}\)</span> as a scalar field. The gradient of the scalar
+field will follow the direction of the anisotropy of the stratigraphic
+structure or, in other words, every possible isosurface of the scalar
+field will represent every synchronal deposition of the layer (see
+figure [fig:potfield]).</p>
+<p>Let’s break down what we actually mean by this: Imagine that a
+geological setting is formed by a perfect sequence of horizontal layers
+piled one above the other. If we know the exact timing of when one of
+these surfaces was deposited, we would know that any layer above had to
+occur afterwards while any layer below had to be deposited earlier in
+time. Obviously, we cannot have data for each of these infinitesimal
+synchronal layers, but we can interpolate the “date” between them. In
+reality, the exact year of the synchronal deposition is
+meaningless—since the related uncertainty would be out of proportion.
+What has value to generate a 3D geomodel is the location of those
+synchronal layers and especially the lithological interfaces where the
+change of physical properties are notable. Due to this, instead
+interpolating <em>time</em>, we use a simple dimensionless parameter—that we
+simply refer to as <em>scalar field value</em>.</p>
+<p>The advantages of using a global interpolator instead of interpolating
+each layer of interest independently are twofold: (i) the location of
+one layer affects the location of others in the same depositional
+environment, making impossible for two layers in the same potential
+field to cross; and (ii) it enables the use of data in-between the
+interfaces of interest, opening the range of possible measurements that
+can be used in the interpolation.</p>
+<div class="figure" id="id24">
+<img alt="" src="../_images/potential_field_simple.png" />
+<p class="caption"><span class="caption-text">Example of scalar field. The input data is formed by six points
+distributed in two layers (<span class="math">\({\bf{x}}_{\alpha \, i}^1\)</span> and
+<span class="math">\({\bf{x}}_{\alpha \, i}^2\)</span>) and and two orientations
+(<span class="math">\({\bf{x}}_{\beta \, j}\)</span>). A isosurface connect the interface
+points and the scalar field is perpendicular to the foliation
+gradient.</span></p>
+</div>
+<p>The interpolation function is obtained as a weighted interpolation based
+on Universal CoKriging <a class="reference internal" href="#b-chiles2009geostatistics" id="id4">[B4]</a>.
+Kriging or Gaussian process regression
+<a class="reference internal" href="#b-matheron1981splines" id="id5">[B5]</a> is a spatial interpolation that
+treats each input as a random variable, aiming to minimize the
+covariance function to obtain the best linear unbiased predictor
+<a class="reference internal" href="#b-wackernagel2013multivariate" id="id6">[B6]</a>.
+Furthermore, it is possible to combine more than one type of data—i.e. a
+multivariate case or CoKriging—to increase the amount of information in
+the interpolator, as long as we capture their relation using a
+cross-covariance. The main advantage in our case is to be able to
+utilize data sampled from different locations in space for the
+estimation. Simple Kriging, as a regression, only minimizes the second
+moment of the data (or variances). However in most geological settings,
+we can expect linear trends in our data—i.e. the mean thickness of a
+layer varies across the region linearly. This trend is captured using
+polynomial drift functions to the system of equations in what is called
+Universal Kriging.</p>
+</div>
+<div class="section" id="adjustments-to-structural-geological-modeling">
+<h3>Adjustments to structural geological modeling<a class="headerlink" href="#adjustments-to-structural-geological-modeling" title="Permalink to this headline">¶</a></h3>
+<p>So far we have shown what we want to obtain and how Universal CoKriging
+is a suitable interpolation method to get there. In the following, we
+will describe the concrete steps from taking our input data to the final
+interpolation function <span class="math">\(\textbf{Z}({\bf{x}}_{0})\)</span>, which describes
+the domain. Much of the complexity of the method comes from the
+difficulty of keeping highly nested nomenclature consistent across
+literature. For this reason, we will try to be especially verbose
+regarding the mathematical terminology. The terms of <em>potential field</em>
+(original coined by <a class="reference internal" href="#b-lajaunie-1997" id="id7">[B2]</a>) and <em>scalar
+field</em> (preferred by the authors) are used interchangeably across the
+paper. The result of a Kriging interpolation is a random function and
+hence both <em>interpolation function</em> and <em>random function</em> are used to
+refer the function of interest <span class="math">\(\textbf{Z}({\bf{x}}_{0})\)</span>. The
+CoKriging nomenclature quickly grows complicated, since it has to
+consider <em>p</em> random functions <span class="math">\(\bf{Z}_{\it{i}}\)</span>, with <span class="math">\(p\)</span>
+being the number of distinct parameters involved in the interpolation,
+sampled at different points <span class="math">\(\bf{x}\)</span> of the three-dimensional
+domain <span class="math">\(\mathbb{R}^3\)</span>. Two types of parameters are used to
+characterize the <em>scalar field</em> in the interpolation: (i) layer
+interface points <span class="math">\({\bf{x}}_{\alpha}\)</span> describing the respective
+isosurfaces of interest—usually the interface between two layers; and
+(ii) the gradients of the scalar field, <span class="math">\({\bf{x}}_{\beta}\)</span>—or in
+geological terms: poles of the layer, i.e. normal vectors to the dip
+plane. Therefore gradients will be oriented perpendicular to the
+isosurfaces and can be located anywhere in space. We will refer to the
+main random function—the scalar field itself—<span class="math">\({\bf{Z}}_{\alpha}\)</span>
+simply as <span class="math">\(\bf{Z}\)</span>, and its set of samples as
+<span class="math">\({\bf{x}}_{\alpha}\)</span> while the second random function
+<span class="math">\({\bf{Z}}_{\beta}\)</span>—the gradient of the scalar field—will be
+referred to as <span class="math">\(\partial {\bf{Z}}/ \partial u\)</span> and its samples as
+<span class="math">\({\bf{x}}_{\beta}\)</span>, so that we can capture the relationship
+between the potential field <span class="math">\(\bf{Z}\)</span> and its gradient as</p>
+<div class="math">
+\[\frac{\partial \bf{Z}}{\partial u}(x) = \lim_{\it{p}\to 0} \frac{ {\bf{Z}} (x+pu)-{\bf{Z}}(x)}{p}
+\label{eq_der}\]</div>
+<p>It is also important to keep the values of every individual synchronal
+layer identified since they have the same scalar field value. Therefore,
+samples that belong to a single layer <span class="math">\(k\)</span> will be expressed as a
+subset denoted using superscript as <span class="math">\({\bf{x}}_\alpha ^k\)</span> and every
+individual point by a subscript, <span class="math">\({\bf{x}}_{\alpha \, i}^k\)</span> (see
+figure [fig:potfield]).</p>
+<p>Note that in this context data does not have any meaningful physical
+parameter associated with it that we want to interpolate as long as
+stratigraphic deposition follows gradient direction. Therefore the two
+constraints we want to conserve in the interpolated scalar field are:
+(i) all points belonging to a determined interface
+<span class="math">\({\bf{x}}_{\alpha \, i}^k\)</span> must have the same scalar field value
+(i.e. there is an isosurface connecting all data points)</p>
+<div class="math">
+\[{{\bf{Z}}( \bf{x}}_{\alpha_\, i}^k ) - {\bf{Z}}({\bf{x}}_{\alpha_\, 0}^k) = 0
+\label{eq_rel}\]</div>
+<p>where <span class="math">\({\bf{x}}_{\alpha_\, 0}^k\)</span> is a reference point of the
+interface and (ii) the scalar field will be perpendicular to the poles
+<span class="math">\({\bf{x}}_{\beta}\)</span> anywhere in 3-D space.</p>
+<p>Considering equation [eq_rel], we do not care about the exact value at
+<span class="math">\({{\bf{Z}}(\bf{x}}_{\alpha_\, i}^k)\)</span> as long as it is constant at
+all points <span class="math">\({\bf{x}}_{\alpha_\, i}^k\)</span>. Therefore, the random
+function <strong>Z</strong> in the CoKriging system (equation [krig_sys]) can be
+substituted by equation [eq_rel]. This formulation entails that the
+specific <em>scalar field values</em> will depend only on the gradients and
+hence at least one gradient is necessary to keep the system of equations
+defined. The reason for this formulation rest on that by not fixing the
+values of each interface <span class="math">\({{\bf{Z}}( \bf{x}}_{\alpha}^k )\)</span>, the
+compression of layers—which is derived by the gradients—can propagate
+smoother beyond the given interfaces. Otherwise, the gradients will only
+have effect in the area within the boundaries of the two interfaces that
+contains the variable.</p>
+<p>The algebraic dependency between <strong>Z</strong> and
+<span class="math">\(\partial {\bf{Z}}/ \partial u\)</span> (equation [eq_der]) gives a
+mathematical definition of the relation between the two variables
+avoiding the need of an empirical cross-variogram, enabling instead the
+use of the derivation of the covariance function. This dependency must
+be taken into consideration in the computation of the drift of the first
+moment as well having a different function for each of the variables</p>
+<div class="math">
+\[\lambda F_1 + \lambda F_2 = f_{10}\]</div>
+<p>where <span class="math">\(F_1\)</span> is a the polynomial of degree <span class="math">\(n\)</span> and
+<span class="math">\(F_2\)</span> its derivative. Having taken this into consideration, the
+resulting CoKriging system takes the form of:</p>
+<div class="math">
+\[\begin{split}\left[ \begin{array}{ccc}
+{\bf{C_{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}}} &amp;
+{\bf{C_{\partial {\bf{Z}}/ \partial u, \, Z}}} &amp;
+\bf{U_{\partial {\bf{Z}}/ \partial u}} \\
+{\bf{C_{Z, \, \partial {\bf{Z}}/ \partial u }}} &amp;
+{\bf{C_{\bf{Z}, \, \bf{Z}}}} &amp;
+{\bf{U_{Z}}} \\
+\bf{U'_{\partial {\bf{Z}}/ \partial u}} &amp;
+{\bf{U'_{Z}}} &amp;
+{\bf{0}} \end{array} \right]
+\left[ \begin{array}{cc}
+\lambda_{{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}} &amp;
+\lambda_{\partial {\bf{Z}}/ \partial u, \, Z}\\
+\lambda_{Z, \,\partial {\bf{Z}}/ \partial u} &amp;
+\lambda_{\bf{Z}, \,\bf{Z}}\\
+{\mu_{\partial {\text{u}}}} &amp; {\mu_{\text{u}}} \end{array} \right] =
+\left[ \begin{array}{cc}
+{\bf{c_{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}}} &amp; {\bf{c_{\partial {\bf{Z}}/ \partial u, \, Z}}} \\
+{\bf{c_{Z, \,\partial {\bf{Z}}/ \partial u}}} &amp;  {\bf{c_{\bf{Z}, \,\bf{Z}}}} \\
+{\bf{f_{10}}} &amp; {\bf{f_{20}}} \end{array} \right]
+\label{krig_sys}\end{split}\]</div>
+<p>where, <span class="math">\({\bf{C_{\partial {\bf{Z}}/ \partial u}}}\)</span> is the gradient
+covariance-matrix; <span class="math">\({\bf{C_{\bf{Z}, \, \bf{Z}}}}\)</span> the
+covariance-matrix of the differences between each interface points to
+reference points in each layer</p>
+<div class="math">
+\[{{C}}_{{\bf{x}}_{\alpha \, i}^r, \, {\bf{x}}_{\alpha \,j}^s} =
+C_{x^r_{\alpha, \,i} \, x^s_{\alpha, \,j}} - C_{x^r_{\alpha, \,0} \, x^s_{\alpha, \,j}} -
+C_{x^r_{\alpha, \,i} \, x^s_{\alpha, \,0}} + C_{x^r_{\alpha, \,0} \, x^s_{\alpha, \,0}}
+\label{one_val}\]</div>
+<p>(see Appendix [interface-covariance-matrix] for further analysis);
+<span class="math">\({\bf{C_{Z, \, \partial {\bf{Z}}/ \partial u }}}\)</span> encapsulates the
+cross-covariance function; and <span class="math">\({\bf{U_{Z}}}\)</span> and
+<span class="math">\(\bf{U'_{\partial {\bf{Z}}/ \partial u}}\)</span> are the drift functions
+and their gradient, respectively. On the right hand side we find the
+vector of the matrix system of equations, being
+:math:<a href="#id8"><span class="problematic" id="id9">`</span></a>{bf{c_{partial {bf{Z}}/ partial u, , partial {bf{Z}}/ partial</p>
+<blockquote>
+<div>v}}}` the gradient of the covariance function to the point <strong>x</strong></div></blockquote>
+<p>of interest; <span class="math">\({\bf{c_{Z, \,\partial {\bf{Z}}/ \partial u}}}\)</span> the
+cross-covariance; <span class="math">\({\bf{c_{\bf{Z}, \,\bf{Z}}}}\)</span> the actual
+covariance function; and <span class="math">\({\bf{f_{10}}}\)</span> and <span class="math">\({\bf{f_{20}}}\)</span>
+the gradient of the drift functions and the drift functions themselves.
+Lastly, the unknown vectors are formed by the corresponding weights,
+<span class="math">\(\lambda\)</span>, and constants of the drift functions, <span class="math">\(\mu\)</span>. A
+more detail inspection of this system of equations is carried out in
+Appendix [kse].</p>
+<p>As we can see in equation [krig_sys], it is possible to solve the
+Kriging system for the scalar field <strong>Z</strong> (second column in the weights
+vector), as well as its derivative <span class="math">\(\partial {\bf{Z}}/ \partial u\)</span>
+(first column in the weights vector). Even though the main goal is the
+segmentation of the layers, which is done using the value of <strong>Z</strong> (see
+Section [from-potential-field-to-block]), the gradient of the scalar
+field can be used for further mathematical applications, such as
+meshing, geophysical forward calculations or locating geological
+structures of interest (e.g. spill points of a hydrocarbon trap).</p>
+<p>Furthermore, since the choice of covariance parameters is ad hoc
+(Appendix [covariance-function-cubic.-discuss-it-with-france] show the
+used covariance function in GemPy), the uncertainty derived by the
+Kriging interpolation does not bear any physical meaning. This fact
+promotes the idea of only using the mean value of the Kriging solution.
+For this reason it is recommended to solve the Kriging system (equation
+[krig_sys]) in its dual form
+<a class="reference internal" href="#b-matheron1981splines" id="id10">[B5]</a>.</p>
+</div>
+</div>
+<div class="section" id="geological-model-interpolation-using-gempy">
+<h2>Geological model interpolation using <em>GemPy</em><a class="headerlink" href="#geological-model-interpolation-using-gempy" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="from-scalar-field-to-geological-block-model">
+<h3>From scalar field to geological block model<a class="headerlink" href="#from-scalar-field-to-geological-block-model" title="Permalink to this headline">¶</a></h3>
+<p>In most scenarios the goal of structural modeling is to define the
+spatial distribution of geological structures, such as layers interfaces
+and faults. In practice, this segmentation usually is done either by
+using a volumetric discretization or by depicting the interfaces as
+surfaces.</p>
+<p>The result of the Kriging interpolation is the random function
+<span class="math">\(\textbf{Z}(x)\)</span> (and its gradient
+<span class="math">\(\partial {\bf{Z}} / \partial u (x)\)</span>, which we will omit in the
+following), which allows the evaluation of the value of the scalar field
+at any given point <span class="math">\(x\)</span> in space. From this point on, the easiest
+way to segment the domains is to discretize the 3-D space (e.g. we use a
+regular grid in figure [fig:model_comp]). First, we need to calculate
+the scalar value at every interface by computing
+<span class="math">\({{\bf{Z}}( \bf{x}}_{\alpha, i}^k)\)</span> for every interface
+<span class="math">\(k_i\)</span>. Once we know the value of the scalar field at the
+interfaces, we evaluate every point of the mesh and compare their value
+to those at the interfaces, identifying every point of the mesh with a
+topological volume. Each of these compartmentalizations will represent
+each individual domain, this is, each lithology of interest (see figure
+[fig:model_comp]a).</p>
+<p>At the time of this manuscript preparation, <em>GemPy</em> only provides
+rectilinear grids but it is important to notice that the computation of
+the scalar field happens in continuous space, and therefore allows the
+use of any type of mesh. The result of this type of segmentation is
+referred in <em>GemPy</em> as a <em>lithology block</em>.</p>
+<p>The second segmentation alternative consist on locating the layer
+isosurfaces. <em>GemPy</em> makes use of the marching cube algorithm
+<a class="reference internal" href="#b-lorensen1987marching" id="id11">[B7]</a> provided by the <em>scikit-image</em>
+library <a class="reference internal" href="#b-scikit-image" id="id12">[B8]</a>. The basics of the marching
+cube algorithm are quite intuitive: (i) First, we discretize the volume
+in 3-D voxels and by comparison we look if the value of the isosurface
+we want to extract falls within the boundary of every single voxel; (ii)
+if so, for each edge of the voxel, we interpolate the values at the
+corners of the cube to obtain the coordinates of the intersection
+between the edges of the voxels and the isosurface of interest, commonly
+referred to as vertices; (iii) those intersections are analyzed and
+compared against all possible configurations to define the simplices
+(i.e. the vertices which form an individual polygon) of the triangles.
+Once we obtain the coordinates of vertices and their correspondent
+simplices, we can use them for visualization (see Section [vis]) or any
+sub-sequential computation that may make use of them (e.g. weighted
+voxels). For more information on meshing algorithms refer to
+<a class="reference internal" href="#b-geuzaine2009gmsh" id="id13">[B9]</a>.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+
+<span class="c1"># Main data management object containing</span>
+<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">(</span><span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+              <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+              <span class="n">path_o</span><span class="o">=</span><span class="s2">&quot;paper_Foliations.csv&quot;</span><span class="p">,</span>
+              <span class="n">path_i</span><span class="o">=</span><span class="s2">&quot;paper_Points.csv&quot;</span><span class="p">)</span>
+
+<span class="c1"># Creating object with data prepared for interpolation and compiling</span>
+<span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorData</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+
+<span class="c1"># Computing result</span>
+<span class="n">lith</span><span class="p">,</span> <span class="n">fault</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+
+<span class="c1"># Plotting result: scalar field</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_scalar_field</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">5</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Plotting result: lithology block</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">5</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Getting vertices and faces</span>
+<span class="n">vertices</span><span class="p">,</span> <span class="n">simpleces</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span> <span class="n">lith</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">fault</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">original_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="figure" id="id25">
+<img alt="" src="../_images/model_comp.png" />
+<p class="caption"><span class="caption-text">Example of different lithological units and their relation to scalar
+fields. a) Simple stratigraphic sequence generated from a scalar
+field as product of the interpolation of interface points and
+orientation gradients. b) Addition of an unconformity horizon from
+which the unconformity layer behaves independently from the older
+layers by overlying a second scalar field. c) Combination of
+unconformity and faulting using three scalar fields.</span></p>
+</div>
+</div>
+<div class="section" id="combining-scalar-fields-depositional-series-and-faults">
+<h3>Combining scalar fields: Depositional series and faults<a class="headerlink" href="#combining-scalar-fields-depositional-series-and-faults" title="Permalink to this headline">¶</a></h3>
+<p>In reality, most geological settings are formed by a concatenation of
+depositional phases partitioned by unconformity boundaries and subjected
+to tectonic stresses which displace and deform the layers. While the
+interpolation is able to represent realistic folding—given enough
+data—the method fails to describe discontinuities. To overcome this
+limitation, it is possible to combine several scalar fields to recreate
+the desired result.</p>
+<p>So far the implemented discontinuities in <em>GemPy</em> are unconformities and
+infinite faults. Both types are computed by specific combinations of
+independent scalar fields. We call these independent scalar fields
+<em>series</em>
+from stratigraphic series in accordance to the use in GeoModeller 3-D]
+and in essence, they represent a subset of grouped interfaces—either
+layers or fault planes—that are interpolated together and therefore
+their spatial location affect each other. To handle and visualize these
+relationships, we use a so called sequential pile; representing the
+order—from the first scalar field to the last—and the grouping of the
+layers (see figure [fig:model_comp]).</p>
+<p>Modeling unconformities is rather straightforward. Once we have grouped
+the layers into their respective series, younger series will overlay
+older ones beyond the unconformity. The scalar fields themselves,
+computed for each of these series, could be seen as a continuous
+depositional sequence in the absence of an unconformity.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+
+<span class="c1"># Main data management object containing</span>
+<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">(</span><span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="o">-</span><span class="mi">10</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span>
+              <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span> <span class="mi">10</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span>
+              <span class="n">path_o</span><span class="o">=</span><span class="s2">&quot;paper_Foliations.csv&quot;</span><span class="p">,</span>
+              <span class="n">path_i</span><span class="o">=</span><span class="s2">&quot;paper_Points.csv&quot;</span><span class="p">)</span>
+
+<span class="c1"># Defining the series of the sequential pile</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">set_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span>
+         <span class="p">{</span><span class="s1">&#39;younger_serie&#39;</span> <span class="p">:</span> <span class="s1">&#39;Unconformity&#39;</span><span class="p">,</span> <span class="s1">&#39;older_serie&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Layer1&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer2&#39;</span><span class="p">)},</span>
+         <span class="n">order_formations</span><span class="o">=</span> <span class="p">[</span><span class="s1">&#39;Unconformity&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer2&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer1&#39;</span><span class="p">])</span>
+
+<span class="c1"># Creating object with data prepared for interpolation and compiling</span>
+<span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorData</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+
+<span class="c1"># Computing result</span>
+<span class="n">lith</span><span class="p">,</span> <span class="n">fault</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+
+<span class="c1"># Plotting result</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">5</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Faults are modeled by the inclusion of an extra drift term into the
+kriging system <a class="reference internal" href="#b-marechal1984kriging" id="id14">[B10]</a>:</p>
+<div class="math">
+\[\begin{split}\left[ \begin{array}{cccc}
+{\bf{C_{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}}} &amp;
+{\bf{C_{\partial {\bf{Z}}/ \partial u, \, Z}}} &amp;
+\bf{U_{\partial {\bf{Z}}/ \partial u}}         &amp;
+\bf{F_{\partial {\bf{Z}}/ \partial u}} \\
+{\bf{C_{Z, \, \partial {\bf{Z}}/ \partial u }}} &amp;
+{\bf{C_{\bf{Z}, \, \bf{Z}}}} &amp;
+{\bf{U_{Z}}}                 &amp;
+{\bf{F_{Z}}} \\
+\bf{U'_{\partial {\bf{Z}}/ \partial u}} &amp;
+{\bf{U'_{Z}}} &amp;
+{\bf{0}}      &amp;
+{\bf{0}}    \\
+\bf{F'_{\partial {\bf{Z}}/ \partial u}} &amp;
+{\bf{F'_{Z}}} &amp;
+ {\bf{0}}    &amp;
+ {\bf{0}}
+\end{array} \right]
+\left[ \begin{array}{cc}
+\lambda_{{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}} &amp;
+\lambda_{\partial {\bf{Z}}/ \partial u, \, Z}\\
+\lambda_{Z, \,\partial {\bf{Z}}/ \partial u} &amp;
+\lambda_{\bf{Z}, \,\bf{Z}}\\
+{\mu_{\partial {\text{u}}}} &amp; {\mu_{\text{u}}} \\
+{\mu_{\partial {\text{f}}}} &amp; {\mu_{\text{f}}}
+ \end{array} \right] =
+\left[ \begin{array}{cc}
+{\bf{c_{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}}} &amp; {\bf{c_{\partial {\bf{Z}}/ \partial u, \, Z}}} \\
+{\bf{c_{Z, \,\partial {\bf{Z}}/ \partial u}}} &amp;  {\bf{c_{\bf{Z}, \,\bf{Z}}}} \\
+{\bf{f_{10}}} &amp; {\bf{f_{20}}} \\
+{\bf{f_{10}}} &amp; {\bf{f_{20}}}
+ \end{array} \right]
+\label{krig_sys_f}\end{split}\]</div>
+<p>which is a function of the faulting structure. This means that for
+every location <span class="math">\({\bf{x}}_{0}\)</span> the drift function will take a value
+depending on the fault compartment—i.e. a segmented domain of the fault
+network—and other geometrical constrains such as spatial influence of a
+fault or variability of the offset. To obtain the offset effect of a
+fault, the value of the drift function has to be different at each of
+its sides. The level of complexity of the drift functions will determine
+the quality of the characterization as well as its robustness.
+Furthermore, finite or localize faults can be recreated by selecting an
+adequate function that describe those specific trends.</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">gempy</span> <span class="k">as</span> <span class="nn">gp</span>
+
+<span class="c1"># Main data management object containing</span>
+<span class="n">geo_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">create_data</span><span class="p">(</span><span class="n">extent</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="o">-</span><span class="mi">10</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span>
+              <span class="n">resolution</span><span class="o">=</span><span class="p">[</span><span class="mi">100</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">100</span><span class="p">],</span>
+              <span class="n">path_o</span> <span class="o">=</span> <span class="s2">&quot;paper_Foliations.csv&quot;</span><span class="p">,</span>
+              <span class="n">path_i</span> <span class="o">=</span> <span class="s2">&quot;paper_Points.csv&quot;</span><span class="p">)</span>
+
+<span class="c1"># Defining the series of the sequential pile</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">set_series</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">series_distribution</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;fault_serie1&#39;</span><span class="p">:</span> <span class="s1">&#39;fault1&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;younger_serie&#39;</span> <span class="p">:</span> <span class="s1">&#39;Unconformity&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;older_serie&#39;</span><span class="p">:</span> <span class="p">(</span><span class="s1">&#39;Layer1&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer2&#39;</span><span class="p">)},</span>
+<span class="n">order_formations</span><span class="o">=</span> <span class="p">[</span><span class="s1">&#39;fault1&#39;</span><span class="p">,</span> <span class="s1">&#39;Unconformity&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer2&#39;</span><span class="p">,</span> <span class="s1">&#39;Layer1&#39;</span><span class="p">])</span>
+
+<span class="c1"># Creating object with data prepared for interpolation and compiling</span>
+<span class="n">interp_data</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">InterpolatorData</span><span class="p">(</span><span class="n">geo_data</span><span class="p">)</span>
+
+<span class="c1"># Computing result</span>
+<span class="n">lith</span><span class="p">,</span> <span class="n">fault</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+
+<span class="c1"># Plotting result</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_section</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">lith</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">5</span><span class="p">,</span> <span class="n">plot_data</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1"># Getting vertices and faces and pltting</span>
+<span class="n">vertices</span><span class="p">,</span> <span class="n">simpleces</span> <span class="o">=</span> <span class="n">gp</span><span class="o">.</span><span class="n">get_surfaces</span><span class="p">(</span><span class="n">interp_data</span><span class="p">,</span><span class="n">lith</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="p">[</span><span class="n">fault</span><span class="p">[</span><span class="mi">1</span><span class="p">]],</span> <span class="n">original_scale</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">gp</span><span class="o">.</span><span class="n">plot_surfaces_3D</span><span class="p">(</span><span class="n">geo_data</span><span class="p">,</span> <span class="n">ver_s</span><span class="p">,</span> <span class="n">sim_s</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The computation of the segmentation of fault compartments (called <em>fault
+block</em> in <em>GemPy</em>)—prior to the inclusion of the fault drift functions
+which depends on this segmentation—can be performed with the
+potential-field method itself. In the case of multiple faults,
+individual drift functions have to be included in the kriging system for
+each fault, representing the subdivision of space that they produce.
+Naturally, younger faults may offset older tectonic events. This
+behavoir is replicated by recursively adding drift functions of younger
+faults to the computation of the older <em>fault blocks</em>. To date, the
+fault relations—i.e. which faults offset others—is described by the user
+in a boolean matrix. An easy to use implementation to generate fault
+networks is being worked on at the time of manuscript preparation. An
+important detail to consider is that drift functions will bend the
+isosurfaces according to the given rules but they will conserve their
+continuity. This differs from the intuitive idea of offset, where the
+interface presents a sharp jump. This fact has direct impact in the
+geometry of the final model, and can, for example, affect certain
+meshing algorithms. Furthermore, in the ideal case of choosing the
+perfect drift function, the isosurface would bend exactly along the
+faulting plane. At the current state <em>GemPy</em> only includes the addition
+of an arbitrary integer to each segmented volume. This limits the
+quality to a constant offset, decreasing the sharpness of the offset as
+data deviates from that constrain. Any deviation from this theoretical
+concept, results in a bending of the layers as they approximate the
+fault plane to accommodate to the data, potentially leading to overly
+smooth transitions around the discontinuity.</p>
+</div>
+</div>
+<div class="section" id="under-the-hood-the-gempy-architecture">
+<h2>“Under the hood”: The <em>GemPy</em> architecture<a class="headerlink" href="#under-the-hood-the-gempy-architecture" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="the-graph-structure">
+<h3>The graph structure<a class="headerlink" href="#the-graph-structure" title="Permalink to this headline">¶</a></h3>
+<p>The architecture of <em>GemPy</em> follows the Python Software Foundation
+recommendations of modularity and reusability
+<a class="reference internal" href="#b-van2001pep" id="id15">[B11]</a>. The aim is to divide all functionality
+into independent small logical units in order to avoid duplication,
+facilitate readability and make changes to the code base easier.</p>
+<p>The design of <em>GemPy</em> revolves around an automatic differentiation (AD)
+scheme. The main constraint is that the mathematical functions need to
+be continuous from the input parameters (in probabilistic jargon priors)
+to the cost function (or likelihoods), and therefore the code must be
+written in the same language (or at the very least compatible) to
+automatically compute the derivatives. In practice, this entails that
+any operation involved in the AD must be coded symbolically using the
+library <em>Theano</em> (see Section [theano] for further details). One of the
+constrains of writing symbolically is the a priori declaration of the
+possible input parameters of the graph which will behave as latent
+variables—i.e. the parameters we try to tune for optimization or
+uncertainty quantification—while leaving others involved parameters
+constant either due to their nature or because of the relative slight
+impact of their variability. This rigidity dictates the whole design of
+input data management that needs to revolved around the preexistent
+symbolic graph.</p>
+<p><em>GemPy</em> encapsulates this creation of the symbolic graph in its the
+module <code class="docutils literal"><span class="pre">theanograph</span></code>. Due to the significant complexity to program
+symbolically, features shipped in <em>GemPy</em> that rely heavily in external
+libraries are not written in <em>Theano</em>. The current functionality written
+in <em>Theano</em> can be seen in the figure [fig:overall] and essentially it
+encompasses all the interpolation of the geological modeling (section
+[kriging]) as well as forward calculation of the gravity (section
+[gravity]).</p>
+<div class="figure" id="id26">
+<img alt="" src="../_images/GemPy.png" />
+<p class="caption"><span class="caption-text">Graph of the logical structure of <em>GemPy</em> logic. There are several
+levels of abstraction represented. (i) The first division is between
+the implicit interpolation of the geological modeling (dark gray) and
+other subsequent operations for different objectives (light gray).
+(ii) All the logic required to perform automatic differentiation is
+presented under the “Theano” label (in purple) (iii) The parts under
+labels “Looping pile” (green) and “Single potential field” (gray),
+divide the logic to control the input data of each necessary scalar
+field and the operations within one of them. (iv) Finally, each
+superset of parameters is color coded according to their
+probabilistic nature and behavior in the graph: in blue, stochastic
+variables (priors or likelihoods); in yellow, deterministic
+functions; and in red the inputs of the graph, which are either
+stochastic or constant depending on the problem.</span></p>
+</div>
+<p>Regarding data structure, we make use of the Python package <em>pandas</em>
+<a class="reference internal" href="#b-mckinney2011pandas" id="id16">[B12]</a> to store and prepare the input
+data for the symbolic graph (red nodes in figure [fig:overall]) or other
+processes, such as visualization. All the methodology to create, export
+and manipulate the original data is encapsulated in the class
+<code class="docutils literal"><span class="pre">DataManagement</span></code>. This class has several child classes to facilitate
+specific precomputation manipulations of data structures (e.g. for
+meshing). The aim is to have all constant data prepared before any
+inference or optimization is carried out to minimize the computational
+overhead of each iteration as much as possible.</p>
+<p>It is important to keep in mind that, in this structure, once data
+enters the part of the symbolic graph, only algebraic operations are
+allowed. This limits the use of many high-level coding structures (e.g.
+dictionaries or undefined loops) and external dependencies. As a result
+of that, the preparation of data must be exhaustive before starting the
+computation. This includes ordering the data within the arrays, passing
+the exact lengths of the subsets we will need later on during the
+interpolation or the calculation of many necessary constant parameters.
+The preprocessing of data is done within the sub-classes of
+<code class="docutils literal"><span class="pre">DataManagement</span></code>, the <code class="docutils literal"><span class="pre">InterpolatorData</span></code> class–of which an instance
+is used to call the <em>Theano</em> graph—and <code class="docutils literal"><span class="pre">InterpolatorClass</span></code>—which
+creates the the <em>Theano</em> variables and compiles the symbolic graph.</p>
+<p>The rest of the package is formed by—an always growing—series of modules
+that perform different tasks using the geological model as input (see
+Section [sec:model-analys-furth] and the assets-area in figure
+[fig:overall]).</p>
+</div>
+<div class="section" id="theano">
+<h3>Theano<a class="headerlink" href="#theano" title="Permalink to this headline">¶</a></h3>
+<p>Efficiently solving a large number of algebraic equations, and
+especially their derivatives, can easily get unmanageable in terms of
+both time and memory. Up to this point we have referenced many times
+<em>Theano</em> and its related terms such as automatic differentiation or
+symbolic programming. In this section we will motivate its use and why
+its capabilities make all the difference in making implicit geological
+modeling available for uncertainty analysis.</p>
+<p><em>Theano</em> is a Python package that takes over many of the optimization
+tasks in order to create a computationally feasible code implementation.
+<em>Theano</em> relies on the creation of symbolical graphs that represent the
+mathematical expressions to compute. Most of the extended programming
+paradigms e.g. procedural languages and
+object-oriented programming; see <a class="reference internal" href="#b-normark2013overview" id="id17">[B13]</a> are executed
+sequentially without any interaction with the subsequent instructions.
+In other words, a later instruction has access to the memory states but
+is clueless about the previous instructions that have modified mentioned
+states. In contrast, symbolic programming define from the beginning to
+the end not only the primary data structure but also the complete logic
+of a function , which in turn enables the optimization (e.g. redundancy)
+and manipulation (e.g. derivatives) of its logic.</p>
+<p>Within the Python implementation, <em>Theano</em> create an acyclic network
+graph where the parameters are represented by nodes, while the
+connections determine mathematical operators that relate them. The
+creation of the graph is done in the class <code class="docutils literal"><span class="pre">theanograph</span></code>. Each
+individual method corresponds to a piece of the graph starting from the
+input data all the way to the geological model or the forward gravity
+(see figure [fig:overall], purple Theano area).</p>
+<p>The symbolic graph is later analyzed to perform the optimization, the
+symbolic differentiation and the compilation to a faster language than
+Python (C or CUDA). This process is computational demanding and
+therefore it must be avoided as much as possible.</p>
+<p>Among the most outstanding optimizers shipped with <em>Theano</em>
+<a class="reference internal" href="#b-2016theano" id="id18">[B1]</a>, we
+can find : (i) the canonicalization of the operations to reduce the
+number of duplicated computations, (ii) specialization of operations to
+improve consecutive element-wise operations, (iii) in-place operations
+to avoid duplications of memory or (iv) Open MP parallelization for CPU
+computations. These optimizations and more can speed up the code an
+order of magnitude.</p>
+<p>However, although <em>Theano</em> code optimization is useful, the real
+game-changer is its capability to perform automatic differentiation.
+There is extensive literature explaining all the ins and outs and
+intuitions of the method since it is a core algorithm to train neural
+networks e.g. a detailed explanation is given by
+<a class="reference internal" href="#b-baydin2015automatic" id="id19">[B14]</a>.
+Here, we will highlight the main differences with numerical approaches
+and how they can be used to improve the modeling process.</p>
+<p>Many of the most advanced algorithms in computer science rely on an
+inverse framework i.e. the result of a forward computation
+<span class="math">\(f(\textbf{x})\)</span> influences the value of one or many of the
+<span class="math">\(\textbf{x}\)</span> latent variables (e.g. neuronal networks,
+optimizations, inferences). The most emblematic example of this is the
+optimization of a cost function. All these problems can be described as
+an exploration of a multidimensional manifold
+<span class="math">\(f: \mathbb{R}^N \rightarrow \mathbb{R}\)</span>. Hence the gradient of
+the function
+<span class="math">\(\nabla f = \left(\frac{\partial f}{\partial x_1}, \frac{\partial f}{\partial x_2}, ..., \frac{\partial f}{\partial x_n}\right)\)</span>
+becomes key for an efficient analysis. In case that the output is also
+multidimensional—i.e.
+<span class="math">\(f: \mathbb{R}^N \rightarrow \mathbb{R}^M\)</span>—the entire manifold
+gradient can be expressed by the Jacobian matrix</p>
+<div class="math">
+\[\begin{split}Jf =
+\begin{bmatrix}
+\frac{\partial f_1}{\partial x_1} &amp; ... &amp; \frac{\partial f_1}{\partial x_n}\\
+\vdots                          &amp; \ddots &amp; \vdots \\
+\frac{\partial f_n}{\partial x_1} &amp; ... &amp; \frac{\partial f_m}{\partial x_n}
+\end{bmatrix}\end{split}\]</div>
+<p>of dimension <span class="math">\(N \cdot M\)</span>, where <span class="math">\(N\)</span> is the number of
+variables and <span class="math">\(M\)</span> the number of functions that depend on those
+variables. Now the question is how we compute the Jacobian matrix in a
+consistent and efficient manner. The most straightforward methodology
+consists in approximating the derivate by numerical differentiation
+applying finite differences approximations, for example a forward FD
+scheme:</p>
+<div class="math">
+\[\frac{\partial f_i}{\partial x_i} = \lim_{\it{h}\to 0} \frac{f(x_i+h)-f(x_i)}{h}\]</div>
+<p>where <span class="math">\(h\)</span> is a discrete increment. The main advantage of
+numerical differentiation is that it only computes <span class="math">\(f\)</span>—evaluated
+for different values of <span class="math">\(x\)</span>—which makes it very easy to implement
+it in any available code. By contrast, a drawback is that for every
+element of the Jacobian we are introducing an approximation error that
+eventually can lead to mathematical instabilities. But above all, the
+main limitation is the need of <span class="math">\(2 \cdot M \cdot N\)</span> evaluations of
+the function <span class="math">\(f\)</span>, which quickly becomes prohibitively expensive to
+compute in high-dimensional problems.</p>
+<p>The alternative is to create the symbolic differentiation of <span class="math">\(f\)</span>.
+This encompasses decomposing <span class="math">\(f\)</span> into its primal operators and
+applying the chain rule to the correspondent transformation by following
+the rules of differentiation to obtain <span class="math">\(f'\)</span>. However, symbolic
+differentiation is not enough since the application of the chain rule
+leads to exponentially large expressions of <span class="math">\(f'\)</span> in what is known
+as “expression swell” <a class="reference internal" href="#b-cohen2003computer" id="id20">[B15]</a>. Luckily,
+these large symbolic expressions have a high level of redundancy in
+their terms. This allows to exploit this redundancy by storing the
+repeated intermediate steps in memory and simply invoke them when
+necessary, instead of computing the whole graph every time. This
+division of the program into sub-routines to store the intermediate
+results—which are invoked several times—is called dynamic programming
+<a class="reference internal" href="#b-bellman2013dynamic" id="id21">[B16]</a>. The simplified symbolic
+differentiation graph is ultimately what is called automatic
+differentiation <a class="reference internal" href="#b-baydin2015automatic" id="id22">[B14]</a>. Additionally,
+in a multivariate/multi-objective case the benefits of using AD increase
+linearly as the difference between the number of parameters <span class="math">\(N\)</span>
+and the number of objective functions <span class="math">\(M\)</span> get larger. By applying
+the same principle of redundancy explained above—this time between
+intermediate steps shared across multiple variables or multiple
+objective function—it is possible to reduce the number of evaluations
+necessary to compute the Jacobian either to <span class="math">\(N\)</span> in
+forward-propagation or to <span class="math">\(M\)</span> in back-propagation, plus a small
+overhead on the evaluations for a more detailed
+description of the two modes of AD see <a class="reference internal" href="#b-cohen2003computer" id="id23">[B15]</a>.</p>
+<p><em>Theano</em> provides a direct implementation of the back-propagation
+algorithm, which means in practice that a new graph of similar size is
+generated per cost function (or, in the probabilistic inference, per
+likelihood function). Therefore, the computational time is independent
+of the number of input parameters, opening the door to solving
+high-dimensional problems.</p>
+<p id="bibtex-bibliography-_theory/core-0"><table class="docutils citation" frame="void" id="b-2016theano" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[B1]</td><td><em>(<a class="fn-backref" href="#id1">1</a>, <a class="fn-backref" href="#id18">2</a>)</em> Theano Development Team. Theano: A Python framework for fast computation of mathematical expressions. <em>arXiv e-prints</em>, May 2016. URL: <a class="reference external" href="http://arxiv.org/abs/1605.02688">http://arxiv.org/abs/1605.02688</a>.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-lajaunie-1997" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[B2]</td><td><em>(<a class="fn-backref" href="#id2">1</a>, <a class="fn-backref" href="#id7">2</a>)</em> Christian Lajaunie, Gabriel Courrioux, and Laurent Manuel. Foliation fields and 3D cartography in geology: Principles of a method based on potential interpolation. <em>Mathematical Geology</em>, 29(4):571–584, 1997.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-calcagno-2008" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[B3]</a></td><td>Philippe Calcagno, Jean-Paul Chiles, Gabriel Courrioux, and Antonio Guillen. Geological modelling from field data and geological knowledge: Part I. Modelling method coupling 3D potential-field interpolation and geological rules: Recent Advances in Computational Geodynamics: Theory, Numerics and Applications. <em>Physics of the Earth and Planetary Interiors</em>, 171(1-4):147–157, 2008.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-chiles2009geostatistics" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[B4]</a></td><td>Jean-Paul Chiles and Pierre Delfiner. <em>Geostatistics: modeling spatial uncertainty</em>. Volume 497. John Wiley &amp; Sons, 2009.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-matheron1981splines" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[B5]</td><td><em>(<a class="fn-backref" href="#id5">1</a>, <a class="fn-backref" href="#id10">2</a>)</em> Georges Matheron. Splines and kriging: their formal equivalence. <em>Down-to-earth-statistics: Solutions looking for geological problems</em>, pages 77–95, 1981.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-wackernagel2013multivariate" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id6">[B6]</a></td><td>Hans Wackernagel. <em>Multivariate geostatistics: an introduction with applications</em>. Springer Science &amp; Business Media, 2013.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-lorensen1987marching" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id11">[B7]</a></td><td>William&nbsp;E Lorensen and Harvey&nbsp;E Cline. Marching cubes: a high resolution 3d surface construction algorithm. In <em>ACM siggraph computer graphics</em>, volume&nbsp;21, 163–169. ACM, 1987.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-scikit-image" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id12">[B8]</a></td><td>Stéfan van&nbsp;der Walt, Johannes&nbsp;L. Schönberger, Juan Nunez-Iglesias, François Boulogne, Joshua&nbsp;D. Warner, Neil Yager, Emmanuelle Gouillart, Tony Yu, and the&nbsp;scikit-image contributors. Scikit-image: image processing in Python. <em>PeerJ</em>, 2:e453, 6 2014. URL: <a class="reference external" href="http://dx.doi.org/10.7717/peerj.453">http://dx.doi.org/10.7717/peerj.453</a>, <a class="reference external" href="https://doi.org/10.7717/peerj.453">doi:10.7717/peerj.453</a>.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-geuzaine2009gmsh" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id13">[B9]</a></td><td>Christophe Geuzaine and Jean-François Remacle. Gmsh: a 3-d finite element mesh generator with built-in pre-and post-processing facilities. <em>International journal for numerical methods in engineering</em>, 79(11):1309–1331, 2009.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-marechal1984kriging" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id14">[B10]</a></td><td>Alain Marechal. Kriging seismic data in presence of faults. In <em>Geostatistics for natural resources characterization</em>, pages 271–294. Springer, 1984.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-van2001pep" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id15">[B11]</a></td><td>Guido van Rossum, Barry Warsaw, and Nick Coghlan. Pep 8: style guide for python code. <em>Python. org</em>, 2001.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-mckinney2011pandas" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id16">[B12]</a></td><td>Wes McKinney. Pandas: a foundational python library for data analysis and statistics. <em>Python for High Performance and Scientific Computing</em>, pages 1–9, 2011.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-normark2013overview" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id17">[B13]</a></td><td>Kurt Normark. Overview of the four main programming paradigms. 2013.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-baydin2015automatic" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[B14]</td><td><em>(<a class="fn-backref" href="#id19">1</a>, <a class="fn-backref" href="#id22">2</a>)</em> Atilim&nbsp;Gunes Baydin, Barak&nbsp;A Pearlmutter, Alexey&nbsp;Andreyevich Radul, and Jeffrey&nbsp;Mark Siskind. Automatic differentiation in machine learning: a survey. <em>arXiv preprint arXiv:1502.05767</em>, 2015.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-cohen2003computer" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[B15]</td><td><em>(<a class="fn-backref" href="#id20">1</a>, <a class="fn-backref" href="#id23">2</a>)</em> Joel&nbsp;S Cohen. <em>Computer algebra and symbolic computation: Mathematical methods</em>. Universities Press, 2003.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="b-bellman2013dynamic" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id21">[B16]</a></td><td>Richard Bellman. <em>Dynamic programming</em>. Courier Corporation, 2013.</td></tr>
+</tbody>
+</table>
+</p>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy2.svg" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../theory.html">Guide</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">CORE - Geological modeling with GemPy</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geological-modeling-and-the-potential-field-approach">Geological modeling and the potential-field approach</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geological-model-interpolation-using-gempy">Geological model interpolation using <em>GemPy</em></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#under-the-hood-the-gempy-architecture">“Under the hood”: The <em>GemPy</em> architecture</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="assets.html">ASSETS – Model analysis and further use</a></li>
+<li class="toctree-l2"><a class="reference internal" href="advanced.html">Advance theory</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../theory.html">Guide</a><ul>
+      <li>Previous: <a href="../theory.html" title="previous chapter">Guide</a></li>
+      <li>Next: <a href="assets.html" title="next chapter">ASSETS – Model analysis and further use</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/_theory/core.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

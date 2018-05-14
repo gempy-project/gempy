@@ -1,4 +1,4 @@
-X,X_std,Y,Y_std,Z,Z_std,annotations,formation,formation number,group_id,isFault,order_series,series
+X,X_std,Y,Y_std,Z,Z_std,annotations,formation,formation_number,group_id,isFault,order_series,series
 1700,0.0,0,0.0,640,0.0,"${\bf{x}}_{\alpha \,{\bf{1}},0}$",Fault,1,fault,True,1,fault
 1500,0.0,10,0.0,990,0.0,"${\bf{x}}_{\alpha \,{\bf{1}},1}$",Fault,1,fault,True,1,fault
 1300,0.0,10,0.0,1340,0.0,"${\bf{x}}_{\alpha \,{\bf{1}},2}$",Fault,1,fault,True,1,fault

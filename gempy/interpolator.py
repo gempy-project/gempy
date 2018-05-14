@@ -109,6 +109,7 @@ class InterpolatorData:
             (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
         """
 
+        from theano.compile.nanguardmode import NanGuardMode
 
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.interpolator.tg.input_parameters_list()
@@ -119,6 +120,7 @@ class InterpolatorData:
             # then we compile we have to pass the number of formations that are faults!!
             th_fn = theano.function(input_data_T,
                                     self.interpolator.tg.compute_geological_model(self.geo_data_res.n_faults),
+                                  # mode=NanGuardMode(nan_is_error=True),
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
                                     profile=False)
@@ -127,6 +129,7 @@ class InterpolatorData:
             # then we compile we have to pass the number of formations that are faults!!
             th_fn = theano.function(input_data_T,
                                     self.interpolator.tg.compute_forward_gravity(self.geo_data_res.n_faults),
+                                  #  mode=NanGuardMode(nan_is_error=True),
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
                                     profile=False)
@@ -158,10 +161,10 @@ class InterpolatorData:
 
         # Compute rescalin factor if not given
         if not rescaling_factor:
-            rescaling_factor = 2 * np.max(max_coord - min_coord)
+            rescaling_factor = (2 * np.max(max_coord - min_coord))
 
         # Get the centers of every axis
-        centers = (max_coord + min_coord) / 2
+        centers = ((max_coord + min_coord) / 2).astype(float)
 
         # Change the coordinates of interfaces
         new_coord_interfaces = (geo_data.interfaces[['X', 'Y', 'Z']] -
@@ -175,7 +178,9 @@ class InterpolatorData:
         # Updating properties
         new_coord_extent = (geo_data.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
 
-        geo_data_rescaled = copy.deepcopy(geo_data)
+        geo_data_rescaled = copy.copy(geo_data)
+        geo_data_rescaled.interfaces = copy.copy(geo_data.interfaces)
+        geo_data_rescaled.orientations = copy.copy(geo_data.orientations)
         geo_data_rescaled.interfaces[['X', 'Y', 'Z']] = new_coord_interfaces
         geo_data_rescaled.orientations[['X', 'Y', 'Z']] = new_coord_orientations
 
@@ -187,9 +192,10 @@ class InterpolatorData:
         except KeyError:
             pass
 
-        geo_data_rescaled.extent = new_coord_extent.as_matrix()
+        geo_data_rescaled.extent = copy.copy(new_coord_extent.as_matrix())
 
-        geo_data_rescaled.grid.values = (geo_data.grid.values - centers.as_matrix()) / rescaling_factor + 0.5001
+        geo_data_rescaled.x_to_interp_given = copy.copy(geo_data.grid.values)
+        geo_data_rescaled.x_to_interp_given = (geo_data.grid.values - centers.as_matrix()) / rescaling_factor + 0.5001
 
         # Saving useful values for later
         self.rescaling_factor = rescaling_factor
@@ -219,7 +225,7 @@ class InterpolatorData:
         as kwargs, otherwise they will take the default value (TODO: documentation of the dafault values)
 
         Args:
-            geo_data: Rescaled gempy.DataManagement.InputData object. If None the stored geo_data_res will be used
+            geo_data: Rescaled gempy.DataManagement.InputData object. If None the stored geo_data_res_no_basement will be used
 
         Keyword Args:
            range_var: Range of the variogram. Default None
@@ -248,11 +254,11 @@ class InterpolatorData:
                 'optimization flag to fast run'
 
         # I update the interpolator data
-        self.interpolator.geo_data_res = geo_data_in
-        self.interpolator.order_table()
-        self.interpolator.data_prep()
-        self.interpolator.set_theano_shared_parameteres(**kwargs)
-
+        # self.interpolator.geo_data_res_no_basement = geo_data_in
+        # self.interpolator.order_table()
+        # self.interpolator.data_prep()
+        # self.interpolator.set_theano_shared_parameteres(**kwargs)
+        self.interpolator.prepare_data_frame(geo_data_in)
 
     def get_input_data(self, u_grade=None):
         """
@@ -317,38 +323,59 @@ class InterpolatorData:
             importlib.reload(theano_graph)
 
             # verbose is a list of strings. See theanograph
-            verbose = kwargs.get('verbose', [0])
+            self.verbose = kwargs.get('verbose', [0])
 
             # Here we can change the dtype for stability and GPU vs CPU
             self.dtype = kwargs.get('dtype', 'float32')
             # Here we change the graph type
-            output = kwargs.get('output', 'geology')
+            self.output = kwargs.get('output', 'geology')
             # Optimization flag
-            theano_optimizer = kwargs.get('theano_optimizer', 'fast_compile')
+            self.theano_optimizer = kwargs.get('theano_optimizer', 'fast_compile')
 
-            self.output = output
+            self.output = self.output
 
-            if 'dtype' in verbose:
+            if 'dtype' in self.verbose:
                 print(self.dtype)
 
             # Drift grade
             u_grade = kwargs.get('u_grade', [3, 3])
 
+            self.create_theano_graph(**kwargs)
+            self.prepare_data_frame(interp_data.geo_data_res, **kwargs)
+
+            # # We hide the scaled copy of DataManagement object from the user.
+            # self.geo_data_res_no_basement = interp_data.geo_data_res
+            # self.geo_data_res_no_basement.interfaces = self.geo_data_res_no_basement.interfaces[:-1]
+            #
+            # # Importing the theano graph. The methods of this object generate different parts of graph.
+            # # See theanograf doc
+            # self.tg = theano_graph.TheanoGraph(output=self.output, optimizer=self.theano_optimizer, dtype=self.dtype, verbose=self.verbose, )
+            #
+            # # Avoid crashing my pc
+            # import theano
+            # if theano.config.optimizer != 'fast_run':
+            #     assert self.tg.grid_val_T.get_value().shape[0] * \
+            #            len(self.tg.len_series_i.get_value()) < 2e7, \
+            #         'The grid is too big for the number of scalar fields. Reduce the grid or change the' \
+            #         'optimization flag to fast run'
+            #
+            # # Sorting data in case the user provides it unordered
+            # self.order_table()
+            #
+            # # Extracting data from the pandas dataframe to numpy array in the required form for the theano function
+            # self.data_prep(**kwargs)
+            #
+            # # Setting theano parameters
+            # self.set_theano_shared_parameteres(**kwargs)
+            #
+        def prepare_data_frame(self, geo_data_res, **kwargs):
+
+            self.formation_number = geo_data_res.interfaces['formation_number'].unique().astype('int32')
+            self.formation_value = geo_data_res.formations['value'].values.squeeze().astype(self.dtype)
+
             # We hide the scaled copy of DataManagement object from the user.
-            self.geo_data_res = interp_data.geo_data_res
-
-            # Importing the theano graph. The methods of this object generate different parts of graph.
-            # See theanograf doc
-            self.tg = theano_graph.TheanoGraph(output=output, optimizer=theano_optimizer, dtype=self.dtype, verbose=verbose, )
-
-            # Avoid crashing my pc
-            import theano
-            if theano.config.optimizer != 'fast_run':
-                assert self.tg.grid_val_T.get_value().shape[0] * \
-                       len(self.tg.len_series_i.get_value()) < 2e7, \
-                    'The grid is too big for the number of scalar fields. Reduce the grid or change the' \
-                    'optimization flag to fast run'
-
+            self.geo_data_res_no_basement = geo_data_res
+            self.geo_data_res_no_basement.interfaces = geo_data_res.interfaces[~(geo_data_res.interfaces['formation'].values == 'basement')]#self.geo_data_res_no_basement.interfaces[:-1]
             # Sorting data in case the user provides it unordered
             self.order_table()
 
@@ -357,6 +384,41 @@ class InterpolatorData:
 
             # Setting theano parameters
             self.set_theano_shared_parameteres(**kwargs)
+
+        def create_theano_graph(self, **kwargs):
+
+            import importlib
+            importlib.reload(theano_graph)
+
+            # # verbose is a list of strings. See theanograph
+            # verbose = kwargs.get('verbose', [0])
+            #
+            # # Here we can change the dtype for stability and GPU vs CPU
+            # self.dtype = kwargs.get('dtype', 'float32')
+            # # Here we change the graph type
+            # output = kwargs.get('output', 'geology')
+            # # Optimization flag
+            # theano_optimizer = kwargs.get('theano_optimizer', 'fast_compile')
+            #
+            # self.output = output
+
+            if 'dtype' in self.verbose:
+                print(self.dtype)
+
+            # Drift grade
+            u_grade = kwargs.get('u_grade', [3, 3])
+
+            # See theanograf doc
+            self.tg = theano_graph.TheanoGraph(output=self.output, optimizer=self.theano_optimizer, dtype=self.dtype,
+                                               verbose=self.verbose)
+
+            # Avoid crashing my pc
+            import theano
+            if theano.config.optimizer != 'fast_run':
+                assert self.tg.grid_val_T.get_value().shape[0] * \
+                       len(self.tg.len_series_i.get_value()) < 2e7, \
+                    'The grid is too big for the number of scalar fields. Reduce the grid or change the' \
+                    'optimization flag to fast run'
 
         def set_formation_number(self):
             """
@@ -368,10 +430,10 @@ class InterpolatorData:
                 Column in the interfaces and orientations dataframes
             """
             try:
-                ip_addresses = self.geo_data_res.interfaces["formation"].unique()
+                ip_addresses = self.geo_data_res_no_basement.interfaces["formation"].unique()
                 ip_dict = dict(zip(ip_addresses, range(1, len(ip_addresses) + 1)))
-                self.geo_data_res.interfaces['formation number'] = self.geo_data_res.interfaces['formation'].replace(ip_dict)
-                self.geo_data_res.orientations['formation number'] = self.geo_data_res.orientations['formation'].replace(ip_dict)
+                self.geo_data_res_no_basement.interfaces['formation_number'] = self.geo_data_res_no_basement.interfaces['formation'].replace(ip_dict)
+                self.geo_data_res_no_basement.orientations['formation_number'] = self.geo_data_res_no_basement.orientations['formation'].replace(ip_dict)
             except ValueError:
                 pass
 
@@ -382,31 +444,31 @@ class InterpolatorData:
             """
 
             # We order the pandas table by series
-            self.geo_data_res.interfaces.sort_values(by=['order_series'],  # , 'formation number'],
-                                                     ascending=True, kind='mergesort',
-                                                     inplace=True)
+            self.geo_data_res_no_basement.interfaces.sort_values(by=['order_series'],  # , 'formation_number'],
+                                                                 ascending=True, kind='mergesort',
+                                                                 inplace=True)
 
-            self.geo_data_res.orientations.sort_values(by=['order_series'],  # , 'formation number'],
-                                                     ascending=True, kind='mergesort',
-                                                     inplace=True)
+            self.geo_data_res_no_basement.orientations.sort_values(by=['order_series'],  # , 'formation_number'],
+                                                                   ascending=True, kind='mergesort',
+                                                                   inplace=True)
 
-            # Give formation number
-            if not 'formation number' in self.geo_data_res.interfaces.columns:
+            # Give formation_number
+            if not 'formation_number' in self.geo_data_res_no_basement.interfaces.columns:
                 # print('I am here')
                 self.set_formation_number()
 
             # We order the pandas table by formation (also by series in case something weird happened)
-            self.geo_data_res.interfaces.sort_values(by=['order_series', 'formation number'],
-                                                     ascending=True, kind='mergesort',
-                                                     inplace=True)
+            self.geo_data_res_no_basement.interfaces.sort_values(by=['order_series', 'formation_number'],
+                                                                 ascending=True, kind='mergesort',
+                                                                 inplace=True)
 
-            self.geo_data_res.orientations.sort_values(by=['order_series', 'formation number'],
-                                                     ascending=True, kind='mergesort',
-                                                     inplace=True)
+            self.geo_data_res_no_basement.orientations.sort_values(by=['order_series', 'formation_number'],
+                                                                   ascending=True, kind='mergesort',
+                                                                   inplace=True)
 
             # Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset
             # the index. For some of the methods (pn.drop) we have to apply afterwards we need to reset these indeces
-            self.geo_data_res.interfaces.reset_index(drop=True, inplace=True)
+            self.geo_data_res_no_basement.interfaces.reset_index(drop=True, inplace=True)
 
         def data_prep(self, **kwargs):
             """
@@ -431,19 +493,19 @@ class InterpolatorData:
             # ==================
             # Array containing the size of every formation. Interfaces
             len_interfaces = np.asarray(
-                [np.sum(self.geo_data_res.interfaces['formation number'] == i)
-                 for i in self.geo_data_res.interfaces['formation number'].unique()])
+                [np.sum(self.geo_data_res_no_basement.interfaces['formation_number'] == i)
+                 for i in self.geo_data_res_no_basement.interfaces['formation_number'].unique()])
 
             # Size of every layer in rests. SHARED (for theano)
             len_rest_form = (len_interfaces - 1)
             self.tg.number_of_points_per_formation_T.set_value(len_rest_form.astype('int32'))
-            self.tg.npf.set_value( np.cumsum(np.concatenate(([0], len_rest_form))).astype('int32'))
+            self.tg.npf.set_value(np.cumsum(np.concatenate(([0], len_rest_form))).astype('int32')) # Last value is useless and breaks the basement
 
             # Position of the first point of every layer
             ref_position = np.insert(len_interfaces[:-1], 0, 0).cumsum()
 
             # Drop the reference points using pandas indeces to get just the rest_layers array
-            pandas_rest_layer_points = self.geo_data_res.interfaces.drop(ref_position)
+            pandas_rest_layer_points = self.geo_data_res_no_basement.interfaces.drop(ref_position)
             self.pandas_rest_layer_points = pandas_rest_layer_points
 
             # Array containing the size of every series. Interfaces.
@@ -456,12 +518,12 @@ class InterpolatorData:
 
             # Array containing the size of every series. orientations.
             len_series_f = np.asarray(
-                [np.sum(self.geo_data_res.orientations['order_series'] == i)
-                 for i in self.geo_data_res.orientations['order_series'].unique()])
+                [np.sum(self.geo_data_res_no_basement.orientations['order_series'] == i)
+                 for i in self.geo_data_res_no_basement.orientations['order_series'].unique()])
 
             # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
 
-            assert len_series_f.shape[0] is not 0, 'You need at least one orientation per series'
+            assert len_series_f.shape[0] is len_series_i.shape[0], 'You need at least one orientation per series'
             self.tg.len_series_f.set_value(np.insert(len_series_f, 0, 0).cumsum().astype('int32'))
 
             # =========================
@@ -494,7 +556,7 @@ class InterpolatorData:
             # Ref layers matrix #VAR
             # Calculation of the ref matrix and tile. Iloc works with the row number
             # Here we extract the reference points
-            self.pandas_ref_layer_points = self.geo_data_res.interfaces.iloc[ref_position]
+            self.pandas_ref_layer_points = self.geo_data_res_no_basement.interfaces.iloc[ref_position]
             self.len_interfaces = len_interfaces
 
             pandas_ref_layer_points_rep = self.pandas_ref_layer_points.apply(lambda x: np.repeat(x, len_interfaces - 1))
@@ -508,10 +570,10 @@ class InterpolatorData:
                 'not have duplicated values in your dataframes'
 
             # orientations, this ones I tile them inside theano. PYTHON VAR
-            dips_position = self.geo_data_res.orientations[['X', 'Y', 'Z']].as_matrix()
-            dip_angles = self.geo_data_res.orientations["dip"].as_matrix()
-            azimuth = self.geo_data_res.orientations["azimuth"].as_matrix()
-            polarity = self.geo_data_res.orientations["polarity"].as_matrix()
+            dips_position = self.geo_data_res_no_basement.orientations[['X', 'Y', 'Z']].as_matrix()
+            dip_angles = self.geo_data_res_no_basement.orientations["dip"].as_matrix()
+            azimuth = self.geo_data_res_no_basement.orientations["azimuth"].as_matrix()
+            polarity = self.geo_data_res_no_basement.orientations["polarity"].as_matrix()
 
             # Set all in a list casting them in the chosen dtype
             idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity,
@@ -541,15 +603,15 @@ class InterpolatorData:
             nugget_effect_scalar = kwargs.get('nugget_effect_scalar', 1e-6)
             # Default range
             if not range_var:
-                range_var = np.sqrt((self.geo_data_res.extent[0] - self.geo_data_res.extent[1]) ** 2 +
-                                    (self.geo_data_res.extent[2] - self.geo_data_res.extent[3]) ** 2 +
-                                    (self.geo_data_res.extent[4] - self.geo_data_res.extent[5]) ** 2)
+                range_var = np.sqrt((self.geo_data_res_no_basement.extent[0] - self.geo_data_res_no_basement.extent[1]) ** 2 +
+                                    (self.geo_data_res_no_basement.extent[2] - self.geo_data_res_no_basement.extent[3]) ** 2 +
+                                    (self.geo_data_res_no_basement.extent[4] - self.geo_data_res_no_basement.extent[5]) ** 2)
 
             # Default covariance at 0
             if not c_o:
                 c_o = range_var ** 2 / 14 / 3
 
-            x_to_interpolate = np.vstack((self.geo_data_res.grid.values,
+            x_to_interpolate = np.vstack((self.geo_data_res_no_basement.x_to_interp_given,
                                           self.pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix(),
                                           self.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()))
 
@@ -583,7 +645,7 @@ class InterpolatorData:
             self.tg.universal_grid_matrix_T.set_value(np.cast[self.dtype](universal_matrix + 1e-10))
 
             # Initialization of the block model
-            self.tg.final_block.set_value(np.zeros((1, self.geo_data_res.grid.values.shape[0]), dtype=self.dtype))
+            self.tg.final_block.set_value(np.zeros((1, self.geo_data_res_no_basement.x_to_interp_given.shape[0]), dtype=self.dtype))
 
             # TODO DEP?
             # Initialization of the boolean array that represent the areas of the block model to be computed in the
@@ -591,11 +653,15 @@ class InterpolatorData:
             #self.tg.yet_simulated.set_value(np.ones((_grid_rescaled.grid.shape[0]), dtype='int'))
 
             # Unique number assigned to each lithology
-            self.tg.n_formation.set_value(self.geo_data_res.interfaces['formation number'].unique().astype('int32'))
-            self.tg.n_formation_float.set_value(self.geo_data_res.interfaces['formation number'].unique().astype('float32'))
+            self.tg.n_formation.set_value(self.formation_number)
+
+            # formation_value_T = self.formation_value.repeat(2)
+            # formation_value_T[0] = - np.abs(formation_value_T[0] - formation_value_T[2])
+            # formation_value_T[-1] = - np.abs(formation_value_T[-3] - formation_value_T[-1])
+            self.tg.formation_values.set_value(self.formation_value)
             # Number of formations per series. The function is not pretty but the result is quite clear
             self.tg.n_formations_per_serie.set_value(
-                np.insert(self.geo_data_res.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0).astype('int32'))
+                np.insert(self.geo_data_res_no_basement.interfaces.groupby('order_series').formation.nunique().values.cumsum(), 0, 0).astype('int32'))
 
             # Init the list to store the values at the interfaces. Here we init the shape for the given dataset
             self.tg.final_scalar_field_at_formations.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
@@ -605,11 +671,11 @@ class InterpolatorData:
 
             # TODO: Push this condition to the geo_data
             # Set fault relation matrix
-            if self.geo_data_res.fault_relation is not None:
-                self.tg.fault_relation.set_value(self.geo_data_res.fault_relation.astype('int32'))
+            if self.geo_data_res_no_basement.fault_relation is not None:
+                self.tg.fault_relation.set_value(self.geo_data_res_no_basement.fault_relation.values.astype('int32'))
             else:
-                fault_rel = np.zeros((self.geo_data_res.interfaces['series'].nunique(),
-                                      self.geo_data_res.interfaces['series'].nunique()))
+                fault_rel = np.zeros((self.geo_data_res_no_basement.interfaces['series'].nunique(),
+                                      self.geo_data_res_no_basement.interfaces['series'].nunique()))
 
                 self.tg.fault_relation.set_value(fault_rel.astype('int32'))
 
@@ -626,10 +692,10 @@ class InterpolatorData:
             resolution = [50,50,50]
 
             #
-            dx, dy, dz = (self.geo_data_res.extent[1] - self.geo_data_res.extent[0]) / resolution[0], (self.geo_data_res.extent[3] - self.geo_data_res.extent[2]) / resolution[
-                0], (self.geo_data_res.extent[5] - self.geo_data_res.extent[4]) / resolution[0]
+            dx, dy, dz = (self.geo_data_res_no_basement.extent[1] - self.geo_data_res_no_basement.extent[0]) / resolution[0], (self.geo_data_res_no_basement.extent[3] - self.geo_data_res_no_basement.extent[2]) / resolution[
+                0], (self.geo_data_res_no_basement.extent[5] - self.geo_data_res_no_basement.extent[4]) / resolution[0]
 
-            #dx, dy, dz = self.geo_data_res.grid.dx, self.geo_data_res.grid.dy, self.geo_data_res.grid.dz
+            #dx, dy, dz = self.geo_data_res_no_basement.grid.dx, self.geo_data_res_no_basement.grid.dy, self.geo_data_res_no_basement.grid.dz
             weight = (
                 #(dx * dy * dz) *
                  np.array(densities))
@@ -662,7 +728,7 @@ class InterpolatorData:
                 None
             """
             # range
-            print('range', self.tg.a_T.get_value(), self.tg.a_T.get_value() * self.geo_data_res.rescaling_factor)
+            print('range', self.tg.a_T.get_value(), self.tg.a_T.get_value() * self.geo_data_res_no_basement.rescaling_factor)
             # Number of drift equations
             print('Number of drift equations', self.tg.n_universal_eq_T.get_value())
             # Covariance at 0

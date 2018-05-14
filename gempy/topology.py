@@ -56,11 +56,11 @@ def topology_analyze(lith_block, fault_block, n_faults,
             labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithology id.
     """
 
-    lith_block = lith_block.astype(int)
+    lith_block = np.round(lith_block).astype(int)
     lithologies = np.unique(lith_block.astype(int))
     # store a safe copy of the lith block for reference
     block_original = lith_block.astype(int)
-    fault_block = fault_block.astype(int)
+    fault_block = np.round(fault_block).astype(int)
     # label the fault block for normalization (comparability of e.g. pynoddy and gempy models)
     fault_block = label(fault_block, neighbors=8, background=9999)
 

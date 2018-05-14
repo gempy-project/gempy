@@ -1,0 +1,693 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Advance theory &#8212; GemPy rc documentation</title>
+    
+    <link rel="stylesheet" href="../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../',
+        VERSION:     'rc',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true,
+        SOURCELINK_SUFFIX: '.txt'
+      };
+    </script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/gempy_squared.ico"/>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Code" href="../code.html" />
+    <link rel="prev" title="ASSETS – Model analysis and further use" href="assets.html" />
+   
+  <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head>
+  <body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="advance-theory">
+<h1>Advance theory<a class="headerlink" href="#advance-theory" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="kriging-system-expansion">
+<h2>Kriging system expansion:<a class="headerlink" href="#kriging-system-expansion" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="gradient-covariance-matrix">
+<h2>Gradient Covariance-Matrix <span class="math">\({\bf{C_{\partial {\bf{Z}}/ \partial u}}}\)</span><a class="headerlink" href="#gradient-covariance-matrix" title="Permalink to this headline">¶</a></h2>
+<p>The following equations have been derived from the work in
+:cite:<a href="#id1"><span class="problematic" id="id2">`</span></a>d-Aug.2004,Lajaunie.1997,chiles2009geostatistics</p>
+<p>The gradient covariance-matrix,
+<span class="math">\({\bf{C_{\partial {\bf{Z}}/ \partial u}}}\)</span>, is made up of as many
+variables as gradient directions that are taken into consideration. In
+3-D, we would have the Cartesian coordinates
+dimensions—<span class="math">\({\bf{Z}}/ \partial x\)</span>, <span class="math">\({\bf{Z}}/ \partial y\)</span>,
+and <span class="math">\({\bf{Z}}/ \partial z\)</span>—and therefore, they will derive from
+the partial differentiation of the covariance function
+<span class="math">\(\sigma(x_i,x_j)\)</span> of <span class="math">\(\bf{Z}\)</span>.</p>
+<div class="figure" id="id5">
+<img alt="" src="../_images/gradients2.png" />
+<p class="caption"><span class="caption-text">2-D representation of the decomposition of the orientation vectors
+into Cartesian axis. Each Cartesian axis represent a variable of a
+sub CoKriging system. The dotted green line represent the covariance
+distance, <span class="math">\(r\)</span>.</span></p>
+</div>
+<p>As in our case the directional derivatives used are the 3 Cartesian
+directions we can rewrite gradients covariance,
+<span class="math">\({\bf{C_{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}}}\)</span>
+for our specific case as:</p>
+<div class="math">
+\[\begin{split}{\bf{C_{\partial {\bf{Z}}/ \partial x, \, \partial {\bf{Z}}/ \partial y \, \partial {\bf{Z}}/ \partial z}}} =
+\left[ \begin{array}{ccc}
+{\bf{C_{\partial {\bf{Z}}/ \partial x, \, \partial {\bf{Z}}/ \partial x}}} &amp;
+{\bf{C_{\partial {\bf{Z}}/ \partial x, \, \partial {\bf{Z}}/ \partial y}}} &amp;
+{\bf{C_{\partial {\bf{Z}}/ \partial x, \, \partial {\bf{Z}}/ \partial z}}} \\
+{\bf{C_{\partial {\bf{Z}}/ \partial y, \, \partial {\bf{Z}}/ \partial x}}} &amp;
+{\bf{C_{\partial {\bf{Z}}/ \partial y, \, \partial {\bf{Z}}/ \partial y}}} &amp;
+{\bf{C_{\partial {\bf{Z}}/ \partial y, \, \partial {\bf{Z}}/ \partial z}}}\\
+{\bf{C_{\partial {\bf{Z}}/ \partial z, \, \partial {\bf{Z}}/ \partial x}}} &amp;
+{\bf{C_{\partial {\bf{Z}}/ \partial z, \, \partial {\bf{Z}}/ \partial y}}} &amp;
+{\bf{C_{\partial {\bf{Z}}/ \partial z, \, \partial {\bf{Z}}/ \partial z}}} \end{array} \right]
+\label{C_g}\end{split}\]</div>
+<p>Notice, however, that covariance functions by definition are described
+in a polar coordinate system, and therefore it will be necessary to
+apply the chain rule for <em>directional derivatives</em>. Considering an
+isotropic and stationary covariance we can express the covariance
+function as:</p>
+<div class="math">
+\[\sigma(x_i,x_j) = C(r)\]</div>
+<p>with:</p>
+<div class="math">
+\[r = \sqrt{h^2_x+h^2_y}\]</div>
+<p>therefore we need to apply the chain rule in partial differentiation.
+For the case of the covariance in a single direction:</p>
+<div class="math">
+\[\begin{split}{\bf{C_{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial u}}} =
+\frac{\partial^2 C_{Z} (r)}{\partial h^2_u} =
+\frac{\partial C_{Z} (r)}{\partial r}
+\frac{\partial}{\partial h_u} \left( \frac{\partial r}{\partial h_u} \right) +
+\frac{\partial}{\partial h_u} \left( \frac{\partial C_Z (r)}{\partial r}\right)
+\frac{\partial r}{\partial h_u} \\\end{split}\]</div>
+<p>where:</p>
+<div class="math">
+\[\frac{\partial C_{Z} (r)}{\partial r} = \frac{\partial C_{Z} (r)}{\partial r} = C'_Z(r)\]</div>
+<div class="math">
+\[\frac{\partial r}{\partial h_u} = \frac{h_u}{\sqrt{h^2_u+h^2_v}} = -\frac{h_u}{r}
+\label{eq:}\]</div>
+<div class="math">
+\[\frac{\partial}{\partial h_u} \left( \frac{\partial r}{\partial h_u} \right) =
+\frac{\partial}{\partial h_u} \left(\frac{h_u}{\sqrt{h^2_u+h^2_v}}\right) =
+-\frac{2 h_u^2}{2\sqrt{h^2_u+h^2_v}} + \frac{1}{\sqrt{h^2_u+h^2_v}} = -\frac{h_u^2}{r^3} + \frac{1}{r}\]</div>
+<div class="math">
+\[\frac{\partial}{\partial h_u} \left( \frac{\partial C_Z (r)}{\partial r}\right) =
+\frac{\partial C'_Z(r)}{\partial h_u} = \frac{\partial C'_{Z} (r)}{\partial r}  \frac{\partial r}{\partial h_u} = - \frac{h_u}{r}C''_Z\]</div>
+<p>Substituting:</p>
+<div class="math">
+\[{\bf{C_{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial u}}} = C'_Z(r) \left( -\frac{h_u^2}{r^3} + \frac{1}{r} \right) - \frac{h_u}{r}C''_Z \frac{h_u}{r} = C'_Z(r) \left( -\frac{h_u^2}{r^3} + \frac{1}{r} \right) + \frac{h_u^2}{r^2} C''_Z
+\label{huhu}\]</div>
+<p>While in case of two different directions the covariance will be:</p>
+<div class="math">
+\[{\bf{C_{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}}} =
+\frac{\partial^2 C_{Z}(r)}{\partial h_u h_v} =
+\frac{\partial C_{Z} (r)}{\partial r}
+\frac{\partial}{\partial h_v} \left( \frac{\partial r}{\partial h_u} \right) +
+\frac{\partial}{\partial h_v} \left( \frac{\partial C_Z (r)}{\partial r}\right)
+\frac{\partial r}{\partial h_u}\]</div>
+<p>with:</p>
+<div class="math">
+\[\frac{\partial}{\partial h_v} \left( \frac{\partial r}{\partial h_u} \right) =
+\frac{\partial}{\partial h_v} \left(\frac{h_u}{\sqrt{h^2_u+h^2_v}}\right) =
+-\frac{h_u h_v}{r^3}\]</div>
+<div class="math">
+\[\frac{\partial}{\partial h_v} \left( \frac{\partial C_Z (r)}{\partial r}\right) =
+\frac{\partial C'_Z(r)}{\partial h_v} = - C''_Z(r) \frac{h_v}{r}\]</div>
+<p>we have:</p>
+<div class="math">
+\[{\bf{C_{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}}} = C'_Z(r) \left(-\frac{h_u h_v}{r^3} \right) + C''_Z(r) \frac{h_u h_v}{r^2}= \frac{h_u h_v}{r^2} \left( C''_Z (r) - \frac{C'_Z (r)}{r} \right)
+\label{huhv}\]</div>
+<p>This derivation is independent to the covariance function choice,
+however, some covariances may lead to mathematical indeterminations.</p>
+</div>
+<div class="section" id="interface-covariance-matrix">
+<h2>Interface Covariance-Matrix<a class="headerlink" href="#interface-covariance-matrix" title="Permalink to this headline">¶</a></h2>
+<div class="figure" id="id6">
+<img alt="" src="../_images/interfaces.png" />
+<p class="caption"><span class="caption-text">Distances <span class="math">\(r\)</span> involved in the computation of the interface
+subsystem of the interpolation. Because all covariances are relative
+to a reference point <span class="math">\(x_{\alpha, \, 0}^i\)</span>, all four covariances
+must be taken into account (equation [eq:int_cov])</span></p>
+</div>
+<p>In a practical sense, keeping the value of the scalar field at every
+interface unfixed forces us to consider the covariance between the
+points within an interface as well as the covariance between different
+layers following equation,</p>
+<div class="math">
+\[{{C}}_{{\bf{x}}_{\alpha \, i}^r, \, {\bf{x}}_{\alpha \,j}^s} =
+C_{x^r_{\alpha, \,i} \, x^s_{\alpha, \,j}} - C_{x^r_{\alpha, \,0} \, x^s_{\alpha, \,j}} -
+C_{x^r_{\alpha, \,i} \, x^s_{\alpha, \,0}} + C_{x^r_{\alpha, \,0} \, x^s_{\alpha, \,0}}
+\label{eq:int_cov}\]</div>
+<p>This lead to the subdivision of the CoKriging system respecting the
+interfaces:</p>
+<div class="math">
+\[\begin{split}{\bf{C_{\bf{Z}, \, \bf{Z}}}} =
+\begin{bmatrix}
+{\bf{C}}_{{\bf{x}}_{\alpha}^1, \, {\bf{x}}_{\alpha}^1}&amp;
+{\bf{C}}_{{\bf{x}}_{\alpha}^1, \, {\bf{x}}_{\alpha}^2}&amp;
+... &amp;
+{\bf{C}}_{{\bf{x}}_{\alpha}^1, \, {\bf{x}}_{\alpha}^s}\\
+{\bf{C}}_{{\bf{x}}_{\alpha}^2, \, {\bf{x}}_{\alpha}^1}&amp;
+{\bf{C}}_{{\bf{x}}_{\alpha}^2, \, {\bf{x}}_{\alpha}^2}&amp;
+... &amp;
+{\bf{C}}_{{\bf{x}}_{\alpha}^2, \, {\bf{x}}_{\alpha}^s}\\
+\vdots &amp;
+\vdots &amp;
+\ddots &amp;
+\vdots \\
+{\bf{C}}_{{\bf{x}}_{\alpha}^r, \, {\bf{x}}_{\alpha}^1}&amp;
+{\bf{C}}_{{\bf{x}}_{\alpha}^r, \, {\bf{x}}_{\alpha}^2}&amp;
+... &amp;
+{\bf{C}}_{{\bf{x}}_{\alpha}^r, \, {\bf{x}}_{\alpha}^s}
+\end{bmatrix}
+\label{C_i}\end{split}\]</div>
+<p>Combining Eq [one_val] and Eq [C_i] the covariance for the property
+<em>potential field</em> will look like:</p>
+<div class="math">
+\[\begin{split}{\bf{C}}_{{\bf{x}}_{\alpha}^r, \, {\bf{x}}_{\alpha}^s} =
+\begin{bmatrix}
+C_{x^1_1 \, x^1_1} - C_{x^1_0 \, x^1_1} -
+C_{x^1_1 \, x^1_0} + C_{x^1_0 \, x^1_0} &amp;
+C_{x^1_1 \, x^1_2} - C_{x^1_0 \, x^1_2} -
+C_{x^1_1 \, x^1_0} + C_{x^1_0 \, x^1_0} &amp;
+... &amp;
+C_{x^1_1 \, x^s_j} - C_{x^1_0 \, x^s_j} -
+C_{x^1_1 \, x^s_0} + C_{x^1_0 \, x^s_0}\\
+C_{x^1_2 \, x^1_1} - C_{x^1_0 \, x^1_1} -
+C_{x^1_2 \, x^1_0} + C_{x^1_0 \, x^1_0} &amp;
+C_{x^1_2 \, x^1_2} - C_{x^1_0 \, x^1_2} -
+C_{x^1_2 \, x^1_0} + C_{x^1_0 \, x^1_0} &amp;
+... &amp;
+C_{x^1_2 \, x^s_j} - C_{x^1_0 \, x^s_j} -
+C_{x^1_j \, x^s_0} + C_{x^1_0 \, x^s_0}\\
+\vdots &amp;
+\vdots &amp;
+\ddots &amp;
+\vdots \\
+C_{x^r_i \, x^s_1} - C_{x^r_0 \, x^s_1} -
+C_{x^r_i \, x^s_0} + C_{x^r_0 \, x^s_0} &amp;
+C_{x^r_i \, x^s_2} - C_{x^r_0 \, x^s_2} -
+C_{x^r_i \, x^s_0} + C_{x^r_0 \, x^s_0} &amp;
+... &amp;
+C_{x^r_i \, x^s_j} - C_{x^r_0 \, x^s_j} -
+C_{x^r_i \, x^s_0} + C_{x^r_0 \, x^s_0}
+\end{bmatrix}\end{split}\]</div>
+</div>
+<div class="section" id="cross-covariance">
+<h2>Cross-Covariance<a class="headerlink" href="#cross-covariance" title="Permalink to this headline">¶</a></h2>
+<p>In a CoKriging system, the relation between the interpolated parameters
+is given by a cross-covariance function. As we saw above, the gradient
+covariance is subdivided into covariances with respect to the three
+Cartesian directions (Eq [C_g]), while the interface covariance is
+detached from the covariances matrices with respect to each individual
+interface (Eq [C_i]). In the same manner, the cross-covariance will
+reflect the relation of every interface to each gradient direction,</p>
+<div class="figure" id="id7">
+<img alt="" src="../_images/cross.png" />
+<p class="caption"><span class="caption-text">Distances <span class="math">\(r\)</span> involved in the computation of the
+cross-covariance function. In a similar fashion as before, all
+interface covariance are computed relative to a reference point in
+each layer <span class="math">\(x_{\alpha, \, 0}^i\)</span></span></p>
+</div>
+<div class="math">
+\[\begin{split}{\bf{C_{Z, \,\partial {\bf{Z}}/ \partial u}}} =
+\begin{bmatrix}
+{\bf{C}}_{{\bf{x}}_{\alpha \, 1}^1, \, \partial {\bf{Z}}({\bf{x}}_{\beta \, 1})/ \partial x}&amp;
+{\bf{C}}_{{\bf{x}}_{\alpha \, 2}^1, \, \partial {\bf{Z}}({\bf{x}}_{\beta \, 1})/ \partial x}&amp;
+... &amp;
+{\bf{C}}_{{\bf{x}}_{\alpha \, 1}^1, \, \partial {\bf{Z}}({\bf{x}}_{\beta \, 1})/ \partial y}&amp;
+... &amp;
+{\bf{C}}_{{\bf{x}}_{\alpha \, i}^1, \, \partial {\bf{Z}}({\bf{x}}_{\beta \, j})/ \partial z}&amp; \\
+{\bf{C}}_{{\bf{x}}_{\alpha \, 1}^2, \, \partial {\bf{Z}}({\bf{x}}_{\beta \, 1})/ \partial x}&amp;
+{\bf{C}}_{{\bf{x}}_{\alpha \, 2}^2, \, \partial {\bf{Z}}({\bf{x}}_{\beta \, 1})/ \partial x}&amp;
+... &amp;
+{\bf{C}}_{{\bf{x}}_{\alpha \, 1}^2, \, \partial {\bf{Z}}({\bf{x}}_{\beta \, 1})/ \partial y}&amp;
+... &amp;
+{\bf{C}}_{{\bf{x}}_{\alpha \, i}^2, \, \partial {\bf{Z}}({\bf{x}}_{\beta \, j})/ \partial z}&amp; \\
+\vdots &amp;
+\vdots &amp;
+\ddots &amp;
+\vdots &amp;
+\ddots &amp;
+\vdots \\
+{\bf{C}}_{{\bf{x}}_{\alpha \, 1}^r, \, \partial {\bf{Z}}({\bf{x}}_{\beta \, 1})/ \partial x}&amp;
+{\bf{C}}_{{\bf{x}}_{\alpha \, 2}^r, \, \partial {\bf{Z}}({\bf{x}}_{\beta \, 1})/ \partial x}&amp;
+... &amp;
+{\bf{C}}_{{\bf{x}}_{\alpha \, 2}^r, \, \partial {\bf{Z}}({\bf{x}}_{\beta \, 1})/ \partial y}&amp;
+... &amp;
+{\bf{C}}_{{\bf{x}}_{\alpha \, i}^r, \, \partial {\bf{Z}}({\bf{x}}_{\beta \, j})/ \partial z}&amp; \\
+\end{bmatrix}\end{split}\]</div>
+<p>As the interfaces are relative to a point
+:math:` {bf{x}}_{alpha_, 0}^k` the value of the covariance function:</p>
+<div class="math">
+\[{\bf{C}}_{{\bf{x}}_{\alpha \, i}^r, \, \partial {\bf{Z}}({\bf{x}}_{\beta \, j})/ \partial x} =
+C_{Z({{\bf{x}}_{\alpha \,i}^r)}, \, \partial Z({\bf{x_{\beta \, j}}})/\partial x} -
+C_{Z({{\bf{x}}_{\alpha \,0}^r)}, \, \partial Z({\bf{x_{\beta \, j}}})/\partial x}\]</div>
+<p>with the covariance of the scalar field being function the vector r,
+its directional derivative is analogous to the previous derivations:</p>
+<div class="math">
+\[{\bf{C}{_{\bf{Z}, \, \partial {\bf{Z}}/ \partial u}}} =
+\frac{\partial C_{\bf{Z}} (r)}{\partial r}
+\frac{\partial r}{\partial h_u} =  - \frac{h_u}{r}C'_Z\]</div>
+</div>
+<div class="section" id="universal-matrix">
+<h2>Universal matrix<a class="headerlink" href="#universal-matrix" title="Permalink to this headline">¶</a></h2>
+<p>As the mean value of the scalar field is going to be always unknown, it
+needs to be estimated from data itself. The simplest approach is to
+consider the mean constant for the whole domain, i.e. ordinary Kriging.
+However, in the <em>scalar field</em> case we can assume certain drift towards
+the direction of the orientations. Therefore, the mean can be written as
+function of known basis functions:</p>
+<div class="math">
+\[\mu({\bf{x}}) = \sum^L_{l=0} a_lf^l({\bf{x}})\]</div>
+<p>where <em>l</em> is the grade of the polynomials used to describe the drift.
+Because of the algebraic dependence of the variables, there is only one
+drift and therefore the unbiasedness can be expressed as:</p>
+<div class="math">
+\[{\bf{U}}_{\bf{Z}} \lambda_{1} + {\bf{U}}_{\partial {\bf{Z}}/ \partial u} \lambda_{2} = f_{10}\]</div>
+<p>Consequently, the number of equations are determined according to the
+grade of the polynomial and the number of equations forming the
+properties matrices equations [C_i] and [C_g]:</p>
+<div class="math">
+\[\begin{split}U_Z =
+\begin{bmatrix}
+x^1_1     - x^1_0 &amp; x^1_2 - x^1_0 &amp; ... &amp;
+x^2_1     - x^2_0 &amp; x^2_2 - x^2_0 &amp; ... &amp;
+x^r_{i-1} - x^r_0 &amp; x^r_i - x^r_0 \\
+y^1_1     - y^1_0 &amp; y^1_2 - y^1_0 &amp; ... &amp;
+y^2_1     - y^2_0 &amp; y^2_2 - y^2_0 &amp; ... &amp;
+y^r_{i-1} - y^r_0 &amp; y^r_i - y^r_0 \\
+z^1_1     - z^1_0 &amp; z^1_2 - z^1_0 &amp; ... &amp;
+z^2_1     - z^2_0 &amp; z^2_2 - z^2_0 &amp; ... &amp;
+z^r_{i-1} - z^r_0 &amp; z^r_i - z^r_0 \\
+x^1_1    x^1_1     - x^1_0x^1_0 &amp; x^1_2 x^1_2 - x^1_0 x^1_0 &amp; ... &amp;
+x^2_1    x^2_1     - x^2_0x^2_0 &amp; x^2_2 x^2_2 - x^2_0 x^2_0 &amp; ... &amp;
+x^r_{i-1}x^r_{i-1} - x^r_0x^r_0 &amp; x^r_i x^r_i - x^r_0 x^r_0 \\
+y^1_1    y^1_1     -
+y^1_0    y^1_0 &amp;
+y^1_2    y^1_2 -
+y^1_0    y^1_0 &amp; ... &amp;
+y^2_1    y^2_1     -
+y^2_0    y^2_0 &amp;
+y^2_2    y^2_2 -
+y^2_0    y^2_0 &amp; ... &amp;
+y^r_{i-1}y^r_{i-1} -
+y^r_0    y^r_0 &amp;
+y^r_i    y^r_i -
+y^r_0    y^r_0 \\
+z^1_1    z^1_1     -
+z^1_0    z^1_0 &amp;
+z^1_2    z^1_2 -
+z^1_0    z^1_0 &amp; ... &amp;
+z^2_1    z^2_1     -
+z^2_0    z^2_0 &amp;
+z^2_2    z^2_2 -
+z^2_0    z^2_0 &amp; ... &amp;
+z^r_{i-1}z^r_{i-1} -
+z^r_0    z^r_0 &amp;
+z^r_i    z^r_i -
+z^r_0    z^r_0 \\
+x^1_1    y^1_1     -
+x^1_0    y^1_0 &amp;
+x^1_2    y^1_2 -
+x^1_0    y^1_0 &amp; ... &amp;
+x^2_1    y^2_1     -
+x^2_0    y^2_0 &amp;
+x^2_2    y^2_2 -
+x^2_0    y^2_0 &amp; ... &amp;
+x^r_{i-1}y^r_{i-1} -
+x^r_0    y^r_0 &amp;
+x^r_i    y^r_i -
+x^r_0    y^r_0 \\
+x^1_1    z^1_1     -
+x^1_0    z^1_0 &amp;
+x^1_2    z^1_2 -
+x^1_0    z^1_0 &amp; ... &amp;
+x^2_1    z^2_1     -
+x^2_0    z^2_0 &amp;
+x^2_2    z^2_2 -
+x^2_0    z^2_0 &amp; ... &amp;
+x^r_{i-1}z^r_{i-1} -
+x^r_0    z^r_0 &amp;
+x^r_i    z^r_i -
+x^r_0    z^r_0 \\
+y^1_1    z^1_1     -
+y^1_0    z^1_0 &amp;
+y^1_2    z^1_2 -
+y^1_0    z^1_0 &amp; ... &amp;
+y^2_1    z^2_1     -
+y^2_0    z^2_0 &amp;
+y^2_2    z^2_2 -
+y^2_0    z^2_0 &amp; ... &amp;
+y^r_{i-1}z^r_{i-1} -
+y^r_0    z^r_0 &amp;
+y^r_i    z^r_i -
+y^r_0    z^r_0 \\
+\end{bmatrix}\end{split}\]</div>
+<div class="math">
+\[\begin{split}\bf{U_{\partial {\bf{Z}}/ \partial u}}  =
+\begin{matrix}
+\begin{matrix}
+{\bf{x}_{\beta 1}} &amp; {\bf{x}_{\beta 2}} &amp; ...&amp; {\bf{x}_{\beta 1}} &amp; {\bf{x}_{\beta 2}}&amp; ...&amp; {\bf{x}_{\beta i-1}} &amp; {\bf{x}_{\beta i}}
+\end{matrix}\\
+\begin{bmatrix}
+1 &amp;
+1 &amp;
+... &amp;
+0 &amp;
+0 &amp;
+... &amp;
+0 &amp;
+0\\
+0 &amp;
+0 &amp;
+... &amp;
+1 &amp;
+1 &amp;
+... &amp;
+0 &amp;
+0\\
+0 &amp;
+0 &amp;
+... &amp;
+0 &amp;
+0 &amp;
+... &amp;
+1 &amp;
+1\\
+2x_1 &amp;
+2x_2 &amp;
+... &amp;
+0 &amp;
+0 &amp;
+... &amp;
+0 &amp;
+0\\
+0 &amp;
+0 &amp;
+... &amp;
+2y_1 &amp;
+2y_2 &amp;
+... &amp;
+0 &amp;
+0\\
+0 &amp;
+0 &amp;
+... &amp;
+0 &amp;
+0 &amp;
+... &amp;
+2z_{i-1} &amp;
+2z_i\\
+y_1 &amp;
+y_2 &amp;
+... &amp;
+x_1 &amp;
+x_2 &amp;
+... &amp;
+0 &amp;
+0\\
+y_1 &amp;
+y_2 &amp;
+... &amp;
+0 &amp;
+0 &amp;
+... &amp;
+x_{i-1} &amp;
+x_i\\
+0 &amp;
+0 &amp;
+... &amp;
+z_1 &amp;
+z_2 &amp;
+... &amp;
+x_{i-1} &amp;
+x_i\\
+\end{bmatrix} &amp;
+\begin{aligned}[l]
+&amp;\left\}\begin{matrix}
+\partial {\bf{x}_{\beta i}}/\partial x \\
+\partial {\bf{x}_{\beta i}}/\partial y \\
+\partial {\bf{x}_{\beta i}}/\partial z \\
+\partial^2 {\bf{x}_{\beta i}}/\partial x^2 \\
+\partial^2 {\bf{x}_{\beta i}}/\partial y^2 \\
+\partial^2 {\bf{x}_{\beta i}}/\partial z^2 \\
+\partial^2 {\bf{x}_{\beta i}}/\partial x \partial y\\
+\partial^2 {\bf{x}_{\beta i}}/\partial x \partial z\\
+\partial^2 {\bf{x}_{\beta i}}/\partial y \partial z\\
+\end{matrix}\right.\end{aligned}
+\end{matrix}\end{split}\]</div>
+</div>
+<div class="section" id="kriging-estimator">
+<h2>Kriging Estimator<a class="headerlink" href="#kriging-estimator" title="Permalink to this headline">¶</a></h2>
+<p>In normal Kriging the right hand term of the Kriging system (Eq.
+[krig_sys]) corresponds to covariances and drift matrices of dimensions
+<span class="math">\(m \times n\)</span> where <em>m</em> is the number of elements of the data
+sets—either <span class="math">\({\bf{x}}_\alpha\)</span> or <span class="math">\({\bf{x}}_\beta\)</span>—and <em>n</em>
+the number of locations where the interpolation is performed,
+<span class="math">\({\bf{x}}_0\)</span>.</p>
+<p>Since, in this case, the parameters of the variogram functions are
+arbitrarily chosen, the Kriging variance does not hold any physical
+information of the domain. As a result of this, being interested only in
+the mean value, we can solve the Kriging system in the dual form
+<a class="reference internal" href="#d-matheron1981splines" id="id3">[D1]</a>:</p>
+<div class="math">
+\[\begin{split}Z({\bf{x}}_0)=
+\begin{bmatrix}
+a'_{{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}}  &amp;
+b'_{{\bf{Z}, \,\bf{Z}}} &amp;
+c'
+\end{bmatrix}
+\left[ \begin{array}{cc}
+{\bf{c_{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}}} &amp; {\bf{c_{\partial {\bf{Z}}/ \partial u, \, Z}}} \\
+{\bf{c_{Z, \,\partial {\bf{Z}}/ \partial u}}} &amp;  {\bf{c_{\bf{Z}, \,\bf{Z}}}} \\
+{\bf{f_{10}}} &amp; {\bf{f_{20}}} \end{array} \right]\end{split}\]</div>
+<p>where:</p>
+<div class="math">
+\[\begin{split}\begin{bmatrix}
+a_{{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}}  \\
+b_{{\bf{Z}, \,\bf{Z}}} \\
+c
+\end{bmatrix} =
+\begin{bmatrix}
+\partial {\bf{Z}}  \\ 0 \\ 0
+\end{bmatrix}
+\left[ \begin{array}{ccc}
+{\bf{C_{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}}} &amp;
+{\bf{C_{\partial {\bf{Z}}/ \partial u, \, Z}}} &amp;
+\bf{U_{\partial {\bf{Z}}/ \partial u}} \\
+{\bf{C_{Z, \, \partial {\bf{Z}}/ \partial u }}} &amp;
+{\bf{C_{\bf{Z}, \, \bf{Z}}}} &amp;
+{\bf{U_{Z}}} \\
+\bf{U'_{\partial {\bf{Z}}/ \partial u}} &amp;
+{\bf{U'_{Z}}} &amp;
+{\bf{0}} \end{array} \right]^{-1}\end{split}\]</div>
+<p>noticing that the 0 on the second row appears due to we are
+interpolation the difference of scalar fields instead the scalar field
+itself [eq_rel].</p>
+</div>
+<div class="section" id="example-of-covariance-function-cubic">
+<h2>Example of covariance function: cubic<a class="headerlink" href="#example-of-covariance-function-cubic" title="Permalink to this headline">¶</a></h2>
+<p>The choice of the covariance function will govern the shape of the
+iso-surfaces of the scalar field. As opposed to other Kriging uses, here
+the choice cannot be based on empirical measurements. Therefore, the
+choice of the covariance function is merely arbitrary trying to mimic as
+far as possible coherent geological structures.</p>
+<div class="figure" id="id8">
+<img alt="" src="../_images/covariance.png" />
+<p class="caption"><span class="caption-text">Representation of a cubic variogram and covariance for an arbitrary
+range and nugget effect.</span></p>
+</div>
+<p>The main requirement to take into consideration when the time comes to
+choose a covariance function is that it has to be twice differentiable,
+<span class="math">\(h^2\)</span> in origin to be able to calculate
+<span class="math">\({\bf{C_{\partial {\bf{Z}}/ \partial u, \, \partial {\bf{Z}}/ \partial v}}}\)</span>
+as we saw in equation [huhv]. The use of a Gaussian model
+<span class="math">\(C(r) = \exp{-(r/a)^2}\)</span> and the non-divergent spline
+<span class="math">\(C(r) = r^4
+Log(r)\)</span> and their correspondent flaws are explored in
+<a class="reference internal" href="#d-lajaunie-1997" id="id4">[D2]</a>.</p>
+<p>The most widely used function in the potential field method is the cubic
+covariance due to mathematical robustness and its coherent geological
+description of the space.</p>
+<div class="math">
+\[\begin{split}C(r) = \begin{cases}
+C_0(1-7(\frac{r}{a})^2+ \frac{35}{4}(\frac{r}{a})^3
+- \frac{7}{2}(\frac{r}{a})^5 +\frac{3}{4}(\frac{r}{a})^7) &amp;
+\text{for } 0  \leq r \leq a \\
+0 &amp; \text{for } r  \geq a
+\end{cases}\end{split}\]</div>
+<p>with <span class="math">\(a\)</span> being the range and <span class="math">\(C_0\)</span> the variance of the data.
+The value of <span class="math">\(a\)</span> determine the maximum distance that a data point
+influence another. Since, we assume that all data belong to the same
+depositional phase it is recommended to choose values close to the
+maximum extent to interpolate in order to avoid mathematical artifacts.
+for the values of the covariance at 0 and nuggets effects so far only
+<em>ad hoc</em> values have been used so far. It is important to notice that
+the only effect that the values of the covariance in the potential-field
+method has it is to weight the relative influence of both CoKriging
+parameters (interfaces and orientations) since te absolut value of the
+field is meaningless. Regarding the nugget effect, the authors
+recommendation is to use fairly small nugget effects to give stability
+to the computation—since we normally use the kriging mean it should not
+have further impact to the result.</p>
+</div>
+<div class="section" id="example-of-probabilistic-graphical-model">
+<h2>Example of Probabilistic Graphical Model<a class="headerlink" href="#example-of-probabilistic-graphical-model" title="Permalink to this headline">¶</a></h2>
+<p>Here we can see the probabilistic graphical model of the Bayesian
+inference of Section [sec:geol-invers-prob]:</p>
+<div class="figure" id="id9">
+<img alt="" src="../_images/paper_graph.png" />
+<p class="caption"><span class="caption-text">Probabilistic graphical model generated with pymc2. Ellipses
+represent stochastic parameters, while triangles are deterministic
+functions that return intermediated states of the probabilistic model
+such as the GemPy model</span></p>
+</div>
+<p id="bibtex-bibliography-_theory/advanced-0"><table class="docutils citation" frame="void" id="d-matheron1981splines" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id3">[D1]</a></td><td>Georges Matheron. Splines and kriging: their formal equivalence. <em>Down-to-earth-statistics: Solutions looking for geological problems</em>, pages 77–95, 1981.</td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="d-lajaunie-1997" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[D2]</a></td><td>Christian Lajaunie, Gabriel Courrioux, and Laurent Manuel. Foliation fields and 3D cartography in geology: Principles of a method based on potential interpolation. <em>Mathematical Geology</em>, 29(4):571–584, 1997.</td></tr>
+</tbody>
+</table>
+</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy2.svg" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../theory.html">Guide</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="core.html">CORE - Geological modeling with GemPy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="assets.html">ASSETS – Model analysis and further use</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Advance theory</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#kriging-system-expansion">Kriging system expansion:</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gradient-covariance-matrix">Gradient Covariance-Matrix <span class="math">\({\bf{C_{\partial {\bf{Z}}/ \partial u}}}\)</span></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interface-covariance-matrix">Interface Covariance-Matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#cross-covariance">Cross-Covariance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#universal-matrix">Universal matrix</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#kriging-estimator">Kriging Estimator</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-of-covariance-function-cubic">Example of covariance function: cubic</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#example-of-probabilistic-graphical-model">Example of Probabilistic Graphical Model</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="../theory.html">Guide</a><ul>
+      <li>Previous: <a href="assets.html" title="previous chapter">ASSETS – Model analysis and further use</a></li>
+      <li>Next: <a href="../code.html" title="next chapter">Code</a></li>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.10</a>
+      
+      |
+      <a href="../_sources/_theory/advanced.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

@@ -15,6 +15,8 @@ class TestPerfomance:
 
         # Importing the data from csv files and settign extent and resolution
         geo_data = gempy.read_pickle(os.path.dirname(__file__)+"/input_data/geo_data.pickle")
+        geo_data.interfaces['formation'] = geo_data.interfaces['formation'].astype('category')
+        geo_data.orientations['formation'] = geo_data.orientations['formation'].astype('category')
         geo_data.add_orientation(X=-2.88043478e+04, Y=6.21413043e+06, Z=-1.17648965e+02, dip=0, azimuth=0, polarity=1,
                                  formation='basement')
 
@@ -43,7 +45,8 @@ class TestPerfomance:
                                    *interp_data.interpolator.tg.n_formations_per_serie.get_value()[n_faults:],
                                    *interp_data.interpolator.tg.n_universal_eq_T.get_value()[n_faults:],
                                    interp_data.interpolator.tg.lith_block_init,
-                                   interp_data.interpolator.tg.fault_matrix
+                                   interp_data.interpolator.tg.final_scalar_field_at_formations_op,
+                                  # interp_data.interpolator.tg.fault_matrix
                                ),
                                on_unused_input='ignore',
                                allow_input_downcast=True,

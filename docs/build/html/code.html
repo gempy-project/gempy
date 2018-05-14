@@ -25,9 +25,10 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="_static/gempy_squared.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="Advance theory" href="theory/advanced.html" />
+    <link rel="prev" title="Advance theory" href="_theory/advanced.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -36,76 +37,9 @@
 
   </head>
   <body>
-  <div class="document">
-    
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">GemPy</a></h1>
+  
 
-
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="index.html">GemPy’s (v 1.0) documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory/motivation.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">Guide</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Code</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#gempy-front">Gempy Front</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-data_management">Data Management</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#theano-graph">Theano Graph</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-geophysics">Geophysics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#topology">Topology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#posterior-analysis">Posterior Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#visualization">Visualization</a></li>
-</ul>
-</li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="theory/advanced.html" title="previous chapter">Advance theory</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -519,7 +453,7 @@ specific directions</p>
 <li><strong>vertices_l</strong> (<em>numpy.array</em>) – 2D array (XYZ) with the coordinates of the points</li>
 <li><strong>simplices_l</strong> (<em>numpy.array</em>) – 2D array with the value of the vertices that form every single triangle</li>
 <li><strong>formations_names_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Name of the formation of the surfaces</li>
-<li><strong>formation_numbers_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Formation numbers (int)</li>
+<li><strong>formation_numbers_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – formation_numbers (int)</li>
 <li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Opacity</li>
 <li><strong>plot_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Default True</li>
 <li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)"><em>tuple</em></a>) – Resolution of the window</li>
@@ -549,7 +483,7 @@ may be better to just modify each potential field individually to increase the s
 <li><strong>vertices_l</strong> (<em>numpy.array</em>) – 2D array (XYZ) with the coordinates of the points</li>
 <li><strong>simplices_l</strong> (<em>numpy.array</em>) – 2D array with the value of the vertices that form every single triangle</li>
 <li><strong>formations_names_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Name of the formation of the surfaces</li>
-<li><strong>formation_numbers_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – Formation numbers (int)</li>
+<li><strong>formation_numbers_l</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – formation_numbers (int)</li>
 <li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Opacity</li>
 <li><strong>plot_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Default True</li>
 <li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)"><em>tuple</em></a>) – Resolution of the window</li>
@@ -1498,7 +1432,7 @@ data</p>
 
 <dl class="method">
 <dt id="theano_graph.TheanoGraph.compute_a_series">
-<code class="descname">compute_a_series</code><span class="sig-paren">(</span><em>len_i_0</em>, <em>len_i_1</em>, <em>len_f_0</em>, <em>len_f_1</em>, <em>n_form_per_serie_0</em>, <em>n_form_per_serie_1</em>, <em>u_grade_iter</em>, <em>final_block</em>, <em>fault_block</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.compute_a_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.compute_a_series" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compute_a_series</code><span class="sig-paren">(</span><em>len_i_0</em>, <em>len_i_1</em>, <em>len_f_0</em>, <em>len_f_1</em>, <em>n_form_per_serie_0</em>, <em>n_form_per_serie_1</em>, <em>u_grade_iter</em>, <em>final_block</em>, <em>scalar_field_at_form</em>, <em>fault_block</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.compute_a_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.compute_a_series" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that loops each series, generating a potential field for each on them with the respective block model</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2272,7 +2206,7 @@ will be displayed.</p>
 <li><strong>X</strong> – X coord</li>
 <li><strong>Y</strong> – Y coord</li>
 <li><strong>Z</strong> – Z corrd</li>
-<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Formation number</li>
+<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – formation_number</li>
 <li><strong>Gx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Component of the gradient x</li>
 <li><strong>Gy</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Component of the gradient y</li>
 <li><strong>Gz</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Component of the gradient z</li>
@@ -2305,7 +2239,7 @@ will be displayed.</p>
 :param X: X coord
 :param Y: Y coord
 :param Z: Z corrd
-:param fn: Formation number
+:param fn: formation_number
 :type fn: int
 :param n_sphere: Number of the sphere
 :type n_sphere: int
@@ -2336,7 +2270,7 @@ will be displayed.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>vertices</strong> (<em>numpy.array</em>) – 2D array (XYZ) with the coordinates of the points</li>
 <li><strong>simplices</strong> (<em>numpy.array</em>) – 2D array with the value of the vertices that form every single triangle</li>
-<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Formation number</li>
+<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – formation_number</li>
 <li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Opacity</li>
 </ul>
 </td>
@@ -2496,7 +2430,7 @@ render_model</p>
 <li><strong>vertices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – list of 3D numpy arrays containing the points that form each plane</li>
 <li><strong>simplices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – list of 3D numpy arrays containing the verticies that form every triangle</li>
 <li><strong>formations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – ordered list of strings containing the name of the formations to represent</li>
-<li><strong>fns</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – ordered list of formation numbers (int)</li>
+<li><strong>fns</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – ordered list of formation_numbers (int)</li>
 <li><strong>alpha</strong> – Opacity of the plane</li>
 </ul>
 </td>
@@ -2524,8 +2458,83 @@ update the pandas data frame.</p>
           </div>
         </div>
       </div>
-    <div class="clearer"></div>
-  </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/./logos/gempy2.svg" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">GemPy’s (v 1.0) documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_theory/motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gempy-front">Gempy Front</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-data_management">Data Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#theano-graph">Theano Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-geophysics">Geophysics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#topology">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#posterior-analysis">Posterior Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualization">Visualization</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="_theory/advanced.html" title="previous chapter">Advance theory</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
     <div class="footer">
       &copy;2017, Miguel de la Varga, CGR-Aachen Team.
       

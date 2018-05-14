@@ -27,7 +27,7 @@ class GravityPreprocessing(object):
         self.interp_data = interp_data
         self.ai_extent = np.array(ai_extent)
         self.ai_resolution = np.array(ai_resolution)
-        self.model_grid = interp_data.geo_data_res.grid.values
+        self.model_grid = interp_data.geo_data_res.x_to_interp_given
 
         self.eu = self.compile_eu_f()
 
@@ -137,15 +137,15 @@ class GravityPreprocessing(object):
     @staticmethod
     def compile_eu_f():
         # Compile Theano function
-        x_1 = T.matrix()
-        x_2 = T.matrix()
+        x_1 = T.dmatrix()
+        x_2 = T.dmatrix()
 
         sqd = T.sqrt(T.maximum(
             (x_1 ** 2).sum(1).reshape((x_1.shape[0], 1)) +
             (x_2 ** 2).sum(1).reshape((1, x_2.shape[0])) -
             2 * x_1.dot(x_2.T), 0
         ))
-        eu = theano.function([x_1, x_2], sqd, allow_input_downcast=True)
+        eu = theano.function([x_1, x_2], sqd, allow_input_downcast=False)
         return eu
 
     def set_airborne_plane(self, z, ai_resolution):

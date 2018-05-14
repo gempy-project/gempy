@@ -1,4 +1,4 @@
-,X,X_std,Y,Y_std,Z,Z_std,annotations,formation,formation number,group_id,isFault,order_series,series
+,X,X_std,Y,Y_std,Z,Z_std,annotations,formation,formation_number,group_id,isFault,order_series,series
 0,250,0.0,0,0.0,996,0.0,"${\bf{x}}_{\alpha \,{\bf{1}},0}$",Layer 2,1,l2_a,False,1,Default serie
 1,2500,0.0,200,0.0,1149,0.0,"${\bf{x}}_{\alpha \,{\bf{1}},1}$",Layer 2,1,l2_b,False,1,Default serie
 2,2250,0.0,100,0.0,1298,0.0,"${\bf{x}}_{\alpha \,{\bf{1}},2}$",Layer 2,1,l2_b,False,1,Default serie

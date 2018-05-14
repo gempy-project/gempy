@@ -25,6 +25,7 @@
     <script type="text/javascript" src="../_static/underscore.js"></script>
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="shortcut icon" href="../_static/gempy_squared.ico"/>
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
    
@@ -35,68 +36,9 @@
 
   </head>
   <body>
-  <div class="document">
-    
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="../index.html">GemPy</a></h1>
+  
 
-
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../theory/motivation.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -665,47 +607,35 @@
         <span class="c1"># First row of matrices</span>
         <span class="c1"># Set C_G</span>
         <span class="n">C_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">C_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">length_of_CG</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">length_of_CG</span><span class="p">],</span> <span class="n">C_G</span><span class="p">)</span>
-
         <span class="c1"># Set CGI</span>
         <span class="n">C_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">C_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">length_of_CG</span><span class="p">,</span> <span class="n">length_of_CG</span><span class="p">:</span><span class="n">length_of_CG</span> <span class="o">+</span> <span class="n">length_of_CGI</span><span class="p">],</span> <span class="n">C_GI</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-
         <span class="c1"># Set UG</span>
         <span class="n">C_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">C_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">length_of_CG</span><span class="p">,</span>
                                    <span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="p">:</span><span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="o">+</span><span class="n">length_of_U_I</span><span class="p">],</span> <span class="n">U_G</span><span class="p">)</span>
-
         <span class="c1"># Set FG. I cannot use -index because when is -0 is equivalent to 0</span>
         <span class="n">C_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">C_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="n">length_of_CG</span><span class="p">,</span> <span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="o">+</span><span class="n">length_of_U_I</span><span class="p">:],</span> <span class="n">F_G</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-
         <span class="c1"># Second row of matrices</span>
         <span class="c1"># Set C_IG</span>
         <span class="n">C_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">C_matrix</span><span class="p">[</span><span class="n">length_of_CG</span><span class="p">:</span><span class="n">length_of_CG</span> <span class="o">+</span> <span class="n">length_of_CGI</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">length_of_CG</span><span class="p">],</span> <span class="n">C_GI</span><span class="p">)</span>
-
         <span class="c1"># Set C_I</span>
         <span class="n">C_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">C_matrix</span><span class="p">[</span><span class="n">length_of_CG</span><span class="p">:</span><span class="n">length_of_CG</span> <span class="o">+</span> <span class="n">length_of_CGI</span><span class="p">,</span>
                                    <span class="n">length_of_CG</span><span class="p">:</span><span class="n">length_of_CG</span> <span class="o">+</span> <span class="n">length_of_CGI</span><span class="p">],</span> <span class="n">C_I</span><span class="p">)</span>
-
         <span class="c1"># Set U_I</span>
         <span class="c1">#if not self.u_grade_T.get_value() == 0:</span>
         <span class="n">C_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">C_matrix</span><span class="p">[</span><span class="n">length_of_CG</span><span class="p">:</span><span class="n">length_of_CG</span> <span class="o">+</span> <span class="n">length_of_CGI</span><span class="p">,</span>
                                    <span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="p">:</span><span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="o">+</span><span class="n">length_of_U_I</span><span class="p">],</span> <span class="n">U_I</span><span class="p">)</span>
-
         <span class="c1"># Set F_I</span>
         <span class="n">C_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">C_matrix</span><span class="p">[</span><span class="n">length_of_CG</span><span class="p">:</span><span class="n">length_of_CG</span> <span class="o">+</span> <span class="n">length_of_CGI</span><span class="p">,</span> <span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="o">+</span><span class="n">length_of_U_I</span><span class="p">:],</span> <span class="n">F_I</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-
         <span class="c1"># Third row of matrices</span>
         <span class="c1"># Set U_G</span>
         <span class="n">C_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">C_matrix</span><span class="p">[</span><span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="p">:</span><span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="o">+</span><span class="n">length_of_U_I</span><span class="p">,</span> <span class="mi">0</span><span class="p">:</span><span class="n">length_of_CG</span><span class="p">],</span> <span class="n">U_G</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-
         <span class="c1"># Set U_I</span>
         <span class="n">C_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">C_matrix</span><span class="p">[</span><span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="p">:</span><span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="o">+</span><span class="n">length_of_U_I</span><span class="p">,</span> <span class="n">length_of_CG</span><span class="p">:</span><span class="n">length_of_CG</span> <span class="o">+</span> <span class="n">length_of_CGI</span><span class="p">],</span> <span class="n">U_I</span><span class="o">.</span><span class="n">T</span><span class="p">)</span>
-
         <span class="c1"># Fourth row of matrices</span>
         <span class="c1"># Set F_G</span>
         <span class="n">C_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">C_matrix</span><span class="p">[</span><span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="o">+</span><span class="n">length_of_U_I</span><span class="p">:,</span> <span class="mi">0</span><span class="p">:</span><span class="n">length_of_CG</span><span class="p">],</span> <span class="n">F_G</span><span class="p">)</span>
-
         <span class="c1"># Set F_I</span>
         <span class="n">C_matrix</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">C_matrix</span><span class="p">[</span><span class="n">length_of_CG</span><span class="o">+</span><span class="n">length_of_CGI</span><span class="o">+</span><span class="n">length_of_U_I</span><span class="p">:,</span> <span class="n">length_of_CG</span><span class="p">:</span><span class="n">length_of_CG</span> <span class="o">+</span> <span class="n">length_of_CGI</span><span class="p">],</span> <span class="n">F_I</span><span class="p">)</span>
-
         <span class="c1"># Add name to the theano node</span>
         <span class="n">C_matrix</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Block Covariance Matrix&#39;</span>
         <span class="k">if</span> <span class="nb">str</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">_getframe</span><span class="p">()</span><span class="o">.</span><span class="n">f_code</span><span class="o">.</span><span class="n">co_name</span><span class="p">)</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
@@ -805,7 +735,7 @@
 
         <span class="c1"># Creation of a matrix of dimensions equal to the grid with the weights for every point (big 4D matrix in</span>
         <span class="c1"># ravel form)</span>
-        <span class="c1"># TODO IMP: Change the tile by a simple dot op</span>
+        <span class="c1"># TODO IMP: Change the tile by a simple dot op -&gt; The DOT version in gpu is slowlier</span>
         <span class="n">DK_weights</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">DK_parameters</span><span class="p">,</span> <span class="p">(</span><span class="n">grid_val</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="mi">1</span><span class="p">))</span><span class="o">.</span><span class="n">T</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">dot_version</span><span class="p">:</span>
@@ -1053,21 +983,26 @@
         <span class="n">Z_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_at_all</span><span class="p">()</span>
 
         <span class="c1"># Max and min values of the potential field.</span>
-        <span class="c1"># TODO this may be expensive because I guess that is a sort algorithm. We just need a +inf and -inf... I guess</span>
-        <span class="n">max_pot</span> <span class="o">=</span> <span class="mi">1000</span>
-        <span class="n">min_pot</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1000</span>
+        <span class="n">max_pot</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">Z_x</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="n">min_pot</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">min</span><span class="p">(</span><span class="n">Z_x</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span>
+        <span class="n">max_pot</span> <span class="o">+=</span> <span class="n">max_pot</span> <span class="o">*</span> <span class="mf">0.1</span>
+        <span class="n">min_pot</span> <span class="o">-=</span> <span class="n">min_pot</span> <span class="o">*</span> <span class="mf">0.1</span>
 
         <span class="c1"># Value of the potential field at the interfaces of the computed series</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_at_interfaces_values</span> <span class="o">=</span> <span class="n">Z_x</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="o">*</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">:</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">npf_op</span><span class="p">]</span>
 
         <span class="c1"># A tensor with the values to segment</span>
-        <span class="n">scalar_field_iter</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">T</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">max_pot</span><span class="p">]),</span>   <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_at_interfaces_values</span><span class="p">,</span> <span class="n">T</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">min_pot</span><span class="p">])))</span>
+        <span class="n">scalar_field_iter</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span>
+                                           <span class="n">T</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">max_pot</span><span class="p">]),</span>
+                                           <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_at_interfaces_values</span><span class="p">,</span>
+                                           <span class="n">T</span><span class="o">.</span><span class="n">stack</span><span class="p">([</span><span class="n">min_pot</span><span class="p">])</span>
+                                            <span class="p">))</span>
 
         <span class="k">if</span> <span class="s2">&quot;scalar_field_iter&quot;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="n">scalar_field_iter</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s2">&quot;scalar_field_iter&quot;</span><span class="p">)(</span><span class="n">scalar_field_iter</span><span class="p">)</span>
 
         <span class="c1"># Loop to segment the distinct lithologies</span>
-        <span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span> <span class="n">n_formation</span><span class="p">,</span> <span class="n">Zx</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">,</span>  <span class="n">n_formation</span><span class="p">,</span> <span class="n">Zx</span><span class="p">):</span>
             <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">            Treshold of the points to interpolate given 2 potential field values. TODO: This function is the one we</span>
 <span class="sd">            need to change for a sigmoid function</span>
@@ -1082,15 +1017,15 @@
 <span class="sd">                theano.tensor.vector: segmented values</span>
 <span class="sd">            &quot;&quot;&quot;</span>
 
-            <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
-                <span class="n">mid_pot</span> <span class="o">=</span> <span class="p">(</span><span class="n">a</span> <span class="o">-</span> <span class="n">b</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span> <span class="o">+</span> <span class="n">b</span>
+            <span class="k">if</span> <span class="kc">True</span><span class="p">:</span>
                 <span class="c1"># The 5 rules the slope of the function</span>
-                <span class="n">segm</span> <span class="o">=</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">T</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">20</span> <span class="o">*</span> <span class="p">(</span><span class="n">Z_x</span> <span class="o">-</span> <span class="n">mid_pot</span><span class="p">)))</span>
-
-                <span class="k">return</span> <span class="n">T</span><span class="o">.</span><span class="n">switch</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">le</span><span class="p">(</span><span class="n">Zx</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">T</span><span class="o">.</span><span class="n">ge</span><span class="p">(</span><span class="n">Zx</span><span class="p">,</span> <span class="n">b</span><span class="p">),</span> <span class="n">segm</span> <span class="o">+</span> <span class="n">n_formation</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+                <span class="n">sigm</span> <span class="o">=</span> <span class="p">((</span><span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">T</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="o">-</span><span class="mi">500</span> <span class="o">*</span> <span class="p">(</span><span class="n">Z_x</span> <span class="o">-</span> <span class="n">b</span><span class="p">)))</span> <span class="o">+</span> <span class="mf">1.</span> <span class="o">/</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">T</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">500</span> <span class="o">*</span> <span class="p">(</span><span class="n">Z_x</span> <span class="o">-</span> <span class="n">a</span><span class="p">))))</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_formation</span>
+                <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+                    <span class="n">sigm</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s2">&quot;middle point&quot;</span><span class="p">)(</span><span class="n">sigm</span><span class="p">)</span>
+                    <span class="n">n_formation</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s2">&quot;n_formation&quot;</span><span class="p">)(</span><span class="n">n_formation</span><span class="p">)</span>
+                <span class="k">return</span> <span class="n">sigm</span>
 
             <span class="k">else</span><span class="p">:</span>
-
                 <span class="k">return</span> <span class="n">T</span><span class="o">.</span><span class="n">le</span><span class="p">(</span><span class="n">Zx</span><span class="p">,</span> <span class="n">a</span><span class="p">)</span> <span class="o">*</span> <span class="n">T</span><span class="o">.</span><span class="n">ge</span><span class="p">(</span><span class="n">Zx</span><span class="p">,</span> <span class="n">b</span><span class="p">)</span> <span class="o">*</span> <span class="n">n_formation</span>
 
         <span class="n">partial_block</span><span class="p">,</span> <span class="n">updates2</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
@@ -1099,7 +1034,8 @@
             <span class="n">sequences</span><span class="o">=</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="n">scalar_field_iter</span><span class="p">,</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op_float</span><span class="p">],</span>
             <span class="n">non_sequences</span><span class="o">=</span><span class="n">Z_x</span><span class="p">,</span>
             <span class="n">name</span><span class="o">=</span><span class="s1">&#39;Looping compare&#39;</span><span class="p">,</span>
-            <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">profile</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">return_list</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 
         <span class="c1"># For every formation we get a vector so we need to sum compress them to one dimension</span>
         <span class="n">partial_block</span> <span class="o">=</span> <span class="n">partial_block</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -1166,7 +1102,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">len_i_0</span> <span class="o">=</span> <span class="n">len_i_0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">len_i_1</span> <span class="o">=</span> <span class="n">len_i_1</span>
 
-
         <span class="c1"># Extracting a the subset of the fault matrix to the scalar field of the current iterations</span>
         <span class="n">faults_relation_op</span> <span class="o">=</span>  <span class="bp">self</span><span class="o">.</span><span class="n">fault_relation</span><span class="p">[:,</span> <span class="n">T</span><span class="o">.</span><span class="n">cast</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;int8&#39;</span><span class="p">)]</span>
         <span class="n">faults_relation_rep</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">repeat</span><span class="p">(</span><span class="n">faults_relation_op</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
@@ -1193,7 +1128,6 @@
         <span class="c1"># Update the potential field matrix</span>
         <span class="n">potential_field_values</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">scalar_field_at_all</span><span class="p">()</span>
 
-
         <span class="n">final_block</span> <span class="o">=</span>  <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
                     <span class="n">final_block</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span>
                     <span class="n">potential_field_values</span><span class="p">)</span>
@@ -1214,7 +1148,7 @@
                          <span class="n">len_f_0</span><span class="p">,</span> <span class="n">len_f_1</span><span class="p">,</span>
                          <span class="n">n_form_per_serie_0</span><span class="p">,</span> <span class="n">n_form_per_serie_1</span><span class="p">,</span>
                          <span class="n">u_grade_iter</span><span class="p">,</span>
-                         <span class="n">final_block</span><span class="p">,</span> <span class="n">fault_block</span><span class="p">):</span>
+                         <span class="n">final_block</span><span class="p">,</span> <span class="n">scalar_field_at_form</span><span class="p">,</span> <span class="n">fault_block</span><span class="p">):</span>
 
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Function that loops each series, generating a potential field for each on them with the respective block model</span>
@@ -1238,14 +1172,18 @@
         <span class="c1"># ==================</span>
         <span class="c1"># Preparing the data</span>
         <span class="c1"># ==================</span>
+
         <span class="c1"># Vector that controls the points that have been simulated in previous iterations</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">eq</span><span class="p">(</span><span class="n">final_block</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="p">:],</span> <span class="mi">0</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">nonzero</span><span class="p">(</span><span class="n">T</span><span class="o">.</span><span class="n">le</span><span class="p">(</span><span class="n">final_block</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="p">:],</span> <span class="n">scalar_field_at_form</span><span class="p">[</span><span class="n">n_form_per_serie_0</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]))[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># This -1 comes to get the last scalar field value (the bottom) of the previous series</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;Yet simulated LITHOLOGY node&#39;</span>
+        <span class="k">if</span> <span class="s1">&#39;yet_simulated&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;yet_simulated&#39;</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span><span class="p">)</span>
+            <span class="n">scalar_field_at_form</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;scalar_field_at_form_out&#39;</span><span class="p">)(</span><span class="n">scalar_field_at_form</span><span class="p">)</span>
 
         <span class="c1"># Theano shared</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">number_of_points_per_formation_T_op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_points_per_formation_T</span><span class="p">[</span><span class="n">n_form_per_serie_0</span><span class="p">:</span> <span class="n">n_form_per_serie_1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_formation</span><span class="p">[</span><span class="n">n_form_per_serie_0</span><span class="p">:</span> <span class="n">n_form_per_serie_1</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op_float</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_formation_float</span><span class="p">[</span><span class="n">n_form_per_serie_0</span><span class="p">:</span> <span class="n">n_form_per_serie_1</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op_float</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_formation_float</span><span class="p">[</span><span class="n">n_form_per_serie_0</span><span class="p">:</span> <span class="n">n_form_per_serie_1</span> <span class="o">+</span> <span class="mi">1</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">npf_op</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">npf</span><span class="p">[</span><span class="n">n_form_per_serie_0</span><span class="p">:</span> <span class="n">n_form_per_serie_1</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">n_universal_eq_T_op</span> <span class="o">=</span> <span class="n">u_grade_iter</span>
@@ -1266,8 +1204,6 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">len_i_1</span> <span class="o">=</span> <span class="n">len_i_1</span>
 
         <span class="c1"># Printing</span>
-        <span class="k">if</span> <span class="s1">&#39;yet_simulated&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span><span class="o">.</span><span class="n">name</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span><span class="p">)</span>
         <span class="k">if</span> <span class="s1">&#39;n_formation&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;n_formation_series&#39;</span><span class="p">)(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span><span class="p">)</span>
 
@@ -1291,6 +1227,10 @@
             <span class="n">final_block</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">yet_simulated</span><span class="p">],</span>
             <span class="n">scalar_field_values</span><span class="p">)</span>
 
+        <span class="n">final_block</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
+            <span class="n">final_block</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">len_points</span><span class="p">:],</span>
+            <span class="mi">0</span><span class="p">)</span>
+
         <span class="c1"># Store the potential field at the interfaces</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">final_scalar_field_at_formations_op</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">final_scalar_field_at_formations_op</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formation_op</span> <span class="o">-</span> <span class="mi">1</span><span class="p">],</span>
@@ -1308,8 +1248,6 @@
 
         <span class="c1"># Compute Faults</span>
         <span class="k">if</span> <span class="n">n_faults</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="c1"># --DEP--? Initialize yet simulated</span>
-           <span class="c1"># self.yet_simulated = T.nonzero(T.eq(self.fault_block_init[0, :], 0))[0]#T.eq(self.fault_block_init[0, :-2 * self.len_points], 0)</span>
 
             <span class="c1"># Looping</span>
             <span class="n">fault_loop</span><span class="p">,</span> <span class="n">updates3</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
@@ -1336,10 +1274,10 @@
         <span class="c1"># Check if there are lithologies to compute</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="o">.</span><span class="n">get_value</span><span class="p">())</span> <span class="o">-</span> <span class="mi">1</span> <span class="o">&gt;</span> <span class="n">n_faults</span><span class="p">:</span>
 
-             <span class="c1"># Compute Lithologies</span>
+            <span class="c1"># Compute Lithologies</span>
              <span class="n">lith_loop</span><span class="p">,</span> <span class="n">updates2</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">scan</span><span class="p">(</span>
                  <span class="n">fn</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">compute_a_series</span><span class="p">,</span>
-                 <span class="n">outputs_info</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lith_block_init</span><span class="p">,</span> <span class="kc">None</span><span class="p">],</span>
+                 <span class="n">outputs_info</span><span class="o">=</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">lith_block_init</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">final_scalar_field_at_formations_op</span><span class="p">],</span>
                  <span class="n">sequences</span><span class="o">=</span><span class="p">[</span><span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_i</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
                             <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">len_series_f</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
                             <span class="nb">dict</span><span class="p">(</span><span class="nb">input</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_formations_per_serie</span><span class="p">[</span><span class="n">n_faults</span><span class="p">:],</span> <span class="n">taps</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]),</span>
@@ -1387,7 +1325,13 @@
                                     <span class="n">return_list</span> <span class="o">=</span> <span class="kc">True</span>
         <span class="p">)</span>
 
-        <span class="n">density_block_loop_f</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">density_block_loop</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">weigths_index</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">weigths_weigths</span><span class="p">)</span>
+        <span class="k">if</span> <span class="kc">False</span><span class="p">:</span>
+            <span class="n">density_block_loop_f</span> <span class="o">=</span> <span class="n">T</span><span class="o">.</span><span class="n">set_subtensor</span><span class="p">(</span><span class="n">density_block_loop</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="bp">self</span><span class="o">.</span><span class="n">weigths_index</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">weigths_weigths</span><span class="p">)</span>
+
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">density_block_loop_f</span> <span class="o">=</span> <span class="n">lith_matrix</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+
         <span class="k">if</span> <span class="s1">&#39;density_block&#39;</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">verbose</span><span class="p">:</span>
             <span class="n">density_block_loop_f</span> <span class="o">=</span> <span class="n">theano</span><span class="o">.</span><span class="n">printing</span><span class="o">.</span><span class="n">Print</span><span class="p">(</span><span class="s1">&#39;density block&#39;</span><span class="p">)(</span><span class="n">density_block_loop_f</span><span class="p">)</span>
 
@@ -1412,8 +1356,75 @@
           </div>
         </div>
       </div>
-    <div class="clearer"></div>
-  </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy2.svg" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy’s (v 1.0) documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_theory/motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
     <div class="footer">
       &copy;2017, Miguel de la Varga, CGR-Aachen Team.
       
