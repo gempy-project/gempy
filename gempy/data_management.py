@@ -762,9 +762,8 @@ class InputData(object):
 
         self.reset_indices()
 
-
-        self.order_table()
         self.set_formations()
+        self.order_table()
         self.set_fault_relation()
 
         #self.set_annotations()

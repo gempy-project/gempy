@@ -69,37 +69,46 @@ def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_
 
     i = interp_data.get_input_data(u_grade=u_grade)
 
-    if output is 'geology':
-        lith_matrix, fault_matrix, potential_at_interfaces = interp_data.th_fn(*i)
-        # TODO check if this is necessary yet
-        if len(lith_matrix.shape) < 3:
-            _np.expand_dims(lith_matrix, 0)
-            _np.expand_dims(fault_matrix, 0)
+    sol = interp_data.th_fn(*i)
+    interp_data.potential_at_interfaces = sol[-1]
+    if get_potential_at_interfaces:
+        return sol
+    else:
+        return sol[:-1]
 
-        interp_data.potential_at_interfaces = potential_at_interfaces
+    #
+    # if output is 'geology':
+    #     lith_matrix, fault_matrix, potential_at_interfaces = interp_data.th_fn(*i)
+    #     # TODO check if this is necessary yet
+    #     if len(lith_matrix.shape) < 3:
+    #         _np.expand_dims(lith_matrix, 0)
+    #         _np.expand_dims(fault_matrix, 0)
+    #
+    #     interp_data.potential_at_interfaces = potential_at_interfaces
+    #
+    #     if get_potential_at_interfaces:
+    #         return lith_matrix, fault_matrix, interp_data.potential_at_interfaces
+    #     else:
+    #         return lith_matrix, fault_matrix
+    #
+    # # TODO this should be a flag read from the compilation I guess
+    # if output is 'gravity':
+    #     # TODO make asserts
+    #     lith_matrix, fault_matrix, potential_at_interfaces, grav = interp_data.th_fn(*i)
+    #     if len(lith_matrix.shape) < 3:
+    #         _np.expand_dims(lith_matrix, 0)
+    #         _np.expand_dims(fault_matrix, 0)
+    #
+    #     interp_data.potential_at_interfaces = potential_at_interfaces
+    #
+    #     if get_potential_at_interfaces:
+    #         return lith_matrix, fault_matrix, grav, interp_data.potential_at_interfaces
+    #     else:
+    #         return lith_matrix, fault_matrix, grav
 
-        if get_potential_at_interfaces:
-            return lith_matrix, fault_matrix, interp_data.potential_at_interfaces
-        else:
-            return lith_matrix, fault_matrix
 
-    # TODO this should be a flag read from the compilation I guess
-    if output is 'gravity':
-        # TODO make asserts
-        lith_matrix, fault_matrix, potential_at_interfaces, grav = interp_data.th_fn(*i)
-        if len(lith_matrix.shape) < 3:
-            _np.expand_dims(lith_matrix, 0)
-            _np.expand_dims(fault_matrix, 0)
-
-        interp_data.potential_at_interfaces = potential_at_interfaces
-
-        if get_potential_at_interfaces:
-            return lith_matrix, fault_matrix, grav, interp_data.potential_at_interfaces
-        else:
-            return lith_matrix, fault_matrix, grav
-
-
-def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None, get_potential_at_interfaces=False):
+def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None, get_potential_at_interfaces=False,
+                     weights=None):
     new_grid = GridClass()
 
     # First Create a new custom grid using the GridClass
@@ -133,6 +142,10 @@ def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None
     # Now we are good to compute the model agai only in the new point
     sol = compute_model(interp_data, output=output, u_grade=u_grade, get_potential_at_interfaces=get_potential_at_interfaces)
     return sol
+
+
+def compute_weights(interp_data, u_grade=None):
+    pass
 
 
 def create_data(extent, resolution=(50, 50, 50), **kwargs):
@@ -428,6 +441,7 @@ def set_orientation_from_interfaces(geo_data, indices_array, verbose=0):
         form = geo_data.interfaces['formation'].iloc[indices].unique()
         assert form.shape[0] is 1, 'The interface points must belong to the same formation'
         form = form[0]
+        print()
         ori_parameters = geo_data.create_orientation_from_interfaces(indices)
         geo_data.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                  dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
@@ -852,7 +866,7 @@ def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
     warnings.warn("gempy plotting functionality will be moved in version 1.2, "
                   "use gempy.plotting module instead", FutureWarning)
     plot = PlotData2D(geo_data)
-    plot.plot_block_section(cell_number, block=block, direction=direction, **kwargs)
+    sec_plot = plot.plot_block_section(cell_number, block=block, direction=direction, **kwargs)
     # TODO saving options
 
 def plot_scalar_field(geo_data, potential_field, cell_number, N=20,

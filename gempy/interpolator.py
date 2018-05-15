@@ -91,11 +91,11 @@ class InterpolatorData:
         # Creating interpolator class with all the precompilation options
         self.interpolator = self.InterpolatorTheano(self, output=output, theano_optimizer=theano_optimizer, **kwargs)
         if compile_theano:
-            self.th_fn = self.compile_th_fn(output)
+            self.th_fn = self.compile_th_fn(output, **kwargs)
 
         self.geophy = geophysics
 
-    def compile_th_fn(self, output):
+    def compile_th_fn(self, output, **kwargs):
         """
         Compile the theano function given the input_data data.
 
@@ -125,7 +125,7 @@ class InterpolatorData:
                                     allow_input_downcast=False,
                                     profile=False)
 
-        if output is 'gravity':
+        elif output is 'gravity':
             # then we compile we have to pass the number of formations that are faults!!
             th_fn = theano.function(input_data_T,
                                     self.interpolator.tg.compute_forward_gravity(self.geo_data_res.n_faults),
@@ -133,6 +133,23 @@ class InterpolatorData:
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
                                     profile=False)
+
+        elif output is 'gradients':
+
+            gradients = kwargs.get('gradients', ['Gx', 'Gy', 'Gz'])
+            self.interpolator.tg.gradients = gradients
+
+            # then we compile we have to pass the number of formations that are faults!!
+            th_fn = theano.function(input_data_T,
+                                    self.interpolator.tg.compute_geological_model_gradient(self.geo_data_res.n_faults),
+                                    #  mode=NanGuardMode(nan_is_error=True),
+                                    on_unused_input='ignore',
+                                    allow_input_downcast=False,
+                                    profile=False)
+
+        else:
+            raise SyntaxError('The output given does not exist. Please use geology, gradients or gravity ')
+
         print('Compilation Done!')
         print('Level of Optimization: ', theano.config.optimizer)
         print('Device: ', theano.config.device)
@@ -512,7 +529,8 @@ class InterpolatorData:
             len_series_i = np.asarray(
                 [np.sum(pandas_rest_layer_points['order_series'] == i)
                  for i in pandas_rest_layer_points['order_series'].unique()])
-
+            if len_series_i.shape[0] is 0:
+                len_series_i = np.insert(len_series_i, 0, 0)
             # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
             self.tg.len_series_i.set_value(np.insert(len_series_i, 0, 0).cumsum().astype('int32'))
 
@@ -523,7 +541,8 @@ class InterpolatorData:
 
             # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
 
-            assert len_series_f.shape[0] is len_series_i.shape[0], 'You need at least one orientation per series'
+            assert len_series_f.shape[0] is len_series_i.shape[0], 'You need at least one orientation and two interfaces' \
+                                                                   'per series'
             self.tg.len_series_f.set_value(np.insert(len_series_f, 0, 0).cumsum().astype('int32'))
 
             # =========================
@@ -531,7 +550,7 @@ class InterpolatorData:
             # =========================
             if u_grade is None:
                 u_grade = np.zeros_like(len_series_i)
-                u_grade[(len_series_i > 4)] = 1
+                u_grade[(len_series_i > 1)] = 1
 
             else:
                 u_grade = np.array(u_grade)

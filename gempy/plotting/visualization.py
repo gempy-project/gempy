@@ -287,6 +287,7 @@ class PlotData2D(object):
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.xlabel(x)
         plt.ylabel(y)
+        return plt.gcf()
 
     def plot_scalar_field(self, scalar_field, cell_number, N=20,
                              direction="y", plot_data=True, series="all", *args, **kwargs):
@@ -322,7 +323,7 @@ class PlotData2D(object):
         plt.contourf(scalar_field.reshape(
             self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[_a, _b, _c].T,
                     N,
-                    extent=extent_val, *args,
+                    extent=extent_val, alpha=0.6, *args,
                     **kwargs)
 
         if 'colorbar' in kwargs:
