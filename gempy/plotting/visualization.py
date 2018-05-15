@@ -287,6 +287,7 @@ class PlotData2D(object):
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.xlabel(x)
         plt.ylabel(y)
+        return plt.gcf()
 
     def plot_scalar_field(self, scalar_field, cell_number, N=20,
                              direction="y", plot_data=True, series="all", *args, **kwargs):
