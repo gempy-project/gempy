@@ -143,7 +143,7 @@ class TestFaults:
         gempy.set_series(geo_data, {'series': ('A', 'B'),
                                     'fault1': 'f1'}, order_series=['fault1', 'series'])
 
-        interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=True)
+        interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=True, verbose=[])
         return interp_data
 
     def test_d(self, theano_f_1f):
