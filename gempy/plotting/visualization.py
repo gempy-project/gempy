@@ -377,6 +377,16 @@ class PlotData2D(object):
                          centroids[node][c2] * e2 / r2 + d2, str(node), color="white", size=6, ha="center", va="center",
                          weight="ultralight", family="monospace")
 
+    def plot_gradient(self, geo_data, cell_number, direction="y", r = 5):
+        _a, _b, _c, extent_val, x, y, Gx, Gy = self._slice(direction, cell_number)
+
+
+        plt.quiver(geo_data.grid.values[:, 0].reshape(50, 50, 50)[::r, cell_number, ::r].T,
+                   geo_data.grid.values[:, 2].reshape(50, 50, 50)[::r, cell_number, ::r].T, s2, V2, pivot="tail",
+                   color='blue', alpha=.6)
+
+        print(Gx, Gy)
+
     # TODO: Incorporate to the class
     @staticmethod
     def annotate_plot(frame, label_col, x, y, **kwargs):
