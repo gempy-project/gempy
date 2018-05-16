@@ -728,7 +728,6 @@ class TheanoGraph(object):
         Returns:
             theano.tensor.vector: Contribution of all foliations (input) at every point to interpolate
         """
-
         if weights is None:
             weights = self.extend_dual_kriging()
         if grid_val is None:
@@ -798,8 +797,8 @@ class TheanoGraph(object):
         length_of_CG, length_of_CGI = self.matrices_shapes()[:2]
 
         # Cartesian distances between the point to simulate and the dips
-        hu_rest = (self.rest_layer_points[:, dir_val] - grid_val[:, dir_val].reshape((grid_val[:, dir_val].shape[0], 1)))
-        hu_ref = (self.ref_layer_points[:, dir_val] - grid_val[:, dir_val].reshape((grid_val[:, dir_val].shape[0], 1)))
+        hu_rest = (- self.rest_layer_points[:, dir_val] + grid_val[:, dir_val].reshape((grid_val[:, dir_val].shape[0], 1)))
+        hu_ref = (- self.ref_layer_points[:, dir_val] + grid_val[:, dir_val].reshape((grid_val[:, dir_val].shape[0], 1)))
 
         # Euclidian distances
 
@@ -807,6 +806,7 @@ class TheanoGraph(object):
         sed_grid_ref = self.squared_euclidean_distances(grid_val, self.ref_layer_points)
 
         # Gradient contribution
+        self.gi_reescale = 2
 
         sigma_0_grad = T.sum(
             (weights[length_of_CG:length_of_CG + length_of_CGI] *
@@ -886,6 +886,8 @@ class TheanoGraph(object):
             direction_val = 1
         if direction == 'z':
             direction_val = 2
+        self.gi_reescale = theano.shared(1)
+
 
         if weights is None:
             weights = self.extend_dual_kriging()
@@ -917,7 +919,7 @@ class TheanoGraph(object):
             perpendicularity_vector[self.dips_position.shape[0]*direction_val:self.dips_position.shape[0]*(direction_val+1)], 1)
 
         sigma_0_grad = T.sum(
-            (weights[:length_of_CG] * ( self.gi_reescale * (
+            (weights[:length_of_CG] * (
              ((-h_u * h_v).T/ sed_dips_SimPoint ** 2) *
              ((
                       (sed_dips_SimPoint < self.a_T) *  # first derivative
@@ -933,7 +935,7 @@ class TheanoGraph(object):
                                35 / 2 * sed_dips_SimPoint ** 3 / self.a_T ** 5 +
                                21 / 4 * sed_dips_SimPoint ** 5 / self.a_T ** 7)))
 
-              )))
+              ))
         , axis=0)
 
         return sigma_0_grad
@@ -983,6 +985,8 @@ class TheanoGraph(object):
             weights = self.extend_dual_kriging()
         if grid_val is None:
             grid_val = self.x_to_interpolate()
+
+        self.gi_reescale = theano.shared(2)
 
         length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C = self.matrices_shapes()
 
