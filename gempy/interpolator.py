@@ -157,6 +157,29 @@ class InterpolatorData:
         print('Number of faults: ', self.geo_data_res.n_faults)
         return th_fn
 
+    def data_to_pickle(self, path=False, recursionlimit=3000):
+        """
+        Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
+        versions used to export and import the pickle differ it may give problems.
+
+        Args:
+            path (str): path where save the pickle
+            recursionlimit(int): limit passed to sys.setrecursionlimit()
+
+        Returns:
+            None
+        """
+
+        if not path:
+            path = './interp_data'
+        import pickle
+        import sys
+        sys.setrecursionlimit(recursionlimit)
+        warnings.warn('Pickling an InterpolatorData object is EXPERIMENTAL and on your own risk. Try to adjust the recursionlimit.')
+        with open(path+'.pickle', 'wb') as f:
+            # Pickle the dictionary using the highest protocol available.
+            pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+
     def rescale_data(self, geo_data, rescaling_factor=None):
         """
         Rescale the data of a DataManagement object between 0 and 1 due to stability problem of the float32.
