@@ -11,23 +11,52 @@ import pdb
 
 input_path = os.path.dirname(__file__)+'/input_data'
 
+
+@pytest.fixture(scope='session')
+def theano_f():
+    # Importing the data from csv files and settign extent and resolution
+    geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+                                 path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
+                                 path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
+
+    interp_data = gempy.InterpolatorData(geo_data, dtype='float64', u_grade=[1], compile_theano=True,
+                                         verbose=['cov_gradients', 'cov_interfaces',
+                                                  'solve_kriging', 'sed_dips_dips', 'slices'])
+    print('compile')
+    return interp_data
+
+
+@pytest.fixture(scope='session')
+def theano_f_1f():
+    # Importing the data from csv files and settign extent and resolution
+    geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+                                 path_o=input_path+"/GeoModeller/test_d/test_d_Foliations.csv",
+                                 path_i=input_path+"/GeoModeller/test_d/test_d_Points.csv")
+
+    gempy.set_series(geo_data, {'series': ('A', 'B'),
+                                'fault1': 'f1'}, order_series=['fault1', 'series'])
+
+    interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=True, verbose=[])
+    return interp_data
+
+
 class TestNoFaults:
     """
     I am testing all block and potential field values so sol is (n_block+n_pot)
     """
 
-    @pytest.fixture(scope='class')
-    def theano_f(self):
-        # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
-                                     path_o=input_path+"/GeoModeller/test_a/test_a_Foliations.csv",
-                                     path_i=input_path+"/GeoModeller/test_a/test_a_Points.csv")
+    # @pytest.fixture(scope='class')
+    # def theano_f(self):
+    #     # Importing the data from csv files and settign extent and resolution
+    #     geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+    #                                  path_o=input_path+"/GeoModeller/test_a/test_a_Foliations.csv",
+    #                                  path_i=input_path+"/GeoModeller/test_a/test_a_Points.csv")
+    #
+    #     interp_data = gempy.InterpolatorData(geo_data, dtype='float64', u_grade=[1], compile_theano=True,
+    #                                          verbose=['cov_gradients', 'cov_interfaces',
+    #                                                   'solve_kriging', 'sed_dips_dips', 'slices'])
 
-        interp_data = gempy.InterpolatorData(geo_data, dtype='float64', u_grade=[1], compile_theano=True,
-                                             verbose=['cov_gradients', 'cov_interfaces',
-                                                      'solve_kriging', 'sed_dips_dips', 'slices'])
-
-        return interp_data
+        # return interp_data
 
     def test_a(self, theano_f):
         """
@@ -133,18 +162,6 @@ class TestNoFaults:
 
 class TestFaults:
 
-    @pytest.fixture(scope='class')
-    def theano_f_1f(self):
-        # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
-                                     path_o=input_path+"/GeoModeller/test_d/test_d_Foliations.csv",
-                                     path_i=input_path+"/GeoModeller/test_d/test_d_Points.csv")
-
-        gempy.set_series(geo_data, {'series': ('A', 'B'),
-                                    'fault1': 'f1'}, order_series=['fault1', 'series'])
-
-        interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=True, verbose=[])
-        return interp_data
 
     def test_d(self, theano_f_1f):
         """

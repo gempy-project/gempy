@@ -28,7 +28,7 @@ from os import path
 import sys
 
 # This is for sphenix to find the packages
-sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+sys.path.append(path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
 import numpy as _np
 import pandas as _pn
