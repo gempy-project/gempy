@@ -892,6 +892,13 @@ def plot_scalar_field(geo_data, potential_field, cell_number, N=20,
                               direction=direction,  plot_data=plot_data, series=series,
                               *args, **kwargs)
 
+def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, r=5,
+                      direction="y", plot_scalar=True, **kwargs):
+
+    plot = PlotData2D(geo_data)
+    plot.plot_gradient(scalar_field, gx, gy, gz, cell_number, r=r,
+                           direction=direction, plot_scalar=plot_scalar,
+                           **kwargs)
 
 def plot_data_3D(geo_data, **kwargs):
     """
