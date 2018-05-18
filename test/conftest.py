@@ -14,7 +14,7 @@ def theano_f():
                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 
-    interp_data = gempy.InterpolatorData(geo_data, dtype='float64', u_grade=[1], compile_theano=True,
+    interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=True,
                                          verbose=[])
     return interp_data
 
@@ -31,6 +31,7 @@ def theano_f_1f():
 
     interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=True, verbose=[])
     return interp_data
+
 
 @pytest.fixture(scope='session')
 def theano_f_grav():

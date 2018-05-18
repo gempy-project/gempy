@@ -6,7 +6,7 @@
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Foobar is distributed in the hope that it will be useful,
+    gempy is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
@@ -23,9 +23,6 @@
     @author: Miguel de la Varga
 """
 
-
-
-import os
 from os import path
 import sys
 
@@ -37,7 +34,7 @@ import pandas as _pn
 
 import copy
 from .visualization import PlotData2D, steno3D, vtkVisualization
-import gempy
+import gempy as _gempy
 
 
 class vtkPlot():
@@ -147,7 +144,7 @@ class vtkPlot():
         Returns:
             None
         """
-        assert isinstance(interp_data, gempy.InterpolatorData), 'The object has to be instance of the InterpolatorInput'
+        assert isinstance(interp_data, _gempy.InterpolatorData), 'The object has to be instance of the InterpolatorInput'
       #  self.set_real_time_on(interp_data)
 
        # assert _np.max(vertices_l[0]) < 1.5, 'Real time plot only works with rescaled data. Change the original scale flag' \
@@ -163,7 +160,7 @@ class vtkPlot():
                        self.alpha)
 
         if posterior is not None:
-            assert isinstance(posterior, gempy.posterior_analysis.Posterior), 'The object has to be instance of the Posterior class'
+            assert isinstance(posterior, _gempy.posterior_analysis.Posterior), 'The object has to be instance of the Posterior class'
             self.vv.post = posterior
             if samples is not None:
                 samp_i = samples[0]
@@ -185,7 +182,7 @@ class vtkPlot():
         print(self.geo_data._columns_i_1, new_df.columns)
 
         # Check rows tht have changed
-        b_i = (new_df[self.geo_data._columns_i_1].sort_index() != gempy.get_data(
+        b_i = (new_df[self.geo_data._columns_i_1].sort_index() != _gempy.get_data(
             self.geo_data, itype='interfaces')[self.geo_data._columns_i_1].sort_index()).any(1)
 
         # Get indices of changed rows
@@ -202,7 +199,7 @@ class vtkPlot():
     def move_orientation(self, new_df):
 
         # Check rows tht have changed
-        b_o = (new_df[self.geo_data._columns_o_1].sort_index() != gempy.get_data(
+        b_o = (new_df[self.geo_data._columns_o_1].sort_index() != _gempy.get_data(
                 self.geo_data, itype='orientations')[self.geo_data._columns_o_1].sort_index()).any(1)
 
         # Get indices of changed rows
@@ -217,14 +214,14 @@ class vtkPlot():
     def move_interface_orientation(self, new_df):
 
         # Check rows tht have changed
-        b_i = (new_df.xs('interfaces')[self.geo_data._columns_i_1].sort_index() != gempy.get_data(
+        b_i = (new_df.xs('interfaces')[self.geo_data._columns_i_1].sort_index() != _gempy.get_data(
             self.geo_data, itype='interfaces')[self.geo_data._columns_i_1].sort_index()).any(1)
 
         # Get indices of changed rows
         ind_i = new_df.xs('interfaces').index[b_i].tolist()
 
         # Check rows tht have changed
-        b_o = (new_df.xs('orientations')[self.geo_data._columns_o_1].sort_index() != gempy.get_data(
+        b_o = (new_df.xs('orientations')[self.geo_data._columns_o_1].sort_index() != _gempy.get_data(
             self.geo_data, itype='orientations')[self.geo_data._columns_o_1].sort_index()).any(1)
 
         # Get indices of changed rows
@@ -412,15 +409,20 @@ class vtkPlot():
                 else:
                     print('something went wrong')
 
-        for surf in self.vv.surf_rend_1:
-            self.vv.ren_list[0].RemoveActor(surf)
-            self.vv.ren_list[1].RemoveActor(surf)
-            self.vv.ren_list[2].RemoveActor(surf)
-            self.vv.ren_list[3].RemoveActor(surf)
+        if self.vv.real_time:
+
+            for surf in self.vv.surf_rend_1:
+                self.vv.ren_list[0].RemoveActor(surf)
+                self.vv.ren_list[1].RemoveActor(surf)
+                self.vv.ren_list[2].RemoveActor(surf)
+                self.vv.ren_list[3].RemoveActor(surf)
+
+            vertices, simpleces = self.vv.update_surfaces_real_time(self.vv.geo_data)
+            self.vv.set_surfaces(vertices, simpleces)
 
         #self.vv.interp_data.update_interpolator(self.geo_data)
-        vertices, simpleces = self.vv.update_surfaces_real_time(self.vv.geo_data)
-        self.vv.set_surfaces(vertices, simpleces)
+
+
 
         self.vv.interactor.Render()
 
@@ -428,7 +430,7 @@ class vtkPlot():
         if not geo_data:
             geo_data = self.geo_data
 
-        self._original_df = copy.deepcopy(gempy.get_data(geo_data, itype=itype))
+        self._original_df = copy.deepcopy(_gempy.get_data(geo_data, itype=itype))
         qgrid_widget = geo_data.interactive_df_open(itype=itype)
         qgrid_widget.observe(self.qgrid_callBack, names=['_df'])
         return qgrid_widget
@@ -479,7 +481,7 @@ def plot_surfaces_3D_real_time(geo_data, interp_data, vertices_l, simplices_l,
         None
     """
 
-    assert isinstance(interp_data, gempy.InterpolatorData), 'The object has to be instance of the InterpolatorInput'
+    assert isinstance(interp_data, _gempy.InterpolatorData), 'The object has to be instance of the InterpolatorInput'
     vv = vtkPlot(geo_data, **kwargs)
     vv.plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l, plot_data=plot_data, posterior=posterior,
                                   samples=samples, **kwargs)

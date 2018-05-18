@@ -72,10 +72,10 @@ class TestNoFaults:
 
         # Updating the interp data which has theano compiled
 
-        interp_data.update_interpolator(geo_data)
+        interp_data.update_interpolator(geo_data, u_grade=[1])
 
         # Compute model
-        sol = gempy.compute_model(interp_data, u_grade=[1])
+        sol = gempy.compute_model(interp_data)
 
         if False:
             np.save(input_path+'/test_a_sol.npy', sol)
@@ -105,11 +105,11 @@ class TestNoFaults:
         interp_data = theano_f
 
         # Updating the interp data which has theano compiled
-        interp_data.update_interpolator(geo_data)
+        interp_data.update_interpolator(geo_data, u_grade=[1])
 
         gempy.get_kriging_parameters(interp_data, verbose=1)
         # Compute model
-        sol = gempy.compute_model(interp_data, u_grade=[1])
+        sol = gempy.compute_model(interp_data)
 
         gempy.plot_section(geo_data, sol[0][0, :], 25, direction='y', plot_data=True)
         plt.savefig(os.path.dirname(__file__)+'/figs/test_b.png', dpi=200)
@@ -140,10 +140,10 @@ class TestNoFaults:
         interp_data = theano_f
 
         # Updating the interp data which has theano compiled
-        interp_data.update_interpolator(geo_data)
+        interp_data.update_interpolator(geo_data, u_grade=[0])
 
         # Compute model
-        sol = gempy.compute_model(interp_data, u_grade=[0])
+        sol = gempy.compute_model(interp_data)
 
         gempy.plot_section(geo_data, sol[0][0, :], 25, direction='y', plot_data=True)
         plt.savefig(os.path.dirname(__file__)+'/figs/test_c.png', dpi=200)
@@ -182,10 +182,10 @@ class TestFaults:
         interp_data = theano_f_1f
 
         # Updating the interp data which has theano compiled
-        interp_data.update_interpolator(geo_data)
+        interp_data.update_interpolator(geo_data, u_grade=[1, 1])
 
         # Compute model
-        sol = gempy.compute_model(interp_data, u_grade=[1, 1])
+        sol = gempy.compute_model(interp_data)
 
         gempy.plot_section(geo_data, sol[0][0, :], 25, direction='y', plot_data=True)
         plt.savefig(os.path.dirname(__file__)+'/figs/test_d.png', dpi=200)
@@ -218,10 +218,10 @@ class TestFaults:
         interp_data = theano_f_1f
 
         # Updating the interp data which has theano compiled
-        interp_data.update_interpolator(geo_data)
+        interp_data.update_interpolator(geo_data, u_grade=[1, 1])
 
         # Compute model
-        sol = gempy.compute_model(interp_data, u_grade=[1, 1])
+        sol = gempy.compute_model(interp_data)
 
         if False:
             np.save(input_path + '/test_e_sol.npy', sol)
@@ -258,10 +258,10 @@ class TestFaults:
         interp_data = theano_f_1f
 
         # Updating the interp data which has theano compiled
-        interp_data.update_interpolator(geo_data)
+        interp_data.update_interpolator(geo_data, u_grade=[1, 1])
 
         # Compute model
-        sol = gempy.compute_model(interp_data, u_grade=[1, 1])
+        sol = gempy.compute_model(interp_data)
 
         if False:
             np.save(input_path + '/test_f_sol.npy', sol)
