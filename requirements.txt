@@ -12,3 +12,5 @@ seaborn
 scikit_learn
 networkx==1.11
 Ipython
+pymc
+pyevtk

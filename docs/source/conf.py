@@ -81,7 +81,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'GemPy'
-copyright = '2017, Miguel de la Varga, CGR-Aachen Team'
+copyright = '2018, Miguel de la Varga, CGR-Aachen Team'
 author = 'Miguel de la Varga, CGR-Aachen Team'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -89,7 +89,7 @@ author = 'Miguel de la Varga, CGR-Aachen Team'
 # built documents.
 #
 # The short X.Y version.
-version = '1.01'
+version = '1.10'
 # The full version, including alpha/beta/rc tags.
 release = 'rc'
 
@@ -128,7 +128,7 @@ html_theme_options = {
     'github_user': 'cgre-aachen',
                         'github_repo': 'gempy',
                         'github_type': 'star',
-                        'logo': './logos/gempy2.svg',
+                        'logo': './logos/gempy.png',
                         'logo_name' : True,
                         'travis_button': True,
                         'page_width':'1200px',
@@ -148,7 +148,7 @@ html_sidebars = {'**': [ 'about.html', 'navigation.html',
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
-html_favicon = '_static/logos/gempy_squared.ico'
+html_favicon = '_static/logos/favicon.ico'
 
 # -- Options for HTMLHelp output ------------------------------------------
 

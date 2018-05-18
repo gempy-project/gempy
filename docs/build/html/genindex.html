@@ -26,7 +26,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="shortcut icon" href="_static/gempy_squared.ico"/>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
    
@@ -37,9 +37,73 @@
 
   </head>
   <body>
-  
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
 
-    <div class="document">
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">GemPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_theory/motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -64,7 +128,6 @@
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
- | <a href="#V"><strong>V</strong></a>
  | <a href="#X"><strong>X</strong></a>
  
 </div>
@@ -77,8 +140,6 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#data_management.InputData.add_orientation">add_orientation() (data_management.InputData method)</a>
 </li>
-      <li><a href="code.html#visualization.PlotData2D.annotate_plot">annotate_plot() (visualization.PlotData2D static method)</a>
-</li>
   </ul></td>
 </tr></table>
 
@@ -89,6 +150,8 @@
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.html#theano_graph.TheanoGraph.block_fault">block_fault() (theano_graph.TheanoGraph method)</a>
+</li>
       <li><a href="code.html#theano_graph.TheanoGraph.block_series">block_series() (theano_graph.TheanoGraph method)</a>
 </li>
   </ul></td>
@@ -109,13 +172,13 @@
 </li>
       <li><a href="code.html#data_management.InputData.calculate_orientations">calculate_orientations() (data_management.InputData method)</a>
 </li>
-      <li><a href="code.html#geophysics.vtkVisualization.camera_list">camera_list (geophysics.vtkVisualization attribute)</a>
-</li>
       <li><a href="code.html#posterior_analysis.change_input_data">change_input_data() (in module posterior_analysis)</a>
 </li>
       <li><a href="code.html#topology.check_adjacency">check_adjacency() (in module topology)</a>
 </li>
       <li><a href="code.html#topology.classify_edges">classify_edges() (in module topology)</a>
+</li>
+      <li><a href="code.html#theano_graph.TheanoGraph.compare">compare() (theano_graph.TheanoGraph method)</a>
 </li>
       <li><a href="code.html#topology.compare_graphs">compare_graphs() (in module topology)</a>
 </li>
@@ -129,11 +192,19 @@
 </li>
       <li><a href="code.html#gempy_front.compute_model">compute_model() (in module gempy_front)</a>
 </li>
-      <li><a href="code.html#posterior_analysis.compute_posterior_models_all">compute_posterior_models_all() (in module posterior_analysis)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.html#posterior_analysis.compute_posterior_models_all">compute_posterior_models_all() (in module posterior_analysis)</a>
+</li>
       <li><a href="code.html#posterior_analysis.compute_probability_lithology">compute_probability_lithology() (in module posterior_analysis)</a>
+</li>
+      <li><a href="code.html#theano_graph.TheanoGraph.contribution_gradient_interface">contribution_gradient_interface() (theano_graph.TheanoGraph method)</a>
+</li>
+      <li><a href="code.html#theano_graph.TheanoGraph.contribution_interface">contribution_interface() (theano_graph.TheanoGraph method)</a>
+</li>
+      <li><a href="code.html#theano_graph.TheanoGraph.contribution_interface_gradient">contribution_interface_gradient() (theano_graph.TheanoGraph method)</a>
+</li>
+      <li><a href="code.html#theano_graph.TheanoGraph.contribution_universal_drift">contribution_universal_drift() (theano_graph.TheanoGraph method)</a>
 </li>
       <li><a href="code.html#data_management.InputData.count_faults">count_faults() (data_management.InputData method)</a>
 </li>
@@ -149,21 +220,9 @@
 </li>
       <li><a href="code.html#gempy_front.create_data">create_data() (in module gempy_front)</a>
 </li>
-      <li><a href="code.html#visualization.vtkVisualization.create_foliation">create_foliation() (visualization.vtkVisualization method)</a>
-</li>
       <li><a href="code.html#gempy_front.create_from_geomodeller_xml">create_from_geomodeller_xml() (in module gempy_front)</a>
 </li>
       <li><a href="code.html#data_management.GridClass.create_regular_grid_3d">create_regular_grid_3d() (data_management.GridClass method)</a>
-</li>
-      <li><a href="code.html#visualization.vtkVisualization.create_ren_list">create_ren_list() (visualization.vtkVisualization method)</a>
-</li>
-      <li><a href="code.html#visualization.vtkVisualization.create_sphere">create_sphere() (visualization.vtkVisualization method)</a>
-</li>
-      <li><a href="code.html#visualization.vtkVisualization.create_surface">create_surface() (visualization.vtkVisualization method)</a>
-</li>
-      <li><a href="code.html#visualization.vtkVisualization.create_surface_points">create_surface_points() (visualization.vtkVisualization method)</a>
-</li>
-      <li><a href="code.html#visualization.vtkVisualization.create_surface_triangles">create_surface_triangles() (visualization.vtkVisualization static method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -195,12 +254,8 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#gempy_front.export_to_vtk">export_to_vtk() (in module gempy_front)</a>
 </li>
-      <li><a href="code.html#visualization.vtkVisualization.export_vtk_lith_block">export_vtk_lith_block() (visualization.vtkVisualization static method)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.html#visualization.vtkVisualization.export_vtk_surfaces">export_vtk_surfaces() (visualization.vtkVisualization static method)</a>
-</li>
       <li><a href="code.html#theano_graph.TheanoGraph.extend_dual_kriging">extend_dual_kriging() (theano_graph.TheanoGraph method)</a>
 </li>
       <li><a href="code.html#data_management.InputData.extent">extent (data_management.InputData attribute)</a>
@@ -239,8 +294,6 @@
         <li><a href="code.html#gempy_front.get_data">(in module gempy_front)</a>
 </li>
       </ul></li>
-      <li><a href="code.html#data_management.InputData.get_formation_number">get_formation_number() (data_management.InputData method)</a>
-</li>
       <li><a href="code.html#data_management.InputData.get_formations">get_formations() (data_management.InputData method)</a>
 </li>
   </ul></td>
@@ -259,8 +312,6 @@
 </li>
       <li><a href="code.html#gempy_front.get_th_fn">get_th_fn() (in module gempy_front)</a>
 </li>
-      <li><a href="code.html#theano_graph.TheanoGraph.gradient_contribution">gradient_contribution() (theano_graph.TheanoGraph method)</a>
-</li>
       <li><a href="code.html#data_management.GridClass">GridClass (class in data_management)</a>
 </li>
   </ul></td>
@@ -273,11 +324,9 @@
 </li>
       <li><a href="code.html#theano_graph.TheanoGraph.input_parameters_list">input_parameters_list() (theano_graph.TheanoGraph method)</a>
 </li>
-      <li><a href="code.html#data_management.InputData">InputData (class in data_management)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.html#theano_graph.TheanoGraph.interface_contribution">interface_contribution() (theano_graph.TheanoGraph method)</a>
+      <li><a href="code.html#data_management.InputData">InputData (class in data_management)</a>
 </li>
       <li><a href="code.html#data_management.InputData.Interfaces">Interfaces (data_management.InputData attribute)</a>, <a href="code.html#data_management.InputData.Interfaces">[1]</a>
 </li>
@@ -335,26 +384,14 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#data_management.InputData.plane_fit">plane_fit() (data_management.InputData static method)</a>
 </li>
-      <li><a href="code.html#visualization.vtkVisualization.planesCallback">planesCallback() (visualization.vtkVisualization method)</a>
-</li>
-      <li><a href="code.html#visualization.PlotData2D.plot_block_section">plot_block_section() (visualization.PlotData2D method)</a>
-</li>
       <li><a href="code.html#gempy_front.plot_data">plot_data() (in module gempy_front)</a>
-
-      <ul>
-        <li><a href="code.html#visualization.PlotData2D.plot_data">(visualization.PlotData2D method)</a>
 </li>
-      </ul></li>
       <li><a href="code.html#gempy_front.plot_data_3D">plot_data_3D() (in module gempy_front)</a>
+</li>
+      <li><a href="code.html#gempy_front.plot_scalar_field">plot_scalar_field() (in module gempy_front)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.html#gempy_front.plot_scalar_field">plot_scalar_field() (in module gempy_front)</a>
-
-      <ul>
-        <li><a href="code.html#visualization.PlotData2D.plot_scalar_field">(visualization.PlotData2D method)</a>
-</li>
-      </ul></li>
       <li><a href="code.html#gempy_front.plot_section">plot_section() (in module gempy_front)</a>
 </li>
       <li><a href="code.html#gempy_front.plot_surfaces_3D">plot_surfaces_3D() (in module gempy_front)</a>
@@ -362,8 +399,6 @@
       <li><a href="code.html#gempy_front.plot_surfaces_3D_real_time">plot_surfaces_3D_real_time() (in module gempy_front)</a>
 </li>
       <li><a href="code.html#gempy_front.plot_topology">plot_topology() (in module gempy_front)</a>
-</li>
-      <li><a href="code.html#visualization.PlotData2D">PlotData2D (class in visualization)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -373,16 +408,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#gempy_front.read_pickle">read_pickle() (in module gempy_front)</a>
 </li>
-      <li><a href="code.html#geophysics.vtkVisualization.ren_list">ren_list (geophysics.vtkVisualization attribute)</a>
-</li>
-      <li><a href="code.html#visualization.vtkVisualization.render_model">render_model() (visualization.vtkVisualization method)</a>
-</li>
-      <li><a href="code.html#geophysics.vtkVisualization.renWin">renWin (geophysics.vtkVisualization attribute)</a>
+      <li><a href="code.html#gempy_front.rescale_data">rescale_data() (in module gempy_front)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.html#gempy_front.rescale_data">rescale_data() (in module gempy_front)</a>
-</li>
       <li><a href="code.html#gempy_front.rescale_factor_default">rescale_factor_default() (in module gempy_front)</a>
 </li>
       <li><a href="code.html#data_management.InputData.reset_indices">reset_indices() (data_management.InputData method)</a>
@@ -403,13 +432,9 @@
 </li>
       <li><a href="code.html#data_management.InputData.set_annotations">set_annotations() (data_management.InputData method)</a>
 </li>
-      <li><a href="code.html#visualization.vtkVisualization.set_camera_backcolor">set_camera_backcolor() (visualization.vtkVisualization method)</a>
-</li>
-      <li><a href="code.html#data_management.InputData.set_fault_relation_matrix">set_fault_relation_matrix() (data_management.InputData method)</a>
+      <li><a href="code.html#data_management.InputData.set_fault_relation">set_fault_relation() (data_management.InputData method)</a>
 </li>
       <li><a href="code.html#data_management.InputData.set_faults">set_faults() (data_management.InputData method)</a>
-</li>
-      <li><a href="code.html#data_management.InputData.set_formation_number">set_formation_number() (data_management.InputData method)</a>
 </li>
       <li><a href="code.html#data_management.InputData.set_grid">set_grid() (data_management.InputData method)</a>
 </li>
@@ -417,8 +442,6 @@
 
       <ul>
         <li><a href="code.html#gempy_front.set_interfaces">(in module gempy_front)</a>
-</li>
-        <li><a href="code.html#visualization.vtkVisualization.set_interfaces">(visualization.vtkVisualization method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -430,8 +453,6 @@
       <ul>
         <li><a href="code.html#gempy_front.set_orientations">(in module gempy_front)</a>
 </li>
-        <li><a href="code.html#visualization.vtkVisualization.set_orientations">(visualization.vtkVisualization method)</a>
-</li>
       </ul></li>
       <li><a href="code.html#data_management.InputData.set_series">set_series() (data_management.InputData method)</a>
 
@@ -439,11 +460,7 @@
         <li><a href="code.html#gempy_front.set_series">(in module gempy_front)</a>
 </li>
       </ul></li>
-      <li><a href="code.html#visualization.vtkVisualization.set_surfaces">set_surfaces() (visualization.vtkVisualization method)</a>
-</li>
       <li><a href="code.html#theano_graph.TheanoGraph.solve_kriging">solve_kriging() (theano_graph.TheanoGraph method)</a>
-</li>
-      <li><a href="code.html#visualization.vtkVisualization.sphereCallback">sphereCallback() (visualization.vtkVisualization method)</a>
 </li>
       <li><a href="code.html#theano_graph.TheanoGraph.squared_euclidean_distances">squared_euclidean_distances() (theano_graph.TheanoGraph static method)</a>
 </li>
@@ -467,19 +484,7 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.html#theano_graph.TheanoGraph.universal_drift_contribution">universal_drift_contribution() (theano_graph.TheanoGraph method)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#theano_graph.TheanoGraph.universal_matrix">universal_matrix() (theano_graph.TheanoGraph method)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="V">V</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.html#visualization.vtkVisualization">vtkVisualization (class in visualization)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -497,75 +502,10 @@
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<p class="logo">
-  <a href="index.html">
-    <img class="logo" src="_static/./logos/gempy2.svg" alt="Logo"/>
-    
-    <h1 class="logo logo-name">GemPy</h1>
-    
-  </a>
-</p>
-
-
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="index.html">GemPy’s (v 1.0) documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_theory/motivation.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
+    <div class="clearer"></div>
+  </div>
     <div class="footer">
-      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      &copy;2018, Miguel de la Varga, CGR-Aachen Team.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>
