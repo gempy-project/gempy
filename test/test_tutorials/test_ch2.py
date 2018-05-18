@@ -24,7 +24,7 @@ input_path = os.path.dirname(__file__)+'/../../notebooks'
 
 # Aux imports
 import numpy as np
-
+import pytest
 
 def test_ch2(theano_f):
     # Importing the data from csv files and settign extent and resolution
@@ -78,7 +78,7 @@ def test_ch2(theano_f):
 
 
     vertices, simplices = gp.get_surfaces(interp_data, lith_block[1], None, original_scale=False)
-
+    pyevtk = pytest.importorskip("pyevtk")
     gp.export_to_vtk(geo_data, path=os.path.dirname(__file__)+'/vtk_files', lith_block=lith_block[0], vertices=vertices, simplices=simplices)
 
     # gp.plot_surfaces_3D_real_time(interp_data, vertices, simplices, alpha=1)

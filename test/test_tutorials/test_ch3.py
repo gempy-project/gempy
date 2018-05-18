@@ -28,9 +28,11 @@ import theano
 
 #from ..conftest import theano_f
 input_path = os.path.dirname(__file__)+'/../../notebooks'
-
+import pytest
+pymc = pytest.importorskip("pymc")
 
 def test_ch3_a(theano_f):
+
     # set cube size and model extent
     cs = 50
     extent = (3000, 200, 2000)  # (x, y, z)
