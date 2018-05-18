@@ -31,7 +31,7 @@ class TestPerfomance:
 
         n_faults = 0
 
-        interp_data = gempy.InterpolatorData(geo_data, dtype='float32', compile_theano=False, verbose=['slices'],
+        interp_data = gempy.InterpolatorData(geo_data, dtype='float32', compile_theano=False, verbose=[],
                                              theano_optimizer='fast_run')
 
         interp_data.interpolator.tg.fault_matrix = theano.tensor.zeros((n_faults * 2,

@@ -1932,7 +1932,7 @@ class TheanoGraph(object):
         grav = densities_selected_reshaped * self.tz
 
         #return [lith_matrix, self.fault_matrix, pfai, grav.sum(axis=1)]
-        return [lith_matrix, fault_matrix, pfai, grav.sum(axis=1)]
+        return [lith_matrix, fault_matrix, grav.sum(axis=1), pfai]
 
 
     def compute_grad(self, n_faults=None):

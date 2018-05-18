@@ -824,7 +824,7 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
     return w
 
 
-def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
+def plot_data(geo_data, direction="y", data_type='all', series="all", legend_font_size=6, **kwargs):
     """
     Plot the projection of the raw data (interfaces and orientations) in 2D following a
     specific directions
