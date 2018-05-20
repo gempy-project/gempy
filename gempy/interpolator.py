@@ -387,7 +387,7 @@ class InterpolatorData:
             #
         def prepare_data_frame(self, geo_data_res, **kwargs):
 
-            self.formation_number = geo_data_res.interfaces['formation_number'].unique().astype('int32')
+            self.formation_number = geo_data_res.formations['formation_number'].values.squeeze().astype('int32')
             self.formation_value = geo_data_res.formations['value'].values.squeeze().astype(self.dtype)
 
             # We hide the scaled copy of DataManagement object from the user.

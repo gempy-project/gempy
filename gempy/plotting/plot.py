@@ -62,7 +62,10 @@ class vtkPlot():
         self.vv.close_window()
 
     def restart(self):
-        self.vv.close_window()
+        try:
+            self.vv.close_window()
+        except AttributeError:
+            pass
 
         self.vv = vtkVisualization(self.geo_data, bg_color=self.bg_color)
 
@@ -108,7 +111,7 @@ class vtkPlot():
         Returns:
             None
         """
-
+        self.restart()
         self.vv.set_interfaces()
         self.vv.set_orientations()
         self.vv.render_model(**kwargs)

@@ -99,9 +99,18 @@ class InputData(object):
 
         if path_o or path_i:
             self.import_data_csv(path_i=path_i, path_o=path_o)
+        # else:
+        #     if dummy_orientation:
+        #         self.orientations.at[0, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']] =\
+        #             [(self.extent[1] - self.extent[0]) / 2,
+        #              (self.extent[3] - self.extent[2]) / 2,
+        #              (self.extent[5] - self.extent[4]) / 2,
+        #              0, 0, 1,
+        #              'dummy']
 
-
-
+        self.fault_relation = None
+        self.formations = None
+        self.faults = None
 
         # If not provided set default series
         self.update_df()
@@ -116,10 +125,7 @@ class InputData(object):
 
         self.order_table()
 
-
         self.potential_at_interfaces = 0
-
-        self.fault_relation = None
 
         # Set dtypes
     #self.interfaces['formation'] = self.interfaces['formation'].astype('category')
@@ -168,6 +174,8 @@ class InputData(object):
            # sef.add_interface(formation='basement', order_series=n_series, formation_number = n_formation)
         else:
             self.modify_interface((drop_basement.index[drop_basement])[0], formation='basement', order_series=n_series, formation_number = n_formation)
+
+        self.order_table()
 
     def calculate_gradient(self):
         """
@@ -755,6 +763,7 @@ class InputData(object):
 
 
         self.set_basement()
+
         self.set_series(series_distribution=series_distribution, order=order)
 
         faults_series = self.count_faults()
@@ -770,12 +779,16 @@ class InputData(object):
 
     def set_formations(self, formation_values = None, formation_order = None):
 
+
         self.interfaces['formation'] = self.interfaces['formation'].astype('category')
         self.orientations['formation'] = self.orientations['formation'].astype('category')
 
         if formation_order is None:
-            if self._formation_values_set is False:
-                formation_order = self.interfaces['formation'].cat.remove_unused_categories().cat.categories
+            if self.formations is None:
+            #if self._formation_values_set is False:
+                formation_order = self.interfaces['formation'].cat.categories
+            else:
+                formation_order = self.formations.index
             # try:
             #     # Check if there is already a df
             #     formation_order = self.formations.index
@@ -809,6 +822,9 @@ class InputData(object):
 
         self.interfaces['formation_value'] = self.interfaces['formation'].map(self.formations.iloc[:, 0])
         self.orientations['formation_value'] = self.orientations['formation'].map(self.formations.iloc[:, 0])
+
+        self.interfaces['formation'].cat.set_categories(formation_order, inplace=True)
+        self.orientations['formation'].cat.set_categories(formation_order, inplace=True)
 
     def _set_formation_number(self, formation_order=None):
         """
