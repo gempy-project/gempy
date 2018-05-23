@@ -475,6 +475,23 @@ def precomputations_gravity(interp_data, n_chunck=25, densities=None):
     return tz, select
 
 
+def precomputations_magnetic(interp_data, n_chunck=25, sus=None, glob=None):
+    try:
+        getattr(interp_data, 'geophy')
+    except:
+        raise AttributeError('You need to set a geophysical object first. See set_geophysics_obj')
+
+    vx, vy, vz, select = interp_data.geophy.compute_magnetic(n_chunck)
+    interp_data.interpolator.set_comp(vx,vy,vz,select)
+
+    if sus is not None:
+        set_sus(interp_data, sus)
+
+    if glob is not None:
+        set_glob(interp_data, glob)
+    return vx, vy, vz, select
+
+
 def read_pickle(path):
     """
     Read InputData object from python pickle.
