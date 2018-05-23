@@ -634,6 +634,31 @@ def plot_scalar_field(geo_data, potential_field, cell_number, N=20,
                               direction=direction,  plot_data=plot_data, series=series,
                               *args, **kwargs)
 
+def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,
+                      direction="y", plot_scalar=True, **kwargs):
+    """
+        Plot the gradient of the scalar field in a given direction.
+
+        Args:
+            geo_data (gempy.DataManagement.InputData): Input data of the model
+            scalar_field(numpy.array): scalar field to plot with the gradient
+            gx(numpy.array): gradient in x-direction
+            gy(numpy.array): gradient in y-direction
+            gz(numpy.array): gradient in z-direction
+            cell_number(int): position of the array to plot
+            q_stepsize(int): step size between arrows to indicate gradient
+            direction(str): xyz. Caartesian direction to be plotted
+            plot_scalar(bool): boolean to plot scalar field
+            **kwargs: plt.contour kwargs
+
+        Returns:
+            None
+    """
+    plot = PlotData2D(geo_data)
+    plot.plot_gradient(scalar_field, gx, gy, gz, cell_number, q_stepsize=q_stepsize,
+                           direction=direction, plot_scalar=plot_scalar,
+                           **kwargs)
+
 
 #
 # def plot_data_3D(geo_data, **kwargs):
