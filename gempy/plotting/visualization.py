@@ -364,13 +364,13 @@ class PlotData2D(object):
             r1 = geo_data.resolution[0]
             r2 = geo_data.resolution[1]
 
-        for edge in G.edges:
+        for edge in G.edges_iter():
             a, b = edge
 
             plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
                           np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "black", linewidth=0.75)
 
-            for node in G.nodes:
+            for node in G.nodes_iter():
                 plt.plot(centroids[node][c1] * e1 / r1 + d1, centroids[node][c2] * e2 / r2 +d2,
                          marker="o", color="black", markersize=10, alpha=0.75)
                 plt.text(centroids[node][c1] * e1 / r1 + d1,
