@@ -130,6 +130,37 @@ class Preprocessing(object):
 
         return tz_all, np.ravel(self.b_all)
 
+    def compute_magnetic(self, n_chunck_o=25):
+        for i in range(self.num/n_chunck_o):
+            airborne_plane_s = self.airborne_plane[i:(i+1)*n_chunck_o]
+            dist = self.eu(airborne_plane_s, self.model_grid)
+            b = dist < self.range_max
+            del dist
+            self.b_all = np.vstack((self.b_all, b))
+
+            model_grid_rep = np.repeat(self.model_grid, n_chunck_o, axis=1)
+            xn = model_grid_rep[:,:n_chunck_o][self.b_all[0:n_chunck_o].T].reshape(n_chunck_o,-1)
+            yn = model_grid_rep[:,n_chunck_o:2*n_chunck_o][self.b_all[0:n_chunck_o].T].reshape(n_chunck_o,-1)
+            zn = model_grid_rep[:,2*n_chunck_o:][self.b_all[0:n_chunck_o].T].reshape(n_chunck_o,-1)
+
+            Xn = np.stack((xn - self.vox_size[0] / 2, xn + self.vox_size[0] / 2), axis=2)
+            Yn = np.stack((yn - self.vox_size[1] / 2, yn + self.vox_size[1] / 2), axis=2)
+            Zn = np.stack((zn - self.vox_size[2] / 2, zn + self.vox_size[2] / 2), axis=2)
+
+            vx, vy, vz = get_V_mat(self, Xn, Yn, Zn, airborne_plane_s, n_chunck_o)
+            # Stacking the precomputation
+            if i == 0:
+                vx_all = vx
+                vy_all = vy
+                vz_all = vz
+
+            else:
+                vx_all = np.vstack((vx_all, vx))
+                vy_all = np.vstack((vy_all, vy))
+                vz_all = np.vstack((vz_all, vz))
+
+        return vx_all, vy_all, vz_all, np.ravel(self.b_all)
+
     def default_range(self):
         # Max range to select voxels
         range_ = (self.model_grid[:, 2].max() - self.model_grid[:, 2].min()) * 0.9
