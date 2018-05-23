@@ -157,6 +157,9 @@ class PlotData2D(object):
                            palette= self._color_lot,#np.asarray([tuple(i) for i in self._color_lot.values()]),
                            **kwargs)
 
+            p.axes[0, 0].set_ylim(extent[2], extent[3])
+            p.axes[0, 0].set_xlim(extent[0], extent[1])
+
             # Plotting orientations
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
@@ -173,11 +176,16 @@ class PlotData2D(object):
                            legend_out=False,
                            palette=self._color_lot,
                            **kwargs)
+            p.axes[0, 0].set_ylim(extent[2], extent[3])
+            p.axes[0, 0].set_xlim(extent[0], extent[1])
+
 
         if data_type == 'orientations':
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
                        pivot="tail", scale_units=min_axis, scale=15)
+
+
 
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 

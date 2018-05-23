@@ -306,20 +306,41 @@ class InputData(object):
             show_par_f = self._columns_o_num
             show_par_i = self._columns_i_num
             dtype = 'float'
+
+
         if itype == 'orientations':
             raw_data = self.orientations[show_par_f]#.astype(dtype)
+            # Be sure that the columns are in order when used for operations
+            if numeric:
+                raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
         elif itype == 'interfaces':
             raw_data = self.interfaces[show_par_i]#.astype(dtype)
+            # Be sure that the columns are in order when used for operations
+            if numeric:
+                raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
         elif itype == 'all':
             raw_data = pn.concat([self.interfaces[show_par_i],#.astype(dtype),
                                  self.orientations[show_par_f]],#.astype(dtype)],
                                  keys=['interfaces', 'orientations'])
-        else:
-            raise AttributeError('itype has to be: \'orientations\', \'interfaces\', or \'all\'')
+            # Be sure that the columns are in order when used for operations
+            if numeric:
+                raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
 
-        # Be sure that the columns are in order when used for operations
-        if numeric:
-            raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
+        elif itype is 'formations':
+            raw_data = self.formations
+        elif itype is 'series':
+            raw_data = self.series
+        elif itype is 'faults':
+            raw_data = self.faults
+        elif itype is 'faults_relations':
+            raw_data = self.faults_relations
+        else:
+            raise AttributeError('itype has to be \'all\', \'interfaces\', \'orientations\', \'formations\', \
+                                       \'serires\', \'faults\' or \'faults_relations\'')
+
+        #else:
+        #    raise AttributeError('itype has to be: \'orientations\', \'interfaces\', or \'all\'')
+
         return raw_data
 
     # def get_formation_number(self):
@@ -336,24 +357,25 @@ class InputData(object):
     #  #   ip_addresses['DefaultBasement'] = 0
     #     return ip_addresses
 
-    def interactive_df_open(self, itype='all', numeric=False, verbosity=0):
+    def interactive_df_open(self, itype='all',  numeric=False, verbosity=0):
+
+        toolbar = True
 
         if itype is 'all':
-            warnings.warn('When itype is \'all\' Add Row does not work. If needed try using interfaces or orientations'
-                          ' instead')
-        if itype is 'all' or itype is 'interfaces' or itype is 'orientations':
-            df_ = self.get_data(itype=itype, verbosity=verbosity),
+            toolbar = False
         elif itype is 'formations':
-            df_ = self.formations
+            toolbar = False
         elif itype is 'faults':
-            df_ = self.faults
+            toolbar = False
         elif itype is 'faults_relations':
-            df_ = self.faults_relations
-        else:
-            raise AttributeError('itype has to be \'all\', \'interfaces\', \'orientations\', \'formations\', \
-                                 \'faults\' or \'faults_relations\'')
+            toolbar = False
 
-        self.qgrid_widget = qgrid.QgridWidget(df= df_, show_toolbar=True)
+        if not toolbar:
+            warnings.warn('for this itype Add Row does not work. If needed try using interfaces or orientations'
+                          'instead')
+
+        df_ = self.get_data(itype=itype, verbosity=verbosity)
+        self.qgrid_widget = qgrid.QgridWidget(df=df_, show_toolbar=toolbar)
 
         return self.qgrid_widget
 
@@ -854,7 +876,7 @@ class InputData(object):
             formation_values = np.append(formation_values, formation_values.max()+1)
 
         self.formations = pn.DataFrame(index=formation_order,
-                                       columns=[['value', 'formation_number']])
+                                       columns=['value', 'formation_number'])
 
         self.formations['value'] = formation_values
         self.formations['formation_number'] = np.arange(1, self.formations.shape[0]+1)

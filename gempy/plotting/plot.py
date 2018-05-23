@@ -181,7 +181,7 @@ class vtkPlot():
 
         self.vv.render_model(**kwargs)
 
-    def move_interface(self, new_df, ):
+    def _move_interface(self, new_df):
 
         print(self.geo_data._columns_i_1, new_df.columns)
 
@@ -200,7 +200,7 @@ class vtkPlot():
         # Move sphere widget to new position
         self.vv.SphereCallbak_move_changes(ind_i)
 
-    def move_orientation(self, new_df):
+    def _move_orientation(self, new_df):
 
         # Check rows tht have changed
         b_o = (new_df[self.geo_data._columns_o_1].sort_index() != _gempy.get_data(
@@ -215,7 +215,7 @@ class vtkPlot():
         # Move widgets
         self.vv.planesCallback_move_changes(ind_o)
 
-    def move_interface_orientation(self, new_df):
+    def _move_interface_orientation(self, new_df):
 
         # Check rows tht have changed
         b_i = (new_df.xs('interfaces')[self.geo_data._columns_i_1].sort_index() != _gempy.get_data(
@@ -238,7 +238,7 @@ class vtkPlot():
         self.vv.SphereCallbak_move_changes(ind_i)
         self.vv.planesCallback_move_changes(ind_o)
 
-    def delete_interface(self, new_df):
+    def _delete_interface(self, new_df):
 
         # Finding deleted indeces
         ind_i = self.geo_data.interfaces.index.values[~_np.in1d(self.geo_data.interfaces.index.values,
@@ -256,7 +256,7 @@ class vtkPlot():
         self.geo_data.set_new_df(new_df)
         print('I am in deleting', ind_i)
 
-    def delete_orientation(self, new_df):
+    def _delete_orientation(self, new_df):
 
         # Finding deleted indeces
         ind_o = self.geo_data.orientations.index.values[~_np.in1d(self.geo_data.orientations.index.values,
@@ -274,7 +274,7 @@ class vtkPlot():
         self.geo_data.set_new_df(new_df)
         print('I am in deleting o', ind_o)
 
-    def add_interface_restore(self, new_df):
+    def _add_interface_restore(self, new_df):
 
         # Finding deleted indeces to restore
         ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
@@ -290,7 +290,7 @@ class vtkPlot():
         self.geo_data.set_new_df(new_df.loc[ind_i], append=True)
         print('I am getting back', ind_i)
 
-    def add_orientation_restore(self, new_df):
+    def _add_orientation_restore(self, new_df):
 
         # Finding deleted indeces to restore
         ind_o = new_df.index.values[~_np.in1d(new_df.index.values,
@@ -306,7 +306,7 @@ class vtkPlot():
         self.geo_data.set_new_df(new_df.loc[ind_o], append=True)
         print('I am getting back', ind_o)
 
-    def add_interface_new(self, new_df):
+    def _add_interface_new(self, new_df):
 
         # Finding the new indices added
         ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
@@ -322,7 +322,7 @@ class vtkPlot():
             self.vv.set_interfaces(indices=i)
         print('I am in adding', ind_i)
 
-    def add_orientation_new(self, new_df):
+    def _add_orientation_new(self, new_df):
 
         # Finding the new indices added
         ind_o = new_df.index.values[~_np.in1d(new_df.index.values,
@@ -345,7 +345,7 @@ class vtkPlot():
         # Check if we are modifing interfaces and orientations at the same time
         try:
             # Modify mode
-            self.move_interface_orientation(new_df)
+            self._move_interface_orientation(new_df)
         except KeyError:
             # Check the itype data
             # ------------
@@ -355,7 +355,7 @@ class vtkPlot():
                 # ++++++++++
                 # Delete mode
                 if new_df.index.shape[0] < self.geo_data.orientations.index.shape[0]:
-                    self.delete_orientation(new_df)
+                    self._delete_orientation(new_df)
                 # +++++++++++
                 # Adding mode
                 elif new_df.index.shape[0] > self.geo_data.orientations.index.shape[0]:
@@ -364,15 +364,15 @@ class vtkPlot():
                     # Filter mode
                     if set(new_df.index).issubset(self._original_df.index):
 
-                        self.add_orientation_restore(new_df)
+                        self._add_orientation_restore(new_df)
 
                     # Adding new data mode
                     else:
-                        self.add_orientation_new(new_df)
+                        self._add_orientation_new(new_df)
                 # +++++++++++
                 # Modify mode
                 elif new_df.index.shape[0] == self.geo_data.orientations.index.shape[0]:  # Modify
-                    self.move_orientation(new_df)
+                    self._move_orientation(new_df)
 
                 else:
                     print('something went wrong')
@@ -386,7 +386,7 @@ class vtkPlot():
                 # ++++++++++
                 # Delete mode
                 if new_df.index.shape[0] < self.geo_data.interfaces.index.shape[0]:
-                    self.delete_interface(new_df)
+                    self._delete_interface(new_df)
 
                 # +++++++++++
                 # Adding mode
@@ -399,16 +399,16 @@ class vtkPlot():
                     # Filter mode
                     if set(new_df.index).issubset(self._original_df.index):
 
-                        self.add_interface_restore(new_df)
+                        self._add_interface_restore(new_df)
 
                     # Adding new data mode
                     else:
-                        self.add_interface_new(new_df)
+                        self._add_interface_new(new_df)
 
                 # +++++++++++
                 # Modify mode
                 elif new_df.index.shape[0] == self.geo_data.interfaces.index.shape[0]:  # Modify
-                    self.move_interface(new_df)
+                    self._move_interface(new_df)
 
                 else:
                     print('something went wrong')
@@ -562,6 +562,7 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
     # w.close_window()
 
     return vv
+
 
 def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None, simplices=None):
     """

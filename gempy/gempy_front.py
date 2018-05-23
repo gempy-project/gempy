@@ -436,6 +436,15 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
     return vertices, simplices
 
 
+def interactive_df_open(geo_data, itype):
+    return geo_data.interactive_df_open(itype)
+
+
+def interactive_df_change_df(geo_data):
+
+    return geo_data.interactive_df_get_changed_df()
+
+
 def set_orientation_from_interfaces(geo_data, indices_array, verbose=0):
 
     if _np.ndim(indices_array) is 1:
@@ -635,7 +644,16 @@ def set_series(geo_data, series_distribution=None, order_series=None, order_form
 
 
 def set_order_formations(geo_data, order_formations):
+    warnings.warn("set_order_formations will be removed in version 1.2, "
+                  "use gempy.set_formations function instead", FutureWarning)
     geo_data.set_formations(formation_order=order_formations)
+
+
+def set_formations(geo_data, formations=None, formations_order=None, formations_values=None):
+    if formations and not formations_order:
+        formations_order = formations
+
+    geo_data.set_formations(formation_order=formations_order, formation_values=formations_values)
 
 
 def set_interfaces(geo_data, interf_Dataframe, append=False):
