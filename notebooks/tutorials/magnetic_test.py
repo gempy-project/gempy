@@ -128,10 +128,10 @@ interp_data = gp.InterpolatorData(geo_data, dtype='float64', output='gravity', c
 # Gravity
 gp.set_geophysics_obj(interp_data,
                       [706000, 746000, 6864000, 6924000, -18000, 2000], # Extent
-                      [20,30])                            # Resolution
+                      [21,31])                            # Resolution
 
 # Setting density and precomputations afafa
-tz, select = gp.precomputations_gravity(interp_data, 20,
+tz, select = gp.precomputations_gravity(interp_data, 21,
                                [2.61, 2.92, 3.1, 2.92, 2.61])
 
 # vx, vy, vz, select = gp.precomputation_magnetic(interp_data, 20,
