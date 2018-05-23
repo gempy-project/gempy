@@ -900,6 +900,12 @@ class InterpolatorData:
             self.tg.tz.set_value(tz.astype(self.dtype))
             self.tg.select.set_value(selected_cells.astype(bool))
 
+        def set_comp(self, vx, vy, vz, selected_cells):
+            self.tg.vx.set_value(vx.astype(self.dtype))
+            self.tg.vy.set_value(vy.astype(self.dtype))
+            self.tg.vz.set_value(vz.astype(self.dtype))
+            self.tg.select.set_value(selected_cells.astype(bool))
+
         def get_kriging_parameters(self, verbose=0):
             """
             Print the kringing parameters
