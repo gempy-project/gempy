@@ -108,8 +108,8 @@ def get_T_mat(Xn, Yn, Zn, rxLoc):
 ## Uncertainty Quatification
 geo_data = gp.create_data([706000-20000,746000+20000,6864000-20000,6924000+20000,-18000,2000],
                           [40,50,100],
-                         path_f = os.pardir+"/input_data/legacy/a_Foliations.csv",
-                         path_i = os.pardir+"/input_data/legacy/a_Points.csv")
+                         path_f = os.pardir+"/input_data/tut_SandStone/a_Foliations.csv",
+                         path_i = os.pardir+"/input_data/tut_SandStone/a_Points.csv")
 gp.set_series(geo_data, {"EarlyGranite_Series": 'EarlyGranite',
                               "BIF_Series":('SimpleMafic2', 'SimpleBIF'),
                               "SimpleMafic_Series":'SimpleMafic1'},
@@ -134,12 +134,12 @@ gp.set_geophysics_obj(interp_data,
 tz, select = gp.precomputations_gravity(interp_data, 20,
                                [2.61, 2.92, 3.1, 2.92, 2.61])
 
-vx, vy, vz, select = gp.precomputation_magnetic(interp_data, 20,
-                               [0, 0, 0.1, 0, 0], [63.4, 0, 50])
+# vx, vy, vz, select = gp.precomputation_magnetic(interp_data, 20,
+#                                [0, 0, 0.1, 0, 0], [63.4, 0, 50])
 
 lith, fault, gravi = gp.compute_model(interp_data, output='gravity')
 
-## Topology
+# Topology
 topo = gp.topology_compute(geo_data, lith[0], fault)
 gp.plot_section(geo_data, lith[0],20, plot_data=True, direction='y')
 gp.plot_topology(geo_data, topo[0], topo[1])
