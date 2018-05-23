@@ -74,6 +74,10 @@ class InputData(object):
 
         # Init number of faults
         self.n_faults = 0
+        self.faults_relations = None
+        self.formations = None
+        self.faults = None
+
 
         self._columns_i_all = ['X', 'Y', 'Z', 'formation', 'series', 'X_std', 'Y_std', 'Z_std', 'order_series', 'formation_number']
         self._columns_o_all = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
@@ -108,9 +112,6 @@ class InputData(object):
         #              0, 0, 1,
         #              'dummy']
 
-        self.faults_relations = None
-        self.formations = None
-        self.faults = None
 
         # If not provided set default series
         self.update_df()
@@ -667,6 +668,10 @@ class InputData(object):
             self.set_series()
             self.order_table()
 
+        # # We check if in the df we are setting there is a new formation. if yes we append it to to the cat
+        # new_cat = interf_Dataframe['formation'].cat.categories[~np.in1d(interf_Dataframe['formation'].cat.categories,
+        #                                                                self.formations)]
+        # self.formations.index.insert(0, new_cat)
         self.set_formations()
         self.set_faults()
         self.interfaces.sort_index()
@@ -852,7 +857,14 @@ class InputData(object):
             #if self._formation_values_set is False:
                 formation_order = self.interfaces['formation'].cat.categories
             else:
-                formation_order = self.formations.index
+                # We check if in the df we are setting there is a new formation. if yes we append it to to the cat
+                new_cat = self.interfaces['formation'].cat.categories[
+                    ~np.in1d(self.interfaces['formation'].cat.categories,
+                             self.formations.index)]
+                if new_cat.empty:
+                    formation_order = self.formations.index
+                else:
+                    formation_order = np.insert(self.formations.index.get_values(), 0, new_cat)
             # try:
             #     # Check if there is already a df
             #     formation_order = self.formations.index

@@ -852,11 +852,11 @@ class InterpolatorData:
 
         def check_fault_ralation(self):
             # Set fault relation matrix
-            if self.geo_data_res_no_basement.fault_relation is None:
+            if self.geo_data_res_no_basement.faults_relations is None:
                 self.fault_rel = np.zeros((self.geo_data_res_no_basement.interfaces['series'].nunique(),
                                       self.geo_data_res_no_basement.interfaces['series'].nunique()))
             else:
-                self.fault_rel = self.geo_data_res_no_basement.fault_relation.values.astype('int32')
+                self.fault_rel = self.geo_data_res_no_basement.faults_relations.values.astype('int32')
 
         # TODO change name to weights!
         def set_densities(self, densities):

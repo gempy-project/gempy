@@ -19,7 +19,7 @@ class TestPerfomance:
         geo_data.orientations['formation'] = geo_data.orientations['formation'].astype('category')
         geo_data.add_orientation(X=-2.88043478e+04, Y=6.21413043e+06, Z=-1.17648965e+02, dip=0, azimuth=0, polarity=1,
                                  formation='basement')
-
+        geo_data.faults_relations = None
         new_grid = gempy.GridClass()
         res = 100
 
