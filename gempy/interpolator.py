@@ -146,6 +146,15 @@ class InterpolatorData:
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
                                     profile=False)
+            
+        elif output is 'magnetic':
+            # then we compile we have to pass the number of formations that are faults!!
+            th_fn = theano.function(input_data_T,
+                                    self.interpolator.tg.compute_forward_magnetic(self.geo_data_res.n_faults),
+                                  #  mode=NanGuardMode(nan_is_error=True),
+                                    on_unused_input='ignore',
+                                    allow_input_downcast=False,
+                                    profile=False)
 
         else:
             raise SyntaxError('The output given does not exist. Please use geology, gradients or gravity ')
