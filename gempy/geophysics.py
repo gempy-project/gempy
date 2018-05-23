@@ -20,7 +20,7 @@ import theano
 import theano.tensor as T
 from scipy.constants import G
 
-
+#just testing
 class GravityPreprocessing(object):
     def __init__(self, interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
 
