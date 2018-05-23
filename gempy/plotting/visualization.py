@@ -504,7 +504,7 @@ class vtkVisualization:
         self.ren_name = ren_name
         # Number of renders
         self.n_ren = 4
-        self.formation_number = geo_data.interfaces['formation_number'].unique()
+        self.formation_number = geo_data.formations['formation_number'].values.squeeze()
         self.formation_name = geo_data.interfaces['formation'].unique()
 
         # Extents
@@ -1034,15 +1034,21 @@ class vtkVisualization:
         self.SphereCallback_change_df(index, new_center)
         self.SphereCallbak_move_changes(index)
 
-        if self.real_time:
-            for surf in self.surf_rend_1:
-                self.ren_list[0].RemoveActor(surf)
-                self.ren_list[1].RemoveActor(surf)
-                self.ren_list[2].RemoveActor(surf)
-                self.ren_list[3].RemoveActor(surf)
+        try:
+            if self.real_time:
+                for surf in self.surf_rend_1:
+                    self.ren_list[0].RemoveActor(surf)
+                    self.ren_list[1].RemoveActor(surf)
+                    self.ren_list[2].RemoveActor(surf)
+                    self.ren_list[3].RemoveActor(surf)
+        except AttributeError:
+            pass
 
+        try:
             vertices, simpleces = self.update_surfaces_real_time(self.geo_data)
             self.set_surfaces(vertices, simpleces)
+        except AssertionError:
+            print('Not enough data to compute the model')
 
     def Callback_camera_reset(self,  obj, event):
 

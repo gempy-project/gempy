@@ -108,7 +108,7 @@ class InputData(object):
         #              0, 0, 1,
         #              'dummy']
 
-        self.fault_relation = None
+        self.faults_relations = None
         self.formations = None
         self.faults = None
 
@@ -243,6 +243,34 @@ class InputData(object):
             # Pickle the 'data' dictionary using the highest protocol available.
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
+    def set_default_orientation(self):
+        ori = pn.DataFrame([[(self.extent[1] - self.extent[0]) / 2,
+                             (self.extent[3] - self.extent[2]) / 2,
+                             (self.extent[4] - self.extent[5]) / 2,
+                             0, 0, 1,
+                             0, 0, 1,
+                             'basement',
+                             'Default series',
+                             1, 1, False]], columns=self._columns_o_1)
+
+        self.set_orientations(ori)
+
+    def set_default_interface(self):
+        if self.formations.index[0] is 'basement':
+            formation = 'default'
+            self.set_formations(formation_order=['default'])
+        else:
+            formation = self.formations.index[0]
+
+        self.set_interfaces(pn.DataFrame({'X': [(self.extent[1] - self.extent[0]) / 2],
+                                          'Y': [(self.extent[3] - self.extent[2]) / 2],
+                                          'Z': [(self.extent[4] - self.extent[5]) / 2],
+                                          'formation':[formation], 'order_series':[0],
+                                          'formation_number': [1], 'series': ['Default series'],
+                                          'isFault': False}))
+
+        self.set_basement()
+
     def get_formations(self):
         """
         Returns:
@@ -313,8 +341,20 @@ class InputData(object):
         if itype is 'all':
             warnings.warn('When itype is \'all\' Add Row does not work. If needed try using interfaces or orientations'
                           ' instead')
+        if itype is 'all' or itype is 'interfaces' or itype is 'orientations':
+            df_ = self.get_data(itype=itype, verbosity=verbosity),
+        elif itype is 'formations':
+            df_ = self.formations
+        elif itype is 'faults':
+            df_ = self.faults
+        elif itype is 'faults_relations':
+            df_ = self.faults_relations
+        else:
+            raise AttributeError('itype has to be \'all\', \'interfaces\', \'orientations\', \'formations\', \
+                                 \'faults\' or \'faults_relations\'')
 
-        self.qgrid_widget = qgrid.QgridWidget(df=self.get_data(itype=itype, verbosity=verbosity), show_toolbar=True)
+        self.qgrid_widget = qgrid.QgridWidget(df= df_, show_toolbar=True)
+
         return self.qgrid_widget
 
     def interactive_df_get_changed_df(self, only_selected=False):
@@ -588,7 +628,8 @@ class InputData(object):
         if append:
             self.interfaces = self.interfaces.append(interf_Dataframe)
         else:
-            self.interfaces[self._columns_i_1] = interf_Dataframe[self._columns_i_1]
+            # self.interfaces[self._columns_i_1] = interf_Dataframe[self._columns_i_1]
+            self.interfaces = interf_Dataframe[self._columns_i_1]
 
         self.interfaces = self.interfaces[~self.interfaces[['X', 'Y', 'Z']].isna().any(1)]
 
@@ -626,7 +667,8 @@ class InputData(object):
         if append:
             self.orientations = self.orientations.append(foliat_Dataframe)
         else:
-            self.orientations[self._columns_o_1] = foliat_Dataframe[self._columns_o_1]
+            #self.orientations[self._columns_o_1] = foliat_Dataframe[self._columns_o_1]
+            self.orientations = foliat_Dataframe[self._columns_o_1]
 
         # self.calculate_orientations()
         self.calculate_gradient()
@@ -950,18 +992,18 @@ class InputData(object):
         """
         #TODO: Change the fault relation automatically every time we add a fault
         try:
-            self.fault_relation
+            self.faults_relations
             if not rel_matrix:
                rel_matrix = np.zeros((self.series.columns.shape[0],
                                       self.series.columns.shape[0]))
 
-            self.fault_relation = pn.DataFrame(rel_matrix, index=self.series.columns,
-                                               columns= self.series.columns, dtype='bool')
+            self.faults_relations = pn.DataFrame(rel_matrix, index=self.series.columns,
+                                                 columns= self.series.columns, dtype='bool')
         except AttributeError:
 
             if rel_matrix is not None:
-                self.fault_relation = pn.DataFrame(rel_matrix, index=self.series.columns,
-                                                   columns=self.series.columns, dtype='bool')
+                self.faults_relations = pn.DataFrame(rel_matrix, index=self.series.columns,
+                                                     columns=self.series.columns, dtype='bool')
 
     def order_table(self):
         """

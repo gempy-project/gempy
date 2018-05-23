@@ -69,6 +69,8 @@ def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_
 
     i = interp_data.get_input_data(u_grade=u_grade)
 
+    assert i[-1].shape[0] is not 0, 'To compute the model is necessary at least 2 interface points per layer'
+
     sol = interp_data.th_fn(*i)
     interp_data.potential_at_interfaces = sol[-1]
     if get_potential_at_interfaces:

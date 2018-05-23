@@ -71,6 +71,14 @@ class InterpolatorData:
         # only block or all
         assert isinstance(geo_data, InputData), 'You need to pass a InputData object'
 
+        if geo_data.interfaces.shape[0] < 2:
+            geo_data.set_default_interface()
+            warnings.warn('Setting default interface')
+
+        if geo_data.orientations.shape[0] < 1:
+            geo_data.set_default_orientation()
+            warnings.warn('Setting default interface')
+
         # Store the original InputData object
         self._geo_data = geo_data
 
@@ -357,6 +365,8 @@ class InterpolatorData:
             # Drift grade
             u_grade = kwargs.get('u_grade', [3, 3])
 
+
+
             self.create_theano_graph(**kwargs)
             self.prepare_data_frame(interp_data.geo_data_res, **kwargs)
 
@@ -393,6 +403,7 @@ class InterpolatorData:
             # We hide the scaled copy of DataManagement object from the user.
             self.geo_data_res_no_basement = geo_data_res
             self.geo_data_res_no_basement.interfaces = geo_data_res.interfaces[~(geo_data_res.interfaces['formation'].values == 'basement')]#self.geo_data_res_no_basement.interfaces[:-1]
+
             # Sorting data in case the user provides it unordered
             self.order_table()
 
@@ -560,7 +571,11 @@ class InterpolatorData:
         def set_layers_rest(self):
 
             # Drop the reference points using pandas indeces to get just the rest_layers array
-            self.pandas_rest_layer_points = self.geo_data_res_no_basement.interfaces.drop(self.ref_position)
+            try:
+                self.pandas_rest_layer_points = self.geo_data_res_no_basement.interfaces.drop(self.ref_position)
+            except ValueError:
+                raise ValueError('It is necessary at least one point per layer to be able to compile')
+
             self.set_length_series()
 
         def set_layers_ref(self):
@@ -582,6 +597,8 @@ class InterpolatorData:
 
         def data_prep(self, **kwargs):
             # This logic is highly interdependent
+
+
             self.set_length_interface()
             self.set_ref_position()
             self.set_layers_rest()
@@ -825,13 +842,13 @@ class InterpolatorData:
             # Set fault relation matrix
             self.check_fault_ralation()
             self.tg.fault_relation.set_value(self.fault_rel.astype('int32'))
-            # if self.geo_data_res_no_basement.fault_relation is not None:
-            #     self.tg.fault_relation.set_value(self.geo_data_res_no_basement.fault_relation.values.astype('int32'))
+            # if self.geo_data_res_no_basement.faults_relations is not None:
+            #     self.tg.faults_relations.set_value(self.geo_data_res_no_basement.faults_relations.values.astype('int32'))
             # else:
             #     fault_rel = np.zeros((self.geo_data_res_no_basement.interfaces['series'].nunique(),
             #                           self.geo_data_res_no_basement.interfaces['series'].nunique()))
             #
-            #     self.tg.fault_relation.set_value(fault_rel.astype('int32'))
+            #     self.tg.faults_relations.set_value(fault_rel.astype('int32'))
 
         def check_fault_ralation(self):
             # Set fault relation matrix
