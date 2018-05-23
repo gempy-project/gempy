@@ -732,6 +732,10 @@ def set_densities(interp_data, densities):
     interp_data.interpolator.set_densities(densities)
 
 
+def set_sus(interp_data, sus):
+    interp_data.interpolator.set_sus(sus)
+
+
 # =====================================
 # Functions for Geophysics
 # =====================================
