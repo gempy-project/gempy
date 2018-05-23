@@ -879,6 +879,12 @@ class InterpolatorData:
 
             self.tg.densities.set_value(np.array(weight, dtype=self.dtype))
 
+        def set_sus(self, sus):
+            self.tg.sus.set_value(np.array(sus), dtype=self.dtype)
+
+        def set_glob(self, glob):
+            self.tg.glob.set_value(np.array(glob), dtype=self.dtype)
+
         def set_z_comp(self, tz, selected_cells):
             """
             Set z component precomputation for the gravity.
