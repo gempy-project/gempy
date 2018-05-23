@@ -322,6 +322,12 @@ class InterpolatorData:
         # TODO assert that is a gravity object
         self.geophy = gravity_obj
 
+
+    def set_magnetic_precomputation(self, magnetic_obj):
+        # TODO assert that is a magnetic object
+        self.geophy = magnetic_obj
+
+
     class InterpolatorTheano(object):
         """
          Class which contain all needed methods to perform potential field implicit modelling in theano.
