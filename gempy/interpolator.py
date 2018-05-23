@@ -147,6 +147,15 @@ class InterpolatorData:
                                     allow_input_downcast=False,
                                     profile=False)
 
+        elif output is 'magnetic':
+            # then we compile we have to pass the number of formations that are faults!!
+            th_fn = theano.function(input_data_T,
+                                    self.interpolator.tg.compute_forward_magnetic(self.geo_data_res.n_faults),
+                                  #  mode=NanGuardMode(nan_is_error=True),
+                                    on_unused_input='ignore',
+                                    allow_input_downcast=False,
+                                    profile=False)
+
         else:
             raise SyntaxError('The output given does not exist. Please use geology, gradients or gravity ')
 
@@ -298,8 +307,8 @@ class InterpolatorData:
     # =======
     # Gravity
     def create_geophysics_obj(self, ai_extent, ai_resolution, ai_z=None, range_max=None):
-        from .geophysics import GravityPreprocessing
-        self.geophy = GravityPreprocessing(self, ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
+        from .geophysics import Preprocessing
+        self.geophy = Preprocessing(self, ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
 
     def set_gravity_precomputation(self, gravity_obj):
         """
@@ -312,6 +321,12 @@ class InterpolatorData:
         """
         # TODO assert that is a gravity object
         self.geophy = gravity_obj
+
+
+    def set_magnetic_precomputation(self, magnetic_obj):
+        # TODO assert that is a magnetic object
+        self.geophy = magnetic_obj
+
 
     class InterpolatorTheano(object):
         """
@@ -864,6 +879,12 @@ class InterpolatorData:
 
             self.tg.densities.set_value(np.array(weight, dtype=self.dtype))
 
+        def set_sus(self, sus):
+            self.tg.sus.set_value(np.array(sus), dtype=self.dtype)
+
+        def set_glob(self, glob):
+            self.tg.glob.set_value(np.array(glob), dtype=self.dtype)
+
         def set_z_comp(self, tz, selected_cells):
             """
             Set z component precomputation for the gravity.
@@ -877,6 +898,12 @@ class InterpolatorData:
 
 
             self.tg.tz.set_value(tz.astype(self.dtype))
+            self.tg.select.set_value(selected_cells.astype(bool))
+
+        def set_comp(self, vx, vy, vz, selected_cells):
+            self.tg.vx.set_value(vx.astype(self.dtype))
+            self.tg.vy.set_value(vy.astype(self.dtype))
+            self.tg.vz.set_value(vz.astype(self.dtype))
             self.tg.select.set_value(selected_cells.astype(bool))
 
         def get_kriging_parameters(self, verbose=0):
