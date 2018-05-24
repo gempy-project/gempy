@@ -1,0 +1,22 @@
+<Placemark>
+	<LookAt>
+		<longitude>58.13443094812737</longitude>
+		<latitude>22.39130463241186</latitude>
+		<altitude>430</altitude>
+		<heading>2.7</heading>
+		<tilt>8.300000000000001</tilt>
+		<range>440.8</range>
+	</LookAt>
+	<styleUrl>#default</styleUrl>
+	<Point>
+		<coordinates>58.13443094812737,22.39130463241186,430</coordinates>
+	</Point>
+	<Style>
+        <IconStyle>
+            <heading>0</heading>
+            <Icon>
+                <href>https://raw.githubusercontent.com/cgre-aachen/remote-geomod/master/rgeomod/templates/dip.png</href>
+            </Icon>
+        </IconStyle>
+    </Style>
+</Placemark>
