@@ -252,7 +252,7 @@ class Preprocessing(object):
 
     def default_range(self):
         # Max range to select voxels
-        range_ = (self.model_grid[:, 2].max() - self.model_grid[:, 2].min()) * 0.9
+        range_ = (self.model_grid[:, 2].max() - self.model_grid[:, 2].min())
         return range_
 
     @staticmethod
@@ -273,36 +273,20 @@ class Preprocessing(object):
 
         # TODO Include all in the loop. At the moment I am tiling all grids and is useless
         # Rescale z
-        z_res = (z-self.interp_data.centers[2])/self.interp_data.rescaling_factor + 0.5001
+        z_res = (z - self.interp_data.centers[2]) / self.interp_data.rescaling_factor + 0.5001
         ai_extent_rescaled = (self.ai_extent - np.repeat(self.interp_data.centers, 2)) / \
-                              self.interp_data.rescaling_factor + 0.5001
+                             self.interp_data.rescaling_factor + 0.5001
 
         # Create xy meshgrid
         xy = np.meshgrid(np.linspace(ai_extent_rescaled.iloc[0], ai_extent_rescaled.iloc[1], self.ai_resolution[0]),
                          np.linspace(ai_extent_rescaled.iloc[2], ai_extent_rescaled.iloc[3], self.ai_resolution[1]))
-        z = np.ones(self.ai_resolution[0]*self.ai_resolution[1])*z_res
+        z = np.ones(self.ai_resolution[0] * self.ai_resolution[1]) * z_res
 
         # Transformation
         xy_ravel = np.vstack(map(np.ravel, xy))
         airborne_plane = np.vstack((xy_ravel, z)).T.astype(self.interp_data.dtype)
 
-        # Now we need to find what point of the grid are the closest to this grid and choose them. This is important in
-        # order to obtain regular matrices when we set a maximum range of effect
-
-        # First we compute the distance between the airborne plane to the grid and choose those closer
-        i_0 = 0
-        for i_1 in np.arange(25, self.ai_resolution[0] * self.ai_resolution[1] + 1 + 25, 25, dtype=int):
-
-            d = self.eu(self.model_grid.astype('float'), airborne_plane[i_0:i_1])
-
-            if i_0 == 0:
-                ab_g = self.model_grid[np.argmin(d, axis=0)]
-            else:
-                ab_g = np.vstack((ab_g, self.model_grid[np.argmin(d, axis=0)]))
-
-            i_0 = i_1
-
-        return ab_g
+        return airborne_plane
 
     def set_vox_size(self):
 
