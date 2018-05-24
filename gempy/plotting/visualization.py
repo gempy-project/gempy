@@ -385,6 +385,61 @@ class PlotData2D(object):
                          centroids[node][c2] * e2 / r2 + d2, str(node), color="white", size=6, ha="center", va="center",
                          weight="ultralight", family="monospace")
 
+    def plot_gradient(self, scalar_field, gx, gy, gz, cell_number, quiver_stepsize=5, #maybe call r sth. like "stepsize"?
+                      direction="y", plot_scalar = True, *args, **kwargs): #include plot data?
+        """
+            Plot the gradient of the scalar field in a given direction.
+
+            Args:
+                geo_data (gempy.DataManagement.InputData): Input data of the model
+                scalar_field(numpy.array): scalar field to plot with the gradient
+                gx(numpy.array): gradient in x-direction
+                gy(numpy.array): gradient in y-direction
+                gz(numpy.array): gradient in z-direction
+                cell_number(int): position of the array to plot
+                quiver_stepsize(int): step size between arrows to indicate gradient
+                direction(str): xyz. Caartesian direction to be plotted
+                plot_scalar(bool): boolean to plot scalar field
+                **kwargs: plt.contour kwargs
+
+            Returns:
+                None
+        """
+        if direction == "y":
+            if plot_scalar:
+                self.plot_scalar_field(scalar_field, cell_number, direction=direction, plot_data=False)
+            U = gx.reshape(self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[::quiver_stepsize,
+                 cell_number, ::quiver_stepsize].T
+            V = gz.reshape(self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[::quiver_stepsize,
+                 cell_number, ::quiver_stepsize].T
+            plt.quiver(self._data.grid.values[:, 0].reshape(self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[::quiver_stepsize, cell_number, ::quiver_stepsize].T,
+                   self._data.grid.values[:, 2].reshape(self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[::quiver_stepsize, cell_number, ::quiver_stepsize].T, U, V, pivot="tail",
+                   color='blue', alpha=.6)
+        elif direction == "x":
+            if plot_scalar:
+                self.plot_scalar_field(scalar_field, cell_number, direction=direction, plot_data=False)
+            U = gy.reshape(self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[cell_number, ::quiver_stepsize, ::quiver_stepsize].T
+            V = gz.reshape(self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[cell_number, ::quiver_stepsize, ::quiver_stepsize].T
+            plt.quiver(self._data.grid.values[:, 1].reshape(self._data.resolution[0], self._data.resolution[1],
+                                                            self._data.resolution[2])[cell_number, ::quiver_stepsize,  ::quiver_stepsize].T,
+                       self._data.grid.values[:, 2].reshape(self._data.resolution[0], self._data.resolution[1],
+                                                            self._data.resolution[2])[cell_number, ::quiver_stepsize,  ::quiver_stepsize].T, U, V,
+                       pivot="tail",
+                       color='blue', alpha=.6)
+        elif direction== "z":
+            if plot_scalar:
+                self.plot_scalar_field(scalar_field, cell_number, direction=direction, plot_data=False)
+            U = gx.reshape(self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T
+            V = gy.reshape(self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T
+            plt.quiver(self._data.grid.values[:, 0].reshape(self._data.resolution[0], self._data.resolution[1],
+                                                            self._data.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T,
+                       self._data.grid.values[:, 1].reshape(self._data.resolution[0], self._data.resolution[1],
+                                                            self._data.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T, U, V,
+                       pivot="tail",
+                       color='blue', alpha=.6)
+        else:
+            raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
+
     # TODO: Incorporate to the class
     @staticmethod
     def annotate_plot(frame, label_col, x, y, **kwargs):
