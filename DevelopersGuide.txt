@@ -17,5 +17,10 @@ $ git tag X.X -m "Add X.X tag for PyPI"
 # push git tag
 $ git push --tags origin master
 # upload newest version to PyPi
-$ python setup.py sdist upload -r pypi
+#  First create the dist
+python3 setup.py sdist bdist_wheel
+
+# Second upload the distributions
+twine upload dist/*
+
 

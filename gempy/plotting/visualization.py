@@ -629,11 +629,9 @@ class vtkVisualization:
         Returns:
 
         """
-        from vtk import (vtkSphereSource, vtkPolyDataMapper, vtkActor, vtkRenderer,
-                         vtkRenderWindow, vtkWindowToImageFilter, vtkPNGWriter)
-
+        # from vtk import (vtkSphereSource, vtkPolyDataMapper, vtkActor, vtkRenderer,
+        #                  vtkRenderWindow, vtkWindowToImageFilter, vtkPNGWriter)
         # initialize and start the app
-
         if 'size' not in kwargs:
             kwargs['size'] = (1920, 1080)
 

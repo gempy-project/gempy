@@ -88,7 +88,7 @@ def set_anchor_points(geo_data):
     thick_formations = []
     for series in series_names:
         try:
-            formations = for_ser.formation.unique()[series]
+            formations = geo_data.series[series].dropna().values
         except KeyError:
             formations = np.empty(0, dtype='object')
         formations = np.insert(formations, 0, '0_aux' + series)
