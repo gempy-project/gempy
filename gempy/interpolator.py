@@ -397,12 +397,16 @@ class InterpolatorData:
             #
         def prepare_data_frame(self, geo_data_res, **kwargs):
 
-            self.formation_number = geo_data_res.formations['formation_number'].values.squeeze().astype('int32')
-            self.formation_value = geo_data_res.formations['value'].values.squeeze().astype(self.dtype)
+
 
             # We hide the scaled copy of DataManagement object from the user.
             self.geo_data_res_no_basement = geo_data_res
             self.geo_data_res_no_basement.interfaces = geo_data_res.interfaces[~(geo_data_res.interfaces['formation'].values == 'basement')]#self.geo_data_res_no_basement.interfaces[:-1]
+
+            self.formation_number = np.arange(1, self.geo_data_res_no_basement.interfaces[
+                                              'formation_number'].nunique() + 2, dtype='int32')  # geo_data_res.interfaces['formation_number'].unique().astype('int32')
+
+            self.formation_value = geo_data_res.formations['value'].values.squeeze().astype(self.dtype)
 
             # Sorting data in case the user provides it unordered
             self.order_table()

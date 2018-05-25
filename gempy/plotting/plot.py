@@ -39,11 +39,11 @@ import gempy as _gempy
 
 class vtkPlot():
     def __init__(self, geo_data, alpha=1,
-                     size=(1920, 1080), fullscreen=False, bg_color=None):
+                     size=(1920, 1080), fullscreen=False, bg_color=None, verbose=0):
 
         self.geo_data = geo_data
 
-
+        self.verbose = verbose
         self.alpha = alpha
         self.size = size
         self.fullscreen = fullscreen

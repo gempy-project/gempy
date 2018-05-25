@@ -362,26 +362,26 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
         raise AttributeError('You need to compute the model first')
 
     def get_surface(potential_block, interp_data, pot_int, n_formation, step_size, original_scale):
-        assert n_formation > 0, 'Number of the formation has to be positive'
+        assert n_formation >= 0, 'Number of the formation has to be positive'
 
         # In case the values are separated by series I put all in a vector
         pot_int = interp_data.potential_at_interfaces.sum(axis=0)
 
         from skimage import measure
 
-        if not potential_block.max() > pot_int[n_formation-1]:
-            pot_int[n_formation - 1] = potential_block.max()
+        if not potential_block.max() > pot_int[n_formation]:
+            pot_int[n_formation] = potential_block.max()
             print('Potential field of the surface is outside the block. Probably is due to float errors')
 
-        if not potential_block.min() < pot_int[n_formation - 1]:
-            pot_int[n_formation - 1] = potential_block.min()
+        if not potential_block.min() < pot_int[n_formation]:
+            pot_int[n_formation] = potential_block.min()
             print('Potential field of the surface is outside the block. Probably is due to float errors')
 
         vertices_p, simplices_p, normals, values = measure.marching_cubes_lewiner(
             potential_block.reshape(interp_data.geo_data_res.resolution[0],
                                     interp_data.geo_data_res.resolution[1],
                                     interp_data.geo_data_res.resolution[2]),
-            pot_int[n_formation-1],
+            pot_int[n_formation],
             step_size=step_size,
             spacing=((interp_data.geo_data_res.extent[1] - interp_data.geo_data_res.extent[0]) / interp_data.geo_data_res.resolution[0],
                      (interp_data.geo_data_res.extent[3] - interp_data.geo_data_res.extent[2]) / interp_data.geo_data_res.resolution[1],
@@ -400,17 +400,21 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
     vertices = []
     simplices = []
 
+    n_formations = _np.arange(interp_data.geo_data_res.interfaces['formation'].nunique())
+
     if potential_fault is not None:
+
 
         assert len(_np.atleast_2d(potential_fault)) == interp_data.geo_data_res.n_faults, 'You need to pass a potential field per fault'
 
         pot_int = interp_data.potential_at_interfaces[:interp_data.geo_data_res.n_faults + 1]
-        for n in interp_data.geo_data_res.interfaces['formation_number'][
-            interp_data.geo_data_res.interfaces['isFault']].unique():
-            if n == 0:
-                continue
-            else:
-                v, s = get_surface(_np.atleast_2d(potential_fault)[n-1], interp_data, pot_int, n,
+# - interp_data.geo_data_res.n_faults)
+      #  n_faults = _np.arange(interp_data.geo_data_res.n_faults)
+        for n in n_formations[:interp_data.geo_data_res.n_faults]:               #interp_data.geo_data_res.interfaces['formation_number'][interp_data.geo_data_res.interfaces['isFault']].unique():
+            # if n == 0:
+            #     continue
+            #else:
+                v, s = get_surface(_np.atleast_2d(potential_fault)[n], interp_data, pot_int, n,
                                    step_size=step_size, original_scale=original_scale)
                 vertices.append(v)
                 simplices.append(s)
@@ -421,10 +425,10 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
         # Compute the vertices of the lithologies
         if n_formation == 'all':
 
-            for n in interp_data.geo_data_res.interfaces['formation_number'][~interp_data.geo_data_res.interfaces['isFault']].unique():
-                if n == 0:
-                    continue
-                else:
+            for n in n_formations[interp_data.geo_data_res.n_faults:]: #interp_data.geo_data_res.interfaces['formation_number'][~interp_data.geo_data_res.interfaces['isFault']].unique():
+                # if n == 0:
+                #     continue
+                #else:
                     v, s = get_surface(potential_lith, interp_data, pot_int, n,
                                        step_size=step_size, original_scale=original_scale)
                     vertices.append(v)

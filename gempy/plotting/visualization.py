@@ -1419,7 +1419,10 @@ class vtkVisualization:
         try:
             v_l, s_l = gp.get_surfaces(self.interp_data, lith_block[1], fault_block[1::2], original_scale=True)
         except IndexError:
-            v_l, s_l = gp.get_surfaces(self.interp_data, lith_block[1], None, original_scale=True)
+            try:
+                v_l, s_l = gp.get_surfaces(self.interp_data, lith_block[1], None, original_scale=True)
+            except IndexError:
+                v_l, s_l = gp.get_surfaces(self.interp_data, None, fault_block[1::2], original_scale=True)
         return v_l, s_l
 
     @staticmethod

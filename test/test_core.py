@@ -274,3 +274,6 @@ class TestFaults:
 
         # We only compare the block because the absolute pot field I changed it
         np.testing.assert_array_almost_equal(np.round(sol[0][0, :]), real_sol[0][0, :], decimal=0)
+
+        ver, sim = gempy.get_surfaces(interp_data, sol[0][1], sol[1][1], original_scale=True)
+        # gempy.plotting.plot_surfaces_3D(geo_data, ver, sim)

@@ -1743,7 +1743,7 @@ class TheanoGraph(object):
             self.pfai_fault = fault_loop[1]
 
         # Check if there are lithologies to compute
-        if len(self.len_series_f.get_value()) - 1 > n_faults:
+        if True:#len(self.len_series_f.get_value()) - 1 > n_faults:
 
             # Compute Lithologies
             lith_loop, updates2 = theano.scan(

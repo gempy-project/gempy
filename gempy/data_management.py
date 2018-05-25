@@ -259,9 +259,10 @@ class InputData(object):
     def set_default_interface(self):
         if self.formations.index[0] is 'basement':
             formation = 'default'
-            self.set_formations(formation_order=['default'])
+            self.set_formations(formation_order=[formation])
         else:
             formation = self.formations.index[0]
+            #self.set_formations(formation_order=[self.formations.index])
 
         self.set_interfaces(pn.DataFrame({'X': [(self.extent[1] - self.extent[0]) / 2],
                                           'Y': [(self.extent[3] - self.extent[2]) / 2],
@@ -672,6 +673,7 @@ class InputData(object):
         # new_cat = interf_Dataframe['formation'].cat.categories[~np.in1d(interf_Dataframe['formation'].cat.categories,
         #                                                                self.formations)]
         # self.formations.index.insert(0, new_cat)
+        self.set_series()
         self.set_formations()
         self.set_faults()
         self.interfaces.sort_index()
@@ -702,6 +704,7 @@ class InputData(object):
 
         self.orientations = self.orientations[~self.orientations[['X', 'Y', 'Z']].isna().any(1)]
 
+        self.set_series()
         self.set_formations()
         self.set_faults()
        # self.set_annotations()
@@ -791,6 +794,12 @@ class InputData(object):
             else:
                 raise AttributeError('series_distribution must be a dictionary, see Docstring for more information')
 
+            # Addind the formations of the new series to the formations df
+            new_formations = self.series.values.reshape(1, -1)
+            # Dropping nans
+            new_formations = new_formations[~pn.isna(new_formations)]
+            self.set_formations(formation_order=new_formations)
+
         if 'basement' not in self.series.iloc[:, -1].values:
             self.series.loc[self.series.shape[0], self.series.columns[-1]] = 'basement'
 
@@ -810,6 +819,9 @@ class InputData(object):
        # if series_distribution is not None:
         self.interfaces.sort_values(by='order_series', inplace=True)
         self.orientations.sort_values(by='order_series', inplace=True)
+
+        self.interfaces['series'].cat.set_categories(self.series.columns, inplace=True)
+        self.orientations['series'].cat.set_categories(self.series.columns, inplace=True)
 
         # faults_series = self.count_faults()
         #

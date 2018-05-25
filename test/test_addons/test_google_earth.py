@@ -82,13 +82,13 @@ def test_rgeomod_integration(theano_f):
     #     print("3-D visualization library vtk not installed.")
 
     # load the digital elevation model
-    geotiff_filepath = "../input_data/dome_sub_sub_utm.tif"
+    geotiff_filepath = input_path+"/dome_sub_sub_utm.tif"
     raster = gdal.Open(geotiff_filepath)
     dtm = raster.ReadAsArray()
     dtmp = plt.imshow(dtm, origin='upper', cmap="viridis");
     plt.title("Digital elevation model");
     plt.colorbar(dtmp, label="Elevation [m]");
-    plt.savefig("../input_data/DTM.pdf")
+    plt.savefig(input_path+"/DTM.pdf")
 
     # To be able to use gempy plotting functionality we need to create a dummy geo_data object with the
     # resoluion we want. In this case resolution=[339, 271, 1]
@@ -151,7 +151,7 @@ def test_rgeomod_integration(theano_f):
     # In[20]:
 
 
-    rgeomod.export_geotiff("../input_data/geomap.tif", geo_map, gp.plotting.colors.cmap, geotiff_filepath)
+    rgeomod.export_geotiff(input_path+"/geomap.tif", geo_map, gp.plotting.colors.cmap, geotiff_filepath)
 
 
     # Export the interface data points:
@@ -159,16 +159,15 @@ def test_rgeomod_integration(theano_f):
     # In[21]:
 
 
-    t = "../input_data/templates/ge_template_raw_interf.xml"
-    pt = "../input_data/templates/ge_placemark_template_interf.xml"
-    rgeomod.gempy_export_points_to_kml("../input_data/", geo_data, pt, t, gp.plotting.colors.cmap)
+    t = input_path+"/templates/ge_template_raw_interf.xml"
+    pt = input_path+"/templates/ge_placemark_template_interf.xml"
+    rgeomod.gempy_export_points_to_kml(input_path, geo_data, pt, t, gp.plotting.colors.cmap)
 
 
     # Export the foliation data:
 
-    # In[22]:
 
 
-    t = "../input_data/templates/ge_template_raw_fol.xml"
-    pt = "../input_data/templates/ge_placemark_template_fol.xml"
-    rgeomod.gempy_export_fol_to_kml("../input_data/dips.kml", geo_data, pt, t)
+    t = input_path+"/templates/ge_template_raw_fol.xml"
+    pt = input_path+"/templates/ge_placemark_template_fol.xml"
+    rgeomod.gempy_export_fol_to_kml(input_path+"/dips.kml", geo_data, pt, t)
