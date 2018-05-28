@@ -159,7 +159,7 @@ class InterpolatorData:
 
     def data_to_pickle(self, path=False, recursionlimit=3000):
         """
-        Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
+        Save InterpData object to a python pickle (serialization of python). Be aware that if the dependencies
         versions used to export and import the pickle differ it may give problems.
 
         Args:
