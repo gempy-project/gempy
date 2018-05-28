@@ -50,7 +50,8 @@ class TheanoGraph(object):
     of these methods is more and more difficult to provide (if you are in a branch close to the trunk you need all the
     results of the branches above)
     """
-    def __init__(self, output='geology', optimizer='fast_compile', verbose=[0], dtype='float32'):
+    def __init__(self, output='geology', optimizer='fast_compile', verbose=[0], dtype='float32',
+                 is_fault=None, is_lith=None):
         """
         In the init we need to create all the symbolic parameters that are used in the process. Most of the variables
         are shared parameters initialized with random values. At this stage we only care about the type and shape of the
@@ -67,6 +68,9 @@ class TheanoGraph(object):
         # Pass the verbose list as property
         self.verbose = verbose
         self.dot_version = False
+
+        self.is_fault = is_fault
+        self.is_lith = is_lith
 
         theano.config.floatX = dtype
         theano.config.optimizer = optimizer
@@ -1717,7 +1721,7 @@ class TheanoGraph(object):
         self.fault_matrix_f = T.zeros((n_faults*2, self.grid_val_T.shape[0]))
 
         # Compute Faults
-        if n_faults != 0:
+        if n_faults != 0 or self.is_fault:
 
             # Looping
             fault_loop, updates3 = theano.scan(
@@ -1743,7 +1747,7 @@ class TheanoGraph(object):
             self.pfai_fault = fault_loop[1]
 
         # Check if there are lithologies to compute
-        if True:#len(self.len_series_f.get_value()) - 1 > n_faults:
+        if len(self.len_series_f.get_value()) - 1 > n_faults or self.is_lith:
 
             # Compute Lithologies
             lith_loop, updates2 = theano.scan(

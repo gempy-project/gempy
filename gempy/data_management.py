@@ -199,10 +199,14 @@ class InputData(object):
         """
         Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.
         """
-        self.orientations["dip"] = np.nan_to_num(np.arccos(self.orientations["G_z"] / self.orientations["polarity"]))
+        self.orientations["dip"] = np.rad2deg(np.nan_to_num(np.arccos(self.orientations["G_z"] / self.orientations["polarity"])))
 
         # TODO if this way to compute azimuth breaks there is in rgeomod=kml_to_plane line 170 a good way to do it
-        self.orientations["azimuth"] = np.nan_to_num(np.arcsin(self.orientations["G_x"]) / (np.sin(np.arccos(self.orientations["G_z"] / self.orientations["polarity"])) * self.orientations["polarity"]))
+        self.orientations["azimuth"] = np.rad2deg(np.nan_to_num(
+            np.arcsin(self.orientations["G_x"]) /
+            (np.sin(np.arccos(self.orientations["G_z"] /
+                              self.orientations["polarity"])) *
+             self.orientations["polarity"])))
 
     def count_faults(self):
         """

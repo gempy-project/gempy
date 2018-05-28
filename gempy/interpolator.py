@@ -440,9 +440,12 @@ class InterpolatorData:
             # Drift grade
             u_grade = kwargs.get('u_grade', [3, 3])
 
+            is_lith = kwargs.get('is_lith', False)
+            is_fault = kwargs.get('is_fault', False)
+
             # See theanograf doc
             self.tg = theano_graph.TheanoGraph(output=self.output, optimizer=self.theano_optimizer, dtype=self.dtype,
-                                               verbose=self.verbose)
+                                               verbose=self.verbose, is_lith=is_lith, is_fault=is_fault)
 
             # Avoid crashing my pc
             import theano

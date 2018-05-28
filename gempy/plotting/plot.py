@@ -319,7 +319,6 @@ class vtkPlot():
 
         # Modifing df
         self.geo_data.set_new_df(new_df.loc[ind_i], append=True)
-        print(ind_i)
 
         # Creating new widget
         for i in ind_i:
@@ -400,7 +399,7 @@ class vtkPlot():
                 # Adding mode
                 elif new_df.index.shape[0] > self.geo_data.interfaces.index.shape[0]:  # Add mode
 
-                    print(set(new_df.index).issubset(self._original_df.index))
+                    # print(set(new_df.index).issubset(self._original_df.index))
 
                     # Checking if is new point or a filter
                     # ===========
@@ -436,6 +435,9 @@ class vtkPlot():
                 self.vv.set_surfaces(vertices, simpleces)
             except AssertionError:
                 print('Not enough data to compute the model')
+            except NotImplementedError:
+                print('If the theano graph expects faults and/or lithologies you need to pass at least one'
+                      ' interface for each of them')
         #self.vv.interp_data.update_interpolator(self.geo_data)
 
 
