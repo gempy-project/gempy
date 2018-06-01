@@ -127,7 +127,7 @@ class InterpolatorData:
         if output is 'geology':
             # then we compile we have to pass the number of formations that are faults!!
             th_fn = theano.function(input_data_T,
-                                    self.interpolator.tg.compute_geological_model(self.geo_data_res.n_faults),
+                                    self.interpolator.tg.compute_geological_model(),
                                   # mode=NanGuardMode(nan_is_error=True),
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
@@ -136,7 +136,7 @@ class InterpolatorData:
         elif output is 'gravity':
             # then we compile we have to pass the number of formations that are faults!!
             th_fn = theano.function(input_data_T,
-                                    self.interpolator.tg.compute_forward_gravity(self.geo_data_res.n_faults),
+                                    self.interpolator.tg.compute_forward_gravity(),
                                   #  mode=NanGuardMode(nan_is_error=True),
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
@@ -370,6 +370,11 @@ class InterpolatorData:
             import importlib
             importlib.reload(theano_graph)
 
+            # We hide the scaled copy of DataManagement object from the user.
+            self.geo_data_res_no_basement = interp_data.geo_data_res
+            self.geo_data_res_no_basement.interfaces = interp_data.geo_data_res.interfaces[
+                ~(interp_data.geo_data_res.interfaces['formation'].values == 'basement')]  #
+
             # verbose is a list of strings. See theanograph
             self.verbose = kwargs.get('verbose', [0])
 
@@ -465,6 +470,12 @@ class InterpolatorData:
 
             is_lith = kwargs.get('is_lith', False)
             is_fault = kwargs.get('is_fault', False)
+
+            if self.geo_data_res_no_basement.n_faults != 0:
+                is_fault = True
+
+            if self.geo_data_res_no_basement.orientations['formation'].nunique() - 1 > self.geo_data_res_no_basement.n_faults:
+                is_lith = True
 
             # See theanograf doc
             self.tg = theano_graph.TheanoGraph(output=self.output, optimizer=self.theano_optimizer, dtype=self.dtype,
@@ -869,6 +880,8 @@ class InterpolatorData:
                                                                         dtype=self.dtype))
             self.tg.final_scalar_field_at_faults.set_value(np.zeros(self.tg.n_formations_per_serie.get_value()[-1],
                                                                     dtype=self.dtype))
+
+            self.tg.n_faults.set_value(self.geo_data_res_no_basement.n_faults)
             # Set fault relation matrix
             self.check_fault_ralation()
             self.tg.fault_relation.set_value(self.fault_rel.astype('int32'))

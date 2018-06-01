@@ -121,7 +121,7 @@ class TheanoGraph(object):
                                                       [0, 0, 0, 0]]), 'fault relation matrix')
         self.inf_factor = theano.shared(np.ones(200, dtype='int32') * 10, 'Arbitrary scalar to make faults infinite')
 
-
+        self.n_faults = theano.shared(0, 'Number of faults')
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T
         self.n_formation_op = self.n_formation
         self.n_formation_op_float = self.formation_values
@@ -1711,17 +1711,17 @@ class TheanoGraph(object):
 
         return final_block, self.final_scalar_field_at_formations_op
 
-    def compute_geological_model(self, n_faults=0, weights=None):
+    def compute_geological_model(self, weights=None):
 
         # Change the flag to extend the graph in the compute fault and compute series function
         lith_matrix = T.zeros((0, 0, self.grid_val_T.shape[0] + 2 * self.len_points))
 
         # Init to matrix which contains the block and scalar field of every fault
-        self.fault_matrix = T.zeros((n_faults*2, self.grid_val_T.shape[0]))
-        self.fault_matrix_f = T.zeros((n_faults*2, self.grid_val_T.shape[0]))
+        self.fault_matrix = T.zeros((self.n_faults*2, self.grid_val_T.shape[0]))
+        self.fault_matrix_f = T.zeros((self.n_faults*2, self.grid_val_T.shape[0]))
 
         # Compute Faults
-        if n_faults != 0 or self.is_fault:
+        if self.n_faults.get_value()  != 0 or self.is_fault:
 
             # Looping
             fault_loop, updates3 = theano.scan(
@@ -1729,10 +1729,10 @@ class TheanoGraph(object):
                     outputs_info=[
                               dict(initial=self.fault_matrix, taps=[-1]),
                               None],  # This line may be used for the faults network
-                sequences=[dict(input=self.len_series_i[:n_faults + 1], taps=[0, 1]),
-                           dict(input=self.len_series_f[:n_faults + 1], taps=[0, 1]),
-                           dict(input=self.n_formations_per_serie[:n_faults + 1], taps=[0, 1]),
-                           dict(input=self.n_universal_eq_T[:n_faults + 1], taps=[0])],
+                sequences=[dict(input=self.len_series_i[:self.n_faults + 1], taps=[0, 1]),
+                           dict(input=self.len_series_f[:self.n_faults + 1], taps=[0, 1]),
+                           dict(input=self.n_formations_per_serie[:self.n_faults + 1], taps=[0, 1]),
+                           dict(input=self.n_universal_eq_T[:self.n_faults + 1], taps=[0])],
                 non_sequences=self.fault_block_init,
                 name='Looping faults',
                 return_list=True,
@@ -1747,16 +1747,16 @@ class TheanoGraph(object):
             self.pfai_fault = fault_loop[1]
 
         # Check if there are lithologies to compute
-        if len(self.len_series_f.get_value()) - 1 > n_faults or self.is_lith:
+        if len(self.len_series_f.get_value()) - 1 > self.n_faults.get_value() or self.is_lith:
 
             # Compute Lithologies
             lith_loop, updates2 = theano.scan(
                  fn=self.compute_a_series,
                  outputs_info=[self.lith_block_init, self.final_scalar_field_at_formations_op],
-                 sequences=[dict(input=self.len_series_i[n_faults:], taps=[0, 1]),
-                            dict(input=self.len_series_f[n_faults:], taps=[0, 1]),
-                            dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),
-                            dict(input=self.n_universal_eq_T[n_faults:], taps=[0])],
+                 sequences=[dict(input=self.len_series_i[self.n_faults:], taps=[0, 1]),
+                            dict(input=self.len_series_f[self.n_faults:], taps=[0, 1]),
+                            dict(input=self.n_formations_per_serie[self.n_faults:], taps=[0, 1]),
+                            dict(input=self.n_universal_eq_T[self.n_faults:], taps=[0])],
                 # non_sequences=[self.fault_matrix],
                  name='Looping interfaces',
                  profile=False,
@@ -1769,7 +1769,7 @@ class TheanoGraph(object):
         pfai = T.vertical_stack(self.pfai_fault, self.pfai_lith)
         return [lith_matrix[:, :-2 * self.len_points], self.fault_matrix_f[:, :-2 * self.len_points], pfai]
 
-    def compute_geological_model_gradient(self, n_faults=0, gradients = [], weights=None):
+    def compute_geological_model_gradient(self, gradients = [], weights=None):
 
         self.gradients = ['Gx', 'Gy', 'Gz']#theano.shared(['Gx', 'Gy', 'Gz'])
 
@@ -1777,14 +1777,14 @@ class TheanoGraph(object):
         lith_matrix = T.zeros((0, 0, self.grid_val_T.shape[0] + 2 * self.len_points))
 
         # Init to matrix which contains the block and scalar field of every fault
-        self.fault_matrix = T.zeros((n_faults*5, self.grid_val_T.shape[0]))
-        self.fault_matrix_f = T.zeros((n_faults*5, self.grid_val_T.shape[0]))
+        self.fault_matrix = T.zeros((self.n_faults*5, self.grid_val_T.shape[0]))
+        self.fault_matrix_f = T.zeros((self.n_faults*5, self.grid_val_T.shape[0]))
 
         self.lith_block_init = T.zeros((5, self.grid_val_T.shape[0]))
         self.fault_block_init = T.zeros((5, self.grid_val_T.shape[0]))
         self.fault_block_init.name = 'final block of faults init'
         # Compute Faults
-        if n_faults != 0:
+        if self.n_faults.get_value()  != 0 or self.is_fault:
 
             # Looping
             fault_loop, updates3 = theano.scan(
@@ -1792,10 +1792,10 @@ class TheanoGraph(object):
                     outputs_info=[
                               dict(initial=self.fault_matrix, taps=[-1]),
                               None],  # This line may be used for the faults network
-                sequences=[dict(input=self.len_series_i[:n_faults + 1], taps=[0, 1]),
-                           dict(input=self.len_series_f[:n_faults + 1], taps=[0, 1]),
-                           dict(input=self.n_formations_per_serie[:n_faults + 1], taps=[0, 1]),
-                           dict(input=self.n_universal_eq_T[:n_faults + 1], taps=[0])],
+                sequences=[dict(input=self.len_series_i[:self.n_faults + 1], taps=[0, 1]),
+                           dict(input=self.len_series_f[:self.n_faults + 1], taps=[0, 1]),
+                           dict(input=self.n_formations_per_serie[:self.n_faults + 1], taps=[0, 1]),
+                           dict(input=self.n_universal_eq_T[:self.n_faults + 1], taps=[0])],
                 non_sequences=self.fault_block_init,
                 name='Looping faults',
                 return_list=True,
@@ -1810,16 +1810,16 @@ class TheanoGraph(object):
             self.pfai_fault = fault_loop[1]
 
         # Check if there are lithologies to compute
-        if len(self.len_series_f.get_value()) - 1 > n_faults:
+        if len(self.len_series_f.get_value()) - 1 > self.n_faults.get_value() or self.is_lith:
 
             # Compute Lithologies
             lith_loop, updates2 = theano.scan(
                  fn=self.compute_a_series,
                  outputs_info=[self.lith_block_init, self.final_scalar_field_at_formations_op],
-                 sequences=[dict(input=self.len_series_i[n_faults:], taps=[0, 1]),
-                            dict(input=self.len_series_f[n_faults:], taps=[0, 1]),
-                            dict(input=self.n_formations_per_serie[n_faults:], taps=[0, 1]),
-                            dict(input=self.n_universal_eq_T[n_faults:], taps=[0])],
+                 sequences=[dict(input=self.len_series_i[self.n_faults:], taps=[0, 1]),
+                            dict(input=self.len_series_f[self.n_faults:], taps=[0, 1]),
+                            dict(input=self.n_formations_per_serie[self.n_faults:], taps=[0, 1]),
+                            dict(input=self.n_universal_eq_T[self.n_faults:], taps=[0])],
                 # non_sequences=[self.fault_matrix],
                  name='Looping interfaces',
                  profile=False,
@@ -1892,11 +1892,11 @@ class TheanoGraph(object):
         density_block = T.switch(T.eq(density_block, n_formation), density, density_block)
         return density_block
 
-    def compute_forward_gravity(self, n_faults=0): # densities, tz, select,
+    def compute_forward_gravity(self): # densities, tz, select,
 
         # TODO: Assert outside that densities is the same size as formations (minus faults)
         # Compute the geological model
-        lith_matrix, fault_matrix, pfai = self.compute_geological_model(n_faults=n_faults)
+        lith_matrix, fault_matrix, pfai = self.compute_geological_model()
 
         # if n_faults == 0:
         #     formations = T.concatenate([self.n_formation[::-1], T.stack([0])])
@@ -1943,20 +1943,20 @@ class TheanoGraph(object):
         sol = self.block_series()
         return theano.grad(sol.sum(), self.rest_layer_points_all)
 
-    def compute_grad2(self, n_faults=None):
-        sol = self.compute_a_series(
-            self.len_series_i[n_faults:][0], self.len_series_i[n_faults:][-1],
-            self.len_series_f[n_faults:][0], self.len_series_f[n_faults:][-1],
-            self.n_formations_per_serie[n_faults:][0], self.n_formations_per_serie[n_faults:][-1],
-            self.n_universal_eq_T[n_faults:],
-            self.lith_block_init, self.final_scalar_field_at_formations,
-            self.fault_matrix
-        )
-        return theano.grad(sol[0].sum(), self.rest_layer_points_all)
-
-    def compute_grad3(self, n_faults=None
-                      ):
-        lith_matrix, fault_matrix, pfai = self.compute_geological_model(n_faults=n_faults)
-        return theano.grad(lith_matrix[0].sum(), self.rest_layer_points_all)
-
-
+    # def compute_grad2(self, n_faults=None):
+    #     sol = self.compute_a_series(
+    #         self.len_series_i[n_faults:][0], self.len_series_i[n_faults:][-1],
+    #         self.len_series_f[n_faults:][0], self.len_series_f[n_faults:][-1],
+    #         self.n_formations_per_serie[n_faults:][0], self.n_formations_per_serie[n_faults:][-1],
+    #         self.n_universal_eq_T[n_faults:],
+    #         self.lith_block_init, self.final_scalar_field_at_formations,
+    #         self.fault_matrix
+    #     )
+    #     return theano.grad(sol[0].sum(), self.rest_layer_points_all)
+    #
+    # def compute_grad3(self, n_faults=None
+    #                   ):
+    #     lith_matrix, fault_matrix, pfai = self.compute_geological_model(n_faults=n_faults)
+    #     return theano.grad(lith_matrix[0].sum(), self.rest_layer_points_all)
+    #
+    #
