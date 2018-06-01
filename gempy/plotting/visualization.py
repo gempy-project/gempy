@@ -892,7 +892,8 @@ class vtkVisualization:
         self.surf_rend_1 = []
 
         formations = self.formation_name
-        fns = self.formation_number
+
+        fns = self.geo_data.interfaces[~(self.geo_data.interfaces['formation'].values == 'basement')]['formation_number'].unique().squeeze()#self.formation_number
         assert type(
             vertices) is list, 'vertices and simpleces have to be a list of arrays even when only one formation' \
                                'is passed'

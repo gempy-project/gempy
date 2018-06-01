@@ -91,7 +91,7 @@ class InterpolatorData:
         # This two properties get set calling rescale data
         self.rescaling_factor = None
         self.centers = None
-        self.extent_rescaled = None
+        #self.extent_original = copy.copy(geo_data.extent)
 
         # Rescaling
         self.geo_data_res = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
