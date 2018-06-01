@@ -843,8 +843,9 @@ class vtkVisualization:
 
         # Position
         source = vtk.vtkPlaneSource()
-        source.SetCenter(X, Y, Z)
+
         source.SetNormal(Gx, Gy, Gz)
+        source.SetCenter(X, Y, Z)
         a, b, c, d_, e, f = self.geo_data.extent
 
         source.SetPoint1(X+self._e_dx*.01, Y-self._e_dy*.01, Z)
@@ -855,8 +856,9 @@ class vtkVisualization:
         min_extent = np.min([self._e_dx, self._e_dy, self._e_dz])
         d.SetPlaceFactor(0.1)
 
-        d.PlaceWidget(a,b,c,d_,e,f)
+        d.PlaceWidget(a, b, c, d_, e, f)
         d.SetNormal(Gx, Gy, Gz)
+        d.SetCenter(X, Y, Z)
         d.GetPlaneProperty().SetColor(self.C_LOT[fn])
         d.GetHandleProperty().SetColor(self.C_LOT[fn])
         d.GetHandleProperty().SetOpacity(alpha)
