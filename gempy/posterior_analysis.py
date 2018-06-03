@@ -22,6 +22,10 @@ try:
     import pymc
 except ImportError:
     warnings.warn("pymc (v2) package is not installed. No support for stochastic simulation posterior analysis.")
+try:
+    import pymc3
+except ImportError:
+    warnings.warn("pymc (v3) package is not installed. No support for stochastic simulation posterior analysis.")
 import numpy as np
 import pandas as pn
 import gempy as gp
@@ -316,6 +320,165 @@ class Posterior:
 
         if self.verbose:
             print("Topology analysis completed.")
+
+
+class PosteriorPyMC3:
+    def __init__(self, dbname, pymc_model_f="gempy_model", pymc_topo_f="gempy_topo",
+                 topology=False, verbose=False):
+        """
+        Posterior database analysis for GemPy-pymc2 hdf5 databases.
+        Args:
+            dbname (str): Path of the hdf5 database.
+            pymc_model_f (str, optional): name of the model output function used (default: "gempy_model).
+            pymc_topo_f (str, optional): name of the topology output function used (default: "gempy_topo).
+            topology (bool, optional):  if a topology trace should be loaded from the database (default: False).
+            verbose (bool, optional): Verbosity switch.
+        """
+        # TODO: Add a method to set the lith_block and fault_block
+
+
+        self.verbose = verbose
+        # load db
+        with pymc3.Model() as model:
+            self.db = pymc3.backends.hdf5.load(dbname)
+            # model environment required? / alternatives?
+
+        self.n_iter = self.db.get_values(pymc_model_f).shape[0]
+        # get trace names
+        self.trace_names = self.db.varnames
+
+        # TODO DEP
+        # get gempy block models
+        # try:
+        #     self.lb = self.db.trace(pymc_model_f)[:, :2, :]
+        #     self.fb = self.db.trace(pymc_model_f)[:, 2:, :]
+        # except KeyError:
+        #     print("No GemPy model trace tallied.")
+        #     self.lb = None
+        #     self.fb = None
+
+        if topology:  # load topology data from database
+            topo_trace = self.db.trace(pymc_topo_f)[:]
+            # load graphs
+            self.topo_graphs = topo_trace[:, 0]
+            # load centroids
+            self.topo_centroids = topo_trace[:, 1]
+            # unique labels
+            self.topo_labels_unique = topo_trace[:, 2]
+            # get the look-up-tables
+            self.topo_lith_to_labels_lot = topo_trace[:, 3]
+            self.topo_labels_to_lith_lot = topo_trace[:, 4]
+            del topo_trace
+
+            self.topo_unique, self.topo_unique_freq, self.topo_unique_ids, self.topo_unique_prob = (None, None, None, None)
+            self.topo_count_dict = None
+
+            self.topo_analyze()
+
+        # load input data
+        #self.input_data = self.db.input_data.gettrace()
+
+        self.lith_prob = None
+        self.ie = None
+        self.ie_total = None
+
+    def change_input_data(self, interp_data, i):
+        """
+        Changes input data in interp_data to posterior input data at iteration i.
+
+        Args:
+            interp_data (gempy.data_management.InterpolationData): An interp_data object with the structure we want to
+            compute.
+            i (int): Iteration we want to recompute
+
+        Returns:
+             gempy.data_management.InterpolationData: interp_data with the data of the given iteration
+        """
+        i = int(i)
+        # replace res and ref point data
+        interp_data.get_input_data()[4] = self.db.get_values('input_ref')[i]
+        interp_data.get_input_data()[5] = self.db.get_values('input_res')[i]
+
+        #recalc_gradients(interp_data.geo_data_res.orientations)
+
+        # update interpolator
+        interp_data.update_interpolator()
+        if self.verbose:
+            print("interp_data parameters changed.")
+        return interp_data
+
+    # TODO: DEP Use gp.compute_model instead
+    # def compute_posterior_model(self, interp_data, i):
+    #     """Computes the model with the respective posterior input data. Returns lith block, fault block."""
+    #     self.change_input_data(interp_data, i)
+    #     return gp.compute_model(interp_data)
+
+
+
+    def compute_posterior_model_avrg(self, interp_data):
+        """Computes average posterior model."""
+        list_interf = []
+        list_fol = []
+        for i in range(self.n_iter):
+            list_interf.append(self.input_data[i][0])
+            list_fol.append(self.input_data[i][1])
+
+        interf_avrg = pn.concat(list_interf).groupby(level=0).mean()
+        fol_avrg = pn.concat(list_fol).groupby(level=0).mean()
+
+        interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = interf_avrg
+        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = fol_avrg
+        interp_data.update_interpolator()
+        return gp.compute_model(interp_data)
+
+    def compute_entropy(self):
+        """Computes the voxel information entropy of stored block models."""
+        if self.lb is None:
+            return "No models stored in self.lb, please run 'self.compute_posterior_models_all' to generate block" \
+                   " models for all iterations."
+
+        self.lith_prob = compute_probability_lithology(self.lb[:, 0, :])
+        self.ie = calcualte_information_entropy(self.lith_prob)
+        self.ie_total = calculate_information_entropy_total(self.ie)
+        print("Information Entropy successfully calculated. Stored in self.ie and self.ie_total")
+
+    def topo_count_connection(self, n1, n2):
+        """Counts the amount of times connection between nodes n1 and n2 in all of the topology graphs."""
+        count = 0
+        for G in self.topo_graphs:
+            count += gp.topology.check_adjacency(G, n1, n2)
+        return count
+
+    def topo_count_connection_array(self, n1, n2):
+        count = []
+        for G in self.topo_graphs:
+            count.append(gp.topology.check_adjacency(G, n1, n2))
+        return count
+
+    def topo_count_total_number_of_nodes(self):
+        """Counts the amount of topology graphs with a certain amount of total nodes."""
+        self.topo_count_dict = {}
+        for g in self.topo_graphs:
+            c = len(g.adj.keys())
+            if c in self.topo_count_dict.keys():
+                self.topo_count_dict[c] += 1
+            else:
+                self.topo_count_dict[c] = 1
+
+    def topo_analyze(self):
+        """Analysis of the tallied topology distribution."""
+        if self.verbose:
+            print("Starting topology analysis. This could take a while (depending on # iterations).")
+        self.topo_unique, self.topo_unique_freq, self.topo_unique_ids = get_unique_topo(self.topo_graphs)
+        self.topo_unique_prob = self.topo_unique_freq / np.sum(self.topo_unique_freq)
+        # count unique node numbers
+        self.topo_count_total_number_of_nodes()
+
+        self.topo_sort = np.argsort(self.topo_unique_freq)[::-1]
+
+        if self.verbose:
+            print("Topology analysis completed.")
+
 
 
 def find_first_match(t, topo_u):
