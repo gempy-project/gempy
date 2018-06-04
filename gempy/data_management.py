@@ -188,25 +188,25 @@ class InputData(object):
 
         self.orientations['G_x'] = np.sin(np.deg2rad(self.orientations["dip"].astype('float'))) * \
                                  np.sin(np.deg2rad(self.orientations["azimuth"].astype('float'))) * \
-                                 self.orientations["polarity"].astype('float')+1e-7
+                                 self.orientations["polarity"].astype('float')+1e-12
         self.orientations['G_y'] = np.sin(np.deg2rad(self.orientations["dip"].astype('float'))) * \
-                                 np.cos(np.deg2rad(self.orientations["azimuth"].astype('float'))) *\
-                                 self.orientations["polarity"].astype('float')+1e-7
+                                   np.cos(np.deg2rad(self.orientations["azimuth"].astype('float'))) *\
+                                 self.orientations["polarity"].astype('float')+1e-12
         self.orientations['G_z'] = np.cos(np.deg2rad(self.orientations["dip"].astype('float'))) *\
-                                 self.orientations["polarity"].astype('float')+1e-7
+                                 self.orientations["polarity"].astype('float')+1e-12
 
     def calculate_orientations(self):
         """
         Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.
         """
+
         self.orientations["dip"] = np.rad2deg(np.nan_to_num(np.arccos(self.orientations["G_z"] / self.orientations["polarity"])))
 
         # TODO if this way to compute azimuth breaks there is in rgeomod=kml_to_plane line 170 a good way to do it
-        self.orientations["azimuth"] = np.rad2deg(np.nan_to_num(
-            np.arcsin(self.orientations["G_x"]) /
-            (np.sin(np.arccos(self.orientations["G_z"] /
-                              self.orientations["polarity"])) *
-             self.orientations["polarity"])))
+        self.orientations["azimuth"] = np.rad2deg(np.nan_to_num(np.arctan(self.orientations["G_x"]/self.orientations["G_y"])))
+                                                  # np.arcsin(self.orientations["G_x"]) /
+                                                  # (np.sin(np.arccos(self.orientations["G_y"] /
+                                                  # self.orientations["polarity"])))))
 
     def count_faults(self):
         """
@@ -552,10 +552,12 @@ class InputData(object):
             self.orientations['formation'].cat.add_categories(kwargs['formation'], inplace=True)
             for key in kwargs:
                 self.orientations.ix[l, str(key)] = kwargs[key]
+
         self.calculate_gradient()
         self.calculate_orientations()
         if not 'series' in kwargs:
             self.set_series()
+
         self.set_basement()
         self.order_table()
 

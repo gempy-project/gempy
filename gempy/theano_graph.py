@@ -1273,7 +1273,6 @@ class TheanoGraph(object):
     #
     #     return Z_x
 
-
     def compare(self, a, b, slice_init, Z_x, l, n_formation, drift):
         """
         Treshold of the points to interpolate given 2 potential field values. TODO: This function is the one we
@@ -1324,12 +1323,12 @@ class TheanoGraph(object):
         ctr = T.mean(fault_points, axis=1)
         x = fault_points - ctr.reshape((-1, 1))
         M = T.dot(x, x.T)
-        U = T.nlinalg.svd(M)[0]
+        U = T.nlinalg.svd(M)[2]
         rotated_x = T.dot(self.x_to_interpolate(), U)
         rotated_fault_points = T.dot(fault_points.T, U)
         rotated_ctr = T.mean(rotated_fault_points, axis=0)
-        a_radio = ((rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()))/2 + self.inf_factor[self.n_formation_op[0]]
-        b_radio = ((rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()))/2 + self.inf_factor[self.n_formation_op[0]]
+        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min())/2 + self.inf_factor[self.n_formation_op[0]]
+        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min())/2 + self.inf_factor[self.n_formation_op[0]]
         sel = T.lt((rotated_x[:, 0] - rotated_ctr[0])**2/a_radio**2 + (rotated_x[:, 1] - rotated_ctr[1])**2/b_radio**2,
                    1)
 
@@ -1444,8 +1443,8 @@ class TheanoGraph(object):
         min_pot = T.min(Z_x)
         #     min_pot = theano.printing.Print("min_pot")(min_pot)
 
-       # max_pot_sigm = 2 * max_pot - self.scalar_field_at_interfaces_values[0]
-        #min_pot_sigm = 2 * min_pot - self.scalar_field_at_interfaces_values[-1]
+        # max_pot_sigm = 2 * max_pot - self.scalar_field_at_interfaces_values[0]
+        # min_pot_sigm = 2 * min_pot - self.scalar_field_at_interfaces_values[-1]
 
         boundaty_pad = (max_pot - min_pot) * 0.01
         #l = slope / (max_pot - min_pot)  # (max_pot - min_pot)
@@ -1553,7 +1552,7 @@ class TheanoGraph(object):
         self.len_i_1 = len_i_1
 
         # Extracting a the subset of the fault matrix to the scalar field of the current iterations
-        faults_relation_op =  self.fault_relation[:, T.cast(self.n_formation_op-1, 'int8')]
+        faults_relation_op = self.fault_relation[:, T.cast(self.n_formation_op-1, 'int8')]
         faults_relation_rep = T.repeat(faults_relation_op, 1)
 
         if 'faults_relation' in self.verbose:
@@ -1589,7 +1588,6 @@ class TheanoGraph(object):
                                                                   self.scalar_field_at_interfaces_values)
 
         aux_ind = T.max(self.n_formation_op, 0)
-
 
         if len(self.gradients) is not 0:
             weights = self.extend_dual_kriging()

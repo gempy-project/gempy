@@ -457,7 +457,7 @@ def set_orientation_from_interfaces(geo_data, indices_array, verbose=0):
 
     if _np.ndim(indices_array) is 1:
         indices = indices_array
-        form = geo_data.interfaces['formation'].iloc[indices].unique()
+        form = geo_data.interfaces['formation'].loc[indices].unique()
         assert form.shape[0] is 1, 'The interface points must belong to the same formation'
         form = form[0]
         print()
@@ -468,7 +468,7 @@ def set_orientation_from_interfaces(geo_data, indices_array, verbose=0):
                                  formation=form)
     elif _np.ndim(indices_array) is 2:
         for indices in indices_array:
-            form = geo_data.interfaces['formation'].iloc[indices].unique()[0]
+            form = geo_data.interfaces['formation'].loc[indices].unique()[0]
             assert form.shape[0] is 1, 'The interface points must belong to the same formation'
             form = form[0]
             ori_parameters = geo_data.create_orientation_from_interfaces(indices)
@@ -476,8 +476,10 @@ def set_orientation_from_interfaces(geo_data, indices_array, verbose=0):
                                      dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                      G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
                                      formation=form[0])
+
+    geo_data.update_df()
     if verbose:
-        get_data()
+        print(ori_parameters)
 
 
 def precomputations_gravity(interp_data, n_chunck=25, densities=None):
