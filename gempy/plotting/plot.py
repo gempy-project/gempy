@@ -253,7 +253,10 @@ class vtkPlot():
             self.vv.s_rend_2.loc[i, 'val'].Off()
             self.vv.s_rend_3.loc[i, 'val'].Off()
             self.vv.s_rend_4.loc[i, 'val'].Off()
-
+            self.vv.s_rend_1.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[0])
+            self.vv.s_rend_2.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[1])
+            self.vv.s_rend_3.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[2])
+            self.vv.s_rend_4.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[3])
         # Modify fg
         self.geo_data.set_new_df(new_df)
         if self.verbose > 0:
@@ -272,7 +275,10 @@ class vtkPlot():
             self.vv.o_rend_2.loc[i, 'val'].Off()
             self.vv.o_rend_3.loc[i, 'val'].Off()
             self.vv.o_rend_4.loc[i, 'val'].Off()
-
+            self.vv.o_rend_1.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[0])
+            self.vv.o_rend_2.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[1])
+            self.vv.o_rend_3.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[2])
+            self.vv.o_rend_4.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[3])
         # Modify fg
         self.geo_data.set_new_df(new_df)
         if self.verbose > 0:
@@ -290,6 +296,7 @@ class vtkPlot():
             self.vv.s_rend_2.loc[i, 'val'].On()
             self.vv.s_rend_3.loc[i, 'val'].On()
             self.vv.s_rend_4.loc[i, 'val'].On()
+
 
         self.geo_data.set_new_df(new_df.loc[ind_i], append=True)
         if self.verbose > 0:
@@ -433,6 +440,7 @@ class vtkPlot():
                 pass
 
             try:
+                self.vv.geo_data.order_table()
                 vertices, simpleces = self.vv.update_surfaces_real_time(self.vv.geo_data)
                 self.vv.set_surfaces(vertices, simpleces)
             except AssertionError:

@@ -791,6 +791,9 @@ class InputData(object):
             if type(series_distribution) is dict:
                 if order is None:
                     order = series_distribution.keys()
+                else:
+                    assert all(np.in1d(order, list(series_distribution.keys()))), 'Order series must contain the same keys as' \
+                                                                       'the passed dictionary ' + str(series_distribution.keys())
                 self.series = pn.DataFrame(dict([(k, pn.Series(v)) for k, v in series_distribution.items()]),
                                            columns=order)
 
@@ -856,7 +859,7 @@ class InputData(object):
         faults_series = self.count_faults()
         self.set_faults(faults_series)
 
-        self.reset_indices()
+       # self.reset_indices()
 
         self.set_formations()
         self.order_table()
@@ -1088,7 +1091,7 @@ class InputData(object):
 
         # Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset
         # the index. For some of the methods (pn.drop) we have to apply afterwards we need to reset these indeces
-        self.reset_indices()
+       # self.reset_indices()
         # DEP
         # self.interfaces.reset_index(drop=True, inplace=True)
         # self.orientations.reset_index(drop=True, inplace=True)
