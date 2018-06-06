@@ -4,13 +4,26 @@ About us
 Computational Geology RWTH Aachen University.
 #############################################
 
-We investigate novel methods to integrate geoscientific data and knowledge in process simulations of subsurface flow and transport problems with a specific focus on inverse problems,
-data fusion, and the analysis and quantification of uncertainties. The institute is lead by Prof. Florian Wellmann.
+The research  institute "Computational Geosciences and Reservoir Engineering", led by Prof. Florian Wellmann, is at the interface between the geosciences (including geophysics),
+computer science, engineering and mathematics. We are researching topics for the quantification of uncertainties in geoscientific systems,
+the characterization of geological complexity and the ability to predict fluid and transport processes underground. We consistently use the
+latest methodological developments in mathematics and computer science in the areas of uncertainty quantification and machine learning and
+integrate these methods into 3-D geological modelling and process simulations, for example to test geothermal and hydrogeological model
+forecasts.
+
+Furthermore, our methods are applied in the field of raw materials analysis and in research topics in structural geology and
+geophysics. We also focus on the development of methods for communicating the underground complexity and the associated uncertainties
+through the combination of virtual and augmented reality techniques.
+
+The profile of the group is thus strongly interdisciplinary, between methodological-technical developments,
+geoscientific questions and practical applications and fits in excellently with them.
 
 .. image:: ./images/institute.JPG
     :width: 59%
-GemPy's development core team:
 
+
+GemPy's development core team:
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 Benevolent Dictator:
 ******************************
 Miguel de la Varga (varga@aices.rwth-aachen.de)
