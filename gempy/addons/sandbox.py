@@ -16,9 +16,6 @@ import matplotlib.pyplot as plt
 import matplotlib
 
 
-
-
-
 # TODO: Superclass or not? methods: run sandbox with runnable, height map only, diff height...
 class Kinect: # add dummy
     _ids = count(0)
@@ -65,8 +62,6 @@ class Kinect: # add dummy
             self.depth=synth_depth
             return self.depth
 
-
-
     def get_filtered_frame(self, n_frames=5, sigma_gauss= None):
         if self.dummy==True:
             self.get_frame()
@@ -80,9 +75,6 @@ class Kinect: # add dummy
             if sigma_gauss:
                 self.depth=scipy.ndimage.filters.gaussian_filter(self.depth, sigma_gauss)
             return self.depth
-
-
-
 
 
 class Beamer:
@@ -106,7 +98,6 @@ class Beamer:
         else:
             self.calibration = Calibration(associated_beamer=self)
             print("calibration not provided or invalid. a new calibration was created.")
-
 
     def calibrate(self):
         self.calibration.create()
@@ -182,8 +173,6 @@ class Beamer:
                             (self.calibration.calibration_data['x_pos'], self.calibration.calibration_data['y_pos']))
         beamer_output.save('output.png') #TODO: Beamer specific outputs
 
-
-
     # TODO: threaded runloop exporting filtered and unfiltered depth
 
 
@@ -207,7 +196,7 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                  'z_range':(800,1400),
                                  'box_dim':(400,300)}
         self.cmap=None
-        ...
+       # ...
 
     def load(self, calibration_file=None):
         if calibration_file == None:
@@ -270,8 +259,6 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
             if close_click==True:
                 calibration_widget.close()
 
-
-
         calibration_widget = widgets.interactive(calibrate,
                                                  rot_angle=widgets.IntSlider(
                                                      value=self.calibration_data['rot_angle'], min=-180, max=180, step=1,continuous_update=False),
@@ -306,7 +293,6 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
 
                                                  )
         display(calibration_widget)
-
 
 
 class Model:
@@ -377,8 +363,6 @@ class Model:
         self.empty_depth_grid = empty_depth_grid
        # return self.empty_depth_grid
 
-
-
     def update_grid(self,depth):
         filtered_depth = numpy.ma.masked_outside(depth,self.associated_calibration.calibration_data['z_range'][0],self.associated_calibration.calibration_data['z_range'][1])
         scaled_depth = self.extent[5] - ((filtered_depth - self.associated_calibration.calibration_data['z_range'][0]) / (self.associated_calibration.calibration_data['z_range'][1] - self.associated_calibration.calibration_data['z_range'][0]) * (self.extent[5] - self.extent[4]))
@@ -388,8 +372,6 @@ class Model:
         flattened_depth = numpy.reshape(cropped_depth, (numpy.shape(self.empty_depth_grid)[0], 1))
         depth_grid = numpy.concatenate((self.empty_depth_grid, flattened_depth), axis=1)
         self.depth_grid=depth_grid
-
-
 
     def render_frame(self, outfile=None):
         if self.cmap == None:
@@ -417,7 +399,8 @@ class Model:
             plt.close(fig)
 
     def create_legend(self):
-        ...
+        #...
+        pass
 
     def setup(self, start_stream=True):
         if start_stream==True:
@@ -448,18 +431,16 @@ def run_model(model, calibration=None, kinect=None, beamer=None, filter_depth=Tr
         beamer.show(input="current_frame.png")
 
 
-
-
 def run_depth(calibration=None, kinect=None, beamer=None, filter_depth=True, n_frames=5, sigma_gauss=4,  cmap='terrain'):
-    if calibration==None:
+    if calibration is None:
         try:
             calibration=Calibration._instances[-1]
             print("using last calibration instance created.")
         except:
             print("no calibration found")
-    if kinect == None:
+    if kinect is None:
         kinect = calibration.associated_kinect
-    if beamer == None:
+    if beamer is None:
         beamer = calibration.associated_beamer
 
     while True:
@@ -473,7 +454,6 @@ def run_depth(calibration=None, kinect=None, beamer=None, filter_depth=True, n_f
         depth_masked = numpy.ma.masked_outside(depth_cropped, calibration.calibration_data['z_range'][0],
                                                calibration.calibration_data['z_range'][
                                                    1])  # depth pixels outside of range are white, no data pixe;ls are black.
-
 
         h = (calibration.calibration_data['y_lim'][1] - calibration.calibration_data['y_lim'][0]) / 100.0
         w = (calibration.calibration_data['x_lim'][1] - calibration.calibration_data['x_lim'][0]) / 100.0
@@ -489,24 +469,15 @@ def run_depth(calibration=None, kinect=None, beamer=None, filter_depth=True, n_f
 
 
 
-
-
-
-
-
-
-
 def render_depth_frame(kinect, beamer, cmap='viridis'):
-    ...
+    pass
 
 
 def render_depth_diff_frame(target_depth, kinect, beamer):
-    ...
-
-
+    pass
 
 def run_depth_diff(target_depth, kinect, beamer):
-    ...
+    pass
 
 """
 
