@@ -901,7 +901,7 @@ class vtkVisualization:
                                'is passed'
         assert 'DefaultBasement' not in formations, 'Remove DefaultBasement from the list of formations'
      #   print('I am in set surfaces')
-        for v, s, fn in zip(vertices, simplices, fns):
+        for v, s, fn in zip(vertices, simplices, np.atleast_1d(fns)):
             act, map, pol = self.create_surface(v, s, fn, alpha)
             self.surf_rend_1.append(act)
 
