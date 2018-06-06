@@ -69,7 +69,7 @@ Also, the use of Theano allows making use of GPUs through cuda (see the Theano d
 
 Making use of vtk interactivity and Qgrid (https://github.com/quantopian/qgrid) *GemPy* provides a functional interface to interact with input data and models.
 
-<p align="center"><a href="https://youtu.be/aA4MaHpLWVE?t=67"></a><img src="https://img.youtube.com/vi/aA4MaHpLWVE/0.jpg" width="600"></p>
+<p align="center"><a href="https://youtu.be/aA4MaHpLWVE?t=67"><img src="https://img.youtube.com/vi/aA4MaHpLWVE/0.jpg" width="600"></p>
 
 
 
