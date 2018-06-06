@@ -36,6 +36,7 @@ Contents:
    tutorial
    theory
    code
+   about
 
 The core algorithm is based on a universal cokriging interpolation method devised by
 Lajaunie et al. (1997) and further elaborated by Calcagno et al. (2008).
