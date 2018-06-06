@@ -27,6 +27,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="#" />
     <link rel="search" title="Search" href="search.html" />
    
@@ -37,73 +38,9 @@
 
   </head>
   <body>
-  <div class="document">
-    
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<p class="logo">
-  <a href="index.html">
-    <img class="logo" src="_static/./logos/gempy.png" alt="Logo"/>
-    
-    <h1 class="logo logo-name">GemPy</h1>
-    
-  </a>
-</p>
+  
 
-
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="index.html">GemPy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_theory/motivation.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -160,19 +97,25 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.html#posterior_analysis.calcualte_information_entropy">calcualte_information_entropy() (in module posterior_analysis)</a>
-</li>
       <li><a href="code.html#data_management.InputData.calculate_gradient">calculate_gradient() (data_management.InputData method)</a>
 
       <ul>
         <li><a href="code.html#posterior_analysis.calculate_gradient">(in module posterior_analysis)</a>
 </li>
       </ul></li>
+      <li><a href="code.html#posterior_analysis.calculate_ie">calculate_ie() (in module posterior_analysis)</a>
+</li>
+      <li><a href="code.html#posterior_analysis.calculate_information_entropy">calculate_information_entropy() (in module posterior_analysis)</a>
+</li>
       <li><a href="code.html#posterior_analysis.calculate_information_entropy_total">calculate_information_entropy_total() (in module posterior_analysis)</a>
 </li>
       <li><a href="code.html#data_management.InputData.calculate_orientations">calculate_orientations() (data_management.InputData method)</a>
 </li>
+      <li><a href="code.html#posterior_analysis.calculate_probability_lithology">calculate_probability_lithology() (in module posterior_analysis)</a>
+</li>
       <li><a href="code.html#posterior_analysis.change_input_data">change_input_data() (in module posterior_analysis)</a>
+</li>
+      <li><a href="code.html#posterior_analysis.change_input_data_avrg">change_input_data_avrg() (in module posterior_analysis)</a>
 </li>
       <li><a href="code.html#topology.check_adjacency">check_adjacency() (in module topology)</a>
 </li>
@@ -188,15 +131,15 @@
 </li>
       <li><a href="code.html#topology.compute_adj_shape">compute_adj_shape() (in module topology)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#topology.compute_areas">compute_areas() (in module topology)</a>
 </li>
       <li><a href="code.html#gempy_front.compute_model">compute_model() (in module gempy_front)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="code.html#posterior_analysis.compute_posterior_models_all">compute_posterior_models_all() (in module posterior_analysis)</a>
+      <li><a href="code.html#gempy_front.compute_model_at">compute_model_at() (in module gempy_front)</a>
 </li>
-      <li><a href="code.html#posterior_analysis.compute_probability_lithology">compute_probability_lithology() (in module posterior_analysis)</a>
+      <li><a href="code.html#posterior_analysis.compute_posterior_models_all">compute_posterior_models_all() (in module posterior_analysis)</a>
 </li>
       <li><a href="code.html#theano_graph.TheanoGraph.contribution_gradient_interface">contribution_gradient_interface() (theano_graph.TheanoGraph method)</a>
 </li>
@@ -266,11 +209,17 @@
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.html#data_management.InputData.faults">faults (data_management.InputData attribute)</a>
+</li>
       <li><a href="code.html#theano_graph.TheanoGraph.faults_contribution">faults_contribution() (theano_graph.TheanoGraph method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#theano_graph.TheanoGraph.faults_matrix">faults_matrix() (theano_graph.TheanoGraph method)</a>
+</li>
+      <li><a href="code.html#data_management.InputData.faults_relations">faults_relations (data_management.InputData attribute)</a>
+</li>
+      <li><a href="code.html#data_management.InputData.formations">formations (data_management.InputData attribute)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -312,6 +261,8 @@
 </li>
       <li><a href="code.html#gempy_front.get_th_fn">get_th_fn() (in module gempy_front)</a>
 </li>
+      <li><a href="code.html#data_management.InputData.grid">grid (data_management.InputData attribute)</a>
+</li>
       <li><a href="code.html#data_management.GridClass">GridClass (class in data_management)</a>
 </li>
   </ul></td>
@@ -324,11 +275,17 @@
 </li>
       <li><a href="code.html#theano_graph.TheanoGraph.input_parameters_list">input_parameters_list() (theano_graph.TheanoGraph method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#data_management.InputData">InputData (class in data_management)</a>
 </li>
-      <li><a href="code.html#data_management.InputData.Interfaces">Interfaces (data_management.InputData attribute)</a>, <a href="code.html#data_management.InputData.Interfaces">[1]</a>
+      <li><a href="code.html#gempy_front.interactive_df_change_df">interactive_df_change_df() (in module gempy_front)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.html#gempy_front.interactive_df_open">interactive_df_open() (in module gempy_front)</a>
+</li>
+      <li><a href="code.html#data_management.InputData.Interfaces">Interfaces (data_management.InputData attribute)</a>
+</li>
+      <li><a href="code.html#data_management.InputData.interfaces">interfaces (data_management.InputData attribute)</a>
 </li>
       <li><a href="code.html#gempy_front.interpolator">interpolator (in module gempy_front)</a>
 </li>
@@ -388,10 +345,12 @@
 </li>
       <li><a href="code.html#gempy_front.plot_data_3D">plot_data_3D() (in module gempy_front)</a>
 </li>
-      <li><a href="code.html#gempy_front.plot_scalar_field">plot_scalar_field() (in module gempy_front)</a>
+      <li><a href="code.html#gempy_front.plot_gradient">plot_gradient() (in module gempy_front)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="code.html#gempy_front.plot_scalar_field">plot_scalar_field() (in module gempy_front)</a>
+</li>
       <li><a href="code.html#gempy_front.plot_section">plot_section() (in module gempy_front)</a>
 </li>
       <li><a href="code.html#gempy_front.plot_surfaces_3D">plot_surfaces_3D() (in module gempy_front)</a>
@@ -436,17 +395,25 @@
 </li>
       <li><a href="code.html#data_management.InputData.set_faults">set_faults() (data_management.InputData method)</a>
 </li>
-      <li><a href="code.html#data_management.InputData.set_grid">set_grid() (data_management.InputData method)</a>
+      <li><a href="code.html#gempy_front.set_formations">set_formations() (in module gempy_front)</a>
 </li>
+      <li><a href="code.html#data_management.InputData.set_grid">set_grid() (data_management.InputData method)</a>
+
+      <ul>
+        <li><a href="code.html#gempy_front.set_grid">(in module gempy_front)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#data_management.InputData.set_interfaces">set_interfaces() (data_management.InputData method)</a>
 
       <ul>
         <li><a href="code.html#gempy_front.set_interfaces">(in module gempy_front)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="code.html#gempy_front.set_interpolation_data">set_interpolation_data() (in module gempy_front)</a>
+</li>
+      <li><a href="code.html#gempy_front.set_orientation_from_interfaces">set_orientation_from_interfaces() (in module gempy_front)</a>
 </li>
       <li><a href="code.html#data_management.InputData.set_orientations">set_orientations() (data_management.InputData method)</a>
 
@@ -502,8 +469,75 @@
           </div>
         </div>
       </div>
-    <div class="clearer"></div>
-  </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="index.html">GemPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_theory/motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About us</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html"><span class="raw-html-m2r"><p align="left"><img src="docs/logos/gempy1.png" width="300"></p></span></a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
     <div class="footer">
       &copy;2018, Miguel de la Varga, CGR-Aachen Team.
       

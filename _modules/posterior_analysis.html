@@ -26,6 +26,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
    
@@ -36,75 +37,9 @@
 
   </head>
   <body>
-  <div class="document">
-    
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<p class="logo">
-  <a href="../index.html">
-    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
-    
-    <h1 class="logo logo-name">GemPy</h1>
-    
-  </a>
-</p>
+  
 
-
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<h3>Navigation</h3>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../_theory/motivation.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="../index.html">Documentation overview</a><ul>
-  <li><a href="index.html">Module code</a><ul>
-  </ul></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="../search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
+    <div class="document">
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -170,7 +105,21 @@
 
     <span class="c1"># update interpolator</span>
     <span class="n">interp_data</span><span class="o">.</span><span class="n">update_interpolator</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;interp_data parameters changed.&quot;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">interp_data</span></div>
 
+
+<div class="viewcode-block" id="change_input_data_avrg"><a class="viewcode-back" href="../code.html#posterior_analysis.change_input_data_avrg">[docs]</a><span class="k">def</span> <span class="nf">change_input_data_avrg</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Calculates average posterior parameters and updates interp_data.geo_data_res dataframes.&quot;&quot;&quot;</span>
+
+    <span class="c1"># get input data</span>
+    <span class="n">trace</span> <span class="o">=</span> <span class="n">db</span><span class="o">.</span><span class="n">input_data</span><span class="o">.</span><span class="n">gettrace</span><span class="p">()</span>
+    <span class="c1"># set average in df</span>
+    <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">trace</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">][:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;dip&quot;</span><span class="p">,</span> <span class="s2">&quot;azimuth&quot;</span><span class="p">,</span> <span class="s2">&quot;polarity&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">trace</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">][:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">recalc_gradients</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">)</span>  <span class="c1"># recalc gradients</span>
+    <span class="n">interp_data</span><span class="o">.</span><span class="n">update_interpolator</span><span class="p">()</span>  <span class="c1"># update interpolator</span>
     <span class="k">return</span> <span class="n">interp_data</span></div>
 
 
@@ -232,7 +181,7 @@
     <span class="k">return</span> <span class="n">lbs</span><span class="p">,</span> <span class="n">fbs</span></div>
 
 
-<div class="viewcode-block" id="compute_probability_lithology"><a class="viewcode-back" href="../code.html#posterior_analysis.compute_probability_lithology">[docs]</a><span class="k">def</span> <span class="nf">compute_probability_lithology</span><span class="p">(</span><span class="n">lith_blocks</span><span class="p">):</span>
+<div class="viewcode-block" id="calculate_probability_lithology"><a class="viewcode-back" href="../code.html#posterior_analysis.calculate_probability_lithology">[docs]</a><span class="k">def</span> <span class="nf">calculate_probability_lithology</span><span class="p">(</span><span class="n">lith_blocks</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Blocks must be just the lith blocks!&quot;&quot;&quot;</span>
     <span class="n">lith_id</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">lith_blocks</span><span class="p">)</span>
     <span class="c1"># lith_count = np.zeros_like(lith_blocks[0:len(lith_id)])</span>
@@ -243,7 +192,7 @@
     <span class="k">return</span> <span class="n">lith_prob</span></div>
 
 
-<div class="viewcode-block" id="calcualte_information_entropy"><a class="viewcode-back" href="../code.html#posterior_analysis.calcualte_information_entropy">[docs]</a><span class="k">def</span> <span class="nf">calcualte_information_entropy</span><span class="p">(</span><span class="n">lith_prob</span><span class="p">):</span>
+<div class="viewcode-block" id="calculate_information_entropy"><a class="viewcode-back" href="../code.html#posterior_analysis.calculate_information_entropy">[docs]</a><span class="k">def</span> <span class="nf">calculate_information_entropy</span><span class="p">(</span><span class="n">lith_prob</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;Calculates information entropy for the given probability array.&quot;&quot;&quot;</span>
     <span class="n">ie</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros_like</span><span class="p">(</span><span class="n">lith_prob</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
     <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">lith_prob</span><span class="p">:</span>
@@ -258,6 +207,16 @@
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ie</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">ie</span><span class="p">)</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="n">ie</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="calculate_ie"><a class="viewcode-back" href="../code.html#posterior_analysis.calculate_ie">[docs]</a><span class="k">def</span> <span class="nf">calculate_ie</span><span class="p">(</span><span class="n">lbs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Computes the per-voxel and total information entropy of given block models.&quot;&quot;&quot;</span>
+
+    <span class="n">lith_prob</span> <span class="o">=</span> <span class="n">calculate_probability_lithology</span><span class="p">(</span><span class="n">lbs</span><span class="p">)</span>
+    <span class="n">ie</span> <span class="o">=</span> <span class="n">calculate_information_entropy</span><span class="p">(</span><span class="n">lith_prob</span><span class="p">)</span>
+    <span class="n">ie_total</span> <span class="o">=</span> <span class="n">calculate_information_entropy_total</span><span class="p">(</span><span class="n">ie</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">ie</span><span class="p">,</span> <span class="n">ie_total</span></div>
 
 
 <span class="k">class</span> <span class="nc">Posterior</span><span class="p">:</span>
@@ -344,29 +303,18 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;interp_data parameters changed.&quot;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">interp_data</span>
 
-    <span class="c1"># TODO: DEP Use gp.compute_model instead</span>
-    <span class="c1"># def compute_posterior_model(self, interp_data, i):</span>
-    <span class="c1">#     &quot;&quot;&quot;Computes the model with the respective posterior input data. Returns lith block, fault block.&quot;&quot;&quot;</span>
-    <span class="c1">#     self.change_input_data(interp_data, i)</span>
-    <span class="c1">#     return gp.compute_model(interp_data)</span>
+    <span class="k">def</span> <span class="nf">change_input_data_avrg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Calculates average posterior parameters and updates interp_data.geo_data_res dataframes.&quot;&quot;&quot;</span>
 
-
-
-    <span class="k">def</span> <span class="nf">compute_posterior_model_avrg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">interp_data</span><span class="p">):</span>
-        <span class="sd">&quot;&quot;&quot;Computes average posterior model.&quot;&quot;&quot;</span>
-        <span class="n">list_interf</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="n">list_fol</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">n_iter</span><span class="p">):</span>
-            <span class="n">list_interf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">])</span>
-            <span class="n">list_fol</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">])</span>
-
-        <span class="n">interf_avrg</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">list_interf</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-        <span class="n">fol_avrg</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">list_fol</span><span class="p">)</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-
+        <span class="c1"># average input data</span>
+        <span class="n">interf_avrg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">][:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">orient_avrg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">][:]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># set average in df</span>
         <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[[</span><span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">interf_avrg</span>
-        <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s2">&quot;G_x&quot;</span><span class="p">,</span> <span class="s2">&quot;G_y&quot;</span><span class="p">,</span> <span class="s2">&quot;G_z&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;dip&quot;</span><span class="p">,</span> <span class="s2">&quot;azimuth&quot;</span><span class="p">,</span> <span class="s2">&quot;polarity&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">fol_avrg</span>
-        <span class="n">interp_data</span><span class="o">.</span><span class="n">update_interpolator</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">gp</span><span class="o">.</span><span class="n">compute_model</span><span class="p">(</span><span class="n">interp_data</span><span class="p">)</span>
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s2">&quot;G_x&quot;</span><span class="p">,</span> <span class="s2">&quot;G_y&quot;</span><span class="p">,</span> <span class="s2">&quot;G_z&quot;</span><span class="p">,</span> <span class="s2">&quot;X&quot;</span><span class="p">,</span> <span class="s2">&quot;Y&quot;</span><span class="p">,</span> <span class="s2">&quot;Z&quot;</span><span class="p">,</span> <span class="s2">&quot;dip&quot;</span><span class="p">,</span> <span class="s2">&quot;azimuth&quot;</span><span class="p">,</span> <span class="s2">&quot;polarity&quot;</span><span class="p">]]</span> <span class="o">=</span> <span class="n">orient_avrg</span>
+        <span class="n">recalc_gradients</span><span class="p">(</span><span class="n">interp_data</span><span class="o">.</span><span class="n">geo_data_res</span><span class="o">.</span><span class="n">orientations</span><span class="p">)</span>  <span class="c1"># recalc gradients</span>
+        <span class="n">interp_data</span><span class="o">.</span><span class="n">update_interpolator</span><span class="p">()</span>  <span class="c1"># update interpolator</span>
+        <span class="k">return</span> <span class="n">interp_data</span>
 
     <span class="k">def</span> <span class="nf">compute_entropy</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Computes the voxel information entropy of stored block models.&quot;&quot;&quot;</span>
@@ -374,8 +322,8 @@
             <span class="k">return</span> <span class="s2">&quot;No models stored in self.lb, please run &#39;self.compute_posterior_models_all&#39; to generate block&quot;</span> \
                    <span class="s2">&quot; models for all iterations.&quot;</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">lith_prob</span> <span class="o">=</span> <span class="n">compute_probability_lithology</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lb</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">ie</span> <span class="o">=</span> <span class="n">calcualte_information_entropy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lith_prob</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">lith_prob</span> <span class="o">=</span> <span class="n">calculate_probability_lithology</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lb</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">:])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">ie</span> <span class="o">=</span> <span class="n">calculate_information_entropy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">lith_prob</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">ie_total</span> <span class="o">=</span> <span class="n">calculate_information_entropy_total</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ie</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Information Entropy successfully calculated. Stored in self.ie and self.ie_total&quot;</span><span class="p">)</span>
 
@@ -417,9 +365,6 @@
             <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Topology analysis completed.&quot;</span><span class="p">)</span>
 
 
-
-
-
 <span class="k">def</span> <span class="nf">find_first_match</span><span class="p">(</span><span class="n">t</span><span class="p">,</span> <span class="n">topo_u</span><span class="p">):</span>
     <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
     <span class="k">for</span> <span class="n">t2</span> <span class="ow">in</span> <span class="n">topo_u</span><span class="p">:</span>
@@ -451,7 +396,6 @@
 
 <span class="k">def</span> <span class="nf">get_unique_jaccard</span><span class="p">(</span><span class="n">js</span><span class="p">):</span>
     <span class="n">j_u</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">js</span><span class="p">)</span>  <span class="c1"># unique topology states</span>
-
 
 
 <div class="viewcode-block" id="modify_plane_dip"><a class="viewcode-back" href="../code.html#posterior_analysis.modify_plane_dip">[docs]</a><span class="k">def</span> <span class="nf">modify_plane_dip</span><span class="p">(</span><span class="n">dip</span><span class="p">,</span> <span class="n">group_id</span><span class="p">,</span> <span class="n">data_obj</span><span class="p">):</span>
@@ -526,8 +470,77 @@
           </div>
         </div>
       </div>
-    <div class="clearer"></div>
-  </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="../index.html">
+    <img class="logo" src="../_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
+
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../index.html">GemPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../_theory/motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About us</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html"><span class="raw-html-m2r"><p align="left"><img src="docs/logos/gempy1.png" width="300"></p></span></a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../index.html">Documentation overview</a><ul>
+  <li><a href="index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="../search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
     <div class="footer">
       &copy;2018, Miguel de la Varga, CGR-Aachen Team.
       
