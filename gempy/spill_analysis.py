@@ -58,6 +58,8 @@ def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z'):
     v_gy[:, 1] = v_gy0[:, 1] * vox_size_y
     v_gy[:, 2] = v_gy0[:, 2] * vox_size_z
 
+    # calculating this distance takes very long
+    # how cut we possibly simplify this?
     dist_gxy = distance.cdist(v_gx, v_gy, 'euclidean')
 
     # get distance minima and minima positions for both vertices groups
@@ -173,7 +175,7 @@ def get_voxel_extrema(GX, GY, GZ=np.nan, direction='z'):
 
     return vox_minima, vox_maxima, vox_saddles
 
-def get_surface_extrema(geo_data, surface_vertices, GX, GY, plot_figure=False):
+def get_surface_extrema(geo_data, surface_vertices, GX, GY):
     vox_size_x = geo_data.extent[1] / geo_data.resolution[0]
     vox_size_y = geo_data.extent[3] / geo_data.resolution[1]
     vox_size_z = geo_data.extent[5] / geo_data.resolution[2]
@@ -224,63 +226,15 @@ def get_surface_extrema(geo_data, surface_vertices, GX, GY, plot_figure=False):
     cut_bool_SADD = min_dist_SADD < vox_size_diag / 2
     intersect_saddles_all = intersect[cut_bool_SADD]
 
-    if plot_figure == True:
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(surface_vertices[:, 0], surface_vertices[:, 1], surface_vertices[:, 2], color='k', alpha=0.05)
-        ax.scatter(intersect_minima_all[:, 0], intersect_minima_all[:, 1], intersect_minima_all[:, 2],
-                   color='turquoise', s=200, marker='+')
-        ax.scatter(intersect_maxima_all[:, 0], intersect_maxima_all[:, 1], intersect_maxima_all[:, 2], color='r', s=200,
-                   marker='x')
-        ax.scatter(intersect_saddles_all[:, 0], intersect_saddles_all[:, 1], intersect_saddles_all[:, 2],
-                   color='violet', s=200, marker='*')
-
-        ax.set_xlim(geo_data.extent[0], geo_data.extent[1])
-        ax.set_ylim(geo_data.extent[2], geo_data.extent[3])
-        ax.set_zlim(geo_data.extent[4], geo_data.extent[5])
-        ax.set_xlabel('X Label')
-        ax.set_ylabel('Y Label')
-        ax.set_zlabel('Z Label')
-
-        plt.show()
-
     return intersect_minima_all, intersect_maxima_all, intersect_saddles_all
 
-def get_spill_point(geo_data, surface_vertices, GX, GY, plot_figure=False):
+def get_saddle_point(geo_data, surface_vertices, GX, GY):
     intersect_saddles_all = get_surface_extrema(geo_data, surface_vertices, GX, GY, plot_figure)[2]
     # get highest saddle point as the relevant point
-    final_SADD = intersect_saddles_all[np.argmax(intersect_saddles_all[:, 2])]
-    if plot_figure == True:
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(surface_vertices[:, 0], surface_vertices[:, 1], surface_vertices[:, 2], color='k', alpha=0.05)
-        ax.scatter(final_SADD[0], final_SADD[1], final_SADD[2], color='violet', s=300, marker='*')
-
-        ax.set_xlim(geo_data.extent[0], geo_data.extent[1])
-        ax.set_ylim(geo_data.extent[2], geo_data.extent[3])
-        ax.set_zlim(geo_data.extent[4], geo_data.extent[5])
-        ax.set_xlabel('X Label')
-        ax.set_ylabel('Y Label')
-        ax.set_zlabel('Z Label')
-
-        plt.show()
-    return final_SADD
+    max_SADD = intersect_saddles_all[np.argmax(intersect_saddles_all[:, 2])]
+    return max_SADD
 
 def get_surface_max(geo_data, surface_vertices, GX, GY, plot_figure=True):
     intersect_maxima_all = get_surface_extrema(geo_data, surface_vertices, GX, GY, plot_figure)[1]
-    final_MAX = intersect_maxima_all[np.argmax(intersect_maxima_all[:, 2])]
-    if plot_figure == True:
-        fig = plt.figure()
-        ax = fig.add_subplot(111, projection='3d')
-        ax.scatter(surface_vertices[:, 0], surface_vertices[:, 1], surface_vertices[:, 2], color='k', alpha=0.05)
-        ax.scatter(final_MAX[0], final_MAX[1], final_MAX[2], color='r', s=200, marker='x')
-
-        ax.set_xlim(geo_data.extent[0], geo_data.extent[1])
-        ax.set_ylim(geo_data.extent[2], geo_data.extent[3])
-        ax.set_zlim(geo_data.extent[4], geo_data.extent[5])
-        ax.set_xlabel('X Label')
-        ax.set_ylabel('Y Label')
-        ax.set_zlabel('Z Label')
-
-        plt.show()
-    return final_MAX
+    max_MAX = intersect_maxima_all[np.argmax(intersect_maxima_all[:, 2])]
+    return max_MAX
