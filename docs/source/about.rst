@@ -5,7 +5,7 @@ Computational Geology RWTH Aachen University.
 #############################################
 
 The research  institute "Computational Geosciences and Reservoir Engineering", led by Prof. Florian Wellmann, is at the interface between the geosciences (including geophysics),
-computer science, engineering and mathematics. We are researching topics for the quantification of uncertainties in geoscientific systems,
+computer science, engineering and mathematics. We are investigating quantification of uncertainties in geoscientific systems,
 the characterization of geological complexity and the ability to predict fluid and transport processes underground. We consistently use the
 latest methodological developments in mathematics and computer science in the areas of uncertainty quantification and machine learning and
 integrate these methods into 3-D geological modelling and process simulations, for example to test geothermal and hydrogeological model

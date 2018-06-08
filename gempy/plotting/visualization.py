@@ -281,7 +281,7 @@ class PlotData2D(object):
             kwargs['cmap'] = self._cmap #
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
-     #   print(plot_block[_a, _b, _c].T, type(plot_block[_a, _b, _c].T))
+
         im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
                         extent=extent_val,
                         interpolation=interpolation,

@@ -137,10 +137,10 @@ map, which can then be reimported into GoogleEarth.
 .. image:: ./images/ge.png
 
 Getting Started
----------------
+^^^^^^^^^^^^^^^
 
 Dependecies
-^^^^^^^^^^^
+------------
 
 *GemPy* requires Python 3 and makes use of numerous open-source libraries:
 
@@ -172,7 +172,7 @@ We are curently working on providing GemPy also via Anaconda Cloud, for easier i
 its dependencies.
 
 Installation
-^^^^^^^^^^^^
+-------------
 
 We provide the latest release version of *GemPy* via the **Conda** and **PyPi** package services. We highly
 recommend using either Conda or PyPi as both will take care of automatically installing all dependencies.
