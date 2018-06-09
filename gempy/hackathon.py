@@ -8,12 +8,15 @@ from scipy.spatial import distance
 import scipy as sp
 import scipy.ndimage
 from matplotlib import cm
-from examples.seismic import Model, plot_velocity
-from devito import TimeFunction
-from devito import Eq
-from sympy import solve
-from examples.seismic import RickerSource
-from devito import Operator
+try:
+    from examples.seismic import Model, plot_velocity
+    from devito import TimeFunction
+    from devito import Eq
+    from sympy import solve
+    from examples.seismic import RickerSource
+    from devito import Operator
+except ImportError:
+    print('Devito is not working')
 
 ### LEGO/SHAPE RECOGNITION
 def where_shapes(image, thresh_value=80, min_area=30):
