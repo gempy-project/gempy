@@ -113,7 +113,6 @@ def get_gradmin_intersect(geo_data, surface_vertices, grad_minima):
     return intersect
 
 def get_voxel_extrema(GX, GY, GZ=np.nan, direction='z'):
-
     if direction == 'z':
         gx = GX
         gy = GY
@@ -229,12 +228,12 @@ def get_surface_extrema(geo_data, surface_vertices, GX, GY):
     return intersect_minima_all, intersect_maxima_all, intersect_saddles_all
 
 def get_saddle_point(geo_data, surface_vertices, GX, GY):
-    intersect_saddles_all = get_surface_extrema(geo_data, surface_vertices, GX, GY, plot_figure)[2]
+    intersect_saddles_all = get_surface_extrema(geo_data, surface_vertices, GX, GY)[2]
     # get highest saddle point as the relevant point
     max_SADD = intersect_saddles_all[np.argmax(intersect_saddles_all[:, 2])]
     return max_SADD
 
-def get_surface_max(geo_data, surface_vertices, GX, GY, plot_figure=True):
-    intersect_maxima_all = get_surface_extrema(geo_data, surface_vertices, GX, GY, plot_figure)[1]
+def get_surface_max(geo_data, surface_vertices, GX, GY):
+    intersect_maxima_all = get_surface_extrema(geo_data, surface_vertices, GX, GY)[1]
     max_MAX = intersect_maxima_all[np.argmax(intersect_maxima_all[:, 2])]
     return max_MAX
