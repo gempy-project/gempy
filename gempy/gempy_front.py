@@ -38,7 +38,6 @@ from pandas import DataFrame
 import copy
 import warnings
 
-import gempy.hackathon as hackathon
 from gempy.plotting.visualization import PlotData2D, vtkVisualization
 from gempy.data_management import InputData, GridClass
 from gempy.interpolator import InterpolatorData
