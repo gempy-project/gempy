@@ -1,7 +1,10 @@
 import sys
 import os
 #sys.path.append( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )
-import freenect
+try:
+    import freenect
+except ImportError:
+    print('Freenect is not installed. Sandbox wont work. Good luck')
 import webbrowser
 import pickle
 import weakref
