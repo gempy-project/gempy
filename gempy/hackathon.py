@@ -5,6 +5,15 @@ import cv2
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial import distance
+import scipy as sp
+import scipy.ndimage
+from matplotlib import cm
+from examples.seismic import Model, plot_velocity
+from devito import TimeFunction
+from devito import Eq
+from sympy import solve
+from examples.seismic import RickerSource
+from devito import Operator
 
 ### LEGO/SHAPE RECOGNITION
 def where_shapes(image, thresh_value=80, min_area=30):
@@ -127,3 +136,56 @@ def plot_all_shapes(image, thresh_value=80, min_area=30):
         cv2.rectangle(output, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
     out_image = np.hstack([image, output])
     plt.imshow(out_image)
+
+
+def scale_linear(data, high, low):
+    mins = np.amin(data)
+    maxs = np.amax(data)
+    rng = maxs - mins
+    return high - (((high - low) * (maxs - data)) / rng)
+
+def smooth_topo(data, sigma_x=2, sigma_y=2):
+    sigma = [sigma_y, sigma_x]
+    dataSmooth = sp.ndimage.filters.gaussian_filter(data, sigma, mode='nearest')
+    return dataSmooth
+
+def simulate_seismic_topo (topo, circles, not_circles, f0 = 0.02500, dx=10, dy=10, t0=0, tn=1000,pmlthickness=40 ,slice_to_display = 200):
+
+    topo = topo.astype(np.float32)
+    topoRescale = scale_linear(topo, 5, 1)
+    veltopo=smooth_topo( topoRescale )
+
+    # Define the model
+    model = Model(vp=veltopo,        # A velocity model.
+                  origin=(0, 0),     # Top left corner.
+                  shape=veltopo.shape,    # Number of grid points.
+                  spacing=(dx, dy),  # Grid spacing in m.
+                  nbpml=pmlthickness)          # boundary layer.
+
+    dt = model.critical_dt  # Time step from model grid spacing
+    nt = int(1 + (tn-t0) / dt)  # Discrete time axis length
+    time = np.linspace(t0, tn, nt)  # Discrete modelling time
+
+    u = TimeFunction(name="u", grid=model.grid,
+                 time_order=2, space_order=2,
+                 save=True, time_dim=nt)
+    pde = model.m * u.dt2 - u.laplace + model.damp * u.dt
+    stencil = Eq(u.forward, solve(pde, u.forward)[0])
+
+
+    src_coords = np.multiply(circles[0],[dx,dy])
+    src = RickerSource(name='src0', grid=model.grid, f0=f0, time=time, coordinates=src_coords)
+    src_term = src.inject(field=u.forward, expr=src * dt**2 / model.m, offset=model.nbpml)
+
+    if circles.shape[0]>1:
+        for idx, row in enumerate(circles[1:,:]):
+            namesrc = 'src' + str(idx+1)
+            src_coords = np.multiply(row,[dx,dy])
+            src_temp = RickerSource(name=namesrc, grid=model.grid, f0=f0, time=time, coordinates=src_coords)
+            src_term_temp = src_temp.inject(field=u.forward, expr=src * dt**2 / model.m, offset=model.nbpml)
+            src_term += src_term_temp
+
+    op_fwd = Operator( [stencil] + src_term )
+    op_fwd(time=nt, dt=model.critical_dt)
+
+    return u.data[:,pmlthickness:-pmlthickness,pmlthickness:-pmlthickness]
