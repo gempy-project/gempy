@@ -44,6 +44,9 @@ def where_shapes(image, thresh_value=80, min_area=30):
 
     return np.array(contour_coords)
 
+def read_image(image):
+    img=cv2.imread(image)
+    return img
 
 def where_circles(image, thresh_value=80):
     """Get the coordinates for all detected circles.
@@ -106,6 +109,7 @@ def get_shape_coords(image, thresh_value=80, min_area=30):
                 """
     non_circles = where_non_circles(image, thresh_value, min_area)
     circles = where_circles(image, thresh_value)
+    if len()
     return non_circles, circles
 
 
