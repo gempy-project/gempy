@@ -39,7 +39,7 @@ import gempy as _gempy
 
 class vtkPlot():
     def __init__(self, geo_data, alpha=1,
-                     size=(1920, 1080), fullscreen=False, bg_color=None, verbose=0):
+                     size=(1920, 1080), fullscreen=False, bg_color=None, verbose=0, lock=None):
 
         self.geo_data = geo_data
 
@@ -48,6 +48,8 @@ class vtkPlot():
         self.size = size
         self.fullscreen = fullscreen
         self.bg_color = bg_color
+
+        self.lock = lock
 
         self.vv = vtkVisualization(self.geo_data, bg_color=self.bg_color)
 
@@ -355,6 +357,10 @@ class vtkPlot():
 
     def qgrid_callBack(self, change):
         #  First we remove a column that is added by qgrid with the unfiltered indeces
+
+        if self.lock is not None:
+            self.lock.acquire()
+
         new_df = change['new'][change['new'].columns[1:]]
 
         # Check if we are modifing interfaces and orientations at the same time
@@ -450,7 +456,8 @@ class vtkPlot():
                       ' interface for each of them')
         #self.vv.interp_data.update_interpolator(self.geo_data)
 
-
+        if self.lock is not None:
+            self.lock.release()
 
         self.vv.interactor.Render()
 

@@ -1,7 +1,10 @@
 import sys
 import os
 #sys.path.append( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )
-import freenect
+try:
+    import freenect
+except ImportError:
+    print('Freenect is not installed. Sandbox wont work. Good luck')
 import webbrowser
 import pickle
 import weakref
@@ -414,7 +417,7 @@ class Model:
     _ids = count(0)
     _instances = []
 
-    def __init__(self, model, extent=None, associated_calibration=None, xy_isometric=True):
+    def __init__(self, model, extent=None, associated_calibration=None, xy_isometric=True, lock=None):
         self.id = next(self._ids)
         self.__class__._instances.append(weakref.proxy(self))
         self.xy_isometric = xy_isometric
@@ -429,6 +432,9 @@ class Model:
         self.cmap = None
         self.norm = None
         self.lot = None
+        self.stop_threat = False
+        if lock:
+            self.lock = lock
 
         if associated_calibration==None:
             try:
@@ -495,7 +501,11 @@ class Model:
             self.norm = plotter._norm
             self.lot = plotter._color_lot
 
-        lith_block, fault_block = gempy.compute_model_at(self.depth_grid, self.model)
+        if self.lock is not None:
+            self.lock.acquire()
+            lith_block, fault_block = gempy.compute_model_at(self.depth_grid, self.model)
+            self.lock.release()
+
         block=lith_block[0].reshape((self.associated_calibration.calibration_data['y_lim'][1] - self.associated_calibration.calibration_data['y_lim'][0],self.associated_calibration.calibration_data['x_lim'][1] - self.associated_calibration.calibration_data['x_lim'][0]))
         h = (self.associated_calibration.calibration_data['y_lim'][1] - self.associated_calibration.calibration_data['y_lim'][0]) / 100.0
         w = (self.associated_calibration.calibration_data['x_lim'][1] - self.associated_calibration.calibration_data['x_lim'][0]) / 100.0
@@ -544,7 +554,8 @@ def run_model(model, calibration=None, kinect=None, beamer=None, filter_depth=Tr
         model.update_grid(depth)
         model.render_frame(outfile="current_frame.png")
         beamer.show(input="current_frame.png")
-
+        if model.stop_threat is True:
+            raise Exception('Threat stopped')
 
 def run_depth(calibration=None, kinect=None, beamer=None, filter_depth=True, n_frames=5, sigma_gauss=4,  cmap='terrain'):
     if calibration is None:
@@ -581,7 +592,6 @@ def run_depth(calibration=None, kinect=None, beamer=None, filter_depth=True, n_f
         plt.savefig('current_frame.png', pad_inches=0)
         plt.close(fig)
         beamer.show(input='current_frame.png')
-
 
 
 def render_depth_frame(kinect, beamer, cmap='viridis'):
