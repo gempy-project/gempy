@@ -157,6 +157,9 @@ class PlotData2D(object):
                            palette= self._color_lot,#np.asarray([tuple(i) for i in self._color_lot.values()]),
                            **kwargs)
 
+            p.axes[0, 0].set_ylim(extent[2], extent[3])
+            p.axes[0, 0].set_xlim(extent[0], extent[1])
+
             # Plotting orientations
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
@@ -173,11 +176,16 @@ class PlotData2D(object):
                            legend_out=False,
                            palette=self._color_lot,
                            **kwargs)
+            p.axes[0, 0].set_ylim(extent[2], extent[3])
+            p.axes[0, 0].set_xlim(extent[0], extent[1])
+
 
         if data_type == 'orientations':
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
                        pivot="tail", scale_units=min_axis, scale=15)
+
+
 
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
@@ -559,7 +567,7 @@ class vtkVisualization:
         self.ren_name = ren_name
         # Number of renders
         self.n_ren = 4
-        self.formation_number = geo_data.interfaces['formation_number'].unique()
+        self.formation_number = geo_data.interfaces['formation_number'].unique().squeeze()
         self.formation_name = geo_data.interfaces['formation'].unique()
 
         # Extents
@@ -621,11 +629,9 @@ class vtkVisualization:
         Returns:
 
         """
-        from vtk import (vtkSphereSource, vtkPolyDataMapper, vtkActor, vtkRenderer,
-                         vtkRenderWindow, vtkWindowToImageFilter, vtkPNGWriter)
-
+        # from vtk import (vtkSphereSource, vtkPolyDataMapper, vtkActor, vtkRenderer,
+        #                  vtkRenderWindow, vtkWindowToImageFilter, vtkPNGWriter)
         # initialize and start the app
-
         if 'size' not in kwargs:
             kwargs['size'] = (1920, 1080)
 
@@ -737,7 +743,7 @@ class vtkVisualization:
             Triangles.InsertNextCell(Triangle)
         return Triangles
 
-    def create_surface(self, vertices, simplices, fn, alpha=1):
+    def create_surface(self, vertices, simplices, fn, alpha=.8):
         """
         Method to create the polydata that define the surfaces
 
@@ -789,6 +795,7 @@ class vtkVisualization:
         s = vtk.vtkSphereWidget()
         s.SetInteractor(self.interactor)
         s.SetRepresentationToSurface()
+        s.SetPriority(2)
         Z = Z * self.ve
         s.r_f = self._e_d_avrg * r
         s.PlaceWidget(X - s.r_f, X + s.r_f, Y - s.r_f, Y + s.r_f, Z - s.r_f, Z + s.r_f)
@@ -836,15 +843,22 @@ class vtkVisualization:
 
         # Position
         source = vtk.vtkPlaneSource()
-        source.SetCenter(X, Y, Z)
+
         source.SetNormal(Gx, Gy, Gz)
+        source.SetCenter(X, Y, Z)
+        a, b, c, d_, e, f = self.geo_data.extent
+
+        source.SetPoint1(X+self._e_dx*.01, Y-self._e_dy*.01, Z)
+        source.SetPoint2(X-self._e_dx*.01, Y+self._e_dy*.01, Z)
         source.Update()
         d.SetInputData(source.GetOutput())
-        d.SetHandleSize(0.05)
+        d.SetHandleSize(.05)
         min_extent = np.min([self._e_dx, self._e_dy, self._e_dz])
-        d.SetPlaceFactor(min_extent/10)
-        d.PlaceWidget()
+        d.SetPlaceFactor(0.1)
+
+        d.PlaceWidget(a, b, c, d_, e, f)
         d.SetNormal(Gx, Gy, Gz)
+        d.SetCenter(X, Y, Z)
         d.GetPlaneProperty().SetColor(self.C_LOT[fn])
         d.GetHandleProperty().SetColor(self.C_LOT[fn])
         d.GetHandleProperty().SetOpacity(alpha)
@@ -853,6 +867,8 @@ class vtkVisualization:
         d.n_render = n_render
         d.index = n_index
         d.AddObserver("EndInteractionEvent", self.planesCallback)
+        d.AddObserver("InteractionEvent", self.Callback_camera_reset)
+
 
         d.On()
 
@@ -878,13 +894,14 @@ class vtkVisualization:
         self.surf_rend_1 = []
 
         formations = self.formation_name
-        fns = self.formation_number
+
+        fns = self.geo_data.interfaces[~(self.geo_data.interfaces['formation'].values == 'basement')]['formation_number'].unique().squeeze()#self.formation_number
         assert type(
             vertices) is list, 'vertices and simpleces have to be a list of arrays even when only one formation' \
                                'is passed'
         assert 'DefaultBasement' not in formations, 'Remove DefaultBasement from the list of formations'
      #   print('I am in set surfaces')
-        for v, s, fn in zip(vertices, simplices, fns):
+        for v, s, fn in zip(vertices, simplices, np.atleast_1d(fns)):
             act, map, pol = self.create_surface(v, s, fn, alpha)
             self.surf_rend_1.append(act)
 
@@ -916,7 +933,7 @@ class vtkVisualization:
                 self.s_rend_4.at[index] =(self.create_sphere(row['X'], row['Y'], row['Z'], row['formation_number'],
                                                         n_sphere=e, n_render=3, n_index=index))
         else:
-            print('indices', indices)
+            #print('indices', indices)
             for e, val in enumerate(self.geo_data.interfaces.loc[np.atleast_1d(indices)].iterrows()):
                 index = val[0]
                 row = val[1]
@@ -1072,7 +1089,7 @@ class vtkVisualization:
         """
         #self.interactor.ExitCallback()
 
-     #   self.Callback_camera_reset()
+       # self.Callback_camera_reset()
 
         # Get new position of the sphere
         new_center = obj.GetCenter()
@@ -1090,14 +1107,21 @@ class vtkVisualization:
         self.SphereCallbak_move_changes(index)
 
         if self.real_time:
-            for surf in self.surf_rend_1:
-                self.ren_list[0].RemoveActor(surf)
-                self.ren_list[1].RemoveActor(surf)
-                self.ren_list[2].RemoveActor(surf)
-                self.ren_list[3].RemoveActor(surf)
+            try:
+                if self.real_time:
+                    for surf in self.surf_rend_1:
+                        self.ren_list[0].RemoveActor(surf)
+                        self.ren_list[1].RemoveActor(surf)
+                        self.ren_list[2].RemoveActor(surf)
+                        self.ren_list[3].RemoveActor(surf)
+            except AttributeError:
+                pass
 
-            vertices, simpleces = self.update_surfaces_real_time(self.geo_data)
-            self.set_surfaces(vertices, simpleces)
+            try:
+                vertices, simpleces = self.update_surfaces_real_time(self.geo_data)
+                self.set_surfaces(vertices, simpleces)
+            except AssertionError:
+                print('Not enough data to compute the model')
 
     def Callback_camera_reset(self,  obj, event):
 
@@ -1171,7 +1195,7 @@ class vtkVisualization:
         update the pandas data frame
         """
 
-        self.Callback_camera_reset()
+      # self.Callback_camera_reset()
 
         # Get new position of the plane and GxGyGz
         new_center = obj.GetCenter()
@@ -1182,16 +1206,36 @@ class vtkVisualization:
         self.planesCallback_change_df(index, new_center, new_normal)
         self.planesCallback_move_changes(index)
 
-        if self.real_time:
-            for surf in self.surf_rend_1:
-                self.ren_list[0].RemoveActor(surf)
-                self.ren_list[1].RemoveActor(surf)
-                self.ren_list[2].RemoveActor(surf)
-                self.ren_list[3].RemoveActor(surf)
 
-            vertices, simpleces = self.update_surfaces_real_time(self.interp_data)
-            #  print(vertices[0][60])
-            self.set_surfaces(vertices, simpleces)
+        if self.real_time:
+            try:
+                if self.real_time:
+                    for surf in self.surf_rend_1:
+                        self.ren_list[0].RemoveActor(surf)
+                        self.ren_list[1].RemoveActor(surf)
+                        self.ren_list[2].RemoveActor(surf)
+                        self.ren_list[3].RemoveActor(surf)
+            except AttributeError:
+                pass
+
+            try:
+                vertices, simpleces = self.update_surfaces_real_time(self.geo_data)
+                self.set_surfaces(vertices, simpleces)
+            except AssertionError:
+                print('Not enough data to compute the model')
+
+        #
+        #
+        # if self.real_time:
+        #     for surf in self.surf_rend_1:
+        #         self.ren_list[0].RemoveActor(surf)
+        #         self.ren_list[1].RemoveActor(surf)
+        #         self.ren_list[2].RemoveActor(surf)
+        #         self.ren_list[3].RemoveActor(surf)
+        #
+        #     vertices, simpleces = self.update_surfaces_real_time(self.interp_data)
+        #     #  print(vertices[0][60])
+        #     self.set_surfaces(vertices, simpleces)
 
     def planesCallback_change_df(self, index, new_center, new_normal):
 
@@ -1199,7 +1243,8 @@ class vtkVisualization:
         # Modify Pandas DataFrame
         # update the gradient vector components and its location
         self.geo_data.modify_orientation(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
-                                         G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
+                                         G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2],
+                                         recalculate_orientations=True)
         # update the dip and azimuth values according to the new gradient
         self.geo_data.calculate_orientations()
 
@@ -1401,13 +1446,16 @@ class vtkVisualization:
 
         self.interp_data.update_interpolator(geo_data)
         lith_block, fault_block = gp.compute_model(self.interp_data, get_potential_at_interfaces=False)
-        print(lith_block)
-        print(fault_block)
+     #   print(lith_block)
+     #   print(fault_block)
 
         try:
             v_l, s_l = gp.get_surfaces(self.interp_data, lith_block[1], fault_block[1::2], original_scale=True)
         except IndexError:
-            v_l, s_l = gp.get_surfaces(self.interp_data, lith_block[1], None, original_scale=True)
+            try:
+                v_l, s_l = gp.get_surfaces(self.interp_data, lith_block[1], None, original_scale=True)
+            except IndexError:
+                v_l, s_l = gp.get_surfaces(self.interp_data, None, fault_block[1::2], original_scale=True)
         return v_l, s_l
 
     @staticmethod

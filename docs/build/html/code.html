@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
-    <link rel="shortcut icon" href="_static/gempy_squared.ico"/>
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Advance theory" href="_theory/advanced.html" />
@@ -37,9 +37,83 @@
 
   </head>
   <body>
-  
+  <div class="document">
+    
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<p class="logo">
+  <a href="index.html">
+    <img class="logo" src="_static/./logos/gempy.png" alt="Logo"/>
+    
+    <h1 class="logo logo-name">GemPy</h1>
+    
+  </a>
+</p>
 
-    <div class="document">
+
+
+
+
+
+<p>
+<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
+  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
+</p>
+
+
+
+
+
+    
+
+<p>
+<a href="https://travis-ci.org/cgre-aachen/gempy">
+    <img
+        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
+    />
+</a>
+</p>
+
+
+<h3>Navigation</h3>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">GemPy</a></li>
+<li class="toctree-l1"><a class="reference internal" href="_theory/motivation.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
+<li class="toctree-l1"><a class="reference internal" href="theory.html">Guide</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Code</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#gempy-front">Gempy Front</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-data_management">Data Management</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#theano-graph">Theano Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-geophysics">Geophysics</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#topology">Topology</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#posterior-analysis">Posterior Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#visualization">Visualization</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="_theory/advanced.html" title="previous chapter">Advance theory</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
       <div class="documentwrapper">
         <div class="bodywrapper">
           <div class="body" role="main">
@@ -200,7 +274,7 @@ versions used to export and import the pickle differ it may give problems</p>
 
 <dl class="function">
 <dt id="gempy_front.get_data">
-<code class="descclassname">gempy_front.</code><code class="descname">get_data</code><span class="sig-paren">(</span><em>geo_data</em>, <em>dtype=’all’</em>, <em>numeric=False</em>, <em>verbosity=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.get_data" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">gempy_front.</code><code class="descname">get_data</code><span class="sig-paren">(</span><em>geo_data</em>, <em>itype=’all’</em>, <em>numeric=False</em>, <em>verbosity=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.get_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method that returns the interfaces and orientations pandas Dataframes. Can return both at the same time or only
 one of the two</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -208,7 +282,7 @@ one of the two</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dtype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – input data type, either ‘orientations’, ‘interfaces’ or ‘all’ for both.</li>
+<li><strong>itype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – input data type, either ‘orientations’, ‘interfaces’ or ‘all’ for both.</li>
 <li><strong>verbosity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Number of properties shown</li>
 </ul>
 </td>
@@ -376,7 +450,7 @@ specific directions</p>
 
 <dl class="function">
 <dt id="gempy_front.plot_data_3D">
-<code class="descclassname">gempy_front.</code><code class="descname">plot_data_3D</code><span class="sig-paren">(</span><em>geo_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#plot_data_3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.plot_data_3D" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">gempy_front.</code><code class="descname">plot_data_3D</code><span class="sig-paren">(</span><em>geo_data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#plot_data_3D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.plot_data_3D" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot in vtk all the input data of a model
 :param geo_data: Input data of the model
 :type geo_data: gempy.DataManagement.InputData</p>
@@ -715,9 +789,9 @@ th_fn: Theano function which compute the interpolation</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>series_distribution</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a>) – with the name of the serie as key and the name of the formations as values.</li>
-<li><strong>order</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>]</em>) – order of the series by default takes the dictionary keys which until python 3.6 are
-random. This is important to set the erosion relations between the different series</li>
+<li><strong>series_distribution</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a><em> or </em><em>dataframe</em>) – with the name of the serie as key and the name of the formations as values.</li>
+<li><strong>order</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>]</em>) – only necessary if passed a dict (python &lt; 3.6)order of the series by default takes the</li>
+<li><strong>keys which until python 3.6 are random. This is important to set the erosion relations between the different series</strong> (<em>dictionary</em>) – </li>
 </ul>
 </td>
 </tr>
@@ -1021,22 +1095,6 @@ traces</li>
 </dd></dl>
 
 <dl class="method">
-<dt id="data_management.InputData.get_formation_number">
-<code class="descname">get_formation_number</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData.get_formation_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData.get_formation_number" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a dictionary with the key the name of the formation and the value their number</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">key the name of the formation and the value their number</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)">dict</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="data_management.InputData.get_formations">
 <code class="descname">get_formations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData.get_formations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData.get_formations" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
@@ -1205,8 +1263,8 @@ and the normal, n.</td>
 </dd></dl>
 
 <dl class="method">
-<dt id="data_management.InputData.set_fault_relation_matrix">
-<code class="descname">set_fault_relation_matrix</code><span class="sig-paren">(</span><em>rel_matrix</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData.set_fault_relation_matrix"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData.set_fault_relation_matrix" title="Permalink to this definition">¶</a></dt>
+<dt id="data_management.InputData.set_fault_relation">
+<code class="descname">set_fault_relation</code><span class="sig-paren">(</span><em>rel_matrix=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData.set_fault_relation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData.set_fault_relation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to set the faults that offset a given sequence and therefore also another fault</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1220,29 +1278,13 @@ and the normal, n.</td>
 
 <dl class="method">
 <dt id="data_management.InputData.set_faults">
-<code class="descname">set_faults</code><span class="sig-paren">(</span><em>series_name</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData.set_faults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData.set_faults" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_faults</code><span class="sig-paren">(</span><em>series_name=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData.set_faults"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData.set_faults" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a flag to the series that are faults.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>series_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em> or </em><em>array_like</em>) – Name of the series which are faults</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="data_management.InputData.set_formation_number">
-<code class="descname">set_formation_number</code><span class="sig-paren">(</span><em>formation_order=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData.set_formation_number"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData.set_formation_number" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set a unique number to each formation. NOTE: this method is getting deprecated since the user does not need
-to know it and also now the numbers must be set in the order of the series as well. Therefore this method
-has been moved to the interpolator class as preprocessing</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Column in the interfaces and orientations dataframes</td>
 </tr>
 </tbody>
 </table>
@@ -1276,7 +1318,7 @@ has been moved to the interpolator class as preprocessing</p>
 
 <dl class="method">
 <dt id="data_management.InputData.set_interfaces">
-<code class="descname">set_interfaces</code><span class="sig-paren">(</span><em>interf_Dataframe</em>, <em>append=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData.set_interfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData.set_interfaces" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_interfaces</code><span class="sig-paren">(</span><em>interf_Dataframe</em>, <em>append=False</em>, <em>order_table=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData.set_interfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData.set_interfaces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to change or append a Dataframe to interfaces in place. A equivalent Pandas Dataframe with
 [‘X’, ‘Y’, ‘Z’, ‘formation’] has to be passed.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1295,7 +1337,7 @@ has been moved to the interpolator class as preprocessing</p>
 
 <dl class="method">
 <dt id="data_management.InputData.set_orientations">
-<code class="descname">set_orientations</code><span class="sig-paren">(</span><em>foliat_Dataframe</em>, <em>append=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData.set_orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData.set_orientations" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_orientations</code><span class="sig-paren">(</span><em>foliat_Dataframe</em>, <em>append=False</em>, <em>order_table=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData.set_orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData.set_orientations" title="Permalink to this definition">¶</a></dt>
 <dd><blockquote>
 <div>Method to change or append a Dataframe to orientations in place.  A equivalent Pandas Dataframe with</div></blockquote>
 <p>[‘X’, ‘Y’, ‘Z’, ‘dip’, ‘azimuth’, ‘polarity’, ‘formation’] has to be passed.</p>
@@ -1386,8 +1428,8 @@ results of the branches above)</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="theano_graph.TheanoGraph.block_series">
-<code class="descname">block_series</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.block_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.block_series" title="Permalink to this definition">¶</a></dt>
+<dt id="theano_graph.TheanoGraph.block_fault">
+<code class="descname">block_fault</code><span class="sig-paren">(</span><em>slope=50</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.block_fault"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.block_fault" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the part of the block model of a given series (dictated by the bool array yet to be computed)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1396,6 +1438,49 @@ results of the branches above)</p>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Value of lithology at every interpolated point</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.tensor.vector</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="theano_graph.TheanoGraph.block_series">
+<code class="descname">block_series</code><span class="sig-paren">(</span><em>slope=50</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.block_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.block_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the part of the block model of a given series (dictated by the bool array yet to be computed)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Value of lithology at every interpolated point</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.tensor.vector</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="theano_graph.TheanoGraph.compare">
+<code class="descname">compare</code><span class="sig-paren">(</span><em>a</em>, <em>b</em>, <em>slice_init</em>, <em>Z_x</em>, <em>l</em>, <em>n_formation</em>, <em>drift</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.compare"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.compare" title="Permalink to this definition">¶</a></dt>
+<dd><p>Treshold of the points to interpolate given 2 potential field values. TODO: This function is the one we
+need to change for a sigmoid function</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>a</strong> (<em>scalar</em>) – Upper limit of the potential field</li>
+<li><strong>b</strong> (<em>scalar</em>) – Lower limit of the potential field</li>
+<li><strong>n_formation</strong> (<em>scalar</em>) – Value given to the segmentation, i.e. lithology number</li>
+<li><strong>Zx</strong> (<em>vector</em>) – Potential field values at all the interpolated points</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">segmented values</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">theano.tensor.vector</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -1432,7 +1517,7 @@ data</p>
 
 <dl class="method">
 <dt id="theano_graph.TheanoGraph.compute_a_series">
-<code class="descname">compute_a_series</code><span class="sig-paren">(</span><em>len_i_0</em>, <em>len_i_1</em>, <em>len_f_0</em>, <em>len_f_1</em>, <em>n_form_per_serie_0</em>, <em>n_form_per_serie_1</em>, <em>u_grade_iter</em>, <em>final_block</em>, <em>scalar_field_at_form</em>, <em>fault_block</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.compute_a_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.compute_a_series" title="Permalink to this definition">¶</a></dt>
+<code class="descname">compute_a_series</code><span class="sig-paren">(</span><em>len_i_0</em>, <em>len_i_1</em>, <em>len_f_0</em>, <em>len_f_1</em>, <em>n_form_per_serie_0</em>, <em>n_form_per_serie_1</em>, <em>u_grade_iter</em>, <em>final_block</em>, <em>scalar_field_at_form</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.compute_a_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.compute_a_series" title="Permalink to this definition">¶</a></dt>
 <dd><p>Function that loops each series, generating a potential field for each on them with the respective block model</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1453,6 +1538,70 @@ data</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">theano.tensor.matrix</p>
 </td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="theano_graph.TheanoGraph.contribution_gradient_interface">
+<code class="descname">contribution_gradient_interface</code><span class="sig-paren">(</span><em>grid_val=None</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.contribution_gradient_interface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.contribution_gradient_interface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computation of the contribution of the foliations at every point to interpolate</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Contribution of all foliations (input) at every point to interpolate</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.tensor.vector</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="theano_graph.TheanoGraph.contribution_interface">
+<code class="descname">contribution_interface</code><span class="sig-paren">(</span><em>grid_val=None</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.contribution_interface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.contribution_interface" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computation of the contribution of the interfaces at every point to interpolate</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Contribution of all interfaces (input) at every point to interpolate</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.tensor.vector</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="theano_graph.TheanoGraph.contribution_interface_gradient">
+<code class="descname">contribution_interface_gradient</code><span class="sig-paren">(</span><em>direction=’x’</em>, <em>grid_val=None</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.contribution_interface_gradient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.contribution_interface_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computation of the contribution of the foliations at every point to interpolate</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Contribution of all foliations (input) at every point to interpolate</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.tensor.vector</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="theano_graph.TheanoGraph.contribution_universal_drift">
+<code class="descname">contribution_universal_drift</code><span class="sig-paren">(</span><em>grid_val=None</em>, <em>weights=None</em>, <em>a=0</em>, <em>b=100000000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.contribution_universal_drift"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.contribution_universal_drift" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computation of the contribution of the universal drift at every point to interpolate</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Contribution of the universal drift (input) at every point to interpolate</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.tensor.vector</td>
 </tr>
 </tbody>
 </table>
@@ -1587,22 +1736,6 @@ discrete values this matrix will be null since the derivative of a constant is 0
 </dd></dl>
 
 <dl class="method">
-<dt id="theano_graph.TheanoGraph.gradient_contribution">
-<code class="descname">gradient_contribution</code><span class="sig-paren">(</span><em>grid_val=None</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.gradient_contribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.gradient_contribution" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computation of the contribution of the foliations at every point to interpolate</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Contribution of all foliations (input) at every point to interpolate</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.tensor.vector</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
 <dt id="theano_graph.TheanoGraph.input_parameters_list">
 <code class="descname">input_parameters_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.input_parameters_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.input_parameters_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create a list with the symbolic variables to use when we compile the theano function</p>
@@ -1617,22 +1750,6 @@ discrete values this matrix will be null since the derivative of a constant is 0
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)">list</a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="theano_graph.TheanoGraph.interface_contribution">
-<code class="descname">interface_contribution</code><span class="sig-paren">(</span><em>grid_val=None</em>, <em>weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.interface_contribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.interface_contribution" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computation of the contribution of the interfaces at every point to interpolate</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Contribution of all interfaces (input) at every point to interpolate</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.tensor.vector</td>
 </tr>
 </tbody>
 </table>
@@ -1654,7 +1771,7 @@ discrete values this matrix will be null since the derivative of a constant is 0
 
 <dl class="method">
 <dt id="theano_graph.TheanoGraph.scalar_field_at_all">
-<code class="descname">scalar_field_at_all</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.scalar_field_at_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.scalar_field_at_all" title="Permalink to this definition">¶</a></dt>
+<code class="descname">scalar_field_at_all</code><span class="sig-paren">(</span><em>weights=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.scalar_field_at_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.scalar_field_at_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the potential field at all the interpolation points, i.e. grid plus rest plus ref
 :returns: Potential fields at all points
 :rtype: theano.tensor.vector</p>
@@ -1696,22 +1813,6 @@ decomposition in all likelihood</p>
 </tr>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">theano.tensor.matrix</p>
 </td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="theano_graph.TheanoGraph.universal_drift_contribution">
-<code class="descname">universal_drift_contribution</code><span class="sig-paren">(</span><em>grid_val=None</em>, <em>weights=None</em>, <em>a=0</em>, <em>b=100000000</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph.universal_drift_contribution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph.universal_drift_contribution" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computation of the contribution of the universal drift at every point to interpolate</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">Contribution of the universal drift (input) at every point to interpolate</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">theano.tensor.vector</td>
 </tr>
 </tbody>
 </table>
@@ -1998,7 +2099,7 @@ Currently only supports the modification of dip angle - azimuth and polarity wil
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>dip</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Desired dip angle of the plane.</li>
 <li><strong>group_id</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Group id identifying the data points belonging to the plane.</li>
-<li><strong>(</strong> (<em>data_obj</em>) – obj:): Data object to be modified (geo_data or interp_data.geo_data_res)</li>
+<li><strong>(</strong> (<em>data_obj</em>) – obj:): Data object to be modified (geo_data or interp_data.geo_data_res_no_basement)</li>
 </ul>
 </td>
 </tr>
@@ -2018,439 +2119,6 @@ Currently only supports the modification of dip angle - azimuth and polarity wil
 </div>
 <div class="section" id="visualization">
 <h2>Visualization<a class="headerlink" href="#visualization" title="Permalink to this headline">¶</a></h2>
-<p>Module with classes and methods to visualized structural geology data and potential fields of the regional modelling based on
-the potential field method.
-Tested on Ubuntu 14</p>
-<p>Created on 23/09/2016</p>
-<p>&#64;author: Miguel de la Varga</p>
-<dl class="class">
-<dt id="visualization.PlotData2D">
-<em class="property">class </em><code class="descclassname">visualization.</code><code class="descname">PlotData2D</code><span class="sig-paren">(</span><em>geo_data</em>, <em>cmap=&lt;matplotlib.colors.ListedColormap object&gt;</em>, <em>norm=&lt;matplotlib.colors.BoundaryNorm object&gt;</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#PlotData2D"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.PlotData2D" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class to make the different plot related with gempy</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>geo_data</strong> (<em>gempy.InputData</em>) – All values of a DataManagement object</li>
-<li><strong>block</strong> (<em>numpy.array</em>) – 3D array containing the lithology block</li>
-<li><strong>**kwargs</strong> – Arbitrary keyword arguments.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>scalar_field</strong> (<em>numpy.ndarray</em>) – 3D array containing a individual potential field</li>
-<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Level of verbosity during the execution of the functions (up to 5). Default 0</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="staticmethod">
-<dt id="visualization.PlotData2D.annotate_plot">
-<em class="property">static </em><code class="descname">annotate_plot</code><span class="sig-paren">(</span><em>frame</em>, <em>label_col</em>, <em>x</em>, <em>y</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#PlotData2D.annotate_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.PlotData2D.annotate_plot" title="Permalink to this definition">¶</a></dt>
-<dd><p>Annotate the plot of a given DataFrame using one of its columns</p>
-<p>Should be called right after a DataFrame or series plot method,
-before telling matplotlib to show the plot.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>frame</strong> (<em>pandas.DataFrame</em>) – </li>
-<li><strong>plot_col</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The string identifying the column of frame that was plotted</li>
-<li><strong>label_col</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – The string identifying the column of frame to be used as label</li>
-<li><strong>kwargs</strong> – Other key-word args that should be passed to plt.annotate</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"></p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.6)">None</a></p>
-</td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Notes</p>
-<p>After calling this function you should call plt.show() to get the
-results. This function only adds the annotations, it doesn’t show
-them.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.PlotData2D.plot_block_section">
-<code class="descname">plot_block_section</code><span class="sig-paren">(</span><em>cell_number=13</em>, <em>block=None</em>, <em>direction=’y’</em>, <em>interpolation=’none’</em>, <em>plot_data=False</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#PlotData2D.plot_block_section"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.PlotData2D.plot_block_section" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot a section of the block model</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – position of the array to plot</li>
-<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
-<li><strong>interpolation</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Type of interpolation of plt.imshow. Default ‘none’.  Acceptable values are ‘none’</li>
-<li><strong>'bilinear'</strong><strong>, </strong><strong>'bicubic'</strong><strong>,</strong> (<em>,</em><em>'nearest'</em><em>,</em>) – </li>
-<li><strong>'spline36'</strong><strong>, </strong><strong>'hanning'</strong><strong>, </strong><strong>'hamming'</strong><strong>, </strong><strong>'hermite'</strong><strong>, </strong><strong>'kaiser'</strong><strong>,</strong> (<em>'spline16'</em><em>,</em>) – </li>
-<li><strong>'catrom'</strong><strong>, </strong><strong>'gaussian'</strong><strong>, </strong><strong>'bessel'</strong><strong>, </strong><strong>'mitchell'</strong><strong>, </strong><strong>'sinc'</strong><strong>,</strong> (<em>'quadric'</em><em>,</em>) – </li>
-<li><strong>'lanczos'</strong> – </li>
-<li><strong>**kwargs</strong> – imshow keywargs</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Block plot</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.PlotData2D.plot_data">
-<code class="descname">plot_data</code><span class="sig-paren">(</span><em>direction=’y’</em>, <em>data_type=’all’</em>, <em>series=’all’</em>, <em>legend_font_size=10</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#PlotData2D.plot_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.PlotData2D.plot_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot the projecton of the raw data (interfaces and orientations) in 2D following a
-specific directions</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
-<li><strong>data_type</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – type of data to plot. ‘all’, ‘interfaces’ or ‘orientations’</li>
-<li><strong>series</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – series to plot</li>
-<li><strong>**kwargs</strong> – seaborn lmplot key arguments. (TODO: adding the link to them)</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">Data plot</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.PlotData2D.plot_scalar_field">
-<code class="descname">plot_scalar_field</code><span class="sig-paren">(</span><em>scalar_field</em>, <em>cell_number</em>, <em>N=20</em>, <em>direction=’y’</em>, <em>plot_data=True</em>, <em>series=’all’</em>, <em>*args</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#PlotData2D.plot_scalar_field"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.PlotData2D.plot_scalar_field" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot a scalar field in a given direction.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – position of the array to plot</li>
-<li><strong>scalar_field</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – name of the scalar field (or series) to plot</li>
-<li><strong>n_pf</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – number of the  scalar field (or series) to plot</li>
-<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
-<li><strong>serie</strong> – <em>Deprecated</em></li>
-<li><strong>**kwargs</strong> – plt.contour kwargs</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">scalar field plot</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
-<dl class="class">
-<dt id="visualization.vtkVisualization">
-<em class="property">class </em><code class="descclassname">visualization.</code><code class="descname">vtkVisualization</code><span class="sig-paren">(</span><em>geo_data</em>, <em>ren_name=’GemPy 3D-Editor’</em>, <em>verbose=0</em>, <em>real_time=False</em>, <em>bg_color=None</em>, <em>ve=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class to visualize data and results in 3D. Init will create all the render properties while the method render
-model will lunch the window. Using set_interfaces, set_orientations and set_surfaces in between can be chosen what
-will be displayed.</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>geo_data</strong> (<em>gempy.InputData</em>) – All values of a DataManagement object</li>
-<li><strong>ren_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Name of the renderer window</li>
-<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Verbosity for certain functions</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<dl class="attribute">
-<dt id="geophysics.vtkVisualization.renWin">
-<code class="descname">renWin</code><a class="headerlink" href="#geophysics.vtkVisualization.renWin" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>vtk.vtkRenderWindow()</em></p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="geophysics.vtkVisualization.camera_list">
-<code class="descname">camera_list</code><a class="headerlink" href="#geophysics.vtkVisualization.camera_list" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – list of cameras for the distinct renderers</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="geophysics.vtkVisualization.ren_list">
-<code class="descname">ren_list</code><a class="headerlink" href="#geophysics.vtkVisualization.ren_list" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>list</em> – list containing the vtk renderers</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.vtkVisualization.create_foliation">
-<code class="descname">create_foliation</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>Z</em>, <em>fn</em>, <em>Gx</em>, <em>Gy</em>, <em>Gz</em>, <em>n_plane=0</em>, <em>n_render=0</em>, <em>n_index=0</em>, <em>alpha=0.5</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.create_foliation"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.create_foliation" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to create a plane given a foliation</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>X</strong> – X coord</li>
-<li><strong>Y</strong> – Y coord</li>
-<li><strong>Z</strong> – Z corrd</li>
-<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – formation_number</li>
-<li><strong>Gx</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Component of the gradient x</li>
-<li><strong>Gy</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Component of the gradient y</li>
-<li><strong>Gz</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – Component of the gradient z</li>
-<li><strong>n_plane</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Number of the plane</li>
-<li><strong>n_render</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Number of the render where the plane belongs</li>
-<li><strong>n_index</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – index value in the PandasDataframe of InupData.interfaces</li>
-<li><strong>alpha</strong> – Opacity of the plane</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">vtk.vtkPlaneWidget</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.vtkVisualization.create_ren_list">
-<code class="descname">create_ren_list</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.create_ren_list"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.create_ren_list" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a list of the 4 renderers we use. One general view and 3 cartersian projections
-:returns: list of renderers
-:rtype: list</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.vtkVisualization.create_sphere">
-<code class="descname">create_sphere</code><span class="sig-paren">(</span><em>X</em>, <em>Y</em>, <em>Z</em>, <em>fn</em>, <em>n_sphere=0</em>, <em>n_render=0</em>, <em>n_index=0</em>, <em>r=0.03</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.create_sphere"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.create_sphere" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to create the sphere that represent the interfaces points
-:param X: X coord
-:param Y: Y coord
-:param Z: Z corrd
-:param fn: formation_number
-:type fn: int
-:param n_sphere: Number of the sphere
-:type n_sphere: int
-:param n_render: Number of the render where the sphere belongs
-:type n_render: int
-:param n_index: index value in the PandasDataframe of InupData.interfaces
-:type n_index: int
-:param r: radio of the sphere
-:type r: float</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">vtk.vtkSphereWidget</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.vtkVisualization.create_surface">
-<code class="descname">create_surface</code><span class="sig-paren">(</span><em>vertices</em>, <em>simplices</em>, <em>fn</em>, <em>alpha=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.create_surface"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.create_surface" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to create the polydata that define the surfaces</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>vertices</strong> (<em>numpy.array</em>) – 2D array (XYZ) with the coordinates of the points</li>
-<li><strong>simplices</strong> (<em>numpy.array</em>) – 2D array with the value of the vertices that form every single triangle</li>
-<li><strong>fn</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – formation_number</li>
-<li><strong>alpha</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – Opacity</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">vtk.vtkActor, vtk.vtkPolyDataMapper, vtk.vtkPolyData</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.vtkVisualization.create_surface_points">
-<code class="descname">create_surface_points</code><span class="sig-paren">(</span><em>vertices</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.create_surface_points"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.create_surface_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to create the points that form the surfaces
-:param vertices: 2D array (XYZ) with the coordinates of the points
-:type vertices: numpy.array</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">with the coordinates of the points</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body">vtk.vtkPoints</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="visualization.vtkVisualization.create_surface_triangles">
-<em class="property">static </em><code class="descname">create_surface_triangles</code><span class="sig-paren">(</span><em>simplices</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.create_surface_triangles"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.create_surface_triangles" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to create the Triangles that form the surfaces
-:param simplices: 2D array with the value of the vertices that form every single triangle
-:type simplices: numpy.array</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">vtk.vtkTriangle</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="visualization.vtkVisualization.export_vtk_lith_block">
-<em class="property">static </em><code class="descname">export_vtk_lith_block</code><span class="sig-paren">(</span><em>geo_data</em>, <em>lith_block</em>, <em>path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.export_vtk_lith_block"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.export_vtk_lith_block" title="Permalink to this definition">¶</a></dt>
-<dd><p>Export data to a vtk file for posterior visualizations</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>geo_data</strong> (<em>gempy.InputData</em>) – All values of a DataManagement object</li>
-<li><strong>block</strong> (<em>numpy.array</em>) – 3D array containing the lithology block</li>
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to the location of the vtk</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="staticmethod">
-<dt id="visualization.vtkVisualization.export_vtk_surfaces">
-<em class="property">static </em><code class="descname">export_vtk_surfaces</code><span class="sig-paren">(</span><em>vertices</em>, <em>simplices</em>, <em>path=None</em>, <em>name=’_surfaces’</em>, <em>alpha=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.export_vtk_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.export_vtk_surfaces" title="Permalink to this definition">¶</a></dt>
-<dd><p>Export data to a vtk file for posterior visualizations</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>geo_data</strong> (<em>gempy.InputData</em>) – All values of a DataManagement object</li>
-<li><strong>block</strong> (<em>numpy.array</em>) – 3D array containing the lithology block</li>
-<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path to the location of the vtk</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.vtkVisualization.planesCallback">
-<code class="descname">planesCallback</code><span class="sig-paren">(</span><em>obj</em>, <em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.planesCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.planesCallback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function that rules what happens when we move a plane. At the moment we update the other 3 renderers and
-update the pandas data frame</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.vtkVisualization.render_model">
-<code class="descname">render_model</code><span class="sig-paren">(</span><em>size=(1920</em>, <em>1080)</em>, <em>fullscreen=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.render_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.render_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to launch the window</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>size</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)"><em>tuple</em></a>) – Resolution of the window</li>
-<li><strong>fullscreen</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Launch window in full screen or not</li>
-</ul>
-</td>
-</tr>
-</tbody>
-</table>
-<p>Returns:</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.vtkVisualization.set_camera_backcolor">
-<code class="descname">set_camera_backcolor</code><span class="sig-paren">(</span><em>color=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.set_camera_backcolor"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.set_camera_backcolor" title="Permalink to this definition">¶</a></dt>
-<dd><p>define background colors of the renderers</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.vtkVisualization.set_interfaces">
-<code class="descname">set_interfaces</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.set_interfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.set_interfaces" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="docutils">
-<dt>Create all the interfaces points and set them to the corresponding renders for their posterior visualization</dt>
-<dd>with render_model</dd>
-</dl>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.vtkVisualization.set_orientations">
-<code class="descname">set_orientations</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.set_orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.set_orientations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create all the orientations and set them to the corresponding renders for their posterior visualization with
-render_model
-:returns: None</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.vtkVisualization.set_surfaces">
-<code class="descname">set_surfaces</code><span class="sig-paren">(</span><em>vertices</em>, <em>simplices</em>, <em>alpha=1</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.set_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.set_surfaces" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create all the surfaces and set them to the corresponding renders for their posterior visualization with
-render_model</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>vertices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – list of 3D numpy arrays containing the points that form each plane</li>
-<li><strong>simplices</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – list of 3D numpy arrays containing the verticies that form every triangle</li>
-<li><strong>formations</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – ordered list of strings containing the name of the formations to represent</li>
-<li><strong>fns</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – ordered list of formation_numbers (int)</li>
-<li><strong>alpha</strong> – Opacity of the plane</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="visualization.vtkVisualization.sphereCallback">
-<code class="descname">sphereCallback</code><span class="sig-paren">(</span><em>obj</em>, <em>event</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/visualization.html#vtkVisualization.sphereCallback"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#visualization.vtkVisualization.sphereCallback" title="Permalink to this definition">¶</a></dt>
-<dd><p>Function that rules what happens when we move a sphere. At the moment we update the other 3 renderers and
-update the pandas data frame.</p>
-</dd></dl>
-
-</dd></dl>
-
 </div>
 </div>
 
@@ -2458,85 +2126,10 @@ update the pandas data frame.</p>
           </div>
         </div>
       </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<p class="logo">
-  <a href="index.html">
-    <img class="logo" src="_static/./logos/gempy2.svg" alt="Logo"/>
-    
-    <h1 class="logo logo-name">GemPy</h1>
-    
-  </a>
-</p>
-
-
-
-
-
-
-<p>
-<iframe src="https://ghbtns.com/github-btn.html?user=cgre-aachen&repo=gempy&type=star&count=true&size=large&v=2"
-  allowtransparency="true" frameborder="0" scrolling="0" width="200px" height="35px"></iframe>
-</p>
-
-
-
-
-
-    
-
-<p>
-<a href="https://travis-ci.org/cgre-aachen/gempy">
-    <img
-        alt="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-        src="https://secure.travis-ci.org/cgre-aachen/gempy.svg?branch=master"
-    />
-</a>
-</p>
-
-
-<h3>Navigation</h3>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="index.html">GemPy’s (v 1.0) documentation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="_theory/motivation.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
-<li class="toctree-l1"><a class="reference internal" href="theory.html">Guide</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Code</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#gempy-front">Gempy Front</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-data_management">Data Management</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#theano-graph">Theano Graph</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-geophysics">Geophysics</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#topology">Topology</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#posterior-analysis">Posterior Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#visualization">Visualization</a></li>
-</ul>
-</li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="_theory/advanced.html" title="previous chapter">Advance theory</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <form class="search" action="search.html" method="get">
-      <div><input type="text" name="q" /></div>
-      <div><input type="submit" value="Go" /></div>
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
+    <div class="clearer"></div>
+  </div>
     <div class="footer">
-      &copy;2017, Miguel de la Varga, CGR-Aachen Team.
+      &copy;2018, Miguel de la Varga, CGR-Aachen Team.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 1.6.2</a>

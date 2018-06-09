@@ -25,8 +25,7 @@ sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import copy
 import numpy as np
 import pandas as pn
-# from gempy import theano_graph
-# import theano
+
 import warnings
 
 try:
@@ -34,26 +33,38 @@ try:
 except ImportError:
     warnings.warn('qgrid package is not installed. No interactive dataframes available.')
 
-pn.options.mode.chained_assignment = None  #
+pn.options.mode.chained_assignment = None
 
 
 class InputData(object):
     """
-    Class to import the raw data of the model and set data classifications into formations and series.
-    This objects will contain the main information of the model.
+    Class that contains all raw data of our models
 
     Args:
         extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]
-        Resolution ((Optional[list])): [nx, ny, nz]. Defaults to 50
-        path_i: Path to the data bases of interfaces. Default os.getcwd(),
-        path_o: Path to the data bases of orientations. Default os.getcwd()
+        Resolution (Optional[list]): [nx, ny, nz]. Defaults to 50
+        path_i (Optional[str]): Path to the data bases of interfaces. Default os.getcwd(),
+        path_o (Optional[str]): Path to the data bases of orientations. Default os.getcwd()
+        kwargs: key words passed to :class:`gempy.data_management.GridClass`
 
     Attributes:
+        interfaces (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the necessary information respect
+            the interface points of the model
+        orientations (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the necessary information respect
+            the orientations of the model
+        formations (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the formations names and the value
+            used for each voxel in the final model and the lithological order
+        series (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and the formations contained
+            on them
+        faults (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and if they are faults or
+            not (otherwise they are lithologies) and in case of being fault if is finite
+        faults_relations (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the offsetting relations
+            between each fault and the rest of the series (either other faults or lithologies)
+        grid (:class:`gempy.data_management.GridClass`): grid object containing mainly the coordinates to interpolate
+            the model
         extent(list):  [x_min, x_max, y_min, y_max, z_min, z_max]
-        resolution ((Optional[list])): [nx, ny, nz]
-        orientations(pandas.core.frame.DataFrame): Pandas data frame with the orientations data
-        Interfaces(pandas.core.frame.DataFrame): Pandas data frame with the interfaces data
-        series(pandas.core.frame.DataFrame): Pandas data frame which contains every formation within each series
+        resolution (Optional[list]): [nx, ny, nz]
+
     """
 
     def __init__(self,
@@ -74,6 +85,10 @@ class InputData(object):
 
         # Init number of faults
         self.n_faults = 0
+        self.faults_relations = None
+        self.formations = None
+        self.series = None
+        self.faults = None
 
         self._columns_i_all = ['X', 'Y', 'Z', 'formation', 'series', 'X_std', 'Y_std', 'Z_std', 'order_series', 'formation_number']
         self._columns_o_all = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
@@ -86,26 +101,20 @@ class InputData(object):
         self._columns_o_num = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
 
 
-        # TODO choose the default source of data. So far only csv
         # Create the pandas dataframes
         # if we dont read a csv we create an empty dataframe with the columns that have to be filled
         self.orientations = pn.DataFrame(columns=self._columns_o_1)
         self.orientations.itype = 'orientations'
 
-
         self.interfaces = pn.DataFrame(columns=self._columns_i_1)
         self.interfaces.itype = 'interfaces'
 
-
         if path_o or path_i:
+            # TODO choose the default source of data. So far only csv
             self.import_data_csv(path_i=path_i, path_o=path_o)
 
-
-
-
-        # If not provided set default series
+        # Init all df
         self.update_df()
-
         self.set_basement()
 
         # Compute gradients given azimuth and dips to plot data
@@ -113,25 +122,12 @@ class InputData(object):
 
         # Create default grid object. TODO: (Is this necessary now?)
         self.grid = self.set_grid(extent=None, resolution=None, grid_type="regular_3D", **kwargs)
-
         self.order_table()
-
-
         self.potential_at_interfaces = 0
 
-        self.fault_relation = None
-
         # Set dtypes
-    #self.interfaces['formation'] = self.interfaces['formation'].astype('category')
-       # self.interfaces['formation_number'] = self.interfaces['formation_number'].astype('int')
-       # self.interfaces['order_series'] = self.interfaces['order_series'].astype('int')
-
-       # self.interfaces['series'] = self.interfaces['series'].astype('category')
-       # self.orientations['series'] = self.orientations['series'].astype('category')
-
         self.interfaces['isFault'] = self.interfaces['isFault'].astype('bool')
         self.orientations['isFault'] = self.orientations['isFault'].astype('bool')
-
 
     def set_basement(self):
 
@@ -169,6 +165,8 @@ class InputData(object):
         else:
             self.modify_interface((drop_basement.index[drop_basement])[0], formation='basement', order_series=n_series, formation_number = n_formation)
 
+        self.order_table()
+
     def calculate_gradient(self):
         """
         Calculate the gradient vector of module 1 given dip and azimuth to be able to plot the orientations
@@ -179,21 +177,25 @@ class InputData(object):
 
         self.orientations['G_x'] = np.sin(np.deg2rad(self.orientations["dip"].astype('float'))) * \
                                  np.sin(np.deg2rad(self.orientations["azimuth"].astype('float'))) * \
-                                 self.orientations["polarity"].astype('float')+1e-7
+                                 self.orientations["polarity"].astype('float')+1e-12
         self.orientations['G_y'] = np.sin(np.deg2rad(self.orientations["dip"].astype('float'))) * \
-                                 np.cos(np.deg2rad(self.orientations["azimuth"].astype('float'))) *\
-                                 self.orientations["polarity"].astype('float')+1e-7
+                                   np.cos(np.deg2rad(self.orientations["azimuth"].astype('float'))) *\
+                                 self.orientations["polarity"].astype('float')+1e-12
         self.orientations['G_z'] = np.cos(np.deg2rad(self.orientations["dip"].astype('float'))) *\
-                                 self.orientations["polarity"].astype('float')+1e-7
+                                 self.orientations["polarity"].astype('float')+1e-12
 
     def calculate_orientations(self):
         """
         Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.
         """
-        self.orientations["dip"] = np.nan_to_num(np.arccos(self.orientations["G_z"] / self.orientations["polarity"]))
+
+        self.orientations["dip"] = np.rad2deg(np.nan_to_num(np.arccos(self.orientations["G_z"] / self.orientations["polarity"])))
 
         # TODO if this way to compute azimuth breaks there is in rgeomod=kml_to_plane line 170 a good way to do it
-        self.orientations["azimuth"] = np.nan_to_num(np.arcsin(self.orientations["G_x"]) / (np.sin(np.arccos(self.orientations["G_z"] / self.orientations["polarity"])) * self.orientations["polarity"]))
+        self.orientations["azimuth"] = np.rad2deg(np.nan_to_num(np.arctan(self.orientations["G_x"]/self.orientations["G_y"])))
+                                                  # np.arcsin(self.orientations["G_x"]) /
+                                                  # (np.sin(np.arccos(self.orientations["G_y"] /
+                                                  # self.orientations["polarity"])))))
 
     def count_faults(self):
         """
@@ -235,6 +237,35 @@ class InputData(object):
             # Pickle the 'data' dictionary using the highest protocol available.
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
 
+    def set_default_orientation(self):
+        ori = pn.DataFrame([[(self.extent[1] - self.extent[0]) / 2,
+                             (self.extent[3] - self.extent[2]) / 2,
+                             (self.extent[4] - self.extent[5]) / 2,
+                             0, 0, 1,
+                             0, 0, 1,
+                             'basement',
+                             'Default series',
+                             1, 1, False]], columns=self._columns_o_1)
+
+        self.set_orientations(ori)
+
+    def set_default_interface(self):
+        if self.formations.index[0] is 'basement':
+            formation = 'default'
+            self.set_formations(formation_order=[formation])
+        else:
+            formation = self.formations.index[0]
+            #self.set_formations(formation_order=[self.formations.index])
+
+        self.set_interfaces(pn.DataFrame({'X': [(self.extent[1] - self.extent[0]) / 2],
+                                          'Y': [(self.extent[3] - self.extent[2]) / 2],
+                                          'Z': [(self.extent[4] - self.extent[5]) / 2],
+                                          'formation':[formation], 'order_series':[0],
+                                          'formation_number': [1], 'series': ['Default series'],
+                                          'isFault': False}))
+
+        self.set_basement()
+
     def get_formations(self):
         """
         Returns:
@@ -270,20 +301,41 @@ class InputData(object):
             show_par_f = self._columns_o_num
             show_par_i = self._columns_i_num
             dtype = 'float'
+
+
         if itype == 'orientations':
             raw_data = self.orientations[show_par_f]#.astype(dtype)
+            # Be sure that the columns are in order when used for operations
+            if numeric:
+                raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
         elif itype == 'interfaces':
             raw_data = self.interfaces[show_par_i]#.astype(dtype)
+            # Be sure that the columns are in order when used for operations
+            if numeric:
+                raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
         elif itype == 'all':
             raw_data = pn.concat([self.interfaces[show_par_i],#.astype(dtype),
                                  self.orientations[show_par_f]],#.astype(dtype)],
                                  keys=['interfaces', 'orientations'])
-        else:
-            raise AttributeError('itype has to be: \'orientations\', \'interfaces\', or \'all\'')
+            # Be sure that the columns are in order when used for operations
+            if numeric:
+                raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
 
-        # Be sure that the columns are in order when used for operations
-        if numeric:
-            raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
+        elif itype is 'formations':
+            raw_data = self.formations
+        elif itype is 'series':
+            raw_data = self.series
+        elif itype is 'faults':
+            raw_data = self.faults
+        elif itype is 'faults_relations':
+            raw_data = self.faults_relations
+        else:
+            raise AttributeError('itype has to be \'all\', \'interfaces\', \'orientations\', \'formations\', \
+                                       \'serires\', \'faults\' or \'faults_relations\'')
+
+        #else:
+        #    raise AttributeError('itype has to be: \'orientations\', \'interfaces\', or \'all\'')
+
         return raw_data
 
     # def get_formation_number(self):
@@ -300,13 +352,26 @@ class InputData(object):
     #  #   ip_addresses['DefaultBasement'] = 0
     #     return ip_addresses
 
-    def interactive_df_open(self, itype='all', numeric=False, verbosity=0):
+    def interactive_df_open(self, itype='all',  numeric=False, verbosity=0):
+
+        toolbar = True
 
         if itype is 'all':
-            warnings.warn('When itype is \'all\' Add Row does not work. If needed try using interfaces or orientations'
-                          ' instead')
+            toolbar = False
+        elif itype is 'formations':
+            toolbar = False
+        elif itype is 'faults':
+            toolbar = False
+        elif itype is 'faults_relations':
+            toolbar = False
 
-        self.qgrid_widget = qgrid.QgridWidget(df=self.get_data(itype=itype, verbosity=verbosity), show_toolbar=True)
+        if not toolbar:
+            warnings.warn('for this itype Add Row does not work. If needed try using interfaces or orientations'
+                          'instead')
+
+        df_ = self.get_data(itype=itype, verbosity=verbosity)
+        self.qgrid_widget = qgrid.QgridWidget(df=df_, show_toolbar=toolbar)
+
         return self.qgrid_widget
 
     def interactive_df_get_changed_df(self, only_selected=False):
@@ -476,10 +541,12 @@ class InputData(object):
             self.orientations['formation'].cat.add_categories(kwargs['formation'], inplace=True)
             for key in kwargs:
                 self.orientations.ix[l, str(key)] = kwargs[key]
+
         self.calculate_gradient()
         self.calculate_orientations()
         if not 'series' in kwargs:
             self.set_series()
+
         self.set_basement()
         self.order_table()
 
@@ -580,7 +647,8 @@ class InputData(object):
         if append:
             self.interfaces = self.interfaces.append(interf_Dataframe)
         else:
-            self.interfaces[self._columns_i_1] = interf_Dataframe[self._columns_i_1]
+            # self.interfaces[self._columns_i_1] = interf_Dataframe[self._columns_i_1]
+            self.interfaces = interf_Dataframe[self._columns_i_1]
 
         self.interfaces = self.interfaces[~self.interfaces[['X', 'Y', 'Z']].isna().any(1)]
 
@@ -596,6 +664,11 @@ class InputData(object):
             self.set_series()
             self.order_table()
 
+        # # We check if in the df we are setting there is a new formation. if yes we append it to to the cat
+        # new_cat = interf_Dataframe['formation'].cat.categories[~np.in1d(interf_Dataframe['formation'].cat.categories,
+        #                                                                self.formations)]
+        # self.formations.index.insert(0, new_cat)
+        self.set_series()
         self.set_formations()
         self.set_faults()
         self.interfaces.sort_index()
@@ -618,13 +691,15 @@ class InputData(object):
         if append:
             self.orientations = self.orientations.append(foliat_Dataframe)
         else:
-            self.orientations[self._columns_o_1] = foliat_Dataframe[self._columns_o_1]
+            #self.orientations[self._columns_o_1] = foliat_Dataframe[self._columns_o_1]
+            self.orientations = foliat_Dataframe[self._columns_o_1]
 
         # self.calculate_orientations()
         self.calculate_gradient()
 
         self.orientations = self.orientations[~self.orientations[['X', 'Y', 'Z']].isna().any(1)]
 
+        self.set_series()
         self.set_formations()
         self.set_faults()
        # self.set_annotations()
@@ -705,6 +780,9 @@ class InputData(object):
             if type(series_distribution) is dict:
                 if order is None:
                     order = series_distribution.keys()
+                else:
+                    assert all(np.in1d(order, list(series_distribution.keys()))), 'Order series must contain the same keys as' \
+                                                                       'the passed dictionary ' + str(series_distribution.keys())
                 self.series = pn.DataFrame(dict([(k, pn.Series(v)) for k, v in series_distribution.items()]),
                                            columns=order)
 
@@ -713,6 +791,12 @@ class InputData(object):
 
             else:
                 raise AttributeError('series_distribution must be a dictionary, see Docstring for more information')
+
+            # Addind the formations of the new series to the formations df
+            new_formations = self.series.values.reshape(1, -1)
+            # Dropping nans
+            new_formations = new_formations[~pn.isna(new_formations)]
+            self.set_formations(formation_order=new_formations)
 
         if 'basement' not in self.series.iloc[:, -1].values:
             self.series.loc[self.series.shape[0], self.series.columns[-1]] = 'basement'
@@ -733,6 +817,9 @@ class InputData(object):
        # if series_distribution is not None:
         self.interfaces.sort_values(by='order_series', inplace=True)
         self.orientations.sort_values(by='order_series', inplace=True)
+
+        self.interfaces['series'].cat.set_categories(self.series.columns, inplace=True)
+        self.orientations['series'].cat.set_categories(self.series.columns, inplace=True)
 
         # faults_series = self.count_faults()
         #
@@ -755,12 +842,13 @@ class InputData(object):
 
 
         self.set_basement()
+
         self.set_series(series_distribution=series_distribution, order=order)
 
         faults_series = self.count_faults()
         self.set_faults(faults_series)
 
-        self.reset_indices()
+       # self.reset_indices()
 
         self.set_formations()
         self.order_table()
@@ -770,12 +858,23 @@ class InputData(object):
 
     def set_formations(self, formation_values = None, formation_order = None):
 
+
         self.interfaces['formation'] = self.interfaces['formation'].astype('category')
         self.orientations['formation'] = self.orientations['formation'].astype('category')
 
         if formation_order is None:
-            if self._formation_values_set is False:
-                formation_order = self.interfaces['formation'].cat.remove_unused_categories().cat.categories
+            if self.formations is None:
+            #if self._formation_values_set is False:
+                formation_order = self.interfaces['formation'].cat.categories
+            else:
+                # We check if in the df we are setting there is a new formation. if yes we append it to to the cat
+                new_cat = self.interfaces['formation'].cat.categories[
+                    ~np.in1d(self.interfaces['formation'].cat.categories,
+                             self.formations.index)]
+                if new_cat.empty:
+                    formation_order = self.formations.index
+                else:
+                    formation_order = np.insert(self.formations.index.get_values(), 0, new_cat)
             # try:
             #     # Check if there is already a df
             #     formation_order = self.formations.index
@@ -799,7 +898,7 @@ class InputData(object):
             formation_values = np.append(formation_values, formation_values.max()+1)
 
         self.formations = pn.DataFrame(index=formation_order,
-                                       columns=[['value', 'formation_number']])
+                                       columns=['value', 'formation_number'])
 
         self.formations['value'] = formation_values
         self.formations['formation_number'] = np.arange(1, self.formations.shape[0]+1)
@@ -809,6 +908,9 @@ class InputData(object):
 
         self.interfaces['formation_value'] = self.interfaces['formation'].map(self.formations.iloc[:, 0])
         self.orientations['formation_value'] = self.orientations['formation'].map(self.formations.iloc[:, 0])
+
+        self.interfaces['formation'].cat.set_categories(formation_order, inplace=True)
+        self.orientations['formation'].cat.set_categories(formation_order, inplace=True)
 
     def _set_formation_number(self, formation_order=None):
         """
@@ -934,18 +1036,18 @@ class InputData(object):
         """
         #TODO: Change the fault relation automatically every time we add a fault
         try:
-            self.fault_relation
+            self.faults_relations
             if not rel_matrix:
                rel_matrix = np.zeros((self.series.columns.shape[0],
                                       self.series.columns.shape[0]))
 
-            self.fault_relation = pn.DataFrame(rel_matrix, index=self.series.columns,
-                                               columns= self.series.columns, dtype='bool')
+            self.faults_relations = pn.DataFrame(rel_matrix, index=self.series.columns,
+                                                 columns= self.series.columns, dtype='bool')
         except AttributeError:
 
             if rel_matrix is not None:
-                self.fault_relation = pn.DataFrame(rel_matrix, index=self.series.columns,
-                                                   columns=self.series.columns, dtype='bool')
+                self.faults_relations = pn.DataFrame(rel_matrix, index=self.series.columns,
+                                                     columns=self.series.columns, dtype='bool')
 
     def order_table(self):
         """
@@ -978,7 +1080,7 @@ class InputData(object):
 
         # Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset
         # the index. For some of the methods (pn.drop) we have to apply afterwards we need to reset these indeces
-        self.reset_indices()
+       # self.reset_indices()
         # DEP
         # self.interfaces.reset_index(drop=True, inplace=True)
         # self.orientations.reset_index(drop=True, inplace=True)
@@ -1077,16 +1179,16 @@ class GridClass(object):
         Returns:
             numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid
         """
-        self._grid_ext = extent
-        self._grid_res = resolution
+        self.extent = extent
+        self.resolution = resolution
 
         self.dx, self.dy, self.dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0],\
                                     (extent[5] - extent[4]) / resolution[0]
 
         g = np.meshgrid(
-            np.linspace(self._grid_ext[0] + self.dx/2, self._grid_ext[1] - self.dx/2, self._grid_res[0], dtype="float32"),
-            np.linspace(self._grid_ext[2] + self.dy/2, self._grid_ext[3] - self.dy/2, self._grid_res[1], dtype="float32"),
-            np.linspace(self._grid_ext[4] + self.dz/2, self._grid_ext[5] - self.dz/2, self._grid_res[2], dtype="float32"), indexing="ij"
+            np.linspace(self.extent[0] + self.dx / 2, self.extent[1] - self.dx / 2, self.resolution[0], dtype="float32"),
+            np.linspace(self.extent[2] + self.dy / 2, self.extent[3] - self.dy / 2, self.resolution[1], dtype="float32"),
+            np.linspace(self.extent[4] + self.dz / 2, self.extent[5] - self.dz / 2, self.resolution[2], dtype="float32"), indexing="ij"
         )
 
         self.values = np.vstack(map(np.ravel, g)).T.astype("float32")

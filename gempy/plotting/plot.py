@@ -6,7 +6,7 @@
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
 
-    Foobar is distributed in the hope that it will be useful,
+    gempy is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
@@ -23,9 +23,6 @@
     @author: Miguel de la Varga
 """
 
-
-
-import os
 from os import path
 import sys
 
@@ -37,16 +34,16 @@ import pandas as _pn
 
 import copy
 from .visualization import PlotData2D, steno3D, vtkVisualization
-import gempy
+import gempy as _gempy
 
 
 class vtkPlot():
     def __init__(self, geo_data, alpha=1,
-                     size=(1920, 1080), fullscreen=False, bg_color=None):
+                     size=(1920, 1080), fullscreen=False, bg_color=None, verbose=0):
 
         self.geo_data = geo_data
 
-
+        self.verbose = verbose
         self.alpha = alpha
         self.size = size
         self.fullscreen = fullscreen
@@ -65,7 +62,10 @@ class vtkPlot():
         self.vv.close_window()
 
     def restart(self):
-        self.vv.close_window()
+        try:
+            self.vv.close_window()
+        except AttributeError:
+            pass
 
         self.vv = vtkVisualization(self.geo_data, bg_color=self.bg_color)
 
@@ -75,7 +75,7 @@ class vtkPlot():
     def plot_surfaces_3D(self, vertices_l, simplices_l,
                      #formations_names_l, formation_numbers_l,
                       plot_data=True,
-                     ):
+                     **kwargs):
         """
         Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
 
@@ -92,6 +92,8 @@ class vtkPlot():
         Returns:
             None
         """
+        self.restart()
+
         self.vv.set_surfaces(vertices_l, simplices_l,
                    #formations_names_l, formation_numbers_l,
                     self.alpha)
@@ -100,7 +102,7 @@ class vtkPlot():
             self.vv.set_interfaces()
             self.vv.set_orientations()
 
-        self.vv.render_model(size=self.size, fullscreen=self.fullscreen)
+        self.vv.render_model(**kwargs)
 
     def plot_data_3D(self, **kwargs):
         """
@@ -111,7 +113,7 @@ class vtkPlot():
         Returns:
             None
         """
-
+        self.restart()
         self.vv.set_interfaces()
         self.vv.set_orientations()
         self.vv.render_model(**kwargs)
@@ -124,7 +126,7 @@ class vtkPlot():
         self.vv.interp_data = interp_data
         self.vv.real_time = True
 
-    def plot_surfaces_3D_real_time(self, interp_data, vertices_l, simplices_l,
+    def plot_surfaces_3D_real_time(self, interp_data, vertices_l=None, simplices_l=None,
                                    # formations_names_l, formation_numbers_l,
                                     plot_data=True, posterior=None, samples=None,
                                    **kwargs):
@@ -147,7 +149,7 @@ class vtkPlot():
         Returns:
             None
         """
-        assert isinstance(interp_data, gempy.InterpolatorData), 'The object has to be instance of the InterpolatorInput'
+        assert isinstance(interp_data, _gempy.InterpolatorData), 'The object has to be instance of the InterpolatorInput'
       #  self.set_real_time_on(interp_data)
 
        # assert _np.max(vertices_l[0]) < 1.5, 'Real time plot only works with rescaled data. Change the original scale flag' \
@@ -158,12 +160,13 @@ class vtkPlot():
         # self.real_time = True
         self.set_real_time_on(interp_data)
 
-        self.vv.set_surfaces(vertices_l, simplices_l,
-                       # formations_names_l, formation_numbers_l,
-                       self.alpha)
+        if vertices_l and simplices_l:
+            self.vv.set_surfaces(vertices_l, simplices_l,
+                           # formations_names_l, formation_numbers_l,
+                           self.alpha)
 
         if posterior is not None:
-            assert isinstance(posterior, gempy.posterior_analysis.Posterior), 'The object has to be instance of the Posterior class'
+            assert isinstance(posterior, _gempy.posterior_analysis.Posterior), 'The object has to be instance of the Posterior class'
             self.vv.post = posterior
             if samples is not None:
                 samp_i = samples[0]
@@ -180,18 +183,18 @@ class vtkPlot():
 
         self.vv.render_model(**kwargs)
 
-    def move_interface(self, new_df, ):
-
-        print(self.geo_data._columns_i_1, new_df.columns)
+    def _move_interface(self, new_df):
+        if self.verbose > 0:
+            print(self.geo_data._columns_i_1, new_df.columns)
 
         # Check rows tht have changed
-        b_i = (new_df[self.geo_data._columns_i_1].sort_index() != gempy.get_data(
+        b_i = (new_df[self.geo_data._columns_i_1].sort_index() != _gempy.get_data(
             self.geo_data, itype='interfaces')[self.geo_data._columns_i_1].sort_index()).any(1)
 
         # Get indices of changed rows
         ind_i = new_df.index[b_i].tolist()
-
-        print('I am in modifing', ind_i)
+        if self.verbose > 0:
+            print('I am in modifing', ind_i)
 
         # Modify df
         self.geo_data.set_new_df(new_df)
@@ -199,10 +202,10 @@ class vtkPlot():
         # Move sphere widget to new position
         self.vv.SphereCallbak_move_changes(ind_i)
 
-    def move_orientation(self, new_df):
+    def _move_orientation(self, new_df):
 
         # Check rows tht have changed
-        b_o = (new_df[self.geo_data._columns_o_1].sort_index() != gempy.get_data(
+        b_o = (new_df[self.geo_data._columns_o_1].sort_index() != _gempy.get_data(
                 self.geo_data, itype='orientations')[self.geo_data._columns_o_1].sort_index()).any(1)
 
         # Get indices of changed rows
@@ -214,17 +217,17 @@ class vtkPlot():
         # Move widgets
         self.vv.planesCallback_move_changes(ind_o)
 
-    def move_interface_orientation(self, new_df):
+    def _move_interface_orientation(self, new_df):
 
         # Check rows tht have changed
-        b_i = (new_df.xs('interfaces')[self.geo_data._columns_i_1].sort_index() != gempy.get_data(
+        b_i = (new_df.xs('interfaces')[self.geo_data._columns_i_1].sort_index() != _gempy.get_data(
             self.geo_data, itype='interfaces')[self.geo_data._columns_i_1].sort_index()).any(1)
 
         # Get indices of changed rows
         ind_i = new_df.xs('interfaces').index[b_i].tolist()
 
         # Check rows tht have changed
-        b_o = (new_df.xs('orientations')[self.geo_data._columns_o_1].sort_index() != gempy.get_data(
+        b_o = (new_df.xs('orientations')[self.geo_data._columns_o_1].sort_index() != _gempy.get_data(
             self.geo_data, itype='orientations')[self.geo_data._columns_o_1].sort_index()).any(1)
 
         # Get indices of changed rows
@@ -237,7 +240,7 @@ class vtkPlot():
         self.vv.SphereCallbak_move_changes(ind_i)
         self.vv.planesCallback_move_changes(ind_o)
 
-    def delete_interface(self, new_df):
+    def _delete_interface(self, new_df):
 
         # Finding deleted indeces
         ind_i = self.geo_data.interfaces.index.values[~_np.in1d(self.geo_data.interfaces.index.values,
@@ -250,12 +253,16 @@ class vtkPlot():
             self.vv.s_rend_2.loc[i, 'val'].Off()
             self.vv.s_rend_3.loc[i, 'val'].Off()
             self.vv.s_rend_4.loc[i, 'val'].Off()
-
+            self.vv.s_rend_1.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[0])
+            self.vv.s_rend_2.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[1])
+            self.vv.s_rend_3.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[2])
+            self.vv.s_rend_4.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[3])
         # Modify fg
         self.geo_data.set_new_df(new_df)
-        print('I am in deleting', ind_i)
+        if self.verbose > 0:
+            print('I am in deleting', ind_i)
 
-    def delete_orientation(self, new_df):
+    def _delete_orientation(self, new_df):
 
         # Finding deleted indeces
         ind_o = self.geo_data.orientations.index.values[~_np.in1d(self.geo_data.orientations.index.values,
@@ -268,12 +275,16 @@ class vtkPlot():
             self.vv.o_rend_2.loc[i, 'val'].Off()
             self.vv.o_rend_3.loc[i, 'val'].Off()
             self.vv.o_rend_4.loc[i, 'val'].Off()
-
+            self.vv.o_rend_1.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[0])
+            self.vv.o_rend_2.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[1])
+            self.vv.o_rend_3.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[2])
+            self.vv.o_rend_4.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[3])
         # Modify fg
         self.geo_data.set_new_df(new_df)
-        print('I am in deleting o', ind_o)
+        if self.verbose > 0:
+            print('I am in deleting o', ind_o)
 
-    def add_interface_restore(self, new_df):
+    def _add_interface_restore(self, new_df):
 
         # Finding deleted indeces to restore
         ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
@@ -286,10 +297,12 @@ class vtkPlot():
             self.vv.s_rend_3.loc[i, 'val'].On()
             self.vv.s_rend_4.loc[i, 'val'].On()
 
-        self.geo_data.set_new_df(new_df.loc[ind_i], append=True)
-        print('I am getting back', ind_i)
 
-    def add_orientation_restore(self, new_df):
+        self.geo_data.set_new_df(new_df.loc[ind_i], append=True)
+        if self.verbose > 0:
+            print('I am getting back', ind_i)
+
+    def _add_orientation_restore(self, new_df):
 
         # Finding deleted indeces to restore
         ind_o = new_df.index.values[~_np.in1d(new_df.index.values,
@@ -303,9 +316,10 @@ class vtkPlot():
             self.vv.o_rend_4.loc[i, 'val'].On()
 
         self.geo_data.set_new_df(new_df.loc[ind_o], append=True)
-        print('I am getting back', ind_o)
+        if self.verbose > 0:
+            print('I am getting back', ind_o)
 
-    def add_interface_new(self, new_df):
+    def _add_interface_new(self, new_df):
 
         # Finding the new indices added
         ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
@@ -314,14 +328,14 @@ class vtkPlot():
 
         # Modifing df
         self.geo_data.set_new_df(new_df.loc[ind_i], append=True)
-        print(ind_i)
 
         # Creating new widget
         for i in ind_i:
             self.vv.set_interfaces(indices=i)
-        print('I am in adding', ind_i)
+        if self.verbose > 0:
+            print('I am in adding', ind_i)
 
-    def add_orientation_new(self, new_df):
+    def _add_orientation_new(self, new_df):
 
         # Finding the new indices added
         ind_o = new_df.index.values[~_np.in1d(new_df.index.values,
@@ -330,12 +344,14 @@ class vtkPlot():
 
         # Modifing df
         self.geo_data.set_new_df(new_df.loc[ind_o], append=True)
-        print(ind_o)
+        if self.verbose > 0:
+            print(ind_o)
 
         # Creating new widget
         for i in ind_o:
             self.vv.set_orientations(indices=i)
-        print('I am in adding', ind_o)
+        if self.verbose > 0:
+            print('I am in adding', ind_o)
 
     def qgrid_callBack(self, change):
         #  First we remove a column that is added by qgrid with the unfiltered indeces
@@ -344,7 +360,7 @@ class vtkPlot():
         # Check if we are modifing interfaces and orientations at the same time
         try:
             # Modify mode
-            self.move_interface_orientation(new_df)
+            self._move_interface_orientation(new_df)
         except KeyError:
             # Check the itype data
             # ------------
@@ -354,7 +370,7 @@ class vtkPlot():
                 # ++++++++++
                 # Delete mode
                 if new_df.index.shape[0] < self.geo_data.orientations.index.shape[0]:
-                    self.delete_orientation(new_df)
+                    self._delete_orientation(new_df)
                 # +++++++++++
                 # Adding mode
                 elif new_df.index.shape[0] > self.geo_data.orientations.index.shape[0]:
@@ -363,15 +379,15 @@ class vtkPlot():
                     # Filter mode
                     if set(new_df.index).issubset(self._original_df.index):
 
-                        self.add_orientation_restore(new_df)
+                        self._add_orientation_restore(new_df)
 
                     # Adding new data mode
                     else:
-                        self.add_orientation_new(new_df)
+                        self._add_orientation_new(new_df)
                 # +++++++++++
                 # Modify mode
                 elif new_df.index.shape[0] == self.geo_data.orientations.index.shape[0]:  # Modify
-                    self.move_orientation(new_df)
+                    self._move_orientation(new_df)
 
                 else:
                     print('something went wrong')
@@ -379,48 +395,87 @@ class vtkPlot():
                     # ----------
             # Interfaces
             elif set(self.geo_data._columns_i_1).issubset(new_df.columns):
-                print(new_df.index.shape[0])
+                if self.verbose > 0:
+                    print(new_df.index.shape[0])
 
                 # Checking the mode
                 # ++++++++++
                 # Delete mode
                 if new_df.index.shape[0] < self.geo_data.interfaces.index.shape[0]:
-                    self.delete_interface(new_df)
+                    self._delete_interface(new_df)
 
                 # +++++++++++
                 # Adding mode
                 elif new_df.index.shape[0] > self.geo_data.interfaces.index.shape[0]:  # Add mode
 
-                    print(set(new_df.index).issubset(self._original_df.index))
+                    # print(set(new_df.index).issubset(self._original_df.index))
 
                     # Checking if is new point or a filter
                     # ===========
                     # Filter mode
                     if set(new_df.index).issubset(self._original_df.index):
 
-                        self.add_interface_restore(new_df)
+                        self._add_interface_restore(new_df)
 
                     # Adding new data mode
                     else:
-                        self.add_interface_new(new_df)
+                        self._add_interface_new(new_df)
 
                 # +++++++++++
                 # Modify mode
                 elif new_df.index.shape[0] == self.geo_data.interfaces.index.shape[0]:  # Modify
-                    self.move_interface(new_df)
+                    self._move_interface(new_df)
 
                 else:
                     print('something went wrong')
 
-        for surf in self.vv.surf_rend_1:
-            self.vv.ren_list[0].RemoveActor(surf)
-            self.vv.ren_list[1].RemoveActor(surf)
-            self.vv.ren_list[2].RemoveActor(surf)
-            self.vv.ren_list[3].RemoveActor(surf)
+        if self.vv.real_time:
+            try:
+                for surf in self.vv.surf_rend_1:
+                    self.vv.ren_list[0].RemoveActor(surf)
+                    self.vv.ren_list[1].RemoveActor(surf)
+                    self.vv.ren_list[2].RemoveActor(surf)
+                    self.vv.ren_list[3].RemoveActor(surf)
+            except AttributeError:
+                pass
 
+            try:
+                self.vv.geo_data.order_table()
+                vertices, simpleces = self.vv.update_surfaces_real_time(self.vv.geo_data)
+                self.vv.set_surfaces(vertices, simpleces)
+            except AssertionError:
+                print('Not enough data to compute the model')
+            except NotImplementedError:
+                print('If the theano graph expects faults and/or lithologies you need to pass at least one'
+                      ' interface for each of them')
         #self.vv.interp_data.update_interpolator(self.geo_data)
-        vertices, simpleces = self.vv.update_surfaces_real_time(self.vv.geo_data)
-        self.vv.set_surfaces(vertices, simpleces)
+
+
+
+        self.vv.interactor.Render()
+
+    def qgrid_callBack_fr(self, change):
+        new_df = change['new'][change['new'].columns[1:]]
+        self.geo_data.faults_relations = new_df
+
+        if self.vv.real_time:
+            try:
+                for surf in self.vv.surf_rend_1:
+                    self.vv.ren_list[0].RemoveActor(surf)
+                    self.vv.ren_list[1].RemoveActor(surf)
+                    self.vv.ren_list[2].RemoveActor(surf)
+                    self.vv.ren_list[3].RemoveActor(surf)
+            except AttributeError:
+                pass
+
+            try:
+                vertices, simpleces = self.vv.update_surfaces_real_time(self.vv.geo_data)
+                self.vv.set_surfaces(vertices, simpleces)
+            except AssertionError:
+                print('Not enough data to compute the model')
+            except NotImplementedError:
+                print('If the theano graph expects faults and/or lithologies you need to pass at least one'
+                      ' interface for each of them')
 
         self.vv.interactor.Render()
 
@@ -428,10 +483,16 @@ class vtkPlot():
         if not geo_data:
             geo_data = self.geo_data
 
-        self._original_df = copy.deepcopy(gempy.get_data(geo_data, itype=itype))
+        self._original_df = copy.deepcopy(_gempy.get_data(geo_data, itype=itype))
         qgrid_widget = geo_data.interactive_df_open(itype=itype)
-        qgrid_widget.observe(self.qgrid_callBack, names=['_df'])
+        if itype is 'faults_relations':
+            qgrid_widget.observe(self.qgrid_callBack_fr, names=['_df'])
+
+        else:
+            qgrid_widget.observe(self.qgrid_callBack, names=['_df'])
+
         return qgrid_widget
+
 
 def plot_data_3D(geo_data, **kwargs):
     """
@@ -479,37 +540,12 @@ def plot_surfaces_3D_real_time(geo_data, interp_data, vertices_l, simplices_l,
         None
     """
 
-    assert isinstance(interp_data, gempy.InterpolatorData), 'The object has to be instance of the InterpolatorInput'
+    assert isinstance(interp_data, _gempy.InterpolatorData), 'The object has to be instance of the InterpolatorInput'
     vv = vtkPlot(geo_data, **kwargs)
     vv.plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l, plot_data=plot_data, posterior=posterior,
                                   samples=samples, **kwargs)
 
     return vv
-
-    # w = vtkVisualization(interp_data.geo_data_res, real_time=True)
-    # w.set_surfaces(vertices_l, simplices_l,
-    #                #formations_names_l, formation_numbers_l,
-    #                 alpha)
-    #
-    # if posterior is not None:
-    #     assert isinstance(posterior, gempy.Posterior), 'The object has to be instance of the Posterior class'
-    #     w.post = posterior
-    #     if samples is not None:
-    #         samp_i = samples[0]
-    #         samp_f = samples[1]
-    #     else:
-    #         samp_i = 0
-    #         samp_f = posterior.n_iter
-    #
-    #     w.create_slider_rep(samp_i, samp_f, samp_f)
-    #
-    # w.interp_data = interp_data
-    # if plot_data:
-    #     w.set_interfaces()
-    #     w.set_orientations()
-    # w.render_model(size=size, fullscreen=fullscreen)
-    #
-    # w.close_window()
 
 
 def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
@@ -551,6 +587,7 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
     # w.close_window()
 
     return vv
+
 
 def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None, simplices=None):
     """
@@ -658,183 +695,6 @@ def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,
     plot.plot_gradient(scalar_field, gx, gy, gz, cell_number, q_stepsize=q_stepsize,
                            direction=direction, plot_scalar=plot_scalar,
                            **kwargs)
-
-
-#
-# def plot_data_3D(geo_data, **kwargs):
-#     """
-#     Plot in vtk all the input data of a model
-#     Args:
-#         geo_data (gempy.DataManagement.InputData): Input data of the model
-#
-#     Returns:
-#         None
-#     """
-#     vv = vtkVisualization(geo_data)
-#     vv.set_interfaces()
-#     vv.set_orientations()
-#     vv.render_model(**kwargs)
-#     return vv
-#
-#
-# def vtk_resume(vtk_plot):
-#     vtk_plot.interactor.Start()
-#
-# def vtk_close(vtk_plot):
-#     vtk_plot.close_window()
-#
-# def vtk_observe_df(geo_data, vtk_plot, itype='all'):
-#
-#     def callBack(change):
-#      #   print(change)
-#         new_df = change['new'][change['new'].columns[1:]]
-#      #   print("i am at the callback", change['new'].columns)
-#         # Boolean of changes
-#         try:
-#          # Modify mode
-#
-#             b_i = (new_df.xs('interfaces')[geo_data._columns_i_num] != get_data(geo_data, itype='interfaces')[
-#                 geo_data._columns_i_num]).any(1)
-#             # Indices
-#             ind_i = new_df.xs('interfaces').index[b_i].tolist()
-#
-#
-#             # Boolean of changes
-#             b_o = (new_df.xs('orientations')[geo_data._columns_o_num] != get_data(geo_data, itype='orientations')[
-#                 geo_data._columns_o_num]).any(1)
-#             # Indices
-#             ind_o = new_df.xs('orientations').index[b_o].tolist()
-#
-#             geo_data.set_new_df(new_df)
-#
-#             vtk_plot.SphereCallbak_move_changes(ind_i)
-#             vtk_plot.planesCallback_move_changes(ind_o)
-#
-#         except KeyError:
-#             # Orientations
-#             if set(geo_data._columns_o_1).issubset(new_df.columns):
-#                 # Boolean of changes
-#                 b_o = (new_df[geo_data._columns_o_num] != get_data(geo_data, itype='orientations')[
-#                     geo_data._columns_o_num]).any(1)
-#
-#                 # Indices
-#                 ind_o = new_df.index[b_o].tolist()
-#                 print('I am here')
-#                 geo_data.set_new_df(new_df)
-#                 vtk_plot.planesCallback_move_changes(ind_o)
-#
-#             # Interfaces
-#             elif set(geo_data._columns_i_1).issubset(new_df.columns):
-#                 print(new_df.index.shape[0])
-#                 if new_df.index.shape[0] < geo_data.interfaces.index.shape[0]:  # Delete mode
-#                     ind_i = geo_data.interfaces.index.values[~_np.in1d(geo_data.interfaces.index.values,
-#                                                                        new_df.index.values,
-#                                                                        assume_unique=True)]
-#
-#                     for i in ind_i:
-#                         vtk_plot.s_rend_1.loc[i, 'val'].Off()
-#                         vtk_plot.s_rend_2.loc[i, 'val'].Off()
-#                         vtk_plot.s_rend_3.loc[i, 'val'].Off()
-#                         vtk_plot.s_rend_4.loc[i, 'val'].Off()
-#
-#                     geo_data.set_new_df(new_df)
-#                     print('I am in deleting', ind_i)
-#                 elif new_df.index.shape[0] > geo_data.interfaces.index.shape[0]:  # Add mode
-#
-#                     print(set(new_df.index).issubset(geo_data._original_df.index))
-#                     if set(new_df.index).issubset(geo_data._original_df.index):
-#                         ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
-#                                                                            geo_data.interfaces.index.values,
-#                                                                            assume_unique=True)]
-#                         for i in ind_i:
-#                             vtk_plot.s_rend_1.loc[i, 'val'].On()
-#                             vtk_plot.s_rend_2.loc[i, 'val'].On()
-#                             vtk_plot.s_rend_3.loc[i, 'val'].On()
-#                             vtk_plot.s_rend_4.loc[i, 'val'].On()
-#
-#                         geo_data.set_new_df(new_df.loc[ind_i], append=True)
-#                         print('I am getting back', ind_i)
-#                     else:
-#
-#                         ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
-#                                                               geo_data.interfaces.index.values,
-#                                                               assume_unique=True)]
-#                         geo_data.set_new_df(new_df.loc[ind_i], append=True)
-#                         print(ind_i)
-#                         for i in ind_i:
-#                             vtk_plot.set_interfaces(indices=i)
-#                         print('I am in adding', ind_i)
-#                 elif new_df.index.shape[0] == geo_data.interfaces.index.shape[0]: # Modify
-#
-#                     print(geo_data._columns_i_1, new_df.columns)
-#
-#                     b_i = (new_df[geo_data._columns_i_1].sort_index() != get_data(geo_data, itype='interfaces')[
-#                         geo_data._columns_i_1].sort_index()).any(1)
-#
-#                     # Indices
-#                     ind_i = new_df.index[b_i].tolist()
-#
-#                     print(print('I am in modifing', ind_i))
-#                     geo_data.set_new_df(new_df)
-#                     vtk_plot.SphereCallbak_move_changes(ind_i)
-#
-#                 else:
-#                     print('something went wrong')
-#
-#
-#         vtk_plot.interactor.Render()
-#
-#     geo_data._original_df = copy.deepcopy(get_data(geo_data, itype=itype))
-#     qgrid_widget = geo_data.interactive_df_open(itype=itype)
-#     qgrid_widget.observe(callBack, names=['_df'])
-#     return qgrid_widget
-#
-# def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
-#                      #formations_names_l, formation_numbers_l,
-#                      alpha=1, plot_data=True, posterior=None, samples=None,
-#                      size=(1920, 1080), fullscreen=False):
-#     """
-#     Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.
-#     IMPORTANT NOTE it is highly recommended to have the flag fast_run in the theano optimization. Also note that the
-#     time needed to compute each model increases linearly with every potential field (i.e. fault or discontinuity). It
-#     may be better to just modify each potential field individually to increase the speed (See gempy.select_series).
-#
-#     Args:
-#         vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
-#         simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
-#         formations_names_l (list): Name of the formation of the surfaces
-#         formation_numbers_l (list): formation_numbers (int)
-#         alpha (float): Opacity
-#         plot_data (bool): Default True
-#         size (tuple): Resolution of the window
-#         fullscreen (bool): Launch window in full screen or not
-#
-#     Returns:
-#         None
-#     """
-#     assert isinstance(interp_data, InterpolatorData), 'The object has to be instance of the InterpolatorInput'
-#     w = vtkVisualization(interp_data.geo_data_res, real_time=True)
-#     w.set_surfaces(vertices_l, simplices_l,
-#                    #formations_names_l, formation_numbers_l,
-#                     alpha)
-#
-#     if posterior is not None:
-#         assert isinstance(posterior, pa.Posterior), 'The object has to be instance of the Posterior class'
-#         w.post = posterior
-#         if samples is not None:
-#             samp_i = samples[0]
-#             samp_f = samples[1]
-#         else:
-#             samp_i = 0
-#             samp_f = posterior.n_iter
-#
-#         w.create_slider_rep(samp_i, samp_f, samp_f)
-#
-#     w.interp_data = interp_data
-#     if plot_data:
-#         w.set_interfaces()
-#         w.set_orientations()
-#     w.render_model(size=size, fullscreen=fullscreen)
 
 
 def plot_topology(geo_data, G, centroids, direction="y"):
