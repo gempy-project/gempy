@@ -17,6 +17,7 @@ from PIL import Image, ImageDraw
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import matplotlib
+import gempy.hackathon as hackathon
 
 
 # TODO: Superclass or not? methods: run sandbox with runnable, height map only, diff height...
@@ -30,6 +31,7 @@ class Kinect: # add dummy
         self.resolution = (640, 480)
         self.dummy=dummy
         self.mirror=mirror
+        self.rgb_frame=None
 
         if self.dummy==False:
             print("looking for kinect...")
@@ -78,6 +80,31 @@ class Kinect: # add dummy
             if sigma_gauss:
                 self.depth=scipy.ndimage.filters.gaussian_filter(self.depth, sigma_gauss)
             return self.depth
+
+    def get_rgb_frame(self):
+        if self.dummy == False:
+            self.rgb_frame = freenect.sync_get_video(index=self.id)[0]
+            self.rgb_frame = numpy.fliplr(self.rgb_frame)
+            return self.depth
+
+            self.depth = synth_depth
+            return self.depth
+
+    def calibrate_frame(self, frame, calibration=None):
+        if calibration is None:
+            try:
+                calibration = Calibration._instances[-1]
+                print("using last calibration instance created.")
+            except:
+                print("no calibration found")
+        rotated = scipy.ndimage.rotate(frame, calibration.calibration_data['rot_angle'], reshape=False)
+        cropped = rotated[calibration.calibration_data['y_lim'][0] : calibration.calibration_data['y_lim'][1], calibration.calibration_data['x_lim'][0] : calibration.calibration_data['x_lim'][1]]
+        return cropped
+
+
+
+
+
 
 
 class Beamer:
@@ -186,24 +213,6 @@ class Beamer:
             beamer_output.paste(hot, (self.calibration.calibration_data['hot_x_lim'][0], self.calibration.calibration_data['hot_y_lim'][0]))
 
         beamer_output.save('output.png') #TODO: Beamer specific outputs
-
-    def hide_legend(self):
-        self.calibration.calibration_data['legend_area'] = False
-
-    def show_legend(self):
-        self.calibration.calibration_data['legend_area'] = True
-
-    def hide_profile(self):
-        self.calibration.calibration_data['profile_area'] = False
-
-    def show_profile(self):
-        self.calibration.calibration_data['profile_area'] = True
-
-    def hide_hot(self):
-        self.calibration.calibration_data['profile_area'] = False
-
-    def show_hot(self):
-        self.calibration.calibration_data['profile_area'] = True
 
     # TODO: threaded runloop exporting filtered and unfiltered depth
 
@@ -406,11 +415,7 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                                  )
         display(calibration_widget)
 
-    def hide_hot(self):
-        self.calibration_data['profile_area'] = False
 
-    def show_hot(self):
-        self.calibration_data['profile_area'] = True
 
 
 class Model:
@@ -435,6 +440,7 @@ class Model:
         self.stop_threat = False
         if lock:
             self.lock = lock
+
 
         if associated_calibration==None:
             try:
@@ -535,6 +541,21 @@ class Model:
 
     def run(self):
         run_model(self)
+
+def detect_shapes(kinect,model, calibration, frame=None):
+    if frame is None:
+        frame=kinect.get_RGB_frame()
+    rotated_frame = scipy.ndimage.rotate(frame, calibration.calibration_data['rot_angle'], reshape=False)
+    cropped_frame = rotated_frame[calibration.calibration_data['y_lim'][0]:calibration.calibration_data['y_lim'][1],
+                                  calibration.calibration_data['x_lim'][0]:calibration.calibration_data['x_lim'][1]]
+    squares, circles = hackathon.get_shape_coords(cropped_frame)
+
+    for square in squares:
+        print(square)
+
+
+
+
 
 
 def run_model(model, calibration=None, kinect=None, beamer=None, filter_depth=True, n_frames=5, sigma_gauss=4 ):  # continous run functions with exit handling
