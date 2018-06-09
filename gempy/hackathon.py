@@ -92,7 +92,7 @@ def where_circles(image, thresh_value=80):
 
 
 def filter_circles(shape_coords, circle_coords):
-    dist = distance.cdist(shape_coords, circle_coords, 'euclidean')
+    dist = distance.cdist(shape_coords, np.array(circle_coords), 'euclidean')
     minima = np.min(dist, axis=1)
     non_circle_pos = np.where(minima > 10)
     return non_circle_pos
