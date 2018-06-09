@@ -10,7 +10,7 @@ import scipy
 import gempy
 #from gempy.plotting.colors import color_lot, cmap, norm
 from itertools import count
-from PIL import Image
+from PIL import Image, ImageDraw
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import matplotlib
@@ -165,13 +165,42 @@ class Beamer:
 
         webbrowser.open_new('file://'+str(os.path.join(self.work_directory,self.html_filename)))
 
-    def show(self, input='current_frame.png'):
+    def show(self, input='current_frame.png', legend_frame='legend.png', profile_frame='profile.png', hot_frame='hot.png'):
 
         beamer_output = Image.new('RGB', self.resolution)
         frame = Image.open(input)
+
         beamer_output.paste(frame.resize((int(frame.width * self.calibration.calibration_data['scale_factor']), int(frame.height * self.calibration.calibration_data['scale_factor']))),
                             (self.calibration.calibration_data['x_pos'], self.calibration.calibration_data['y_pos']))
+        if self.calibration.calibration_data['legend_area'] is not False:
+            legend=Image.open(legend_frame)
+            beamer_output.paste(legend, (self.calibration.calibration_data['legend_x_lim'][0],self.calibration.calibration_data['legend_y_lim'][0]))
+        if self.calibration.calibration_data['profile_area'] is not False:
+            profile=Image.open(profile_frame)
+            beamer_output.paste(profile, (self.calibration.calibration_data['profile_x_lim'][0],self.calibration.calibration_data['profile_y_lim'][0]))
+        if self.calibration.calibration_data['hot_area'] is not False:
+            hot = Image.open(hot_frame)
+            beamer_output.paste(hot, (self.calibration.calibration_data['hot_x_lim'][0], self.calibration.calibration_data['hot_y_lim'][0]))
+
         beamer_output.save('output.png') #TODO: Beamer specific outputs
+
+    def hide_legend(self):
+        self.calibration.calibration_data['legend_area'] = False
+
+    def show_legend(self):
+        self.calibration.calibration_data['legend_area'] = True
+
+    def hide_profile(self):
+        self.calibration.calibration_data['profile_area'] = False
+
+    def show_profile(self):
+        self.calibration.calibration_data['profile_area'] = True
+
+    def hide_hot(self):
+        self.calibration.calibration_data['profile_area'] = False
+
+    def show_hot(self):
+        self.calibration.calibration_data['profile_area'] = True
 
     # TODO: threaded runloop exporting filtered and unfiltered depth
 
@@ -194,7 +223,18 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                  'y_pos': 0,
                                  'scale_factor': 1.0,
                                  'z_range':(800,1400),
-                                 'box_dim':(400,300)}
+                                 'box_dim':(400,300),
+                                 'legend_area':False,
+                                 'legend_x_lim':(self.beamer_resolution[1]-50,self.beamer_resolution[0]-1 ),
+                                 'legend_y_lim':(self.beamer_resolution[1]-100,self.beamer_resolution[1]- 50),
+                                 'profile_area': False,
+                                 'profile_x_lim': (self.beamer_resolution[0] - 50, self.beamer_resolution[0] - 1),
+                                 'profile_y_lim': (self.beamer_resolution[1] - 100, self.beamer_resolution[1] - 1),
+                                 'hot_area': False,
+                                 'hot_x_lim': (self.beamer_resolution[0] - 50, self.beamer_resolution[0] - 1),
+                                 'hot_y_lim': (self.beamer_resolution[1] - 100, self.beamer_resolution[1] - 1)
+                                 }
+
         self.cmap=None
        # ...
 
@@ -227,7 +267,7 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
             except:
                 print("Error: no kinect instance found.")
 
-        def calibrate(rot_angle, x_lim, y_lim, x_pos, y_pos, scale_factor, z_range, box_width,box_height, close_click):
+        def calibrate(rot_angle, x_lim, y_lim, x_pos, y_pos, scale_factor, z_range, box_width,box_height,legend_area, legend_x_lim, legend_y_lim, profile_area, profile_x_lim, profile_y_lim, hot_area, hot_x_lim, hot_y_lim, close_click):
             depth = self.associated_kinect.get_frame()
             depth_rotated = scipy.ndimage.rotate(depth,rot_angle, reshape=False )
             depth_cropped = depth_rotated[y_lim[0]:y_lim[1], x_lim[0]:x_lim[1]]
@@ -247,6 +287,9 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
             plt.savefig('current_frame.png', pad_inches=0)
             plt.close(fig)
 
+
+
+
             self.calibration_data = {'rot_angle': rot_angle,
                                  'x_lim': x_lim,  # TODO: refactor calibration_data as an inner class for type safety
                                  'y_lim': y_lim,
@@ -254,7 +297,30 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                  'y_pos': y_pos,
                                  'scale_factor': scale_factor,
                                  'z_range':z_range,
-                                 'box_dim': (box_width,box_height)}
+                                 'box_dim': (box_width,box_height),
+                                 'legend_area': legend_area,
+                                 'legend_x_lim': legend_x_lim,
+                                 'legend_y_lim': legend_y_lim,
+                                 'profile_area': profile_area,
+                                 'profile_x_lim': profile_x_lim,
+                                 'profile_y_lim': profile_y_lim,
+                                 'hot_area': hot_area,
+                                 'hot_x_lim': hot_x_lim,
+                                 'hot_y_lim': hot_y_lim
+                                     }
+
+            if self.calibration_data['legend_area'] is not False:
+                legend=Image.new('RGB', (self.calibration_data['legend_x_lim'][1]-self.calibration_data['legend_x_lim'][0], self.calibration_data['legend_y_lim'][1]-self.calibration_data['legend_y_lim'][0]), color = 'white')
+                ImageDraw.Draw(legend).text((10,10),"Legend",fill=(255,255,0))
+                legend.save('legend.png')
+            if self.calibration_data['profile_area'] is not False:
+                profile=Image.new('RGB', (self.calibration_data['profile_x_lim'][1]-self.calibration_data['profile_x_lim'][0], self.calibration_data['profile_y_lim'][1]-self.calibration_data['profile_y_lim'][0]), color = 'blue')
+                ImageDraw.Draw(profile).text((10,10),"Profile",fill=(255,255,0))
+                profile.save('profile.png')
+            if self.calibration_data['hot_area'] is not False:
+                hot=Image.new('RGB', (self.calibration_data['hot_x_lim'][1]-self.calibration_data['hot_x_lim'][0], self.calibration_data['hot_y_lim'][1]-self.calibration_data['hot_y_lim'][0]), color = 'red')
+                ImageDraw.Draw(hot).text((10,10),"Hot Area",fill=(255,255,0))
+                hot.save('hot.png')
             self.associated_beamer.show()
             if close_click==True:
                 calibration_widget.close()
@@ -282,6 +348,49 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                                                          max=2000,continuous_update=False),
                                                  box_height=widgets.IntSlider(value=self.calibration_data['box_dim'][1], min=0,
                                                                          max=2000,continuous_update=False),
+                                                 legend_area=widgets.ToggleButton(
+                                                    value=self.calibration_data['legend_area'],
+                                                    description='display a legend',
+                                                    disabled=False,
+                                                    button_style='',  # 'success', 'info', 'warning', 'danger' or ''
+                                                    tooltip='Description',
+                                                    icon='check'),
+                                                 legend_x_lim=widgets.IntRangeSlider(
+                                                     value=[self.calibration_data['legend_x_lim'][0], self.calibration_data['legend_x_lim'][1]],
+                                                     min=0, max=self.beamer_resolution[0], step=1,continuous_update=False),
+                                                 legend_y_lim=widgets.IntRangeSlider(
+                                                     value=[self.calibration_data['legend_y_lim'][0], self.calibration_data['legend_y_lim'][1]],
+                                                     min=0, max=self.beamer_resolution[1], step=1, continuous_update=False),
+                                                 profile_area=widgets.ToggleButton(
+                                                     value=self.calibration_data['profile_area'],
+                                                     description='display a profile area',
+                                                     disabled=False,
+                                                     button_style='',  # 'success', 'info', 'warning', 'danger' or ''
+                                                     tooltip='Description',
+                                                     icon='check'),
+                                                 profile_x_lim=widgets.IntRangeSlider(
+                                                     value=[self.calibration_data['profile_x_lim'][0],
+                                                            self.calibration_data['profile_x_lim'][1]],
+                                                     min=0, max=self.beamer_resolution[0], step=1, continuous_update=False),
+                                                 profile_y_lim=widgets.IntRangeSlider(
+                                                     value=[self.calibration_data['profile_y_lim'][0],
+                                                            self.calibration_data['profile_y_lim'][1]],
+                                                     min=0, max=self.beamer_resolution[1], step=1, continuous_update=False),
+                                                 hot_area=widgets.ToggleButton(
+                                                     value=self.calibration_data['hot_area'],
+                                                     description='display a hot area for qr codes',
+                                                     disabled=False,
+                                                     button_style='',  # 'success', 'info', 'warning', 'danger' or ''
+                                                     tooltip='Description',
+                                                     icon='check'),
+                                                 hot_x_lim=widgets.IntRangeSlider(
+                                                     value=[self.calibration_data['hot_x_lim'][0],
+                                                            self.calibration_data['hot_x_lim'][1]],
+                                                     min=0, max=self.beamer_resolution[0], step=1, continuous_update=False),
+                                                 hot_y_lim=widgets.IntRangeSlider(
+                                                     value=[self.calibration_data['hot_y_lim'][0],
+                                                            self.calibration_data['hot_y_lim'][1]],
+                                                     min=0, max=self.beamer_resolution[1], step=1, continuous_update=False),
                                                  close_click=widgets.ToggleButton(
                                                     value=False,
                                                     description='Close calibration',
@@ -293,6 +402,12 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
 
                                                  )
         display(calibration_widget)
+
+    def hide_hot(self):
+        self.calibration_data['profile_area'] = False
+
+    def show_hot(self):
+        self.calibration_data['profile_area'] = True
 
 
 class Model:

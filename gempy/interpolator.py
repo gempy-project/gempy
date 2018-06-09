@@ -234,8 +234,8 @@ class InterpolatorData:
 
         try:
             # Rescaling the std in case of stochastic values
-            geo_data_rescaled.interfaces[['X_std', 'Y_std', 'Z_std']] = geo_data.interfaces[['X_std', 'Y_std', 'Z_std']]/ rescaling_factor
-            geo_data_rescaled.orientations[['X_std', 'Y_std', 'Z_std']] = geo_data.orientations[['X_std', 'Y_std', 'Z_std']]/ rescaling_factor
+            geo_data_rescaled.interfaces[['X_std', 'Y_std', 'Z_std']] = geo_data.interfaces[['X_std', 'Y_std', 'Z_std']] / rescaling_factor
+            geo_data_rescaled.orientations[['X_std', 'Y_std', 'Z_std']] = geo_data.orientations[['X_std', 'Y_std', 'Z_std']] / rescaling_factor
 
         except KeyError:
             pass
@@ -286,7 +286,7 @@ class InterpolatorData:
             # Checking is geodata is already rescaled
             try:
                 getattr(geo_data, 'rescaling_factor')
-                warnings.warn('You are passing a rescaled geo_data')
+                # warnings.warn('You are passing a rescaled geo_data')
                 geo_data_in = self.geo_data_res
             except AttributeError:
                 geo_data_in = self.rescale_data(geo_data)

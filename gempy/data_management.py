@@ -769,12 +769,13 @@ class InputData(object):
         # _series = pn.DataFrame(dict([ (k,pn.Series(v)) for k,v in _series.items() ]), columns=order)
 
         if series_distribution is None:
-            try:
-                # Check if there is already a df
-                self.series
-            except AttributeError:
-                # set to default series
-                self.series = pn.DataFrame({"Default series": self.interfaces["formation"].unique().astype(list)}, dtype=str)
+            if self.series is None:
+                self.series = pn.DataFrame({"Default series": self.interfaces["formation"].unique().astype(list)},
+                                           dtype=str)
+            #     # Check if there is already a df
+            #     self.series
+            # except AttributeError:
+            #     # set to default series
 
         else:
             if type(series_distribution) is dict:
@@ -840,11 +841,8 @@ class InputData(object):
         self.interfaces['formation'] = self.interfaces['formation'].astype('category')
         self.orientations['formation'] = self.orientations['formation'].astype('category')
 
-
-        self.set_basement()
-
         self.set_series(series_distribution=series_distribution, order=order)
-
+        self.set_basement()
         faults_series = self.count_faults()
         self.set_faults(faults_series)
 

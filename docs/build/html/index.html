@@ -26,6 +26,7 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Introduction" href="_theory/motivation.html" />
@@ -83,6 +84,7 @@
 <li class="toctree-l1"><a class="reference internal" href="tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="theory.html">Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About us</a></li>
 </ul>
 
 <div class="relations">
@@ -155,40 +157,129 @@ including stratigraphic and structural features such as:</p>
 <li class="toctree-l2"><a class="reference internal" href="code.html#visualization">Visualization</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About us</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="about.html#computational-geology-rwth-aachen-university">Computational Geology RWTH Aachen University.</a></li>
+</ul>
+</li>
 </ul>
 </div>
-<p>The core algorithm is based on a universal cokriging interpolation method devised by
-Lajaunie et al. (1997) and further elaborated by Calcagno et al. (2008).
-Its implicit nature allows the user to generate complete 3D geological models
-through the interpolation of input data consisting of:</p>
+<p>The core algorithm of <em>GemPy</em> is based on a universal cokriging interpolation method devised by
+Lajaunie et al. (1997) and extended by Calcagno et al. (2008). Its implicit nature allows the user to automatically
+generate complex 3D structural geological models through the interpolation of input data:</p>
 <ul class="simple">
-<li>Surface contact points: 3D coordinates of points marking the boundaries between different features.</li>
-<li>Orientation measurements: Orientation of the poles perpendicular to the dipping of surfaces at any point in the 3D space.</li>
+<li><em>Surface contact points</em>: 3D coordinates of points marking the boundaries between different features (e.g. layer interfaces, fault planes, unconformities).</li>
+<li><em>Orientation measurements</em>: Orientation of the poles perpendicular to the dipping of surfaces at any point in the 3D space.</li>
 </ul>
-<p>GemPy also allows for the definition of topological elements such as stratigraphic sequences and fault networks to be considered in this process.</p>
+<p><em>GemPy</em> also allows for the definition of topological elements such as combining multiple stratigraphic sequences and
+complex fault networks to be considered in the modeling proc</p>
 <img alt="_images/modeling_principle.png" src="_images/modeling_principle.png" />
 <p>GemPy itself offers direct visualization of 2D sections via matplotlib
-and in full 3D using the Visualization Toolkit (VTK). These VTK files can also be exported
+and in full 3D using the Visualization Toolkit (VTK).</p>
+<a class="reference internal image-reference" href="_images/gempy-animation.gif"><img alt="_images/gempy-animation.gif" src="_images/gempy-animation.gif" style="width: 70%;" /></a>
+<p>These VTK files can also be exported
 for further processing in programs such as Paraview. GemPy can furthermore be easily
 embedded in Blender for 3D rendering.
 Another option is Steno3D, which allows for a flexible and interactive visualization of 3D models:</p>
 <div style="margin-top:10px;">
   <iframe src="https://steno3d.com/embed/mWACfOTPB2vT3scgJABp" width="800" height="600"></iframe>
-</div><p>GemPy was furthermore designed to allow the performance of
-Bayesian inference for stochastic geological modeling. This was achieved by writing GemPy’s core algorithm
-in Theano (<a class="reference external" href="http://deeplearning.net/software/theano/">http://deeplearning.net/software/theano/</a>) and coupling it with PyMC3 (<a class="reference external" href="https://pymc-devs.github.io/pymc3/notebooks/getting_started.html">https://pymc-devs.github.io/pymc3/notebooks/getting_started.html</a>).
-This enables the use of advanced HMC methods and is of particular relevance when considering
-uncertainties in model input data and the availability of additional secondary information.</p>
+</div><p><em>GemPy</em> was designed from the beginning to support stochastic geological modeling for uncertainty analysis (e.g. Monte Carlo simulations, Bayesian inference). This was achieved by writing <em>GemPy</em>’s core architecture
+using the numerical computation library <a class="reference external" href="http://deeplearning.net/software/theano/">Theano</a> to couple it with the probabilistic programming framework <a class="reference external" href="https://pymc-devs.github.io/pymc3/notebooks/getting_started.html">PyMC3</a>.
+This enables the use of advanced sampling methods (e.g. Hamiltonian Monte Carlo) and is of particular relevance when considering
+uncertainties in the model input data and making use of additional secondary information in a Bayesian inference framework.</p>
 <p>We can, for example, include uncertainties with respect to the z-position of layer boundaries
 in the model space. Simple Monte Carlo simulation via PyMC will then result in different model realizations:</p>
 <p><a class="reference internal" href="_images/gempy_zunc.png"><img alt="z_unc" src="_images/gempy_zunc.png" style="width: 40%;" /></a> <a class="reference internal" href="_images/model_wobble.gif"><img alt="wobble" src="_images/model_wobble.gif" style="width: 55%;" /></a></p>
-<p>This opens the path to…</p>
-<p>((This optimization package allows the computation
-of gradients opening the door to the use of advance HMC methods
-coupling GeMpy and PyMC3 (<a class="reference external" href="https://pymc-devs.github.io/pymc3/notebooks/getting_started.html">https://pymc-devs.github.io/pymc3/notebooks/getting_started.html</a>).
-Also, the use of theano allows the use of the GPU through cuda (see theano doc for more information).)</p>
-<p>For a more detailed elaboration of the theory behind GemPy, take a look at the upcoming scientific publication
-“GemPy 1.0: open-source stochastic geological modeling and inversion” by de la Varga et al. (2018).</p>
+<p>Theano allows the automated computation of gradients opening the door to the use of advanced gradient-based sampling methods
+coupling <em>GeMpy</em> and <a class="reference external" href="https://pymc-devs.github.io/pymc3/notebooks/getting_started.html">PyMC3</a> for advanced stochastic modeling.
+Also, the use of Theano allows making use of GPUs through cuda (see the Theano documentation for more information.</p>
+<p>Making use of vtk interactivity and Qgrid (<a class="reference external" href="https://github.com/quantopian/qgrid">https://github.com/quantopian/qgrid</a>) <em>GemPy</em> provides a functional interface to interact with input data and models.</p>
+<div style="position: relative; height: 0; overflow: hidden; max-width: 100%; height: auto;">
+    <iframe width="560" height="315" src="https://www.youtube.com/embed/aA4MaHpLWVE?start=60" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+</div><p>For a more detailed elaboration of the theory behind <em>GemPy</em>, take a look at the upcoming scientific publication
+<em>“GemPy 1.0: open-source stochastic geological modeling and inversion”</em> by de la Varga et al. (2018).</p>
+<p>Besides the main functionality GemPy is powering currently some further projects:</p>
+<div class="section" id="sandbox">
+<h3>Sandbox<a class="headerlink" href="#sandbox" title="Permalink to this headline">¶</a></h3>
+<p>New developments in the field of augmented reality, i.e. the superimposition of real and digital objects, offer interesting and diverse possibilities that have hardly been exploited to date.
+The aim of the project is therefore the development and realization of an augmented reality sandbox for interaction with geoscientific data and models.
+In this project, methods are to be developed to project geoscientific data (such as the outcrop of a geological layer surface or geophysical measurement data) onto real surfaces.</p>
+<p>The AR Sandbox is based on a container filled with sand, the surface of which can be shaped as required. The topography of the sand surface is continuously scanned by a 3D sensor and a camera.
+In the computer the scanned surface is now blended with a digital geological 3D model (or other data) in real time and an image is calculated, which is projected onto the sand surface by means
+of a beamer. This results in an interactive model with which the user can interact in an intuitive way and which visualizes and comprehend complex three-dimensional facts in an accessible way.</p>
+<p>In addition to applications in teaching and research, this development offers great potential as an interactive exhibit with high outreach for the geosciences thanks to its intuitive operation.
+The finished sandbox can be used in numerous lectures and public events , but is mainly used as an interface to GemPy software and for rapid prototyping of implicit geological models.</p>
+<img alt="_images/Sandbox.gif" src="_images/Sandbox.gif" />
+</div>
+<div class="section" id="remote-geomod-from-googleearth-to-3-d-geology">
+<h3>Remote Geomod: From GoogleEarth to 3-D Geology<a class="headerlink" href="#remote-geomod-from-googleearth-to-3-d-geology" title="Permalink to this headline">¶</a></h3>
+<p>We support this effort here with a full 3-D geomodeling exercise
+on the basis of the excellent possibilities offered by open global data sets, implemented in
+GoogleEarth, and dedicated geoscientific open-source software and motivate the use of 3-D
+geomodeling to address specific geological questions. Initial steps include the selection of
+relevant geological surfaces in GoogleEarth and the analysis of determined orientation values
+for a selected region This information is subsequently used
+to construct a full 3-D geological model with a state-of-the-art interpolation algorithm. Fi-
+nally, the generated model is intersected with a digital elevation model to obtain a geological
+map, which can then be reimported into GoogleEarth.</p>
+<img alt="_images/ge.png" src="_images/ge.png" />
+<div class="section" id="getting-started">
+<h4>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">¶</a></h4>
+</div>
+</div>
+<div class="section" id="dependecies">
+<h3>Dependecies<a class="headerlink" href="#dependecies" title="Permalink to this headline">¶</a></h3>
+<p><em>GemPy</em> requires Python 3 and makes use of numerous open-source libraries:</p>
+<ul class="simple">
+<li>pandas</li>
+<li>tqdm</li>
+<li>scikit_image</li>
+<li>Theano</li>
+<li>matplotlib</li>
+<li>numpy</li>
+<li>pytest</li>
+<li>scipy</li>
+<li>ipython</li>
+<li>seaborn</li>
+<li>setuptools</li>
+<li>scikit_learn</li>
+<li>networkx</li>
+</ul>
+<p>Optional:</p>
+<ul class="simple">
+<li><code class="docutils literal"><span class="pre">vtk&gt;=7</span></code> for interactive 3-D visualization</li>
+<li><code class="docutils literal"><span class="pre">pymc</span></code> or <code class="docutils literal"><span class="pre">pymc3</span></code></li>
+<li><code class="docutils literal"><span class="pre">steno3d</span></code></li>
+</ul>
+<p>Overall we recommend the use of a dedicated Python distribution, such as
+<a class="reference external" href="https://www.continuum.io/what-is-anaconda">Anaconda</a>, for hassle-free package installation.
+We are curently working on providing GemPy also via Anaconda Cloud, for easier installation of
+its dependencies.</p>
+</div>
+<div class="section" id="installation">
+<h3>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h3>
+<p>We provide the latest release version of <em>GemPy</em> via the <strong>Conda</strong> and <strong>PyPi</strong> package services. We highly
+recommend using either Conda or PyPi as both will take care of automatically installing all dependencies.</p>
+<p><code class="docutils literal"><span class="pre">$</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">gempy</span></code></p>
+<p>Otherwise you can clone the current repository by downloading is manually or by using Git by calling</p>
+<p><code class="docutils literal"><span class="pre">$</span> <span class="pre">git</span> <span class="pre">clone</span> <span class="pre">https://github.com/cgre-aachen/gempy.git</span></code></p>
+<p>and then manually install it using the provided Python install file by calling</p>
+<p><code class="docutils literal"><span class="pre">$</span> <span class="pre">python</span> <span class="pre">gempy/setup.py</span> <span class="pre">install</span></code></p>
+<p>in the cloned or downloaded repository folder. Make sure you have installed all necessary dependencies listed above before using <em>GemPy</em>.</p>
+<div class="section" id="documentation">
+<h4>Documentation<a class="headerlink" href="#documentation" title="Permalink to this headline">¶</a></h4>
+<p>Extensive documentation for <em>GemPy</em> is hosted at <a class="reference external" href="http://gempy.readthedocs.io/">gempy.readthedocs.io</a>,
+explaining its capabilities, <a class="reference external" href="http://gempy.readthedocs.io/Kriging.html">the theory behind it</a> and
+providing detailed <a class="reference external" href="http://gempy.readthedocs.io/tutorial.html">tutorials</a> on how to use it.</p>
+</div>
+<div class="section" id="references">
+<h4>References<a class="headerlink" href="#references" title="Permalink to this headline">¶</a></h4>
+<ul class="simple">
+<li>de la Varga, M., Schaaf, A., &amp; Wellmann, F. GemPy 1.0: open-source stochastic geological modeling and inversion.</li>
+<li>Calcagno, P., Chilès, J. P., Courrioux, G., &amp; Guillen, A. (2008). Geological modelling from field data and geological knowledge: Part I. Modelling method coupling 3D potential-field interpolation and geological rules. Physics of the Earth and Planetary Interiors, 171(1-4), 147-157.</li>
+<li>Lajaunie, C., Courrioux, G., &amp; Manuel, L. (1997). Foliation fields and 3D cartography in geology: principles of a method based on potential interpolation. Mathematical Geology, 29(4), 571-584.</li>
+</ul>
+</div>
+</div>
 </div>
 </div>
 <div class="section" id="indices-and-tables">

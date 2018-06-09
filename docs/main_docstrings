@@ -1,0 +1,13 @@
+:class:`gempy.interpolator.InterpolatorData`
+:class:`gempy.data_management.InputData`
+:class:`gempy.data_management.GridClass`
+:class:`_pn.core.frame.DataFrame`
+:class:`_np.ndarray`
+
+
+:class:`matplotlib.pyplot.Figure`
+:class:`DataFrame`
+:class:`ndarray`
+
+itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'faults', 'fautls_relations'}): input
+            data type to be retrieved.

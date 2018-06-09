@@ -31,6 +31,4 @@ def test_set_orientations():
                                              'Shale', 'Sandstone_1',
                                              ], verbose=0)
 
-    gp.set_orientation_from_interfaces(geo_data, [0, 1, 2], verbose=1)
-    gp.set_orientation_from_interfaces(geo_data, [0, 1, 2], verbose=1)
-    gp.set_orientation_from_interfaces(geo_data, [0, 1, 3], verbose=1)
+    gp.set_orientation_from_interfaces(geo_data, [0, 1, 2])

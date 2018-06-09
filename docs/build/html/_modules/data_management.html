@@ -26,6 +26,7 @@
     <script type="text/javascript" src="../_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="../_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="../about.html" />
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
    
@@ -82,6 +83,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../tutorial.html">Tutorial</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../theory.html">Guide</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../code.html">Code</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../about.html">About us</a></li>
 </ul>
 
 <div class="relations">
@@ -137,8 +139,7 @@
 <span class="kn">import</span> <span class="nn">copy</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pn</span>
-<span class="c1"># from gempy import theano_graph</span>
-<span class="c1"># import theano</span>
+
 <span class="kn">import</span> <span class="nn">warnings</span>
 
 <span class="k">try</span><span class="p">:</span>
@@ -146,26 +147,38 @@
 <span class="k">except</span> <span class="ne">ImportError</span><span class="p">:</span>
     <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;qgrid package is not installed. No interactive dataframes available.&#39;</span><span class="p">)</span>
 
-<span class="n">pn</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">chained_assignment</span> <span class="o">=</span> <span class="kc">None</span>  <span class="c1">#</span>
+<span class="n">pn</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">mode</span><span class="o">.</span><span class="n">chained_assignment</span> <span class="o">=</span> <span class="kc">None</span>
 
 
 <div class="viewcode-block" id="InputData"><a class="viewcode-back" href="../code.html#data_management.InputData">[docs]</a><span class="k">class</span> <span class="nc">InputData</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Class to import the raw data of the model and set data classifications into formations and series.</span>
-<span class="sd">    This objects will contain the main information of the model.</span>
+<span class="sd">    Class that contains all raw data of our models</span>
 
 <span class="sd">    Args:</span>
 <span class="sd">        extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]</span>
-<span class="sd">        Resolution ((Optional[list])): [nx, ny, nz]. Defaults to 50</span>
-<span class="sd">        path_i: Path to the data bases of interfaces. Default os.getcwd(),</span>
-<span class="sd">        path_o: Path to the data bases of orientations. Default os.getcwd()</span>
+<span class="sd">        Resolution (Optional[list]): [nx, ny, nz]. Defaults to 50</span>
+<span class="sd">        path_i (Optional[str]): Path to the data bases of interfaces. Default os.getcwd(),</span>
+<span class="sd">        path_o (Optional[str]): Path to the data bases of orientations. Default os.getcwd()</span>
+<span class="sd">        kwargs: key words passed to :class:`gempy.data_management.GridClass`</span>
 
 <span class="sd">    Attributes:</span>
+<span class="sd">        interfaces (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the necessary information respect</span>
+<span class="sd">            the interface points of the model</span>
+<span class="sd">        orientations (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the necessary information respect</span>
+<span class="sd">            the orientations of the model</span>
+<span class="sd">        formations (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the formations names and the value</span>
+<span class="sd">            used for each voxel in the final model and the lithological order</span>
+<span class="sd">        series (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and the formations contained</span>
+<span class="sd">            on them</span>
+<span class="sd">        faults (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and if they are faults or</span>
+<span class="sd">            not (otherwise they are lithologies) and in case of being fault if is finite</span>
+<span class="sd">        faults_relations (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the offsetting relations</span>
+<span class="sd">            between each fault and the rest of the series (either other faults or lithologies)</span>
+<span class="sd">        grid (:class:`gempy.data_management.GridClass`): grid object containing mainly the coordinates to interpolate</span>
+<span class="sd">            the model</span>
 <span class="sd">        extent(list):  [x_min, x_max, y_min, y_max, z_min, z_max]</span>
-<span class="sd">        resolution ((Optional[list])): [nx, ny, nz]</span>
-<span class="sd">        orientations(pandas.core.frame.DataFrame): Pandas data frame with the orientations data</span>
-<span class="sd">        Interfaces(pandas.core.frame.DataFrame): Pandas data frame with the interfaces data</span>
-<span class="sd">        series(pandas.core.frame.DataFrame): Pandas data frame which contains every formation within each series</span>
+<span class="sd">        resolution (Optional[list]): [nx, ny, nz]</span>
+
 <span class="sd">    &quot;&quot;&quot;</span>
 
     <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
@@ -186,6 +199,10 @@
 
         <span class="c1"># Init number of faults</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">n_faults</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">formations</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">faults</span> <span class="o">=</span> <span class="kc">None</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_columns_i_all</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;formation&#39;</span><span class="p">,</span> <span class="s1">&#39;series&#39;</span><span class="p">,</span> <span class="s1">&#39;X_std&#39;</span><span class="p">,</span> <span class="s1">&#39;Y_std&#39;</span><span class="p">,</span> <span class="s1">&#39;Z_std&#39;</span><span class="p">,</span> <span class="s1">&#39;order_series&#39;</span><span class="p">,</span> <span class="s1">&#39;formation_number&#39;</span><span class="p">]</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_columns_o_all</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;G_z&#39;</span><span class="p">,</span> <span class="s1">&#39;dip&#39;</span><span class="p">,</span> <span class="s1">&#39;azimuth&#39;</span><span class="p">,</span> <span class="s1">&#39;polarity&#39;</span><span class="p">,</span>
@@ -198,26 +215,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">_columns_o_num</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;G_z&#39;</span><span class="p">,</span> <span class="s1">&#39;dip&#39;</span><span class="p">,</span> <span class="s1">&#39;azimuth&#39;</span><span class="p">,</span> <span class="s1">&#39;polarity&#39;</span><span class="p">]</span>
 
 
-        <span class="c1"># TODO choose the default source of data. So far only csv</span>
         <span class="c1"># Create the pandas dataframes</span>
         <span class="c1"># if we dont read a csv we create an empty dataframe with the columns that have to be filled</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns_o_1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">itype</span> <span class="o">=</span> <span class="s1">&#39;orientations&#39;</span>
 
-
         <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns_i_1</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">itype</span> <span class="o">=</span> <span class="s1">&#39;interfaces&#39;</span>
 
-
         <span class="k">if</span> <span class="n">path_o</span> <span class="ow">or</span> <span class="n">path_i</span><span class="p">:</span>
+            <span class="c1"># TODO choose the default source of data. So far only csv</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">import_data_csv</span><span class="p">(</span><span class="n">path_i</span><span class="o">=</span><span class="n">path_i</span><span class="p">,</span> <span class="n">path_o</span><span class="o">=</span><span class="n">path_o</span><span class="p">)</span>
 
-
-
-
-        <span class="c1"># If not provided set default series</span>
+        <span class="c1"># Init all df</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">update_df</span><span class="p">()</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">set_basement</span><span class="p">()</span>
 
         <span class="c1"># Compute gradients given azimuth and dips to plot data</span>
@@ -225,25 +236,12 @@
 
         <span class="c1"># Create default grid object. TODO: (Is this necessary now?)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">grid</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">set_grid</span><span class="p">(</span><span class="n">extent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">resolution</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">grid_type</span><span class="o">=</span><span class="s2">&quot;regular_3D&quot;</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span>
-
-
         <span class="bp">self</span><span class="o">.</span><span class="n">potential_at_interfaces</span> <span class="o">=</span> <span class="mi">0</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">fault_relation</span> <span class="o">=</span> <span class="kc">None</span>
-
         <span class="c1"># Set dtypes</span>
-    <span class="c1">#self.interfaces[&#39;formation&#39;] = self.interfaces[&#39;formation&#39;].astype(&#39;category&#39;)</span>
-       <span class="c1"># self.interfaces[&#39;formation_number&#39;] = self.interfaces[&#39;formation_number&#39;].astype(&#39;int&#39;)</span>
-       <span class="c1"># self.interfaces[&#39;order_series&#39;] = self.interfaces[&#39;order_series&#39;].astype(&#39;int&#39;)</span>
-
-       <span class="c1"># self.interfaces[&#39;series&#39;] = self.interfaces[&#39;series&#39;].astype(&#39;category&#39;)</span>
-       <span class="c1"># self.orientations[&#39;series&#39;] = self.orientations[&#39;series&#39;].astype(&#39;category&#39;)</span>
-
         <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;isFault&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
-
 
     <span class="k">def</span> <span class="nf">set_basement</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 
@@ -281,6 +279,8 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">modify_interface</span><span class="p">((</span><span class="n">drop_basement</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="n">drop_basement</span><span class="p">])[</span><span class="mi">0</span><span class="p">],</span> <span class="n">formation</span><span class="o">=</span><span class="s1">&#39;basement&#39;</span><span class="p">,</span> <span class="n">order_series</span><span class="o">=</span><span class="n">n_series</span><span class="p">,</span> <span class="n">formation_number</span> <span class="o">=</span> <span class="n">n_formation</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span>
+
 <div class="viewcode-block" id="InputData.calculate_gradient"><a class="viewcode-back" href="../code.html#data_management.InputData.calculate_gradient">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_gradient</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate the gradient vector of module 1 given dip and azimuth to be able to plot the orientations</span>
@@ -291,21 +291,25 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_x&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;dip&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)))</span> <span class="o">*</span> \
                                  <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)))</span> <span class="o">*</span> \
-                                 <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span><span class="o">+</span><span class="mf">1e-7</span>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span><span class="o">+</span><span class="mf">1e-12</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_y&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;dip&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)))</span> <span class="o">*</span> \
-                                 <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)))</span> <span class="o">*</span>\
-                                 <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span><span class="o">+</span><span class="mf">1e-7</span>
+                                   <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)))</span> <span class="o">*</span>\
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span><span class="o">+</span><span class="mf">1e-12</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;G_z&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">cos</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">deg2rad</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;dip&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)))</span> <span class="o">*</span>\
-                                 <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span><span class="o">+</span><span class="mf">1e-7</span></div>
+                                 <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;float&#39;</span><span class="p">)</span><span class="o">+</span><span class="mf">1e-12</span></div>
 
 <div class="viewcode-block" id="InputData.calculate_orientations"><a class="viewcode-back" href="../code.html#data_management.InputData.calculate_orientations">[docs]</a>    <span class="k">def</span> <span class="nf">calculate_orientations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;dip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;G_z&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;dip&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;G_z&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">])))</span>
 
         <span class="c1"># TODO if this way to compute azimuth breaks there is in rgeomod=kml_to_plane line 170 a good way to do it</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arcsin</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;G_x&quot;</span><span class="p">])</span> <span class="o">/</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sin</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arccos</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;G_z&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]))</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;polarity&quot;</span><span class="p">]))</span></div>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;azimuth&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">rad2deg</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">nan_to_num</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">arctan</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;G_x&quot;</span><span class="p">]</span><span class="o">/</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s2">&quot;G_y&quot;</span><span class="p">])))</span></div>
+                                                  <span class="c1"># np.arcsin(self.orientations[&quot;G_x&quot;]) /</span>
+                                                  <span class="c1"># (np.sin(np.arccos(self.orientations[&quot;G_y&quot;] /</span>
+                                                  <span class="c1"># self.orientations[&quot;polarity&quot;])))))</span>
 
 <div class="viewcode-block" id="InputData.count_faults"><a class="viewcode-back" href="../code.html#data_management.InputData.count_faults">[docs]</a>    <span class="k">def</span> <span class="nf">count_faults</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -347,6 +351,35 @@
             <span class="c1"># Pickle the &#39;data&#39; dictionary using the highest protocol available.</span>
             <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">f</span><span class="p">,</span> <span class="n">pickle</span><span class="o">.</span><span class="n">HIGHEST_PROTOCOL</span><span class="p">)</span></div>
 
+    <span class="k">def</span> <span class="nf">set_default_orientation</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">ori</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">([[(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                             <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span>
+                             <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+                             <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span>
+                             <span class="s1">&#39;basement&#39;</span><span class="p">,</span>
+                             <span class="s1">&#39;Default series&#39;</span><span class="p">,</span>
+                             <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="kc">False</span><span class="p">]],</span> <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns_o_1</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_orientations</span><span class="p">(</span><span class="n">ori</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_default_interface</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">formations</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">is</span> <span class="s1">&#39;basement&#39;</span><span class="p">:</span>
+            <span class="n">formation</span> <span class="o">=</span> <span class="s1">&#39;default&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_formations</span><span class="p">(</span><span class="n">formation_order</span><span class="o">=</span><span class="p">[</span><span class="n">formation</span><span class="p">])</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">formation</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">formations</span><span class="o">.</span><span class="n">index</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="c1">#self.set_formations(formation_order=[self.formations.index])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_interfaces</span><span class="p">(</span><span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span>
+                                          <span class="s1">&#39;Y&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span>
+                                          <span class="s1">&#39;Z&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span> <span class="o">/</span> <span class="mi">2</span><span class="p">],</span>
+                                          <span class="s1">&#39;formation&#39;</span><span class="p">:[</span><span class="n">formation</span><span class="p">],</span> <span class="s1">&#39;order_series&#39;</span><span class="p">:[</span><span class="mi">0</span><span class="p">],</span>
+                                          <span class="s1">&#39;formation_number&#39;</span><span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;series&#39;</span><span class="p">:</span> <span class="p">[</span><span class="s1">&#39;Default series&#39;</span><span class="p">],</span>
+                                          <span class="s1">&#39;isFault&#39;</span><span class="p">:</span> <span class="kc">False</span><span class="p">}))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_basement</span><span class="p">()</span>
+
 <div class="viewcode-block" id="InputData.get_formations"><a class="viewcode-back" href="../code.html#data_management.InputData.get_formations">[docs]</a>    <span class="k">def</span> <span class="nf">get_formations</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Returns:</span>
@@ -382,20 +415,41 @@
             <span class="n">show_par_f</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns_o_num</span>
             <span class="n">show_par_i</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_columns_i_num</span>
             <span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;float&#39;</span>
+
+
         <span class="k">if</span> <span class="n">itype</span> <span class="o">==</span> <span class="s1">&#39;orientations&#39;</span><span class="p">:</span>
             <span class="n">raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="n">show_par_f</span><span class="p">]</span><span class="c1">#.astype(dtype)</span>
+            <span class="c1"># Be sure that the columns are in order when used for operations</span>
+            <span class="k">if</span> <span class="n">numeric</span><span class="p">:</span>
+                <span class="n">raw_data</span> <span class="o">=</span> <span class="n">raw_data</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;G_z&#39;</span><span class="p">,</span> <span class="s1">&#39;dip&#39;</span><span class="p">,</span> <span class="s1">&#39;azimuth&#39;</span><span class="p">,</span> <span class="s1">&#39;polarity&#39;</span><span class="p">]]</span>
         <span class="k">elif</span> <span class="n">itype</span> <span class="o">==</span> <span class="s1">&#39;interfaces&#39;</span><span class="p">:</span>
             <span class="n">raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">show_par_i</span><span class="p">]</span><span class="c1">#.astype(dtype)</span>
+            <span class="c1"># Be sure that the columns are in order when used for operations</span>
+            <span class="k">if</span> <span class="n">numeric</span><span class="p">:</span>
+                <span class="n">raw_data</span> <span class="o">=</span> <span class="n">raw_data</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;G_z&#39;</span><span class="p">,</span> <span class="s1">&#39;dip&#39;</span><span class="p">,</span> <span class="s1">&#39;azimuth&#39;</span><span class="p">,</span> <span class="s1">&#39;polarity&#39;</span><span class="p">]]</span>
         <span class="k">elif</span> <span class="n">itype</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
             <span class="n">raw_data</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="n">show_par_i</span><span class="p">],</span><span class="c1">#.astype(dtype),</span>
                                  <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="n">show_par_f</span><span class="p">]],</span><span class="c1">#.astype(dtype)],</span>
                                  <span class="n">keys</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;interfaces&#39;</span><span class="p">,</span> <span class="s1">&#39;orientations&#39;</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;itype has to be: </span><span class="se">\&#39;</span><span class="s1">orientations</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">interfaces</span><span class="se">\&#39;</span><span class="s1">, or </span><span class="se">\&#39;</span><span class="s1">all</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="c1"># Be sure that the columns are in order when used for operations</span>
+            <span class="k">if</span> <span class="n">numeric</span><span class="p">:</span>
+                <span class="n">raw_data</span> <span class="o">=</span> <span class="n">raw_data</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;G_z&#39;</span><span class="p">,</span> <span class="s1">&#39;dip&#39;</span><span class="p">,</span> <span class="s1">&#39;azimuth&#39;</span><span class="p">,</span> <span class="s1">&#39;polarity&#39;</span><span class="p">]]</span>
 
-        <span class="c1"># Be sure that the columns are in order when used for operations</span>
-        <span class="k">if</span> <span class="n">numeric</span><span class="p">:</span>
-            <span class="n">raw_data</span> <span class="o">=</span> <span class="n">raw_data</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">,</span> <span class="s1">&#39;G_x&#39;</span><span class="p">,</span> <span class="s1">&#39;G_y&#39;</span><span class="p">,</span> <span class="s1">&#39;G_z&#39;</span><span class="p">,</span> <span class="s1">&#39;dip&#39;</span><span class="p">,</span> <span class="s1">&#39;azimuth&#39;</span><span class="p">,</span> <span class="s1">&#39;polarity&#39;</span><span class="p">]]</span>
+        <span class="k">elif</span> <span class="n">itype</span> <span class="ow">is</span> <span class="s1">&#39;formations&#39;</span><span class="p">:</span>
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">formations</span>
+        <span class="k">elif</span> <span class="n">itype</span> <span class="ow">is</span> <span class="s1">&#39;series&#39;</span><span class="p">:</span>
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span>
+        <span class="k">elif</span> <span class="n">itype</span> <span class="ow">is</span> <span class="s1">&#39;faults&#39;</span><span class="p">:</span>
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults</span>
+        <span class="k">elif</span> <span class="n">itype</span> <span class="ow">is</span> <span class="s1">&#39;faults_relations&#39;</span><span class="p">:</span>
+            <span class="n">raw_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;itype has to be </span><span class="se">\&#39;</span><span class="s1">all</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">interfaces</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">orientations</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">formations</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\</span>
+<span class="s1">                                       </span><span class="se">\&#39;</span><span class="s1">serires</span><span class="se">\&#39;</span><span class="s1">, </span><span class="se">\&#39;</span><span class="s1">faults</span><span class="se">\&#39;</span><span class="s1"> or </span><span class="se">\&#39;</span><span class="s1">faults_relations</span><span class="se">\&#39;</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="c1">#else:</span>
+        <span class="c1">#    raise AttributeError(&#39;itype has to be: \&#39;orientations\&#39;, \&#39;interfaces\&#39;, or \&#39;all\&#39;&#39;)</span>
+
         <span class="k">return</span> <span class="n">raw_data</span></div>
 
     <span class="c1"># def get_formation_number(self):</span>
@@ -412,13 +466,26 @@
     <span class="c1">#  #   ip_addresses[&#39;DefaultBasement&#39;] = 0</span>
     <span class="c1">#     return ip_addresses</span>
 
-    <span class="k">def</span> <span class="nf">interactive_df_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">itype</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">numeric</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">interactive_df_open</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">itype</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>  <span class="n">numeric</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
+
+        <span class="n">toolbar</span> <span class="o">=</span> <span class="kc">True</span>
 
         <span class="k">if</span> <span class="n">itype</span> <span class="ow">is</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
-            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;When itype is </span><span class="se">\&#39;</span><span class="s1">all</span><span class="se">\&#39;</span><span class="s1"> Add Row does not work. If needed try using interfaces or orientations&#39;</span>
-                          <span class="s1">&#39; instead&#39;</span><span class="p">)</span>
+            <span class="n">toolbar</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">itype</span> <span class="ow">is</span> <span class="s1">&#39;formations&#39;</span><span class="p">:</span>
+            <span class="n">toolbar</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">itype</span> <span class="ow">is</span> <span class="s1">&#39;faults&#39;</span><span class="p">:</span>
+            <span class="n">toolbar</span> <span class="o">=</span> <span class="kc">False</span>
+        <span class="k">elif</span> <span class="n">itype</span> <span class="ow">is</span> <span class="s1">&#39;faults_relations&#39;</span><span class="p">:</span>
+            <span class="n">toolbar</span> <span class="o">=</span> <span class="kc">False</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">qgrid_widget</span> <span class="o">=</span> <span class="n">qgrid</span><span class="o">.</span><span class="n">QgridWidget</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">itype</span><span class="o">=</span><span class="n">itype</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">),</span> <span class="n">show_toolbar</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">toolbar</span><span class="p">:</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">warn</span><span class="p">(</span><span class="s1">&#39;for this itype Add Row does not work. If needed try using interfaces or orientations&#39;</span>
+                          <span class="s1">&#39;instead&#39;</span><span class="p">)</span>
+
+        <span class="n">df_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_data</span><span class="p">(</span><span class="n">itype</span><span class="o">=</span><span class="n">itype</span><span class="p">,</span> <span class="n">verbosity</span><span class="o">=</span><span class="n">verbosity</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">qgrid_widget</span> <span class="o">=</span> <span class="n">qgrid</span><span class="o">.</span><span class="n">QgridWidget</span><span class="p">(</span><span class="n">df</span><span class="o">=</span><span class="n">df_</span><span class="p">,</span> <span class="n">show_toolbar</span><span class="o">=</span><span class="n">toolbar</span><span class="p">)</span>
+
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">qgrid_widget</span>
 
     <span class="k">def</span> <span class="nf">interactive_df_get_changed_df</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">only_selected</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
@@ -588,10 +655,12 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">add_categories</span><span class="p">(</span><span class="n">kwargs</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">ix</span><span class="p">[</span><span class="n">l</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">key</span><span class="p">)]</span> <span class="o">=</span> <span class="n">kwargs</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">calculate_gradient</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calculate_orientations</span><span class="p">()</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;series&#39;</span> <span class="ow">in</span> <span class="n">kwargs</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">set_series</span><span class="p">()</span>
+
         <span class="bp">self</span><span class="o">.</span><span class="n">set_basement</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span></div>
 
@@ -692,7 +761,8 @@
         <span class="k">if</span> <span class="n">append</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">interf_Dataframe</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns_i_1</span><span class="p">]</span> <span class="o">=</span> <span class="n">interf_Dataframe</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns_i_1</span><span class="p">]</span>
+            <span class="c1"># self.interfaces[self._columns_i_1] = interf_Dataframe[self._columns_i_1]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span> <span class="o">=</span> <span class="n">interf_Dataframe</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns_i_1</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span>
 
@@ -708,6 +778,11 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">set_series</span><span class="p">()</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span>
 
+        <span class="c1"># # We check if in the df we are setting there is a new formation. if yes we append it to to the cat</span>
+        <span class="c1"># new_cat = interf_Dataframe[&#39;formation&#39;].cat.categories[~np.in1d(interf_Dataframe[&#39;formation&#39;].cat.categories,</span>
+        <span class="c1">#                                                                self.formations)]</span>
+        <span class="c1"># self.formations.index.insert(0, new_cat)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_series</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_formations</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_faults</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">sort_index</span><span class="p">()</span></div>
@@ -730,13 +805,15 @@
         <span class="k">if</span> <span class="n">append</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">foliat_Dataframe</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns_o_1</span><span class="p">]</span> <span class="o">=</span> <span class="n">foliat_Dataframe</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns_o_1</span><span class="p">]</span>
+            <span class="c1">#self.orientations[self._columns_o_1] = foliat_Dataframe[self._columns_o_1]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span> <span class="o">=</span> <span class="n">foliat_Dataframe</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_columns_o_1</span><span class="p">]</span>
 
         <span class="c1"># self.calculate_orientations()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">calculate_gradient</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="o">~</span><span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[[</span><span class="s1">&#39;X&#39;</span><span class="p">,</span> <span class="s1">&#39;Y&#39;</span><span class="p">,</span> <span class="s1">&#39;Z&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">any</span><span class="p">(</span><span class="mi">1</span><span class="p">)]</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_series</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_formations</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_faults</span><span class="p">()</span>
        <span class="c1"># self.set_annotations()</span>
@@ -806,17 +883,21 @@
         <span class="c1"># _series = pn.DataFrame(dict([ (k,pn.Series(v)) for k,v in _series.items() ]), columns=order)</span>
 
         <span class="k">if</span> <span class="n">series_distribution</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">try</span><span class="p">:</span>
-                <span class="c1"># Check if there is already a df</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">series</span>
-            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
-                <span class="c1"># set to default series</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Default series&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;formation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">list</span><span class="p">)},</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="s2">&quot;Default series&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s2">&quot;formation&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">list</span><span class="p">)},</span>
+                                           <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">)</span>
+            <span class="c1">#     # Check if there is already a df</span>
+            <span class="c1">#     self.series</span>
+            <span class="c1"># except AttributeError:</span>
+            <span class="c1">#     # set to default series</span>
 
         <span class="k">else</span><span class="p">:</span>
             <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">series_distribution</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
                 <span class="k">if</span> <span class="n">order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
                     <span class="n">order</span> <span class="o">=</span> <span class="n">series_distribution</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="k">assert</span> <span class="nb">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="n">order</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">series_distribution</span><span class="o">.</span><span class="n">keys</span><span class="p">()))),</span> <span class="s1">&#39;Order series must contain the same keys as&#39;</span> \
+                                                                       <span class="s1">&#39;the passed dictionary &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">series_distribution</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">series</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="nb">dict</span><span class="p">([(</span><span class="n">k</span><span class="p">,</span> <span class="n">pn</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">v</span><span class="p">))</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">series_distribution</span><span class="o">.</span><span class="n">items</span><span class="p">()]),</span>
                                            <span class="n">columns</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
 
@@ -825,6 +906,12 @@
 
             <span class="k">else</span><span class="p">:</span>
                 <span class="k">raise</span> <span class="ne">AttributeError</span><span class="p">(</span><span class="s1">&#39;series_distribution must be a dictionary, see Docstring for more information&#39;</span><span class="p">)</span>
+
+            <span class="c1"># Addind the formations of the new series to the formations df</span>
+            <span class="n">new_formations</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+            <span class="c1"># Dropping nans</span>
+            <span class="n">new_formations</span> <span class="o">=</span> <span class="n">new_formations</span><span class="p">[</span><span class="o">~</span><span class="n">pn</span><span class="o">.</span><span class="n">isna</span><span class="p">(</span><span class="n">new_formations</span><span class="p">)]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">set_formations</span><span class="p">(</span><span class="n">formation_order</span><span class="o">=</span><span class="n">new_formations</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="s1">&#39;basement&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="s1">&#39;basement&#39;</span>
@@ -846,6 +933,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;order_series&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s1">&#39;order_series&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
+        <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">set_categories</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;series&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">set_categories</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="c1"># faults_series = self.count_faults()</span>
         <span class="c1">#</span>
         <span class="c1"># self.set_faults(faults_series)</span>
@@ -865,14 +955,12 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
 
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">set_basement</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_series</span><span class="p">(</span><span class="n">series_distribution</span><span class="o">=</span><span class="n">series_distribution</span><span class="p">,</span> <span class="n">order</span><span class="o">=</span><span class="n">order</span><span class="p">)</span>
-
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_basement</span><span class="p">()</span>
         <span class="n">faults_series</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">count_faults</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">set_faults</span><span class="p">(</span><span class="n">faults_series</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">reset_indices</span><span class="p">()</span>
+       <span class="c1"># self.reset_indices()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">set_formations</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">order_table</span><span class="p">()</span>
@@ -882,12 +970,23 @@
 
     <span class="k">def</span> <span class="nf">set_formations</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formation_values</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="n">formation_order</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 
+
         <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;category&#39;</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="n">formation_order</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">_formation_values_set</span> <span class="ow">is</span> <span class="kc">False</span><span class="p">:</span>
-                <span class="n">formation_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">remove_unused_categories</span><span class="p">()</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">formations</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="c1">#if self._formation_values_set is False:</span>
+                <span class="n">formation_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># We check if in the df we are setting there is a new formation. if yes we append it to to the cat</span>
+                <span class="n">new_cat</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span><span class="p">[</span>
+                    <span class="o">~</span><span class="n">np</span><span class="o">.</span><span class="n">in1d</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">categories</span><span class="p">,</span>
+                             <span class="bp">self</span><span class="o">.</span><span class="n">formations</span><span class="o">.</span><span class="n">index</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="n">new_cat</span><span class="o">.</span><span class="n">empty</span><span class="p">:</span>
+                    <span class="n">formation_order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">formations</span><span class="o">.</span><span class="n">index</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">formation_order</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formations</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_values</span><span class="p">(),</span> <span class="mi">0</span><span class="p">,</span> <span class="n">new_cat</span><span class="p">)</span>
             <span class="c1"># try:</span>
             <span class="c1">#     # Check if there is already a df</span>
             <span class="c1">#     formation_order = self.formations.index</span>
@@ -911,7 +1010,7 @@
             <span class="n">formation_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">formation_values</span><span class="p">,</span> <span class="n">formation_values</span><span class="o">.</span><span class="n">max</span><span class="p">()</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">formations</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">formation_order</span><span class="p">,</span>
-                                       <span class="n">columns</span><span class="o">=</span><span class="p">[[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;formation_number&#39;</span><span class="p">]])</span>
+                                       <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">,</span> <span class="s1">&#39;formation_number&#39;</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">formations</span><span class="p">[</span><span class="s1">&#39;value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">formation_values</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">formations</span><span class="p">[</span><span class="s1">&#39;formation_number&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">formations</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
@@ -921,6 +1020,9 @@
 
         <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formations</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;formation_value&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">formations</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">interfaces</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">set_categories</span><span class="p">(</span><span class="n">formation_order</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">orientations</span><span class="p">[</span><span class="s1">&#39;formation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">cat</span><span class="o">.</span><span class="n">set_categories</span><span class="p">(</span><span class="n">formation_order</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">_set_formation_number</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">formation_order</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1046,18 +1148,18 @@
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1">#TODO: Change the fault relation automatically every time we add a fault</span>
         <span class="k">try</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">fault_relation</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">rel_matrix</span><span class="p">:</span>
                <span class="n">rel_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
                                       <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
 
-            <span class="bp">self</span><span class="o">.</span><span class="n">fault_relation</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rel_matrix</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
-                                               <span class="n">columns</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rel_matrix</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+                                                 <span class="n">columns</span><span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span>
         <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
 
             <span class="k">if</span> <span class="n">rel_matrix</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">fault_relation</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rel_matrix</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
-                                                   <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span></div>
+                <span class="bp">self</span><span class="o">.</span><span class="n">faults_relations</span> <span class="o">=</span> <span class="n">pn</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">rel_matrix</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+                                                     <span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">series</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="s1">&#39;bool&#39;</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="InputData.order_table"><a class="viewcode-back" href="../code.html#data_management.InputData.order_table">[docs]</a>    <span class="k">def</span> <span class="nf">order_table</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
@@ -1090,7 +1192,7 @@
 
         <span class="c1"># Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset</span>
         <span class="c1"># the index. For some of the methods (pn.drop) we have to apply afterwards we need to reset these indeces</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">reset_indices</span><span class="p">()</span>
+       <span class="c1"># self.reset_indices()</span>
         <span class="c1"># DEP</span>
         <span class="c1"># self.interfaces.reset_index(drop=True, inplace=True)</span>
         <span class="c1"># self.orientations.reset_index(drop=True, inplace=True)</span>
@@ -1189,16 +1291,16 @@
 <span class="sd">        Returns:</span>
 <span class="sd">            numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_grid_ext</span> <span class="o">=</span> <span class="n">extent</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_grid_res</span> <span class="o">=</span> <span class="n">resolution</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">extent</span> <span class="o">=</span> <span class="n">extent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span> <span class="o">=</span> <span class="n">resolution</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">dz</span> <span class="o">=</span> <span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>\
                                     <span class="p">(</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span> <span class="o">/</span> <span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
 
         <span class="n">g</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">meshgrid</span><span class="p">(</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grid_ext</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grid_ext</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grid_res</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grid_ext</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grid_ext</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grid_res</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">),</span>
-            <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_grid_ext</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dz</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grid_ext</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">dz</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_grid_res</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">),</span> <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;ij&quot;</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">dx</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">dy</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">),</span>
+            <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">dz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">extent</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">dz</span> <span class="o">/</span> <span class="mi">2</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">resolution</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="s2">&quot;float32&quot;</span><span class="p">),</span> <span class="n">indexing</span><span class="o">=</span><span class="s2">&quot;ij&quot;</span>
         <span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ravel</span><span class="p">,</span> <span class="n">g</span><span class="p">))</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s2">&quot;float32&quot;</span><span class="p">)</span>

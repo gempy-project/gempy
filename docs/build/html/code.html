@@ -26,8 +26,10 @@
     <script type="text/javascript" src="_static/doctools.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
     <link rel="shortcut icon" href="_static/favicon.ico"/>
+    <link rel="author" title="About these documents" href="about.html" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="About us" href="about.html" />
     <link rel="prev" title="Advance theory" href="_theory/advanced.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -92,6 +94,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#visualization">Visualization</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="about.html">About us</a></li>
 </ul>
 
 <div class="relations">
@@ -99,6 +102,7 @@
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="_theory/advanced.html" title="previous chapter">Advance theory</a></li>
+      <li>Next: <a href="about.html" title="next chapter">About us</a></li>
   </ul></li>
 </ul>
 </div>
@@ -137,36 +141,112 @@ GNU General Public License for more details.</p>
 along with gempy.  If not, see &lt;<a class="reference external" href="http://www.gnu.org/licenses/">http://www.gnu.org/licenses/</a>&gt;.</p>
 <p>Module with classes and methods to perform implicit regional modelling based on
 the potential field method.
-Tested on Ubuntu 14</p>
+Tested on Ubuntu 16</p>
 <p>Created on 10/10 /2016</p>
 <p>&#64;author: Miguel de la Varga</p>
 <dl class="function">
 <dt id="gempy_front.compute_model">
 <code class="descclassname">gempy_front.</code><code class="descname">compute_model</code><span class="sig-paren">(</span><em>interp_data</em>, <em>output=’geology’</em>, <em>u_grade=None</em>, <em>get_potential_at_interfaces=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#compute_model"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.compute_model" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes the geological model.</p>
+<dd><p>Computes the geological model and any extra output given.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>interp_data</strong> (<em>gempy.DataManagement.InterpolatorInput</em>) – Rescaled data.</li>
-<li><strong>u_grade</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – grade of the polynomial for the universal part of the Kriging interpolations. The value has to</li>
-<li><strong>either 0</strong><strong>, </strong><strong>3</strong><strong> or </strong><strong>9</strong> (<em>be</em>) – </li>
-<li><strong>on the number of points given as input to try to avoid singular matrix. NOTE</strong> (<em>depends</em>) – if during the computation</li>
-<li><strong>the model a singular matrix is returned try to reduce the u_grade of the series.</strong> (<em>of</em>) – </li>
+<li><strong>interp_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.interpolator.InterpolatorData</span></code>) – </li>
+<li><strong>output</strong> (<em>{'geology'</em><em>, </em><em>'gravity'</em><em>, </em><em>'gradients'}</em>) – Only if theano functions has not been compiled yet</li>
+<li><strong>u_grade</strong> (<em>array-like of {0</em><em>, </em><em>1</em><em>, </em><em>2}</em>) – grade of the polynomial for the universal part of the Kriging interpolations. The value has to
+be either 0, 1 or 2  and the length has to be the number of series. By default the value
+depends on the number of points given as input to try to avoid singular matrix. NOTE: if during the computation
+of the model a singular matrix is returned try to reduce the u_grade of the series.</li>
 <li><strong>get_potential_at_interfaces</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – Get potential at interfaces</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">if compute_all was chosen in gempy.DataManagement.InterpolatorInput, the first
-row will be the lithology block model, the second the potential field and the third the fault
-network block. if compute_all was False only the lithology block model will be computed. In
-addition if get_potential_at_interfaces is True, the value of the potential field at each of
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<dt>depending on the chosen out returns different number of solutions:</dt>
+<dd><dl class="first last docutils">
+<dt>if output is geology:</dt>
+<dd><ol class="first last arabic simple">
+<li>Lithologies: block and scalar field</li>
+<li>Faults: block and scalar field for each faulting plane</li>
+</ol>
+</dd>
+<dt>if output is ‘gravity’:</dt>
+<dd><ol class="first last arabic simple">
+<li>Weights: block and scalar field</li>
+<li>Faults: block and scalar field for each faulting plane</li>
+<li>Forward gravity</li>
+</ol>
+</dd>
+<dt>if output is gradients:</dt>
+<dd><ol class="first last arabic simple">
+<li>Lithologies: block and scalar field</li>
+<li>Faults: block and scalar field for each faulting plane</li>
+<li>Gradients of scalar field x</li>
+<li>Gradients of scalar field y</li>
+<li>Gradients of scalar field z</li>
+</ol>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>In addition if get_potential_at_interfaces is True, the value of the potential field at each of
+the interfaces is given as well</p>
+</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">list of <code class="xref py py-class docutils literal"><span class="pre">_np.array</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gempy_front.compute_model_at">
+<code class="descclassname">gempy_front.</code><code class="descname">compute_model_at</code><span class="sig-paren">(</span><em>new_grid_array</em>, <em>interp_data</em>, <em>output=’geology’</em>, <em>u_grade=None</em>, <em>get_potential_at_interfaces=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#compute_model_at"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.compute_model_at" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function does the same as <code class="xref py py-func docutils literal"><span class="pre">compute_model()</span></code> plus the addion functionallity of passing a given
+array of point where evaluate the model instead of using the <code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code> grid.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>new_grid_array</strong> (<code class="xref py py-class docutils literal"><span class="pre">_np.array</span></code>) – 2D array with XYZ (columns) coorinates</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
+<dt>depending on the chosen out returns different number of solutions:</dt>
+<dd><dl class="first last docutils">
+<dt>if output is geology:</dt>
+<dd><ol class="first last arabic simple">
+<li>Lithologies: block and scalar field</li>
+<li>Faults: block and scalar field for each faulting plane</li>
+</ol>
+</dd>
+<dt>if output is ‘gravity’:</dt>
+<dd><ol class="first last arabic simple">
+<li>Weights: block and scalar field</li>
+<li>Faults: block and scalar field for each faulting plane</li>
+<li>Forward gravity</li>
+</ol>
+</dd>
+<dt>if output is gradients:</dt>
+<dd><ol class="first last arabic simple">
+<li>Lithologies: block and scalar field</li>
+<li>Faults: block and scalar field for each faulting plane</li>
+<li>Gradients of scalar field x</li>
+<li>Gradients of scalar field y</li>
+<li>Gradients of scalar field z</li>
+</ol>
+</dd>
+</dl>
+</dd>
+</dl>
+<p>In addition if get_potential_at_interfaces is True, the value of the potential field at each of
 the interfaces is given as well</p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">numpy.array</p>
-</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">list of <code class="xref py py-class docutils literal"><span class="pre">_np.array</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -175,7 +255,7 @@ the interfaces is given as well</p>
 <dl class="function">
 <dt id="gempy_front.create_data">
 <code class="descclassname">gempy_front.</code><code class="descname">create_data</code><span class="sig-paren">(</span><em>extent</em>, <em>resolution=(50</em>, <em>50</em>, <em>50)</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#create_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.create_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to create a InputData object. It is analogous to gempy.InputData()</p>
+<dd><p>Method to create a <code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code> object. It is analogous to gempy.InputData()</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -196,12 +276,7 @@ and default of for the grid class.</li>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><p>Object that encapsulate all raw data of the project</p>
-<p>dep: self.Plot(GeMpy_core.PlotData): Object to visualize data and results</p>
-</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">GeMpy.DataManagement</p>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code></p>
 </td>
 </tr>
 </tbody>
@@ -242,9 +317,14 @@ versions used to export and import the pickle differ it may give problems</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path where save the pickle</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </li>
+<li><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path where save the pickle (without .pickle)</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -275,22 +355,22 @@ versions used to export and import the pickle differ it may give problems</p>
 <dl class="function">
 <dt id="gempy_front.get_data">
 <code class="descclassname">gempy_front.</code><code class="descname">get_data</code><span class="sig-paren">(</span><em>geo_data</em>, <em>itype=’all’</em>, <em>numeric=False</em>, <em>verbosity=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#get_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.get_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method that returns the interfaces and orientations pandas Dataframes. Can return both at the same time or only
-one of the two</p>
+<dd><p>Method to return the data stored in <code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code> within a <code class="xref py py-class docutils literal"><span class="pre">gempy.interpolator.InterpolatorData</span></code>
+object.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>itype</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – input data type, either ‘orientations’, ‘interfaces’ or ‘all’ for both.</li>
+<li><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.interpolator.InterpolatorData</span></code>) – </li>
+<li><strong>itype</strong> (<em>str {'all'</em><em>, </em><em>'interfaces'</em><em>, </em><em>'orientaions'</em><em>, </em><em>'formations'</em><em>, </em><em>'series'</em><em>, </em><em>'faults'</em><em>, </em><em>'fautls_relations'}</em>) – input
+data type to be retrieved.</li>
+<li><strong>numeric</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – if True it only returns numberical properties. This may be useful due to memory issues</li>
 <li><strong>verbosity</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Number of properties shown</li>
 </ul>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Data frame with the raw data</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">pandas.core.frame.DataFrame</p>
 </td>
 </tr>
 </tbody>
@@ -300,18 +380,15 @@ one of the two</p>
 <dl class="function">
 <dt id="gempy_front.get_grid">
 <code class="descclassname">gempy_front.</code><code class="descname">get_grid</code><span class="sig-paren">(</span><em>geo_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#get_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.get_grid" title="Permalink to this definition">¶</a></dt>
-<dd><table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>geo_data</strong> (<em>gempy.DataManagement.InputData object</em>) – </td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Return series and formations relations</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">numpy.array</td>
-</tr>
-</tbody>
-</table>
+<dd><p>Coordinates can be found in <code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.GridClass.values</span></code></p>
+<blockquote>
+<div><dl class="docutils">
+<dt>Args:</dt>
+<dd>geo_data (<code class="xref py py-class docutils literal"><span class="pre">gempy.interpolator.InterpolatorData</span></code>)</dd>
+<dt>Returns:</dt>
+<dd><code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.GridClass</span></code></dd>
+</dl>
+</div></blockquote>
 </dd></dl>
 
 <dl class="function">
@@ -323,7 +400,7 @@ one of the two</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>interp_data</strong> (<em>gempy.DataManagement.InterpolatorInput</em>) – </li>
+<li><strong>interp_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </li>
 <li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – if &gt; 0 print all the shape values as well.</li>
 </ul>
 </td>
@@ -339,15 +416,15 @@ one of the two</p>
 <dt id="gempy_front.get_sequential_pile">
 <code class="descclassname">gempy_front.</code><code class="descname">get_sequential_pile</code><span class="sig-paren">(</span><em>geo_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#get_sequential_pile"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.get_sequential_pile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Visualize an interactive stratigraphic pile to move around the formations and the series. IMPORTANT NOTE:
-To have the interactive properties it is necessary the use of qt as interactive backend. (In notebook use:
-%matplotlib qt5)</p>
+To have the interactive properties it is necessary the use of an interactive backend. (In notebook use:
+%matplotlib qt5 or notebook)</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>geo_data</strong> – gempy.DataManagement.InputData object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.interpolator.InterpolatorData</span></code>) – </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">interactive Matplotlib figure</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">matplotlib.pyplot.Figure</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -355,16 +432,16 @@ To have the interactive properties it is necessary the use of qt as interactive 
 
 <dl class="function">
 <dt id="gempy_front.get_series">
-<code class="descclassname">gempy_front.</code><code class="descname">get_series</code><span class="sig-paren">(</span><em>geo_gata</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#get_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.get_series" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">gempy_front.</code><code class="descname">get_series</code><span class="sig-paren">(</span><em>geo_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#get_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.get_series" title="Permalink to this definition">¶</a></dt>
 <dd><table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>geo_data</strong> (<em>gempy.DataManagement.InputData object</em>) – </td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Return series and formations relations</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">Pandas.DataFrame</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -373,16 +450,18 @@ To have the interactive properties it is necessary the use of qt as interactive 
 <dl class="function">
 <dt id="gempy_front.get_surfaces">
 <code class="descclassname">gempy_front.</code><code class="descname">get_surfaces</code><span class="sig-paren">(</span><em>interp_data</em>, <em>potential_lith=None</em>, <em>potential_fault=None</em>, <em>n_formation=’all’</em>, <em>step_size=1</em>, <em>original_scale=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#get_surfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.get_surfaces" title="Permalink to this definition">¶</a></dt>
-<dd><p>compute vertices and simplices of the interfaces for its vtk visualization or further
+<dd><p>Compute vertices and simplices of the interfaces for its vtk visualization and further
 analysis</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>potential_lith</strong> (<em>numpy.array</em>) – 1D numpy array with the solution of the computation of the model
-containing the scalar field of potentials (second row of solution)</li>
-<li><strong>interp_data</strong> (<em>gempy.DataManagement.InterpolatorInput</em>) – Interpolator object.</li>
+<li><strong>interp_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </li>
+<li><strong>potential_lith</strong> (<em>ndarray</em>) – 1D numpy array with the solution of the computation of the model
+containing the scalar field of potentials (second row of lith solution)</li>
+<li><strong>potential_fault</strong> (<em>ndarray</em>) – 1D numpy array with the solution of the computation of the model
+containing the scalar field of the faults (every second row of fault solution)</li>
 <li><strong>n_formation</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a><em> or </em><em>'all'</em>) – Positive integer with the number of the formation of which the surface is returned.
 use method get_formation_number() to get a dictionary back with the values</li>
 <li><strong>step_size</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – resolution of the method. This is every how many voxels the marching cube method is applied</li>
@@ -400,18 +479,13 @@ coordinates</li>
 
 <dl class="function">
 <dt id="gempy_front.get_th_fn">
-<code class="descclassname">gempy_front.</code><code class="descname">get_th_fn</code><span class="sig-paren">(</span><em>interp_data</em>, <em>compute_all=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#get_th_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.get_th_fn" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get theano function</p>
+<code class="descclassname">gempy_front.</code><code class="descname">get_th_fn</code><span class="sig-paren">(</span><em>interp_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#get_th_fn"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.get_th_fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the compiled theano function</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>interp_data</strong> (<em>gempy.DataManagement.InterpolatorInput</em>) – <p>Rescaled data.
-compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
-the block model of faults. If False only return the block model of lithologies. This may be important to speed</p>
-<blockquote>
-<div>up the computation. Default True</div></blockquote>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>interp_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><dl class="docutils">
 <dt>Compiled function if C or CUDA which computes the interpolation given the input data</dt>
@@ -419,7 +493,56 @@ the block model of faults. If False only return the block model of lithologies. 
 </dl>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">theano.function</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">theano.compile.function_module.Function</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gempy_front.interactive_df_change_df">
+<code class="descclassname">gempy_front.</code><code class="descname">interactive_df_change_df</code><span class="sig-paren">(</span><em>geo_data</em>, <em>only_selected=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#interactive_df_change_df"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.interactive_df_change_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Confirm and return the changes made to a dataframe using qgrid interactively. To update the
+<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code> with the modify df use the correspondant set function.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – the same <code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>
+object used to call <code class="xref py py-func docutils literal"><span class="pre">interactive_df_open()</span></code></li>
+<li><strong>only_selected</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gempy_front.interactive_df_open">
+<code class="descclassname">gempy_front.</code><code class="descname">interactive_df_open</code><span class="sig-paren">(</span><em>geo_data</em>, <em>itype</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#interactive_df_open"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.interactive_df_open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Open the qgrid interactive DataFrame (<a class="reference external" href="http://qgrid.readthedocs.io/en/latest/">http://qgrid.readthedocs.io/en/latest/</a>).
+To seve the changes see: <code class="xref py py-func docutils literal"><span class="pre">interactive_df_change_df()</span></code></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </li>
+<li><strong>itype</strong> (<em>str {'all'</em><em>, </em><em>'interfaces'</em><em>, </em><em>'orientaions'</em><em>, </em><em>'formations'</em><em>, </em><em>'series'</em><em>, </em><em>'faults'</em><em>, </em><em>'fautls_relations'}</em>) – input
+data type to be retrieved.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Interactive DF</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code></p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -459,6 +582,35 @@ specific directions</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gempy_front.plot_gradient">
+<code class="descclassname">gempy_front.</code><code class="descname">plot_gradient</code><span class="sig-paren">(</span><em>geo_data</em>, <em>scalar_field</em>, <em>gx</em>, <em>gy</em>, <em>gz</em>, <em>cell_number</em>, <em>q_stepsize=5</em>, <em>direction=’y’</em>, <em>plot_scalar=True</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#plot_gradient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.plot_gradient" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot the gradient of the scalar field in a given direction.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>geo_data</strong> (<em>gempy.DataManagement.InputData</em>) – Input data of the model</li>
+<li><strong>scalar_field</strong> (<em>numpy.array</em>) – scalar field to plot with the gradient</li>
+<li><strong>gx</strong> (<em>numpy.array</em>) – gradient in x-direction</li>
+<li><strong>gy</strong> (<em>numpy.array</em>) – gradient in y-direction</li>
+<li><strong>gz</strong> (<em>numpy.array</em>) – gradient in z-direction</li>
+<li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – position of the array to plot</li>
+<li><strong>q_stepsize</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – step size between arrows to indicate gradient</li>
+<li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – xyz. Caartesian direction to be plotted</li>
+<li><strong>plot_scalar</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – boolean to plot scalar field</li>
+<li><strong>**kwargs</strong> – plt.contour kwargs</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -614,9 +766,7 @@ as values.</li>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – path where save the pickle</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">Input Data object</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body">gempy.DataManagement.InputData</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code></td>
 </tr>
 </tbody>
 </table>
@@ -625,13 +775,14 @@ as values.</li>
 <dl class="function">
 <dt id="gempy_front.rescale_data">
 <code class="descclassname">gempy_front.</code><code class="descname">rescale_data</code><span class="sig-paren">(</span><em>geo_data</em>, <em>rescaling_factor=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#rescale_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.rescale_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>Rescale the data of a DataManagement object between 0 and 1 due to stability problem of the float32.</p>
+<dd><p>Rescale the data of a <code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>
+object between 0 and 1 due to stability problem of the float32.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>geo_data</strong> – Original gempy.DataManagement.InputData object</li>
+<li><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </li>
 <li><strong>rescaling_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.6)"><em>float</em></a>) – factor of the rescaling. Default to maximum distance in one the axis</li>
 </ul>
 </td>
@@ -649,12 +800,12 @@ as values.</li>
 <dl class="function">
 <dt id="gempy_front.rescale_factor_default">
 <code class="descclassname">gempy_front.</code><code class="descname">rescale_factor_default</code><span class="sig-paren">(</span><em>geo_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#rescale_factor_default"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.rescale_factor_default" title="Permalink to this definition">¶</a></dt>
-<dd><p>Gives the default rescaling factor for a given geo_data</p>
+<dd><p>Returns the default rescaling factor for a given geo_data</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>geo_data</strong> – Original gempy.DataManagement.InputData object</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">rescaling factor</td>
 </tr>
@@ -672,9 +823,71 @@ as values.</li>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>series</strong> – list of int or list of str</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </li>
+<li><strong>series</strong> (<em>list of int</em><em> or </em><em>list of str</em>) – Subset of series to be selected</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">formations of a given serie in string separeted by |</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">New object only containing the selected series</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gempy_front.set_formations">
+<code class="descclassname">gempy_front.</code><code class="descname">set_formations</code><span class="sig-paren">(</span><em>geo_data</em>, <em>formations=None</em>, <em>formations_order=None</em>, <em>formations_values=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#set_formations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.set_formations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Function to order and change the value of the model formations. The values of the formations will be the final
+numerical value that each formation will take in the interpolated geological model (lithology block)
+:param geo_data:
+:type geo_data: <code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>
+:param formations_order: List with a given order of the formations. Due to the interpolation algorithm</p>
+<blockquote>
+<div>this order is only relevant to keep consistent the colors of layers and input data. The order ultimately is
+determined by the geometric sedimentary order</div></blockquote>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>formations</strong> (<em>list of str</em>) – same as formations order. you can use any</li>
+<li><strong>formations_values</strong> (<em>list of floats</em><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – values of the formations will be the final</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>numerical value that each formation will take in the interpolated geological model (lithology block)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">formations dataframe already updated in place</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="gempy_front.set_grid">
+<code class="descclassname">gempy_front.</code><code class="descname">set_grid</code><span class="sig-paren">(</span><em>geo_data</em>, <em>grid</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#set_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.set_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a new <code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.GridClass</span></code> object into a <code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code> object.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </li>
+<li><strong>grid</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.GridClass</span></code>) – </li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
@@ -682,15 +895,16 @@ as values.</li>
 
 <dl class="function">
 <dt id="gempy_front.set_interfaces">
-<code class="descclassname">gempy_front.</code><code class="descname">set_interfaces</code><span class="sig-paren">(</span><em>geo_data</em>, <em>interf_Dataframe</em>, <em>append=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#set_interfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.set_interfaces" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">gempy_front.</code><code class="descname">set_interfaces</code><span class="sig-paren">(</span><em>geo_data</em>, <em>interf_dataframe</em>, <em>append=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#set_interfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.set_interfaces" title="Permalink to this definition">¶</a></dt>
 <dd><p>Method to change or append a Dataframe to interfaces in place.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>interf_Dataframe</strong> – pandas.core.frame.DataFrame with the data</li>
-<li><strong>append</strong> – Bool: if you want to append the new data frame or substitute it</li>
+<li><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </li>
+<li><strong>interf_dataframe</strong> (<code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code>) – </li>
+<li><strong>append</strong> (<em>Bool</em>) – if you want to append the new data frame or substitute it</li>
 </ul>
 </td>
 </tr>
@@ -701,8 +915,11 @@ as values.</li>
 <dl class="function">
 <dt id="gempy_front.set_interpolation_data">
 <code class="descclassname">gempy_front.</code><code class="descname">set_interpolation_data</code><span class="sig-paren">(</span><em>geo_data</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#set_interpolation_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.set_interpolation_data" title="Permalink to this definition">¶</a></dt>
-<dd><p>InterpolatorInput is a class that contains all the preprocessing operations to prepare the data to compute the model.
-Also is the object that has to be manipulated to vary the data without recompile the modeling function.</p>
+<dd><dl class="docutils">
+<dt>Create a <code class="xref py py-class docutils literal"><span class="pre">gempy.interpolator.InterpolatorData</span></code>. InterpolatorData is a class that contains all the</dt>
+<dd>preprocessing operations to prepare the data to compute the model.
+Also is the object that has to be manipulated to vary the data without recompile the modeling function.</dd>
+</dl>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -762,17 +979,48 @@ th_fn: Theano function which compute the interpolation</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="gempy_front.set_orientation_from_interfaces">
+<code class="descclassname">gempy_front.</code><code class="descname">set_orientation_from_interfaces</code><span class="sig-paren">(</span><em>geo_data</em>, <em>indices_array</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#set_orientation_from_interfaces"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.set_orientation_from_interfaces" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Create and set orientations from at least 3 points of the <code class="xref py py-attr docutils literal"><span class="pre">gempy.data_management.InputData.interfaces</span></code></dt>
+<dd>Dataframe</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </li>
+<li><strong>indices_array</strong> (<em>array-like</em>) – 1D or 2D array with the pandas indices of the
+<code class="xref py py-attr docutils literal"><span class="pre">gempy.data_management.InputData.interfaces</span></code>. If 2D every row of the 2D matrix will be used to create an
+orientation</li>
+<li><strong>verbose</strong> – </li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">Already updated inplace</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><code class="xref py py-attr docutils literal"><span class="pre">gempy.data_management.InputData.orientations</span></code></p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
 <dt id="gempy_front.set_orientations">
-<code class="descclassname">gempy_front.</code><code class="descname">set_orientations</code><span class="sig-paren">(</span><em>geo_data</em>, <em>orient_Dataframe</em>, <em>append=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#set_orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.set_orientations" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to change or append a Dataframe to orientations in place.  A equivalent Pandas Dataframe with
+<code class="descclassname">gempy_front.</code><code class="descname">set_orientations</code><span class="sig-paren">(</span><em>geo_data</em>, <em>orient_dataframe</em>, <em>append=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#set_orientations"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.set_orientations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to change or append a dataframe to orientations in place.  A equivalent Pandas Dataframe with
 [‘X’, ‘Y’, ‘Z’, ‘dip’, ‘azimuth’, ‘polarity’, ‘formation’] has to be passed.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>interf_Dataframe</strong> – pandas.core.frame.DataFrame with the data</li>
-<li><strong>append</strong> – Bool: if you want to append the new data frame or substitute it</li>
+<li><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </li>
+<li><strong>interf_dataframe</strong> (<code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code>) – </li>
+<li><strong>append</strong> (<em>Bool</em>) – if you want to append the new data frame or substitute it</li>
 </ul>
 </td>
 </tr>
@@ -783,28 +1031,35 @@ th_fn: Theano function which compute the interpolation</p>
 <dl class="function">
 <dt id="gempy_front.set_series">
 <code class="descclassname">gempy_front.</code><code class="descname">set_series</code><span class="sig-paren">(</span><em>geo_data</em>, <em>series_distribution=None</em>, <em>order_series=None</em>, <em>order_formations=None</em>, <em>verbose=0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gempy_front.html#set_series"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gempy_front.set_series" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to define the different series of the project.</p>
+<dd><p>Function to set in place the different series of the project with their correspondent formations</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>series_distribution</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.6)"><em>dict</em></a><em> or </em><em>dataframe</em>) – with the name of the serie as key and the name of the formations as values.</li>
-<li><strong>order</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>]</em>) – only necessary if passed a dict (python &lt; 3.6)order of the series by default takes the</li>
-<li><strong>keys which until python 3.6 are random. This is important to set the erosion relations between the different series</strong> (<em>dictionary</em>) – </li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>geo_data</strong> (<code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.InputData</span></code>) – </li>
+<li><strong>series_distribution</strong> (dict or <code class="xref py py-class docutils literal"><span class="pre">DataFrame</span></code>) – with the name of the series as key and the name of the
+formations as values.</li>
+<li><strong>order_series</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>]</em>) – only necessary if passed a dict (python &lt; 3.6)order of the series by default takes the
+dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series</li>
+<li><strong>order_formations</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>]</em>) – only necessary if passed a dict (python &lt; 3.6)order of the series by default takes the
+dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series</li>
+<li><strong>verbose</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – if verbose is True plot hte sequential pile</li>
 </ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">A pandas DataFrame with the series and formations relations
-self.interfaces: one extra column with the given series
-self.orientations: one extra column with the given series</p>
-</td>
-</tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">self.series</p>
 </td>
 </tr>
 </tbody>
 </table>
+<p class="rubric">Notes</p>
+<dl class="docutils">
+<dt>The following dataframes will be modified in place</dt>
+<dd><ol class="first last arabic simple">
+<li>geo_data.series: A pandas DataFrame with the series and formations relations</li>
+<li>geo_data.interfaces: one extra column with the given series</li>
+<li>geo_data.orientations: one extra column with the given series</li>
+</ol>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -817,13 +1072,8 @@ self.orientations: one extra column with the given series</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>geo_data</strong> (<em>gempy.data_management.InputData</em>) – GemPy’s data object for the model.</li>
-<li><strong>lith_block</strong> (<em>np.ndarray</em>) – Lithology block model.</li>
-<li><strong>fault_block</strong> (<em>np.ndarray</em>) – Fault block model.</li>
-</ul>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>lith_block</strong> (<em>ndarray</em>) – Lithology block model.</li>
+<li><strong>fault_block</strong> (<em>ndarray</em>) – Fault block model.</li>
 <li><strong>cell_number</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.6)"><em>int</em></a>) – Cell number for 2-D slice topology analysis. Default None.</li>
 <li><strong>direction</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a>) – “x”, “y” or “z” specifying the slice direction for 2-D topology analysis. Default None.</li>
 <li><strong>compute_areas</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.6)"><em>bool</em></a>) – If True computes adjacency areas for connected nodes in voxel number. Default False.</li>
@@ -831,7 +1081,7 @@ self.orientations: one extra column with the given series</p>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
 <dt>G: Region adjacency graph object (skimage.future.graph.rag.RAG) containing the adjacency topology graph</dt>
 <dd><p class="first last">(G.adj).</p>
 </dd>
@@ -845,7 +1095,7 @@ labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithol
 </p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)">tuple</a></p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.6)">tuple</a></p>
 </td>
 </tr>
 </tbody>
@@ -917,22 +1167,71 @@ along with gempy.  If not, see &lt;<a class="reference external" href="http://ww
 <dl class="class">
 <dt id="data_management.InputData">
 <em class="property">class </em><code class="descclassname">data_management.</code><code class="descname">InputData</code><span class="sig-paren">(</span><em>extent, resolution=[50, 50, 50], path_i=None, path_o=None, path_f=None, **kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/data_management.html#InputData"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#data_management.InputData" title="Permalink to this definition">¶</a></dt>
-<dd><p>Class to import the raw data of the model and set data classifications into formations and series.
-This objects will contain the main information of the model.</p>
+<dd><p>Class that contains all raw data of our models</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>extent</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a>) – [x_min, x_max, y_min, y_max, z_min, z_max]</li>
-<li><strong>Resolution</strong> (<em>(</em><em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>]</em><em>)</em>) – [nx, ny, nz]. Defaults to 50</li>
-<li><strong>path_i</strong> – Path to the data bases of interfaces. Default os.getcwd(),</li>
-<li><strong>path_o</strong> – Path to the data bases of orientations. Default os.getcwd()</li>
+<li><strong>Resolution</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.6)"><em>list</em></a><em>]</em>) – [nx, ny, nz]. Defaults to 50</li>
+<li><strong>path_i</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em>]</em>) – Path to the data bases of interfaces. Default os.getcwd(),</li>
+<li><strong>path_o</strong> (<em>Optional</em><em>[</em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.6)"><em>str</em></a><em>]</em>) – Path to the data bases of orientations. Default os.getcwd()</li>
+<li><strong>kwargs</strong> – key words passed to <code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.GridClass</span></code></li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
+<dl class="attribute">
+<dt id="data_management.InputData.interfaces">
+<code class="descname">interfaces</code><a class="headerlink" href="#data_management.InputData.interfaces" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal"><span class="pre">pn.core.frame.DataFrames</span></code> – Pandas data frame containing the necessary information respect
+the interface points of the model</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="data_management.InputData.orientations">
+<code class="descname">orientations</code><a class="headerlink" href="#data_management.InputData.orientations" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal"><span class="pre">pn.core.frame.DataFrames</span></code> – Pandas data frame containing the necessary information respect
+the orientations of the model</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="data_management.InputData.formations">
+<code class="descname">formations</code><a class="headerlink" href="#data_management.InputData.formations" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal"><span class="pre">pn.core.frame.DataFrames</span></code> – Pandas data frame containing the formations names and the value
+used for each voxel in the final model and the lithological order</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="data_management.InputData.series">
+<code class="descname">series</code><a class="headerlink" href="#data_management.InputData.series" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal"><span class="pre">pn.core.frame.DataFrames</span></code> – Pandas data frame containing the series and the formations contained
+on them</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="data_management.InputData.faults">
+<code class="descname">faults</code><a class="headerlink" href="#data_management.InputData.faults" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal"><span class="pre">pn.core.frame.DataFrames</span></code> – Pandas data frame containing the series and if they are faults or
+not (otherwise they are lithologies) and in case of being fault if is finite</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="data_management.InputData.faults_relations">
+<code class="descname">faults_relations</code><a class="headerlink" href="#data_management.InputData.faults_relations" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal"><span class="pre">pn.core.frame.DataFrames</span></code> – Pandas data frame containing the offsetting relations
+between each fault and the rest of the series (either other faults or lithologies)</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="data_management.InputData.grid">
+<code class="descname">grid</code><a class="headerlink" href="#data_management.InputData.grid" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="xref py py-class docutils literal"><span class="pre">gempy.data_management.GridClass</span></code> – grid object containing mainly the coordinates to interpolate
+the model</p>
+</dd></dl>
+
 <dl class="attribute">
 <dt id="data_management.InputData.extent">
 <code class="descname">extent</code><a class="headerlink" href="#data_management.InputData.extent" title="Permalink to this definition">¶</a></dt>
@@ -942,25 +1241,7 @@ This objects will contain the main information of the model.</p>
 <dl class="attribute">
 <dt id="data_management.InputData.resolution">
 <code class="descname">resolution</code><a class="headerlink" href="#data_management.InputData.resolution" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>(Optional[list])</em> – [nx, ny, nz]</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="data_management.InputData.orientations">
-<code class="descname">orientations</code><a class="headerlink" href="#data_management.InputData.orientations" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>pandas.core.frame.DataFrame</em> – Pandas data frame with the orientations data</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="data_management.InputData.Interfaces">
-<code class="descname">Interfaces</code><a class="headerlink" href="#data_management.InputData.Interfaces" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>pandas.core.frame.DataFrame</em> – Pandas data frame with the interfaces data</p>
-</dd></dl>
-
-<dl class="attribute">
-<dt id="data_management.InputData.series">
-<code class="descname">series</code><a class="headerlink" href="#data_management.InputData.series" title="Permalink to this definition">¶</a></dt>
-<dd><p><em>pandas.core.frame.DataFrame</em> – Pandas data frame which contains every formation within each series</p>
+<dd><p><em>Optional[list]</em> – [nx, ny, nz]</p>
 </dd></dl>
 
 <dl class="method">
@@ -1134,8 +1415,8 @@ GeoModeller (check in the input_data data folder for an example).</p>
 </dd></dl>
 
 <dl class="attribute">
-<dt>
-<code class="descname">Interfaces</code></dt>
+<dt id="data_management.InputData.Interfaces">
+<code class="descname">Interfaces</code><a class="headerlink" href="#data_management.InputData.Interfaces" title="Permalink to this definition">¶</a></dt>
 <dd><p><em>pandas.core.frame.DataFrame</em> – Pandas data frame with the interfaces data</p>
 </dd></dl>
 
@@ -1403,7 +1684,7 @@ theano function for the block</td>
 </table>
 <dl class="class">
 <dt id="theano_graph.TheanoGraph">
-<em class="property">class </em><code class="descclassname">theano_graph.</code><code class="descname">TheanoGraph</code><span class="sig-paren">(</span><em>output=’geology’, optimizer=’fast_compile’, verbose=[0], dtype=’float32’</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descclassname">theano_graph.</code><code class="descname">TheanoGraph</code><span class="sig-paren">(</span><em>output=’geology’, optimizer=’fast_compile’, verbose=[0], dtype=’float32’, is_fault=None, is_lith=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/theano_graph.html#TheanoGraph"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#theano_graph.TheanoGraph" title="Permalink to this definition">¶</a></dt>
 <dd><p>This class is used to help to divide the construction of the graph into sensical parts. All its methods buildDEP2 a part
 of the graph. Every method can be seen as a branch and collection of branches until the last method that will be the
 whole tree. Every part of the graph could be compiled separately but as we increase the complexity the input of each
@@ -2017,21 +2298,33 @@ labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithol
 <h2>Posterior Analysis<a class="headerlink" href="#posterior-analysis" title="Permalink to this headline">¶</a></h2>
 <p>&#64;author: Alexander Schaaf, Miguel de la Varga</p>
 <dl class="function">
-<dt id="posterior_analysis.calcualte_information_entropy">
-<code class="descclassname">posterior_analysis.</code><code class="descname">calcualte_information_entropy</code><span class="sig-paren">(</span><em>lith_prob</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/posterior_analysis.html#calcualte_information_entropy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#posterior_analysis.calcualte_information_entropy" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculates information entropy for the given probability array.</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="posterior_analysis.calculate_gradient">
 <code class="descclassname">posterior_analysis.</code><code class="descname">calculate_gradient</code><span class="sig-paren">(</span><em>dip</em>, <em>az</em>, <em>pol</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/posterior_analysis.html#calculate_gradient"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#posterior_analysis.calculate_gradient" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculates the gradient from dip, azimuth and polarity values.</p>
 </dd></dl>
 
 <dl class="function">
+<dt id="posterior_analysis.calculate_ie">
+<code class="descclassname">posterior_analysis.</code><code class="descname">calculate_ie</code><span class="sig-paren">(</span><em>lbs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/posterior_analysis.html#calculate_ie"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#posterior_analysis.calculate_ie" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the per-voxel and total information entropy of given block models.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="posterior_analysis.calculate_information_entropy">
+<code class="descclassname">posterior_analysis.</code><code class="descname">calculate_information_entropy</code><span class="sig-paren">(</span><em>lith_prob</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/posterior_analysis.html#calculate_information_entropy"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#posterior_analysis.calculate_information_entropy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates information entropy for the given probability array.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="posterior_analysis.calculate_information_entropy_total">
 <code class="descclassname">posterior_analysis.</code><code class="descname">calculate_information_entropy_total</code><span class="sig-paren">(</span><em>ie</em>, <em>absolute=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/posterior_analysis.html#calculate_information_entropy_total"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#posterior_analysis.calculate_information_entropy_total" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate total information entropy (float) from an information entropy array.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="posterior_analysis.calculate_probability_lithology">
+<code class="descclassname">posterior_analysis.</code><code class="descname">calculate_probability_lithology</code><span class="sig-paren">(</span><em>lith_blocks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/posterior_analysis.html#calculate_probability_lithology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#posterior_analysis.calculate_probability_lithology" title="Permalink to this definition">¶</a></dt>
+<dd><p>Blocks must be just the lith blocks!</p>
 </dd></dl>
 
 <dl class="function">
@@ -2060,6 +2353,12 @@ labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithol
 </dd></dl>
 
 <dl class="function">
+<dt id="posterior_analysis.change_input_data_avrg">
+<code class="descclassname">posterior_analysis.</code><code class="descname">change_input_data_avrg</code><span class="sig-paren">(</span><em>db</em>, <em>interp_data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/posterior_analysis.html#change_input_data_avrg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#posterior_analysis.change_input_data_avrg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculates average posterior parameters and updates interp_data.geo_data_res dataframes.</p>
+</dd></dl>
+
+<dl class="function">
 <dt id="posterior_analysis.compute_posterior_models_all">
 <code class="descclassname">posterior_analysis.</code><code class="descname">compute_posterior_models_all</code><span class="sig-paren">(</span><em>db</em>, <em>interp_data</em>, <em>indices</em>, <em>u_grade=None</em>, <em>get_potential_at_interfaces=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/posterior_analysis.html#compute_posterior_models_all"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#posterior_analysis.compute_posterior_models_all" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes block models from stored input parameters for all iterations.</p>
@@ -2079,12 +2378,6 @@ labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithol
 </tbody>
 </table>
 <p>Returns:</p>
-</dd></dl>
-
-<dl class="function">
-<dt id="posterior_analysis.compute_probability_lithology">
-<code class="descclassname">posterior_analysis.</code><code class="descname">compute_probability_lithology</code><span class="sig-paren">(</span><em>lith_blocks</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/posterior_analysis.html#compute_probability_lithology"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#posterior_analysis.compute_probability_lithology" title="Permalink to this definition">¶</a></dt>
-<dd><p>Blocks must be just the lith blocks!</p>
 </dd></dl>
 
 <dl class="function">
