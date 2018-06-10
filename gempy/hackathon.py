@@ -230,7 +230,10 @@ def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 =
     wf_data_normalize = wf_data/np.amax(wf_data)
     return wf_data_normalize
 
-def overlay_seismic_topography(topo_image, wavefield_cube, time_slice, mask_flag = 0, thrshld = .01, outfile=None):
+def overlay_seismic_topography(image_in, wavefield_cube, time_slice, mask_flag = 0, thrshld = .01, outfile=None):
+
+    topo_image = plt.imread(image_in)
+
     if topo_image.shape[:2] != wavefield_cube.shape[1:]:
         wavefield = np.transpose(wavefield_cube[time_slice,:,:])
         if topo_image.shape[:2] != wavefield.shape:
@@ -238,8 +241,11 @@ def overlay_seismic_topography(topo_image, wavefield_cube, time_slice, mask_flag
     else:
         wavefield = wavefield_cube[time_slice,:,:]
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(topo_image.shape[1]/100,topo_image.shape[0]/100), dpi=100, frameon=False)
+#    fig = plt.figure(frameon=False)
     ax = plt.Axes(fig, [0., 0., 1., 1.])
+    ax.set_axis_off()
+    fig.add_axes(ax)
 
     data_param = dict(vmin=-.1e0, vmax=.1e0, cmap=cm.seismic, aspect=1, interpolation='none')
 
@@ -251,6 +257,7 @@ def overlay_seismic_topography(topo_image, wavefield_cube, time_slice, mask_flag
         waves = np.ma.masked_where(np.abs(wavefield) <= thrshld , wavefield)
         ax = plt.imshow(topo_image)
         ax = plt.imshow(waves, **data_param)
+
 
     if outfile==None:
             plt.show()
