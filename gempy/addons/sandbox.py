@@ -229,6 +229,7 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
         self.__class__._instances.append(weakref.proxy(self))
         self.associated_beamer = associated_beamer
         self.beamer_resolution = associated_beamer.resolution
+
         self.associated_kinect = associated_kinect
         self.calibration_file = "calibration" + str(self.id) + ".dat"
         self.calibration_data = {'rot_angle': 0, # TODO: refactor calibration_data as an inner class for type safety
@@ -452,7 +453,9 @@ class Model:
             except:
                 print("ERROR: no calibration instance found. please create a calibration")
                 # parameters from the model:
-        else: self.associated_calibration = associated_calibration
+        else:
+            self.associated_calibration = associated_calibration
+            self.associated_calibration.
         if extent == None:  # extent should be array with shape (6,) or convert to list?
             self.extent = self.model._geo_data.extent
 
