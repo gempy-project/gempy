@@ -438,8 +438,8 @@ class Model:
         self.norm = None
         self.lot = None
         self.stop_threat = False
-        if lock:
-            self.lock = lock
+
+        self.lock = lock
 
 
         if associated_calibration==None:
