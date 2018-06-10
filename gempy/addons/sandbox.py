@@ -45,6 +45,9 @@ class Kinect: # add dummy
             self.filtered_depth = None
             print("kinect initialized")
         else:
+            self.angle = None
+            self.filtered_depth = None
+            self.depth = self.get_frame()
             print ("dummy mode. get_frame() will return a synthetic depth frame, other functions may not work")
 
     def set_angle(self, angle):
@@ -511,7 +514,8 @@ class Model:
             self.lock.acquire()
             lith_block, fault_block = gempy.compute_model_at(self.depth_grid, self.model)
             self.lock.release()
-
+        else:
+            lith_block, fault_block = gempy.compute_model_at(self.depth_grid, self.model)
         block=lith_block[0].reshape((self.associated_calibration.calibration_data['y_lim'][1] - self.associated_calibration.calibration_data['y_lim'][0],self.associated_calibration.calibration_data['x_lim'][1] - self.associated_calibration.calibration_data['x_lim'][0]))
         h = (self.associated_calibration.calibration_data['y_lim'][1] - self.associated_calibration.calibration_data['y_lim'][0]) / 100.0
         w = (self.associated_calibration.calibration_data['x_lim'][1] - self.associated_calibration.calibration_data['x_lim'][0]) / 100.0
