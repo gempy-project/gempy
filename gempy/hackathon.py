@@ -152,6 +152,19 @@ def plot_all_shapes(image, thresh_value=80, min_area=30):
     plt.imshow(out_image)
 
 
+def draw_markers(image,coords):
+    for point in coords:
+        cv2.circle(image,tuple(point), 6, (255,255,255), -1)
+    return image
+
+def draw_line(image, coords): #takes list of exactly 2 coordinate pairs
+    lineThickness = 2
+    cv2.line(image, tuple(coords[0]), tuple(coords[1]),(255,255,255), lineThickness)
+    return image
+
+
+
+
 def scale_linear(data, high, low):
     mins = np.amin(data)
     maxs = np.amax(data)
