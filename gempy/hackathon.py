@@ -19,7 +19,7 @@ except ImportError:
     print('Devito is not working')
 
 ### LEGO/SHAPE RECOGNITION
-def where_shapes(image, thresh_value=80, min_area=30):
+def where_shapes(image, thresh_value=60, min_area=30):
     """Get the coordinates for all detected shapes.
 
             Args:
@@ -103,7 +103,7 @@ def filter_circles(shape_coords, circle_coords):
     non_circle_pos = np.where(minima > 10)
     return non_circle_pos
 
-def where_non_circles(image, thresh_value=80, min_area=30):
+def where_non_circles(image, thresh_value=60, min_area=30):
     shape_coords = where_shapes(image, thresh_value, min_area)
     circle_coords = where_circles(image, thresh_value)
     if len(circle_coords)>0:
@@ -112,7 +112,7 @@ def where_non_circles(image, thresh_value=80, min_area=30):
     else:
         return shape_coords.tolist()
 
-def get_shape_coords(image, thresh_value=80, min_area=30):
+def get_shape_coords(image, thresh_value=60, min_area=30):
     """Get the coordinates for all shapes, classified as circles and non-circles.
 
                     Args:
@@ -131,7 +131,7 @@ def get_shape_coords(image, thresh_value=80, min_area=30):
     return non_circles, circles
 
 
-def plot_all_shapes(image, thresh_value=80, min_area=30):
+def plot_all_shapes(image, thresh_value=60, min_area=30):
     """Plot detected shapes onto image.
 
                         Args:
@@ -149,6 +149,16 @@ def plot_all_shapes(image, thresh_value=80, min_area=30):
         cv2.rectangle(output, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
     out_image = np.hstack([image, output])
     plt.imshow(out_image)
+
+def non_circles_fillmask(image, th1=60, th2=80, min_area=30):
+    bilateral_filtered_image = cv2.bilateralFilter(image, 5, 175, 175)
+    gray = cv2.cvtColor(bilateral_filtered_image, cv2.COLOR_BGR2GRAY)
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    thresh = cv2.threshold(blurred, th1, 1, cv2.THRESH_BINARY)[1]
+    circle_coords = where_circles(image, th2)
+    for (x, y) in circle_coords:
+        cv2.circle(thresh, (x, y), 20, 1, -1)
+    return np.invert(thresh.astype(bool))
 
 
 def draw_markers(image,coords):
@@ -175,12 +185,12 @@ def smooth_topo(data, sigma_x=2, sigma_y=2):
     dataSmooth = sp.ndimage.filters.gaussian_filter(data, sigma, mode='nearest')
     return dataSmooth
 
-def simulate_seismic_topo (topo, circles_list, not_circles, f0 = 0.02500, dx=10, dy=10, t0=0, tn=1000,pmlthickness=40 ,slice_to_display = 200):
+def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 = 0.02500, dx=10, dy=10, t0=0, tn=1000, pmlthickness=40, slice_to_display = 200):
 
     circles = np.array(circles_list)
 
     topo = topo.astype(np.float32)
-    topoRescale = scale_linear(topo, 5, 1)
+    topoRescale = scale_linear(topo, vmax, vmin)
     veltopo=smooth_topo( topoRescale )
 
     # Define the model
@@ -212,7 +222,7 @@ def simulate_seismic_topo (topo, circles_list, not_circles, f0 = 0.02500, dx=10,
             src_temp = RickerSource(name=namesrc, grid=model.grid, f0=f0, time=time, coordinates=src_coords)
             src_term_temp = src_temp.inject(field=u.forward, expr=src * dt**2 / model.m, offset=model.nbpml)
             src_term += src_term_temp
-    print(src_term)
+
     op_fwd = Operator( [stencil] + src_term )
     op_fwd(time=nt, dt=model.critical_dt)
 
@@ -220,7 +230,10 @@ def simulate_seismic_topo (topo, circles_list, not_circles, f0 = 0.02500, dx=10,
     wf_data_normalize = wf_data/np.amax(wf_data)
     return wf_data_normalize
 
-def overlay_seismic_topography(topo_image, wavefield_cube, time_slice, mask_flag = 0, thrshld = .01, outfile=None):
+def overlay_seismic_topography(image_in, wavefield_cube, time_slice, mask_flag = 0, thrshld = .01, outfile=None):
+
+    topo_image = plt.imread(image_in)
+
     if topo_image.shape[:2] != wavefield_cube.shape[1:]:
         wavefield = np.transpose(wavefield_cube[time_slice,:,:])
         if topo_image.shape[:2] != wavefield.shape:
@@ -228,8 +241,11 @@ def overlay_seismic_topography(topo_image, wavefield_cube, time_slice, mask_flag
     else:
         wavefield = wavefield_cube[time_slice,:,:]
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(topo_image.shape[1]/100,topo_image.shape[0]/100), dpi=100, frameon=False)
+#    fig = plt.figure(frameon=False)
     ax = plt.Axes(fig, [0., 0., 1., 1.])
+    ax.set_axis_off()
+    fig.add_axes(ax)
 
     data_param = dict(vmin=-.1e0, vmax=.1e0, cmap=cm.seismic, aspect=1, interpolation='none')
 
@@ -241,6 +257,7 @@ def overlay_seismic_topography(topo_image, wavefield_cube, time_slice, mask_flag
         waves = np.ma.masked_where(np.abs(wavefield) <= thrshld , wavefield)
         ax = plt.imshow(topo_image)
         ax = plt.imshow(waves, **data_param)
+
 
     if outfile==None:
             plt.show()
