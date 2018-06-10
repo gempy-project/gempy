@@ -193,6 +193,8 @@ def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 =
     topo = topo.astype(np.float32)
     topoRescale = scale_linear(topo, vmax, vmin)
     veltopo=smooth_topo( topoRescale, sigma_x, sigma_y )
+    if not_circles != []:
+        veltopo[not_circles] = vmax * 1.8
 
     # Define the model
     model = Model(vp=veltopo,        # A velocity model.
