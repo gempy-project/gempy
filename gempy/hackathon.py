@@ -77,7 +77,8 @@ def where_circles(image, thresh_value=80):
     # circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1.2 100)
     circles = cv2.HoughCircles(thresh, cv2.HOUGH_GRADIENT, 1, 2, np.array([]), 200, 8, 4, 8)
 
-    if circles is not None:
+
+    if len(circles) >0:
         # convert the (x, y) coordinates and radius of the circles to integers
         circles = np.round(circles[0, :]).astype("int")
         # print(circles)
@@ -92,10 +93,13 @@ def where_circles(image, thresh_value=80):
         circle_coords = np.vstack((circle_coords, mean_grouped))
 
         return circle_coords.tolist()
+    else:
+        return []
+
 
 
 def filter_circles(shape_coords, circle_coords):
-    dist = distance.cdist(shape_coords, np.array(circle_coords), 'euclidean')
+    dist = distance.cdist(shape_coords, circle_coords, 'euclidean')
     minima = np.min(dist, axis=1)
     non_circle_pos = np.where(minima > 10)
     return non_circle_pos
@@ -103,8 +107,11 @@ def filter_circles(shape_coords, circle_coords):
 def where_non_circles(image, thresh_value=80, min_area=30):
     shape_coords = where_shapes(image, thresh_value, min_area)
     circle_coords = where_circles(image, thresh_value)
-    non_circles = filter_circles(shape_coords, circle_coords)
-    return shape_coords[non_circles].tolist()
+    if len(circle_coords)>0:
+        non_circles = filter_circles(shape_coords, circle_coords)
+        return shape_coords[non_circles].tolist()
+    else:
+        return shape_coords.tolist()
 
 def get_shape_coords(image, thresh_value=80, min_area=30):
     """Get the coordinates for all shapes, classified as circles and non-circles.

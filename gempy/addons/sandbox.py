@@ -85,10 +85,10 @@ class Kinect: # add dummy
         if self.dummy == False:
             self.rgb_frame = freenect.sync_get_video(index=self.id)[0]
             self.rgb_frame = numpy.fliplr(self.rgb_frame)
-            return self.depth
 
-            self.depth = synth_depth
-            return self.depth
+            return self.rgb_frame
+        else:
+            pass
 
     def calibrate_frame(self, frame, calibration=None):
         if calibration is None:
