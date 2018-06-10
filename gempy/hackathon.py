@@ -155,7 +155,7 @@ def non_circles_fillmask(image, thresh_value=60, min_area=30):
     gray = cv2.cvtColor(bilateral_filtered_image, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
     thresh = cv2.threshold(blurred, thresh_value, 1, cv2.THRESH_BINARY)[1]
-    circle_coords = where_circles(images[5], thresh_value)
+    circle_coords = where_circles(image, thresh_value)
     for (x, y) in circle_coords:
         cv2.circle(thresh, (x, y), 20, 1, -1)
     return np.invert(thresh.astype(bool))
