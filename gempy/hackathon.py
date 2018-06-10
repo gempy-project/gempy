@@ -262,4 +262,22 @@ def get_arbitrary_2d_grid(geo_data, px, py, s):
     b = np.repeat(zs, len(xs))
     grid = np.concatenate((a, b[:, np.newaxis]), axis=1)
 
-    return grid, (len(zs), len(ys))  # len wrong xs zs , zs xs, ys xs, xs ys, zs ys
+    return grid, (len(zs), len(ys))
+
+
+def DRILLLL(geo_data, x, y, s=1):
+    """Creates 1d vertical grid at given x,y location.
+
+    Args:
+        geo_data: gempy geo_data object
+        x (int): x coordinate of the drill location
+        y (int): y coordinate of the drill location
+        s (int, optional): pixel/voxel edge length (default: 1)
+
+    Returns:
+        np.ndarray: grid (n, 3) for use with gempy.compute_model_at
+
+    """
+    zs = np.arange(geo_data.extent[4], geo_data.extent[5], s)
+    grid = np.array([np.repeat(x, len(zs)), np.repeat(y, len(zs)), zs]).T
+    return grid
