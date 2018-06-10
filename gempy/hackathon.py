@@ -185,13 +185,16 @@ def smooth_topo(data, sigma_x=2, sigma_y=2):
     dataSmooth = sp.ndimage.filters.gaussian_filter(data, sigma, mode='nearest')
     return dataSmooth
 
-def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 = 0.02500, dx=10, dy=10, t0=0, tn=1000, pmlthickness=40, slice_to_display = 200):
-
+def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 = 0.02500, dx=10, dy=10, t0=0, tn=1000, pmlthickness=40, sigma_x=2, sigma_y=2):
+    if circles_list == []:
+        circles_list = [[1,1]]
     circles = np.array(circles_list)
 
     topo = topo.astype(np.float32)
     topoRescale = scale_linear(topo, vmax, vmin)
-    veltopo=smooth_topo( topoRescale )
+    veltopo=smooth_topo( topoRescale, sigma_x, sigma_y )
+    if not_circles != []:
+        veltopo[not_circles] = vmax * 1.8
 
     # Define the model
     model = Model(vp=veltopo,        # A velocity model.
