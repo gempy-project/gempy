@@ -452,6 +452,7 @@ class Model:
             except:
                 print("ERROR: no calibration instance found. please create a calibration")
                 # parameters from the model:
+        else: self.associated_calibration = associated_calibration
         if extent == None:  # extent should be array with shape (6,) or convert to list?
             self.extent = self.model._geo_data.extent
 
@@ -545,6 +546,14 @@ class Model:
 
     def run(self):
         run_model(self)
+
+    def convert_coordinates(self,coords):
+        converted_coords=[]
+        for point in coords:
+            y= point[0] * self.pixel_size[1]+self.extent[2]
+            x= point[1] * self.pixel_size[0]+self.extent[0]
+            converted_coords.append([x,y])
+        return converted_coords
 
 def detect_shapes(kinect,model, calibration, frame=None):
     if frame is None:
