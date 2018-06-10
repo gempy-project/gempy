@@ -176,7 +176,9 @@ def smooth_topo(data, sigma_x=2, sigma_y=2):
     dataSmooth = sp.ndimage.filters.gaussian_filter(data, sigma, mode='nearest')
     return dataSmooth
 
-def simulate_seismic_topo (topo, circles, not_circles, f0 = 0.02500, dx=10, dy=10, t0=0, tn=1000,pmlthickness=40 ,slice_to_display = 200):
+def simulate_seismic_topo (topo, circles_list, not_circles, f0 = 0.02500, dx=10, dy=10, t0=0, tn=1000,pmlthickness=40 ,slice_to_display = 200):
+
+    circles = np.array(circles_list)
 
     topo = topo.astype(np.float32)
     topoRescale = scale_linear(topo, 5, 1)
@@ -215,4 +217,6 @@ def simulate_seismic_topo (topo, circles, not_circles, f0 = 0.02500, dx=10, dy=1
     op_fwd = Operator( [stencil] + src_term )
     op_fwd(time=nt, dt=model.critical_dt)
 
-    return u.data[:,pmlthickness:-pmlthickness,pmlthickness:-pmlthickness]
+    wf_data = u.data[:,pmlthickness:-pmlthickness,pmlthickness:-pmlthickness]
+    wf_data_normalize = wf_data/np.amax(wf_data)
+    return wf_data_normalize
