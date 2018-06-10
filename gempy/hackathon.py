@@ -207,3 +207,46 @@ def simulate_seismic_topo (topo, circles_list, not_circles, f0 = 0.02500, dx=10,
     wf_data = u.data[:,pmlthickness:-pmlthickness,pmlthickness:-pmlthickness]
     wf_data_normalize = wf_data/np.amax(wf_data)
     return wf_data_normalize
+
+
+def get_arbitrary_2d_grid(geo_data, px, py, s):
+    """Creates arbitrary 2d grid given two input points.
+
+    Args:
+        geo_data: gempy geo_Data object
+        px (list): x coordinates of the two input points (e.g. [0, 2000])
+        py (list: y coordinates of the two input points (e.g. [0, 2000])
+        s (int): pixel/voxel edge length
+
+    Returns:
+        np.ndarray: grid (n, 3) for use with gempy.compute_model_at function
+        tuple: shape information to reshape into 2d array
+
+    """
+    px = np.array(px)
+    py = np.array(py)
+
+    from scipy.stats import linregress
+    gradient, *_ = linregress(px, py)
+
+    theta = np.arctan(gradient)
+    dy = np.sin(theta) * s
+    dx = np.cos(theta) * s
+
+    if px[1] - px[0] == 0:
+        ys = np.arange(py[0], py[1], s)
+        xs = np.repeat(px[0], len(ys))
+    elif py[1] - py[0] == 0:
+        xs = np.arange(px[0], px[1], s)
+        ys = np.repeat(py[0], len(xs))
+    else:
+        xs = np.arange(px[0], px[1], dx)
+        ys = np.arange(py[0], py[1], dy)
+
+    zs = np.arange(geo_data.extent[4], geo_data.extent[5] + 1, s)
+
+    a = np.tile([xs, ys], len(zs)).T
+    b = np.repeat(zs, len(xs))
+    grid = np.concatenate((a, b[:, np.newaxis]), axis=1)
+
+    return grid, (len(zs), len(ys))  # len wrong xs zs , zs xs, ys xs, xs ys, zs ys
