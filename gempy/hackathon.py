@@ -77,8 +77,7 @@ def where_circles(image, thresh_value=80):
     # circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1.2 100)
     circles = cv2.HoughCircles(thresh, cv2.HOUGH_GRADIENT, 1, 2, np.array([]), 200, 8, 4, 8)
 
-
-    if len(circles) >0:
+    if circles != [] and circles is not None:
         # convert the (x, y) coordinates and radius of the circles to integers
         circles = np.round(circles[0, :]).astype("int")
         # print(circles)
@@ -183,7 +182,7 @@ def simulate_seismic_topo (topo, circles_list, not_circles, f0 = 0.02500, dx=10,
     topo = topo.astype(np.float32)
     topoRescale = scale_linear(topo, 5, 1)
     veltopo=smooth_topo( topoRescale )
-
+    
     # Define the model
     model = Model(vp=veltopo,        # A velocity model.
                   origin=(0, 0),     # Top left corner.
