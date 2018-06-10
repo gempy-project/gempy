@@ -150,12 +150,12 @@ def plot_all_shapes(image, thresh_value=60, min_area=30):
     out_image = np.hstack([image, output])
     plt.imshow(out_image)
 
-def non_circles_fillmask(image, thresh_value=60, min_area=30):
+def non_circles_fillmask(image, th1=60, th2=80, min_area=30):
     bilateral_filtered_image = cv2.bilateralFilter(image, 5, 175, 175)
     gray = cv2.cvtColor(bilateral_filtered_image, cv2.COLOR_BGR2GRAY)
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
-    thresh = cv2.threshold(blurred, thresh_value, 1, cv2.THRESH_BINARY)[1]
-    circle_coords = where_circles(image, thresh_value)
+    thresh = cv2.threshold(blurred, th1, 1, cv2.THRESH_BINARY)[1]
+    circle_coords = where_circles(image, th2)
     for (x, y) in circle_coords:
         cv2.circle(thresh, (x, y), 20, 1, -1)
     return np.invert(thresh.astype(bool))
