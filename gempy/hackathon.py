@@ -175,12 +175,12 @@ def smooth_topo(data, sigma_x=2, sigma_y=2):
     dataSmooth = sp.ndimage.filters.gaussian_filter(data, sigma, mode='nearest')
     return dataSmooth
 
-def simulate_seismic_topo (topo, circles_list, not_circles, f0 = 0.02500, dx=10, dy=10, t0=0, tn=1000,pmlthickness=40 ,slice_to_display = 200):
+def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 = 0.02500, dx=10, dy=10, t0=0, tn=1000, pmlthickness=40, slice_to_display = 200):
 
     circles = np.array(circles_list)
 
     topo = topo.astype(np.float32)
-    topoRescale = scale_linear(topo, 5, 1)
+    topoRescale = scale_linear(topo, vmax, vmin)
     veltopo=smooth_topo( topoRescale )
 
     # Define the model
@@ -212,7 +212,7 @@ def simulate_seismic_topo (topo, circles_list, not_circles, f0 = 0.02500, dx=10,
             src_temp = RickerSource(name=namesrc, grid=model.grid, f0=f0, time=time, coordinates=src_coords)
             src_term_temp = src_temp.inject(field=u.forward, expr=src * dt**2 / model.m, offset=model.nbpml)
             src_term += src_term_temp
-    print(src_term)
+
     op_fwd = Operator( [stencil] + src_term )
     op_fwd(time=nt, dt=model.critical_dt)
 
