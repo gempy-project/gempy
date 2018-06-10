@@ -121,7 +121,7 @@ def get_shape_coords(image, thresh_value=80, min_area=30):
                 """
     non_circles = where_non_circles(image, thresh_value, min_area)
     circles = where_circles(image, thresh_value)
-    if len()
+
     return non_circles, circles
 
 
