@@ -185,7 +185,7 @@ def smooth_topo(data, sigma_x=2, sigma_y=2):
     dataSmooth = sp.ndimage.filters.gaussian_filter(data, sigma, mode='nearest')
     return dataSmooth
 
-def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 = 0.02500, dx=10, dy=10, t0=0, tn=1000, pmlthickness=40, sigma_x=2, sigma_y=2):
+def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 = 0.02500, dx=10, dy=10, t0=0, tn=1000, pmlthickness=40, sigma_x=2, sigma_y=2, n_frames = 30):
     if circles_list == []:
         circles_list = [[1,1]]
     circles = np.array(circles_list)
@@ -231,7 +231,9 @@ def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 =
 
     wf_data = u.data[:,pmlthickness:-pmlthickness,pmlthickness:-pmlthickness]
     wf_data_normalize = wf_data/np.amax(wf_data)
-    return wf_data_normalize
+
+    framerate=np.int(np.ceil(wf_data.shape[0]/n_frames))
+    return wf_data_normalize[0::framerate,:,:]
 
 def overlay_seismic_topography(image_in, wavefield_cube, time_slice, mask_flag = 0, thrshld = .01, outfile=None):
 
@@ -340,4 +342,3 @@ def drill_image(lb, n_rep=100, fp="well.png"):
     plt.title("Lego well")
     plt.savefig(fp, dpi=100)
     return im
-
