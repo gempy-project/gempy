@@ -19,7 +19,7 @@ except ImportError:
     print('Devito is not working')
 
 ### LEGO/SHAPE RECOGNITION
-def where_shapes(image, thresh_value=80, min_area=30):
+def where_shapes(image, thresh_value=60, min_area=30):
     """Get the coordinates for all detected shapes.
 
             Args:
@@ -103,7 +103,7 @@ def filter_circles(shape_coords, circle_coords):
     non_circle_pos = np.where(minima > 10)
     return non_circle_pos
 
-def where_non_circles(image, thresh_value=80, min_area=30):
+def where_non_circles(image, thresh_value=60, min_area=30):
     shape_coords = where_shapes(image, thresh_value, min_area)
     circle_coords = where_circles(image, thresh_value)
     if len(circle_coords)>0:
@@ -112,7 +112,7 @@ def where_non_circles(image, thresh_value=80, min_area=30):
     else:
         return shape_coords.tolist()
 
-def get_shape_coords(image, thresh_value=80, min_area=30):
+def get_shape_coords(image, thresh_value=60, min_area=30):
     """Get the coordinates for all shapes, classified as circles and non-circles.
 
                     Args:
@@ -131,7 +131,7 @@ def get_shape_coords(image, thresh_value=80, min_area=30):
     return non_circles, circles
 
 
-def plot_all_shapes(image, thresh_value=80, min_area=30):
+def plot_all_shapes(image, thresh_value=60, min_area=30):
     """Plot detected shapes onto image.
 
                         Args:
@@ -149,6 +149,16 @@ def plot_all_shapes(image, thresh_value=80, min_area=30):
         cv2.rectangle(output, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
     out_image = np.hstack([image, output])
     plt.imshow(out_image)
+
+def non_circles_fillmask(image, thresh_value=60, min_area=30):
+    bilateral_filtered_image = cv2.bilateralFilter(image, 5, 175, 175)
+    gray = cv2.cvtColor(bilateral_filtered_image, cv2.COLOR_BGR2GRAY)
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    thresh = cv2.threshold(blurred, thresh_value, 1, cv2.THRESH_BINARY)[1]
+    circle_coords = where_circles(images[5], thresh_value)
+    for (x, y) in circle_coords:
+        cv2.circle(thresh, (x, y), 20, 1, -1)
+    return np.invert(thresh.astype(bool))
 
 
 def draw_markers(image,coords):
