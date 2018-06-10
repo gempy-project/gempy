@@ -182,7 +182,7 @@ def simulate_seismic_topo (topo, circles_list, not_circles, f0 = 0.02500, dx=10,
     topo = topo.astype(np.float32)
     topoRescale = scale_linear(topo, 5, 1)
     veltopo=smooth_topo( topoRescale )
-    
+
     # Define the model
     model = Model(vp=veltopo,        # A velocity model.
                   origin=(0, 0),     # Top left corner.
@@ -220,6 +220,34 @@ def simulate_seismic_topo (topo, circles_list, not_circles, f0 = 0.02500, dx=10,
     wf_data_normalize = wf_data/np.amax(wf_data)
     return wf_data_normalize
 
+def overlay_seismic_topography(topo_image, wavefield_cube, time_slice, mask_flag = 0, thrshld = .01, outfile=None):
+    if topo_image.shape[:2] != wavefield_cube.shape[1:]:
+        wavefield = np.transpose(wavefield_cube[time_slice,:,:])
+        if topo_image.shape[:2] != wavefield.shape:
+            print("Topography shape does not match the wavefield shape")
+    else:
+        wavefield = wavefield_cube[time_slice,:,:]
+
+    fig = plt.figure()
+    ax = plt.Axes(fig, [0., 0., 1., 1.])
+
+    data_param = dict(vmin=-.1e0, vmax=.1e0, cmap=cm.seismic, aspect=1, interpolation='none')
+
+    if mask_flag == 0:
+        waves = wavefield
+        ax = plt.imshow(topo_image)
+        ax = plt.imshow(waves, alpha=.4, **data_param)
+    else:
+        waves = np.ma.masked_where(np.abs(wavefield) <= thrshld , wavefield)
+        ax = plt.imshow(topo_image)
+        ax = plt.imshow(waves, **data_param)
+
+    if outfile==None:
+            plt.show()
+            plt.close()
+    else:
+        plt.savefig(outfile, pad_inches=0)
+        plt.close(fig)
 
 def get_arbitrary_2d_grid(geo_data, px, py, s):
     """Creates arbitrary 2d grid given two input points.
