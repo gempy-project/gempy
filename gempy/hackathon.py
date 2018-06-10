@@ -309,7 +309,7 @@ def get_arbitrary_2d_grid(geo_data, px, py, s):
     return grid, (len(zs), len(ys))
 
 
-def DRILLLL(geo_data, x, y, s=1):
+def drill(geo_data, x, y, s=1):
     """Creates 1d vertical grid at given x,y location.
 
     Args:
@@ -325,3 +325,16 @@ def DRILLLL(geo_data, x, y, s=1):
     zs = np.arange(geo_data.extent[4], geo_data.extent[5], s)
     grid = np.array([np.repeat(x, len(zs)), np.repeat(y, len(zs)), zs]).T
     return grid
+
+
+def drill_image(lb, n_rep=100, fp="well.png"):
+    p = np.repeat(lb[0, np.newaxis].astype(int), n_rep, axis=0)
+    plt.figure(figsize=(2, 6))
+    im = plt.imshow(p.T, origin="lower", cmap=gp.plotting.colors.cmap, norm=gp.plotting.colors.norm)
+    plt.ylabel("z")
+    im.axes.get_xaxis().set_ticks([])
+    plt.tight_layout()
+    plt.title("Lego well")
+    plt.savefig(fp, dpi=100)
+    return im
+
