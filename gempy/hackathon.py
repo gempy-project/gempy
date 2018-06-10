@@ -212,7 +212,7 @@ def simulate_seismic_topo (topo, circles_list, not_circles, f0 = 0.02500, dx=10,
             src_temp = RickerSource(name=namesrc, grid=model.grid, f0=f0, time=time, coordinates=src_coords)
             src_term_temp = src_temp.inject(field=u.forward, expr=src * dt**2 / model.m, offset=model.nbpml)
             src_term += src_term_temp
-
+    print(src_term)
     op_fwd = Operator( [stencil] + src_term )
     op_fwd(time=nt, dt=model.critical_dt)
 
