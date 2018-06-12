@@ -185,9 +185,9 @@ def smooth_topo(data, sigma_x=2, sigma_y=2):
     dataSmooth = sp.ndimage.filters.gaussian_filter(data, sigma, mode='nearest')
     return dataSmooth
 
-def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 = 0.02500, dx=10, dy=10, t0=0, tn=1000, pmlthickness=40, sigma_x=2, sigma_y=2, n_frames = 50):
+def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 = 0.02500, dx=10, dy=10, t0=0, tn=700, pmlthickness=40, sigma_x=2, sigma_y=2, n_frames = 50):
     if circles_list == []:
-        circles_list = [[1,1]]
+        circles_list = [[int(topo.shape[0]/2),int(topo.shape[1]/2)]]
     circles = np.array(circles_list)
 
     topo = topo.astype(np.float32)
