@@ -18,6 +18,8 @@ import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import matplotlib
 import gempy.hackathon as hackathon
+import IPython
+
 
 
 # TODO: Superclass or not? methods: run sandbox with runnable, height map only, diff height...
@@ -416,7 +418,7 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                                     )
 
                                                  )
-        display(calibration_widget)
+        IPython.display.display(calibration_widget)
 
 
 
