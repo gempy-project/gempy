@@ -104,6 +104,7 @@ class Kinect: # add dummy
                 print("no calibration found")
         rotated = scipy.ndimage.rotate(frame, calibration.calibration_data['rot_angle'], reshape=False)
         cropped = rotated[calibration.calibration_data['y_lim'][0] : calibration.calibration_data['y_lim'][1], calibration.calibration_data['x_lim'][0] : calibration.calibration_data['x_lim'][1]]
+        cropped = numpy.flipud(cropped)
         return cropped
 
 
