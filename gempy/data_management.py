@@ -196,6 +196,11 @@ class InputData(object):
                                                   # np.arcsin(self.orientations["G_x"]) /
                                                   # (np.sin(np.arccos(self.orientations["G_y"] /
                                                   # self.orientations["polarity"])))))
+        self.orientations['azimuth'][(self.orientations['G_x'] < 0).as_matrix() * (self.orientations['G_y'] >= 0).as_matrix()] += 360
+        self.orientations['azimuth'][(self.orientations['G_y'] < 0).as_matrix()] += 180
+        self.orientations['azimuth'][(self.orientations['G_x'] > 0).as_matrix() * (self.orientations['G_y'] == 0).as_matrix()] = 90
+        self.orientations['azimuth'][(self.orientations['G_x'] < 0).as_matrix() * (self.orientations['G_y'] == 0).as_matrix()] = 270
+
 
     def count_faults(self):
         """
@@ -216,6 +221,7 @@ class InputData(object):
 
         center, normal = self.plane_fit(selected_points)
         orientation = get_orientation(normal)
+
         return np.array([*center, *orientation, *normal])
 
     def data_to_pickle(self, path=False):
@@ -534,6 +540,7 @@ class InputData(object):
 
         """
         l = len(self.orientations)
+
         try:
             for key in kwargs:
                 self.orientations.ix[l, str(key)] = kwargs[key]
@@ -637,7 +644,7 @@ class InputData(object):
             append: Bool: if you want to append the new data frame or substitute it
         """
         assert set(self._columns_i_1).issubset(interf_Dataframe.columns), \
-            "One or more columns do not match with the expected values " + str(interf_Dataframe.columns)
+            "One or more columns do not match with the expected values " + str(self._columns_i_1)
 
         interf_Dataframe[self._columns_i_num] = interf_Dataframe[self._columns_i_num].astype(float, copy=True)
         interf_Dataframe[['formation_number', 'order_series']] = interf_Dataframe[['formation_number', 'order_series']].astype(int, copy=True)
@@ -684,7 +691,7 @@ class InputData(object):
           """
         assert set(self._columns_o_1).issubset(
             foliat_Dataframe.columns), "One or more columns do not match with the expected values " +\
-                                       str(foliat_Dataframe.columns)
+                                       str(self._columns_o_1)
 
         foliat_Dataframe[self._columns_o_num] = foliat_Dataframe[self._columns_o_num].astype(float, copy=True)
 

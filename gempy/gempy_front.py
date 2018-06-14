@@ -492,14 +492,14 @@ def set_orientation_from_interfaces(geo_data, indices_array):
                                  formation=form)
     elif _np.ndim(indices_array) is 2:
         for indices in indices_array:
-            form = geo_data.interfaces['formation'].loc[indices].unique()[0]
+            form = geo_data.interfaces['formation'].loc[indices].unique()
             assert form.shape[0] is 1, 'The interface points must belong to the same formation'
             form = form[0]
             ori_parameters = geo_data.create_orientation_from_interfaces(indices)
             geo_data.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                      dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                      G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
-                                     formation=form[0])
+                                     formation=form)
 
     geo_data.update_df()
     return geo_data.orientations
