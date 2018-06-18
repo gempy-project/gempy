@@ -322,11 +322,11 @@ class Posterior:
             print("Topology analysis completed.")
 
 
-class PosteriorPyMC3:
+class PosteriorPyMC3(Posterior):
     def __init__(self, dbname, pymc_model_f="gempy_model", pymc_topo_f="gempy_topo",
                  topology=False, verbose=False):
         """
-        Posterior database analysis for GemPy-pymc2 hdf5 databases.
+        Posterior database analysis for GemPy-PyMC3 hdf5 databases.
         Args:
             dbname (str): Path of the hdf5 database.
             pymc_model_f (str, optional): name of the model output function used (default: "gempy_model).
@@ -406,78 +406,6 @@ class PosteriorPyMC3:
         if self.verbose:
             print("interp_data parameters changed.")
         return interp_data
-
-    # TODO: DEP Use gp.compute_model instead
-    # def compute_posterior_model(self, interp_data, i):
-    #     """Computes the model with the respective posterior input data. Returns lith block, fault block."""
-    #     self.change_input_data(interp_data, i)
-    #     return gp.compute_model(interp_data)
-
-
-
-    def compute_posterior_model_avrg(self, interp_data):
-        """Computes average posterior model."""
-        list_interf = []
-        list_fol = []
-        for i in range(self.n_iter):
-            list_interf.append(self.input_data[i][0])
-            list_fol.append(self.input_data[i][1])
-
-        interf_avrg = pn.concat(list_interf).groupby(level=0).mean()
-        fol_avrg = pn.concat(list_fol).groupby(level=0).mean()
-
-        interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = interf_avrg
-        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = fol_avrg
-        interp_data.update_interpolator()
-        return gp.compute_model(interp_data)
-
-    def compute_entropy(self):
-        """Computes the voxel information entropy of stored block models."""
-        if self.lb is None:
-            return "No models stored in self.lb, please run 'self.compute_posterior_models_all' to generate block" \
-                   " models for all iterations."
-
-        self.lith_prob = compute_probability_lithology(self.lb[:, 0, :])
-        self.ie = calcualte_information_entropy(self.lith_prob)
-        self.ie_total = calculate_information_entropy_total(self.ie)
-        print("Information Entropy successfully calculated. Stored in self.ie and self.ie_total")
-
-    def topo_count_connection(self, n1, n2):
-        """Counts the amount of times connection between nodes n1 and n2 in all of the topology graphs."""
-        count = 0
-        for G in self.topo_graphs:
-            count += gp.topology.check_adjacency(G, n1, n2)
-        return count
-
-    def topo_count_connection_array(self, n1, n2):
-        count = []
-        for G in self.topo_graphs:
-            count.append(gp.topology.check_adjacency(G, n1, n2))
-        return count
-
-    def topo_count_total_number_of_nodes(self):
-        """Counts the amount of topology graphs with a certain amount of total nodes."""
-        self.topo_count_dict = {}
-        for g in self.topo_graphs:
-            c = len(g.adj.keys())
-            if c in self.topo_count_dict.keys():
-                self.topo_count_dict[c] += 1
-            else:
-                self.topo_count_dict[c] = 1
-
-    def topo_analyze(self):
-        """Analysis of the tallied topology distribution."""
-        if self.verbose:
-            print("Starting topology analysis. This could take a while (depending on # iterations).")
-        self.topo_unique, self.topo_unique_freq, self.topo_unique_ids = get_unique_topo(self.topo_graphs)
-        self.topo_unique_prob = self.topo_unique_freq / np.sum(self.topo_unique_freq)
-        # count unique node numbers
-        self.topo_count_total_number_of_nodes()
-
-        self.topo_sort = np.argsort(self.topo_unique_freq)[::-1]
-
-        if self.verbose:
-            print("Topology analysis completed.")
 
 
 
