@@ -343,7 +343,7 @@ class PosteriorPyMC3:
             self.db = pymc3.backends.hdf5.load(dbname)
             # model environment required? / alternatives?
 
-        self.n_iter = self.db.get_values(pymc_model_f).shape[0]
+        self.n_iter = self.db.get_values(pymc_model_f).shape[0]-1
         # get trace names
         self.trace_names = self.db.varnames
 
