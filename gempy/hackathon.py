@@ -185,13 +185,16 @@ def smooth_topo(data, sigma_x=2, sigma_y=2):
     dataSmooth = sp.ndimage.filters.gaussian_filter(data, sigma, mode='nearest')
     return dataSmooth
 
-def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 = 0.02500, dx=10, dy=10, t0=0, tn=1000, pmlthickness=40, slice_to_display = 200):
-
+def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 = 0.02500, dx=10, dy=10, t0=0, tn=700, pmlthickness=40, sigma_x=2, sigma_y=2, n_frames = 50):
+    if circles_list == []:
+        circles_list = [[int(topo.shape[0]/2),int(topo.shape[1]/2)]]
     circles = np.array(circles_list)
 
     topo = topo.astype(np.float32)
     topoRescale = scale_linear(topo, vmax, vmin)
-    veltopo=smooth_topo( topoRescale )
+    veltopo=smooth_topo( topoRescale, sigma_x, sigma_y )
+    if not_circles != []:
+        veltopo[not_circles] = vmax * 1.8
 
     # Define the model
     model = Model(vp=veltopo,        # A velocity model.
@@ -228,7 +231,9 @@ def simulate_seismic_topo (topo, circles_list, not_circles, vmax=5, vmin=1, f0 =
 
     wf_data = u.data[:,pmlthickness:-pmlthickness,pmlthickness:-pmlthickness]
     wf_data_normalize = wf_data/np.amax(wf_data)
-    return wf_data_normalize
+
+    framerate=np.int(np.ceil(wf_data.shape[0]/n_frames))
+    return wf_data_normalize[0::framerate,:,:]
 
 def overlay_seismic_topography(image_in, wavefield_cube, time_slice, mask_flag = 0, thrshld = .01, outfile=None):
 
@@ -309,7 +314,7 @@ def get_arbitrary_2d_grid(geo_data, px, py, s):
     return grid, (len(zs), len(ys))
 
 
-def DRILLLL(geo_data, x, y, s=1):
+def drill(geo_data, x, y, s=1):
     """Creates 1d vertical grid at given x,y location.
 
     Args:
@@ -325,3 +330,15 @@ def DRILLLL(geo_data, x, y, s=1):
     zs = np.arange(geo_data.extent[4], geo_data.extent[5], s)
     grid = np.array([np.repeat(x, len(zs)), np.repeat(y, len(zs)), zs]).T
     return grid
+
+
+def drill_image(lb, n_rep=100, fp="well.png"):
+    p = np.repeat(lb[0, np.newaxis].astype(int), n_rep, axis=0)
+    plt.figure(figsize=(2, 6))
+    im = plt.imshow(p.T, origin="lower", cmap=gp.plotting.colors.cmap, norm=gp.plotting.colors.norm)
+    plt.ylabel("z")
+    im.axes.get_xaxis().set_ticks([])
+    plt.tight_layout()
+    plt.title("Lego well")
+    plt.savefig(fp, dpi=100)
+    return im

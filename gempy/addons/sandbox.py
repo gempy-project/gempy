@@ -18,6 +18,8 @@ import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import matplotlib
 import gempy.hackathon as hackathon
+import IPython
+
 
 
 # TODO: Superclass or not? methods: run sandbox with runnable, height map only, diff height...
@@ -102,6 +104,7 @@ class Kinect: # add dummy
                 print("no calibration found")
         rotated = scipy.ndimage.rotate(frame, calibration.calibration_data['rot_angle'], reshape=False)
         cropped = rotated[calibration.calibration_data['y_lim'][0] : calibration.calibration_data['y_lim'][1], calibration.calibration_data['x_lim'][0] : calibration.calibration_data['x_lim'][1]]
+        cropped = numpy.flipud(cropped)
         return cropped
 
 
@@ -288,7 +291,7 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
             depth_cropped = depth_rotated[y_lim[0]:y_lim[1], x_lim[0]:x_lim[1]]
             depth_masked=numpy.ma.masked_outside(depth_cropped,self.calibration_data['z_range'][0],self.calibration_data['z_range'][1]) #depth pixels outside of range are white, no data pixe;ls are black.
 
-            self.cmap=matplotlib.colors.Colormap('hsv')
+            self.cmap=matplotlib.colors.Colormap('tab20c')
             self.cmap.set_bad('white',800)
             plt.set_cmap(self.cmap)
             h = (y_lim[1]-y_lim[0])  / 100.0
@@ -416,7 +419,7 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                                     )
 
                                                  )
-        display(calibration_widget)
+        IPython.display.display(calibration_widget)
 
 
 
@@ -505,13 +508,17 @@ class Model:
         depth_grid = numpy.concatenate((self.empty_depth_grid, flattened_depth), axis=1)
         self.depth_grid=depth_grid
 
-    def render_frame(self, outfile=None):
-        if self.cmap == None:
+    def set_cmap(self,cmap=None, norm=None):
+        if cmap is None:
             plotter = gempy.PlotData2D(self.model._geo_data)
             self.cmap = plotter._cmap
+        if norm is None:
             self.norm = plotter._norm
             self.lot = plotter._color_lot
 
+    def render_frame(self, outfile=None):
+        if self.cmap is None:
+            self.set_cmap()
         if self.lock is not None:
             self.lock.acquire()
             lith_block, fault_block = gempy.compute_model_at(self.depth_grid, self.model)
@@ -629,8 +636,41 @@ def run_depth(calibration=None, kinect=None, beamer=None, filter_depth=True, n_f
         beamer.show(input='current_frame.png')
 
 
-def render_depth_frame(kinect, beamer, cmap='viridis'):
-    pass
+def render_depth_frame(calibration=None, kinect=None, beamer=None, filter_depth=True, n_frames=5, sigma_gauss=4,  cmap='terrain'):
+    if calibration is None:
+        try:
+            calibration=Calibration._instances[-1]
+            print("using last calibration instance created.")
+        except:
+            print("no calibration found")
+    if kinect is None:
+        kinect = calibration.associated_kinect
+    if beamer is None:
+        beamer = calibration.associated_beamer
+
+
+    if filter_depth == True:
+        depth = kinect.get_filtered_frame(n_frames=n_frames, sigma_gauss=sigma_gauss)
+    else:
+        depth = kinect.get_frame()
+
+    depth_rotated = scipy.ndimage.rotate(depth, calibration.calibration_data['rot_angle'], reshape=False)
+    depth_cropped = depth_rotated[calibration.calibration_data['y_lim'][0]:calibration.calibration_data['y_lim'][1], calibration.calibration_data['x_lim'][0]:calibration.calibration_data['x_lim'][1]]
+    depth_masked = numpy.ma.masked_outside(depth_cropped, calibration.calibration_data['z_range'][0],
+                                           calibration.calibration_data['z_range'][
+                                               1])  # depth pixels outside of range are white, no data pixe;ls are black.
+
+    h = (calibration.calibration_data['y_lim'][1] - calibration.calibration_data['y_lim'][0]) / 100.0
+    w = (calibration.calibration_data['x_lim'][1] - calibration.calibration_data['x_lim'][0]) / 100.0
+
+    fig = plt.figure(figsize=(w, h), dpi=100, frameon=False)
+    ax = plt.Axes(fig, [0., 0., 1., 1.])
+    ax.set_axis_off()
+    fig.add_axes(ax)
+    ax.pcolormesh(depth_masked, vmin=calibration.calibration_data['z_range'][0], vmax=calibration.calibration_data['z_range'][1],cmap=cmap)
+    plt.savefig('current_frame.png', pad_inches=0)
+    plt.close(fig)
+    beamer.show(input='current_frame.png')
 
 
 def render_depth_diff_frame(target_depth, kinect, beamer):
