@@ -8,7 +8,7 @@ import gempy.utils.input_manipulation as im
 
 
 def test_find_interfaces():
-    block = np.load(input_path+'noddy_block.npy')
+    block = np.load(input_path+'/noddy_block.npy')
     bool_block = im.find_interfaces_from_block(block, 1)
 
     geo_data = gp.create_data([0, 6000,
