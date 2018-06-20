@@ -24,7 +24,7 @@ class TestPerfomance:
         res = 100
 
         # Create a new grid object with the new resolution
-        new_grid.create_regular_grid_3d(geo_data.extent, [res, res, res])
+        new_grid.set_regular_grid(geo_data.extent, [res, res, res])
 
         # Setting the new grid to the geodata
         gempy.set_grid(geo_data, new_grid)

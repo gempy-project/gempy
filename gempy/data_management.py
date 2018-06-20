@@ -1156,6 +1156,8 @@ class GridClass(object):
 
     def __init__(self):
 
+        self.resolution = None
+        self.extent = None
         self.values = None
 
     def set_custom_grid(self, custom_grid):
@@ -1201,4 +1203,6 @@ class GridClass(object):
         return values
 
     def set_regular_grid(self, extent, resolution):
+        self.extent = extent
+        self.resolution = resolution
         self.values = self.create_regular_grid_3d(extent, resolution)
