@@ -104,9 +104,11 @@ class InputData(object):
         # Create the pandas dataframes
         # if we dont read a csv we create an empty dataframe with the columns that have to be filled
         self.orientations = pn.DataFrame(columns=self._columns_o_1)
+        self.orientations[self._columns_o_num] = self.orientations[self._columns_o_num].astype(float)
         self.orientations.itype = 'orientations'
 
         self.interfaces = pn.DataFrame(columns=self._columns_i_1)
+        self.interfaces[self._columns_i_num] = self.interfaces[self._columns_i_num].astype(float)
         self.interfaces.itype = 'interfaces'
 
         if path_o or path_i:
@@ -200,7 +202,6 @@ class InputData(object):
         self.orientations['azimuth'][(self.orientations['G_y'] < 0).as_matrix()] += 180
         self.orientations['azimuth'][(self.orientations['G_x'] > 0).as_matrix() * (self.orientations['G_y'] == 0).as_matrix()] = 90
         self.orientations['azimuth'][(self.orientations['G_x'] < 0).as_matrix() * (self.orientations['G_y'] == 0).as_matrix()] = 270
-
 
     def count_faults(self):
         """

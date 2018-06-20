@@ -1,12 +1,12 @@
 #Filename = ch4_model.his 
-#Date Saved = 14/6/2018 10:47:47
+#Date Saved = 19/6/2018 10:52:46
 FileType = 111
 Version = 7.11
 
 
 No of Events	= 2
 Event #1	= STRATIGRAPHY
-	Num Layers	= 5
+	Num Layers = 5
 	Unit Name	= 5
 	Height	= 350.0
 	Apply Alterations	= ON
@@ -103,7 +103,6 @@ Event #1	= STRATIGRAPHY
 	Green	= 153
 	Blue	= 48 
 	Name	= Strat
-
 Event #2	= FOLD
 	Type	= Sine
 	Single Fold	= FALSE
