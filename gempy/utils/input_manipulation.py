@@ -55,9 +55,9 @@ def find_interfaces_from_block(block, value):
 def interfaces_from_interfaces_block(block_bool, grid, formation='default_formation', series='Default_series',
                                      formation_number=1, order_series=1, n_points=20):
 
-    coord_select = grid[block_bool]
+    coord_select = grid[np.ravel(block_bool)]
 
-    loc_points = np.linspace(0, coord_select.shape[0], n_points, dtype=int)
+    loc_points = np.linspace(0, coord_select.shape[0]-1, n_points, dtype=int)
 
     # Init dataframe
     p = pn.DataFrame(columns=['X', 'Y', 'Z', 'formation', 'series', 'formation_number',
@@ -74,11 +74,17 @@ def interfaces_from_interfaces_block(block_bool, grid, formation='default_format
 
 def set_interfaces_from_block(geo_data, block):
     values = np.unique(np.round(block))
+    values.sort()
+    values = values[:-1]
     interfaces_df = pn.DataFrame(columns=['X', 'Y', 'Z', 'formation', 'series', 'formation_number',
-                                          'order_series', 'isFault'])
+                                          'order_series'])
     for e, value in enumerate(values):
         block_bool = find_interfaces_from_block(block, value)
-        interfaces_df.append(interfaces_from_interfaces_block(block_bool, geo_data.grid.values,
+        #interfaces_df.append(interfaces_from_interfaces_block(block_bool, geo_data.grid.values,
+        #                                                      formation='formation_'+str(e), series='Default_series',
+        #                                                     formation_number=e, order_series=1))
+        geo_data.set_interfaces(interfaces_from_interfaces_block(block_bool, geo_data.grid.values,
                                                               formation='formation_'+str(e), series='Default_series',
-                                                              formation_number=e, order_series=1))
-    geo_data.set_interfaces(p)
+                                                              formation_number=e, order_series=1), append=True)
+
+    return geo_data
