@@ -127,7 +127,7 @@ def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None
     new_grid = GridClass()
 
     # Here we can pass the new coordinates as a 2D numpy array XYZ
-    new_grid.create_custom_grid(new_grid_array)
+    new_grid.set_custom_grid(new_grid_array)
 
     # Next we rescale the data. For this the main parameters are already stored in interp_data
     new_grid_res = (new_grid.values - interp_data.centers.as_matrix()) / interp_data.rescaling_factor + 0.5001

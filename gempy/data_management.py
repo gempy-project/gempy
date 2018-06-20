@@ -625,13 +625,13 @@ class InputData(object):
             assert custom_grid.shape[1] is 3, 'The shape of new grid must be (n,3) where n is' \
                                                                         'the number of points of the grid'
 
-            self.grid.create_custom_grid(custom_grid)
+            self.grid.set_custom_grid(custom_grid)
         if grid_type is 'regular_3D':
             if not extent:
                 extent = self.extent
             if not resolution:
                 resolution = self.resolution
-            self.grid.create_regular_grid_3d(extent, resolution)
+            self.grid.set_regular_grid(extent, resolution)
 
             return self.grid
 
@@ -1158,7 +1158,7 @@ class GridClass(object):
 
         self.values = None
 
-    def create_custom_grid(self, custom_grid):
+    def set_custom_grid(self, custom_grid):
         """
         Give the coordinates of an external generated grid
 
@@ -1174,7 +1174,8 @@ class GridClass(object):
         self.values = custom_grid
         return self.values
 
-    def create_regular_grid_3d(self, extent, resolution):
+    @staticmethod
+    def create_regular_grid_3d(extent, resolution):
         """
         Method to create a 3D regular grid where is interpolated
 
@@ -1185,17 +1186,19 @@ class GridClass(object):
         Returns:
             numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid
         """
-        self.extent = extent
-        self.resolution = resolution
 
-        self.dx, self.dy, self.dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0],\
+
+        dx, dy, dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0],\
                                     (extent[5] - extent[4]) / resolution[0]
 
         g = np.meshgrid(
-            np.linspace(self.extent[0] + self.dx / 2, self.extent[1] - self.dx / 2, self.resolution[0], dtype="float32"),
-            np.linspace(self.extent[2] + self.dy / 2, self.extent[3] - self.dy / 2, self.resolution[1], dtype="float32"),
-            np.linspace(self.extent[4] + self.dz / 2, self.extent[5] - self.dz / 2, self.resolution[2], dtype="float32"), indexing="ij"
+            np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0], dtype="float32"),
+            np.linspace(extent[2] + dy / 2, extent[3] - dy / 2, resolution[1], dtype="float32"),
+            np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2], dtype="float32"), indexing="ij"
         )
 
-        self.values = np.vstack(map(np.ravel, g)).T.astype("float32")
-        return self.values
+        values = np.vstack(map(np.ravel, g)).T.astype("float32")
+        return values
+
+    def set_regular_grid(self, extent, resolution):
+        self.values = self.create_regular_grid_3d(extent, resolution)

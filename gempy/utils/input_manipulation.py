@@ -52,10 +52,13 @@ def find_interfaces_from_block(block, value):
     return final_bool
 
 
-def interfaces_from_interfaces_block(block_bool, grid, formation='default_formation', series='Default_series',
+def interfaces_from_interfaces_block(block_bool, block_grid, formation='default_formation', series='Default_series',
                                      formation_number=1, order_series=1, n_points=20):
 
-    coord_select = grid[np.ravel(block_bool)]
+    assert np.ravel(block_bool).shape[0] == block_grid.shape[0], 'Grid and block block must have the same size. If you' \
+                                                           'are importing a model from noddy make sure that the' \
+                                                           'resolution is the same'
+    coord_select = block_grid[np.ravel(block_bool)]
 
     loc_points = np.linspace(0, coord_select.shape[0]-1, n_points, dtype=int)
 
@@ -72,19 +75,22 @@ def interfaces_from_interfaces_block(block_bool, grid, formation='default_format
     return p
 
 
-def set_interfaces_from_block(geo_data, block):
+def set_interfaces_from_block(geo_data, block, block_grid=None, n_points=20, reset_index=False):
     values = np.unique(np.round(block))
     values.sort()
     values = values[:-1]
-    interfaces_df = pn.DataFrame(columns=['X', 'Y', 'Z', 'formation', 'series', 'formation_number',
-                                          'order_series'])
+
+    if block_grid is None:
+        block_grid = geo_data.grid.values
+
     for e, value in enumerate(values):
         block_bool = find_interfaces_from_block(block, value)
-        #interfaces_df.append(interfaces_from_interfaces_block(block_bool, geo_data.grid.values,
-        #                                                      formation='formation_'+str(e), series='Default_series',
-        #                                                     formation_number=e, order_series=1))
-        geo_data.set_interfaces(interfaces_from_interfaces_block(block_bool, geo_data.grid.values,
-                                                              formation='formation_'+str(e), series='Default_series',
-                                                              formation_number=e, order_series=1), append=True)
+
+        geo_data.set_interfaces(interfaces_from_interfaces_block(block_bool, block_grid,
+                                                                 formation='formation_'+str(e), series='Default_series',
+                                                                 formation_number=e, order_series=1,
+                                                                 n_points=n_points), append=True)
+        if reset_index:
+            geo_data.interfaces.reset_index(drop=True, inplace=True)
 
     return geo_data
