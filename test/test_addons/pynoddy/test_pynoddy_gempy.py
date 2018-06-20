@@ -2,14 +2,13 @@ import pytest
 import numpy as np
 import gempy as gp
 import sys
-sys.path.append('../../../../pynoddy')
-
-pynoddy = pytest.importorskip("pynoddy")
+import os
+input_path = os.path.dirname(__file__)
 import gempy.utils.input_manipulation as im
 
 
 def test_find_interfaces():
-    block = np.load('noddy_block.npy')
+    block = np.load(input_path+'noddy_block.npy')
     bool_block = im.find_interfaces_from_block(block, 1)
 
     geo_data = gp.create_data([0, 6000,
