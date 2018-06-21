@@ -808,7 +808,7 @@ def set_densities(interp_data, densities):
 # =====================================
 def topology_compute(geo_data, lith_block, fault_block,
                      cell_number=None, direction=None,
-                     compute_areas=False, return_label_block=False):
+                     compute_areas=False, return_label_block=False, return_rprops=False, filter_rogue=False):
     """
     Computes model topology and returns graph, centroids and look-up-tables.
 
@@ -847,7 +847,8 @@ def topology_compute(geo_data, lith_block, fault_block,
         lb = lith_block.reshape(geo_data.resolution)[:, :, cell_number]
         fb = fault_block.reshape(geo_data.resolution)[:, :, cell_number]
 
-    return _topology_analyze(lb, fb, geo_data.n_faults, areas_bool=compute_areas, return_block=return_label_block)
+    return _topology_analyze(lb, fb, geo_data.n_faults, areas_bool=compute_areas, return_block=return_label_block,
+                             return_rprops=return_rprops, filter_rogue=filter_rogue)
 
 
 # +++++++
