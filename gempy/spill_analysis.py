@@ -26,9 +26,9 @@ from scipy.spatial import distance
 def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z', ref='x'):
 
     # for scaling from voxels up to original scale using the original extent
-    vox_size_x = geo_data.extent[1] / geo_data.resolution[0]
-    vox_size_y = geo_data.extent[3] / geo_data.resolution[1]
-    vox_size_z = geo_data.extent[5] / geo_data.resolution[2]
+    vox_size_x = (geo_data.extent[1]-geo_data.extent[0]) / geo_data.resolution[0]
+    vox_size_y = (geo_data.extent[3]-geo_data.extent[2]) / geo_data.resolution[1]
+    vox_size_z = (geo_data.extent[5]-geo_data.extent[4]) / geo_data.resolution[2]
     vox_size_diag = np.sqrt(vox_size_x ** 2 + vox_size_y ** 2 + vox_size_z ** 2)
 
     if direction == 'z':
@@ -50,6 +50,7 @@ def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z', ref='x'):
         v_gx[:, 1] = v_gx0[:, 1] * vox_size_y
         v_gx[:, 2] = v_gx0[:, 2] * vox_size_z
         return v_gx
+
     elif ref == 'y':
         v_gy0 = measure.marching_cubes_lewiner(gy, 0)[0]
         v_gy = v_gy0
@@ -57,8 +58,8 @@ def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z', ref='x'):
         v_gy[:, 1] = v_gy0[:, 1] * vox_size_y
         v_gy[:, 2] = v_gy0[:, 2] * vox_size_z
         return v_gy
-    elif ref == 'mean':
 
+    elif ref == 'mean':
         # using marching cubes to aquire surfaces (vertices, simplices) that align
         # with the occurrence of zeros of the gradients (gradient minima)
         v_gx0 = measure.marching_cubes_lewiner(gx, 0)[0]
@@ -117,9 +118,9 @@ def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z', ref='x'):
         raise AttributeError(str(ref) + "must be 'x', 'y' or 'mean'")
 
 def get_gradmin_intersect(geo_data, surface_vertices, grad_minima):
-    vox_size_x = geo_data.extent[1] / geo_data.resolution[0]
-    vox_size_y = geo_data.extent[3] / geo_data.resolution[1]
-    vox_size_z = geo_data.extent[5] / geo_data.resolution[2]
+    vox_size_x = (geo_data.extent[1] - geo_data.extent[0]) / geo_data.resolution[0]
+    vox_size_y = (geo_data.extent[3] - geo_data.extent[2]) / geo_data.resolution[1]
+    vox_size_z = (geo_data.extent[5] - geo_data.extent[4]) / geo_data.resolution[2]
     vox_size_diag = np.sqrt(vox_size_x ** 2 + vox_size_y ** 2 + vox_size_z ** 2)
 
     #v_l = np.array(surface_vertices[0])
@@ -193,9 +194,9 @@ def get_voxel_extrema(GX, GY, GZ=np.nan, direction='z'):
     return vox_minima, vox_maxima, vox_saddles
 
 def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
-    vox_size_x = geo_data.extent[1] / geo_data.resolution[0]
-    vox_size_y = geo_data.extent[3] / geo_data.resolution[1]
-    vox_size_z = geo_data.extent[5] / geo_data.resolution[2]
+    vox_size_x = (geo_data.extent[1] - geo_data.extent[0]) / geo_data.resolution[0]
+    vox_size_y = (geo_data.extent[3] - geo_data.extent[2]) / geo_data.resolution[1]
+    vox_size_z = (geo_data.extent[5] - geo_data.extent[4]) / geo_data.resolution[2]
     vox_size_diag = np.sqrt(vox_size_x ** 2 + vox_size_y ** 2 + vox_size_z ** 2)
 
     grad_minima = get_gradient_minima(geo_data, GX,GY, ref)
