@@ -30,7 +30,9 @@ except ImportError:
 
 def topology_analyze(lith_block, fault_block, n_faults,
                      areas_bool=False,
-                     return_block=False):
+                     return_block=False,
+                     return_rprops=False,
+                     filter_rogue=False):
     """
     Analyses the block models adjacency topology. Every lithological entity is described by a uniquely labeled node
     (centroid) and its connections to other entities by edges.
@@ -44,6 +46,8 @@ def topology_analyze(lith_block, fault_block, n_faults,
     Keyword Args:
         areas_bool (bool): If True computes adjacency areas for connected nodes in voxel number. Default False.
         return_block (bool): If True additionally returns the uniquely labeled block model as np.ndarray.
+        return_rprops (bool): If True additionally returns region properties of the unique regions (see skimage.measure.regionprops).
+        filter_rogue (bool); If True filters nodes with region areas below threshold (default: 1) from topology graph.
 
     Return:
         tuple:
@@ -81,8 +85,14 @@ def topology_analyze(lith_block, fault_block, n_faults,
     labels_unique = np.unique(labels_block)
     # create adjacency graph from labeled block
     G = graph.RAG(labels_block)
-    # get the centroids from the labeled block
-    centroids = get_centroids(labels_block)
+    # get properties of uniquely labeles regions
+    rprops = regionprops(labels_block)
+    centroids = get_centroids(rprops)
+
+    # filter rogue pixel nodes from graph if wanted
+    if filter_rogue:
+        filter_region_areas(G, rprops)
+
     # create look-up-tables in both directions
     lith_to_labels_lot = lithology_labels_lot(lithologies, labels_block, block_original, labels_unique)
     labels_to_lith_lot = labels_lithology_lot(labels_unique, labels_block, block_original)
@@ -93,10 +103,36 @@ def topology_analyze(lith_block, fault_block, n_faults,
         # TODO: 2d option (if slice only), right now it only works for 3d
         compute_areas(G, labels_block)
 
-    if not return_block:
-        return G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot
-    else:
-        return G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot, labels_block
+    topo = [G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot]
+    if return_block:
+        topo.append(labels_block)
+    if return_rprops:
+        topo.append(rprops)
+
+    return tuple(topo)
+
+
+def filter_region_areas(g, rprops, area_threshold=1):
+    """
+    Filters nodes with region areas with an area below the given threshold (default: 1) from given graph.
+    Useful for filtering rogue pixels that throw off topology graph comparisons.
+
+    Args:
+        g (skimage.future.graph.rag.RAG): Topology graph object to be filtered.
+        rprops (list): Region property objects (skimage.measure._regionprops._RegionProperties) for all nodes within given topology graph.
+    Keyword Args:
+        area_threshold (int): Region areas with number of pixels below or equal of this value will be removed.
+
+    Returns:
+        None (in-place removal)
+    """
+    if len(g.nodes()) != len(rprops):   # failsafe if the function is run with mismatching rprops
+        return None
+
+    for n, rp in zip(g.nodes(), rprops):
+        if rp.area <= area_threshold:  # if region area is below given threshold area
+            g.remove_node(n)  # then pop the node and all its edges
+    return None
 
 
 def compute_areas(G, labels_block):
@@ -167,11 +203,10 @@ def classify_edges(G, centroids, lith_block, fault_block):
             G.adj[n1][n2]["edge_type"] = "fault"
 
 
-def get_centroids(label_block):
+def get_centroids(rprops):
     """Get node centroids in 2d and 3d as {node id (int): tuple(x,y,z)}."""
-    _rprops = regionprops(label_block)
     centroids = {}
-    for rp in _rprops:
+    for rp in rprops:
             centroids[rp.label] = rp.centroid
     return centroids
 
