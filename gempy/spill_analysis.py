@@ -46,17 +46,17 @@ def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z', ref='x'):
     if ref == 'x':
         v_gx0 = measure.marching_cubes_lewiner(gx, 0)[0]
         v_gx = v_gx0
-        v_gx[:, 0] = v_gx0[:, 0] * vox_size_x
-        v_gx[:, 1] = v_gx0[:, 1] * vox_size_y
-        v_gx[:, 2] = v_gx0[:, 2] * vox_size_z
+        v_gx[:, 0] = (v_gx0[:, 0] * vox_size_x)+geo_data.extent[1]
+        v_gx[:, 1] = (v_gx0[:, 1] * vox_size_y)+geo_data.extent[3]
+        v_gx[:, 2] = (v_gx0[:, 2] * vox_size_z)+geo_data.extent[5]
         return v_gx
 
     elif ref == 'y':
         v_gy0 = measure.marching_cubes_lewiner(gy, 0)[0]
         v_gy = v_gy0
-        v_gy[:, 0] = v_gy0[:, 0] * vox_size_x
-        v_gy[:, 1] = v_gy0[:, 1] * vox_size_y
-        v_gy[:, 2] = v_gy0[:, 2] * vox_size_z
+        v_gy[:, 0] = (v_gy0[:, 0] * vox_size_x)+geo_data.extent[1]
+        v_gy[:, 1] = (v_gy0[:, 1] * vox_size_y)+geo_data.extent[3]
+        v_gy[:, 2] = (v_gy0[:, 2] * vox_size_z)+geo_data.extent[5]
         return v_gy
 
     elif ref == 'mean':
@@ -66,14 +66,14 @@ def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z', ref='x'):
         v_gy0 = measure.marching_cubes_lewiner(gy, 0)[0]
 
         v_gx = v_gx0
-        v_gx[:, 0] = v_gx0[:, 0] * vox_size_x
-        v_gx[:, 1] = v_gx0[:, 1] * vox_size_y
-        v_gx[:, 2] = v_gx0[:, 2] * vox_size_z
+        v_gx[:, 0] = (v_gx0[:, 0] * vox_size_x) + geo_data.extent[1]
+        v_gx[:, 1] = (v_gx0[:, 1] * vox_size_y) + geo_data.extent[3]
+        v_gx[:, 2] = (v_gx0[:, 2] * vox_size_z) + geo_data.extent[5]
 
         v_gy = v_gy0
-        v_gy[:, 0] = v_gy0[:, 0] * vox_size_x
-        v_gy[:, 1] = v_gy0[:, 1] * vox_size_y
-        v_gy[:, 2] = v_gy0[:, 2] * vox_size_z
+        v_gy[:, 0] = (v_gy0[:, 0] * vox_size_x) + geo_data.extent[1]
+        v_gy[:, 1] = (v_gy0[:, 1] * vox_size_y) + geo_data.extent[3]
+        v_gy[:, 2] = (v_gy0[:, 2] * vox_size_z) + geo_data.extent[5]
 
         # calculating this distance takes very long
         # how cut we possibly simplify this?
