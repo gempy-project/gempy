@@ -209,9 +209,9 @@ def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
         # rescale the coordinates to actual size of voxels
         # to use combined with the intersection coordinates from above
         MIN_coord = MIN_coord0
-        MIN_coord[:, 0] = (MIN_coord0[:, 0] * vox_size_x)  # + vox_size_x/2
-        MIN_coord[:, 1] = (MIN_coord0[:, 1] * vox_size_y)  # + vox_size_y/2
-        MIN_coord[:, 2] = (MIN_coord0[:, 2] * vox_size_z)  # + vox_size_z/2
+        MIN_coord[:, 0] = (MIN_coord0[:, 0] * vox_size_x) + geo_data.extent[0] # + vox_size_x/2
+        MIN_coord[:, 1] = (MIN_coord0[:, 1] * vox_size_y) + geo_data.extent[2] # + vox_size_y/2
+        MIN_coord[:, 2] = (MIN_coord0[:, 2] * vox_size_z) + geo_data.extent[4] # + vox_size_z/2
         # get distances between intersection and the according extrema coordinates
         dist_MIN = distance.cdist(intersect, MIN_coord, 'euclidean')
         # classify intersection extrema by limiting to distance to according voxel coordinates
@@ -226,9 +226,9 @@ def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
     if np.any(vox_maxima):
         MAX_coord0 = np.argwhere(vox_maxima == True)
         MAX_coord = MAX_coord0
-        MAX_coord[:, 0] = (MAX_coord0[:, 0] * vox_size_x)  # + vox_size_x/2
-        MAX_coord[:, 1] = (MAX_coord0[:, 1] * vox_size_y)  # + vox_size_y/2
-        MAX_coord[:, 2] = (MAX_coord0[:, 2] * vox_size_z)  # + vox_size_z/2
+        MAX_coord[:, 0] = (MAX_coord0[:, 0] * vox_size_x) + geo_data.extent[0] # + vox_size_x/2
+        MAX_coord[:, 1] = (MAX_coord0[:, 1] * vox_size_y) + geo_data.extent[2] # + vox_size_y/2
+        MAX_coord[:, 2] = (MAX_coord0[:, 2] * vox_size_z) + geo_data.extent[4] # + vox_size_z/2
         dist_MAX = distance.cdist(intersect, MAX_coord, 'euclidean')
         min_dist_MAX = np.min(dist_MAX, axis=1)
         cut_bool_MAX = min_dist_MAX < vox_size_diag / 2
@@ -240,9 +240,9 @@ def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
     if np.any(vox_saddles):
         SADD_coord0 = np.argwhere(vox_saddles == True)
         SADD_coord = SADD_coord0
-        SADD_coord[:, 0] = (SADD_coord0[:, 0] * vox_size_x)  # + vox_size_x/2
-        SADD_coord[:, 1] = (SADD_coord0[:, 1] * vox_size_y)  # + vox_size_y/2
-        SADD_coord[:, 2] = (SADD_coord0[:, 2] * vox_size_z)  # + vox_size_z/2
+        SADD_coord[:, 0] = (SADD_coord0[:, 0] * vox_size_x) + geo_data.extent[0] # + vox_size_x/2
+        SADD_coord[:, 1] = (SADD_coord0[:, 1] * vox_size_y) + geo_data.extent[2] # + vox_size_y/2
+        SADD_coord[:, 2] = (SADD_coord0[:, 2] * vox_size_z) + geo_data.extent[4] # + vox_size_z/2
         dist_SADD = distance.cdist(intersect, SADD_coord, 'euclidean')
         min_dist_SADD = np.min(dist_SADD, axis=1)
         cut_bool_SADD = min_dist_SADD < vox_size_diag / 2
