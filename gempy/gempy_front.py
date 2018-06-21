@@ -360,7 +360,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
         """
 
         assert n_formation >= 0, 'Number of the formation has to be positive'
-
+        n_formation = n_formation - 1
         # In case the values are separated by series I put all in a vector
         pot_int = interp_data.potential_at_interfaces.sum(axis=0)
 

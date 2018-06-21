@@ -152,20 +152,20 @@ def get_voxel_extrema(GX, GY, GZ=np.nan, direction='z'):
     # since signchange only identifies the next index AFTER the signchange,
     # we include the voxel BEFORE the signchange by doing an according roll
     gx_maxima[gx_max_cond] = 1
-    gx_maxima2 = np.roll(gx_maxima, -1, axis=1)
+    gx_maxima2 = np.roll(gx_maxima, -1, axis=0)
     gx_max_final = gx_maxima + gx_maxima2
     gy_maxima[gy_max_cond] = 1
-    gy_maxima2 = np.roll(gy_maxima, -1, axis=0)
+    gy_maxima2 = np.roll(gy_maxima, -1, axis=1)
     gy_max_final = gy_maxima + gy_maxima2
     # overall maxima in BOTH directions:
     vox_maxima = np.logical_and(gx_max_final, gy_max_final)
     # NOTE: 0 gives a POSITIVE sign! Might have to correct for this?
     # analogous process for minima:
     gx_minima[gx_min_cond] = 1
-    gx_minima2 = np.roll(gx_minima, -1, axis=1)
+    gx_minima2 = np.roll(gx_minima, -1, axis=0)
     gx_min_final = gx_minima + gx_minima2
     gy_minima[gy_min_cond] = 1
-    gy_minima2 = np.roll(gy_minima, -1, axis=0)
+    gy_minima2 = np.roll(gy_minima, -1, axis=1)
     gy_min_final = gy_minima + gy_minima2
     vox_minima = np.logical_and(gx_min_final, gy_min_final)
     # saddle points as max in one and min in the other direction
@@ -184,56 +184,68 @@ def get_surface_extrema(geo_data, surface_vertices, GX, GY):
     intersect = get_gradmin_intersect(geo_data, surface_vertices, grad_minima)
     vox_minima, vox_maxima, vox_saddles = get_voxel_extrema(GX, GY)
 
-    # get the coordinates for minima, maxima and saddles
-    MAX_coord0 = np.argwhere(vox_maxima == True)
-    MIN_coord0 = np.argwhere(vox_minima == True)
-    SADD_coord0 = np.argwhere(vox_saddles == True)
+    if np.any(vox_minima):
+        # get the coordinates for minima, maxima and saddles
+        MIN_coord0 = np.argwhere(vox_minima == True)
+        # rescale the coordinates to actual size of voxels
+        # to use combined with the intersection coordinates from above
+        MIN_coord = MIN_coord0
+        MIN_coord[:, 0] = (MIN_coord0[:, 0] * vox_size_x)  # + vox_size_x/2
+        MIN_coord[:, 1] = (MIN_coord0[:, 1] * vox_size_y)  # + vox_size_y/2
+        MIN_coord[:, 2] = (MIN_coord0[:, 2] * vox_size_z)  # + vox_size_z/2
+        # get distances between intersection and the according extrema coordinates
+        dist_MIN = distance.cdist(intersect, MIN_coord, 'euclidean')
+        # classify intersection extrema by limiting to distance to according voxel coordinates
+        # half a voxel-diagonal to get what is "inside" a voxel (best results, yet)
+        min_dist_MIN = np.min(dist_MIN, axis=1)
+        cut_bool_MIN = min_dist_MIN < vox_size_diag / 2
+        intersect_minima_all = intersect[cut_bool_MIN]
+    else:
+        print('No minima found for surface.')
+        intersect_minima_all = []
 
-    # rescale the coordinates to actual size of voxels
-    # to use combined with the intersection coordinates from above
-    MAX_coord = MAX_coord0
-    MAX_coord[:, 0] = (MAX_coord0[:, 0] * vox_size_x)  # + vox_size_x/2
-    MAX_coord[:, 1] = (MAX_coord0[:, 1] * vox_size_y)  # + vox_size_y/2
-    MAX_coord[:, 2] = (MAX_coord0[:, 2] * vox_size_z)  # + vox_size_z/2
+    if np.any(vox_maxima):
+        MAX_coord0 = np.argwhere(vox_maxima == True)
+        MAX_coord = MAX_coord0
+        MAX_coord[:, 0] = (MAX_coord0[:, 0] * vox_size_x)  # + vox_size_x/2
+        MAX_coord[:, 1] = (MAX_coord0[:, 1] * vox_size_y)  # + vox_size_y/2
+        MAX_coord[:, 2] = (MAX_coord0[:, 2] * vox_size_z)  # + vox_size_z/2
+        dist_MAX = distance.cdist(intersect, MAX_coord, 'euclidean')
+        min_dist_MAX = np.min(dist_MAX, axis=1)
+        cut_bool_MAX = min_dist_MAX < vox_size_diag / 2
+        intersect_maxima_all = intersect[cut_bool_MAX]
+    else:
+        print('No maxima found for surface.')
+        intersect_maxima_all = []
 
-    MIN_coord = MIN_coord0
-    MIN_coord[:, 0] = (MIN_coord0[:, 0] * vox_size_x)  # + vox_size_x/2
-    MIN_coord[:, 1] = (MIN_coord0[:, 1] * vox_size_y)  # + vox_size_y/2
-    MIN_coord[:, 2] = (MIN_coord0[:, 2] * vox_size_z)  # + vox_size_z/2
-
-    SADD_coord = SADD_coord0
-    SADD_coord[:, 0] = (SADD_coord0[:, 0] * vox_size_x)  # + vox_size_x/2
-    SADD_coord[:, 1] = (SADD_coord0[:, 1] * vox_size_y)  # + vox_size_y/2
-    SADD_coord[:, 2] = (SADD_coord0[:, 2] * vox_size_z)  # + vox_size_z/2
-
-    # get distances between intersection and the according extrema coordinates
-    dist_MIN = distance.cdist(intersect, MIN_coord, 'euclidean')
-    dist_MAX = distance.cdist(intersect, MAX_coord, 'euclidean')
-    dist_SADD = distance.cdist(intersect, SADD_coord, 'euclidean')
-
-    # classify intersection extrema by limiting to distance to according voxel coordinates
-    # half a voxel-diagonal to get what is "inside" a voxel (best results, yet)
-    min_dist_MIN = np.min(dist_MIN, axis=1)
-    cut_bool_MIN = min_dist_MIN < vox_size_diag / 2
-    intersect_minima_all = intersect[cut_bool_MIN]
-
-    min_dist_MAX = np.min(dist_MAX, axis=1)
-    cut_bool_MAX = min_dist_MAX < vox_size_diag / 2
-    intersect_maxima_all = intersect[cut_bool_MAX]
-
-    min_dist_SADD = np.min(dist_SADD, axis=1)
-    cut_bool_SADD = min_dist_SADD < vox_size_diag / 2
-    intersect_saddles_all = intersect[cut_bool_SADD]
+    if np.any(vox_saddles):
+        SADD_coord0 = np.argwhere(vox_saddles == True)
+        SADD_coord = SADD_coord0
+        SADD_coord[:, 0] = (SADD_coord0[:, 0] * vox_size_x)  # + vox_size_x/2
+        SADD_coord[:, 1] = (SADD_coord0[:, 1] * vox_size_y)  # + vox_size_y/2
+        SADD_coord[:, 2] = (SADD_coord0[:, 2] * vox_size_z)  # + vox_size_z/2
+        dist_SADD = distance.cdist(intersect, SADD_coord, 'euclidean')
+        min_dist_SADD = np.min(dist_SADD, axis=1)
+        cut_bool_SADD = min_dist_SADD < vox_size_diag / 2
+        intersect_saddles_all = intersect[cut_bool_SADD]
+    else:
+        print('No saddle points found for surface.')
+        intersect_saddles_all = []
 
     return intersect_minima_all, intersect_maxima_all, intersect_saddles_all
 
 def get_saddle_point(geo_data, surface_vertices, GX, GY):
     intersect_saddles_all = get_surface_extrema(geo_data, surface_vertices, GX, GY)[2]
-    # get highest saddle point as the relevant point
-    max_SADD = intersect_saddles_all[np.argmax(intersect_saddles_all[:, 2])]
+    if len(intersect_saddles_all) > 0:
+        max_SADD = intersect_saddles_all[np.argmax(intersect_saddles_all[:, 2])]
+    else:
+        max_SADD = []
     return max_SADD
 
 def get_surface_max(geo_data, surface_vertices, GX, GY):
     intersect_maxima_all = get_surface_extrema(geo_data, surface_vertices, GX, GY)[1]
-    max_MAX = intersect_maxima_all[np.argmax(intersect_maxima_all[:, 2])]
-    return max_MAX
+    if len(intersect_maxima_all) > 0:
+        it_final_MAX = intersect_maxima_all[np.argmax(intersect_maxima_all[:, 2])]
+    else:
+        it_final_MAX = []
+    return it_final_MAX

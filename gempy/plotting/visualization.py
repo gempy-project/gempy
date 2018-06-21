@@ -385,7 +385,7 @@ class PlotData2D(object):
                          centroids[node][c2] * e2 / r2 + d2, str(node), color="white", size=6, ha="center", va="center",
                          weight="ultralight", family="monospace")
 
-    def plot_gradient(self, scalar_field, gx, gy, gz, cell_number, quiver_stepsize=5, #maybe call r sth. like "stepsize"?
+    def plot_gradient(self, scalar_field, gx, gy, gz, cell_number, quiver_stepsize,
                       direction="y", plot_scalar = True, *args, **kwargs): #include plot data?
         """
             Plot the gradient of the scalar field in a given direction.
