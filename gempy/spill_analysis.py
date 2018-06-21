@@ -23,7 +23,7 @@ from matplotlib import pyplot as plt
 from skimage import measure
 from scipy.spatial import distance
 
-def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z'):
+def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z', ref='x'):
 
     # for scaling from voxels up to original scale using the original extent
     vox_size_x = geo_data.extent[1] / geo_data.resolution[0]
@@ -43,60 +43,78 @@ def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z'):
     else:
         raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
 
-    # using marching cubes to aquire surfaces (vertices, simplices) that align
-    # with the occurrence of zeros of the gradients (gradient minima)
-    v_gx0 = measure.marching_cubes_lewiner(gx, 0)[0]
-    v_gy0 = measure.marching_cubes_lewiner(gy, 0)[0]
+    if ref == 'x':
+        v_gx0 = measure.marching_cubes_lewiner(gx, 0)[0]
+        v_gx = v_gx0
+        v_gx[:, 0] = v_gx0[:, 0] * vox_size_x
+        v_gx[:, 1] = v_gx0[:, 1] * vox_size_y
+        v_gx[:, 2] = v_gx0[:, 2] * vox_size_z
+        return v_gx
+    elif ref == 'y':
+        v_gy0 = measure.marching_cubes_lewiner(gy, 0)[0]
+        v_gy = v_gy0
+        v_gy[:, 0] = v_gy0[:, 0] * vox_size_x
+        v_gy[:, 1] = v_gy0[:, 1] * vox_size_y
+        v_gy[:, 2] = v_gy0[:, 2] * vox_size_z
+        return v_gy
+    elif ref == 'mean':
 
-    v_gx = v_gx0
-    v_gx[:, 0] = v_gx0[:, 0] * vox_size_x
-    v_gx[:, 1] = v_gx0[:, 1] * vox_size_y
-    v_gx[:, 2] = v_gx0[:, 2] * vox_size_z
+        # using marching cubes to aquire surfaces (vertices, simplices) that align
+        # with the occurrence of zeros of the gradients (gradient minima)
+        v_gx0 = measure.marching_cubes_lewiner(gx, 0)[0]
+        v_gy0 = measure.marching_cubes_lewiner(gy, 0)[0]
 
-    v_gy = v_gy0
-    v_gy[:, 0] = v_gy0[:, 0] * vox_size_x
-    v_gy[:, 1] = v_gy0[:, 1] * vox_size_y
-    v_gy[:, 2] = v_gy0[:, 2] * vox_size_z
+        v_gx = v_gx0
+        v_gx[:, 0] = v_gx0[:, 0] * vox_size_x
+        v_gx[:, 1] = v_gx0[:, 1] * vox_size_y
+        v_gx[:, 2] = v_gx0[:, 2] * vox_size_z
 
-    # calculating this distance takes very long
-    # how cut we possibly simplify this?
-    dist_gxy = distance.cdist(v_gx, v_gy, 'euclidean')
+        v_gy = v_gy0
+        v_gy[:, 0] = v_gy0[:, 0] * vox_size_x
+        v_gy[:, 1] = v_gy0[:, 1] * vox_size_y
+        v_gy[:, 2] = v_gy0[:, 2] * vox_size_z
 
-    # get distance minima and minima positions for both vertices groups
-    # this way we can pair 2 vertices from gx and gy based on their
-    # common distance which is to be minimal (smaller than to all other points)
-    minx = np.min(dist_gxy, axis=1)
-    miny = np.min(dist_gxy, axis=0)
-    minx_pos = np.argmin(dist_gxy, axis=1)
-    miny_pos = np.argmin(dist_gxy, axis=0)
+        # calculating this distance takes very long
+        # how cut we possibly simplify this?
+        dist_gxy = distance.cdist(v_gx, v_gy, 'euclidean')
 
-    # set a cut-off value for minimal distance (here: 3D-diagonal of a voxel)
-    gx_cut_bool = minx < vox_size_diag
-    gy_cut_bool = miny < vox_size_diag
+        # get distance minima and minima positions for both vertices groups
+        # this way we can pair 2 vertices from gx and gy based on their
+        # common distance which is to be minimal (smaller than to all other points)
+        minx = np.min(dist_gxy, axis=1)
+        miny = np.min(dist_gxy, axis=0)
+        minx_pos = np.argmin(dist_gxy, axis=1)
+        miny_pos = np.argmin(dist_gxy, axis=0)
 
-    # need to pair the vertices of one group to those of the other
-    # for this we actually only need the minima positions of one vertices group
-    ### pair the mins of the shorter array onto the longer array
-    if len(v_gy) >= len(v_gx):
-        vgy_paired = v_gy[minx_pos]
-        # limit (cut down) the vertices groups to only those
-        # below the defined distance threshold
-        vgx_cut = v_gx[gx_cut_bool]
-        vgy_cut = vgy_paired[gx_cut_bool]
+        # set a cut-off value for minimal distance (here: 3D-diagonal of a voxel)
+        gx_cut_bool = minx < vox_size_diag
+        gy_cut_bool = miny < vox_size_diag
 
-        V1 = vgx_cut
-        V2 = vgy_cut
-        V_mean = (V1 + V2) / 2
+        # need to pair the vertices of one group to those of the other
+        # for this we actually only need the minima positions of one vertices group
+        ### pair the mins of the shorter array onto the longer array
+        if len(v_gy) >= len(v_gx):
+            vgy_paired = v_gy[minx_pos]
+            # limit (cut down) the vertices groups to only those
+            # below the defined distance threshold
+            vgx_cut = v_gx[gx_cut_bool]
+            vgy_cut = vgy_paired[gx_cut_bool]
+
+            V1 = vgx_cut
+            V2 = vgy_cut
+            V_mean = (V1 + V2) / 2
+        else:
+            vgx_paired = v_gx[miny_pos]
+            vgy_cut = v_gy[gy_cut_bool]
+            vgx_cut = vgx_paired[gy_cut_bool]
+
+            V1 = vgx_cut
+            V2 = vgy_cut
+            V_mean = (V1 + V2) / 2
+
+        return V_mean
     else:
-        vgx_paired = v_gx[miny_pos]
-        vgy_cut = v_gy[gy_cut_bool]
-        vgx_cut = vgx_paired[gy_cut_bool]
-
-        V1 = vgx_cut
-        V2 = vgy_cut
-        V_mean = (V1 + V2) / 2
-
-    return V_mean
+        raise AttributeError(str(ref) + "must be 'x', 'y' or 'mean'")
 
 def get_gradmin_intersect(geo_data, surface_vertices, grad_minima):
     vox_size_x = geo_data.extent[1] / geo_data.resolution[0]
@@ -174,13 +192,13 @@ def get_voxel_extrema(GX, GY, GZ=np.nan, direction='z'):
 
     return vox_minima, vox_maxima, vox_saddles
 
-def get_surface_extrema(geo_data, surface_vertices, GX, GY):
+def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
     vox_size_x = geo_data.extent[1] / geo_data.resolution[0]
     vox_size_y = geo_data.extent[3] / geo_data.resolution[1]
     vox_size_z = geo_data.extent[5] / geo_data.resolution[2]
     vox_size_diag = np.sqrt(vox_size_x ** 2 + vox_size_y ** 2 + vox_size_z ** 2)
 
-    grad_minima = get_gradient_minima(geo_data, GX,GY)
+    grad_minima = get_gradient_minima(geo_data, GX,GY, ref)
     intersect = get_gradmin_intersect(geo_data, surface_vertices, grad_minima)
     vox_minima, vox_maxima, vox_saddles = get_voxel_extrema(GX, GY)
 
@@ -234,16 +252,16 @@ def get_surface_extrema(geo_data, surface_vertices, GX, GY):
 
     return intersect_minima_all, intersect_maxima_all, intersect_saddles_all
 
-def get_saddle_point(geo_data, surface_vertices, GX, GY):
-    intersect_saddles_all = get_surface_extrema(geo_data, surface_vertices, GX, GY)[2]
+def get_saddle_point(geo_data, surface_vertices, GX, GY, ref='x'):
+    intersect_saddles_all = get_surface_extrema(geo_data, surface_vertices, GX, GY, ref)[2]
     if len(intersect_saddles_all) > 0:
         max_SADD = intersect_saddles_all[np.argmax(intersect_saddles_all[:, 2])]
     else:
         max_SADD = []
     return max_SADD
 
-def get_surface_max(geo_data, surface_vertices, GX, GY):
-    intersect_maxima_all = get_surface_extrema(geo_data, surface_vertices, GX, GY)[1]
+def get_surface_max(geo_data, surface_vertices, GX, GY, ref='x'):
+    intersect_maxima_all = get_surface_extrema(geo_data, surface_vertices, GX, GY, ref)[1]
     if len(intersect_maxima_all) > 0:
         it_final_MAX = intersect_maxima_all[np.argmax(intersect_maxima_all[:, 2])]
     else:
