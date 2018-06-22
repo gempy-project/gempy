@@ -32,7 +32,8 @@ def topology_analyze(lith_block, fault_block, n_faults,
                      areas_bool=False,
                      return_block=False,
                      return_rprops=False,
-                     filter_rogue=False):
+                     filter_rogue=False,
+                     filter_threshold_area=10, neighbors=8):
     """
     Analyses the block models adjacency topology. Every lithological entity is described by a uniquely labeled node
     (centroid) and its connections to other entities by edges.
@@ -66,7 +67,7 @@ def topology_analyze(lith_block, fault_block, n_faults,
     block_original = lith_block.astype(int)
     fault_block = np.round(fault_block).astype(int)
     # label the fault block for normalization (comparability of e.g. pynoddy and gempy models)
-    fault_block = label(fault_block, neighbors=8, background=9999)
+    fault_block = label(fault_block, neighbors=neighbors, background=9999)
 
     if 0 in lith_block:
         # then this is a gempy model, numpy starts with 1
@@ -91,7 +92,7 @@ def topology_analyze(lith_block, fault_block, n_faults,
 
     # filter rogue pixel nodes from graph if wanted
     if filter_rogue:
-        filter_region_areas(G, rprops)
+        filter_region_areas(G, rprops, area_threshold=filter_threshold_area)
 
     # create look-up-tables in both directions
     lith_to_labels_lot = lithology_labels_lot(lithologies, labels_block, block_original, labels_unique)
@@ -112,16 +113,16 @@ def topology_analyze(lith_block, fault_block, n_faults,
     return tuple(topo)
 
 
-def filter_region_areas(g, rprops, area_threshold=1):
+def filter_region_areas(g, rprops, area_threshold=10):
     """
-    Filters nodes with region areas with an area below the given threshold (default: 1) from given graph.
+    Filters nodes with region areas with an area below the given threshold (default: 10) from given graph.
     Useful for filtering rogue pixels that throw off topology graph comparisons.
 
     Args:
         g (skimage.future.graph.rag.RAG): Topology graph object to be filtered.
         rprops (list): Region property objects (skimage.measure._regionprops._RegionProperties) for all nodes within given topology graph.
     Keyword Args:
-        area_threshold (int): Region areas with number of pixels below or equal of this value will be removed.
+        area_threshold (int): Region areas with number of pixels below or equal of this value will be removed. Default 10
 
     Returns:
         None (in-place removal)
@@ -299,3 +300,26 @@ def compare_graphs(G1, G2):
             union += 1
 
     return intersection / union
+
+
+def convert_centroids_2d(centroids, direction="y"):
+    """
+    Args:
+        centroids (dict): Dictionary containing graph node numbers as keys and centroid coordinates (x,z,y) as values
+        (as given by regionprops function).
+
+    Keyword Args:
+        direction (str): Specifies for which direction to flatten the coordinates from 3D to 2D (default: "y").
+
+    Returns:
+        (dict): Dictionary containing graph node numbers as keys an centroid coordinates in 2D depending on direction
+    """
+    centroids_2d = {}
+    for key, val in centroids.items():
+        if direction == "y":
+            centroids_2d[key] = (val[0], val[2])
+        elif direction == "x":
+            centroids_2d[key] = (val[1], val[2])
+        elif direction == "z":
+            centroids_2d[key] = (val[0], val[1])
+    return centroids_2d
