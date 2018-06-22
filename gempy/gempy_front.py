@@ -1107,6 +1107,11 @@ def get_surface_as_2dline(geo_data, vertices, layer, i, direction="y"):
 
     Returns:
         (tuple): Tuple of the points representing the points (x,z) / (y,z) / (x,y)
+
+    Example:
+        for layer in range(len(vertices)):
+            points = gp.get_surface_as_2dline(geo_data, vertices, layer, 24, direction="y")
+            plt.plot(points[0], points[1])
     """
     if direction == "x":
         bins = _np.linspace(geo_data.extent[2], geo_data.extent[3], geo_data.resolution[1])
