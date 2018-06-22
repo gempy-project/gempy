@@ -1092,3 +1092,34 @@ def plot_topology(geo_data, G, centroids, direction="y"):
     warnings.warn("gempy plotting functionality will be moved in version 1.2, "
                   "use gempy.plotting module instead", FutureWarning)
     PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)
+
+
+def get_surface_as_2dline(geo_data, vertices, layer, i, direction="y"):
+    """
+    Extracts points along a 2D line from a 3D set of given vertices.
+
+    Args:
+        geo_data (gempy.data_management.InputData): GemPy's InputData object of the model for extent and resolution.
+        vertices (list): List of all vertices as given by gp.get_surfaces
+        layer (int): Layer number as index of the vertices list
+        i (int): Position of 2d slice (in voxel coordinates)
+        direction (str, optional):
+
+    Returns:
+        (tuple): Tuple of the points representing the points (x,z) / (y,z) / (x,y)
+    """
+    if direction == "x":
+        bins = _np.linspace(geo_data.extent[2], geo_data.extent[3], geo_data.resolution[1])
+        digitized = _np.digitize(vertices[layer][:, 0], bins)
+        points = vertices[layer][_np.where(digitized == i)[0]]
+        return points[:, 1], points[:, 2]
+    elif direction == "y":
+        bins = _np.linspace(geo_data.extent[0], geo_data.extent[1], geo_data.resolution[0])
+        digitized = _np.digitize(vertices[layer][:, 1], bins)
+        points = vertices[layer][_np.where(digitized == i)[0]]
+        return points[:, 0], points[:, 2]
+    elif direction == "z":
+        bins = _np.linspace(geo_data.extent[4], geo_data.extent[5], geo_data.resolution[2])
+        digitized = _np.digitize(vertices[layer][:, 2], bins)
+        points = vertices[layer][_np.where(digitized == i)[0]]
+        return points[:, 0], points[:, 1]
