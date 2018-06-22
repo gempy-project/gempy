@@ -33,7 +33,8 @@ def topology_analyze(lith_block, fault_block, n_faults,
                      return_block=False,
                      return_rprops=False,
                      filter_rogue=False,
-                     filter_threshold_area=10, neighbors=8):
+                     filter_threshold_area=10,
+                     neighbors=8):
     """
     Analyses the block models adjacency topology. Every lithological entity is described by a uniquely labeled node
     (centroid) and its connections to other entities by edges.
@@ -42,20 +43,24 @@ def topology_analyze(lith_block, fault_block, n_faults,
         lith_block (np.ndarray): Lithology block model
         fault_block (np.ndarray): Fault block model
         n_faults (int): Number of faults.
-
-
-    Keyword Args:
-        areas_bool (bool): If True computes adjacency areas for connected nodes in voxel number. Default False.
-        return_block (bool): If True additionally returns the uniquely labeled block model as np.ndarray.
-        return_rprops (bool): If True additionally returns region properties of the unique regions (see skimage.measure.regionprops).
-        filter_rogue (bool); If True filters nodes with region areas below threshold (default: 1) from topology graph.
+        areas_bool (bool, optional): If True computes adjacency areas for connected nodes in voxel number.
+            Default False.
+        return_block (bool, optional): If True additionally returns the uniquely labeled block model as np.ndarray.
+        return_rprops (bool, optional): If True additionally returns region properties of the unique regions
+            (see skimage.measure.regionprops).
+        filter_rogue (bool, optional): If True filters nodes with region areas below threshold (default: 1) from
+            topology graph.
+        filter_threshold_area (int, optional): Specifies the threshold area value (number of pixels) for filtering
+            small regions that may thow off topology analysis.
+        neighbors (int, optional): Specifies the neighbor voxel connectivity taken into account for the topology
+            analysis. Must be either 4 or 8 (default: 8)
 
     Return:
         tuple:
             G: Region adjacency graph object (skimage.future.graph.rag.RAG) containing the adjacency topology graph
                 (G.adj).
-            centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys and (x,y,z) coordinates
-                as values.
+            centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys and (x,y,z)
+                coordinates as values.
             labels_unique (np.array): List of all labels used.
             lith_to_labels_lot (dict): Dictionary look-up-table to go from lithology id to node id.
             labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithology id.
@@ -306,10 +311,8 @@ def convert_centroids_2d(centroids, direction="y"):
     """
     Args:
         centroids (dict): Dictionary containing graph node numbers as keys and centroid coordinates (x,z,y) as values
-        (as given by regionprops function).
-
-    Keyword Args:
-        direction (str): Specifies for which direction to flatten the coordinates from 3D to 2D (default: "y").
+        (as given by skimage.measure.regionprops function).
+        direction (str, optional): Specifies for which direction to flatten the coordinates from 3D to 2D (default: "y").
 
     Returns:
         (dict): Dictionary containing graph node numbers as keys an centroid coordinates in 2D depending on direction
