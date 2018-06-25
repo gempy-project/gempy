@@ -38,13 +38,11 @@ from pandas import DataFrame
 import copy
 import warnings
 
-import gempy.hackathon as hackathon
 from gempy.plotting.visualization import PlotData2D, vtkVisualization
 from gempy.data_management import InputData, GridClass
 from gempy.interpolator import InterpolatorData
 from gempy.plotting.sequential_pile import StratigraphicPile
 from gempy.topology import topology_analyze as _topology_analyze
-from gempy.addons import sandbox
 from gempy.utils.geomodeller_integration import ReadGeoModellerXML as _ReadGeoModellerXML
 import gempy.posterior_analysis as pa # So far we use this type of import because the other one makes a copy and blows up some asserts
 
@@ -361,6 +359,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
 
         assert n_formation >= 0, 'Number of the formation has to be positive'
         n_formation = n_formation - 1
+
         # In case the values are separated by series I put all in a vector
         pot_int = interp_data.potential_at_interfaces.sum(axis=0)
 
