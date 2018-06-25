@@ -1,6 +1,7 @@
 import sys
 import os
-#sys.path.append( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )
+
+# sys.path.append( os.path.dirname( os.path.dirname( os.path.abspath(__file__) ) ) )
 try:
     import freenect
 except ImportError:
@@ -11,7 +12,7 @@ import weakref
 import numpy
 import scipy
 import gempy
-#from gempy.plotting.colors import color_lot, cmap, norm
+# from gempy.plotting.colors import color_lot, cmap, norm
 from itertools import count
 from PIL import Image, ImageDraw
 import ipywidgets as widgets
@@ -21,9 +22,8 @@ import gempy.hackathon as hackathon
 import IPython
 
 
-
 # TODO: Superclass or not? methods: run sandbox with runnable, height map only, diff height...
-class Kinect: # add dummy
+class Kinect:  # add dummy
     _ids = count(0)
     _instances = []
 
@@ -31,11 +31,11 @@ class Kinect: # add dummy
         self.__class__._instances.append(weakref.proxy(self))
         self.id = next(self._ids)
         self.resolution = (640, 480)
-        self.dummy=dummy
-        self.mirror=mirror
-        self.rgb_frame=None
+        self.dummy = dummy
+        self.mirror = mirror
+        self.rgb_frame = None
 
-        if self.dummy==False:
+        if self.dummy == False:
             print("looking for kinect...")
             self.ctx = freenect.init()
             self.dev = freenect.open_device(self.ctx, self.id)
@@ -43,37 +43,38 @@ class Kinect: # add dummy
             freenect.close_device(self.dev)  # TODO Test if this has to be done!
 
             self.angle = None
-            self.depth = freenect.sync_get_depth(index=self.id, format=freenect.DEPTH_MM)[0]  # get the first Depth frame already (the first one takes much longer than the following)
+            self.depth = freenect.sync_get_depth(index=self.id, format=freenect.DEPTH_MM)[
+                0]  # get the first Depth frame already (the first one takes much longer than the following)
             self.filtered_depth = None
             print("kinect initialized")
         else:
             self.angle = None
             self.filtered_depth = None
             self.depth = self.get_frame()
-            print ("dummy mode. get_frame() will return a synthetic depth frame, other functions may not work")
+            print("dummy mode. get_frame() will return a synthetic depth frame, other functions may not work")
 
     def set_angle(self, angle):
         self.angle = angle
         freenect.set_tilt_degs(self.dev, self.angle)
 
     def get_frame(self, horizontal_slice=None):
-        if self.dummy==False:
+        if self.dummy is False:
             self.depth = freenect.sync_get_depth(index=self.id, format=freenect.DEPTH_MM)[0]
-            self.depth=numpy.fliplr(self.depth)
+            self.depth = numpy.fliplr(self.depth)
             return self.depth
         else:
             synth_depth = numpy.zeros((480, 640))
             for x in range(640):
                 for y in range(480):
-                    if horizontal_slice==None:
+                    if horizontal_slice == None:
                         synth_depth[y, x] = int(800 + 200 * (numpy.sin(2 * numpy.pi * x / 320)))
                     else:
                         synth_depth[y, x] = horizontal_slice
-            self.depth=synth_depth
+            self.depth = synth_depth
             return self.depth
 
-    def get_filtered_frame(self, n_frames=5, sigma_gauss= None):
-        if self.dummy==True:
+    def get_filtered_frame(self, n_frames=5, sigma_gauss=None):
+        if self.dummy == True:
             self.get_frame()
             return self.depth
         else:
@@ -81,9 +82,9 @@ class Kinect: # add dummy
             for i in range(n_frames - 1):
                 depth_array = numpy.dstack([depth_array, self.get_frame()])
             depth_array_masked = numpy.ma.masked_where(depth_array == 0, depth_array)
-            self.depth=numpy.ma.mean(depth_array_masked, axis=2)
+            self.depth = numpy.ma.mean(depth_array_masked, axis=2)
             if sigma_gauss:
-                self.depth=scipy.ndimage.filters.gaussian_filter(self.depth, sigma_gauss)
+                self.depth = scipy.ndimage.filters.gaussian_filter(self.depth, sigma_gauss)
             return self.depth
 
     def get_rgb_frame(self):
@@ -103,26 +104,22 @@ class Kinect: # add dummy
             except:
                 print("no calibration found")
         rotated = scipy.ndimage.rotate(frame, calibration.calibration_data['rot_angle'], reshape=False)
-        cropped = rotated[calibration.calibration_data['y_lim'][0] : calibration.calibration_data['y_lim'][1], calibration.calibration_data['x_lim'][0] : calibration.calibration_data['x_lim'][1]]
+        cropped = rotated[calibration.calibration_data['y_lim'][0]: calibration.calibration_data['y_lim'][1],
+                  calibration.calibration_data['x_lim'][0]: calibration.calibration_data['x_lim'][1]]
         cropped = numpy.flipud(cropped)
         return cropped
-
-
-
-
-
 
 
 class Beamer:
     _ids = count(0)
     _instances = []
 
-    def __init__(self, calibration=None, resolution=(800,600)):
+    def __init__(self, calibration=None, resolution=(800, 600)):
         self.__class__._instances.append(weakref.proxy(self))
         self.id = next(self._ids)
         self.html_filename = "beamer" + str(self.id) + ".html"
         self.frame_filenamne = "frame" + str(self.id) + ".png"
-        self.work_directory=None
+        self.work_directory = None
         self.html_file = None
         self.html_text = None
         self.frame_file = None
@@ -140,11 +137,11 @@ class Beamer:
 
     def start_stream(self):
         # def start_stream(self, html_file=self.html_file, frame_file=self.frame_file):
-        if self.work_directory==None:
-            self.work_directory=os.getcwd()
-        self.html_file = open(os.path.join(self.work_directory,self.html_filename), "w")
+        if self.work_directory is None:
+            self.work_directory = os.getcwd()
+        self.html_file = open(os.path.join(self.work_directory, self.html_filename), "w")
 
-        self.html_text ="""
+        self.html_text = """
             <html>
             <head>
                 <style>
@@ -195,30 +192,39 @@ class Beamer:
             </html>
 
             """
-        self.html_text=self.html_text.format(self.refresh, self.drawdate)
+        self.html_text = self.html_text.format(self.refresh, self.drawdate)
         self.html_file.write(self.html_text)
         self.html_file.close()
 
-        webbrowser.open_new('file://'+str(os.path.join(self.work_directory,self.html_filename)))
+        webbrowser.open_new('file://' + str(os.path.join(self.work_directory, self.html_filename)))
 
-    def show(self, input='current_frame.png', legend_frame='legend.png', profile_frame='profile.png', hot_frame='hot.png'):
+    def show(self, input='current_frame.png', legend_frame='legend.png', profile_frame='profile.png',
+             hot_frame='hot.png', rescale=True):
 
         beamer_output = Image.new('RGB', self.resolution)
         frame = Image.open(input)
+        if rescale is True:
+            beamer_output.paste(frame.resize((int(frame.width * self.calibration.calibration_data['scale_factor']),
+                                              int(frame.height * self.calibration.calibration_data['scale_factor']))),
+                                (
+                                self.calibration.calibration_data['x_pos'], self.calibration.calibration_data['y_pos']))
+        else:
+            beamer_output.paste(frame, (self.calibration.calibration_data['x_pos'], self.calibration.calibration_data['y_pos']))
 
-        beamer_output.paste(frame.resize((int(frame.width * self.calibration.calibration_data['scale_factor']), int(frame.height * self.calibration.calibration_data['scale_factor']))),
-                            (self.calibration.calibration_data['x_pos'], self.calibration.calibration_data['y_pos']))
         if self.calibration.calibration_data['legend_area'] is not False:
-            legend=Image.open(legend_frame)
-            beamer_output.paste(legend, (self.calibration.calibration_data['legend_x_lim'][0],self.calibration.calibration_data['legend_y_lim'][0]))
+            legend = Image.open(legend_frame)
+            beamer_output.paste(legend, (
+            self.calibration.calibration_data['legend_x_lim'][0], self.calibration.calibration_data['legend_y_lim'][0]))
         if self.calibration.calibration_data['profile_area'] is not False:
-            profile=Image.open(profile_frame)
-            beamer_output.paste(profile, (self.calibration.calibration_data['profile_x_lim'][0],self.calibration.calibration_data['profile_y_lim'][0]))
+            profile = Image.open(profile_frame)
+            beamer_output.paste(profile, (self.calibration.calibration_data['profile_x_lim'][0],
+                                          self.calibration.calibration_data['profile_y_lim'][0]))
         if self.calibration.calibration_data['hot_area'] is not False:
             hot = Image.open(hot_frame)
-            beamer_output.paste(hot, (self.calibration.calibration_data['hot_x_lim'][0], self.calibration.calibration_data['hot_y_lim'][0]))
+            beamer_output.paste(hot, (
+            self.calibration.calibration_data['hot_x_lim'][0], self.calibration.calibration_data['hot_y_lim'][0]))
 
-        beamer_output.save('output.png') #TODO: Beamer specific outputs
+        beamer_output.save('output.png')  # TODO: Beamer specific outputs
 
     # TODO: threaded runloop exporting filtered and unfiltered depth
 
@@ -227,24 +233,24 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
     _ids = count(0)
     _instances = []
 
-    def __init__(self, associated_beamer=None,associated_kinect=None):
+    def __init__(self, associated_beamer=None, associated_kinect=None):
         self.id = next(self._ids)
         self.__class__._instances.append(weakref.proxy(self))
         self.associated_beamer = associated_beamer
         self.beamer_resolution = associated_beamer.resolution
         self.associated_kinect = associated_kinect
         self.calibration_file = "calibration" + str(self.id) + ".dat"
-        self.calibration_data = {'rot_angle': 0, # TODO: refactor calibration_data as an inner class for type safety
+        self.calibration_data = {'rot_angle': 0,  # TODO: refactor calibration_data as an inner class for type safety
                                  'x_lim': (0, 640),
                                  'y_lim': (0, 480),
                                  'x_pos': 0,
                                  'y_pos': 0,
                                  'scale_factor': 1.0,
-                                 'z_range':(800,1400),
-                                 'box_dim':(400,300),
-                                 'legend_area':False,
-                                 'legend_x_lim':(self.beamer_resolution[1]-50,self.beamer_resolution[0]-1 ),
-                                 'legend_y_lim':(self.beamer_resolution[1]-100,self.beamer_resolution[1]- 50),
+                                 'z_range': (800, 1400),
+                                 'box_dim': (400, 300),
+                                 'legend_area': False,
+                                 'legend_x_lim': (self.beamer_resolution[1] - 50, self.beamer_resolution[0] - 1),
+                                 'legend_y_lim': (self.beamer_resolution[1] - 100, self.beamer_resolution[1] - 50),
                                  'profile_area': False,
                                  'profile_x_lim': (self.beamer_resolution[0] - 50, self.beamer_resolution[0] - 1),
                                  'profile_y_lim': (self.beamer_resolution[1] - 100, self.beamer_resolution[1] - 1),
@@ -253,8 +259,9 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                  'hot_y_lim': (self.beamer_resolution[1] - 100, self.beamer_resolution[1] - 1)
                                  }
 
-        self.cmap=None
-       # ...
+        self.cmap = None
+
+    # ...
 
     def load(self, calibration_file=None):
         if calibration_file == None:
@@ -271,114 +278,133 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
         print("calibration saved to " + str(calibration_file))
 
     def create(self):
-        if self.associated_beamer==None:
+        if self.associated_beamer == None:
             try:
                 self.associated_beamer = Beamer._instances[-1]
                 print("no associated beamer specified, using last beamer instance created")
             except:
                 print("Error: no Beamer instance found.")
 
-        if self.associated_kinect==None:
+        if self.associated_kinect == None:
             try:
                 self.associated_kinect = Kinect._instances[-1]
                 print("no associated kinect specified, using last kinect instance created")
             except:
                 print("Error: no kinect instance found.")
 
-        def calibrate(rot_angle, x_lim, y_lim, x_pos, y_pos, scale_factor, z_range, box_width,box_height,legend_area, legend_x_lim, legend_y_lim, profile_area, profile_x_lim, profile_y_lim, hot_area, hot_x_lim, hot_y_lim, close_click):
+        def calibrate(rot_angle, x_lim, y_lim, x_pos, y_pos, scale_factor, z_range, box_width, box_height, legend_area,
+                      legend_x_lim, legend_y_lim, profile_area, profile_x_lim, profile_y_lim, hot_area, hot_x_lim,
+                      hot_y_lim, close_click):
             depth = self.associated_kinect.get_frame()
-            depth_rotated = scipy.ndimage.rotate(depth,rot_angle, reshape=False )
+            depth_rotated = scipy.ndimage.rotate(depth, rot_angle, reshape=False)
             depth_cropped = depth_rotated[y_lim[0]:y_lim[1], x_lim[0]:x_lim[1]]
-            depth_masked=numpy.ma.masked_outside(depth_cropped,self.calibration_data['z_range'][0],self.calibration_data['z_range'][1]) #depth pixels outside of range are white, no data pixe;ls are black.
+            depth_masked = numpy.ma.masked_outside(depth_cropped, self.calibration_data['z_range'][0],
+                                                   self.calibration_data['z_range'][
+                                                       1])  # depth pixels outside of range are white, no data pixe;ls are black.
 
-            self.cmap=matplotlib.colors.Colormap('tab20c')
-            self.cmap.set_bad('white',800)
+            self.cmap = matplotlib.colors.Colormap('tab20c')
+            self.cmap.set_bad('white', 800)
             plt.set_cmap(self.cmap)
-            h = (y_lim[1]-y_lim[0])  / 100.0
-            w = (x_lim[1]-x_lim[0]) / 100.0
+            h = (y_lim[1] - y_lim[0]) / 100.0
+            w = (x_lim[1] - x_lim[0]) / 100.0
 
             fig = plt.figure(figsize=(w, h), dpi=100, frameon=False)
             ax = plt.Axes(fig, [0., 0., 1., 1.])
             ax.set_axis_off()
             fig.add_axes(ax)
-            ax.pcolormesh(depth_masked, vmin=self.calibration_data['z_range'][0], vmax=self.calibration_data['z_range'][1])
+            ax.pcolormesh(depth_masked, vmin=self.calibration_data['z_range'][0],
+                          vmax=self.calibration_data['z_range'][1])
             plt.savefig('current_frame.png', pad_inches=0)
             plt.close(fig)
 
-
-
-
             self.calibration_data = {'rot_angle': rot_angle,
-                                 'x_lim': x_lim,  # TODO: refactor calibration_data as an inner class for type safety
-                                 'y_lim': y_lim,
-                                 'x_pos': x_pos,
-                                 'y_pos': y_pos,
-                                 'scale_factor': scale_factor,
-                                 'z_range':z_range,
-                                 'box_dim': (box_width,box_height),
-                                 'legend_area': legend_area,
-                                 'legend_x_lim': legend_x_lim,
-                                 'legend_y_lim': legend_y_lim,
-                                 'profile_area': profile_area,
-                                 'profile_x_lim': profile_x_lim,
-                                 'profile_y_lim': profile_y_lim,
-                                 'hot_area': hot_area,
-                                 'hot_x_lim': hot_x_lim,
-                                 'hot_y_lim': hot_y_lim
+                                     'x_lim': x_lim,
+                                     # TODO: refactor calibration_data as an inner class for type safety
+                                     'y_lim': y_lim,
+                                     'x_pos': x_pos,
+                                     'y_pos': y_pos,
+                                     'scale_factor': scale_factor,
+                                     'z_range': z_range,
+                                     'box_dim': (box_width, box_height),
+                                     'legend_area': legend_area,
+                                     'legend_x_lim': legend_x_lim,
+                                     'legend_y_lim': legend_y_lim,
+                                     'profile_area': profile_area,
+                                     'profile_x_lim': profile_x_lim,
+                                     'profile_y_lim': profile_y_lim,
+                                     'hot_area': hot_area,
+                                     'hot_x_lim': hot_x_lim,
+                                     'hot_y_lim': hot_y_lim
                                      }
 
             if self.calibration_data['legend_area'] is not False:
-                legend=Image.new('RGB', (self.calibration_data['legend_x_lim'][1]-self.calibration_data['legend_x_lim'][0], self.calibration_data['legend_y_lim'][1]-self.calibration_data['legend_y_lim'][0]), color = 'white')
-                ImageDraw.Draw(legend).text((10,10),"Legend",fill=(255,255,0))
+                legend = Image.new('RGB', (
+                self.calibration_data['legend_x_lim'][1] - self.calibration_data['legend_x_lim'][0],
+                self.calibration_data['legend_y_lim'][1] - self.calibration_data['legend_y_lim'][0]), color='white')
+                ImageDraw.Draw(legend).text((10, 10), "Legend", fill=(255, 255, 0))
                 legend.save('legend.png')
             if self.calibration_data['profile_area'] is not False:
-                profile=Image.new('RGB', (self.calibration_data['profile_x_lim'][1]-self.calibration_data['profile_x_lim'][0], self.calibration_data['profile_y_lim'][1]-self.calibration_data['profile_y_lim'][0]), color = 'blue')
-                ImageDraw.Draw(profile).text((10,10),"Profile",fill=(255,255,0))
+                profile = Image.new('RGB', (
+                self.calibration_data['profile_x_lim'][1] - self.calibration_data['profile_x_lim'][0],
+                self.calibration_data['profile_y_lim'][1] - self.calibration_data['profile_y_lim'][0]), color='blue')
+                ImageDraw.Draw(profile).text((10, 10), "Profile", fill=(255, 255, 0))
                 profile.save('profile.png')
             if self.calibration_data['hot_area'] is not False:
-                hot=Image.new('RGB', (self.calibration_data['hot_x_lim'][1]-self.calibration_data['hot_x_lim'][0], self.calibration_data['hot_y_lim'][1]-self.calibration_data['hot_y_lim'][0]), color = 'red')
-                ImageDraw.Draw(hot).text((10,10),"Hot Area",fill=(255,255,0))
+                hot = Image.new('RGB', (self.calibration_data['hot_x_lim'][1] - self.calibration_data['hot_x_lim'][0],
+                                        self.calibration_data['hot_y_lim'][1] - self.calibration_data['hot_y_lim'][0]),
+                                color='red')
+                ImageDraw.Draw(hot).text((10, 10), "Hot Area", fill=(255, 255, 0))
                 hot.save('hot.png')
             self.associated_beamer.show()
-            if close_click==True:
+            if close_click == True:
                 calibration_widget.close()
 
         calibration_widget = widgets.interactive(calibrate,
                                                  rot_angle=widgets.IntSlider(
-                                                     value=self.calibration_data['rot_angle'], min=-180, max=180, step=1,continuous_update=False),
+                                                     value=self.calibration_data['rot_angle'], min=-180, max=180,
+                                                     step=1, continuous_update=False),
                                                  x_lim=widgets.IntRangeSlider(
-                                                     value=[self.calibration_data['x_lim'][0], self.calibration_data['x_lim'][1]],
-                                                     min=0, max=640, step=1,continuous_update=False),
+                                                     value=[self.calibration_data['x_lim'][0],
+                                                            self.calibration_data['x_lim'][1]],
+                                                     min=0, max=640, step=1, continuous_update=False),
                                                  y_lim=widgets.IntRangeSlider(
-                                                     value=[self.calibration_data['y_lim'][0], self.calibration_data['y_lim'][1]],
-                                                     min=0, max=480, step=1,continuous_update=False),
+                                                     value=[self.calibration_data['y_lim'][0],
+                                                            self.calibration_data['y_lim'][1]],
+                                                     min=0, max=480, step=1, continuous_update=False),
                                                  x_pos=widgets.IntSlider(value=self.calibration_data['x_pos'], min=0,
                                                                          max=self.beamer_resolution[0]),
                                                  y_pos=widgets.IntSlider(value=self.calibration_data['y_pos'], min=0,
                                                                          max=self.beamer_resolution[1]),
                                                  scale_factor=widgets.FloatSlider(
                                                      value=self.calibration_data['scale_factor'], min=0.1, max=4.0,
-                                                     step=0.01,continuous_update=False),
+                                                     step=0.01, continuous_update=False),
                                                  z_range=widgets.IntRangeSlider(
-                                                     value=[self.calibration_data['z_range'][0], self.calibration_data['z_range'][1]],
+                                                     value=[self.calibration_data['z_range'][0],
+                                                            self.calibration_data['z_range'][1]],
                                                      min=500, max=2000, step=1, continuous_update=False),
-                                                 box_width=widgets.IntSlider(value=self.calibration_data['box_dim'][0], min=0,
-                                                                         max=2000,continuous_update=False),
-                                                 box_height=widgets.IntSlider(value=self.calibration_data['box_dim'][1], min=0,
-                                                                         max=2000,continuous_update=False),
+                                                 box_width=widgets.IntSlider(value=self.calibration_data['box_dim'][0],
+                                                                             min=0,
+                                                                             max=2000, continuous_update=False),
+                                                 box_height=widgets.IntSlider(value=self.calibration_data['box_dim'][1],
+                                                                              min=0,
+                                                                              max=2000, continuous_update=False),
                                                  legend_area=widgets.ToggleButton(
-                                                    value=self.calibration_data['legend_area'],
-                                                    description='display a legend',
-                                                    disabled=False,
-                                                    button_style='',  # 'success', 'info', 'warning', 'danger' or ''
-                                                    tooltip='Description',
-                                                    icon='check'),
+                                                     value=self.calibration_data['legend_area'],
+                                                     description='display a legend',
+                                                     disabled=False,
+                                                     button_style='',  # 'success', 'info', 'warning', 'danger' or ''
+                                                     tooltip='Description',
+                                                     icon='check'),
                                                  legend_x_lim=widgets.IntRangeSlider(
-                                                     value=[self.calibration_data['legend_x_lim'][0], self.calibration_data['legend_x_lim'][1]],
-                                                     min=0, max=self.beamer_resolution[0], step=1,continuous_update=False),
+                                                     value=[self.calibration_data['legend_x_lim'][0],
+                                                            self.calibration_data['legend_x_lim'][1]],
+                                                     min=0, max=self.beamer_resolution[0], step=1,
+                                                     continuous_update=False),
                                                  legend_y_lim=widgets.IntRangeSlider(
-                                                     value=[self.calibration_data['legend_y_lim'][0], self.calibration_data['legend_y_lim'][1]],
-                                                     min=0, max=self.beamer_resolution[1], step=1, continuous_update=False),
+                                                     value=[self.calibration_data['legend_y_lim'][0],
+                                                            self.calibration_data['legend_y_lim'][1]],
+                                                     min=0, max=self.beamer_resolution[1], step=1,
+                                                     continuous_update=False),
                                                  profile_area=widgets.ToggleButton(
                                                      value=self.calibration_data['profile_area'],
                                                      description='display a profile area',
@@ -389,11 +415,13 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                                  profile_x_lim=widgets.IntRangeSlider(
                                                      value=[self.calibration_data['profile_x_lim'][0],
                                                             self.calibration_data['profile_x_lim'][1]],
-                                                     min=0, max=self.beamer_resolution[0], step=1, continuous_update=False),
+                                                     min=0, max=self.beamer_resolution[0], step=1,
+                                                     continuous_update=False),
                                                  profile_y_lim=widgets.IntRangeSlider(
                                                      value=[self.calibration_data['profile_y_lim'][0],
                                                             self.calibration_data['profile_y_lim'][1]],
-                                                     min=0, max=self.beamer_resolution[1], step=1, continuous_update=False),
+                                                     min=0, max=self.beamer_resolution[1], step=1,
+                                                     continuous_update=False),
                                                  hot_area=widgets.ToggleButton(
                                                      value=self.calibration_data['hot_area'],
                                                      description='display a hot area for qr codes',
@@ -404,24 +432,24 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                                  hot_x_lim=widgets.IntRangeSlider(
                                                      value=[self.calibration_data['hot_x_lim'][0],
                                                             self.calibration_data['hot_x_lim'][1]],
-                                                     min=0, max=self.beamer_resolution[0], step=1, continuous_update=False),
+                                                     min=0, max=self.beamer_resolution[0], step=1,
+                                                     continuous_update=False),
                                                  hot_y_lim=widgets.IntRangeSlider(
                                                      value=[self.calibration_data['hot_y_lim'][0],
                                                             self.calibration_data['hot_y_lim'][1]],
-                                                     min=0, max=self.beamer_resolution[1], step=1, continuous_update=False),
+                                                     min=0, max=self.beamer_resolution[1], step=1,
+                                                     continuous_update=False),
                                                  close_click=widgets.ToggleButton(
-                                                    value=False,
-                                                    description='Close calibration',
-                                                    disabled=False,
-                                                    button_style='',  # 'success', 'info', 'warning', 'danger' or ''
-                                                    tooltip='Description',
-                                                    icon='check'
-                                                    )
+                                                     value=False,
+                                                     description='Close calibration',
+                                                     disabled=False,
+                                                     button_style='',  # 'success', 'info', 'warning', 'danger' or ''
+                                                     tooltip='Description',
+                                                     icon='check'
+                                                 )
 
                                                  )
         IPython.display.display(calibration_widget)
-
-
 
 
 class Model:
@@ -432,8 +460,9 @@ class Model:
         self.id = next(self._ids)
         self.__class__._instances.append(weakref.proxy(self))
         self.xy_isometric = xy_isometric
-        self.scale = [None,None,None]
+        self.scale = [None, None, None]
         self.pixel_size = [None, None]
+        self.output_res = None
 
         self.legend = True
         self.model = model
@@ -443,12 +472,22 @@ class Model:
         self.cmap = None
         self.norm = None
         self.lot = None
-        self.stop_threat = False
 
+        self.contours = True
+        self.main_contours = numpy.arange(0, 2000, 50)
+        self.sub_contours = numpy.arange(0, 2000, 10)
+
+        self.scalar_contours = False
+        self.scalar_main_contours = numpy.arange(0.0, 1.0, 0.1)
+        self.scalar_sub_contours = numpy.arange(0.0, 1.0, 0.02)
+
+        self.show_faults=True
+        self.fault_contours= numpy.arange(0.0, 50, 0.5)
+
+        self.stop_threat = False
         self.lock = lock
 
-
-        if associated_calibration==None:
+        if associated_calibration == None:
             try:
                 self.associated_calibration = Calibration._instances[-1]
                 print("no calibration specified, using last calibration instance created")
@@ -461,15 +500,17 @@ class Model:
             self.extent = self.model._geo_data.extent
 
         else:
-            self.extent = extent #check: array with 6 entries!
+            self.extent = extent  # check: array with 6 entries!
 
     def calculate_scales(self):
-        output_res = (self.associated_calibration.calibration_data['x_lim'][1] - self.associated_calibration.calibration_data['x_lim'][0],
-                      self.associated_calibration.calibration_data['y_lim'][1] - self.associated_calibration.calibration_data['y_lim'][0])
-        self.pixel_size[0] = float(self.extent[1] - self.extent[0]) / float(output_res[0])
-        self.pixel_size[1] = float(self.extent[3] - self.extent[2]) / float(output_res[1])
+        self.output_res = (self.associated_calibration.calibration_data['x_lim'][1] -
+                           self.associated_calibration.calibration_data['x_lim'][0],
+                           self.associated_calibration.calibration_data['y_lim'][1] -
+                           self.associated_calibration.calibration_data['y_lim'][0])
+        self.pixel_size[0] = float(self.extent[1] - self.extent[0]) / float(self.output_res[0])
+        self.pixel_size[1] = float(self.extent[3] - self.extent[2]) / float(self.output_res[1])
 
-        if self.xy_isometric==True: #model is scaled to fit into box
+        if self.xy_isometric == True:  # model is scaled to fit into box
             print("Aspect ratio of the model is fixed in XY")
             if self.pixel_size[0] >= self.pixel_size[1]:
                 self.pixel_size[1] = self.pixel_size[0]
@@ -480,35 +521,47 @@ class Model:
 
         self.scale[0] = self.pixel_size[0]
         self.scale[1] = self.pixel_size[1]
-        self.scale[2] = float(self.extent[5]-self.extent[4]) / (self.associated_calibration.calibration_data['z_range'][1]-self.associated_calibration.calibration_data['z_range'][0])
-        print("scale in Model units/ mm (X,Y,Z): "+str(self.scale))
+        self.scale[2] = float(self.extent[5] - self.extent[4]) / (
+                    self.associated_calibration.calibration_data['z_range'][1] -
+                    self.associated_calibration.calibration_data['z_range'][0])
+        print("scale in Model units/ mm (X,Y,Z): " + str(self.scale))
 
-
-    #TODO: manually define zscale and either lower or upper limit of Z, adjust rest accordingly.
+    # TODO: manually define zscale and either lower or upper limit of Z, adjust rest accordingly.
 
     def create_empty_depth_grid(self):
         grid_list = []
-        output_res = (self.associated_calibration.calibration_data['x_lim'][1] - self.associated_calibration.calibration_data['x_lim'][0],
-                      self.associated_calibration.calibration_data['y_lim'][1] - self.associated_calibration.calibration_data['y_lim'][0])
-        for x in range(output_res[1]):
-            for y in range(output_res[0]):
-                grid_list.append([ y * self.pixel_size[1]+self.extent[2],x * self.pixel_size[0]+self.extent[0]])
+        self.output_res = (self.associated_calibration.calibration_data['x_lim'][1] -
+                           self.associated_calibration.calibration_data['x_lim'][0],
+                           self.associated_calibration.calibration_data['y_lim'][1] -
+                           self.associated_calibration.calibration_data['y_lim'][0])
+        for x in range(self.output_res[1]):
+            for y in range(self.output_res[0]):
+                grid_list.append([y * self.pixel_size[1] + self.extent[2], x * self.pixel_size[0] + self.extent[0]])
 
         empty_depth_grid = numpy.array(grid_list)
         self.empty_depth_grid = empty_depth_grid
-       # return self.empty_depth_grid
 
-    def update_grid(self,depth):
-        filtered_depth = numpy.ma.masked_outside(depth,self.associated_calibration.calibration_data['z_range'][0],self.associated_calibration.calibration_data['z_range'][1])
-        scaled_depth = self.extent[5] - ((filtered_depth - self.associated_calibration.calibration_data['z_range'][0]) / (self.associated_calibration.calibration_data['z_range'][1] - self.associated_calibration.calibration_data['z_range'][0]) * (self.extent[5] - self.extent[4]))
-        rotated_depth = scipy.ndimage.rotate(scaled_depth,  self.associated_calibration.calibration_data['rot_angle'], reshape=False)
-        cropped_depth = rotated_depth[self.associated_calibration.calibration_data['y_lim'][0] : self.associated_calibration.calibration_data['y_lim'][1], self.associated_calibration.calibration_data['x_lim'][0] : self.associated_calibration.calibration_data['x_lim'][1]]
+    # return self.empty_depth_grid
+
+    def update_grid(self, depth):
+        filtered_depth = numpy.ma.masked_outside(depth, self.associated_calibration.calibration_data['z_range'][0],
+                                                 self.associated_calibration.calibration_data['z_range'][1])
+        scaled_depth = self.extent[5] - (
+                    (filtered_depth - self.associated_calibration.calibration_data['z_range'][0]) / (
+                        self.associated_calibration.calibration_data['z_range'][1] -
+                        self.associated_calibration.calibration_data['z_range'][0]) * (self.extent[5] - self.extent[4]))
+        rotated_depth = scipy.ndimage.rotate(scaled_depth, self.associated_calibration.calibration_data['rot_angle'],
+                                             reshape=False)
+        cropped_depth = rotated_depth[self.associated_calibration.calibration_data['y_lim'][0]:
+                                      self.associated_calibration.calibration_data['y_lim'][1],
+                        self.associated_calibration.calibration_data['x_lim'][0]:
+                        self.associated_calibration.calibration_data['x_lim'][1]]
 
         flattened_depth = numpy.reshape(cropped_depth, (numpy.shape(self.empty_depth_grid)[0], 1))
         depth_grid = numpy.concatenate((self.empty_depth_grid, flattened_depth), axis=1)
-        self.depth_grid=depth_grid
+        self.depth_grid = depth_grid
 
-    def set_cmap(self,cmap=None, norm=None):
+    def set_cmap(self, cmap=None, norm=None):
         if cmap is None:
             plotter = gempy.PlotData2D(self.model._geo_data)
             self.cmap = plotter._cmap
@@ -517,6 +570,7 @@ class Model:
             self.lot = plotter._color_lot
 
     def render_frame(self, outfile=None):
+
         if self.cmap is None:
             self.set_cmap()
         if self.lock is not None:
@@ -525,29 +579,52 @@ class Model:
             self.lock.release()
         else:
             lith_block, fault_block = gempy.compute_model_at(self.depth_grid, self.model)
-        block=lith_block[0].reshape((self.associated_calibration.calibration_data['y_lim'][1] - self.associated_calibration.calibration_data['y_lim'][0],self.associated_calibration.calibration_data['x_lim'][1] - self.associated_calibration.calibration_data['x_lim'][0]))
-        h = (self.associated_calibration.calibration_data['y_lim'][1] - self.associated_calibration.calibration_data['y_lim'][0]) / 100.0
-        w = (self.associated_calibration.calibration_data['x_lim'][1] - self.associated_calibration.calibration_data['x_lim'][0]) / 100.0
+        scalar_field = lith_block[1].reshape((self.output_res[1], self.output_res[0]))
+        block = lith_block[0].reshape((self.output_res[1], self.output_res[0]))
+        h = self.associated_calibration.calibration_data['scale_factor'] * (self.output_res[1]) / 100.0
+        w = self.associated_calibration.calibration_data['scale_factor'] * (self.output_res[0]) / 100.0
 
         fig = plt.figure(figsize=(w, h), dpi=100, frameon=False)
         ax = plt.Axes(fig, [0., 0., 1., 1.])
         ax.set_axis_off()
         fig.add_axes(ax)
-        ax.pcolormesh(block, cmap=self.cmap, norm=self.norm )
+        ax.pcolormesh(block, cmap=self.cmap, norm=self.norm)
 
-        if outfile==None:
-                plt.show()
-                plt.close()
+        if self.show_faults is True:
+            plt.contour(fault_block[0].reshape((self.output_res[1], self.output_res[0])), levels=self.fault_contours, linewidths=3.0, colors=[(1.0, 1.0, 1.0, 1.0)])
+
+        if self.contours is True:
+            x = range(self.output_res[0])
+            y = range(self.output_res[1])
+            z = self.depth_grid.reshape((self.output_res[1], self.output_res[0], 3))[:, :, 2]
+            sub_contours = plt.contour(x, y, z, levels=self.sub_contours, linewidths=0.5, colors=[(0, 0, 0, 0.8)])
+            main_contours = plt.contour(x, y, z, levels=self.main_contours, linewidths=1.0, colors=[(0, 0, 0, 1.0)])
+            # plt.contour(lith_block[1].reshape((self.output_res[1], self.output_res[0])) levels=main_levels, linewidths=1.0, colors=[(0, 0, 0, 1.0)])
+            plt.clabel(main_contours, inline=0, fontsize=15, fmt='%3.0f')
+
+        if self.scalar_contours is True:
+            x = range(self.output_res[0])
+            y = range(self.output_res[1])
+            z = scalar_field
+            sub_contours = plt.contour(x, y, z, levels=self.scalar_sub_contours, linewidths=0.5, colors=[(0, 0, 0, 0.8)])
+            main_contours = plt.contour(x, y, z, levels=self.scalar_main_contours, linewidths=1.0, colors=[(0, 0, 0, 1.0)])
+           # plt.contour(lith_block[1].reshape((self.output_res[1], self.output_res[0])) levels=main_levels, linewidths=1.0, colors=[(0, 0, 0, 1.0)])
+            plt.clabel(main_contours, inline=0, fontsize=15, fmt='%3.0f')
+
+
+        if outfile == None:
+            plt.show()
+            plt.close()
         else:
             plt.savefig(outfile, pad_inches=0)
             plt.close(fig)
 
     def create_legend(self):
-        #...
+        # ...
         pass
 
     def setup(self, start_stream=True):
-        if start_stream==True:
+        if start_stream == True:
             self.associated_calibration.associated_beamer.start_stream()
         self.calculate_scales()
         self.create_empty_depth_grid()
@@ -555,31 +632,29 @@ class Model:
     def run(self):
         run_model(self)
 
-    def convert_coordinates(self,coords):
-        converted_coords=[]
+    def convert_coordinates(self, coords):
+        converted_coords = []
         for point in coords:
-            y= point[0] * self.pixel_size[1]+self.extent[2]
-            x= point[1] * self.pixel_size[0]+self.extent[0]
-            converted_coords.append([x,y])
+            y = point[0] * self.pixel_size[1] + self.extent[2]
+            x = point[1] * self.pixel_size[0] + self.extent[0]
+            converted_coords.append([x, y])
         return converted_coords
 
-def detect_shapes(kinect,model, calibration, frame=None):
+
+def detect_shapes(kinect, model, calibration, frame=None):
     if frame is None:
-        frame=kinect.get_RGB_frame()
+        frame = kinect.get_RGB_frame()
     rotated_frame = scipy.ndimage.rotate(frame, calibration.calibration_data['rot_angle'], reshape=False)
     cropped_frame = rotated_frame[calibration.calibration_data['y_lim'][0]:calibration.calibration_data['y_lim'][1],
-                                  calibration.calibration_data['x_lim'][0]:calibration.calibration_data['x_lim'][1]]
+                    calibration.calibration_data['x_lim'][0]:calibration.calibration_data['x_lim'][1]]
     squares, circles = hackathon.get_shape_coords(cropped_frame)
 
     for square in squares:
         print(square)
 
 
-
-
-
-
-def run_model(model, calibration=None, kinect=None, beamer=None, filter_depth=True, n_frames=5, sigma_gauss=4 ):  # continous run functions with exit handling
+def run_model(model, calibration=None, kinect=None, beamer=None, filter_depth=True, n_frames=5,
+              sigma_gauss=4):  # continous run functions with exit handling
     if calibration == None:
         calibration = model.associated_calibration
     if kinect == None:
@@ -595,14 +670,16 @@ def run_model(model, calibration=None, kinect=None, beamer=None, filter_depth=Tr
 
         model.update_grid(depth)
         model.render_frame(outfile="current_frame.png")
-        beamer.show(input="current_frame.png")
+        beamer.show(input="current_frame.png", rescale=False)
         if model.stop_threat is True:
             raise Exception('Threat stopped')
 
-def run_depth(calibration=None, kinect=None, beamer=None, filter_depth=True, n_frames=5, sigma_gauss=4,  cmap='terrain'):
+
+def run_depth(calibration=None, kinect=None, beamer=None, filter_depth=True, n_frames=5, sigma_gauss=3, cmap='terrain',
+              contours=True):
     if calibration is None:
         try:
-            calibration=Calibration._instances[-1]
+            calibration = Calibration._instances[-1]
             print("using last calibration instance created.")
         except:
             print("no calibration found")
@@ -610,6 +687,10 @@ def run_depth(calibration=None, kinect=None, beamer=None, filter_depth=True, n_f
         kinect = calibration.associated_kinect
     if beamer is None:
         beamer = calibration.associated_beamer
+    if contours is True:
+        main_levels = numpy.arange(0, 2000, 50)
+        sub_levels = numpy.arange(0, 2000, 10)
+        # sub_levels = list(set(numpy.arange(0, 2000, 10)) - set(main_levels)).sort()
 
     while True:
         if filter_depth == True:
@@ -618,66 +699,47 @@ def run_depth(calibration=None, kinect=None, beamer=None, filter_depth=True, n_f
             depth = kinect.get_frame()
 
         depth_rotated = scipy.ndimage.rotate(depth, calibration.calibration_data['rot_angle'], reshape=False)
-        depth_cropped = depth_rotated[calibration.calibration_data['y_lim'][0]:calibration.calibration_data['y_lim'][1], calibration.calibration_data['x_lim'][0]:calibration.calibration_data['x_lim'][1]]
+        depth_cropped = depth_rotated[calibration.calibration_data['y_lim'][0]:calibration.calibration_data['y_lim'][1],
+                        calibration.calibration_data['x_lim'][0]:calibration.calibration_data['x_lim'][1]]
         depth_masked = numpy.ma.masked_outside(depth_cropped, calibration.calibration_data['z_range'][0],
                                                calibration.calibration_data['z_range'][
                                                    1])  # depth pixels outside of range are white, no data pixe;ls are black.
 
-        h = (calibration.calibration_data['y_lim'][1] - calibration.calibration_data['y_lim'][0]) / 100.0
-        w = (calibration.calibration_data['x_lim'][1] - calibration.calibration_data['x_lim'][0]) / 100.0
+        h = calibration.calibration_data['scale_factor'] * (
+                    calibration.calibration_data['y_lim'][1] - calibration.calibration_data['y_lim'][0]) / 100.0
+        w = calibration.calibration_data['scale_factor'] * (
+                    calibration.calibration_data['x_lim'][1] - calibration.calibration_data['x_lim'][0]) / 100.0
 
         fig = plt.figure(figsize=(w, h), dpi=100, frameon=False)
         ax = plt.Axes(fig, [0., 0., 1., 1.])
         ax.set_axis_off()
         fig.add_axes(ax)
-        ax.pcolormesh(depth_masked, vmin=calibration.calibration_data['z_range'][0], vmax=calibration.calibration_data['z_range'][1],cmap=cmap)
+        if contours is True:
+            x = range(numpy.shape(depth_cropped)[1])
+            y = range(numpy.shape(depth_cropped)[0])
+            z = depth_cropped
+            sub_contours = plt.contour(x, y, z, levels=sub_levels, linewidths=0.5, colors=[(0, 0, 0, 0.8)])
+            main_contours = plt.contour(x, y, z, levels=main_levels, linewidths=1.0, colors=[(0, 0, 0, 1.0)])
+            plt.clabel(main_contours, inline=0, fontsize=15, fmt='%3.0f')
+        ax.pcolormesh(depth_masked, vmin=calibration.calibration_data['z_range'][0],
+                      vmax=calibration.calibration_data['z_range'][1], cmap=cmap)
         plt.savefig('current_frame.png', pad_inches=0)
         plt.close(fig)
-        beamer.show(input='current_frame.png')
+        beamer.show(input='current_frame.png', rescale=False)
 
 
-def render_depth_frame(calibration=None, kinect=None, beamer=None, filter_depth=True, n_frames=5, sigma_gauss=4,  cmap='terrain'):
-    if calibration is None:
-        try:
-            calibration=Calibration._instances[-1]
-            print("using last calibration instance created.")
-        except:
-            print("no calibration found")
-    if kinect is None:
-        kinect = calibration.associated_kinect
-    if beamer is None:
-        beamer = calibration.associated_beamer
-
-
-    if filter_depth == True:
-        depth = kinect.get_filtered_frame(n_frames=n_frames, sigma_gauss=sigma_gauss)
-    else:
-        depth = kinect.get_frame()
-
-    depth_rotated = scipy.ndimage.rotate(depth, calibration.calibration_data['rot_angle'], reshape=False)
-    depth_cropped = depth_rotated[calibration.calibration_data['y_lim'][0]:calibration.calibration_data['y_lim'][1], calibration.calibration_data['x_lim'][0]:calibration.calibration_data['x_lim'][1]]
-    depth_masked = numpy.ma.masked_outside(depth_cropped, calibration.calibration_data['z_range'][0],
-                                           calibration.calibration_data['z_range'][
-                                               1])  # depth pixels outside of range are white, no data pixe;ls are black.
-
-    h = (calibration.calibration_data['y_lim'][1] - calibration.calibration_data['y_lim'][0]) / 100.0
-    w = (calibration.calibration_data['x_lim'][1] - calibration.calibration_data['x_lim'][0]) / 100.0
-
-    fig = plt.figure(figsize=(w, h), dpi=100, frameon=False)
-    ax = plt.Axes(fig, [0., 0., 1., 1.])
-    ax.set_axis_off()
-    fig.add_axes(ax)
-    ax.pcolormesh(depth_masked, vmin=calibration.calibration_data['z_range'][0], vmax=calibration.calibration_data['z_range'][1],cmap=cmap)
-    plt.savefig('current_frame.png', pad_inches=0)
-    plt.close(fig)
-    beamer.show(input='current_frame.png')
+def render_depth_frame(calibration=None, kinect=None, beamer=None, filter_depth=True, n_frames=5, sigma_gauss=4,
+                       cmap='terrain'):  ##TODO:remove duplicates in run_depth
+    pass
 
 
 def render_depth_diff_frame(target_depth, kinect, beamer):
     pass
 
+
 def run_depth_diff(target_depth, kinect, beamer):
     pass
+
 
 """
 
