@@ -24,7 +24,30 @@ from skimage import measure
 from scipy.spatial import distance
 
 def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z', ref='x'):
+    """
+        Compute the shared minima of two gradient fields in 3D space.
+        The positions of minima are returned as surface vertices.
 
+        Args:
+            geo_data (:class:`gempy.data_management.InputData`)
+            GX (ndarray): Gradient field in x-direction.
+            GY (ndarray): Gradient field in y-direction.
+            GZ (ndarray, optional): Gradient field in z-direction. Only needed if
+                minima are relative to a different direction than 'z'.
+            direction (str, optional, default = 'z'): Direction to which the gradients refer to,
+                and to which the minima are related.
+                Default for standard topography is 'z'.
+            ref (str, optional, default='x'): Reference direction for
+                marching cubes to attain vertices. Default is 'x'.
+                'x' or 'y' should suffice and lead to the same results
+                in most cases.
+                If needed, ref can be declared as the 'mean' of both,
+                but this comes at high computational costs and is
+                not recommended in most cases.
+
+        Returns:
+            gradient minima vertices (coordinates in 3D space)
+        """
     # for scaling from voxels up to original scale using the original extent
     vox_size_x = np.abs(geo_data.extent[1]-geo_data.extent[0]) / geo_data.resolution[0]
     vox_size_y = np.abs(geo_data.extent[3]-geo_data.extent[2]) / geo_data.resolution[1]
@@ -87,9 +110,9 @@ def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z', ref='x'):
         minx_pos = np.argmin(dist_gxy, axis=1)
         miny_pos = np.argmin(dist_gxy, axis=0)
 
-        # set a cut-off value for minimal distance (here: 3D-diagonal of a voxel)
-        gx_cut_bool = minx < vox_size_diag
-        gy_cut_bool = miny < vox_size_diag
+        # set a cut-off value for minimal distance (here: 3D-diagonal of a voxel/2)
+        gx_cut_bool = minx < (vox_size_diag/2)
+        gy_cut_bool = miny < (vox_size_diag/2)
 
         # need to pair the vertices of one group to those of the other
         # for this we actually only need the minima positions of one vertices group
@@ -118,6 +141,20 @@ def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z', ref='x'):
         raise AttributeError(str(ref) + "must be 'x', 'y' or 'mean'")
 
 def get_gradmin_intersect(geo_data, surface_vertices, grad_minima):
+    """
+        Compute the intersection between gradient minima and a surface of
+        interest as vertices.
+
+        Args:
+            geo_data (:class:`gempy.data_management.InputData`)
+            surface_vertices (ndarray): Vertices of the surface of interest.
+            grad_minima (ndarray): Vertices of the gradient minima surface.
+
+        Returns:
+            intersection vertices (ndarray)
+
+
+        """
     vox_size_x = np.abs(geo_data.extent[1] - geo_data.extent[0]) / geo_data.resolution[0]
     vox_size_y = np.abs(geo_data.extent[3] - geo_data.extent[2]) / geo_data.resolution[1]
     vox_size_z = np.abs(geo_data.extent[5] - geo_data.extent[4]) / geo_data.resolution[2]
@@ -127,11 +164,33 @@ def get_gradmin_intersect(geo_data, surface_vertices, grad_minima):
     v_l = np.array(surface_vertices)
     l_dist = distance.cdist(grad_minima, v_l)
     min_dist = np.min(l_dist, axis=0)
-    l_cut_bool = min_dist < vox_size_diag
+    l_cut_bool = min_dist < (vox_size_diag/2)
     intersect = v_l[l_cut_bool]
     return intersect
 
 def get_voxel_extrema(GX, GY, GZ=np.nan, direction='z'):
+    """
+        Detects gradient extrema in voxels and classifies them as
+        minima, maxima or saddle point based on changes in sign of the
+        gradient.
+
+        Args:
+            GX (ndarray): Gradient field in x-direction.
+            GY (ndarray): Gradient field in y-direction.
+            GZ (ndarray, optional): Gradient field in z-direction. Only needed if
+                minima are relative to a different direction than 'z'.
+            direction (str, optional, default = 'z'): Direction to which the gradients refer to,
+                and to which the minima are related.
+                Default for standard topography is 'z'.
+
+        Returns:
+            All extrema are returned as 'True' or '1' in
+            boolean arrays accordingly.
+
+            [0]: minima voxels (ndarray)
+            [1]: maxima voxels (ndarray)
+            [2]: saddle voxels (ndarray)
+        """
     if direction == 'z':
         gx = GX
         gy = GY
@@ -194,6 +253,36 @@ def get_voxel_extrema(GX, GY, GZ=np.nan, direction='z'):
     return vox_minima, vox_maxima, vox_saddles
 
 def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
+    """
+        Compute possible extrema (minima, maxima and saddle points)
+        for a surface of interest.
+        This works for standard non-extreme topographies,
+        but does not consider the presence of faults.
+
+        Note: This will currently return various points and also
+        several points for one extrema. To attain single points,
+        further distinction and selection is required.
+
+        Args:
+            geo_data (:class:`gempy.data_management.InputData`)
+            GX (ndarray): Gradient field in x-direction.
+            GY (ndarray): Gradient field in y-direction.
+            surface_vertices (ndarray): Vertices of the surface of interest.
+            ref (str, optional, default='x'): Reference direction for
+                marching cubes to attain vertices. Default is 'x'.
+                'x' or 'y' should suffice and lead to the same results
+                in most cases.
+                If needed, ref can be defined as the 'mean' of both,
+                but this comes at high computational costs and is
+                not recommended in most cases.
+
+        Returns:
+            3D coordinates for possible extrema.
+
+            [0]: minima coordinates (ndarray)
+            [1]: maxima coordinates (ndarray)
+            [2]: saddle coordinates (ndarray)
+        """
     vox_size_x = np.abs(geo_data.extent[1] - geo_data.extent[0]) / geo_data.resolution[0]
     vox_size_y = np.abs(geo_data.extent[3] - geo_data.extent[2]) / geo_data.resolution[1]
     vox_size_z = np.abs(geo_data.extent[5] - geo_data.extent[4]) / geo_data.resolution[2]
@@ -217,7 +306,7 @@ def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
         # classify intersection extrema by limiting to distance to according voxel coordinates
         # half a voxel-diagonal to get what is "inside" a voxel (best results, yet)
         min_dist_MIN = np.min(dist_MIN, axis=1)
-        cut_bool_MIN = min_dist_MIN < vox_size_diag / 2
+        cut_bool_MIN = min_dist_MIN < (vox_size_diag / 2)
         intersect_minima_all = intersect[cut_bool_MIN]
     else:
         print('No minima found for surface.')
@@ -231,7 +320,7 @@ def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
         MAX_coord[:, 2] = (MAX_coord0[:, 2] * vox_size_z) + geo_data.extent[4] # + vox_size_z/2
         dist_MAX = distance.cdist(intersect, MAX_coord, 'euclidean')
         min_dist_MAX = np.min(dist_MAX, axis=1)
-        cut_bool_MAX = min_dist_MAX < vox_size_diag / 2
+        cut_bool_MAX = min_dist_MAX < (vox_size_diag / 2)
         intersect_maxima_all = intersect[cut_bool_MAX]
     else:
         print('No maxima found for surface.')
@@ -245,7 +334,7 @@ def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
         SADD_coord[:, 2] = (SADD_coord0[:, 2] * vox_size_z) + geo_data.extent[4] # + vox_size_z/2
         dist_SADD = distance.cdist(intersect, SADD_coord, 'euclidean')
         min_dist_SADD = np.min(dist_SADD, axis=1)
-        cut_bool_SADD = min_dist_SADD < vox_size_diag / 2
+        cut_bool_SADD = min_dist_SADD < (vox_size_diag / 2)
         intersect_saddles_all = intersect[cut_bool_SADD]
     else:
         print('No saddle points found for surface.')
@@ -253,7 +342,27 @@ def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
 
     return intersect_minima_all, intersect_maxima_all, intersect_saddles_all
 
-def get_saddle_point(geo_data, surface_vertices, GX, GY, ref='x'):
+def get_highest_saddle_point(geo_data, surface_vertices, GX, GY, ref='x'):
+    """
+        Compute the maximum saddle point for a surface of interest.
+        Useful for simple models with only on main structure.
+
+        Args:
+            geo_data (:class:`gempy.data_management.InputData`)
+            surface_vertices (ndarray): Vertices of the surface of interest.
+            GX (ndarray): Gradient field in x-direction.
+            GY (ndarray): Gradient field in y-direction.
+            ref (str, optional, default='x'): Reference direction for
+                marching cubes to attain vertices. Default is 'x'.
+                'x' or 'y' should suffice and lead to the same results
+                in most cases.
+                If needed, ref can be defined as the 'mean' of both,
+                but this comes at high computational costs and is
+                not recommended in most cases.
+
+        Returns:
+            3D coordinates for the highest saddle point (ndarray).
+        """
     intersect_saddles_all = get_surface_extrema(geo_data, surface_vertices, GX, GY, ref)[2]
     if len(intersect_saddles_all) > 0:
         max_SADD = intersect_saddles_all[np.argmax(intersect_saddles_all[:, 2])]
@@ -261,10 +370,75 @@ def get_saddle_point(geo_data, surface_vertices, GX, GY, ref='x'):
         max_SADD = []
     return max_SADD
 
-def get_surface_max(geo_data, surface_vertices, GX, GY, ref='x'):
+def get_highest_max(geo_data, surface_vertices, GX, GY, ref='x'):
+    """
+        Compute the highest maximum for a surface of interest.
+        Useful for simple models with only on main structure.
+
+        Args:
+            geo_data (:class:`gempy.data_management.InputData`)
+            surface_vertices (ndarray): Vertices of the surface of interest.
+            GX (ndarray): Gradient field in x-direction.
+            GY (ndarray): Gradient field in y-direction.
+            ref (str, optional, default='x'): Reference direction for
+                marching cubes to attain vertices. Default is 'x'.
+                'x' or 'y' should suffice and lead to the same results
+                in most cases.
+                If needed, ref can be defined as the 'mean' of both,
+                but this comes at high computational costs and is
+                not recommended in most cases.
+
+        Returns:
+            3D coordinates for the highest maximum (ndarray).
+        """
     intersect_maxima_all = get_surface_extrema(geo_data, surface_vertices, GX, GY, ref)[1]
     if len(intersect_maxima_all) > 0:
         it_final_MAX = intersect_maxima_all[np.argmax(intersect_maxima_all[:, 2])]
     else:
         it_final_MAX = []
     return it_final_MAX
+
+def plot_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
+    """
+        Plot the surface of interest and detected extrema (blue= minima,
+        red = maxima, violet = saddle points).
+
+        Args:
+            geo_data (:class:`gempy.data_management.InputData`)
+            surface_vertices (ndarray): Vertices of the surface of interest.
+            GX (ndarray): Gradient field in x-direction.
+            GY (ndarray): Gradient field in y-direction.
+            ref (str, optional, default='x'): Reference direction for
+                marching cubes to attain vertices. Default is 'x'.
+                'x' or 'y' should suffice and lead to the same results
+                in most cases.
+                If needed, ref can be defined as the 'mean' of both,
+                but this comes at high computational costs and is
+                not recommended in most cases.
+
+        """
+    intersect_minima_all, intersect_maxima_all, intersect_saddles_all \
+        = get_surface_extrema(geo_data, surface_vertices, GX, GY, ref)
+    v_l = surface_vertices
+    fig = plt.figure()
+    ax = fig.add_subplot(111, projection='3d')
+    ax.scatter(v_l[:, 0], v_l[:, 1], v_l[:, 2], color='k', alpha=0.2)
+    #ax.scatter(gradmin[:, 0], gradmin[:, 1], gradmin[:, 2], color='k', alpha=0.2)
+    #ax.scatter(intersect[:, 0], intersect[:, 1], intersect[:, 2], color='b')
+    if len(intersect_minima_all) > 0:
+        ax.scatter(intersect_minima_all[:, 0], intersect_minima_all[:, 1], intersect_minima_all[:, 2], \
+                   color='blue',s=200, marker='o')
+    if len(intersect_maxima_all) > 0:
+        ax.scatter(intersect_maxima_all[:,0],intersect_maxima_all[:,1],intersect_maxima_all[:,2],\
+                   color='r', s=200, marker='o')
+    if len(intersect_saddles_all) > 0:
+        ax.scatter(intersect_saddles_all[:, 0], intersect_saddles_all[:, 1], intersect_saddles_all[:, 2], \
+                   color='violet',s=200, marker='o')
+
+    ax.set_xlim(geo_data.extent[0], geo_data.extent[1])
+    ax.set_ylim(geo_data.extent[2], geo_data.extent[3])
+    ax.set_zlim(geo_data.extent[4], geo_data.extent[5])
+    ax.set_xlabel('X [m]')
+    ax.set_ylabel('Y [m]')
+    ax.set_zlabel('Depth [m]')
+    plt.show()
