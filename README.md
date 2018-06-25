@@ -20,7 +20,7 @@
 constructing complex 3D geological models of folded structures, fault networks and unconformities. It was designed from the 
 ground up to support easy embedding in probabilistic frameworks for the uncertainty analysis of subsurface structures.
 
-Check out the documentaion either in [github pages](https://cgre-aachen.github.io/gempy/index.html) (better option), or [read the docs](http://gempy.readthedocs.io/).
+Check out the documentaion either in [github pages](https://gempy.rocks) (better option), or [read the docs](http://gempy.readthedocs.io/).
 
 ## Table of Contents
 

@@ -104,9 +104,11 @@ class InputData(object):
         # Create the pandas dataframes
         # if we dont read a csv we create an empty dataframe with the columns that have to be filled
         self.orientations = pn.DataFrame(columns=self._columns_o_1)
+        self.orientations[self._columns_o_num] = self.orientations[self._columns_o_num].astype(float)
         self.orientations.itype = 'orientations'
 
         self.interfaces = pn.DataFrame(columns=self._columns_i_1)
+        self.interfaces[self._columns_i_num] = self.interfaces[self._columns_i_num].astype(float)
         self.interfaces.itype = 'interfaces'
 
         if path_o or path_i:
@@ -196,6 +198,10 @@ class InputData(object):
                                                   # np.arcsin(self.orientations["G_x"]) /
                                                   # (np.sin(np.arccos(self.orientations["G_y"] /
                                                   # self.orientations["polarity"])))))
+        self.orientations['azimuth'][(self.orientations['G_x'] < 0).as_matrix() * (self.orientations['G_y'] >= 0).as_matrix()] += 360
+        self.orientations['azimuth'][(self.orientations['G_y'] < 0).as_matrix()] += 180
+        self.orientations['azimuth'][(self.orientations['G_x'] > 0).as_matrix() * (self.orientations['G_y'] == 0).as_matrix()] = 90
+        self.orientations['azimuth'][(self.orientations['G_x'] < 0).as_matrix() * (self.orientations['G_y'] == 0).as_matrix()] = 270
 
     def count_faults(self):
         """
@@ -216,6 +222,7 @@ class InputData(object):
 
         center, normal = self.plane_fit(selected_points)
         orientation = get_orientation(normal)
+
         return np.array([*center, *orientation, *normal])
 
     def data_to_pickle(self, path=False):
@@ -534,6 +541,7 @@ class InputData(object):
 
         """
         l = len(self.orientations)
+
         try:
             for key in kwargs:
                 self.orientations.ix[l, str(key)] = kwargs[key]
@@ -617,13 +625,13 @@ class InputData(object):
             assert custom_grid.shape[1] is 3, 'The shape of new grid must be (n,3) where n is' \
                                                                         'the number of points of the grid'
 
-            self.grid.create_custom_grid(custom_grid)
+            self.grid.set_custom_grid(custom_grid)
         if grid_type is 'regular_3D':
             if not extent:
                 extent = self.extent
             if not resolution:
                 resolution = self.resolution
-            self.grid.create_regular_grid_3d(extent, resolution)
+            self.grid.set_regular_grid(extent, resolution)
 
             return self.grid
 
@@ -637,7 +645,7 @@ class InputData(object):
             append: Bool: if you want to append the new data frame or substitute it
         """
         assert set(self._columns_i_1).issubset(interf_Dataframe.columns), \
-            "One or more columns do not match with the expected values " + str(interf_Dataframe.columns)
+            "One or more columns do not match with the expected values " + str(self._columns_i_1)
 
         interf_Dataframe[self._columns_i_num] = interf_Dataframe[self._columns_i_num].astype(float, copy=True)
         interf_Dataframe[['formation_number', 'order_series']] = interf_Dataframe[['formation_number', 'order_series']].astype(int, copy=True)
@@ -684,7 +692,7 @@ class InputData(object):
           """
         assert set(self._columns_o_1).issubset(
             foliat_Dataframe.columns), "One or more columns do not match with the expected values " +\
-                                       str(foliat_Dataframe.columns)
+                                       str(self._columns_o_1)
 
         foliat_Dataframe[self._columns_o_num] = foliat_Dataframe[self._columns_o_num].astype(float, copy=True)
 
@@ -1148,9 +1156,11 @@ class GridClass(object):
 
     def __init__(self):
 
+        self.resolution = None
+        self.extent = None
         self.values = None
 
-    def create_custom_grid(self, custom_grid):
+    def set_custom_grid(self, custom_grid):
         """
         Give the coordinates of an external generated grid
 
@@ -1166,7 +1176,8 @@ class GridClass(object):
         self.values = custom_grid
         return self.values
 
-    def create_regular_grid_3d(self, extent, resolution):
+    @staticmethod
+    def create_regular_grid_3d(extent, resolution):
         """
         Method to create a 3D regular grid where is interpolated
 
@@ -1177,17 +1188,21 @@ class GridClass(object):
         Returns:
             numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid
         """
-        self.extent = extent
-        self.resolution = resolution
 
-        self.dx, self.dy, self.dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0],\
+
+        dx, dy, dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0],\
                                     (extent[5] - extent[4]) / resolution[0]
 
         g = np.meshgrid(
-            np.linspace(self.extent[0] + self.dx / 2, self.extent[1] - self.dx / 2, self.resolution[0], dtype="float32"),
-            np.linspace(self.extent[2] + self.dy / 2, self.extent[3] - self.dy / 2, self.resolution[1], dtype="float32"),
-            np.linspace(self.extent[4] + self.dz / 2, self.extent[5] - self.dz / 2, self.resolution[2], dtype="float32"), indexing="ij"
+            np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0], dtype="float32"),
+            np.linspace(extent[2] + dy / 2, extent[3] - dy / 2, resolution[1], dtype="float32"),
+            np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2], dtype="float32"), indexing="ij"
         )
 
-        self.values = np.vstack(map(np.ravel, g)).T.astype("float32")
-        return self.values
+        values = np.vstack(map(np.ravel, g)).T.astype("float32")
+        return values
+
+    def set_regular_grid(self, extent, resolution):
+        self.extent = extent
+        self.resolution = resolution
+        self.values = self.create_regular_grid_3d(extent, resolution)

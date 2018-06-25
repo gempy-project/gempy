@@ -60,8 +60,8 @@ class InterpolatorData:
         geo_data: Original gempy.DataManagement.InputData object
         geo_data_res: Rescaled data. It has the same structure has gempy.InputData
         interpolator: Instance of the gempy.DataManagement.InterpolaorInput.InterpolatorClass. See Also
-         gempy.DataManagement.InterpolaorInput.InterpolatorClass docs
-         th_fn: Theano function which compute the interpolation
+        gempy.DataManagement.InterpolaorInput.InterpolatorClass docs
+        th_fn: Theano function which compute the interpolation
         dtype:  type of float
 
     """
