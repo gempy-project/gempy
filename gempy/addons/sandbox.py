@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 import matplotlib
 import gempy.hackathon as hackathon
 import IPython
+from warnings import warn
 
 
 # TODO: Superclass or not? methods: run sandbox with runnable, height map only, diff height...
@@ -110,14 +111,18 @@ class Kinect:  # add dummy
         return cropped
 
 
-class Beamer:
+def Beamer(*args, **kwargs):
+    warn("'Projector' class is deprecated due to the stupid german name. Use 'Projector' instead.")
+    return Projector(*args, **kwargs)
+
+class Projector:
     _ids = count(0)
     _instances = []
 
     def __init__(self, calibration=None, resolution=None):
         self.__class__._instances.append(weakref.proxy(self))
         self.id = next(self._ids)
-        self.html_filename = "beamer" + str(self.id) + ".html"
+        self.html_filename = "projector" + str(self.id) + ".html"
         self.frame_filenamne = "frame" + str(self.id) + ".png"
         self.work_directory = None
         self.html_file = None
@@ -131,7 +136,7 @@ class Beamer:
         if isinstance(calibration, Calibration):
             self.calibration = calibration
         else:
-            self.calibration = Calibration(associated_beamer=self)
+            self.calibration = Calibration(associated_projector=self)
             print("calibration not provided or invalid. a new calibration was created.")
 
     def calibrate(self):
@@ -203,30 +208,30 @@ class Beamer:
     def show(self, input='current_frame.png', legend_frame='legend.png', profile_frame='profile.png',
              hot_frame='hot.png', rescale=True):
 
-        beamer_output = Image.new('RGB', self.resolution)
+        projector_output = Image.new('RGB', self.resolution)
         frame = Image.open(input)
         if rescale is True:
-            beamer_output.paste(frame.resize((int(frame.width * self.calibration.calibration_data['scale_factor']),
+            projector_output.paste(frame.resize((int(frame.width * self.calibration.calibration_data['scale_factor']),
                                               int(frame.height * self.calibration.calibration_data['scale_factor']))),
                                 (
                                 self.calibration.calibration_data['x_pos'], self.calibration.calibration_data['y_pos']))
         else:
-            beamer_output.paste(frame, (self.calibration.calibration_data['x_pos'], self.calibration.calibration_data['y_pos']))
+            projector_output.paste(frame, (self.calibration.calibration_data['x_pos'], self.calibration.calibration_data['y_pos']))
 
         if self.calibration.calibration_data['legend_area'] is not False:
             legend = Image.open(legend_frame)
-            beamer_output.paste(legend, (
+            projector_output.paste(legend, (
             self.calibration.calibration_data['legend_x_lim'][0], self.calibration.calibration_data['legend_y_lim'][0]))
         if self.calibration.calibration_data['profile_area'] is not False:
             profile = Image.open(profile_frame)
-            beamer_output.paste(profile, (self.calibration.calibration_data['profile_x_lim'][0],
+            projector_output.paste(profile, (self.calibration.calibration_data['profile_x_lim'][0],
                                           self.calibration.calibration_data['profile_y_lim'][0]))
         if self.calibration.calibration_data['hot_area'] is not False:
             hot = Image.open(hot_frame)
-            beamer_output.paste(hot, (
+            projector_output.paste(hot, (
             self.calibration.calibration_data['hot_x_lim'][0], self.calibration.calibration_data['hot_y_lim'][0]))
 
-        beamer_output.save('output.png')  # TODO: Beamer specific outputs
+        projector_output.save('output.png')  # TODO: Projector specific outputs
 
     # TODO: threaded runloop exporting filtered and unfiltered depth
 
@@ -235,11 +240,11 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
     _ids = count(0)
     _instances = []
 
-    def __init__(self, associated_beamer=None, associated_kinect=None):
+    def __init__(self, associated_projector=None, associated_kinect=None):
         self.id = next(self._ids)
         self.__class__._instances.append(weakref.proxy(self))
-        self.associated_beamer = associated_beamer
-        self.beamer_resolution = associated_beamer.resolution
+        self.associated_projector = associated_projector
+        self.projector_resolution = associated_projector.resolution
         self.associated_kinect = associated_kinect
         self.calibration_file = "calibration" + str(self.id) + ".dat"
         self.calibration_data = {'rot_angle': 0,  # TODO: refactor calibration_data as an inner class for type safety
@@ -251,14 +256,14 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                  'z_range': (800, 1400),
                                  'box_dim': (400, 300),
                                  'legend_area': False,
-                                 'legend_x_lim': (self.beamer_resolution[1] - 50, self.beamer_resolution[0] - 1),
-                                 'legend_y_lim': (self.beamer_resolution[1] - 100, self.beamer_resolution[1] - 50),
+                                 'legend_x_lim': (self.projector_resolution[1] - 50, self.projector_resolution[0] - 1),
+                                 'legend_y_lim': (self.projector_resolution[1] - 100, self.projector_resolution[1] - 50),
                                  'profile_area': False,
-                                 'profile_x_lim': (self.beamer_resolution[0] - 50, self.beamer_resolution[0] - 1),
-                                 'profile_y_lim': (self.beamer_resolution[1] - 100, self.beamer_resolution[1] - 1),
+                                 'profile_x_lim': (self.projector_resolution[0] - 50, self.projector_resolution[0] - 1),
+                                 'profile_y_lim': (self.projector_resolution[1] - 100, self.projector_resolution[1] - 1),
                                  'hot_area': False,
-                                 'hot_x_lim': (self.beamer_resolution[0] - 50, self.beamer_resolution[0] - 1),
-                                 'hot_y_lim': (self.beamer_resolution[1] - 100, self.beamer_resolution[1] - 1)
+                                 'hot_x_lim': (self.projector_resolution[0] - 50, self.projector_resolution[0] - 1),
+                                 'hot_y_lim': (self.projector_resolution[1] - 100, self.projector_resolution[1] - 1)
                                  }
 
         self.cmap = None
@@ -280,12 +285,12 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
         print("calibration saved to " + str(calibration_file))
 
     def create(self):
-        if self.associated_beamer == None:
+        if self.associated_projector == None:
             try:
-                self.associated_beamer = Beamer._instances[-1]
-                print("no associated beamer specified, using last beamer instance created")
+                self.associated_projector = Projector._instances[-1]
+                print("no associated projector specified, using last projector instance created")
             except:
-                print("Error: no Beamer instance found.")
+                print("Error: no Projector instance found.")
 
         if self.associated_kinect == None:
             try:
@@ -358,7 +363,7 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                 color='red')
                 ImageDraw.Draw(hot).text((10, 10), "Hot Area", fill=(255, 255, 0))
                 hot.save('hot.png')
-            self.associated_beamer.show()
+            self.associated_projector.show()
             if close_click == True:
                 calibration_widget.close()
 
@@ -375,9 +380,9 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                                             self.calibration_data['y_lim'][1]],
                                                      min=0, max=480, step=1, continuous_update=False),
                                                  x_pos=widgets.IntSlider(value=self.calibration_data['x_pos'], min=0,
-                                                                         max=self.beamer_resolution[0]),
+                                                                         max=self.projector_resolution[0]),
                                                  y_pos=widgets.IntSlider(value=self.calibration_data['y_pos'], min=0,
-                                                                         max=self.beamer_resolution[1]),
+                                                                         max=self.projector_resolution[1]),
                                                  scale_factor=widgets.FloatSlider(
                                                      value=self.calibration_data['scale_factor'], min=0.1, max=4.0,
                                                      step=0.01, continuous_update=False),
@@ -401,12 +406,12 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                                  legend_x_lim=widgets.IntRangeSlider(
                                                      value=[self.calibration_data['legend_x_lim'][0],
                                                             self.calibration_data['legend_x_lim'][1]],
-                                                     min=0, max=self.beamer_resolution[0], step=1,
+                                                     min=0, max=self.projector_resolution[0], step=1,
                                                      continuous_update=False),
                                                  legend_y_lim=widgets.IntRangeSlider(
                                                      value=[self.calibration_data['legend_y_lim'][0],
                                                             self.calibration_data['legend_y_lim'][1]],
-                                                     min=0, max=self.beamer_resolution[1], step=1,
+                                                     min=0, max=self.projector_resolution[1], step=1,
                                                      continuous_update=False),
                                                  profile_area=widgets.ToggleButton(
                                                      value=self.calibration_data['profile_area'],
@@ -418,12 +423,12 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                                  profile_x_lim=widgets.IntRangeSlider(
                                                      value=[self.calibration_data['profile_x_lim'][0],
                                                             self.calibration_data['profile_x_lim'][1]],
-                                                     min=0, max=self.beamer_resolution[0], step=1,
+                                                     min=0, max=self.projector_resolution[0], step=1,
                                                      continuous_update=False),
                                                  profile_y_lim=widgets.IntRangeSlider(
                                                      value=[self.calibration_data['profile_y_lim'][0],
                                                             self.calibration_data['profile_y_lim'][1]],
-                                                     min=0, max=self.beamer_resolution[1], step=1,
+                                                     min=0, max=self.projector_resolution[1], step=1,
                                                      continuous_update=False),
                                                  hot_area=widgets.ToggleButton(
                                                      value=self.calibration_data['hot_area'],
@@ -435,12 +440,12 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                                  hot_x_lim=widgets.IntRangeSlider(
                                                      value=[self.calibration_data['hot_x_lim'][0],
                                                             self.calibration_data['hot_x_lim'][1]],
-                                                     min=0, max=self.beamer_resolution[0], step=1,
+                                                     min=0, max=self.projector_resolution[0], step=1,
                                                      continuous_update=False),
                                                  hot_y_lim=widgets.IntRangeSlider(
                                                      value=[self.calibration_data['hot_y_lim'][0],
                                                             self.calibration_data['hot_y_lim'][1]],
-                                                     min=0, max=self.beamer_resolution[1], step=1,
+                                                     min=0, max=self.projector_resolution[1], step=1,
                                                      continuous_update=False),
                                                  close_click=widgets.ToggleButton(
                                                      value=False,
@@ -628,7 +633,7 @@ class Model:
 
     def setup(self, start_stream=True):
         if start_stream == True:
-            self.associated_calibration.associated_beamer.start_stream()
+            self.associated_calibration.associated_projector.start_stream()
         self.calculate_scales()
         self.create_empty_depth_grid()
 
@@ -656,14 +661,14 @@ def detect_shapes(kinect, model, calibration, frame=None):
         print(square)
 
 
-def run_model(model, calibration=None, kinect=None, beamer=None, filter_depth=True, n_frames=5,
+def run_model(model, calibration=None, kinect=None, projector=None, filter_depth=True, n_frames=5,
               sigma_gauss=4):  # continous run functions with exit handling
     if calibration == None:
         calibration = model.associated_calibration
     if kinect == None:
         kinect = calibration.associated_kinect
-    if beamer == None:
-        beamer = calibration.associated_beamer
+    if projector == None:
+        projector = calibration.associated_projector
 
     while True:
         if filter_depth == True:
@@ -673,12 +678,12 @@ def run_model(model, calibration=None, kinect=None, beamer=None, filter_depth=Tr
 
         model.update_grid(depth)
         model.render_frame(outfile="current_frame.png")
-        beamer.show(input="current_frame.png", rescale=False)
+        projector.show(input="current_frame.png", rescale=False)
         if model.stop_threat is True:
             raise Exception('Threat stopped')
 
 
-def run_depth(calibration=None, kinect=None, beamer=None, filter_depth=True, n_frames=5, sigma_gauss=3, cmap='terrain',
+def run_depth(calibration=None, kinect=None, projector=None, filter_depth=True, n_frames=5, sigma_gauss=3, cmap='terrain',
               contours=True):
     if calibration is None:
         try:
@@ -688,8 +693,8 @@ def run_depth(calibration=None, kinect=None, beamer=None, filter_depth=True, n_f
             print("no calibration found")
     if kinect is None:
         kinect = calibration.associated_kinect
-    if beamer is None:
-        beamer = calibration.associated_beamer
+    if projector is None:
+        projector = calibration.associated_projector
     if contours is True:
         main_levels = numpy.arange(0, 2000, 50)
         sub_levels = numpy.arange(0, 2000, 10)
@@ -728,19 +733,19 @@ def run_depth(calibration=None, kinect=None, beamer=None, filter_depth=True, n_f
                       vmax=calibration.calibration_data['z_range'][1], cmap=cmap)
         plt.savefig('current_frame.png', pad_inches=0)
         plt.close(fig)
-        beamer.show(input='current_frame.png', rescale=False)
+        projector.show(input='current_frame.png', rescale=False)
 
 
-def render_depth_frame(calibration=None, kinect=None, beamer=None, filter_depth=True, n_frames=5, sigma_gauss=4,
+def render_depth_frame(calibration=None, kinect=None, projector=None, filter_depth=True, n_frames=5, sigma_gauss=4,
                        cmap='terrain'):  ##TODO:remove duplicates in run_depth
     pass
 
 
-def render_depth_diff_frame(target_depth, kinect, beamer):
+def render_depth_diff_frame(target_depth, kinect, projector):
     pass
 
 
-def run_depth_diff(target_depth, kinect, beamer):
+def run_depth_diff(target_depth, kinect, projector):
     pass
 
 
