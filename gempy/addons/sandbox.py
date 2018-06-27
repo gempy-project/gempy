@@ -114,7 +114,7 @@ class Beamer:
     _ids = count(0)
     _instances = []
 
-    def __init__(self, calibration=None, resolution=(800, 600)):
+    def __init__(self, calibration=None, resolution=None):
         self.__class__._instances.append(weakref.proxy(self))
         self.id = next(self._ids)
         self.html_filename = "beamer" + str(self.id) + ".html"
@@ -125,6 +125,8 @@ class Beamer:
         self.frame_file = None
         self.drawdate = "false"  # Boolean as string for html, only used for testing.
         self.refresh = 100  # wait time in ms for html file to load image
+        if resolution is None:
+            resolution = (800, 600)
         self.resolution = resolution
         if isinstance(calibration, Calibration):
             self.calibration = calibration
@@ -302,7 +304,7 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
                                                    self.calibration_data['z_range'][
                                                        1])  # depth pixels outside of range are white, no data pixe;ls are black.
 
-            self.cmap = matplotlib.colors.Colormap('tab20c')
+            self.cmap = matplotlib.colors.Colormap('viridis')
             self.cmap.set_bad('white', 800)
             plt.set_cmap(self.cmap)
             h = (y_lim[1] - y_lim[0]) / 100.0
@@ -314,6 +316,7 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
             fig.add_axes(ax)
             ax.pcolormesh(depth_masked, vmin=self.calibration_data['z_range'][0],
                           vmax=self.calibration_data['z_range'][1])
+            plt.contour(depth_masked, linewidths=1.0, colors=[(0, 0, 0, 1.0)])
             plt.savefig('current_frame.png', pad_inches=0)
             plt.close(fig)
 
