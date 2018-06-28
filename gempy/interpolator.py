@@ -425,8 +425,6 @@ class InterpolatorData:
             #
         def prepare_data_frame(self, geo_data_res, **kwargs):
 
-
-
             # We hide the scaled copy of DataManagement object from the user.
             self.geo_data_res_no_basement = geo_data_res
             self.geo_data_res_no_basement.interfaces = geo_data_res.interfaces[~(geo_data_res.interfaces['formation'].values == 'basement')]#self.geo_data_res_no_basement.interfaces[:-1]
