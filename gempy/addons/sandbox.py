@@ -1,10 +1,15 @@
 
 import os
-
+from warnings import warn
 try:
     import freenect
 except ImportError:
-    print('Freenect is not installed. Sandbox wont work. Good luck')
+    warn('Freenect is not installed. Sandbox wont work. Good luck')
+try:
+    import cv2
+except ImportError:
+    warn('opencv is not installed. Object detection will not work')
+
 import webbrowser
 import pickle
 import weakref
@@ -16,9 +21,9 @@ from PIL import Image, ImageDraw
 import ipywidgets as widgets
 import matplotlib.pyplot as plt
 import matplotlib
-import gempy.hackathon as hackathon
+#import gempy.hackathon as hackathon
 import IPython
-from warnings import warn
+
 
 
 # TODO: Superclass or not? methods: run sandbox with runnable, height map only, diff height...
@@ -232,6 +237,43 @@ class Projector:
         projector_output.save('output.png')  # TODO: Projector specific outputs
 
     # TODO: threaded runloop exporting filtered and unfiltered depth
+
+    def draw_markers(self, coords,image=None):
+        """
+        Draw markers onto an image at the given coordinates
+        if image is a filename, the file will be overwritten. if image is an cv2 image object (numpy.ndarray), function will return an image object
+        :param image:
+        :param coords:
+        :return:
+        """
+        if image is None:
+            image=self.frame_file
+        if type(image) is str:
+            img = cv2.imread(image)
+        if type(image) is numpy.ndarray:
+            img=image
+        for point in coords:
+            cv2.circle(img, tuple(point), 6, (255, 255, 255), -1)
+        if type(image) is str:
+            cv2.imwrite(self.frame_file, img)
+        else:
+            return img
+
+    def draw_line(self, coords, image=None):  # takes list of exactly 2 coordinate pairs
+        if image is None:
+            image=self.frame_file
+        if type(image) is str:
+            img = cv2.imread(image)
+        if type(image) is numpy.ndarray:
+            img=image
+        lineThickness = 2
+        cv2.line(img, tuple(coords[0]), tuple(coords[1]), (255, 255, 255), lineThickness)
+        if type(image) is str:
+            cv2.imwrite(self.frame_file, img)
+        else:
+            return img
+
+
 
 
 class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
@@ -461,7 +503,173 @@ class Detector:
     """
     Detector for Obects or Markers in a specified Region, based on the RGB image from a kinect
     """
-    ...
+    #TODO: implement area of interest!
+    def __init__(self):
+
+        self.shapes=None
+        self.circles=None
+        self.circle_coords=None
+        self.shape_coords=None
+
+        #default parameters for the detection function:
+        self.thresh_value=80
+        self.min_area=30
+
+
+    def where_shapes(self,image, thresh_value=None, min_area=None):
+        """Get the coordinates for all detected shapes.
+
+                Args:
+                    image (image file): Image input.
+                    min_area (int, float): Minimal area for a shape to be detected.
+                Returns:
+                    x- and y- coordinates for all detected shapes as a 2D array.
+
+            """
+        if thresh_value is None:
+            thresh_value = self.thresh_value
+        if min_area is None:
+            min_area=self.min_area
+
+        bilateral_filtered_image = cv2.bilateralFilter(image, 5, 175, 175)
+        gray = cv2.cvtColor(bilateral_filtered_image, cv2.COLOR_BGR2GRAY)
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+        thresh = cv2.threshold(blurred, thresh_value, 255, cv2.THRESH_BINARY)[1]
+        edge_detected_image = cv2.Canny(thresh, 75, 200)
+
+        _, contours, hierarchy = cv2.findContours(edge_detected_image, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+        contour_list = []
+        contour_coords = []
+        for contour in contours:
+            M = cv2.moments(contour)
+            if M["m00"] != 0:
+                cX = int(M["m10"] / M["m00"])
+                cY = int(M["m01"] / M["m00"])
+            else:
+                cX = 0
+                cY = 0
+
+            approx = cv2.approxPolyDP(contour, 0.01 * cv2.arcLength(contour, True), True)
+            area = cv2.contourArea(contour)
+            if ((len(approx) > 8) & (len(approx) < 23) & (area > min_area)):
+                contour_list.append(contour)
+                contour_coords.append([cX, cY])
+        self.shapes=numpy.array(contour_coords)
+
+
+    def where_circles(self, image, thresh_value=None):
+        """Get the coordinates for all detected circles.
+
+                    Args:
+                        image (image file): Image input.
+                        thresh_value (int, optional, default = 80): Define the lower threshold value for shape recognition.
+                    Returns:
+                        x- and y- coordinates for all detected circles as a 2D array.
+
+                """
+        if thresh_value is None:
+            thresh_value = self.thresh_value
+        #output = image.copy()
+        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+        thresh = cv2.threshold(blurred, thresh_value, 255, cv2.THRESH_BINARY)[1]
+        # circles = cv2.HoughCircles(gray, cv2.HOUGH_GRADIENT, 1.2 100)
+        circles = cv2.HoughCircles(thresh, cv2.HOUGH_GRADIENT, 1, 2, numpy.array([]), 200, 8, 4, 8)
+
+        if circles != [] and circles is not None:
+            # convert the (x, y) coordinates and radius of the circles to integers
+            circles = numpy.round(circles[0, :]).astype("int")
+            # print(circles)
+            circle_coords = numpy.array(circles)[:, :2]
+            dist = scipy.spatial.distance.cdist(circle_coords, circle_coords, 'euclidean')
+            #minima = np.min(dist, axis=1)
+            dist_bool = (dist > 0) & (dist < 5)
+            pos = numpy.where(dist_bool == True)[0]
+            grouped = circle_coords[pos]
+            mean_grouped = (numpy.sum(grouped, axis=0) / 2).astype(int)
+            circle_coords = numpy.delete(circle_coords, list(pos), axis=0)
+            circle_coords = numpy.vstack((circle_coords, mean_grouped))
+
+            self.circles = circle_coords.tolist()
+
+
+
+    def filter_circles(self, shape_coords, circle_coords):
+        dist = scipy.spatial.distance.cdist(shape_coords, circle_coords, 'euclidean')
+        minima = numpy.min(dist, axis=1)
+        non_circle_pos = numpy.where(minima > 10)
+        return non_circle_pos
+
+    def where_non_circles(self, image, thresh_value=None, min_area=None):
+        if thresh_value is None:
+            thresh_value = self.thresh_value
+        if min_area is None:
+            min_area=self.min_area
+        shape_coords = self.where_shapes(image, thresh_value, min_area)
+        circle_coords = self.where_circles(image, thresh_value)
+        if len(circle_coords)>0:
+            non_circles = self.filter_circles(shape_coords, circle_coords)
+            return shape_coords[non_circles].tolist()  #ToDo: what is this output?
+        else:
+            return shape_coords.tolist()
+
+    def get_shape_coords(self, image, thresh_value=None, min_area=None):
+        """Get the coordinates for all shapes, classified as circles and non-circles.
+
+                        Args:
+                            image (image file): Image input.
+                            thresh_value (int, optional, default = 80): Define the lower threshold value for shape recognition.
+                            min_area (int, float): Minimal area for a non-circle shape to be detected.
+                        Returns:
+                            x- and y- coordinates for all detected shapes as 2D arrays.
+                            [0]: non-circle shapes
+                            [1]: circle shapes
+
+                    """
+        if thresh_value is None:
+            thresh_value = self.thresh_value
+        if min_area is None:
+            min_area=self.min_area
+        non_circles = self.where_non_circles(image, thresh_value, min_area)
+        circles = self.where_circles(image, thresh_value)
+
+        return non_circles, circles
+
+
+    def plot_all_shapes(self, image, thresh_value=None, min_area=None):
+        """Plot detected shapes onto image.
+
+                            Args:
+                                image (image file): Image input.
+                                thresh_value (int, optional, default = 80): Define the lower threshold value for shape recognition.
+                                min_area (int, float): Minimal area for a non-circle shape to be detected.
+
+                        """
+        if thresh_value is None:
+            thresh_value = self.thresh_value
+        if min_area is None:
+            min_area=self.min_area
+
+        output = image.copy()
+        non_circles, circles = self.get_shape_coords(image, thresh_value, min_area)
+        for (x, y) in circles:
+            cv2.circle(output, (x, y), 5, (0, 255, 0), 3)
+            # cv2.rectangle(output, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
+        for (x, y) in non_circles:
+            cv2.rectangle(output, (x - 5, y - 5), (x + 5, y + 5), (0, 128, 255), -1)
+        out_image = numpy.hstack([image, output])
+        plt.imshow(out_image)
+
+    def non_circles_fillmask(self, image, th1=60, th2=80):   #TODO: what is this function?
+        bilateral_filtered_image = cv2.bilateralFilter(image, 5, 175, 175)
+        gray = cv2.cvtColor(bilateral_filtered_image, cv2.COLOR_BGR2GRAY)
+        blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+        thresh = cv2.threshold(blurred, th1, 1, cv2.THRESH_BINARY)[1]
+        circle_coords = self.where_circles(image, th2)
+        for (x, y) in circle_coords:           cv2.circle(thresh, (x, y), 20, 1, -1)
+        return numpy.invert(thresh.astype(bool))
+
 
 
 
@@ -472,7 +680,7 @@ def detect_shapes(kinect, model, calibration, frame=None):
     rotated_frame = scipy.ndimage.rotate(frame, calibration.calibration_data['rot_angle'], reshape=False)
     cropped_frame = rotated_frame[calibration.calibration_data['y_lim'][0]:calibration.calibration_data['y_lim'][1],
                     calibration.calibration_data['x_lim'][0]:calibration.calibration_data['x_lim'][1]]
-    squares, circles = hackathon.get_shape_coords(cropped_frame)
+    squares, circles = Detector.get_shape_coords(cropped_frame)
 
     for square in squares:
         print(square)
