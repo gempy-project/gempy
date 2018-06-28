@@ -1337,7 +1337,7 @@ class TheanoGraph(object):
 
         return sel
 
-    def block_series(self, slope=50, weights=None):
+    def block_series(self, slope=5000, weights=None):
         """
         Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
 
