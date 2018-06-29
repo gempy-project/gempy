@@ -20,9 +20,9 @@ def cut_df(df, e):
     Returns:
         pandas.DataFrame
     """
-    return df[(df.X > e[0]) & (df.X < e[1]) &
-              (df.Y > e[2]) & (df.Y < e[3]) &
-              (df.Z > e[4]) & (df.Z < e[5])]
+    return df[(abs(df.X) > abs(e[0])) & (abs(df.X) < abs(e[1])) &
+              (abs(df.Y) > abs(e[2])) & (abs(df.Y) < abs(e[3])) &
+              (abs(df.Z) > abs(e[4])) & (abs(df.Z) < abs(e[5]))]
 
 
 def read_earth_vision_grid(fp, formation=None, preserve_colrow=False, group=None, decimate=None):
@@ -58,15 +58,17 @@ def read_earth_vision_grid(fp, formation=None, preserve_colrow=False, group=None
 
 def read_list(fps, formations=None, groups=None, preserve_colrow=False):
     """
+    Given a list of file paths for EarthVision files, reads them all in and returns gempy interfaces dataframe with all
+    points in given EarthVision surfaces.
 
     Args:
-        fps:
-        formations:
-        groups:
-        preserve_colrow:
+        fps (list): List of filepath strings to EarthVision files
+        formations (list): List of corresponding formation names to apply to each read surface.
+        groups (list): List of group names (relevant for proper identification of seperate parts of same layer)
+        preserve_colrow (bool): If to preserve the col/row parameters stored in EarthVision files, default: False
 
     Returns:
-
+        pandas.DataFrame: gempy interfaces dataframe
     """
     if preserve_colrow:
         columns = "X Y Z col row".split()
