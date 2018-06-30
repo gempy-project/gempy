@@ -41,7 +41,7 @@ class Model:
         self.stop_threat = False
         self.lock = lock
 
-        if associated_calibration == None:
+        if associated_calibration is None:
             try:
                 self.associated_calibration = Calibration._instances[-1]
                 print("no calibration specified, using last calibration instance created: ",self.associated_calibration)
@@ -177,7 +177,7 @@ class Model:
         # ...
         pass
 
-    def setup(self, start_stream=True):
+    def setup(self, start_stream=False):
         if start_stream == True:
             self.associated_calibration.associated_projector.start_stream()
         self.calculate_scales()

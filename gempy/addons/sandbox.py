@@ -23,10 +23,9 @@ import matplotlib.pyplot as plt
 import matplotlib
 #import gempy.hackathon as hackathon
 import IPython
+import threading
 
 
-
-# TODO: Superclass or not? methods: run sandbox with runnable, height map only, diff height...
 class Kinect:  # add dummy
     _ids = count(0)
     _instances = []
@@ -38,6 +37,12 @@ class Kinect:  # add dummy
         self.dummy = dummy
         self.mirror = mirror
         self.rgb_frame = None
+
+        #TODO: include filter self.-filter parameters as function defaults
+        self.n_frames = 5 #filter parameters
+        self.sigma_gauss = 3
+        self.filter = 'gaussian' #TODO: deprecate get_filtered_frame, make it switchable in runtime
+
 
         if self.dummy == False:
             print("looking for kinect...")
@@ -77,19 +82,25 @@ class Kinect:  # add dummy
             self.depth = synth_depth
             return self.depth
 
-    def get_filtered_frame(self, n_frames=5, sigma_gauss=None):
+    def get_filtered_frame(self, n_frames=None, sigma_gauss=None): #TODO: deprecate?
+        if n_frames==None:
+            n_frames=self.n_frames
+        if sigma_gauss==None:
+            sigma_gauss=self.sigma_gauss
+
         if self.dummy == True:
             self.get_frame()
             return self.depth
-        else:
-            depth_array = self.get_frame()
+        elif self.filter=='gaussian':
+
+            depth_array = freenect.sync_get_depth(index=self.id, format=freenect.DEPTH_MM)[0]
             for i in range(n_frames - 1):
-                depth_array = numpy.dstack([depth_array, self.get_frame()])
+                depth_array = numpy.dstack([depth_array, freenect.sync_get_depth(index=self.id, format=freenect.DEPTH_MM)[0]])
             depth_array_masked = numpy.ma.masked_where(depth_array == 0, depth_array)
             self.depth = numpy.ma.mean(depth_array_masked, axis=2)
-            if sigma_gauss:
-                self.depth = scipy.ndimage.filters.gaussian_filter(self.depth, sigma_gauss)
+            self.depth = scipy.ndimage.filters.gaussian_filter(self.depth, sigma_gauss)
             return self.depth
+
 
     def get_rgb_frame(self):
         if self.dummy == False:
@@ -501,7 +512,7 @@ class Calibration:  # TODO: add legend position; add rotation; add z_range!!!!
 
 class Detector:
     """
-    Detector for Obects or Markers in a specified Region, based on the RGB image from a kinect
+    Detector for Objects or Markers in a specified Region, based on the RGB image from a kinect
     """
     #TODO: implement area of interest!
     def __init__(self):
@@ -671,6 +682,135 @@ class Detector:
         return numpy.invert(thresh.astype(bool))
 
 
+class Terrain:
+    """
+    simple module to visualize the topography in the sandbox with contours and a colormap.
+    """
+    def __init__(self,calibration=None, cmap='terrain', contours=True):
+        """
+        :type contours: boolean
+        :type cmap: matplotlib colormap object or keyword
+        :type calibration: Calibration object. By default the last created calibration is used.
+
+        """
+        if calibration is None:
+            try:
+                self.calibration = Calibration._instances[-1]
+                print("using last calibration instance created: ", calibration)
+            except:
+                print("no calibration found")
+                self.calibration = calibration
+
+        self.cmap = cmap
+        self.contours = contours
+        self.main_levels = numpy.arange(0, 2000, 50)
+        self.sub_levels = numpy.arange(0, 2000, 10)
+
+
+    def setup(self):
+        pass
+
+    def render_frame(self,depth):
+        depth_rotated = scipy.ndimage.rotate(depth, self.calibration.calibration_data['rot_angle'], reshape=False)
+        depth_cropped = depth_rotated[self.calibration.calibration_data['y_lim'][0]:self.calibration.calibration_data['y_lim'][1],
+                        self.calibration.calibration_data['x_lim'][0]:self.calibration.calibration_data['x_lim'][1]]
+        depth_masked = numpy.ma.masked_outside(depth_cropped, self.calibration.calibration_data['z_range'][0],
+                                               self.calibration.calibration_data['z_range'][
+                                                   1])  # depth pixels outside of range are white, no data pixe;ls are black.
+
+        h = self.calibration.calibration_data['scale_factor'] * (
+                    self.calibration.calibration_data['y_lim'][1] - self.calibration.calibration_data['y_lim'][0]) / 100.0
+        w = self.calibration.calibration_data['scale_factor'] * (
+                self.calibration.calibration_data['x_lim'][1] - self.calibration.calibration_data['x_lim'][0]) / 100.0
+
+        fig = plt.figure(figsize=(w, h), dpi=100, frameon=False)
+        ax = plt.Axes(fig, [0., 0., 1., 1.])
+        ax.set_axis_off()
+        fig.add_axes(ax)
+        if self.contours is True:
+            x = range(numpy.shape(depth_cropped)[1])
+            y = range(numpy.shape(depth_cropped)[0])
+            z = depth_cropped
+            sub_contours = plt.contour(x, y, z, levels=self.sub_levels, linewidths=0.5, colors=[(0, 0, 0, 0.8)])
+            main_contours = plt.contour(x, y, z, levels=self.main_levels, linewidths=1.0, colors=[(0, 0, 0, 1.0)])
+            plt.clabel(main_contours, inline=0, fontsize=15, fmt='%3.0f')
+        ax.pcolormesh(depth_masked, vmin=self.calibration.calibration_data['z_range'][0],
+                      vmax=self.calibration.calibration_data['z_range'][1], cmap=self.cmap)
+        plt.savefig('current_frame.png', pad_inches=0)
+        plt.close(fig)
+
+class Module:
+    """
+    container for modules that handles threading. any kind of module can be loaded, as long as it contains a 'setup' and 'render_frame" method!
+    """
+    _ids = count(0)
+    _instances = []
+
+    def __init__(self, module, kinect=None, calibration=None, projector=None):
+
+        if kinect is None:
+            try:
+                self.kinect = Kinect._instances[-1]
+                print("using last kinect instance created: ", kinect)
+            except:
+                print("no kinect found")
+                self.kinect = kinect
+
+
+        if calibration is None:
+            try:
+                self.calibration = Calibration._instances[-1]
+                print("using last calibration instance created: ", calibration)
+            except:
+                print("no calibration found")
+                self.calibration = calibration
+
+        if projector is None:
+            try:
+                projector = Projector._instances[-1]
+                print("using last projector instance created: ", calibration)
+            except:
+                print("no calibration found")
+                self.projector=projector
+
+        self.id = next(self._ids)
+        self.__class__._instances.append(weakref.proxy(self))
+
+        self.module = module
+        self.thread = None
+        self.lock = threading.Lock()
+        self.stop_threat = False
+
+        #controlParameters:
+
+
+    def loop(self):
+        while self.stop_thread is False:
+            depth=self.kinect.get_filtered_frame()
+            self.module.render_frame(depth)
+            self.beamer.show()
+
+    def run(self):
+        self.stop_threat= False
+        self.module.setup()
+        self.lock.acquire()
+        self.thread = threading.Thread(target=self.loop, daemon=None)
+        self.thread.start()
+        # with thread and thread lock move these to main sandbox
+
+
+    def pause(self):
+        self.lock.release()
+
+    def resume(self):
+        self.lock.acquire()
+
+    def kill(self):
+        self.stop_threat=True
+        try:
+            self.lock.release()
+        except:
+            pass
 
 
 
@@ -687,57 +827,7 @@ def detect_shapes(kinect, model, calibration, frame=None):
 
 
 
-def run_depth(calibration=None, kinect=None, projector=None, filter_depth=True, n_frames=5, sigma_gauss=3, cmap='terrain',
-              contours=True):
-    if calibration is None:
-        try:
-            calibration = Calibration._instances[-1]
-            print("using last calibration instance created: ", calibration)
-        except:
-            print("no calibration found")
-    if kinect is None:
-        kinect = calibration.associated_kinect
-    if projector is None:
-        projector = calibration.associated_projector
-    if contours is True:
-        main_levels = numpy.arange(0, 2000, 50)
-        sub_levels = numpy.arange(0, 2000, 10)
-        # sub_levels = list(set(numpy.arange(0, 2000, 10)) - set(main_levels)).sort()
 
-    while True:
-        if filter_depth == True:
-            depth = kinect.get_filtered_frame(n_frames=n_frames, sigma_gauss=sigma_gauss)
-        else:
-            depth = kinect.get_frame()
-
-        depth_rotated = scipy.ndimage.rotate(depth, calibration.calibration_data['rot_angle'], reshape=False)
-        depth_cropped = depth_rotated[calibration.calibration_data['y_lim'][0]:calibration.calibration_data['y_lim'][1],
-                        calibration.calibration_data['x_lim'][0]:calibration.calibration_data['x_lim'][1]]
-        depth_masked = numpy.ma.masked_outside(depth_cropped, calibration.calibration_data['z_range'][0],
-                                               calibration.calibration_data['z_range'][
-                                                   1])  # depth pixels outside of range are white, no data pixe;ls are black.
-
-        h = calibration.calibration_data['scale_factor'] * (
-                    calibration.calibration_data['y_lim'][1] - calibration.calibration_data['y_lim'][0]) / 100.0
-        w = calibration.calibration_data['scale_factor'] * (
-                    calibration.calibration_data['x_lim'][1] - calibration.calibration_data['x_lim'][0]) / 100.0
-
-        fig = plt.figure(figsize=(w, h), dpi=100, frameon=False)
-        ax = plt.Axes(fig, [0., 0., 1., 1.])
-        ax.set_axis_off()
-        fig.add_axes(ax)
-        if contours is True:
-            x = range(numpy.shape(depth_cropped)[1])
-            y = range(numpy.shape(depth_cropped)[0])
-            z = depth_cropped
-            sub_contours = plt.contour(x, y, z, levels=sub_levels, linewidths=0.5, colors=[(0, 0, 0, 0.8)])
-            main_contours = plt.contour(x, y, z, levels=main_levels, linewidths=1.0, colors=[(0, 0, 0, 1.0)])
-            plt.clabel(main_contours, inline=0, fontsize=15, fmt='%3.0f')
-        ax.pcolormesh(depth_masked, vmin=calibration.calibration_data['z_range'][0],
-                      vmax=calibration.calibration_data['z_range'][1], cmap=cmap)
-        plt.savefig('current_frame.png', pad_inches=0)
-        plt.close(fig)
-        projector.show(input='current_frame.png', rescale=False)
 
 
 def render_depth_frame(calibration=None, kinect=None, projector=None, filter_depth=True, n_frames=5, sigma_gauss=4,
