@@ -285,26 +285,21 @@ def compute_adj_shape(n1, n2, labels_block):
 
 
 def compare_graphs(G1, G2):
-    """
-    Compares two graph objects using the Jaccard-Index.
+    """Jaccard index for numeric topology graph comparisons.
 
     Args:
         G1 (skimage.future.graph.rag.RAG): Topology graph object.
         G2 (skimage.future.graph.rag.RAG): Another topology graph object.
 
     Returns:
-        (float): Jaccard-Index
+        (float): Jaccard-Index (1 if identical graph, 0 if entirely dissimilar)
+
+    Source:
+        http://dataconomy.com/2015/04/implementing-the-five-most-popular-similarity-measures-in-python/
     """
-    intersection = 0
-    union = G1.number_of_edges()
-
-    for n1, n2 in G1.edges():
-        if G2.has_edge(n1, n2):
-            intersection += 1
-        else:
-            union += 1
-
-    return intersection / union
+    intersection_cardinality = len(set.intersection(*[set(G1.edges()), set(G2.edges())]))
+    union_cardinality = len(set.union(*[set(G1.edges()), set(G2.edges())]))
+    return intersection_cardinality / float(union_cardinality)
 
 
 def convert_centroids_2d(centroids, direction="y"):
