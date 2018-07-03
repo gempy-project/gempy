@@ -751,7 +751,7 @@ class Module:
         if kinect is None:
             try:
                 self.kinect = Kinect._instances[-1]
-                print("using last kinect instance created: ", kinect)
+                print("using last kinect instance created: ", self.kinect)
             except:
                 print("no kinect found")
                 self.kinect = kinect
@@ -760,17 +760,17 @@ class Module:
         if calibration is None:
             try:
                 self.calibration = Calibration._instances[-1]
-                print("using last calibration instance created: ", calibration)
+                print("using last calibration instance created: ", self.calibration)
             except:
                 print("no calibration found")
                 self.calibration = calibration
 
         if projector is None:
             try:
-                projector = Projector._instances[-1]
-                print("using last projector instance created: ", calibration)
+                self.projector = Projector._instances[-1]
+                print("using last projector instance created: ", self.projector)
             except:
-                print("no calibration found")
+                print("no projector found")
                 self.projector=projector
 
         self.id = next(self._ids)
@@ -779,7 +779,7 @@ class Module:
         self.module = module
         self.thread = None
         self.lock = threading.Lock()
-        self.stop_threat = False
+        self.stop_thread = False
 
         #controlParameters:
 

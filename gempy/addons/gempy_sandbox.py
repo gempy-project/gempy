@@ -123,7 +123,9 @@ class Model:
             self.norm = plotter._norm
             self.lot = plotter._color_lot
 
-    def render_frame(self, outfile=None):
+    def render_frame(self, depth, outfile=None):
+        self.depth_grid=self.update_grid(depth) #muss das?
+        
 
         if self.cmap is None:
             self.set_cmap()
@@ -172,6 +174,8 @@ class Model:
         else:
             plt.savefig(outfile, pad_inches=0)
             plt.close(fig)
+
+
 
     def create_legend(self):
         # ...
