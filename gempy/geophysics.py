@@ -41,7 +41,6 @@ class GravityPreprocessing(object):
                                 interp_data.geo_data_res.resolution[2]
         self.vox_size = self.set_vox_size()
 
-
         if range_max is None:
             self.range_max = self.default_range()
         else:
