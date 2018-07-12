@@ -450,8 +450,6 @@ class vtkPlot():
                       ' interface for each of them')
         #self.vv.interp_data.update_interpolator(self.geo_data)
 
-
-
         self.vv.interactor.Render()
 
     def qgrid_callBack_fr(self, change):

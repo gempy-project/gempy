@@ -41,7 +41,6 @@ class GravityPreprocessing(object):
                                 interp_data.geo_data_res.resolution[2]
         self.vox_size = self.set_vox_size()
 
-
         if range_max is None:
             self.range_max = self.default_range()
         else:
@@ -152,7 +151,7 @@ class GravityPreprocessing(object):
 
         # TODO Include all in the loop. At the moment I am tiling all grids and is useless
         # Rescale z
-        z_res = (z-self.interp_data.centers[2])/self.interp_data.rescaling_factor + 0.5001
+        z_res = z #(z-self.interp_data.centers[2])/self.interp_data.rescaling_factor + 0.5001
         ai_extent_rescaled = (self.ai_extent - np.repeat(self.interp_data.centers, 2)) / \
                               self.interp_data.rescaling_factor + 0.5001
 
