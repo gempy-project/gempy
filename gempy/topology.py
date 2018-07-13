@@ -67,7 +67,6 @@ def topology_analyze(lith_block, fault_block, n_faults,
             labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithology id.
     """
     block_original = lith_block.astype(int)
-    lithologies = np.unique(lith_block.astype(int))
 
     # generate unique labels block by combining lith and fault blocks
     labels_block = get_unique_regions(lith_block, fault_block, n_faults, neighbors=neighbors, noddy=noddy)
@@ -84,8 +83,8 @@ def topology_analyze(lith_block, fault_block, n_faults,
         filter_region_areas(G, rprops, area_threshold=filter_threshold_area)
 
     # create look-up-tables in both directions
-    lith_to_labels_lot = lithology_labels_lot(lithologies, labels_block, block_original, labels_unique)
-    labels_to_lith_lot = labels_lithology_lot(labels_unique, labels_block, block_original)
+    lith_to_labels_lot = lithology_labels_lot(labels_block, block_original)
+    labels_to_lith_lot = labels_lithology_lot(labels_block, block_original)
     # classify the edges (stratigraphic, across-fault)
     classify_edges(G, centroids, block_original, fault_block)
     # compute the adjacency areas for each edge
@@ -235,12 +234,12 @@ def get_centroids(rprops):
     return centroids
 
 
-def lithology_labels_lot(lithologies, labels, block_original, labels_unique, verbose=0):
+def lithology_labels_lot(labels, block_original, verbose=0):
     """Create LOT from lithology id to label."""
     lot = {}
-    for lith in lithologies:
+    for lith in np.unique(block_original):
         lot[str(lith)] = {}
-    for l in labels_unique:
+    for l in np.unique(labels):
         if len(np.where(labels == l)) == 3:
             _x, _y, _z = np.where(labels == l)
             lith_id = np.unique(block_original[_x, _y, _z])[0]
@@ -255,16 +254,16 @@ def lithology_labels_lot(lithologies, labels, block_original, labels_unique, ver
     return lot
 
 
-def labels_lithology_lot(labels_unique, labels, block_original, verbose=0):
+def labels_lithology_lot(labels, lb, verbose=0):
     """Create LOT from label to lithology id."""
     lot = {}
-    for l in labels_unique:
+    for l in np.unique(labels):
         if len(np.where(labels == l)) == 3:
             _x, _y, _z = np.where(labels == l)
-            lith_id = np.unique(block_original[_x, _y, _z])[0]
+            lith_id = np.unique(lb[_x, _y, _z])[0]
         else:
             _x, _z = np.where(labels == l)
-            lith_id = np.unique(block_original[_x, _z])[0]
+            lith_id = np.unique(lb[_x, _z])[0]
         if verbose:
             print(l)
         lot[l] = str(lith_id)
