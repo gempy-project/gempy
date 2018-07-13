@@ -281,7 +281,7 @@ class PlotData2D(object):
             kwargs['cmap'] = self._cmap #
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
-     #   print(plot_block[_a, _b, _c].T, type(plot_block[_a, _b, _c].T))
+
         im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
                         extent=extent_val,
                         interpolation=interpolation,
@@ -372,7 +372,7 @@ class PlotData2D(object):
             r1 = geo_data.resolution[0]
             r2 = geo_data.resolution[1]
 
-        for edge in G.edges_iter():
+        for edge in G.edges():
             a, b = edge
 
             plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
@@ -843,8 +843,9 @@ class vtkVisualization:
 
         # Position
         source = vtk.vtkPlaneSource()
-        source.SetCenter(X, Y, Z)
+
         source.SetNormal(Gx, Gy, Gz)
+        source.SetCenter(X, Y, Z)
         a, b, c, d_, e, f = self.geo_data.extent
 
         source.SetPoint1(X+self._e_dx*.01, Y-self._e_dy*.01, Z)
@@ -855,8 +856,9 @@ class vtkVisualization:
         min_extent = np.min([self._e_dx, self._e_dy, self._e_dz])
         d.SetPlaceFactor(0.1)
 
-        d.PlaceWidget(a,b,c,d_,e,f)
+        d.PlaceWidget(a, b, c, d_, e, f)
         d.SetNormal(Gx, Gy, Gz)
+        d.SetCenter(X, Y, Z)
         d.GetPlaneProperty().SetColor(self.C_LOT[fn])
         d.GetHandleProperty().SetColor(self.C_LOT[fn])
         d.GetHandleProperty().SetOpacity(alpha)
@@ -892,13 +894,14 @@ class vtkVisualization:
         self.surf_rend_1 = []
 
         formations = self.formation_name
-        fns = self.formation_number
+
+        fns = self.geo_data.interfaces[~(self.geo_data.interfaces['formation'].values == 'basement')]['formation_number'].unique().squeeze()#self.formation_number
         assert type(
             vertices) is list, 'vertices and simpleces have to be a list of arrays even when only one formation' \
                                'is passed'
         assert 'DefaultBasement' not in formations, 'Remove DefaultBasement from the list of formations'
      #   print('I am in set surfaces')
-        for v, s, fn in zip(vertices, simplices, fns):
+        for v, s, fn in zip(vertices, simplices, np.atleast_1d(fns)):
             act, map, pol = self.create_surface(v, s, fn, alpha)
             self.surf_rend_1.append(act)
 

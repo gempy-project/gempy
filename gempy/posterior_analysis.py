@@ -58,7 +58,21 @@ def change_input_data(db, interp_data, i):
 
     # update interpolator
     interp_data.update_interpolator()
+    if verbose:
+        print("interp_data parameters changed.")
+    return interp_data
 
+
+def change_input_data_avrg(db, interp_data):
+    """Calculates average posterior parameters and updates interp_data.geo_data_res dataframes."""
+
+    # get input data
+    trace = db.input_data.gettrace()
+    # set average in df
+    interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = trace[:, 0][:].mean(axis=0)
+    interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = trace[:, 1][:].mean(axis=0)
+    recalc_gradients(interp_data.geo_data_res.orientations)  # recalc gradients
+    interp_data.update_interpolator()  # update interpolator
     return interp_data
 
 
@@ -120,7 +134,7 @@ def compute_posterior_models_all(db, interp_data, indices, u_grade=None, get_pot
     return lbs, fbs
 
 
-def compute_probability_lithology(lith_blocks):
+def calculate_probability_lithology(lith_blocks):
     """Blocks must be just the lith blocks!"""
     lith_id = np.unique(lith_blocks)
     # lith_count = np.zeros_like(lith_blocks[0:len(lith_id)])
@@ -131,7 +145,7 @@ def compute_probability_lithology(lith_blocks):
     return lith_prob
 
 
-def calcualte_information_entropy(lith_prob):
+def calculate_information_entropy(lith_prob):
     """Calculates information entropy for the given probability array."""
     ie = np.zeros_like(lith_prob[0])
     for l in lith_prob:
@@ -146,6 +160,16 @@ def calculate_information_entropy_total(ie, absolute=False):
         return np.sum(ie)
     else:
         return np.sum(ie) / np.size(ie)
+
+
+def calculate_ie(lbs):
+    """Computes the per-voxel and total information entropy of given block models."""
+
+    lith_prob = calculate_probability_lithology(lbs)
+    ie = calculate_information_entropy(lith_prob)
+    ie_total = calculate_information_entropy_total(ie)
+
+    return ie, ie_total
 
 
 class Posterior:
@@ -232,29 +256,18 @@ class Posterior:
             print("interp_data parameters changed.")
         return interp_data
 
-    # TODO: DEP Use gp.compute_model instead
-    # def compute_posterior_model(self, interp_data, i):
-    #     """Computes the model with the respective posterior input data. Returns lith block, fault block."""
-    #     self.change_input_data(interp_data, i)
-    #     return gp.compute_model(interp_data)
+    def change_input_data_avrg(self, interp_data):
+        """Calculates average posterior parameters and updates interp_data.geo_data_res dataframes."""
 
-
-
-    def compute_posterior_model_avrg(self, interp_data):
-        """Computes average posterior model."""
-        list_interf = []
-        list_fol = []
-        for i in range(self.n_iter):
-            list_interf.append(self.input_data[i][0])
-            list_fol.append(self.input_data[i][1])
-
-        interf_avrg = pn.concat(list_interf).groupby(level=0).mean()
-        fol_avrg = pn.concat(list_fol).groupby(level=0).mean()
-
+        # average input data
+        interf_avrg = self.input_data[:, 0][:].mean(axis=0)
+        orient_avrg = self.input_data[:, 1][:].mean(axis=0)
+        # set average in df
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = interf_avrg
-        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = fol_avrg
-        interp_data.update_interpolator()
-        return gp.compute_model(interp_data)
+        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = orient_avrg
+        recalc_gradients(interp_data.geo_data_res.orientations)  # recalc gradients
+        interp_data.update_interpolator()  # update interpolator
+        return interp_data
 
     def compute_entropy(self):
         """Computes the voxel information entropy of stored block models."""
@@ -262,8 +275,8 @@ class Posterior:
             return "No models stored in self.lb, please run 'self.compute_posterior_models_all' to generate block" \
                    " models for all iterations."
 
-        self.lith_prob = compute_probability_lithology(self.lb[:, 0, :])
-        self.ie = calcualte_information_entropy(self.lith_prob)
+        self.lith_prob = calculate_probability_lithology(self.lb[:, 0, :])
+        self.ie = calculate_information_entropy(self.lith_prob)
         self.ie_total = calculate_information_entropy_total(self.ie)
         print("Information Entropy successfully calculated. Stored in self.ie and self.ie_total")
 
@@ -305,9 +318,6 @@ class Posterior:
             print("Topology analysis completed.")
 
 
-
-
-
 def find_first_match(t, topo_u):
     index = 0
     for t2 in topo_u:
@@ -339,7 +349,6 @@ def get_unique_topo(topo_l):
 
 def get_unique_jaccard(js):
     j_u = np.unique(js)  # unique topology states
-
 
 
 def modify_plane_dip(dip, group_id, data_obj):

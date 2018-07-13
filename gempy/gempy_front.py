@@ -17,7 +17,7 @@
 
     Module with classes and methods to perform implicit regional modelling based on
     the potential field method.
-    Tested on Ubuntu 14
+    Tested on Ubuntu 16
 
     Created on 10/10 /2016
 
@@ -31,7 +31,9 @@ import sys
 sys.path.append(path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
 import numpy as _np
+from numpy import ndarray
 import pandas as _pn
+from pandas import DataFrame
 
 import copy
 import warnings
@@ -47,21 +49,34 @@ import gempy.posterior_analysis as pa # So far we use this type of import becaus
 
 def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_interfaces=False):
     """
-    Computes the geological model.
+    Computes the geological model and any extra output given.
 
     Args:
-        interp_data (gempy.DataManagement.InterpolatorInput): Rescaled data.
-        u_grade (list): grade of the polynomial for the universal part of the Kriging interpolations. The value has to
-        be either 0, 3 or 9 (number of equations) and the length has to be the number of series. By default the value
-        depends on the number of points given as input to try to avoid singular matrix. NOTE: if during the computation
-        of the model a singular matrix is returned try to reduce the u_grade of the series.
+
+        interp_data (:class:`gempy.interpolator.InterpolatorData`)
+        output ({'geology', 'gravity', 'gradients'}): Only if theano functions has not been compiled yet
+        u_grade (array-like of {0, 1, 2}): grade of the polynomial for the universal part of the Kriging interpolations. The value has to
+            be either 0, 1 or 2  and the length has to be the number of series. By default the value
+            depends on the number of points given as input to try to avoid singular matrix. NOTE: if during the computation
+            of the model a singular matrix is returned try to reduce the u_grade of the series.
         get_potential_at_interfaces (bool): Get potential at interfaces
 
     Returns:
-        numpy.array: if compute_all was chosen in gempy.DataManagement.InterpolatorInput, the first
-        row will be the lithology block model, the second the potential field and the third the fault
-        network block. if compute_all was False only the lithology block model will be computed. In
-        addition if get_potential_at_interfaces is True, the value of the potential field at each of
+        list of :class:`_np.array`: depending on the chosen out returns different number of solutions:
+            if output is geology:
+                1) Lithologies: block and scalar field
+                2) Faults: block and scalar field for each faulting plane
+            if output is 'gravity':
+                1) Weights: block and scalar field
+                2) Faults: block and scalar field for each faulting plane
+                3) Forward gravity
+            if output is gradients:
+                1) Lithologies: block and scalar field
+                2) Faults: block and scalar field for each faulting plane
+                3) Gradients of scalar field x
+                4) Gradients of scalar field y
+                5) Gradients of scalar field z
+        In addition if get_potential_at_interfaces is True, the value of the potential field at each of
         the interfaces is given as well
     """
     if not getattr(interp_data, 'th_fn', None):
@@ -69,56 +84,50 @@ def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_
 
     i = interp_data.get_input_data(u_grade=u_grade)
 
-    assert i[-1].shape[0] is not 0 and i[-1].shape[0] >= interp_data.interpolator.len_series_i.shape[0],\
+    assert interp_data.interpolator.len_interfaces.min() > 1,  \
         'To compute the model is necessary at least 2 interface points per layer'
 
     sol = interp_data.th_fn(*i)
     interp_data.potential_at_interfaces = sol[-1]
+
     if get_potential_at_interfaces:
         return sol
     else:
         return sol[:-1]
 
-    #
-    # if output is 'geology':
-    #     lith_matrix, fault_matrix, potential_at_interfaces = interp_data.th_fn(*i)
-    #     # TODO check if this is necessary yet
-    #     if len(lith_matrix.shape) < 3:
-    #         _np.expand_dims(lith_matrix, 0)
-    #         _np.expand_dims(fault_matrix, 0)
-    #
-    #     interp_data.potential_at_interfaces = potential_at_interfaces
-    #
-    #     if get_potential_at_interfaces:
-    #         return lith_matrix, fault_matrix, interp_data.potential_at_interfaces
-    #     else:
-    #         return lith_matrix, fault_matrix
-    #
-    # # TODO this should be a flag read from the compilation I guess
-    # if output is 'gravity':
-    #     # TODO make asserts
-    #     lith_matrix, fault_matrix, potential_at_interfaces, grav = interp_data.th_fn(*i)
-    #     if len(lith_matrix.shape) < 3:
-    #         _np.expand_dims(lith_matrix, 0)
-    #         _np.expand_dims(fault_matrix, 0)
-    #
-    #     interp_data.potential_at_interfaces = potential_at_interfaces
-    #
-    #     if get_potential_at_interfaces:
-    #         return lith_matrix, fault_matrix, grav, interp_data.potential_at_interfaces
-    #     else:
-    #         return lith_matrix, fault_matrix, grav
 
+def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None, get_potential_at_interfaces=False):
+    """
+    This function does the same as :func:`~gempy.compute_model` plus the addion functionallity of passing a given
+    array of point where evaluate the model instead of using the :class:`gempy.data_management.InputData` grid.
 
-def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None, get_potential_at_interfaces=False,
-                     weights=None):
-    new_grid = GridClass()
+    Args:
+        new_grid_array (:class:`_np.array`): 2D array with XYZ (columns) coorinates
+
+    Returns:
+        list of :class:`_np.array`: depending on the chosen out returns different number of solutions:
+            if output is geology:
+                1) Lithologies: block and scalar field
+                2) Faults: block and scalar field for each faulting plane
+            if output is 'gravity':
+                1) Weights: block and scalar field
+                2) Faults: block and scalar field for each faulting plane
+                3) Forward gravity
+            if output is gradients:
+                1) Lithologies: block and scalar field
+                2) Faults: block and scalar field for each faulting plane
+                3) Gradients of scalar field x
+                4) Gradients of scalar field y
+                5) Gradients of scalar field z
+        In addition if get_potential_at_interfaces is True, the value of the potential field at each of
+        the interfaces is given as well
+    """
 
     # First Create a new custom grid using the GridClass
     new_grid = GridClass()
 
     # Here we can pass the new coordinates as a 2D numpy array XYZ
-    new_grid.create_custom_grid(new_grid_array)
+    new_grid.set_custom_grid(new_grid_array)
 
     # Next we rescale the data. For this the main parameters are already stored in interp_data
     new_grid_res = (new_grid.values - interp_data.centers.as_matrix()) / interp_data.rescaling_factor + 0.5001
@@ -137,7 +146,6 @@ def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None
                                   ))
 
     # Last step is to change the variables in the theano graph
-
     interp_data.interpolator.tg.grid_val_T.set_value(_np.cast[interp_data.interpolator.dtype](x_to_interpolate + 10e-9))
     interp_data.interpolator.tg.universal_grid_matrix_T.set_value(
         _np.cast[interp_data.interpolator.dtype](universal_matrix + 1e-10))
@@ -147,13 +155,9 @@ def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None
     return sol
 
 
-def compute_weights(interp_data, u_grade=None):
-    pass
-
-
 def create_data(extent, resolution=(50, 50, 50), **kwargs):
     """
-    Method to create a InputData object. It is analogous to gempy.InputData()
+    Method to create a :class:`gempy.data_management.InputData` object. It is analogous to gempy.InputData()
 
     Args:
         extent (list or array):  [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data
@@ -167,10 +171,8 @@ def create_data(extent, resolution=(50, 50, 50), **kwargs):
         path_f: Path to the data bases of orientations. Default os.getcwd()
 
     Returns:
-        GeMpy.DataManagement: Object that encapsulate all raw data of the project
+        :class:`gempy.data_management.InputData`
 
-
-        dep: self.Plot(GeMpy_core.PlotData): Object to visualize data and results
     """
 
     return InputData(extent, resolution, **kwargs)
@@ -200,26 +202,6 @@ def create_from_geomodeller_xml(fp, resolution=(50, 50, 50), return_xml=False, *
     geo_data.interfaces = gmx.interfaces
     geo_data.orientations = gmx.orientations
 
-    # interf = gmx.get_interfaces_df()
-    # orient = gmx.get_orientation_df()
-    # if interf is None or orient is None:
-    #     raise ValueError("No 3D data stored in given XML file, can't extract interfaces or orientations.")
-    # else:
-    #     geo_data.interfaces = interf
-    #     geo_data.orientations = orient
-    #
-    # # this seems to fuck things up so far:
-    # for f in gmx.faults:
-    #     gmx.series_distribution[f] = f
-    #
-    # try:  # try to set series ordering and stuff, if fails (because the xml files are fucked up) tell user to do it manually
-    #     set_series(geo_data, gmx.series_distribution,
-    #                order_series=list(gmx.faults + gmx.stratigraphic_column),
-    #                order_formations=gmx.get_order_formations())
-    # except AssertionError:
-    #     print("Some of the formations given are not in the formations data frame. Therefore, you have to set the series"
-    #           " order manually.")
-
     if return_xml:
         return geo_data, gmx
     else:
@@ -232,7 +214,8 @@ def data_to_pickle(geo_data, path=False):
      versions used to export and import the pickle differ it may give problems
 
      Args:
-         path (str): path where save the pickle
+         geo_data (:class:`gempy.data_management.InputData`)
+         path (str): path where save the pickle (without .pickle)
 
      Returns:
          None
@@ -240,27 +223,28 @@ def data_to_pickle(geo_data, path=False):
     geo_data.data_to_pickle(path)
 
 
-
-def get_series(geo_gata):
+def get_series(geo_data):
     """
     Args:
-         geo_data (gempy.DataManagement.InputData object)
+         geo_data (:class:`gempy.data_management.InputData`)
 
     Returns:
-        Pandas.DataFrame: Return series and formations relations
+        :class:`DataFrame`: Return series and formations relations
     """
-    return geo_gata.series
+    return geo_data.series
 
 
 def get_grid(geo_data):
     """
+    Coordinates can be found in :class:`gempy.data_management.GridClass.values`
+
      Args:
-          geo_data (gempy.DataManagement.InputData object)
+          geo_data (:class:`gempy.interpolator.InterpolatorData`)
 
      Returns:
-         numpy.array: Return series and formations relations
-     """
-    return geo_data.grid.values
+        :class:`gempy.data_management.GridClass`
+    """
+    return geo_data.grid
 
 
 def get_resolution(geo_data):
@@ -273,15 +257,18 @@ def get_extent(geo_data):
 
 def get_data(geo_data, itype='all', numeric=False, verbosity=0):
     """
-    Method that returns the interfaces and orientations pandas Dataframes. Can return both at the same time or only
-    one of the two
+    Method to return the data stored in :class:`DataFrame` within a :class:`gempy.interpolator.InterpolatorData`
+    object.
 
     Args:
-        itype(str): input data type, either 'orientations', 'interfaces' or 'all' for both.
+        geo_data (:class:`gempy.interpolator.InterpolatorData`)
+        itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'faults', 'fautls_relations'}): input
+            data type to be retrieved.
+        numeric (bool): if True it only returns numberical properties. This may be useful due to memory issues
         verbosity (int): Number of properties shown
 
     Returns:
-        pandas.core.frame.DataFrame: Data frame with the raw data
+        pandas.core.frame.DataFrame
 
     """
     return geo_data.get_data(itype=itype, numeric=numeric, verbosity=verbosity)
@@ -290,24 +277,28 @@ def get_data(geo_data, itype='all', numeric=False, verbosity=0):
 def get_sequential_pile(geo_data):
     """
     Visualize an interactive stratigraphic pile to move around the formations and the series. IMPORTANT NOTE:
-    To have the interactive properties it is necessary the use of qt as interactive backend. (In notebook use:
-    %matplotlib qt5)
+    To have the interactive properties it is necessary the use of an interactive backend. (In notebook use:
+    %matplotlib qt5 or notebook)
 
     Args:
-        geo_data: gempy.DataManagement.InputData object
+        geo_data (:class:`gempy.interpolator.InterpolatorData`)
 
     Returns:
-        interactive Matplotlib figure
+        :class:`matplotlib.pyplot.Figure`
     """
     return StratigraphicPile(geo_data)
 
+
+# =====================================
+# Functions for the InterpolatorData
+# =====================================
 
 def get_kriging_parameters(interp_data, verbose=0):
     """
     Print the kringing parameters
 
     Args:
-        interp_data (gempy.DataManagement.InterpolatorInput)
+        interp_data (:class:`gempy.data_management.InputData`)
         verbose (int): if > 0 print all the shape values as well.
 
     Returns:
@@ -315,39 +306,37 @@ def get_kriging_parameters(interp_data, verbose=0):
     """
     return interp_data.interpolator.get_kriging_parameters(verbose=verbose)
 
-# =====================================
-# Functions for the InterpolatorData
-# =====================================
 # TODO check that is a interp_data object and if not try to create within the function one from the geo_data
 
 
-def get_th_fn(interp_data, compute_all=True):
+def get_th_fn(interp_data):
     """
-    Get theano function
+    Get the compiled theano function
 
     Args:
-        interp_data (gempy.DataManagement.InterpolatorInput): Rescaled data.
-         compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
-         the block model of faults. If False only return the block model of lithologies. This may be important to speed
-          up the computation. Default True
+        interp_data (:class:`gempy.data_management.InputData`)
 
     Returns:
-        theano.function: Compiled function if C or CUDA which computes the interpolation given the input data
+        :class:`theano.compile.function_module.Function`: Compiled function if C or CUDA which computes the interpolation given the input data
             (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
     """
+    assert getattr(interp_data, 'th_fn', False), 'Theano has not been compiled yet'
 
-    return interp_data.compile_th_fn(compute_all=compute_all)
+    return interp_data.compile_th_fn()
 
 
-def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_formation='all', step_size=1, original_scale=True):
+def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_formation='all',
+                 step_size=1, original_scale=True):
     """
-    compute vertices and simplices of the interfaces for its vtk visualization or further
+    Compute vertices and simplices of the interfaces for its vtk visualization and further
     analysis
 
     Args:
-        potential_lith (numpy.array): 1D numpy array with the solution of the computation of the model
-         containing the scalar field of potentials (second row of solution)
-        interp_data (gempy.DataManagement.InterpolatorInput): Interpolator object.
+        interp_data (:class:`gempy.data_management.InputData`)
+        potential_lith (ndarray): 1D numpy array with the solution of the computation of the model
+         containing the scalar field of potentials (second row of lith solution)
+        potential_fault (ndarray): 1D numpy array with the solution of the computation of the model
+         containing the scalar field of the faults (every second row of fault solution)
         n_formation (int or 'all'): Positive integer with the number of the formation of which the surface is returned.
          use method get_formation_number() to get a dictionary back with the values
         step_size (int): resolution of the method. This is every how many voxels the marching cube method is applied
@@ -363,6 +352,11 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
         raise AttributeError('You need to compute the model first')
 
     def get_surface(potential_block, interp_data, pot_int, n_formation, step_size, original_scale):
+        """
+        Get an individual surface
+
+        """
+
         assert n_formation >= 0, 'Number of the formation has to be positive'
 
         # In case the values are separated by series I put all in a vector
@@ -403,23 +397,19 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
 
     n_formations = _np.arange(interp_data.geo_data_res.interfaces['formation'].nunique())
 
+    # Looping the scalar fields of the faults
     if potential_fault is not None:
-
 
         assert len(_np.atleast_2d(potential_fault)) == interp_data.geo_data_res.n_faults, 'You need to pass a potential field per fault'
 
         pot_int = interp_data.potential_at_interfaces[:interp_data.geo_data_res.n_faults + 1]
-# - interp_data.geo_data_res.n_faults)
-      #  n_faults = _np.arange(interp_data.geo_data_res.n_faults)
-        for n in n_formations[:interp_data.geo_data_res.n_faults]:               #interp_data.geo_data_res.interfaces['formation_number'][interp_data.geo_data_res.interfaces['isFault']].unique():
-            # if n == 0:
-            #     continue
-            #else:
-                v, s = get_surface(_np.atleast_2d(potential_fault)[n], interp_data, pot_int, n,
-                                   step_size=step_size, original_scale=original_scale)
-                vertices.append(v)
-                simplices.append(s)
+        for n in n_formations[:interp_data.geo_data_res.n_faults]:
+            v, s = get_surface(_np.atleast_2d(potential_fault)[n], interp_data, pot_int, n,
+                               step_size=step_size, original_scale=original_scale)
+            vertices.append(v)
+            simplices.append(s)
 
+    # Looping the scalar fields of the lithologies
     if potential_lith is not None:
         pot_int = interp_data.potential_at_interfaces[interp_data.geo_data_res.n_faults:]
 
@@ -442,19 +432,56 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
 
 
 def interactive_df_open(geo_data, itype):
+    """
+    Open the qgrid interactive DataFrame (http://qgrid.readthedocs.io/en/latest/).
+    To seve the changes see: :func:`~gempy.gempy_front.interactive_df_change_df`
+
+
+    Args:
+        geo_data (:class:`gempy.data_management.InputData`)
+        itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'faults', 'fautls_relations'}): input
+            data type to be retrieved.
+
+    Returns:
+        :class:`DataFrame`: Interactive DF
+    """
     return geo_data.interactive_df_open(itype)
 
 
-def interactive_df_change_df(geo_data):
+def interactive_df_change_df(geo_data, only_selected=False):
+    """
+    Confirm and return the changes made to a dataframe using qgrid interactively. To update the
+    :class:`gempy.data_management.InputData` with the modify df use the correspondant set function.
 
-    return geo_data.interactive_df_get_changed_df()
+    Args:
+        geo_data (:class:`gempy.data_management.InputData`): the same :class:`gempy.data_management.InputData`
+            object used to call :func:`~gempy.gempy_front.interactive_df_open`
+        only_selected (bool) if True only returns the selected rows
+
+    Returns:
+        :class:`DataFrame`
+    """
+    return geo_data.interactive_df_get_changed_df(only_selected=only_selected)
 
 
-def set_orientation_from_interfaces(geo_data, indices_array, verbose=0):
+def set_orientation_from_interfaces(geo_data, indices_array):
+    """
+    Create and set orientations from at least 3 points of the :attr:`gempy.data_management.InputData.interfaces`
+     Dataframe
+    Args:
+        geo_data (:class:`gempy.data_management.InputData`)
+        indices_array (array-like): 1D or 2D array with the pandas indices of the
+          :attr:`gempy.data_management.InputData.interfaces`. If 2D every row of the 2D matrix will be used to create an
+          orientation
+        verbose:
+
+    Returns:
+        :attr:`gempy.data_management.InputData.orientations`: Already updated inplace
+    """
 
     if _np.ndim(indices_array) is 1:
         indices = indices_array
-        form = geo_data.interfaces['formation'].iloc[indices].unique()
+        form = geo_data.interfaces['formation'].loc[indices].unique()
         assert form.shape[0] is 1, 'The interface points must belong to the same formation'
         form = form[0]
         print()
@@ -465,16 +492,17 @@ def set_orientation_from_interfaces(geo_data, indices_array, verbose=0):
                                  formation=form)
     elif _np.ndim(indices_array) is 2:
         for indices in indices_array:
-            form = geo_data.interfaces['formation'].iloc[indices].unique()[0]
+            form = geo_data.interfaces['formation'].loc[indices].unique()
             assert form.shape[0] is 1, 'The interface points must belong to the same formation'
             form = form[0]
             ori_parameters = geo_data.create_orientation_from_interfaces(indices)
             geo_data.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                      dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                      G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
-                                     formation=form[0])
-    if verbose:
-        get_data()
+                                     formation=form)
+
+    geo_data.update_df()
+    return geo_data.orientations
 
 
 def precomputations_gravity(interp_data, n_chunck=25, densities=None):
@@ -499,7 +527,8 @@ def read_pickle(path):
        path (str): path where save the pickle
 
     Returns:
-        gempy.DataManagement.InputData: Input Data object
+        :class:`gempy.data_management.InputData`
+
     """
     import pickle
     with open(path, 'rb') as f:
@@ -511,10 +540,10 @@ def read_pickle(path):
 
 def rescale_factor_default(geo_data):
     """
-    Gives the default rescaling factor for a given geo_data
+    Returns the default rescaling factor for a given geo_data
 
     Args:
-        geo_data: Original gempy.DataManagement.InputData object
+        geo_data(:class:`gempy.data_management.InputData`)
 
     Returns:
         float: rescaling factor
@@ -532,10 +561,11 @@ def rescale_factor_default(geo_data):
 
 def rescale_data(geo_data, rescaling_factor=None):
     """
-    Rescale the data of a DataManagement object between 0 and 1 due to stability problem of the float32.
+    Rescale the data of a :class:`gempy.data_management.InputData`
+    object between 0 and 1 due to stability problem of the float32.
 
     Args:
-        geo_data: Original gempy.DataManagement.InputData object
+        geo_data(:class:`gempy.data_management.InputData`)
         rescaling_factor(float): factor of the rescaling. Default to maximum distance in one the axis
 
     Returns:
@@ -595,10 +625,11 @@ def select_series(geo_data, series):
     Return the formations of a given serie in string
 
     Args:
-        series: list of int or list of str
+        geo_data (:class:`gempy.data_management.InputData`)
+        series(list of int or list of str): Subset of series to be selected
 
     Returns:
-         formations of a given serie in string separeted by |
+         :class:`gempy.data_management.InputData`: New object only containing the selected series
     """
     new_geo_data = copy.deepcopy(geo_data)
 
@@ -624,20 +655,25 @@ def select_series(geo_data, series):
 def set_series(geo_data, series_distribution=None, order_series=None, order_formations=None,
                verbose=0):
     """
-    Method to define the different series of the project.
+    Function to set in place the different series of the project with their correspondent formations
 
     Args:
-        series_distribution (dict or dataframe): with the name of the serie as key and the name of the formations as values.
-        order(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
-        dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
+        geo_data (:class:`gempy.data_management.InputData`)
+        series_distribution (dict or :class:`DataFrame`): with the name of the series as key and the name of the
+          formations as values.
+        order_series(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
+             dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
+        order_formations(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
+            dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
+        verbose(int): if verbose is True plot hte sequential pile
 
-    Returns:
-        self.series: A pandas DataFrame with the series and formations relations
-        self.interfaces: one extra column with the given series
-        self.orientations: one extra column with the given series
+    Notes:
+        The following dataframes will be modified in place
+            1) geo_data.series: A pandas DataFrame with the series and formations relations
+            2) geo_data.interfaces: one extra column with the given series
+            3) geo_data.orientations: one extra column with the given series
     """
     geo_data.update_df(series_distribution=series_distribution, order=order_series)
-    #geo_data.order_table()
     if order_formations is not None:
         geo_data.set_formations(formation_order=order_formations)
         geo_data.order_table()
@@ -655,48 +691,75 @@ def set_order_formations(geo_data, order_formations):
 
 
 def set_formations(geo_data, formations=None, formations_order=None, formations_values=None):
+    """
+    Function to order and change the value of the model formations. The values of the formations will be the final
+    numerical value that each formation will take in the interpolated geological model (lithology block)
+    Args:
+        geo_data (:class:`gempy.data_management.InputData`):
+        formations_order (list of str): List with a given order of the formations. Due to the interpolation algorithm
+            this order is only relevant to keep consistent the colors of layers and input data. The order ultimately is
+            determined by the geometric sedimentary order
+        formations (list of str): same as formations order. you can use any
+        formations_values (list of floats or int):  values of the formations will be the final
+    numerical value that each formation will take in the interpolated geological model (lithology block)
+
+    Returns:
+        :class:`DataFrame`: formations dataframe already updated in place
+
+    """
     if formations and not formations_order:
         formations_order = formations
 
     geo_data.set_formations(formation_order=formations_order, formation_values=formations_values)
+    return  geo_data.formations
 
 
-def set_interfaces(geo_data, interf_Dataframe, append=False):
+def set_interfaces(geo_data, interf_dataframe, append=False):
     """
      Method to change or append a Dataframe to interfaces in place.
 
      Args:
-         interf_Dataframe: pandas.core.frame.DataFrame with the data
-         append: Bool: if you want to append the new data frame or substitute it
+         geo_data(:class:`gempy.data_management.InputData`)
+         interf_dataframe (:class:`DataFrame`)
+         append (Bool): if you want to append the new data frame or substitute it
      """
-    geo_data.set_interfaces(interf_Dataframe, append=append)
+    geo_data.set_interfaces(interf_dataframe, append=append)
 
 
-def set_orientations(geo_data, orient_Dataframe, append=False):
+def set_orientations(geo_data, orient_dataframe, append=False):
     """
-    Method to change or append a Dataframe to orientations in place.  A equivalent Pandas Dataframe with
+    Method to change or append a dataframe to orientations in place.  A equivalent Pandas Dataframe with
     ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation'] has to be passed.
 
     Args:
-        interf_Dataframe: pandas.core.frame.DataFrame with the data
-        append: Bool: if you want to append the new data frame or substitute it
+         geo_data(:class:`gempy.data_management.InputData`)
+         interf_dataframe (:class:`DataFrame`)
+         append (Bool): if you want to append the new data frame or substitute it
     """
 
-    geo_data.set_orientations(orient_Dataframe, append=append)
+    geo_data.set_orientations(orient_dataframe, append=append)
 
 
 def set_grid(geo_data, grid):
+    """
+    Set a new :class:`gempy.data_management.GridClass` object into a :class:`gempy.data_management.InputData` object.
+
+    Args:
+        geo_data (:class:`gempy.data_management.InputData`):
+        grid (:class:`gempy.data_management.GridClass`):
+
+    """
     assert isinstance(grid, GridClass)
     geo_data.grid = grid
-    geo_data.extent = grid._grid_ext
-    geo_data.resolution = grid._grid_res
+    geo_data.extent = grid.extent
+    geo_data.resolution = grid.resolution
 
 
-# TODO:
 def set_interpolation_data(geo_data, **kwargs):
     """
-    InterpolatorInput is a class that contains all the preprocessing operations to prepare the data to compute the model.
-    Also is the object that has to be manipulated to vary the data without recompile the modeling function.
+    Create a :class:`gempy.interpolator.InterpolatorData`. InterpolatorData is a class that contains all the
+     preprocessing operations to prepare the data to compute the model.
+     Also is the object that has to be manipulated to vary the data without recompile the modeling function.
 
     Args:
         geo_data(gempy.DataManagement.InputData): All values of a DataManagement object
@@ -751,9 +814,8 @@ def topology_compute(geo_data, lith_block, fault_block,
 
     Args:
         geo_data (gempy.data_management.InputData): GemPy's data object for the model.
-        lith_block (np.ndarray): Lithology block model.
-        fault_block (np.ndarray): Fault block model.
-    Keyword Args:
+        lith_block (ndarray): Lithology block model.
+        fault_block (ndarray): Fault block model.
         cell_number (int): Cell number for 2-D slice topology analysis. Default None.
         direction (str): "x", "y" or "z" specifying the slice direction for 2-D topology analysis. Default None.
         compute_areas (bool): If True computes adjacency areas for connected nodes in voxel number. Default False.
@@ -786,7 +848,6 @@ def topology_compute(geo_data, lith_block, fault_block,
         fb = fault_block.reshape(geo_data.resolution)[:, :, cell_number]
 
     return _topology_analyze(lb, fb, geo_data.n_faults, areas_bool=compute_areas, return_block=return_label_block)
-
 
 
 # +++++++

@@ -75,7 +75,7 @@ class vtkPlot():
     def plot_surfaces_3D(self, vertices_l, simplices_l,
                      #formations_names_l, formation_numbers_l,
                       plot_data=True,
-                     ):
+                     **kwargs):
         """
         Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
 
@@ -92,6 +92,8 @@ class vtkPlot():
         Returns:
             None
         """
+        self.restart()
+
         self.vv.set_surfaces(vertices_l, simplices_l,
                    #formations_names_l, formation_numbers_l,
                     self.alpha)
@@ -100,7 +102,7 @@ class vtkPlot():
             self.vv.set_interfaces()
             self.vv.set_orientations()
 
-        self.vv.render_model(size=self.size, fullscreen=self.fullscreen)
+        self.vv.render_model(**kwargs)
 
     def plot_data_3D(self, **kwargs):
         """
@@ -251,7 +253,10 @@ class vtkPlot():
             self.vv.s_rend_2.loc[i, 'val'].Off()
             self.vv.s_rend_3.loc[i, 'val'].Off()
             self.vv.s_rend_4.loc[i, 'val'].Off()
-
+            self.vv.s_rend_1.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[0])
+            self.vv.s_rend_2.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[1])
+            self.vv.s_rend_3.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[2])
+            self.vv.s_rend_4.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[3])
         # Modify fg
         self.geo_data.set_new_df(new_df)
         if self.verbose > 0:
@@ -270,7 +275,10 @@ class vtkPlot():
             self.vv.o_rend_2.loc[i, 'val'].Off()
             self.vv.o_rend_3.loc[i, 'val'].Off()
             self.vv.o_rend_4.loc[i, 'val'].Off()
-
+            self.vv.o_rend_1.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[0])
+            self.vv.o_rend_2.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[1])
+            self.vv.o_rend_3.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[2])
+            self.vv.o_rend_4.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[3])
         # Modify fg
         self.geo_data.set_new_df(new_df)
         if self.verbose > 0:
@@ -288,6 +296,7 @@ class vtkPlot():
             self.vv.s_rend_2.loc[i, 'val'].On()
             self.vv.s_rend_3.loc[i, 'val'].On()
             self.vv.s_rend_4.loc[i, 'val'].On()
+
 
         self.geo_data.set_new_df(new_df.loc[ind_i], append=True)
         if self.verbose > 0:
@@ -431,6 +440,7 @@ class vtkPlot():
                 pass
 
             try:
+                self.vv.geo_data.order_table()
                 vertices, simpleces = self.vv.update_surfaces_real_time(self.vv.geo_data)
                 self.vv.set_surfaces(vertices, simpleces)
             except AssertionError:
@@ -440,7 +450,30 @@ class vtkPlot():
                       ' interface for each of them')
         #self.vv.interp_data.update_interpolator(self.geo_data)
 
+        self.vv.interactor.Render()
 
+    def qgrid_callBack_fr(self, change):
+        new_df = change['new'][change['new'].columns[1:]]
+        self.geo_data.faults_relations = new_df
+
+        if self.vv.real_time:
+            try:
+                for surf in self.vv.surf_rend_1:
+                    self.vv.ren_list[0].RemoveActor(surf)
+                    self.vv.ren_list[1].RemoveActor(surf)
+                    self.vv.ren_list[2].RemoveActor(surf)
+                    self.vv.ren_list[3].RemoveActor(surf)
+            except AttributeError:
+                pass
+
+            try:
+                vertices, simpleces = self.vv.update_surfaces_real_time(self.vv.geo_data)
+                self.vv.set_surfaces(vertices, simpleces)
+            except AssertionError:
+                print('Not enough data to compute the model')
+            except NotImplementedError:
+                print('If the theano graph expects faults and/or lithologies you need to pass at least one'
+                      ' interface for each of them')
 
         self.vv.interactor.Render()
 
@@ -450,7 +483,12 @@ class vtkPlot():
 
         self._original_df = copy.deepcopy(_gempy.get_data(geo_data, itype=itype))
         qgrid_widget = geo_data.interactive_df_open(itype=itype)
-        qgrid_widget.observe(self.qgrid_callBack, names=['_df'])
+        if itype is 'faults_relations':
+            qgrid_widget.observe(self.qgrid_callBack_fr, names=['_df'])
+
+        else:
+            qgrid_widget.observe(self.qgrid_callBack, names=['_df'])
+
         return qgrid_widget
 
 

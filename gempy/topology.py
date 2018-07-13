@@ -110,7 +110,7 @@ def compute_areas(G, labels_block):
     # TODO: AS: make area computation function more modular to support additional functionality (e.g. fault throw) FABIAN?
     # get all bool arrays for each label, for filtering
     labels_bools = np.array([(labels_block == l).astype("bool") for l in np.unique(labels_block)])
-    for n1, n2 in G.edges_iter():  # iterate over every edge in the graph
+    for n1, n2 in G.edges():  # iterate over every edge in the graph
         # modify labels block to avoid non-unique values when doing later comparison
         b = np.square(labels_block * (labels_bools[n1 - 1] + labels_bools[n2 - 1]))
         # translate block by 1 voxel in each dimension and substract, take absolute of results; this gets you
@@ -139,19 +139,26 @@ def classify_edges(G, centroids, lith_block, fault_block):
 
     """
     # loop over every node in adjacency dictionary
-    for n1, n2 in G.edges_iter():
+    for n1, n2 in G.edges():
         # get centroid coordinates
         if n2 == 0 or n1 == 0:
             continue
         n1_c = centroids[n1]
         n2_c = centroids[n2]
         # get fault block values at node positions
-        if len(np.shape(lith_block)) == 3:
+        if len(n1_c) == 3:
             n1_fb_val = fault_block[int(n1_c[0]), int(n1_c[1]), int(n1_c[2])]
             n2_fb_val = fault_block[int(n2_c[0]), int(n2_c[1]), int(n2_c[2])]
         else:
-            n1_fb_val = fault_block[int(n1_c[0]), int(n1_c[1])]
-            n2_fb_val = fault_block[int(n2_c[0]), int(n2_c[1])]
+            # if 2d slice, but in 3d array (e.g. shape (50,1,50))
+            if len(fault_block.shape) == 3:
+                axis = np.argmin(fault_block.shape)
+                n1_fb_val = np.squeeze(fault_block, axis)[int(n1_c[0]), int(n1_c[1])]
+                n2_fb_val = np.squeeze(fault_block, axis)[int(n2_c[0]), int(n2_c[1])]
+            # if actual 2d slice of shape e.g. (50,50)
+            else:
+                n1_fb_val = fault_block[int(n1_c[0]), int(n1_c[1])]
+                n2_fb_val = fault_block[int(n2_c[0]), int(n2_c[1])]
 
         if n1_fb_val == n2_fb_val:
             # both are in the same fault entity
@@ -250,8 +257,8 @@ def compare_graphs(G1, G2):
     intersection = 0
     union = G1.number_of_edges()
 
-    for edge in G1.edges_iter():
-        if G2.has_edge(edge[0], edge[1]):
+    for n1, n2 in G1.edges():
+        if G2.has_edge(n1, n2):
             intersection += 1
         else:
             union += 1

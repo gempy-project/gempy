@@ -25,8 +25,7 @@ sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import copy
 import numpy as np
 import pandas as pn
-# from gempy import theano_graph
-# import theano
+
 import warnings
 
 try:
@@ -34,26 +33,38 @@ try:
 except ImportError:
     warnings.warn('qgrid package is not installed. No interactive dataframes available.')
 
-pn.options.mode.chained_assignment = None  #
+pn.options.mode.chained_assignment = None
 
 
 class InputData(object):
     """
-    Class to import the raw data of the model and set data classifications into formations and series.
-    This objects will contain the main information of the model.
+    Class that contains all raw data of our models
 
     Args:
         extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]
-        Resolution ((Optional[list])): [nx, ny, nz]. Defaults to 50
-        path_i: Path to the data bases of interfaces. Default os.getcwd(),
-        path_o: Path to the data bases of orientations. Default os.getcwd()
+        Resolution (Optional[list]): [nx, ny, nz]. Defaults to 50
+        path_i (Optional[str]): Path to the data bases of interfaces. Default os.getcwd(),
+        path_o (Optional[str]): Path to the data bases of orientations. Default os.getcwd()
+        kwargs: key words passed to :class:`gempy.data_management.GridClass`
 
     Attributes:
+        interfaces (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the necessary information respect
+            the interface points of the model
+        orientations (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the necessary information respect
+            the orientations of the model
+        formations (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the formations names and the value
+            used for each voxel in the final model and the lithological order
+        series (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and the formations contained
+            on them
+        faults (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and if they are faults or
+            not (otherwise they are lithologies) and in case of being fault if is finite
+        faults_relations (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the offsetting relations
+            between each fault and the rest of the series (either other faults or lithologies)
+        grid (:class:`gempy.data_management.GridClass`): grid object containing mainly the coordinates to interpolate
+            the model
         extent(list):  [x_min, x_max, y_min, y_max, z_min, z_max]
-        resolution ((Optional[list])): [nx, ny, nz]
-        orientations(pandas.core.frame.DataFrame): Pandas data frame with the orientations data
-        Interfaces(pandas.core.frame.DataFrame): Pandas data frame with the interfaces data
-        series(pandas.core.frame.DataFrame): Pandas data frame which contains every formation within each series
+        resolution (Optional[list]): [nx, ny, nz]
+
     """
 
     def __init__(self,
@@ -76,8 +87,8 @@ class InputData(object):
         self.n_faults = 0
         self.faults_relations = None
         self.formations = None
+        self.series = None
         self.faults = None
-
 
         self._columns_i_all = ['X', 'Y', 'Z', 'formation', 'series', 'X_std', 'Y_std', 'Z_std', 'order_series', 'formation_number']
         self._columns_o_all = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
@@ -90,32 +101,22 @@ class InputData(object):
         self._columns_o_num = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
 
 
-        # TODO choose the default source of data. So far only csv
         # Create the pandas dataframes
         # if we dont read a csv we create an empty dataframe with the columns that have to be filled
         self.orientations = pn.DataFrame(columns=self._columns_o_1)
+        self.orientations[self._columns_o_num] = self.orientations[self._columns_o_num].astype(float)
         self.orientations.itype = 'orientations'
 
-
         self.interfaces = pn.DataFrame(columns=self._columns_i_1)
+        self.interfaces[self._columns_i_num] = self.interfaces[self._columns_i_num].astype(float)
         self.interfaces.itype = 'interfaces'
 
-
         if path_o or path_i:
+            # TODO choose the default source of data. So far only csv
             self.import_data_csv(path_i=path_i, path_o=path_o)
-        # else:
-        #     if dummy_orientation:
-        #         self.orientations.at[0, ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']] =\
-        #             [(self.extent[1] - self.extent[0]) / 2,
-        #              (self.extent[3] - self.extent[2]) / 2,
-        #              (self.extent[5] - self.extent[4]) / 2,
-        #              0, 0, 1,
-        #              'dummy']
 
-
-        # If not provided set default series
+        # Init all df
         self.update_df()
-
         self.set_basement()
 
         # Compute gradients given azimuth and dips to plot data
@@ -123,22 +124,12 @@ class InputData(object):
 
         # Create default grid object. TODO: (Is this necessary now?)
         self.grid = self.set_grid(extent=None, resolution=None, grid_type="regular_3D", **kwargs)
-
         self.order_table()
-
         self.potential_at_interfaces = 0
 
         # Set dtypes
-    #self.interfaces['formation'] = self.interfaces['formation'].astype('category')
-       # self.interfaces['formation_number'] = self.interfaces['formation_number'].astype('int')
-       # self.interfaces['order_series'] = self.interfaces['order_series'].astype('int')
-
-       # self.interfaces['series'] = self.interfaces['series'].astype('category')
-       # self.orientations['series'] = self.orientations['series'].astype('category')
-
         self.interfaces['isFault'] = self.interfaces['isFault'].astype('bool')
         self.orientations['isFault'] = self.orientations['isFault'].astype('bool')
-
 
     def set_basement(self):
 
@@ -188,25 +179,29 @@ class InputData(object):
 
         self.orientations['G_x'] = np.sin(np.deg2rad(self.orientations["dip"].astype('float'))) * \
                                  np.sin(np.deg2rad(self.orientations["azimuth"].astype('float'))) * \
-                                 self.orientations["polarity"].astype('float')+1e-7
+                                 self.orientations["polarity"].astype('float')+1e-12
         self.orientations['G_y'] = np.sin(np.deg2rad(self.orientations["dip"].astype('float'))) * \
-                                 np.cos(np.deg2rad(self.orientations["azimuth"].astype('float'))) *\
-                                 self.orientations["polarity"].astype('float')+1e-7
+                                   np.cos(np.deg2rad(self.orientations["azimuth"].astype('float'))) *\
+                                 self.orientations["polarity"].astype('float')+1e-12
         self.orientations['G_z'] = np.cos(np.deg2rad(self.orientations["dip"].astype('float'))) *\
-                                 self.orientations["polarity"].astype('float')+1e-7
+                                 self.orientations["polarity"].astype('float')+1e-12
 
     def calculate_orientations(self):
         """
         Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.
         """
+
         self.orientations["dip"] = np.rad2deg(np.nan_to_num(np.arccos(self.orientations["G_z"] / self.orientations["polarity"])))
 
         # TODO if this way to compute azimuth breaks there is in rgeomod=kml_to_plane line 170 a good way to do it
-        self.orientations["azimuth"] = np.rad2deg(np.nan_to_num(
-            np.arcsin(self.orientations["G_x"]) /
-            (np.sin(np.arccos(self.orientations["G_z"] /
-                              self.orientations["polarity"])) *
-             self.orientations["polarity"])))
+        self.orientations["azimuth"] = np.rad2deg(np.nan_to_num(np.arctan(self.orientations["G_x"]/self.orientations["G_y"])))
+                                                  # np.arcsin(self.orientations["G_x"]) /
+                                                  # (np.sin(np.arccos(self.orientations["G_y"] /
+                                                  # self.orientations["polarity"])))))
+        self.orientations['azimuth'][(self.orientations['G_x'] < 0).as_matrix() * (self.orientations['G_y'] >= 0).as_matrix()] += 360
+        self.orientations['azimuth'][(self.orientations['G_y'] < 0).as_matrix()] += 180
+        self.orientations['azimuth'][(self.orientations['G_x'] > 0).as_matrix() * (self.orientations['G_y'] == 0).as_matrix()] = 90
+        self.orientations['azimuth'][(self.orientations['G_x'] < 0).as_matrix() * (self.orientations['G_y'] == 0).as_matrix()] = 270
 
     def count_faults(self):
         """
@@ -227,6 +222,7 @@ class InputData(object):
 
         center, normal = self.plane_fit(selected_points)
         orientation = get_orientation(normal)
+
         return np.array([*center, *orientation, *normal])
 
     def data_to_pickle(self, path=False):
@@ -545,6 +541,7 @@ class InputData(object):
 
         """
         l = len(self.orientations)
+
         try:
             for key in kwargs:
                 self.orientations.ix[l, str(key)] = kwargs[key]
@@ -552,10 +549,12 @@ class InputData(object):
             self.orientations['formation'].cat.add_categories(kwargs['formation'], inplace=True)
             for key in kwargs:
                 self.orientations.ix[l, str(key)] = kwargs[key]
+
         self.calculate_gradient()
         self.calculate_orientations()
         if not 'series' in kwargs:
             self.set_series()
+
         self.set_basement()
         self.order_table()
 
@@ -626,13 +625,13 @@ class InputData(object):
             assert custom_grid.shape[1] is 3, 'The shape of new grid must be (n,3) where n is' \
                                                                         'the number of points of the grid'
 
-            self.grid.create_custom_grid(custom_grid)
+            self.grid.set_custom_grid(custom_grid)
         if grid_type is 'regular_3D':
             if not extent:
                 extent = self.extent
             if not resolution:
                 resolution = self.resolution
-            self.grid.create_regular_grid_3d(extent, resolution)
+            self.grid.set_regular_grid(extent, resolution)
 
             return self.grid
 
@@ -646,7 +645,7 @@ class InputData(object):
             append: Bool: if you want to append the new data frame or substitute it
         """
         assert set(self._columns_i_1).issubset(interf_Dataframe.columns), \
-            "One or more columns do not match with the expected values " + str(interf_Dataframe.columns)
+            "One or more columns do not match with the expected values " + str(self._columns_i_1)
 
         interf_Dataframe[self._columns_i_num] = interf_Dataframe[self._columns_i_num].astype(float, copy=True)
         interf_Dataframe[['formation_number', 'order_series']] = interf_Dataframe[['formation_number', 'order_series']].astype(int, copy=True)
@@ -693,7 +692,7 @@ class InputData(object):
           """
         assert set(self._columns_o_1).issubset(
             foliat_Dataframe.columns), "One or more columns do not match with the expected values " +\
-                                       str(foliat_Dataframe.columns)
+                                       str(self._columns_o_1)
 
         foliat_Dataframe[self._columns_o_num] = foliat_Dataframe[self._columns_o_num].astype(float, copy=True)
 
@@ -778,17 +777,21 @@ class InputData(object):
         # _series = pn.DataFrame(dict([ (k,pn.Series(v)) for k,v in _series.items() ]), columns=order)
 
         if series_distribution is None:
-            try:
-                # Check if there is already a df
-                self.series
-            except AttributeError:
-                # set to default series
-                self.series = pn.DataFrame({"Default series": self.interfaces["formation"].unique().astype(list)}, dtype=str)
+            if self.series is None:
+                self.series = pn.DataFrame({"Default series": self.interfaces["formation"].unique().astype(list)},
+                                           dtype=str)
+            #     # Check if there is already a df
+            #     self.series
+            # except AttributeError:
+            #     # set to default series
 
         else:
             if type(series_distribution) is dict:
                 if order is None:
                     order = series_distribution.keys()
+                else:
+                    assert all(np.in1d(order, list(series_distribution.keys()))), 'Order series must contain the same keys as' \
+                                                                       'the passed dictionary ' + str(series_distribution.keys())
                 self.series = pn.DataFrame(dict([(k, pn.Series(v)) for k, v in series_distribution.items()]),
                                            columns=order)
 
@@ -846,15 +849,12 @@ class InputData(object):
         self.interfaces['formation'] = self.interfaces['formation'].astype('category')
         self.orientations['formation'] = self.orientations['formation'].astype('category')
 
-
-        self.set_basement()
-
         self.set_series(series_distribution=series_distribution, order=order)
-
+        self.set_basement()
         faults_series = self.count_faults()
         self.set_faults(faults_series)
 
-        self.reset_indices()
+       # self.reset_indices()
 
         self.set_formations()
         self.order_table()
@@ -1086,7 +1086,7 @@ class InputData(object):
 
         # Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset
         # the index. For some of the methods (pn.drop) we have to apply afterwards we need to reset these indeces
-        self.reset_indices()
+       # self.reset_indices()
         # DEP
         # self.interfaces.reset_index(drop=True, inplace=True)
         # self.orientations.reset_index(drop=True, inplace=True)
@@ -1156,9 +1156,11 @@ class GridClass(object):
 
     def __init__(self):
 
+        self.resolution = None
+        self.extent = None
         self.values = None
 
-    def create_custom_grid(self, custom_grid):
+    def set_custom_grid(self, custom_grid):
         """
         Give the coordinates of an external generated grid
 
@@ -1174,7 +1176,8 @@ class GridClass(object):
         self.values = custom_grid
         return self.values
 
-    def create_regular_grid_3d(self, extent, resolution):
+    @staticmethod
+    def create_regular_grid_3d(extent, resolution):
         """
         Method to create a 3D regular grid where is interpolated
 
@@ -1185,17 +1188,21 @@ class GridClass(object):
         Returns:
             numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid
         """
-        self._grid_ext = extent
-        self._grid_res = resolution
 
-        self.dx, self.dy, self.dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0],\
+
+        dx, dy, dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0],\
                                     (extent[5] - extent[4]) / resolution[0]
 
         g = np.meshgrid(
-            np.linspace(self._grid_ext[0] + self.dx/2, self._grid_ext[1] - self.dx/2, self._grid_res[0], dtype="float32"),
-            np.linspace(self._grid_ext[2] + self.dy/2, self._grid_ext[3] - self.dy/2, self._grid_res[1], dtype="float32"),
-            np.linspace(self._grid_ext[4] + self.dz/2, self._grid_ext[5] - self.dz/2, self._grid_res[2], dtype="float32"), indexing="ij"
+            np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0], dtype="float32"),
+            np.linspace(extent[2] + dy / 2, extent[3] - dy / 2, resolution[1], dtype="float32"),
+            np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2], dtype="float32"), indexing="ij"
         )
 
-        self.values = np.vstack(map(np.ravel, g)).T.astype("float32")
-        return self.values
+        values = np.vstack(map(np.ravel, g)).T.astype("float32")
+        return values
+
+    def set_regular_grid(self, extent, resolution):
+        self.extent = extent
+        self.resolution = resolution
+        self.values = self.create_regular_grid_3d(extent, resolution)
