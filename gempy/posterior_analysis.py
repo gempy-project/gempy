@@ -22,6 +22,10 @@ try:
     import pymc
 except ImportError:
     warnings.warn("pymc (v2) package is not installed. No support for stochastic simulation posterior analysis.")
+try:
+    import pymc3
+except ImportError:
+    warnings.warn("pymc (v3) package is not installed. No support for stochastic simulation posterior analysis.")
 import numpy as np
 import pandas as pn
 import gempy as gp
@@ -316,6 +320,93 @@ class Posterior:
 
         if self.verbose:
             print("Topology analysis completed.")
+
+
+class PosteriorPyMC3(Posterior):
+    def __init__(self, dbname, pymc_model_f="gempy_model", pymc_topo_f="gempy_topo",
+                 topology=False, verbose=False):
+        """
+        Posterior database analysis for GemPy-PyMC3 hdf5 databases.
+        Args:
+            dbname (str): Path of the hdf5 database.
+            pymc_model_f (str, optional): name of the model output function used (default: "gempy_model).
+            pymc_topo_f (str, optional): name of the topology output function used (default: "gempy_topo).
+            topology (bool, optional):  if a topology trace should be loaded from the database (default: False).
+            verbose (bool, optional): Verbosity switch.
+        """
+        # TODO: Add a method to set the lith_block and fault_block
+
+
+        self.verbose = verbose
+        # load db
+        with pymc3.Model() as model:
+            self.db = pymc3.backends.hdf5.load(dbname)
+            # model environment required? / alternatives?
+
+        self.n_iter = self.db.get_values(pymc_model_f).shape[0]-1
+        # get trace names
+        self.trace_names = self.db.varnames
+
+        # TODO DEP
+        # get gempy block models
+        # try:
+        #     self.lb = self.db.trace(pymc_model_f)[:, :2, :]
+        #     self.fb = self.db.trace(pymc_model_f)[:, 2:, :]
+        # except KeyError:
+        #     print("No GemPy model trace tallied.")
+        #     self.lb = None
+        #     self.fb = None
+
+        if topology:  # load topology data from database
+            topo_trace = self.db.trace(pymc_topo_f)[:]
+            # load graphs
+            self.topo_graphs = topo_trace[:, 0]
+            # load centroids
+            self.topo_centroids = topo_trace[:, 1]
+            # unique labels
+            self.topo_labels_unique = topo_trace[:, 2]
+            # get the look-up-tables
+            self.topo_lith_to_labels_lot = topo_trace[:, 3]
+            self.topo_labels_to_lith_lot = topo_trace[:, 4]
+            del topo_trace
+
+            self.topo_unique, self.topo_unique_freq, self.topo_unique_ids, self.topo_unique_prob = (None, None, None, None)
+            self.topo_count_dict = None
+
+            self.topo_analyze()
+
+        # load input data
+        #self.input_data = self.db.input_data.gettrace()
+
+        self.lith_prob = None
+        self.ie = None
+        self.ie_total = None
+
+    def change_input_data(self, interp_data, i):
+        """
+        Changes input data in interp_data to posterior input data at iteration i.
+
+        Args:
+            interp_data (gempy.data_management.InterpolationData): An interp_data object with the structure we want to
+            compute.
+            i (int): Iteration we want to recompute
+
+        Returns:
+             gempy.data_management.InterpolationData: interp_data with the data of the given iteration
+        """
+        i = int(i)
+        # replace res and ref point data
+        interp_data.get_input_data()[4] = self.db.get_values('input_ref')[i]
+        interp_data.get_input_data()[5] = self.db.get_values('input_res')[i]
+
+        #recalc_gradients(interp_data.geo_data_res.orientations)
+
+        # update interpolator
+        interp_data.update_interpolator()
+        if self.verbose:
+            print("interp_data parameters changed.")
+        return interp_data
+
 
 
 def find_first_match(t, topo_u):
