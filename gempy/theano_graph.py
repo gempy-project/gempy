@@ -648,7 +648,6 @@ class TheanoGraph(object):
         b = T.zeros((length_of_C,))
         b = T.set_subtensor(b[0:G.shape[0]], G)
 
-
         if str(sys._getframe().f_code.co_name) in self.verbose:
             b = theano.printing.Print('b vector')(b)
 
@@ -717,7 +716,7 @@ class TheanoGraph(object):
             DK_parameters = self.weights
         # Creation of a matrix of dimensions equal to the grid with the weights for every point (big 4D matrix in
         # ravel form)
-        # TODO IMP: Change the tile by a simple dot op -> The DOT version in gpu is slowlier
+        # TODO IMP: Change the tile by a simple dot op -> The DOT version in gpu is slower
         DK_weights = T.tile(DK_parameters, (grid_val.shape[0], 1)).T
 
         if self.dot_version:
@@ -777,7 +776,7 @@ class TheanoGraph(object):
 
         return sigma_0_grad
 
-    def contribution_interface_gradient(self, direction ='x', grid_val=None, weights=None):
+    def contribution_interface_gradient(self, direction='x', grid_val=None, weights=None):
         """
         Computation of the contribution of the foliations at every point to interpolate
 
@@ -791,7 +790,6 @@ class TheanoGraph(object):
             dir_val = 1
         if direction == 'z':
             dir_val = 2
-
 
         if weights is None:
             weights = self.extend_dual_kriging()
@@ -1207,7 +1205,6 @@ class TheanoGraph(object):
             Gx.name = 'Value of the gradient field X at every point'
             G_field = T.set_subtensor(G_field[0, :], Gx)
 
-
         if 'Gy' in gradients:
             Gy_loop, updates6 = theano.scan(
                 fn=self.gradient_field_loop_y,
@@ -1221,6 +1218,7 @@ class TheanoGraph(object):
             Gy = Gy_loop[-1][-1]
             Gy.name = 'Value of the gradient field X at every point'
             G_field = T.set_subtensor(G_field[1, :], Gy)
+
         if 'Gz' in gradients:
             Gz_loop, updates7 = theano.scan(
                 fn=self.gradient_field_loop_z,
@@ -1367,14 +1365,14 @@ class TheanoGraph(object):
         max_pot_sigm = 2*max_pot - self.scalar_field_at_interfaces_values[0]
         min_pot_sigm = 2*min_pot - self.scalar_field_at_interfaces_values[-1]
 
-        boundaty_pad = (max_pot - min_pot)*0.01
+        boundary_pad = (max_pot - min_pot)*0.01
         l = slope / (max_pot - min_pot)
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
-                                           T.stack([max_pot + boundaty_pad]),
+                                           T.stack([max_pot + boundary_pad]),
                                            self.scalar_field_at_interfaces_values,
-                                           T.stack([min_pot - boundaty_pad])
+                                           T.stack([min_pot - boundary_pad])
                                             ))
 
         if "scalar_field_iter" in self.verbose:
@@ -1383,7 +1381,6 @@ class TheanoGraph(object):
         # Loop to segment the distinct lithologies
 
         n_formation_op_float_sigmoid = T.repeat(self.n_formation_op_float, 2)
-
 
         # TODO: instead -1 at the border look for the average distance of the input!
         n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[0], -1)
@@ -1448,6 +1445,8 @@ class TheanoGraph(object):
 
         boundaty_pad = (max_pot - min_pot) * 0.01
         #l = slope / (max_pot - min_pot)  # (max_pot - min_pot)
+
+        # This is the different line with respect layers
         l = T.switch(self.select_finite_faults(), 5000 / (max_pot - min_pot), 50 / (max_pot - min_pot))
         #  l = theano.printing.Print("l")(l)
 
@@ -1579,7 +1578,7 @@ class TheanoGraph(object):
         # Update the potential field matrix
        # potential_field_values = self.scalar_field_at_all()
 
-        final_block =  T.set_subtensor(
+        final_block = T.set_subtensor(
                     final_block[1, :],
                     potential_field_values)
 
