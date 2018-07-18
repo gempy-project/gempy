@@ -24,7 +24,6 @@ import matplotlib.pyplot as plt
 
 import numpy as np
 import pandas as pn
-import theano
 
 #from ..conftest import theano_f
 input_path = os.path.dirname(__file__)+'/../../notebooks'
@@ -254,10 +253,10 @@ def test_ch3_b(theano_f):
 
     # But of course we want to look at the perturbation results. We have a class for that:
 
-    import gempy.posterior_analysis
+    import gempy.bayesian.posterior_analysis
 
     dbname = os.path.dirname(__file__)+"/ch3-pymc2.hdf5"
-    post = gempy.posterior_analysis.Posterior(dbname)
+    post = gempy.bayesian.posterior_analysis.Posterior(dbname)
 
 
 

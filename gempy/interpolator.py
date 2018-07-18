@@ -15,7 +15,6 @@ You should have received a copy of the GNU General Public License
 along with gempy.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
 import sys
 from os import path
 
@@ -116,8 +115,6 @@ class InterpolatorData:
             theano.function: Compiled function if C or CUDA which computes the interpolation given the input_data data
             (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
         """
-
-        from theano.compile.nanguardmode import NanGuardMode
 
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.interpolator.tg.input_parameters_list()
@@ -329,7 +326,7 @@ class InterpolatorData:
     # =======
     # Gravity
     def create_geophysics_obj(self, ai_extent, ai_resolution, ai_z=None, range_max=None):
-        from .geophysics import GravityPreprocessing
+        from gempy.addons.geophysics import GravityPreprocessing
         self.geophy = GravityPreprocessing(self, ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
 
     def set_gravity_precomputation(self, gravity_obj):

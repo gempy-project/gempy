@@ -42,9 +42,9 @@ from gempy.plotting.visualization import PlotData2D, vtkVisualization
 from gempy.data_management import InputData, GridClass
 from gempy.interpolator import InterpolatorData
 from gempy.plotting.sequential_pile import StratigraphicPile
-from gempy.topology import topology_analyze as _topology_analyze
+from gempy.addons.topology import topology_analyze as _topology_analyze
 from gempy.utils.geomodeller_integration import ReadGeoModellerXML as _ReadGeoModellerXML
-import gempy.posterior_analysis as pa # So far we use this type of import because the other one makes a copy and blows up some asserts
+import gempy.bayesian.posterior_analysis as pa # So far we use this type of import because the other one makes a copy and blows up some asserts
 
 
 def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_interfaces=False):
