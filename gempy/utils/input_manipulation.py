@@ -94,3 +94,61 @@ def set_interfaces_from_block(geo_data, block, block_grid=None, n_points=20, res
             geo_data.interfaces.reset_index(drop=True, inplace=True)
 
     return geo_data
+
+
+class VanMisesFisher:
+    def __init__(self, mu, kappa, dim=3):
+        """van Mises-Fisher distribution for sampling from a n-dimensional sphere
+
+        Adapted from source: https://github.com/pymc-devs/pymc3/issues/2458
+
+        Args:
+            mu (np.ndarray): Mean direction of vector [Gx, Gy, Gz]
+            kappa (float): Concentration parameter (~spread?)
+            dim (int, optional): Dimensionality of the Sphere
+        """
+        self.mu = mu
+        self.kappa = kappa
+        self.dim = dim
+
+    def sample(self, n):
+        """Obtain n samples from van Mises-Fisher distribution.
+
+        Args:
+            n (int): Number of samples to draw
+
+        Returns:
+            np.ndarray with shape (n, 3) containing samples.
+
+        """
+        result = np.zeros((n, self.dim))
+        for nn in range(n):
+            # sample offset from center (on sphere) with spread kappa
+            w = self._sample_weight()
+            # sample a point v on the unit sphere that's orthogonal to mu
+            v = self._sample_orthonormal_to()
+            # compute new point
+            result[nn, :] = v * np.sqrt(1. - w** 2) + w * self.mu
+        return result
+
+    def _sample_weight(self):
+        """Who likes documentation anyways. This is totally intuitive and trivial."""
+        dim = self.dim - 1  # since S^{n-1}
+        b = dim / (np.sqrt(4. * self.kappa ** 2 + dim ** 2) + 2 * self.kappa)
+        x = (1. - b) / (1. + b)
+        c = self.kappa * x + dim * np.log(1 - x ** 2)
+
+        while True:
+            z = np.random.beta(dim / 2., dim / 2.)
+            w = (1. - (1. + b) * z) / (1. - (1. - b) * z)
+            u = np.random.uniform(low=0, high=1)
+            if self.kappa * w + dim * np.log(1. - x * w) - c >= np.log(u):
+                # print(w)
+                return w
+
+    def _sample_orthonormal_to(self):
+        """Who likes documentation anyways. This is totally intuitive and trivial."""
+        v = np.random.randn(self.mu.shape[0])
+        proj_mu_v = self.mu * np.dot(self.mu, v) / np.linalg.norm(self.mu)
+        orthto = v - proj_mu_v
+        return orthto / np.linalg.norm(orthto)
