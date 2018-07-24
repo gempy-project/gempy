@@ -26,6 +26,7 @@ try:
     from skimage.measure import regionprops
 except ImportError:
     warnings.warn("skimage package is not installed, which is required for geomodel topology analysis.")
+from gempy.utils.analysis import get_centroids, get_unique_regions
 
 
 def topology_analyze(lith_block, fault_block, n_faults,
@@ -99,40 +100,6 @@ def topology_analyze(lith_block, fault_block, n_faults,
         topo.append(rprops)
 
     return tuple(topo)
-
-
-def get_unique_regions(lith_block, fault_block, n_faults, neighbors=8, noddy=False):
-    """
-
-    Args:
-        lith_block (np.ndarray): Lithology block model
-        fault_block (np.ndarray): Fault block model
-        n_faults (int): Number of faults.
-        neighbors (int, optional): Specifies the neighbor voxel connectivity taken into account for the topology
-            analysis. Must be either 4 or 8 (default: 8)
-        noddy (bool): If a noddy block is handed to the function, equalizes the results to be comparable with GemPy
-
-    Returns:
-        (np.ndarray): Model block with uniquely labeled regions.
-    """
-    lith_block = np.round(lith_block).astype(int)
-    fault_block = np.round(fault_block).astype(int)
-
-    # label the fault block for normalization (comparability of e.g. pynoddy and gempy models)
-    fault_block = label(fault_block, neighbors=neighbors, background=9999)
-
-    if noddy:
-        # then this is a gempy model, numpy starts with 1
-        lith_block[lith_block == 0] = int(np.max(lith_block) + 1)  # set the 0 to highest value + 1
-        lith_block -= n_faults  # lower by n_faults to equal with pynoddy models
-        # so the block starts at 1 and goes continuously to max
-
-    ublock = (lith_block.max() + 1) * fault_block + lith_block
-    labels_block, labels_n = label(ublock, neighbors=neighbors, return_num=True, background=9999)
-    if 0 in np.unique(labels_block):
-        labels_block += 1
-
-    return labels_block
 
 
 def filter_region_areas(g, rprops, area_threshold=10):
@@ -224,14 +191,6 @@ def classify_edges(G, centroids, lith_block, fault_block):
             G.adj[n1][n2]["edge_type"] = "stratigraphic"
         else:
             G.adj[n1][n2]["edge_type"] = "fault"
-
-
-def get_centroids(rprops):
-    """Get node centroids in 2d and 3d as {node id (int): tuple(x,y,z)}."""
-    centroids = {}
-    for rp in rprops:
-            centroids[rp.label] = rp.centroid
-    return centroids
 
 
 def lithology_labels_lot(labels, block_original, verbose=0):

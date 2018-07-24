@@ -18,7 +18,7 @@ Tested on Ubuntu 16
 
 Created on 23/06/2018
 
-@author: Miguel de la Varga
+@author: Miguel de la Varga, Alexander Schaaf
 """
 import numpy as np
 import pandas as pn
@@ -98,20 +98,20 @@ def set_interfaces_from_block(geo_data, block, block_grid=None, n_points=20, res
 
 class VanMisesFisher:
     def __init__(self, mu, kappa, dim=3):
-        """van Mises-Fisher distribution for sampling from a n-dimensional sphere
+        """van Mises-Fisher distribution for sampling vector components from n-dimensional spheres.
 
         Adapted from source: https://github.com/pymc-devs/pymc3/issues/2458
 
         Args:
             mu (np.ndarray): Mean direction of vector [Gx, Gy, Gz]
-            kappa (float): Concentration parameter (~spread?)
+            kappa (float): Concentration parameter (the lower the higher the spread on the sphere)
             dim (int, optional): Dimensionality of the Sphere
         """
         self.mu = mu
         self.kappa = kappa
         self.dim = dim
 
-    def sample(self, n):
+    def rvs(self, n=1):
         """Obtain n samples from van Mises-Fisher distribution.
 
         Args:
@@ -152,3 +152,43 @@ class VanMisesFisher:
         proj_mu_v = self.mu * np.dot(self.mu, v) / np.linalg.norm(self.mu)
         orthto = v - proj_mu_v
         return orthto / np.linalg.norm(orthto)
+
+    def stats(self):
+        return self.mu, self.kappa
+
+
+def change_data(interp_data, geo_data_stoch, priors):
+    """Changes input data with prior distributions (scipy.stats distributions) given in list.
+    Prior distribution objects must contain .rvs() method for drawing samples.
+
+    Args:
+        interp_data:
+        geo_data_stoch:
+        priors:
+        verbose:
+
+    Returns:
+
+    """
+    prior_draws = []
+    for prior in priors:
+        if hasattr(prior, "gradient"):
+            value = prior.rvs()
+        else:
+            value = prior.rvs() / interp_data.rescaling_factor
+        prior_draws.append(value)
+
+        if prior.index_interf is not None:
+            if prior.replace:  # replace the value
+                # geo_data.interfaces.set_value(prior.index_interf, prior.column, prior.rvs() / rf)
+                interp_data.interfaces.loc[prior.index_interf, prior.column] = value
+            else:  # add value
+                interp_data.interfaces.loc[prior.index_interf, prior.column] = geo_data_stoch.interfaces.loc[
+                                                                                prior.index_interf, prior.column] + value
+        if prior.index_orient is not None:
+            if prior.replace:  # replace the value
+                interp_data.orientations.loc[prior.index_orient, prior.column] = value
+            else:  # add value
+                interp_data.orientations.loc[prior.index_orient, prior.column] = geo_data_stoch.orientations.loc[
+                                                                                  prior.index_orient, prior.column] + value
+    return prior_draws
