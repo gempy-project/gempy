@@ -1095,24 +1095,6 @@ class InputData(object):
         self.set_annotations()
 
     # # TODO think where this function should go
-    def _read_vox(self, path):
-        """
-        read vox from geomodeller and transform it to gempy format
-        Returns:
-            numpy.array: block model
-        """
-
-        geo_res = pn.read_csv(path)
-
-        geo_res = geo_res.iloc[9:]
-
-        ip_dict = self.get_formation_number()
-
-        geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
-        block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
-                                        self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
-        return block_geomodeller
-
 
 def get_orientation(normal):
     """Get orientation (dip, azimuth, polarity ) for points in all point set"""
