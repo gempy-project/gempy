@@ -50,11 +50,12 @@ def change_input_data_general(data_array, interp_data):
     # replace interface data
     interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = data_array[interf_mask, :3]
     # replace foliation data
-    try:
+    if data_array[orient_mask, :].shape[1] == 6:
         interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = data_array[orient_mask, :]
-    except ValueError:
-        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = data_array[orient_mask, :]
-
+    elif data_array[orient_mask, :].shape[1] == 9:
+        interp_data.geo_data_res.orientations[["X", "Y", "Z", "G_x", "G_y", "G_z", "dip", "azimuth", "polarity"]] = data_array[orient_mask, :]
+    else:
+        raise ValueError("Value mismatch.")
     # recalc gradients
     recalc_gradients(interp_data.geo_data_res.orientations)
     # update interpolator
