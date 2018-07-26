@@ -27,6 +27,7 @@ try:
 except ImportError:
     warnings.warn("skimage package is not installed, which is required for geomodel topology analysis.")
 from gempy.utils.analysis import get_centroids, get_unique_regions
+from networkx import convert_node_labels_to_integers
 
 
 def topology_analyze(lith_block, fault_block, n_faults,
@@ -81,13 +82,15 @@ def topology_analyze(lith_block, fault_block, n_faults,
 
     # filter rogue pixel nodes from graph if wanted
     if filter_rogue:
-        filter_region_areas(G, rprops, area_threshold=filter_threshold_area)
+        filter_region_areas(G, centroids, rprops, area_threshold=filter_threshold_area)
+        G = convert_node_labels_to_integers(G, first_label=1)
+        centroids = {i+1: coords for i, coords in enumerate(centroids.values())}
 
     # create look-up-tables in both directions
     lith_to_labels_lot = lithology_labels_lot(labels_block, block_original)
     labels_to_lith_lot = labels_lithology_lot(labels_block, block_original)
     # classify the edges (stratigraphic, across-fault)
-    classify_edges(G, centroids, block_original, fault_block)
+    # classify_edges(G, centroids, block_original, fault_block)
     # compute the adjacency areas for each edge
     if areas_bool:
         # TODO: 2d option (if slice only), right now it only works for 3d
@@ -102,7 +105,7 @@ def topology_analyze(lith_block, fault_block, n_faults,
     return tuple(topo)
 
 
-def filter_region_areas(g, rprops, area_threshold=10):
+def filter_region_areas(g, c, rprops, area_threshold=10):
     """
     Filters nodes with region areas with an area below the given threshold (default: 10) from given graph.
     Useful for filtering rogue pixels that throw off topology graph comparisons.
@@ -122,6 +125,7 @@ def filter_region_areas(g, rprops, area_threshold=10):
     for n, rp in zip(g.nodes(), rprops):
         if rp.area <= area_threshold:  # if region area is below given threshold area
             g.remove_node(n)  # then pop the node and all its edges
+            c.pop(n)  # pop centroid
     return None
 
 
