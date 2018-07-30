@@ -47,7 +47,7 @@ def find_interfaces_from_block(block, value):
     z_shift = B[:, :, :-1] ^ B[:, :, 1:]
 
     final_bool = np.zeros_like(block, dtype=bool)
-    final_bool[:-1, :-1, :-1] = x_shift[:, :-1, :-1] ^ y_shift[:-1, :, :-1] ^ z_shift[-1:, -1:, :]
+    final_bool[:-1, :-1, :-1] = x_shift[:, :-1, :-1] + y_shift[:-1, :, :-1] + z_shift[-1:, -1:, :]
 
     return final_bool
 
