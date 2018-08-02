@@ -96,6 +96,11 @@ def test_topo_lot2(topo_compute):
 
 def test_topo_Gadj(topo_compute):
     Gadj = topo_compute[0].adj
+    # Gadj_test = {1: {2: {}, 3: {}, 5: {}},  # for testing without classified edges
+    #              2: {1: {}, 4: {}}, 3: {1: {}, 4: {}},
+    #              4: {2: {}, 3: {},
+    #                  5: {}},
+    #              5: {1: {}, 4: {}}}
     Gadj_test = {1: {2: {'edge_type': 'stratigraphic'}, 3: {'edge_type': 'fault'}, 5: {'edge_type': 'fault'}},
                  2: {1: {'edge_type': 'stratigraphic'}, 4: {'edge_type': 'fault'}}, 3: {1: {'edge_type': 'fault'},
                  4: {'edge_type': 'stratigraphic'}}, 4: {2: {'edge_type': 'fault'}, 3: {'edge_type': 'stratigraphic'},
