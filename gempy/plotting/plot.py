@@ -723,6 +723,7 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
     # mean berechnen und mit plotten
     # df_sub als legende
     # distinguish between fault and bedding planes
+    import mplstereonet
 
     colors = ['red', 'green', 'blue', 'orange', 'grey']
 
