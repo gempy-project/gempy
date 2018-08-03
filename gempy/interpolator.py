@@ -203,9 +203,9 @@ class InterpolatorData:
 
         # Check which axis is the largest
         max_coord = pn.concat(
-            [geo_data.orientations, geo_data.interfaces]).max()[['X', 'Y', 'Z']]
+            [geo_data.orientations, geo_data.interfaces], sort=False).max()[['X', 'Y', 'Z']]
         min_coord = pn.concat(
-            [geo_data.orientations, geo_data.interfaces]).min()[['X', 'Y', 'Z']]
+            [geo_data.orientations, geo_data.interfaces], sort=False).min()[['X', 'Y', 'Z']]
 
         # Compute rescalin factor if not given
         if not rescaling_factor:
@@ -240,10 +240,10 @@ class InterpolatorData:
         except KeyError:
             pass
 
-        geo_data_rescaled.extent = copy.copy(new_coord_extent.as_matrix())
+        geo_data_rescaled.extent = copy.copy(new_coord_extent.values)
 
         geo_data_rescaled.x_to_interp_given = copy.copy(geo_data.grid.values)
-        geo_data_rescaled.x_to_interp_given = (geo_data.grid.values - centers.as_matrix()) / rescaling_factor + 0.5001
+        geo_data_rescaled.x_to_interp_given = (geo_data.grid.values - centers.values) / rescaling_factor + 0.5001
 
         # Saving useful values for later
         self.rescaling_factor = rescaling_factor
@@ -621,7 +621,7 @@ class InterpolatorData:
            # self.len_interfaces = self.len_interfaces
 
             pandas_ref_layer_points_rep = self.pandas_ref_layer_points.apply(lambda x: np.repeat(x, self.len_interfaces - 1))
-           # ref_layer_points = pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()
+           # ref_layer_points = pandas_ref_layer_points_rep[['X', 'Y', 'Z']].values
 
             #self.ref_layer_points = ref_layer_points
             self.pandas_ref_layer_points_rep = pandas_ref_layer_points_rep
@@ -724,7 +724,7 @@ class InterpolatorData:
         #     # Prepare Matrices
         #     # ================
         #     # Rest layers matrix # PYTHON VAR
-        #     rest_layer_points = pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix()
+        #     rest_layer_points = pandas_rest_layer_points[['X', 'Y', 'Z']].values
         #
         #     # Ref layers matrix #VAR
         #     # Calculation of the ref matrix and tile. Iloc works with the row number
@@ -733,7 +733,7 @@ class InterpolatorData:
         #     self.len_interfaces = len_interfaces
         #
         #     pandas_ref_layer_points_rep = self.pandas_ref_layer_points.apply(lambda x: np.repeat(x, len_interfaces - 1))
-        #     ref_layer_points = pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()
+        #     ref_layer_points = pandas_ref_layer_points_rep[['X', 'Y', 'Z']].values
         #
         #     self.ref_layer_points = ref_layer_points
         #     self.pandas_ref_layer_points_rep = pandas_ref_layer_points_rep
@@ -743,10 +743,10 @@ class InterpolatorData:
         #         'not have duplicated values in your dataframes'
         #
         #     # orientations, this ones I tile them inside theano. PYTHON VAR
-        #     dips_position = self.geo_data_res_no_basement.orientations[['X', 'Y', 'Z']].as_matrix()
-        #     dip_angles = self.geo_data_res_no_basement.orientations["dip"].as_matrix()
-        #     azimuth = self.geo_data_res_no_basement.orientations["azimuth"].as_matrix()
-        #     polarity = self.geo_data_res_no_basement.orientations["polarity"].as_matrix()
+        #     dips_position = self.geo_data_res_no_basement.orientations[['X', 'Y', 'Z']].values
+        #     dip_angles = self.geo_data_res_no_basement.orientations["dip"].values
+        #     azimuth = self.geo_data_res_no_basement.orientations["azimuth"].values
+        #     polarity = self.geo_data_res_no_basement.orientations["polarity"].values
         #
         #     # Set all in a list casting them in the chosen dtype
         #     idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity,
@@ -756,8 +756,8 @@ class InterpolatorData:
 
         def compute_x_0(self):
             x_0 = np.vstack((self.geo_data_res_no_basement.x_to_interp_given,
-                              self.pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix(),
-                              self.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()))
+                              self.pandas_rest_layer_points[['X', 'Y', 'Z']].values,
+                              self.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].values))
 
             return x_0
 
@@ -774,12 +774,12 @@ class InterpolatorData:
 
         def input_data_python(self):
             # orientations, this ones I tile them inside theano. PYTHON VAR
-            dips_position = self.geo_data_res_no_basement.orientations[['X', 'Y', 'Z']].as_matrix()
-            dip_angles = self.geo_data_res_no_basement.orientations["dip"].as_matrix()
-            azimuth = self.geo_data_res_no_basement.orientations["azimuth"].as_matrix()
-            polarity = self.geo_data_res_no_basement.orientations["polarity"].as_matrix()
-            ref_layer_points = self.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()
-            rest_layer_points = self.pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix()
+            dips_position = self.geo_data_res_no_basement.orientations[['X', 'Y', 'Z']].values
+            dip_angles = self.geo_data_res_no_basement.orientations["dip"].values
+            azimuth = self.geo_data_res_no_basement.orientations["azimuth"].values
+            polarity = self.geo_data_res_no_basement.orientations["polarity"].values
+            ref_layer_points = self.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].values
+            rest_layer_points = self.pandas_rest_layer_points[['X', 'Y', 'Z']].values
 
             assert not any(ref_layer_points[:, 0]) in rest_layer_points[:, 0], \
                 'A reference point is in the rest list point. Check you do ' \
@@ -822,8 +822,8 @@ class InterpolatorData:
                 c_o = range_var ** 2 / 14 / 3
 
             # x_to_interpolate = np.vstack((self.geo_data_res_no_basement.x_to_interp_given,
-            #                               self.pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix(),
-            #                               self.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()))
+            #                               self.pandas_rest_layer_points[['X', 'Y', 'Z']].values,
+            #                               self.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].values))
             #
             #
             # # Creating the drift matrix.

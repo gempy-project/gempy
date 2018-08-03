@@ -198,10 +198,10 @@ class InputData(object):
                                                   # np.arcsin(self.orientations["G_x"]) /
                                                   # (np.sin(np.arccos(self.orientations["G_y"] /
                                                   # self.orientations["polarity"])))))
-        self.orientations['azimuth'][(self.orientations['G_x'] < 0).as_matrix() * (self.orientations['G_y'] >= 0).as_matrix()] += 360
-        self.orientations['azimuth'][(self.orientations['G_y'] < 0).as_matrix()] += 180
-        self.orientations['azimuth'][(self.orientations['G_x'] > 0).as_matrix() * (self.orientations['G_y'] == 0).as_matrix()] = 90
-        self.orientations['azimuth'][(self.orientations['G_x'] < 0).as_matrix() * (self.orientations['G_y'] == 0).as_matrix()] = 270
+        self.orientations['azimuth'][(self.orientations['G_x'] < 0).values * (self.orientations['G_y'] >= 0).values] += 360
+        self.orientations['azimuth'][(self.orientations['G_y'] < 0).values] += 180
+        self.orientations['azimuth'][(self.orientations['G_x'] > 0).values * (self.orientations['G_y'] == 0).values] = 90
+        self.orientations['azimuth'][(self.orientations['G_x'] < 0).values * (self.orientations['G_y'] == 0).values] = 270
 
     def count_faults(self):
         """
@@ -815,11 +815,11 @@ class InputData(object):
         # assigned number to the series
         self.interfaces["series"] = [(i == self.series).sum().idxmax() for i in self.interfaces["formation"]]
         self.interfaces["series"] = self.interfaces["series"].astype('category')
-        self.interfaces["order_series"] = [(i == self.series).sum().as_matrix().argmax().astype(int) + 1
+        self.interfaces["order_series"] = [(i == self.series).sum().values.argmax().astype(int) + 1
                                            for i in self.interfaces["formation"]]
         self.orientations["series"] = [(i == self.series).sum().idxmax() for i in self.orientations["formation"]]
         self.orientations["series"] = self.orientations["series"].astype('category')
-        self.orientations["order_series"] = [(i == self.series).sum().as_matrix().argmax().astype(int) + 1
+        self.orientations["order_series"] = [(i == self.series).sum().values.argmax().astype(int) + 1
                                            for i in self.orientations["formation"]]
 
         # We sort the series altough is only important for the computation (we will do it again just before computing)
@@ -1109,7 +1109,7 @@ class InputData(object):
         ip_dict = self.get_formation_number()
 
         geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
-        block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
+        block_geomodeller = np.ravel(geo_res_num.values.reshape(
                                         self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
         return block_geomodeller
 

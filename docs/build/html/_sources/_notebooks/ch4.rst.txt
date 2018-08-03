@@ -271,7 +271,7 @@ Real gravity
     import theano
     grav_real_mid = theano.shared(rs_mid, 'Grav_real_mid')
     grav_real_range = theano.shared(rs_range, 'Grav_real_range')
-    grav_real_th = theano.shared(grav_real['G'].as_matrix())
+    grav_real_th = theano.shared(grav_real['G'].values)
 
 .. code:: ipython3
 
@@ -388,20 +388,20 @@ we just have to call the theano operation and pymc will do the rest
         # We create the Stochastic parameters. In this case only the Z position
         # of the interfaces
         Z_rest = pm.Normal('Z_unc_rest',
-           interp_data_grav.interpolator.pandas_rest_layer_points['Z'].as_matrix().astype('float32'),
-           interp_data_grav.interpolator.pandas_rest_layer_points['Z_std'].as_matrix().astype('float32'),
+           interp_data_grav.interpolator.pandas_rest_layer_points['Z'].values.astype('float32'),
+           interp_data_grav.interpolator.pandas_rest_layer_points['Z_std'].values.astype('float32'),
                       dtype=dtype, shape = (66))
         
-        Z_ref = pm.Normal('Z_unc_ref', interp_data_grav.interpolator.pandas_ref_layer_points_rep['Z'].as_matrix().astype('float32'),
-                  interp_data_grav.interpolator.pandas_ref_layer_points_rep['Z_std'].as_matrix().astype('float32'),
+        Z_ref = pm.Normal('Z_unc_ref', interp_data_grav.interpolator.pandas_ref_layer_points_rep['Z'].values.astype('float32'),
+                  interp_data_grav.interpolator.pandas_ref_layer_points_rep['Z_std'].values.astype('float32'),
                   dtype=dtype, shape = (66))
         
-        dip_unc = pm.Normal('dip_unc', interp_data_grav.geo_data_res.foliations['dip'].as_matrix(),
-                            interp_data_grav.geo_data_res.foliations['dip_std'].as_matrix(),
+        dip_unc = pm.Normal('dip_unc', interp_data_grav.geo_data_res.foliations['dip'].values,
+                            interp_data_grav.geo_data_res.foliations['dip_std'].values,
                            dtype=dtype, shape = (41))
         
-        azimuth_unc = pm.Normal('azimuth_unc', interp_data_grav.geo_data_res.foliations['azimuth'].as_matrix(), 
-                                interp_data_grav.geo_data_res.foliations['azimuth_std'].as_matrix(),
+        azimuth_unc = pm.Normal('azimuth_unc', interp_data_grav.geo_data_res.foliations['azimuth'].values,
+                                interp_data_grav.geo_data_res.foliations['azimuth_std'].values,
                            dtype=dtype, shape = (41))
         
     #     Z_unc = pm.Normal('Z_unc', interp_data_grav.geo_data_res.interfaces['Z'].astype('float32'),

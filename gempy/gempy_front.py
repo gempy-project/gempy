@@ -130,12 +130,12 @@ def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None
     new_grid.set_custom_grid(new_grid_array)
 
     # Next we rescale the data. For this the main parameters are already stored in interp_data
-    new_grid_res = (new_grid.values - interp_data.centers.as_matrix()) / interp_data.rescaling_factor + 0.5001
+    new_grid_res = (new_grid.values - interp_data.centers.values) / interp_data.rescaling_factor + 0.5001
 
     # We stack the input data
     x_to_interpolate = _np.vstack((new_grid_res,
-                                  interp_data.interpolator.pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix(),
-                                  interp_data.interpolator.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()))
+                                  interp_data.interpolator.pandas_rest_layer_points[['X', 'Y', 'Z']].values,
+                                  interp_data.interpolator.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].values))
 
     # And create the drift function matrix. (This step could be done within theano to speed up a bit)
     universal_matrix = _np.vstack((x_to_interpolate.T,
@@ -610,9 +610,9 @@ def rescale_data(geo_data, rescaling_factor=None):
     geo_data_rescaled = copy.deepcopy(geo_data)
     geo_data_rescaled.interfaces[['X', 'Y', 'Z']] = new_coord_interfaces
     geo_data_rescaled.orientations[['X', 'Y', 'Z']] = new_coord_orientations
-    geo_data_rescaled.extent = new_coord_extent.as_matrix()
+    geo_data_rescaled.extent = new_coord_extent.values
 
-    geo_data_rescaled.grid.values = (geo_data.grid.values - centers.as_matrix()) / rescaling_factor + 0.5001
+    geo_data_rescaled.grid.values = (geo_data.grid.values - centers.values) / rescaling_factor + 0.5001
 
     # Saving useful values for later
     geo_data_rescaled.rescaling_factor = rescaling_factor

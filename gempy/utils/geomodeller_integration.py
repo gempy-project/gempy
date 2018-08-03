@@ -397,7 +397,7 @@ def read_vox(geo_data, path):
   #  ip_dict = geo_data.interfaces['formation_number'].unique()
 
     geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
-    block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
+    block_geomodeller = np.ravel(geo_res_num.values.reshape(
         geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2], order='C').T)
     return block_geomodeller
 

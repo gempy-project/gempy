@@ -133,7 +133,7 @@ class StratigraphicPile(object):
         series_rect = {}
 
         # Define the initial value of each rectangle
-        pos_anch = np.squeeze(self.anch_series.as_matrix())
+        pos_anch = np.squeeze(self.anch_series.values)
         rects = ax.barh(pos_anch, np.ones_like(pos_anch)*2, self.thick_series, )
 
         # We connect each rectangle
@@ -153,7 +153,7 @@ class StratigraphicPile(object):
         formation_rect = {}
 
         # Define the initial value of each rectangle
-        pos_anch = np.squeeze(self.anch_formations.as_matrix())
+        pos_anch = np.squeeze(self.anch_formations.values)
         rects = ax.barh(pos_anch, np.ones_like(pos_anch)*2, .5, left=3.)
 
         color = 1
@@ -306,14 +306,14 @@ class DraggableRectangle:
 
     def compute_new_arch_series(self):
 
-        dist = np.abs(self.anch_series.as_matrix() - self.rect.get_y())
+        dist = np.abs(self.anch_series.values - self.rect.get_y())
         arg_min = np.argmin(dist)
         new_arch = self.anch_series.iloc[0, arg_min]
         return new_arch, arg_min
 
     def compute_new_arch_formation(self):
 
-        dist = np.abs(self.anch_formations.as_matrix() - self.rect.get_y())
+        dist = np.abs(self.anch_formations.values - self.rect.get_y())
         arg_min = np.argmin(dist)
         new_arch = self.anch_formations.iloc[0, arg_min]
         return new_arch, arg_min

@@ -147,7 +147,7 @@ def compute_variogram(df, properties, euclidian_distances, tol=10, lags=np.logsp
     """
 
     # Tiling the properties to a square matrix
-    element = (df[properties[0]].as_matrix().reshape(-1, 1) -
+    element = (df[properties[0]].values.reshape(-1, 1) -
                np.tile(df[properties[1]], (df[properties[1]].shape[0], 1))) ** 2
 
     # Semivariance computation
@@ -480,12 +480,12 @@ class SGS(object):
             exp = pm.Deterministic('exp',
                                    # (lambda_[:n_exp*n_var]*
                                    psill[:n_exp] *
-                                   (1. - T.exp(T.dot(-lags.as_matrix().reshape((len(lags), 1)),
+                                   (1. - T.exp(T.dot(-lags.values.reshape((len(lags), 1)),
                                                      (range_[:n_exp].reshape((1, n_exp)) / 3.) ** -1))))
 
             gauss = pm.Deterministic('gaus',
                                      psill[n_exp:] *
-                                     (1. - T.exp(T.dot(-lags.as_matrix().reshape((len(lags), 1)) ** 2,
+                                     (1. - T.exp(T.dot(-lags.values.reshape((len(lags), 1)) ** 2,
                                                        (range_[n_exp:].reshape((1, n_gauss)) * 4 / 7.) ** -2))))
 
             # We stack the basic functions in the same matrix and tile it to match the number of properties we have
@@ -496,7 +496,7 @@ class SGS(object):
 
             for e, cross in enumerate(df.columns):
                 # Likelihoods
-                pm.Normal(cross + "_like", mu=func_w[e], sd=sigma[e], observed=df[cross].as_matrix())
+                pm.Normal(cross + "_like", mu=func_w[e], sd=sigma[e], observed=df[cross].values)
         return model
 
     def plot_cross_variograms(self, iter_plot=200, trace=None, experimental=None):
@@ -657,7 +657,7 @@ class SGS(object):
 
         # Select input data and compute its euclidean distances
         selected_coord_data = self.data_to_inter[selection_A][['X', 'Y', 'Z']]
-        selected_values_data = self.data_to_inter[selection_A][self.data_to_inter.columns.difference(['X', 'Y', 'Z'])].as_matrix()
+        selected_values_data = self.data_to_inter[selection_A][self.data_to_inter.columns.difference(['X', 'Y', 'Z'])].values
         h_A = self.SED_f(selected_coord_data, selected_coord_data)
 
         # Select points of grid to interpolate and compute the euclidean distances respect the input data
@@ -745,12 +745,12 @@ def fit_cross_cov(df, lags, n_exp=2, n_gaus=2, range_mu=None):
         exp = pm.Deterministic('exp',
                                # (lambda_[:n_exp*n_var]*
                                psill[:n_exp] *
-                               (1. - T.exp(T.dot(-lags.as_matrix().reshape((len(lags), 1)),
+                               (1. - T.exp(T.dot(-lags.values.reshape((len(lags), 1)),
                                                  (range_[:n_exp].reshape((1, n_exp)) / 3.) ** -1))))
 
         gaus = pm.Deterministic('gaus',
                                 psill[n_exp:] *
-                                (1. - T.exp(T.dot(-lags.as_matrix().reshape((len(lags), 1)) ** 2,
+                                (1. - T.exp(T.dot(-lags.values.reshape((len(lags), 1)) ** 2,
                                                   (range_[n_exp:].reshape((1, n_gaus)) * 4 / 7.) ** -2))))
 
         func = pm.Deterministic('func', T.tile(T.horizontal_stack(exp, gaus), (n_var, 1, 1)))
@@ -760,7 +760,7 @@ def fit_cross_cov(df, lags, n_exp=2, n_gaus=2, range_mu=None):
 
         for e, cross in enumerate(df.columns):
             # Likelihoods
-            pm.Normal(cross + "_like", mu=func_w[e], sd=sigma[e], observed=df[cross].as_matrix())
+            pm.Normal(cross + "_like", mu=func_w[e], sd=sigma[e], observed=df[cross].values)
     return model
 
 
@@ -999,8 +999,8 @@ def SGS_run(df, grid_to_inter, cluster,
             n_rep=10, verbose = 0):
 
     points_cluster = np.bincount(cluster.labels_)
-    coord_data = df[['X', 'Y', 'Z']].as_matrix()
-    values_data = df[df.columns.difference(['X', 'Y', 'Z'])].as_matrix()
+    coord_data = df[['X', 'Y', 'Z']].values
+    values_data = df[df.columns.difference(['X', 'Y', 'Z'])].values
 
     SED_f = theano_sed()
 
