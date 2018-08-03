@@ -150,9 +150,16 @@ class GridClass(object):
 
     def __init__(self):
 
+        self.grid_type = 'foo'
         self.resolution = None
         self.extent = None
         self.values = None
+
+    def __str__(self):
+        return self.grid_type
+
+    def __repr__(self):
+        return np.array_repr(self.values)
 
     def set_custom_grid(self, custom_grid):
         """
@@ -203,9 +210,16 @@ class GridClass(object):
 
 class Series(object):
     def __init__(self):
-        self.df = None
+        self.df = pn.DataFrame({"Default series": [None]}, dtype=str)
+        self.sequential_pile = None
 
-    def set_series(self, interfaces=None, series_distribution=None, order=None):
+    def __repr__(self):
+        return self.df.to_string()
+
+    def _repr_html_(self):
+        return self.df.to_html()
+
+    def set_series(self, series_distribution, order=None):
         """
         Method to define the different series of the project.
 
@@ -219,33 +233,53 @@ class Series(object):
             self.interfaces: one extra column with the given series
             self.orientations: one extra column with the given series
         """
-        
-        # Default series df. We extract the formations from Interfaces
-        if series_distribution is None and interfaces is not None:
-            if self.series is None:
-                self.series = pn.DataFrame({"Default series": self.interfaces["formation"].unique().astype(list)},
-                                           dtype=str)
-        # We pass a df or dictionary with the right shape
-        else:
-            if type(series_distribution) is dict:
-                if order is None:
-                    order = series_distribution.keys()
-                else:
-                    assert all(np.in1d(order, list(series_distribution.keys()))), 'Order series must contain the same keys as' \
-                                                                       'the passed dictionary ' + str(series_distribution.keys())
-                self.series = pn.DataFrame(dict([(k, pn.Series(v)) for k, v in series_distribution.items()]),
-                                           columns=order)
 
-            elif type(series_distribution) is pn.core.frame.DataFrame:
-                self.series = series_distribution
+        if isinstance(series_distribution, Interfaces):
+            self.df = pn.DataFrame({"Default series": self.interfaces["formation"].unique().astype(list)},
+                                   dtype=str)
 
+        elif type(series_distribution) is dict:
+            if order is None:
+                order = series_distribution.keys()
             else:
-                raise AttributeError('series_distribution must be a dictionary, see Docstring for more information')
+                assert all(
+                    np.in1d(order, list(series_distribution.keys()))), 'Order series must contain the same keys as' \
+                                                                       'the passed dictionary ' + str(
+                    series_distribution.keys())
+            self.df = pn.DataFrame(dict([(k, pn.Series(v)) for k, v in series_distribution.items()]),
+                                   columns=order)
 
-        if 'basement' not in self.series.iloc[:, -1].values:
-            self.series.loc[self.series.shape[0], self.series.columns[-1]] = 'basement'
+        elif type(series_distribution) is pn.core.frame.DataFrame:
+                self.df = series_distribution
 
-        # TODO decide if we allow to update Interfaces and Orientations here
+        else:
+            raise AttributeError('You must pass either a Interface object (or container with it) or'
+                                 ' series_distribution (dict or DataFrame),'
+                                 ' see Docstring for more information')
+
+        if 'basement' not in self.df.iloc[:, -1].values:
+            self.df.loc[self.df.shape[0], self.df.columns[-1]] = 'basement'
+
+        # # Default series df. We extract the formations from Interfaces
+        # if series_distribution is None and interfaces is not None:
+        #     if self.df is None:
+        #         self.df = pn.DataFrame({"Default series": self.interfaces["formation"].unique().astype(list)},
+        #                                    dtype=str)
+        # # We pass a df or dictionary with the right shape
+        # else:
+        #     if type(series_distribution) is dict:
+        #         if order is None:
+        #             order = series_distribution.keys()
+        #         else:
+        #             assert all(np.in1d(order, list(series_distribution.keys()))), 'Order series must contain the same keys as' \
+        #                                                                'the passed dictionary ' + str(series_distribution.keys())
+        #         self.df = pn.DataFrame(dict([(k, pn.Series(v)) for k, v in series_distribution.items()]),
+        #                                columns=order)
+        #         print (self.df)
+        #     elif type(series_distribution) is pn.core.frame.DataFrame:
+        #         self.df = series_distribution
+
+      # TODO decide if we allow to update Interfaces and Orientations here
        #  # Now we fill the column series in the interfaces and orientations tables with the correspondant series and
        #  # assigned number to the series
        #  self.interfaces["series"] = [(i == self.series).sum().idxmax() for i in self.interfaces["formation"]]
@@ -265,61 +299,76 @@ class Series(object):
        #  self.interfaces['series'].cat.set_categories(self.series.columns, inplace=True)
        #  self.orientations['series'].cat.set_categories(self.series.columns, inplace=True)
 
-        return self.series
+        return self.df
 
     def map_formations(self, formations_df):
-        
+
         # TODO review
         # Addind the formations of the new series to the formations df
         new_formations = self.series.values.reshape(1, -1)
         # Dropping nans
         new_formations = new_formations[~pn.isna(new_formations)]
         self.set_formations(formation_order=new_formations)
-    
+
     
 class Faults(object):
     def __init__(self):
-        self.faults_relations = None
-        self.faults = None
+        self.faults_relations = pn.DataFrame(index=['DefaultSeries'], columns=['DefaultSeries'], dtype='bool')
+        self.faults = pn.DataFrame(columns=['isFault', 'isFinite'])
         self.n_faults = None
 
-    def set_faults(self, series, series_name=None):
+    def __repr__(self):
+        return self.faults.to_string()
+
+    def _repr_html_(self):
+        return self.faults.to_html()
+
+    def set_faults(self, series, series_fault=None):
         """
         Set a flag to the series that are faults.
 
         Args:
-            series_name(list or array_like): Name of the series which are faults
+            series_fault(list or Interfaces): Name of the series which are faults
         """
 
-        try:
-            # Check if there is already a df
-            self.faults
+        #if isinstance(series_fault, Interfaces):
+        if series_fault is None:
+            series_fault = self.count_faults(series.df.columns)
 
-            try:
-                if any(self.faults.columns != series.columns):
-                    series_name = self.count_faults()
-                    self.faults = pn.DataFrame(index=series.columns, columns=['isFault'])
-                    self.faults['isFault'] = self.faults.index.isin(series_name)
-            except ValueError:
-                series_name = self.count_faults()
-                self.faults = pn.DataFrame(index=series.columns, columns=['isFault'])
-                self.faults['isFault'] = self.faults.index.isin(series_name)
+        self.faults = pn.DataFrame(index=series.df.columns, columns=['isFault'])
+        self.faults['isFault'] = self.faults.index.isin(series_fault)
+        self.n_faults = self.faults['isFault'].sum()
+        return self.faults
 
-            if series_name:
-                self.faults['isFault'] = self.faults.index.isin(series_name)
-
-        except AttributeError:
-
-            if not series_name:
-                series_name = self.count_faults()
-                self.faults = pn.DataFrame(index=series.columns, columns=['isFault'])
-                self.faults['isFault'] = self.faults.index.isin(series_name)
+        #
+        # try:
+        #     # Check if there is already a df
+        #     self.faults
+        #
+        #     try:
+        #         if any(self.faults.columns != series.columns):
+        #             series_fault = self.count_faults()
+        #             self.faults = pn.DataFrame(index=series.columns, columns=['isFault'])
+        #             self.faults['isFault'] = self.faults.index.isin(series_fault)
+        #     except ValueError:
+        #         series_fault = self.count_faults()
+        #         self.faults = pn.DataFrame(index=series.columns, columns=['isFault'])
+        #         self.faults['isFault'] = self.faults.index.isin(series_fault)
+        #
+        #     if series_fault:
+        #         self.faults['isFault'] = self.faults.index.isin(series_fault)
+        #
+        # except AttributeError:
+        #
+        #     if not series_fault:
+        #         series_fault = self.count_faults()
+        #         self.faults = pn.DataFrame(index=series.columns, columns=['isFault'])
+        #         self.faults['isFault'] = self.faults.index.isin(series_fault)
 
         # self.interfaces.loc[:, 'isFault'] = self.interfaces['series'].isin(self.faults.index[self.faults['isFault']])
         # self.orientations.loc[:, 'isFault'] = self.orientations['series'].isin(
         #     self.faults.index[self.faults['isFault']])
 
-        self.n_faults = self.faults['isFault'].sum()
 
     def check_fault_relations(self):
         pass
@@ -332,29 +381,51 @@ class Faults(object):
             rel_matrix (numpy.array): 2D Boolean array with the logic. Rows affect (offset) columns
         """
         # TODO: Change the fault relation automatically every time we add a fault
-        try:
-            self.faults_relations
-            if not rel_matrix:
+        if not rel_matrix:
+            rel_matrix = np.zeros((series.df.columns.shape[0],
+                                   series.df.columns.shape[0]))
 
-                rel_matrix = np.zeros((series.df.columns.shape[0],
-                                       series.df.columns.shape[0]))
+        self.faults_relations = pn.DataFrame(rel_matrix, index=series.df.columns,
+                                             columns=series.df.columns, dtype='bool')
 
-            self.faults_relations = pn.DataFrame(rel_matrix, index=series.df.columns,
-                                                 columns=series.df.columns, dtype='bool')
-        except AttributeError:
+        return self.faults_relations
+        #
+        # try:
+        #     self.faults_relations
+        #
+        # except AttributeError:
+        #
+        #     if rel_matrix is not None:
+        #         self.faults_relations = pn.DataFrame(rel_matrix, index=series.df.columns,
+        #                                              columns=series.df.columns, dtype='bool')
 
-            if rel_matrix is not None:
-                self.faults_relations = pn.DataFrame(rel_matrix, index=series.df.columns,
-                                                     columns=series.df.columns, dtype='bool')
+    @staticmethod
+    def count_faults(list_of_names):
+        """
+        Read the string names of the formations to detect automatically the number of faults.
+        """
+        faults_series = []
+        for i in list_of_names:
+            try:
+                if ('fault' in i or 'Fault' in i) and 'Default' not in i:
+                    faults_series.append(i)
+            except TypeError:
+                pass
+        return faults_series
 
 
 class Formations(object):
     def __init__(self):
-        self.formations = None
-        self.sequential_pile = None
+        self.df = pn.DataFrame(columns=['formation_name', 'id'])
         self._formation_values_set = False
 
-    def set_formations(self, formation_values=None, interfaces_df=None, formation_order=None):
+    def __repr__(self):
+        return self.df.to_string()
+
+    def _repr_html_(self):
+        return self.df.to_html()
+
+    def set_formations_values(self, formation_values=None, interfaces_df=None, formation_order=None):
 
         #self.orientations['formation'] = self.orientations['formation'].astype('category')
 
@@ -479,60 +550,67 @@ class Data(object):
         pass
 
 
-class Interfaces(object, Data):
+class Interfaces(Data):
     def __init__(self):
-  
+
+        super().__init__()
         self._columns_i_all = ['X', 'Y', 'Z', 'formation', 'series', 'X_std', 'Y_std', 'Z_std',
                                'order_series', 'formation_number']
         self._columns_i_1 = ['X', 'Y', 'Z', 'formation', 'series', 'formation_number', 'order_series', 'isFault']
         self._columns_i_num = ['X', 'Y', 'Z']
         self.df = pn.DataFrame(columns=self._columns_i_1)
-        self.df[self._columns_i_num] = self.interfaces[self._columns_i_num].astype(float)
+        self.df[self._columns_i_num] = self.df[self._columns_i_num].astype(float)
+        self.df['formation'] = self.df['formation'].astype('category')
+
         self.df.itype = 'interfaces'
         
         self.set_basement()
         self.df['isFault'] = self.df['isFault'].astype('bool')
 
+
     def set_basement(self):
-        try:
-            self.df['formation'].cat.add_categories('basement', inplace=True)
-        except ValueError:
-            pass
+        pass
 
-        try:
-            n_series = self.df['order_series'].unique().max()
-        except ValueError:
-            n_series = 0
+        # try:
+        #     self.df['formation'].cat.add_categories('basement', inplace=True)
+        # except ValueError:
+        #     pass
+        #
+        # try:
+        #     n_series = self.df['order_series'].unique().max()
+        # except ValueError:
+        #     n_series = 0
+        #
+        # drop_basement = self.df['formation'] == 'basement'
+        # original_frame = self.df[~drop_basement]
+        #
+        # try:
+        #     n_formation = original_frame['formation_number'].unique().max() + 1
+        # except ValueError:
+        #     n_formation = 1
+        # l = len(self.df)
+        #
+        # if not 'basement' in self.df['formation'].values:
+        #
+        #     try:
+        #         columns = {'X': self.extent[0], 'Y': self.extent[2], 'Z': self.extent[4], 'formation': 'basement',
+        #                    'order_series': n_series, 'formation_number': n_formation, 'series': self.series.columns[-1]}
+        #     except AttributeError:
+        #         columns = {'X': self.extent[0], 'Y': self.extent[2], 'Z': self.extent[4], 'formation': 'basement',
+        #                    'order_series': n_series, 'formation_number': n_formation, 'series': 'Default series'}
+        #
+        #     for key in columns:
+        #         self.df.at[l, str(key)] = columns[key]
+        #
+        #     self.order_table()
+        # # sef.add_interface(formation='basement', order_series=n_series, formation_number = n_formation)
+        # else:
+        #     self.modify_interface((drop_basement.index[drop_basement])[0], formation='basement', order_series=n_series,
+        #                           formation_number=n_formation)
+        #
+        # self.order_table()
 
-        drop_basement = self.df['formation'] == 'basement'
-        original_frame = self.df[~drop_basement]
-
-        try:
-            n_formation = original_frame['formation_number'].unique().max() + 1
-        except ValueError:
-            n_formation = 1
-        l = len(self.interfaces)
-
-        if not 'basement' in self.df['formation'].values:
-
-            try:
-                columns = {'X': self.extent[0], 'Y': self.extent[2], 'Z': self.extent[4], 'formation': 'basement',
-                           'order_series': n_series, 'formation_number': n_formation, 'series': self.series.columns[-1]}
-            except AttributeError:
-                columns = {'X': self.extent[0], 'Y': self.extent[2], 'Z': self.extent[4], 'formation': 'basement',
-                           'order_series': n_series, 'formation_number': n_formation, 'series': 'Default series'}
-
-            for key in columns:
-                self.df.at[l, str(key)] = columns[key]
-
-            self.order_table()
-        # sef.add_interface(formation='basement', order_series=n_series, formation_number = n_formation)
-        else:
-            self.modify_interface((drop_basement.index[drop_basement])[0], formation='basement', order_series=n_series,
-                                  formation_number=n_formation)
-
-        self.order_table()
-
+    # TODO any use here?
     def count_faults(self):
         """
         Read the string names of the formations to detect automatically the number of faults.
@@ -641,9 +719,9 @@ class Interfaces(object, Data):
         self.df['annotations'] = point_l
 
 
-class Orientations(object, Data):
+class Orientations(Data):
     def __init__(self):
-        
+        super().__init__()
         self._columns_o_all = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
                                'formation', 'series', 'X_std', 'Y_std', 'Z_std', 'dip_std', 'azimuth_std',
                                'order_series', 'formation_number']
@@ -863,8 +941,9 @@ class Structure(object):
         self.reference_position = None
 
 
-class AdditionalData(object, Structure):
+class AdditionalData(Structure):
     def __init__(self):
+        super().__init__()
         self.u_grade = None
         self.range_var = None
         self.c_o = None

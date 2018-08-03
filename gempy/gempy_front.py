@@ -687,7 +687,7 @@ def set_series(geo_data, series_distribution=None, order_series=None, order_form
 def set_order_formations(geo_data, order_formations):
     warnings.warn("set_order_formations will be removed in version 1.2, "
                   "use gempy.set_formations function instead", FutureWarning)
-    geo_data.set_formations(formation_order=order_formations)
+    geo_data.set_formations_values(formation_order=order_formations)
 
 
 def set_formations(geo_data, formations=None, formations_order=None, formations_values=None):
