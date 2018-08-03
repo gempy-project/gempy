@@ -723,7 +723,6 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
     # die umrechnung vom azimuth vorher machen
     # legende schön und richtig machen: farben für planes sind falsch wenn single_plots = False
     # option zum mean berechnen und plotten
-    # df_sub als legende
     # distinguish between fault and bedding planes
 
     # is import mplstereonet working?
@@ -757,12 +756,12 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
             ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=colors[i], linewidth=1,
                      label=formation + ': ' + 'plane')
 
-        if show_density is True and single_plots is True:
-            ax.density_contourf(df_sub['azimuth'] - 90, df_sub['dip'], measurement='poles', cmap='gist_yarg')
-
-        if show_density is True and single_plots is False:
-            ax.density_contourf(geo_data.orientations['azimuth'] - 90, geo_data.orientations['dip'],
-                                measurement='poles', cmap='gist_yarg')
+        if show_density is True:
+            if single_plots is False:
+                ax.density_contourf(geo_data.orientations['azimuth']-90, geo_data.orientations['dip'],
+                                    measurement='poles', cmap='gist_yarg')
+            else:
+                ax.density_contourf(df_sub['azimuth']-90, df_sub['dip'], measurement='poles', cmap='gist_yarg')
 
         fig.subplots_adjust(top=0.8)
         handles, labels = ax.get_legend_handles_labels()  # avoid repetition in legend
