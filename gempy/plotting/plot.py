@@ -715,7 +715,7 @@ def plot_topology(geo_data, G, centroids, direction="y"):
 
 def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=False, show_density=False):
     '''Equal-area projection of the orientations dataframe using mplstereonet ('Schmidt Net').
-    litho: lithologies/formation names, as list
+    litho: lithologies/formation names, as list. If None, all are plotted
     planes/poles:
     single_plots: if True, orientations for every formation are plotted in single stereonet
     show_density: if True, density contour plot around the pole points is shown'''
