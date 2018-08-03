@@ -725,8 +725,12 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
     # distinguish between fault and bedding planes
     import mplstereonet
     import matplotlib.pyplot as plt
+    from gempy.plotting.colors import color_lot, cmap, norm
 
-    colors = ['red', 'green', 'blue', 'orange', 'grey']
+    #colors = ['red', 'green', 'blue', 'orange', 'grey']
+
+    formation_numbers = geo_data.orientations['formation_number'].unique()
+    colors = [im.cmap(im.norm(value)) for value in formation_numbers]
 
     if litho is None:
         litho = geo_data.orientations['formation'].unique()
