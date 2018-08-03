@@ -714,20 +714,21 @@ def plot_topology(geo_data, G, centroids, direction="y"):
 
 
 def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=False, show_density=False):
-    '''plots orientations df in stereonet using mplstereonet package
+    '''Equal-area projection of the orientations dataframe using mplstereonet ('Schmidt Net').
     litho: lithologies/formation names, as list
-    returns: nothing, it just plots'''
+    planes/poles:
+    single_plots: if True, orientations for every formation are plotted in single stereonet
+    show_density: if True, density contour plot around the pole points is shown'''
 
     # die umrechnung vom azimuth vorher machen
-    # legende schön und richtig machen: farben für planes sind falsch
-    # mean berechnen und mit plotten
+    # legende schön und richtig machen: farben für planes sind falsch wenn single_plots = False
+    # option zum mean berechnen und plotten
     # df_sub als legende
     # distinguish between fault and bedding planes
+
     import mplstereonet
     import matplotlib.pyplot as plt
-    from gempy.plotting.colors import color_lot, cmap, norm
-
-    #colors = ['red', 'green', 'blue', 'orange', 'grey']
+    from gempy.plotting.colors import cmap
 
     formation_numbers = geo_data.orientations['formation_number'].unique()
     colors = [cmap(value) for value in formation_numbers]
