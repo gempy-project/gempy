@@ -717,11 +717,7 @@ def select_formation(geo_data, litho):
     '''helper fucntion for plot_stereonet
     geo_data: geodata df
     litho(list): Name of formation'''
-
-    domain = geo_data.orientations[geo_data.orientations['formation'] == litho]
-
-    return domain
-
+    return geo_data.orientations[geo_data.orientations['formation'] == litho]
 
 def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=False, show_density=False):
     '''plots orientations df in stereonet using mplstereonet package
