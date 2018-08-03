@@ -718,8 +718,8 @@ def select_formation(geo_data, litho):
     geo_data: geodata df
     litho(list): Name of formation'''
 
-    domain = geo_data.orientations[geo_data.orientations['formation'] == litho][
-        ~_np.append(['formation', 'azimuth'], 'dip')]
+    domain = geo_data.orientations[geo_data.orientations['formation'] == litho]
+    #[np.append(['formation', 'azimuth'], 'dip')]
     return domain
 
 
