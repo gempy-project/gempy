@@ -726,6 +726,7 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
     # df_sub als legende
     # distinguish between fault and bedding planes
 
+    # is import mplstereonet working?
     import mplstereonet
     import matplotlib.pyplot as plt
     from gempy.plotting.colors import cmap
