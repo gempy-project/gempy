@@ -193,9 +193,9 @@ class InputData(object):
 
         self.orientations["dip"] = np.rad2deg(np.nan_to_num(np.arccos(self.orientations["G_z"] / self.orientations["polarity"])))
 
-        self.orientations["azimuth"] = np.rad2deg(np.nan_to_num(np.arctan2(self.orientations["G_x"], self.orientations["G_y"])))
+        self.orientations["azimuth"] = np.rad2deg(np.nan_to_num(np.arctan2(self.orientations["G_x"]/self.orientations["polarity"], self.orientations["G_y"]/self.orientations["polarity"])))
         self.orientations["azimuth"][self.orientations["azimuth"] < 0] += 360  # shift values from [-pi, 0] to [pi,2*pi]
-        self.orientations["azimuth"][self.orientations["dip"] == 0] = 0  # because if dip is zero azimuth is undefined
+        #self.orientations["azimuth"][self.orientations["dip"] < 0.001] = 0  # because if dip is zero azimuth is undefined
 
 
 
