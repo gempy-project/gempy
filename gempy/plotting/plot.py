@@ -741,22 +741,22 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
 
     for i, formation in enumerate(litho):
 
-        if single_plots is True:
+        if single_plots:
             fig = plt.figure(figsize=(5, 5))
             ax = fig.add_subplot(111, projection='stereonet')
             ax.set_title(formation, y=1.1)
 
         df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
 
-        if poles is True:
+        if poles:
             ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='.', color=colors[i],
                     label=formation + ': ' + 'pole point')
 
-        if planes is True:
+        if planes:
             ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=colors[i], linewidth=1,
                      label=formation + ': ' + 'plane')
 
-        if show_density is True:
+        if show_density:
             if single_plots is False:
                 ax.density_contourf(geo_data.orientations['azimuth']-90, geo_data.orientations['dip'],
                                     measurement='poles', cmap='gist_yarg')
