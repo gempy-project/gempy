@@ -137,6 +137,8 @@ class Model(object):
        #  self.set_fault_relation()
 
 
+
+
 class MetaData(object):
     def __init__(self, name_project='default_project'):
         self.name_project = name_project
@@ -416,7 +418,11 @@ class Faults(object):
 
 class Formations(object):
     def __init__(self):
-        self.df = pn.DataFrame(columns=['formation_name', 'id'])
+        self.df = pn.DataFrame(columns=['formation', 'id', 'isBasement'])
+        self.df['isBasement'] = self.df['isBasement'].astype(bool)
+        self.df["formation"] = self.df["formation"].astype('category')
+
+        self.formations_names = np.empty(0)
         self._formation_values_set = False
 
     def __repr__(self):
@@ -425,51 +431,138 @@ class Formations(object):
     def _repr_html_(self):
         return self.df.to_html()
 
-    def set_formations_values(self, formation_values=None, interfaces_df=None, formation_order=None):
-
-        #self.orientations['formation'] = self.orientations['formation'].astype('category')
-
-        if formation_order is None and interfaces_df is not None:
-            if self.formations is None:
-                interfaces_df['formation'] = interfaces_df['formation'].astype('category')
-                # if self._formation_values_set is False:
-                formation_order = interfaces_df['formation'].cat.categories
-            else:
-                # We check if in the df we are setting there is a new formation. if yes we append it to to the cat
-                new_cat = interfaces_df['formation'].cat.categories[
-                    ~np.in1d(interfaces_df['formation'].cat.categories,
-                             self.formations.index)]
-                if new_cat.empty:
-                    formation_order = self.formations.index
-                else:
-                    formation_order = np.insert(self.formations.index.get_values(), 0, new_cat)
-            # try:
-            #     # Check if there is already a df
-            #     formation_order = self.formations.index
-            #
-            # except AttributeError:
-            #
-
-        if 'basement' not in formation_order:
-            formation_order = np.append(formation_order, 'basement')
-
-        if formation_values is None:
-            if self._formation_values_set:
-                # Check if there is already a df
-                formation_values = self.formations['value'].squeeze()
-            else:
-                formation_values = np.arange(1, formation_order.shape[0] + 1)
+    def set_formation_names(self, list_names):
+        if type(list_names) is list or type(list_names) is np.ndarray:
+            self.formations_names = np.asarray(list_names)
+        elif isinstance(list_names, Interfaces):
+            self.formations_names = np.asarray(list_names.df['formation'].cat.categories)
         else:
-            self._formation_values_set = True
+            raise AttributeError('list_names must be either array_like type or Interfaces')
 
-        if np.atleast_1d(formation_values).shape[0] < np.atleast_1d(formation_order).shape[0]:
-            formation_values = np.append(formation_values, formation_values.max() + 1)
+        self.map_formation_names()
 
-        self.formations = pn.DataFrame(index=formation_order,
-                                       columns=['value', 'formation_number'])
+    def map_formation_names(self):
+        if self.df['formation'].shape[0] == self.formations_names.shape[0]:
+            self.df['formation'] = self.formations_names
 
-        self.formations['value'] = formation_values
-        self.formations['formation_number'] = np.arange(1, self.formations.shape[0] + 1)
+        elif self.df['formation'].shape[0] > self.formations_names.shape[0]:
+            n_to_append = self.df['formation'].shape[0] - self.formations_names.shape[0]
+            for i in range(n_to_append):
+                self.formations_names = np.append(self.formations_names, 'default_formation_' + str(i))
+            warnings.warn('Length of formation_names does not match number of formations')
+            self.df['formation'] = self.formations_names
+
+        elif self.df['formation'].shape[0] < self.formations_names.shape[0]:
+            warnings.warn('Length of formation_names does not match number of formations')
+            self.df['formation'] = self.formations_names[:self.df.shape[0]]
+
+        self.df['formation'] = self.df['formation'].astype('category')
+        # try:
+        #     self.df['formation_name'] = self.formations_names
+        # except ValueError:
+        #     warnings.warn('Length of formation_names does not match number of formations')
+        #     self.df['formation_name'] = self.formations_names[:self.df.shape[0]]
+
+    def set_basement(self, basement_formation):
+        self.df['isBasement'] = self.df['formation'] == basement_formation
+
+    def sort_formations(self, series):
+        """
+        Sort formations df regarding series order
+        Args:
+            series:
+
+        Returns:
+
+        """
+        pass
+
+    @staticmethod
+    def set_id(df):
+        df['id'] = df.index
+        return df
+
+    def set_formations(self, values_array, values_names=np.empty(0), formation_names=None):
+        self.df = pn.DataFrame(columns=['formation', 'isBasement', 'id'])
+        self.df['isBasement'] = self.df['isBasement'].astype(bool)
+        self.df["formation"] = self.df["formation"].astype('category')
+
+        if type(values_array) is np.ndarray:
+            if values_names.size is 0:
+                for i in range(values_array.shape[1]):
+                    values_names = np.append(values_names, 'value_' + str(i))
+            vals_df = pn.DataFrame(values_array, columns=values_names)
+
+        elif isinstance(values_array, pn.core.frame.DataFrame):
+            vals_df = values_array
+
+        else:
+            raise AttributeError('values_array must be either numpy array or pandas df')
+
+        if formation_names:
+            self.set_formation_names(formation_names)
+        #
+        # if formation_names is None and self.formations_names.shape[0] <= values_array.shape[0]:
+        #     n_to_append = values_array.shape[0] - self.formations_names.shape[0]
+        #     for i in range(n_to_append):
+        #         self.formations_names = np.append(self.formations_names, 'default_formation_' + str(i))
+        #
+        # vals_df['formation_name'] = self.formations_names
+
+        f_df = pn.concat([self.df, vals_df], sort=False, axis=1, verify_integrity=True, ignore_index=False)
+
+        #f_df = pn.merge(self.df, vals_df, on='')
+        self.df = self.set_id(f_df)
+        self.map_formation_names()
+        self.set_basement(None)
+        return self.df
+
+    #
+    # def _set_formations_values(self, formation_values=None, interfaces_df=None, formation_order=None):
+    #
+    #     #self.orientations['formation'] = self.orientations['formation'].astype('category')
+    #
+    #     if formation_order is None and interfaces_df is not None:
+    #         if self.formations is None:
+    #             interfaces_df['formation'] = interfaces_df['formation'].astype('category')
+    #             # if self._formation_values_set is False:
+    #             formation_order = interfaces_df['formation'].cat.categories
+    #         else:
+    #             # We check if in the df we are setting there is a new formation. if yes we append it to to the cat
+    #             new_cat = interfaces_df['formation'].cat.categories[
+    #                 ~np.in1d(interfaces_df['formation'].cat.categories,
+    #                          self.formations.index)]
+    #             if new_cat.empty:
+    #                 formation_order = self.formations.index
+    #             else:
+    #                 formation_order = np.insert(self.formations.index.get_values(), 0, new_cat)
+    #         # try:
+    #         #     # Check if there is already a df
+    #         #     formation_order = self.formations.index
+    #         #
+    #         # except AttributeError:
+    #         #
+    #
+    #     if 'basement' not in formation_order:
+    #         formation_order = np.append(formation_order, 'basement')
+    #
+    #     if formation_values is None:
+    #         if self._formation_values_set:
+    #             # Check if there is already a df
+    #             formation_values = self.formations['value'].squeeze()
+    #         else:
+    #             formation_values = np.arange(1, formation_order.shape[0] + 1)
+    #     else:
+    #         self._formation_values_set = True
+    #
+    #     if np.atleast_1d(formation_values).shape[0] < np.atleast_1d(formation_order).shape[0]:
+    #         formation_values = np.append(formation_values, formation_values.max() + 1)
+    #
+    #     self.formations = pn.DataFrame(index=formation_order,
+    #                                    columns=['value', 'formation_number'])
+    #
+    #     self.formations['value'] = formation_values
+    #     self.formations['formation_number'] = np.arange(1, self.formations.shape[0] + 1)
 
         # self.interfaces['formation_number'] = self.interfaces['formation'].map(self.formations.iloc[:, 1])
         # self.orientations['formation_number'] = self.orientations['formation'].map(self.formations.iloc[:, 1])
@@ -485,27 +578,37 @@ class Data(object):
     def __init__(self):
         self.df = pn.DataFrame()
 
-    def import_data(self):
-        pass
+    def __repr__(self):
+        return self.df.to_string()
 
-    def order_table(self):
+    def _repr_html_(self):
+        return self.df.to_html()
+
+    def read_data(self, filepath, **kwargs):
+
+        if 'sep' not in kwargs:
+            kwargs['sep'] = ','
+
+        table = pn.read_table(filepath, **kwargs)
+
+        return table
+
+    @staticmethod
+    def sort_table(df):
         """
         First we sort the dataframes by the series age. Then we set a unique number for every formation and resort
         the formations. All inplace
         """
 
-        # We order the pandas table by series
-        self.df.sort_values(by=['order_series'],
-                                    ascending=True, kind='mergesort',
-                                    inplace=True)
-        # Give formation_number
-        if not 'formation_number' in self.df.columns:
-            self.map_formations()
+        # # We order the pandas table by series
+        # self.df.sort_values(by=['order_series'],
+        #                             ascending=True, kind='mergesort',
+        #                             inplace=True)
 
         # We order the pandas table by formation (also by series in case something weird happened)
-        self.df.sort_values(by=['order_series', 'formation_number'],
-                                    ascending=True, kind='mergesort',
-                                    inplace=True)
+        df.sort_values(by=['order_series', 'id'],
+                             ascending=True, kind='mergesort',
+                             inplace=False)
 
 
         # Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset
@@ -517,7 +620,7 @@ class Data(object):
 
         # TODO check if this works
         # Update labels for anotations
-        self.set_annotations()
+        #self.set_annotations()
 
     def map_series(self, series):
         # Now we fill the column series in the interfaces and orientations tables with the correspondant series and
@@ -530,24 +633,107 @@ class Data(object):
                                    for i in self.df["formation"]]
         # We sort the series altough is only important for the computation (we will do it again just before computing)
         # if series_distribution is not None:
-        self.df.sort_values(by='order_series', inplace=True)
+        #   self.df.sort_values(by='order_series', inplace=True)
 
         self.df['series'].cat.set_categories(series_df.columns, inplace=True)
+        return self.df
 
-    def map_formations(self, formations):
-        formations_df = formations.df
-        formation_order = formations.df.index
+    def map_formations(self, formations, sort=True, inplace=True):
+        i_df = self.df.drop('id', axis=1)
+        new_df = pn.merge(i_df, formations.df, on=['formation'], how='left')
+        #
+        # formations_df = formations.df
+        # formation_order = formations.df.index
 
-        self.df['formation_number'] = self.df['formation'].map(formations_df.iloc[:, 1])
-        self.df['formation_value'] = self.df['formation'].map(formations_df.iloc[:, 0])
-        self.df['formation'].cat.set_categories(formation_order, inplace=True)
+        if sort:
+            self.sort_table(new_df)
 
-    def map_faults(self, faults):
-        faults_df = faults.df
-        self.df.loc[:, 'isFault'] = self.df['series'].isin(faults_df.index[self.faults['isFault']])
+        # TODO: Substitute by ID
+        if inplace:
+            self.df = new_df
+            self.df['formation_number'] = self.df['id']
+            self.set_dypes()
+            self.df['formation'].cat.set_categories(formations.df['formation'].cat.categories, inplace=True)
 
-    def rescale_data(self):
+        else:
+            return new_df
+        # TODO: DEP
+        # self.df['formation_value'] = self.df['formation'].map(formations_df['id'])
+        # self.df['formation'].cat.set_categories(formation_order, inplace=True)
+
+    def map_faults(self, faults, inplace=True):
+
+        faults_df = faults.faults
+
+        if any(self.df['series'].isna()):
+            warnings.warn('Some points do not have series/fault')
+        if inplace:
+
+            self.df.loc[:, 'isFault'] = self.df['series'].isin(faults_df.index[faults_df['isFault']])
+        else:
+            return self.df['series'].isin(faults_df.index[faults_df['isFault']])
+
+    def set_dypes(self):
+        # Choose types
+        self.df['formation'] = self.df['formation'].astype('category', copy=True)
+        self.df['series'] = self.df['series'].astype('category', copy=True)
+        self.df['isFault'] = self.df['isFault'].astype('bool')
+        try:
+            self.df[['formation_number', 'order_series', 'id']] = self.df[
+                ['formation_number', 'order_series', 'id']].astype(int, copy=True)
+        except ValueError:
+            warnings.warn('You may have non-finite values (NA or inf) on the dataframe')
+
+    def rescale_data(self, rescaling_factor, centers):
+        self.df[['Xr', 'Yr', 'Zr']] = (self.df[['X', 'Y', 'Z']] - centers) / rescaling_factor + 0.5001
+
+
+class RescaledData(object):
+    def __init__(self, interfaces, orientations, grid):
+
+        self.interfaces_r = interfaces.df
+        self.orientations_r = orientations.df
+        self.grid_r = grid.values_r
+
+    def get_rescaled_data(self):
         pass
+
+
+def max_min_coord(interfaces=None, orientations=None):
+    if interfaces is None:
+        df = orientations
+        if orientations is None:
+            raise AttributeError('You must pass at least one Data object')
+        else:
+            df = orientations
+    else:
+        if orientations is None:
+            df = interfaces
+        else:
+            df = pn.concat(orientations.df, interfaces.df)
+
+    max_coord = df.max()[['X', 'Y', 'Z']]
+    min_coord = df.min()[['X', 'Y', 'Z']]
+    return max_coord, min_coord
+
+
+def data_center(interfaces=None, orientations=None,
+                max_coord=None, min_coord=None):
+
+    if max_coord is None or min_coord is None:
+        max_coord, min_coord = max_min_coord(interfaces, orientations)
+
+    # Get the centers of every axis
+    centers = ((max_coord + min_coord) / 2).astype(float)
+    return centers
+
+
+def rescaling_factor(interfaces=None, orientations=None,
+                     max_coord=None, min_coord=None):
+    if max_coord is None or min_coord is None:
+        max_coord, min_coord = max_min_coord(interfaces, orientations)
+    rescaling_factor_val = (2 * np.max(max_coord - min_coord))
+    return rescaling_factor_val
 
 
 class Interfaces(Data):
@@ -556,16 +742,90 @@ class Interfaces(Data):
         super().__init__()
         self._columns_i_all = ['X', 'Y', 'Z', 'formation', 'series', 'X_std', 'Y_std', 'Z_std',
                                'order_series', 'formation_number']
-        self._columns_i_1 = ['X', 'Y', 'Z', 'formation', 'series', 'formation_number', 'order_series', 'isFault']
+        self._columns_i_1 = ['X', 'Y', 'Z', 'formation', 'series', 'id', 'formation_number', 'order_series', 'isFault']
         self._columns_i_num = ['X', 'Y', 'Z']
         self.df = pn.DataFrame(columns=self._columns_i_1)
-        self.df[self._columns_i_num] = self.df[self._columns_i_num].astype(float)
-        self.df['formation'] = self.df['formation'].astype('category')
 
+        # Choose types
+        self.df[self._columns_i_num] = self.df[self._columns_i_num].astype(float)
+        self.set_dypes()
         self.df.itype = 'interfaces'
-        
-        self.set_basement()
-        self.df['isFault'] = self.df['isFault'].astype('bool')
+
+       # self.set_basement()
+       # self.df['isFault'] = self.df['isFault'].astype('bool')
+
+    def read_interfaces(self, filepath, debug=False, inplace=False, append=False, **kwargs):
+
+        if 'sep' not in kwargs:
+            kwargs['sep'] = ','
+
+        table = pn.read_table(filepath, **kwargs)
+        if debug is True:
+            print('Debugging activated. Changes won\'t be saved.')
+            return table
+        else:
+            assert set(['X', 'Y', 'Z', 'formation']).issubset(table.columns), \
+                "One or more columns do not match with the expected values " + str(table.columns)
+
+            # c = np.array(self._columns_i_1)
+            # interfaces_read = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], False))
+            # self.set_interfaces(interfaces_read, append=append)
+
+            if inplace:
+                # self.df[table.columns] = table
+                c = np.array(self._columns_i_1)
+                interfaces_read = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
+                self.set_interfaces(interfaces_read, append=append)
+                #self.set_interfaces(interfaces_read, append=append)
+                self.df['formation'] = self.df['formation'].astype('category')
+
+            else:
+                return table
+
+    def set_interfaces(self, interf_Dataframe, append=False, order_table=True):
+        """
+        Method to change or append a Dataframe to interfaces in place. A equivalent Pandas Dataframe with
+        ['X', 'Y', 'Z', 'formation'] has to be passed.
+
+        Args:
+            interf_Dataframe: pandas.core.frame.DataFrame with the data
+            append: Bool: if you want to append the new data frame or substitute it
+        """
+        assert set(self._columns_i_1).issubset(interf_Dataframe.columns), \
+            "One or more columns do not match with the expected values " + str(self._columns_i_1)
+
+        interf_Dataframe[self._columns_i_num] = interf_Dataframe[self._columns_i_num].astype(float, copy=True)
+        interf_Dataframe[['formation_number', 'order_series']] = interf_Dataframe[
+            ['formation_number', 'order_series']].astype(int, copy=True)
+        interf_Dataframe['formation'] = interf_Dataframe['formation'].astype('category', copy=True)
+        interf_Dataframe['series'] = interf_Dataframe['series'].astype('category', copy=True)
+
+        if append:
+            self.df = self.df.append(interf_Dataframe)
+        else:
+            # self.interfaces[self._columns_i_1] = interf_Dataframe[self._columns_i_1]
+            self.df = interf_Dataframe[self._columns_i_1]
+
+        self.df = self.df[~self.df[['X', 'Y', 'Z']].isna().any(1)]
+
+        # self.set_annotations()
+
+        # self.set_annotations()
+        if not self.df.index.is_unique:
+            self.df.reset_index(drop=True, inplace=True)
+
+        # if order_table:
+        #     self.set_series()
+        #     self.order_table()
+        #
+        # # # We check if in the df we are setting there is a new formation. if yes we append it to to the cat
+        # # new_cat = interf_Dataframe['formation'].cat.categories[~np.in1d(interf_Dataframe['formation'].cat.categories,
+        # #                                                                self.formations)]
+        # # self.formations.index.insert(0, new_cat)
+        # self.set_series()
+        # self.set_formations()
+        # self.set_faults()
+        # self.interfaces.sort_index()
 
 
     def set_basement(self):
@@ -610,22 +870,22 @@ class Interfaces(Data):
         #
         # self.order_table()
 
-    # TODO any use here?
-    def count_faults(self):
-        """
-        Read the string names of the formations to detect automatically the number of faults.
-        """
-        faults_series = []
-        for i in self.df['series'].unique():
-            try:
-                if ('fault' in i or 'Fault' in i) and 'Default' not in i:
-                    faults_series.append(i)
-            except TypeError:
-                pass
-        return faults_series
+    # TODO any use here? -> moved to faults
+    # def count_faults(self):
+    #     """
+    #     Read the string names of the formations to detect automatically the number of faults.
+    #     """
+    #     faults_series = []
+    #     for i in self.df['series'].unique():
+    #         try:
+    #             if ('fault' in i or 'Fault' in i) and 'Default' not in i:
+    #                 faults_series.append(i)
+    #         except TypeError:
+    #             pass
+    #     return faults_series
 
     def set_default_interface(self, extent):
-        # TODO this part is to update the formation class
+        # TODO this part is to update the formation class!!!!!!!!!!!!!!!!!!
         if self.formations.index[0] is 'basement':
             formation = 'default'
             self.set_formations(formation_order=[formation])
@@ -648,62 +908,74 @@ class Interfaces(Data):
              pandas.core.frame.DataFrame: Returns a list of formations
 
         """
-        return self.interfaces["formation"].unique()
+        return self.df["formation"].unique()
 
-    def import_data_csv(self, path, **kwargs):
-        """
-        Method to import interfaces and orientations from csv. The format is the same as the export 3D model data of
-        GeoModeller (check in the input_data data folder for an example).
+    # def import_data_csv(self, path, **kwargs):
+    #     """
+    #     Method to import interfaces and orientations from csv. The format is the same as the export 3D model data of
+    #     GeoModeller (check in the input_data data folder for an example).
+    #
+    #     Args:
+    #         path_i (str): path to the csv table
+    #         path_o (str): path to the csv table
+    #         **kwargs: kwargs of :func: `~pn.read_csv`
+    #
+    #     Attributes:
+    #         orientations(pandas.core.frame.DataFrame): Pandas data frame with the orientations data
+    #         Interfaces(pandas.core.frame.DataFrame): Pandas data frame with the interfaces data
+    #     """
+    #
+    #     interfaces_read = pn.read_csv(path, **kwargs)
+    #     assert set(['X', 'Y', 'Z', 'formation']).issubset(interfaces_read.columns), \
+    #         "One or more columns do not match with the expected values " + str(interfaces_read.columns)
+    #
+    #     c = np.array(self._columns_i_1)
+    #     interfaces_read = interfaces_read.assign(**dict.fromkeys(c[~np.in1d(c, interfaces_read.columns)], False))
+    #     self.set_interfaces(interfaces_read, append=True)
+    #     # self.interfaces[interfaces_read.columns] = interfaces_read[interfaces_read.columns]
+    #         # gagag
+    #     self.update_df()
 
-        Args:
-            path_i (str): path to the csv table
-            path_o (str): path to the csv table
-            **kwargs: kwargs of :func: `~pn.read_csv`
-
-        Attributes:
-            orientations(pandas.core.frame.DataFrame): Pandas data frame with the orientations data
-            Interfaces(pandas.core.frame.DataFrame): Pandas data frame with the interfaces data
-        """
-
-        interfaces_read = pn.read_csv(path, **kwargs)
-        assert set(['X', 'Y', 'Z', 'formation']).issubset(interfaces_read.columns), \
-            "One or more columns do not match with the expected values " + str(interfaces_read.columns)
-
-        c = np.array(self._columns_i_1)
-        interfaces_read = interfaces_read.assign(**dict.fromkeys(c[~np.in1d(c, interfaces_read.columns)], False))
-        self.set_interfaces(interfaces_read, append=True)
-        # self.interfaces[interfaces_read.columns] = interfaces_read[interfaces_read.columns]
-            # gagag
-        self.update_df()
-
-    def map_series(self, series):
-        # Now we fill the column series in the interfaces and orientations tables with the correspondant series and
-        # assigned number to the series
-        series_df = series.df
-        
-        self.df["series"] = [(i == series_df).sum().idxmax() for i in self.df["formation"]]
-        self.df["series"] = self.df["series"].astype('category')
-        self.df["order_series"] = [(i == series_df).sum().as_matrix().argmax().astype(int) + 1
-                                           for i in self.df["formation"]]
-        # We sort the series altough is only important for the computation (we will do it again just before computing)
-        # if series_distribution is not None:
-        self.df.sort_values(by='order_series', inplace=True)
-
-        self.df['series'].cat.set_categories(series_df.columns, inplace=True)
-        
-    def map_formations(self, formations):
-        
-        formations_df = formations.df
-        formation_order = formations.df.index
-
-        self.df['formation_number'] = self.df['formation'].map(formations_df.iloc[:, 1])
-        self.df['formation_value'] = self.df['formation'].map(formations_df.iloc[:, 0])
-        self.df['formation'].cat.set_categories(formation_order, inplace=True)
-
-    def map_faults(self, faults):
-
-        faults_df = faults.df
-        self.df.loc[:, 'isFault'] = self.df['series'].isin(faults_df.index[self.faults['isFault']])
+    # def map_series(self, series):
+    #     # Now we fill the column series in the interfaces and orientations tables with the correspondant series and
+    #     # assigned number to the series
+    #     series_df = series.df
+    #
+    #     self.df["series"] = [(i == series_df).sum().idxmax() for i in self.df["formation"]]
+    #     self.df["series"] = self.df["series"].astype('category')
+    #     self.df["order_series"] = [(i == series_df).sum().as_matrix().argmax().astype(int) + 1
+    #                                        for i in self.df["formation"]]
+    #     # We sort the series altough is only important for the computation (we will do it again just before computing)
+    #     # if series_distribution is not None:
+    #  #   self.df.sort_values(by='order_series', inplace=True)
+    #
+    #     self.df['series'].cat.set_categories(series_df.columns, inplace=True)
+    #     return self.df
+    #
+    # def map_formations(self, formations, sort=True, inplace=True):
+    #
+    #     new_df = pn.merge(self.df, formations.df, on='formation', how='outer')
+    #     #
+    #     # formations_df = formations.df
+    #     # formation_order = formations.df.index
+    #
+    #     if sort:
+    #         self.sort_table(new_df)
+    #
+    #     # TODO: Substitute by ID
+    #     if inplace:
+    #         self.df = new_df
+    #         self.df['formation_number'] = self.df['id']
+    #     else:
+    #         return new_df
+    #     # TODO: DEP
+    #     #self.df['formation_value'] = self.df['formation'].map(formations_df['id'])
+    #     #self.df['formation'].cat.set_categories(formation_order, inplace=True)
+    #
+    # def map_faults(self, faults):
+    #
+    #     faults_df = faults.faults
+    #     self.df.loc[:, 'isFault'] = self.df['series'].isin(faults_df.index[faults_df['isFault']])
 
     def set_annotations(self):
         """
@@ -712,9 +984,9 @@ class Interfaces(Data):
         Returns:
             None
         """
-        point_num = self.interfaces.groupby('formation_number').cumcount()
+        point_num = self.df.groupby('id').cumcount()
         point_l = [r'${\bf{x}}_{\alpha \,{\bf{' + str(f) + '}},' + str(p) + '}$'
-                   for p, f in zip(point_num, self.interfaces['formation_number'])]
+                   for p, f in zip(point_num, self.df['id'])]
 
         self.df['annotations'] = point_l
 
@@ -723,17 +995,16 @@ class Orientations(Data):
     def __init__(self):
         super().__init__()
         self._columns_o_all = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
-                               'formation', 'series', 'X_std', 'Y_std', 'Z_std', 'dip_std', 'azimuth_std',
-                               'order_series', 'formation_number']
+                               'formation', 'series', 'id', 'order_series', 'formation_number']
         self._columns_o_1 = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity', 'formation',
-                             'series', 'formation_number', 'order_series', 'isFault']
+                             'series', 'id', 'formation_number', 'order_series', 'isFault']
         self._columns_o_num = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
         self.df = pn.DataFrame(columns=self._columns_o_1)
-        self.df[self._columns_o_num] = self.orientations[self._columns_o_num].astype(float)
+        self.df[self._columns_o_num] = self.df[self._columns_o_num].astype(float)
         self.df.itype = 'orientations'
         
         self.calculate_gradient()
-        self.df['isFault'] = self.df['isFault'].astype('bool')
+     #   self.df['isFault'] = self.df['isFault'].astype('bool')
 
     def calculate_gradient(self):
         """
@@ -778,6 +1049,7 @@ class Orientations(Data):
 
         return np.array([*center, *orientation, *normal])
 
+    # TODO: Update!!!!!1
     def set_default_orientation(self, extent):
         ori = pn.DataFrame([[(extent[1] - extent[0]) / 2,
                              (extent[3] - extent[2]) / 2,
@@ -790,59 +1062,121 @@ class Orientations(Data):
 
         self.set_orientations(ori)
 
-    def import_data_csv(self, path, **kwargs):
+    def read_orientations(self, filepath, debug=False, inplace=False, append=False, **kwargs):
+
+        if 'sep' not in kwargs:
+            kwargs['sep'] = ','
+
+        table = pn.read_table(filepath, **kwargs)
+        if debug is True:
+            print('Debugging activated. Changes won\'t be saved.')
+            return table
+        else:
+            assert set(['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']).issubset(table.columns), \
+                "One or more columns do not match with the expected values " + str(table.columns)
+
+            if inplace:
+               # self.df[table.columns] = table
+                c = np.array(self._columns_o_1)
+                orientations_read = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
+                self.set_orientations(orientations_read, append=append)
+                #self.set_interfaces(interfaces_read, append=append)
+                self.df['formation'] = self.df['formation'].astype('category')
+
+            else:
+                return table
+
+    def set_orientations(self, foliat_Dataframe, append=False, order_table=True):
         """
-        Method to import interfaces and orientations from csv. The format is the same as the export 3D model data of
-        GeoModeller (check in the input_data data folder for an example).
+          Method to change or append a Dataframe to orientations in place.  A equivalent Pandas Dataframe with
+        ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation'] has to be passed.
 
-        Args:
-            path_i (str): path to the csv table
-            path_o (str): path to the csv table
-            **kwargs: kwargs of :func: `~pn.read_csv`
+          Args:
+              interf_Dataframe: pandas.core.frame.DataFrame with the data
+              append: Bool: if you want to append the new data frame or substitute it
+          """
+        assert set(self._columns_o_1).issubset(
+            foliat_Dataframe.columns), "One or more columns do not match with the expected values " +\
+                                       str(self._columns_o_1)
 
-        Attributes:
-            orientations(pandas.core.frame.DataFrame): Pandas data frame with the orientations data
-            Interfaces(pandas.core.frame.DataFrame): Pandas data frame with the interfaces data
-        """
+        foliat_Dataframe[self._columns_o_num] = foliat_Dataframe[self._columns_o_num].astype(float, copy=True)
 
-        orientations_read = pn.read_csv(path, **kwargs)
+        if append:
+            self.df = self.orientations.append(foliat_Dataframe)
+        else:
+            #self.orientations[self._columns_o_1] = foliat_Dataframe[self._columns_o_1]
+            self.df = foliat_Dataframe[self._columns_o_1]
 
-        assert set(['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']).issubset(orientations_read.columns), \
-            "One or more columns do not match with the expected values " + str(orientations_read.columns)
+        # self.calculate_orientations()
+        self.calculate_gradient()
 
-        self.orientations[orientations_read.columns] = orientations_read[orientations_read.columns]
+       #  self.orientations = self.orientations[~self.orientations[['X', 'Y', 'Z']].isna().any(1)]
+       #
+       #  self.set_series()
+       #  self.set_formations()
+       #  self.set_faults()
+       # # self.set_annotations()
+       #
+       #  if order_table:
+       #    #  self.set_formation_number()
+       #      self.set_series()
+       #      self.order_table()
+       #
+       #  self.orientations.sort_index()
 
-        self.update_df()
-
-    def map_series(self, series_df):
-        # Now we fill the column series in the interfaces and orientations tables with the correspondant series and
-        # assigned number to the series
-        self.df["series"] = [(i == series_df).sum().idxmax() for i in self.df["formation"]]
-        self.df["series"] = self.df["series"].astype('category')
-        self.df["order_series"] = [(i == series_df).sum().as_matrix().argmax().astype(int) + 1
-                                             for i in self.df["formation"]]
-
-        # We sort the series altough is only important for the computation (we will do it again just before computing)
-        # if series_distribution is not None:
-        self.df.sort_values(by='order_series', inplace=True)
-
-        self.df['series'].cat.set_categories(series_df.columns, inplace=True)
-
-    def map_formations(self, formations):
-        formations_df = formations.df
-        formation_order = formations.df.index
-
-        self.df['formation_number'] = self.df['formation'].map(formations_df.iloc[:, 1])
-
-        self.df['formation_value'] = self.df['formation'].map(formations_df.iloc[:, 0])
-
-        self.df['formation'].cat.set_categories(formation_order, inplace=True)
-    
-    def map_faults(self, faults):
-
-        faults_df = faults.df
-        self.df.loc[:, 'isFault'] = self.df['series'].isin(
-            faults_df.index[faults_df['isFault']])
+    # def import_data_csv(self, path, **kwargs):
+    #     """
+    #     Method to import interfaces and orientations from csv. The format is the same as the export 3D model data of
+    #     GeoModeller (check in the input_data data folder for an example).
+    #
+    #     Args:
+    #         path_i (str): path to the csv table
+    #         path_o (str): path to the csv table
+    #         **kwargs: kwargs of :func: `~pn.read_csv`
+    #
+    #     Attributes:
+    #         orientations(pandas.core.frame.DataFrame): Pandas data frame with the orientations data
+    #         Interfaces(pandas.core.frame.DataFrame): Pandas data frame with the interfaces data
+    #     """
+    #
+    #     orientations_read = pn.read_csv(path, **kwargs)
+    #
+    #     assert set(['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']).issubset(orientations_read.columns), \
+    #         "One or more columns do not match with the expected values " + str(orientations_read.columns)
+    #
+    #     self.orientations[orientations_read.columns] = orientations_read[orientations_read.columns]
+    #
+    #     self.update_df()
+    #
+    # def map_series(self, series_df):
+    #     # Now we fill the column series in the interfaces and orientations tables with the correspondant series and
+    #     # assigned number to the series
+    #     self.df["series"] = [(i == series_df).sum().idxmax() for i in self.df["formation"]]
+    #     self.df["series"] = self.df["series"].astype('category')
+    #     self.df["order_series"] = [(i == series_df).sum().as_matrix().argmax().astype(int) + 1
+    #                                          for i in self.df["formation"]]
+    #
+    #     # We sort the series altough is only important for the computation (we will do it again just before computing)
+    #     # if series_distribution is not None:
+    #     self.df.sort_values(by='order_series', inplace=True)
+    #
+    #     self.df['series'].cat.set_categories(series_df.columns, inplace=True)
+    #
+    # def map_formations(self, formations):
+    #     formations_df = formations.df
+    #     formation_order = formations.df.index
+    #
+    #     self.df['formation_number'] = self.df['formation'].map(formations_df.iloc[:, 1])
+    #
+    #     self.df['formation_value'] = self.df['formation'].map(formations_df.iloc[:, 0])
+    #
+    #     self.df['formation'].cat.set_categories(formation_order, inplace=True)
+    #
+    # def map_faults(self, faults):
+    #
+    #     faults_df = faults.df
+    #     self.df.loc[:, 'isFault'] = self.df['series'].isin(
+    #         faults_df.index[faults_df['isFault']])
 
     def set_annotations(self):
         """
@@ -852,9 +1186,9 @@ class Orientations(Data):
             None
         """
 
-        orientation_num = self.orientations.groupby('formation_number').cumcount()
+        orientation_num = self.df.groupby('formation_number').cumcount()
         foli_l = [r'${\bf{x}}_{\beta \,{\bf{' + str(f) + '}},' + str(p) + '}$'
-                   for p, f in zip(orientation_num, self.orientations['formation_number'])]
+                   for p, f in zip(orientation_num, self.df['formation_number'])]
 
         self.df['annotations'] = foli_l
 
@@ -934,30 +1268,100 @@ def plane_fit(point_list):
 
 
 class Structure(object):
-    def __init__(self):
-        self.len_interfaces = None
-        self.len_series_i = None
-        self.len_series_o = None
-        self.reference_position = None
+    def __init__(self, interfaces, orientations):
+
+        self.len_formations_i = self.set_length_formations_i(interfaces)
+        self.len_series_i = self.set_length_series_i(interfaces)
+        self.len_series_o = self.set_length_series_o(orientations)
+        self.ref_position = self.set_ref_position()
+
+    def set_length_formations_i(self, interfaces):
+        # ==================
+        # Extracting lengths
+        # ==================
+        # Array containing the size of every formation. Interfaces
+        self.len_formations_i = interfaces.df['id'].value_counts(sort=False).values
+        return self.len_formations_i
+
+    def set_length_series_i(self, interfaces):
+
+        # Array containing the size of every series. Interfaces.
+        len_series_i = interfaces.df['order_series'].value_counts(sort=False).values
+
+        if len_series_i.shape[0] is 0:
+            len_series_i = np.insert(len_series_i, 0, 0)
+
+        self.len_series_i = len_series_i
+        return self.len_series_i
+
+    def set_length_series_o(self, orientations):
+        # Array containing the size of every series. orientations.
+        self.len_series_o = orientations.df['id'].value_counts(sort=False).values
+        return self.len_series_o
+
+    def set_ref_position(self):
+        self.ref_position = np.insert(self.len_formations_i[:-1], 0, 0).cumsum()
+        return self.ref_position
 
 
-class AdditionalData(Structure):
-    def __init__(self):
-        super().__init__()
-        self.u_grade = None
-        self.range_var = None
-        self.c_o = None
-        self.nugget_effect_gradient = None
-        self.nugget_effect_scalar = None
+class AdditionalData(Structure, RescaledData):
+    def __init__(self, interfaces, orientations, grid):
 
-        self.rescaling_factor = 1
-        self.centers = np.array([])
+        super().__init__(interfaces, orientations)
 
-    def default_range(self):
-        pass
+        self.range_var = self.default_range(grid.extent)
+        self.c_o = self.default_c_o()
+
+        self.n_universal_eq = self.set_u_grade()
+
+        self.nugget_effect_gradient = 0.01
+        self.nugget_effect_scalar = 1e-6
+
+        self.kriging_data = pn.DataFrame([self.range_var, self.c_o, self.n_universal_eq,
+                                             self.nugget_effect_gradient, self.nugget_effect_scalar],
+                                            columns=['values'],
+                                            index=['range', '$C_o$', 'drift equations',
+                                                   'nugget grad', 'nugget scalar'])
+
+        self.rescaled_data = RescaledData(interfaces, orientations, grid)
+        self.options = pn.DataFrame()
+
+
+    @staticmethod
+    def default_range(extent):
+
+        range_var = np.sqrt(
+            (extent[0] - extent[1]) ** 2 +
+            (extent[2] - extent[3]) ** 2 +
+            (extent[4] - extent[5]) ** 2)
+
+        return range_var
 
     def default_c_o(self):
-        pass
+        c_o = self.range_var ** 2 / 14 / 3
+        return c_o
+
+    def set_u_grade(self, **kwargs):
+
+        u_grade = kwargs.get('u_grade', None)
+
+        # =========================
+        # Choosing Universal drifts
+        # =========================
+        if u_grade is None:
+            u_grade = np.zeros_like(self.len_series_i)
+            u_grade[(self.len_series_i > 1)] = 1
+
+        else:
+            u_grade = np.array(u_grade)
+
+        n_universal_eq = np.zeros_like(self.len_series_i)
+        n_universal_eq[u_grade == 0] = 0
+        n_universal_eq[u_grade == 1] = 3
+        n_universal_eq[u_grade == 2] = 9
+
+        self.n_universal_eq = n_universal_eq
+        return self.n_universal_eq
 
     def get_kriging_parameters(self):
         pass
