@@ -323,7 +323,7 @@ class InputData(object):
         elif itype == 'all':
             raw_data = pn.concat([self.interfaces[show_par_i],#.astype(dtype),
                                  self.orientations[show_par_f]],#.astype(dtype)],
-                                 keys=['interfaces', 'orientations'])
+                                 keys=['interfaces', 'orientations'], sort=False)
             # Be sure that the columns are in order when used for operations
             if numeric:
                 raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
