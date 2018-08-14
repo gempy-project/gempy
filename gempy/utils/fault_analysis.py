@@ -282,6 +282,44 @@ def plot_hanging_wall_projection(hw_array, projection='automatic'):
         print('Projection plane should be yz, xz or automatic.')
 
 
+def get_lith_fault_intersect(v_f, v_l):
+    # cutting layer surface vertices (v_l) down to maximal extent of fault surface (v_f)
+    f_x_extent = np.array([np.min(v_f[:, 0]), np.max(v_f[:, 0])])
+    f_y_extent = np.array([np.min(v_f[:, 1]), np.max(v_f[:, 1])])
+    f_z_extent = np.array([np.min(v_f[:, 2]), np.max(v_f[:, 2])])
+
+    x_cond1 = v_l[:, 0] >= f_x_extent[0]
+    x_cond2 = v_l[:, 0] <= f_x_extent[1]
+    x_cond = np.logical_and(x_cond1, x_cond2)
+
+    y_cond1 = v_l[:, 1] >= f_y_extent[0]
+    y_cond2 = v_l[:, 1] <= f_y_extent[1]
+    y_cond = np.logical_and(y_cond1, y_cond2)
+
+    z_cond1 = v_l[:, 2] >= f_z_extent[0]
+    z_cond2 = v_l[:, 2] <= f_z_extent[1]
+    z_cond = np.logical_and(z_cond1, z_cond2)
+
+    xyz_cond = np.logical_and(z_cond, np.logical_and(x_cond, y_cond))
+
+    v_cut = v_l[xyz_cond]
+
+    # find intersection between layer and fault surface
+    fl_dist = distance.cdist(v_cut, v_f)
+    min_dist = np.min(fl_dist, axis=0)
+    fl_cut_bool = min_dist < (vox_size_diag / 2)
+    fault_intersect = v_f[fl_cut_bool]
+    holder = np.zeros_like(v_f)
+    holder[fl_cut_bool] = 1
+
+    fl_dist = distance.cdist(v_f, v_cut)
+    min_dist = np.min(fl_dist, axis=0)
+    fl_cut_bool = min_dist < (vox_size_diag / 2)
+    fault_intersect2 = v_cut[fl_cut_bool]
+
+    return fault_intersect, fault_intersect2, holder.astype(bool)
+
+
 def get_layer_fault_contact(fault_vertices, layer_vertices, voxel_array, \
                             projection='yz', fault_side='footwall'):
     if projection == 'automatic':
@@ -316,7 +354,9 @@ def get_layer_fault_contact(fault_vertices, layer_vertices, voxel_array, \
 
 def get_contact_peaks(fault_vertices, layer_vertices, voxel_array, \
                       projection='yz', fault_side='footwall', \
-                      order=np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))):
+                      order='automatic'):
+    if order == 'automatic':
+        np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
     top_line = get_layer_fault_contact(fault_vertices, layer_vertices, voxel_array, \
                                        projection=projection, fault_side=fault_side)
     relmaxpos = sg.argrelextrema(top_line[:, 2], np.greater_equal, order=order)
