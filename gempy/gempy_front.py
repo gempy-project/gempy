@@ -425,6 +425,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
                     vertices.append(v)
                     simplices.append(s)
         else:
+            n_formation = n_formation - 1
             vertices, simplices = get_surface(potential_lith, interp_data, pot_int, n_formation,
                                               step_size=step_size, original_scale=original_scale)
 
