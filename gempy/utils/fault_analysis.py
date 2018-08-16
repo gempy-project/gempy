@@ -25,6 +25,24 @@ from scipy.spatial import distance
 
 
 def get_fault_mask(geo_data, fault_sol, fault_n, fault_side='both'):
+    """
+            Get a boolean mask (voxel block) for the fault surface contact to either the
+            footwall, the hanging wall side or both.
+
+            Args:
+                geo_data (:class:`gempy.data_management.InputData`)
+                fault_sol (ndarray): Computed model fault solution.
+                fault_n (int): Number of the fault of interest.
+                fault_side (string, optional, default='both'): The side of the fault for which the
+                    contact is to be returned:
+                        'footwall' or 'fw'
+                        'hanging wall' or 'hw'
+                        'both'.
+
+            Returns:
+                Fault surface contact boolean mask (ndarray).
+            """
+
     fault_block = fault_sol[0].astype(int).reshape(geo_data.resolution[0],
                                                    geo_data.resolution[1], geo_data.resolution[2])
 
@@ -101,11 +119,30 @@ def get_fault_mask(geo_data, fault_sol, fault_n, fault_side='both'):
     elif fault_side == 'footwall' or fault_side == 'fw':
         return f_mask_fw
     else:
-        print('fault side has do be chosen as both, footwall or hanging wall.')
-        return np.nan
+        raise AttributeError(str(form) + "must be 'footwall' ('fw'), 'hanging wall' ('hw') or 'both'.")
 
 def get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
                        lith_n, fault_n, fault_side='both'):
+    """
+            Get voxels of a lithology which are in contact with the fault surface, either on the footwall,
+            the hanging wall or both sides.
+
+            Args:
+                geo_data (:class:`gempy.data_management.InputData`)
+                lith_sol (ndarray): Computed model lithology solution.
+                fault_sol (ndarray): Computed model fault solution.
+                lith_n (int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                fault_n (int): Number of the fault of interest.
+                fault_side (string, optional, default='both'): The side of the fault for which the
+                    contact is to be returned:
+                        'footwall' or 'fw'
+                        'hanging wall' or 'hw'
+                        'both'.
+
+            Returns:
+                Lithology-fault contact voxels as boolean array.
+            """
+
     fault_block = fault_sol[0].astype(int).reshape(geo_data.resolution[0],
                                      geo_data.resolution[1],geo_data.resolution[2])
     fault_mask = get_fault_mask(geo_data, fault_sol, fault_n, fault_side)
@@ -119,14 +156,27 @@ def get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
     elif fault_side == 'both':
         fs_cond = np.ones_like(fault_block)
     else:
-        print('fault side has do be chosen as both, footwall or hanging wall.')
-        return np.nan
+        raise AttributeError(str(form) + "must be 'footwall' ('fw'), 'hanging wall' ('hw') or 'both'.")
     lith_cut = lith_cond * fs_cond
     vox_contact = fault_mask * lith_cut
     return vox_contact
 
-
 def project_voxels(voxel_array, projection='automatic'):
+    """
+            Project the 'True' voxels in a boolean array onto either the 'yz'- or the 'xz'-plane.
+
+            Args:
+                voxel_array (3D boolean array): Boolean array to be projected. Must be in 3D shape.
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+
+            Returns:
+                3D boolean array with True voxels projected onto one plane.
+            """
     if projection == 'automatic':
         d_x = (np.max(voxel_array[:, 0]) - np.min(voxel_array[:, 0]))
         d_y = (np.max(voxel_array[:, 1]) - np.min(voxel_array[:, 1]))
@@ -139,39 +189,65 @@ def project_voxels(voxel_array, projection='automatic'):
     elif projection == 'xz':
         p = 1
     else:
-        print('Projection plane should be yz, xz or automatic.')
+        raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
         p = 0
     proj = np.zeros_like(voxel_array)
     pos = np.argwhere(voxel_array == True)
     pos[:, p] = 0
     proj[pos[:, 0], pos[:, 1], pos[:, 2]] = True
     return proj
+    ### This is currently still a 3D array. Unnecessary. Find a better format (2d array?) and adapt functions!
 
+def get_extrema_line_projected(projected_array, extr_type='max'):
+    """
+            Get either the top or bottom edge of a projected lithology-fault contact (3D boolean array).
 
-def get_extrema_line_projected(projected_array, ext_type='max'):
-    if ext_type == 'max':
+            Args:
+                projected_array (3D boolean array): Previously projected array of the contact. Must be in 3D shape.
+                extr_type (string, optional, default='max'): Either 'max' for top edge or 'min' for lower edge.
+
+            Returns:
+                3D boolean array with 'True' voxels for the according edge line.
+            """
+    if extr_type == 'max':
         roll = np.roll(projected_array, -1, axis=2)
         roll[:, :, -1] = 0
         ext_line = np.bitwise_xor(projected_array, roll)
         ext_line[~projected_array] = 0
-    elif ext_type == 'min':
+    elif extr_type == 'min':
         roll = np.roll(projected_array, 1, axis=2)
         roll[:, :, 0] = 0
         ext_line = np.bitwise_xor(projected_array, roll)
         ext_line[~projected_array] = 0
     else:
-        print('ext_type must be either max or min.')
-        ext_line = np.nan
+        raise AttributeError(str(extr_type) + "must be either 'min' or 'max.")
     return ext_line
 
+def get_extrema_line_voxels(voxel_array, extrema_type='max', projection='automatic', form='projected'):
+    """
+        Get either the top or bottom edge of a lithology-fault contact (3D boolean array).
 
-def get_extrema_line_voxels(voxel_array, ext_type='max', projection='automatic', form='projected'):
+        Args:
+                    voxel_array (3D boolean array): Boolean array of the contact. Must be in 3D shape.
+                    extr_type (string, optional, default='max'): Either 'max' for top edge or 'min' for lower edge.
+                    projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+                    form (string, optional, default='projected'): In which form the edge is to be returned,
+                        either 'projected' or 'original' (not working at this moment).
+
+                Returns:
+                    3D boolean array with 'True' voxels for the according edge.
+                """
     projected_array = project_voxels(voxel_array, projection)
-    ext_line_p = get_extrema_line_projected(projected_array, ext_type)
+    extr_line_p = get_extrema_line_projected(projected_array, extrema_type)
     if form == 'projected':
-        return ext_line_p
+        return extr_line_p
     elif form == 'original':
-        return ext_line_o
+        return extr_line_o # original form not working yet
     # ext_line_r = np.zeros_like(voxel_array)
     # if projection == 'automatic':
     #    d_x = (np.max(projected_array[:,0])-np.min(projected_array[:,0]))
@@ -188,15 +264,39 @@ def get_extrema_line_voxels(voxel_array, ext_type='max', projection='automatic',
     # ext_line_r[rcond1] = 1
     ### need to find out how to come back to original form
     else:
-        print('form needs to be projected or original.')
-
+        raise AttributeError(str(form) + "must be 'projected' or 'original'")
 
 def get_juxtaposition(hw_array, fw_array):
-    juxtapos = np.logical_and(hw_array, fw_array)
+    juxtapos = np.logical_and(hw_array, fw_array) # this should only work with projected arrays
     return juxtapos
 
+def plot_allan_diagram(geo_data, lith_sol, fault_sol, \
+                       lith_n, fault_n, projection='automatic'):
+    """
+            Simple Allan diagram illustration (voxel-based).
 
-def plot_allan_diagram(hw_array, fw_array, projection='automatic'):
+            Args:
+                geo_data (:class:`gempy.data_management.InputData`)
+                lith_sol (ndarray): Computed model lithology solution.
+                fault_sol (ndarray): Computed model fault solution.
+                lith_n (int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                fault_n (int): Number of the fault of interest.
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+
+            Returns:
+                Allan diagram plot showing the layer-fault contact on footwall and hanging wall side, as well as
+                the resulting juxtaposition in different colors.
+            """
+    fw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                       lith_n, fault_n, fault_side='fw')
+    hw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                  lith_n, fault_n, fault_side='hw')
+
     if projection == 'automatic':
         d_x = (np.max(hw_array[:, 0]) - np.min(hw_array[:, 0]))
         d_y = (np.max(hw_array[:, 1]) - np.min(hw_array[:, 1]))
@@ -242,45 +342,77 @@ def plot_allan_diagram(hw_array, fw_array, projection='automatic'):
         diagram[juxtapos[:, 0, :]] = 3
 
     else:
-        return np.nan
-        # RAISE ERROR
+        raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
+
     plt.imshow(diagram.T, origin='bottom', cmap='viridis')
     return diagram
 
+def plot_fault_contact_projection(geo_data, lith_sol, fault_sol, \
+                       lith_n, fault_n, fault_side='footwall', projection='automatic'):
+    """
+            Voxel-based illustration of the contact of a lithology with a fault surface.
 
-def plot_footwall_projection(fw_array, projection='automatic'):
+            Args:
+                geo_data (:class:`gempy.data_management.InputData`)
+                lith_sol (ndarray): Computed model lithology solution.
+                fault_sol (ndarray): Computed model fault solution.
+                lith_n (int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                fault_n (int): Number of the fault of interest.
+                fault_side (string, optional, default='both'): The side of the fault for which the
+                    contact is to be returned:
+                        'footwall' or 'fw'
+                        'hanging wall' or 'hw'
+                        'both'.
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+            """
+    if fault_side == 'hanging wall' or fault_side == 'hw':
+        w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                     lith_n, fault_n, fault_side='hw')
+    elif fault_side == 'footwall' or fault_side == 'fw':
+        w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                     lith_n, fault_n, fault_side='fw')
+    elif fault_side == 'both':
+        w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                     lith_n, fault_n, fault_side='both')
+    else:
+        raise AttributeError(str(form) + "must be 'footwall' ('fw'), 'hanging wall' ('hw') or 'both'.")
+
+
     if projection == 'automatic':
-        d_x = (np.max(fw_array[:, 0]) - np.min(fw_array[:, 0]))
-        d_y = (np.max(fw_array[:, 1]) - np.min(fw_array[:, 1]))
+        d_x = (np.max(w_array[:, 0]) - np.min(w_array[:, 0]))
+        d_y = (np.max(w_array[:, 1]) - np.min(w_array[:, 1]))
         if d_x > d_y:
             projection = 'xz'
         else:
             projection = 'yz'
-    fw_proj = project_voxels(fw_array, projection)
+    w_proj = project_voxels(w_array, projection)
     if projection == 'yz':
-        plt.imshow(fw_proj[0, :, :].T, origin='bottom', cmap='viridis')
+        plt.imshow(w_proj[0, :, :].T, origin='bottom', cmap='viridis')
     elif projection == 'xz':
-        plt.imshow(fw_proj[:, 0, :].T, origin='bottom', cmap='viridis')
+        plt.imshow(w_proj[:, 0, :].T, origin='bottom', cmap='viridis')
     else:
-        print('Projection plane should be yz, xz or automatic.')
+        raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
 
-
-def plot_hanging_wall_projection(hw_array, projection='automatic'):
+def plot_direct_wall_projection(w_array, projection='automatic'):
     if projection == 'automatic':
-        d_x = (np.max(fw_array[:, 0]) - np.min(fw_array[:, 0]))
-        d_y = (np.max(fw_array[:, 1]) - np.min(fw_array[:, 1]))
+        d_x = (np.max(w_array[:, 0]) - np.min(w_array[:, 0]))
+        d_y = (np.max(w_array[:, 1]) - np.min(w_array[:, 1]))
         if d_x > d_y:
             projection = 'xz'
         else:
             projection = 'yz'
-    hw_proj = project_voxels(fw_array, projection)
+    w_proj = project_voxels(w_array, projection)
     if projection == 'yz':
-        plt.imshow(hw_proj[0, :, :].T, origin='bottom', cmap='viridis')
+        plt.imshow(w_proj[0, :, :].T, origin='bottom', cmap='viridis')
     elif projection == 'xz':
-        plt.imshow(hw_proj[:, 0, :].T, origin='bottom', cmap='viridis')
+        plt.imshow(w_proj[:, 0, :].T, origin='bottom', cmap='viridis')
     else:
-        print('Projection plane should be yz, xz or automatic.')
-
+        raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
 
 def get_lith_fault_intersect(v_f, v_l):
     # cutting layer surface vertices (v_l) down to maximal extent of fault surface (v_f)
@@ -334,7 +466,7 @@ def get_layer_fault_contact(fault_vertices, layer_vertices, voxel_array, \
     elif projection == 'xz':
         p = 1
     else:
-        print('Projection plane should be yz, xz or automatic.')
+        raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
         p = 0
     intersection_surface = get_lith_fault_intersect(fault_vertices, layer_vertices)[0]
     maxline_vox = get_extrema_line_voxels(voxel_array, ext_type='max', projection=projection)
