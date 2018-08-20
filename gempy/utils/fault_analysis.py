@@ -651,26 +651,23 @@ def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
 
     maxpos_hw = np.argwhere(maxline_hw == True)  # getting a shape too big for maxpos1, as HW side is bugged
     maxpos_hw_red = np.delete(maxpos_hw, emptypos_fw, 1)
-    print('TEST 1')
-    print(maxpos_fw_red, '-',maxpos_hw_red)
-
     if len(maxpos_fw_red) != len(maxpos_hw_red):
         if len(maxpos_fw_red) > len(maxpos_hw_red):
             maxpos_corrected = np.zeros_like(maxpos_hw_red)
             maxpos_corrected[:, 0] = maxpos_hw_red[:,0]
             for i in maxpos_corrected[:, 0]:
-                filter_max = np.max(maxpos_fw_red[np.argwhere(maxpos_fw_red[:, 0] == i), 1])
+                posi = np.argwhere(maxpos_fw_red[:, 0] == i)
+                filter_max = np.max(maxpos_fw_red[posi, 1])
                 maxpos_corrected[i, 1] = filter_max
             maxpos_fw_red = maxpos_corrected
         elif len(maxpos_hw_red) > len(maxpos_fw_red):
             maxpos_corrected = np.zeros_like(maxpos_fw_red)
             maxpos_corrected[:, 0] = maxpos_fw_red[:,0]
             for i in maxpos_corrected[:, 0]:
-                filter_max = np.max(maxpos_hw_red[np.argwhere(maxpos_hw_red[:, 0] == i), 1])
+                posi = np.argwhere(maxpos_hw_red[:, 0] == i)
+                filter_max = np.max(maxpos_hw_red[posi, 1])
                 maxpos_corrected[i, 1] = filter_max
             maxpos_hw_red = maxpos_corrected
-    print('TEST 2')
-    print(maxpos_fw_red,'-', maxpos_hw_red)
     if position == 'faultmax':
         # finding max for FW maxline only. should I make this optional? So possible to choose HW as reference?
         if order == 'automatic':
