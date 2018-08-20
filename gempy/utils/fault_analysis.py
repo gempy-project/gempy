@@ -18,6 +18,7 @@
 @author: Fabian A. Stamm
 """
 
+import gempy as gp
 import numpy as np
 import scipy.signal as sg
 from matplotlib import pyplot as plt
@@ -414,8 +415,21 @@ def plot_direct_wall_projection(w_array, projection='automatic'):
     else:
         raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
 
-def get_lith_fault_intersect(v_f, v_l):
+def get_slip_surface(fault_v, layer_v):
+    """
+            Get vertices-based coordinates for the surface on which a layer interface slipped on the fault surface.
+
+            Args:
+                fault_v (numpy.array): 2D array (XYZ) with the coordinates of fault vertices.
+                layer_v (numpy.array): 2D array (XYZ) with the coordinates of layer interface vertices.
+
+            Returns:
+                2D numpy array which contains shared vertices betweem the layer inetrface and the fault surface.
+                This is achieved by looking for minimal euclidean distances relative to the fault surface vertices.
+            """
     # cutting layer surface vertices (v_l) down to maximal extent of fault surface (v_f)
+    v_f = fault_v
+    v_l = layer_v
     f_x_extent = np.array([np.min(v_f[:, 0]), np.max(v_f[:, 0])])
     f_y_extent = np.array([np.min(v_f[:, 1]), np.max(v_f[:, 1])])
     f_z_extent = np.array([np.min(v_f[:, 2]), np.max(v_f[:, 2])])
@@ -452,8 +466,26 @@ def get_lith_fault_intersect(v_f, v_l):
     return fault_intersect, fault_intersect2, holder.astype(bool)
 
 
-def get_layer_fault_contact(fault_vertices, layer_vertices, voxel_array, \
-                            projection='yz', fault_side='footwall'):
+def get_lf_contact(fault_vertices, layer_vertices, w_array, \
+                            projection='automatic'):
+    """
+            Get vertices-based coordinates for the surface on which a layer interface slipped on the fault surface.
+
+            Args:
+                fault_v (numpy.array): 2D array (XYZ) with the coordinates of fault vertices.
+                layer_v (numpy.array): 2D array (XYZ) with the coordinates of layer interface vertices.
+                w_array (ndarray): 3D boolean array, fault contact mask for either foot- or hanging wall.
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+
+            Returns:
+                2D array (XYZ) with the coordinates of the fault slip surface.
+            """
+
     if projection == 'automatic':
         d_x = (np.max(voxel_array[:, 0]) - np.min(voxel_array[:, 0]))
         d_y = (np.max(voxel_array[:, 1]) - np.min(voxel_array[:, 1]))
@@ -468,9 +500,10 @@ def get_layer_fault_contact(fault_vertices, layer_vertices, voxel_array, \
     else:
         raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
         p = 0
-    intersection_surface = get_lith_fault_intersect(fault_vertices, layer_vertices)[0]
-    maxline_vox = get_extrema_line_voxels(voxel_array, ext_type='max', projection=projection)
-    maxpos_vox = np.argwhere(maxline_vox == True)
+
+    intersection_surface = get_slip_surface(fault_vertices, layer_vertices)[0]
+    extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection)
+    maxpos_vox = np.argwhere(extrline_vox == True)
     # rescaling
     maxpos_vox[:, 0] = maxpos_vox[:, 0] * vox_size_x
     maxpos_vox[:, 1] = maxpos_vox[:, 1] * vox_size_y
@@ -483,14 +516,113 @@ def get_layer_fault_contact(fault_vertices, layer_vertices, voxel_array, \
     top_line = intersection_surface[mi_cut_bool]
     return top_line
 
+def get_layer_fault_contact(geo_data, lith_sol, fault_sol, lith_n, \
+                            fault_n, fault_v, layer_v, \
+                            projection='automatic', fault_side='fw'):
+    """
+            Get vertices-based coordinates for the surface on which a layer interface slipped on the fault surface.
 
-def get_contact_peaks(fault_vertices, layer_vertices, voxel_array, \
+            Args:
+                geo_data (:class:`gempy.data_management.InputData`)
+                lith_sol (ndarray): Computed model lithology solution.
+                fault_sol (ndarray): Computed model fault solution.
+                lith_n (int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                fault_n (int): Number of the fault of interest.
+                fault_v (numpy.array): 2D array (XYZ) with the coordinates of fault vertices.
+                layer_v (numpy.array): 2D array (XYZ) with the coordinates of layer interface vertices.
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+                fault_side (string, optional, default='both'): The side of the fault for which the
+                    contact is to be returned:
+                        'footwall' or 'fw'
+                        'hanging wall' or 'hw'
+                        'both'.
+
+            Returns:
+                2D array (XYZ) with the coordinates of the fault slip surface.
+            """
+    if fault_side = 'both':
+        raise AttributeError(str(projection) + "can not be 'both' in this function.")
+    w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                 lith_n, fault_n, fault_side)
+    top_contact_line = get_lf_contact(fault_v, layer_v, w_array, projection)
+    return top_contact_line
+
+def get_c_peaks(fault_vertices, layer_vertices, voxel_array, \
                       projection='yz', fault_side='footwall', \
                       order='automatic'):
+    """
+            Get peak and maxima plateaus for a layer-fault contact line.
+
+            Args:
+                fault_v (numpy.array): 2D array (XYZ) with the coordinates of fault vertices.
+                layer_v (numpy.array): 2D array (XYZ) with the coordinates of layer interface vertices.
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+                fault_side (string, optional, default='both'): The side of the fault for which the
+                    contact is to be returned:
+                        'footwall' or 'fw'
+                        'hanging wall' or 'hw'
+                        'both'.
+                order (int, optional): Order of neighboring cells used to compare to find peaks.
+                    Default is 'automatic' and takes half the average xy-resolution.
+
+            Returns:
+                2D array (XYZ) with the coordinates of the fault contact peaks.
+            """
     if order == 'automatic':
         np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
     top_line = get_layer_fault_contact(fault_vertices, layer_vertices, voxel_array, \
                                        projection=projection, fault_side=fault_side)
+    relmaxpos = sg.argrelextrema(top_line[:, 2], np.greater_equal, order=order)
+    peaks = top_line[relmaxpos]
+    return peaks
+
+def get_contact_peaks(geo_data, lith_sol, fault_sol, lith_n, \
+                        fault_n, fault_vertices, layer_certives, \
+                        projection='automatic', fault_side='fw'
+                        order='automatic'):
+    """
+            Get peak and maxima plateaus for a layer-fault contact line.
+
+            Args:
+                geo_data (:class:`gempy.data_management.InputData`)
+                lith_sol (ndarray): Computed model lithology solution.
+                fault_sol (ndarray): Computed model fault solution.
+                lith_n (int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                fault_n (int): Number of the fault of interest.
+                fault_v (numpy.array): 2D array (XYZ) with the coordinates of fault vertices.
+                layer_v (numpy.array): 2D array (XYZ) with the coordinates of layer interface vertices.
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+                fault_side (string, optional, default='both'): The side of the fault for which the
+                    contact is to be returned:
+                        'footwall' or 'fw'
+                        'hanging wall' or 'hw'
+                        'both'.
+                order (int, optional): Order of neighboring cells used to compare to find peaks.
+                    Default is 'automatic' and takes half the average xy-resolution.
+
+            Returns:
+                2D array (XYZ) with the coordinates of the fault contact peaks.
+            """
+    if order == 'automatic':
+        np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
+    top_line = get_layer_fault_contact(geo_data, lith_sol, fault_sol, lith_n, \
+                            fault_n, fault_vertices, layer_certives, \
+                            projection, fault_side)
     relmaxpos = sg.argrelextrema(top_line[:, 2], np.greater_equal, order=order)
     peaks = top_line[relmaxpos]
     return peaks
