@@ -199,29 +199,29 @@ def project_voxels(voxel_array, projection='automatic'):
     return proj
     ### This is currently still a 3D array. Unnecessary. Find a better format (2d array?) and adapt functions!
 
-def get_extrema_line_projected(projected_array, extr_type='max'):
+def get_extrema_line_projected(projected_array, extrema_type='max'):
     """
             Get either the top or bottom edge of a projected lithology-fault contact (3D boolean array).
 
             Args:
                 projected_array (3D boolean array): Previously projected array of the contact. Must be in 3D shape.
-                extr_type (string, optional, default='max'): Either 'max' for top edge or 'min' for lower edge.
+                extrema_type (string, optional, default='max'): Either 'max' for top edge or 'min' for lower edge.
 
             Returns:
                 3D boolean array with 'True' voxels for the according edge line.
             """
-    if extr_type == 'max':
+    if extrema_type == 'max':
         roll = np.roll(projected_array, -1, axis=2)
         roll[:, :, -1] = 0
         ext_line = np.bitwise_xor(projected_array, roll)
         ext_line[~projected_array] = 0
-    elif extr_type == 'min':
+    elif extrema_type == 'min':
         roll = np.roll(projected_array, 1, axis=2)
         roll[:, :, 0] = 0
         ext_line = np.bitwise_xor(projected_array, roll)
         ext_line[~projected_array] = 0
     else:
-        raise AttributeError(str(extr_type) + "must be either 'min' or 'max.")
+        raise AttributeError(str(extrema_type) + "must be either 'min' or 'max.")
     return ext_line
 
 def get_extrema_line_voxels(voxel_array, extrema_type='max', projection='automatic', form='projected'):
@@ -230,7 +230,7 @@ def get_extrema_line_voxels(voxel_array, extrema_type='max', projection='automat
 
         Args:
                     voxel_array (3D boolean array): Boolean array of the contact. Must be in 3D shape.
-                    extr_type (string, optional, default='max'): Either 'max' for top edge or 'min' for lower edge.
+                    extrema_type (string, optional, default='max'): Either 'max' for top edge or 'min' for lower edge.
                     projection (string, optional, default='automatic'): Choose the plane onto which the
                     voxels are to be projected:
                         'yz'
@@ -244,11 +244,11 @@ def get_extrema_line_voxels(voxel_array, extrema_type='max', projection='automat
                     3D boolean array with 'True' voxels for the according edge.
                 """
     projected_array = project_voxels(voxel_array, projection)
-    extr_line_p = get_extrema_line_projected(projected_array, extrema_type)
+    extrema_line_p = get_extrema_line_projected(projected_array, extrema_type)
     if form == 'projected':
-        return extr_line_p
+        return extrema_line_p
     elif form == 'original':
-        return extr_line_o # original form not working yet
+        return extrema_line_o # original form not working yet
     # ext_line_r = np.zeros_like(voxel_array)
     # if projection == 'automatic':
     #    d_x = (np.max(projected_array[:,0])-np.min(projected_array[:,0]))
@@ -306,13 +306,13 @@ def plot_allan_diagram(geo_data, lith_sol, fault_sol, \
         else:
             projection = 'yz'
     fw_proj = project_voxels(fw_array, projection)
-    fw_maxline = get_extrema_line_voxels(fw_array, ext_type='max', projection=projection)
-    fw_minline = get_extrema_line_voxels(fw_array, ext_type='min', projection=projection)
+    fw_maxline = get_extrema_line_voxels(fw_array, extrema_type='max', projection=projection)
+    fw_minline = get_extrema_line_voxels(fw_array, extrema_type='min', projection=projection)
     fw_between = np.bitwise_xor(fw_proj, np.logical_or(fw_maxline, fw_minline))
 
     hw_proj = project_voxels(hw_array, projection)
-    hw_maxline = get_extrema_line_voxels(hw_array, ext_type='max', projection=projection)
-    hw_minline = get_extrema_line_voxels(hw_array, ext_type='min', projection=projection)
+    hw_maxline = get_extrema_line_voxels(hw_array, extrema_type='max', projection=projection)
+    hw_minline = get_extrema_line_voxels(hw_array, extrema_type='min', projection=projection)
     hw_between = np.bitwise_xor(hw_proj, np.logical_or(hw_maxline, hw_minline))
 
     juxtapos = np.logical_and(fw_proj, hw_proj)
@@ -415,7 +415,7 @@ def plot_direct_wall_projection(w_array, projection='automatic'):
     else:
         raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
 
-def get_slip_surface(fault_v, layer_v):
+def get_slip_surface(geo_data, fault_v, layer_v):
     """
             Get vertices-based coordinates for the surface on which a layer interface slipped on the fault surface.
 
@@ -430,6 +430,12 @@ def get_slip_surface(fault_v, layer_v):
     # cutting layer surface vertices (v_l) down to maximal extent of fault surface (v_f)
     v_f = fault_v
     v_l = layer_v
+
+    vox_size_x = np.abs(geo_data.extent[1] - geo_data.extent[0]) / geo_data.resolution[0]
+    vox_size_y = np.abs(geo_data.extent[3] - geo_data.extent[2]) / geo_data.resolution[1]
+    vox_size_z = np.abs(geo_data.extent[5] - geo_data.extent[4]) / geo_data.resolution[2]
+    vox_size_diag = np.sqrt(vox_size_x ** 2 + vox_size_y ** 2 + vox_size_z ** 2)
+
     f_x_extent = np.array([np.min(v_f[:, 0]), np.max(v_f[:, 0])])
     f_y_extent = np.array([np.min(v_f[:, 1]), np.max(v_f[:, 1])])
     f_z_extent = np.array([np.min(v_f[:, 2]), np.max(v_f[:, 2])])
@@ -466,7 +472,7 @@ def get_slip_surface(fault_v, layer_v):
     return fault_intersect, fault_intersect2, holder.astype(bool)
 
 
-def get_lf_contact(fault_vertices, layer_vertices, w_array, \
+def get_lf_contact(geo_data, fault_vertices, layer_vertices, w_array, \
                             projection='automatic'):
     """
             Get vertices-based coordinates for the surface on which a layer interface slipped on the fault surface.
@@ -485,10 +491,14 @@ def get_lf_contact(fault_vertices, layer_vertices, w_array, \
             Returns:
                 2D array (XYZ) with the coordinates of the fault slip surface.
             """
+    vox_size_x = np.abs(geo_data.extent[1] - geo_data.extent[0]) / geo_data.resolution[0]
+    vox_size_y = np.abs(geo_data.extent[3] - geo_data.extent[2]) / geo_data.resolution[1]
+    vox_size_z = np.abs(geo_data.extent[5] - geo_data.extent[4]) / geo_data.resolution[2]
+    vox_size_diag = np.sqrt(vox_size_x ** 2 + vox_size_y ** 2 + vox_size_z ** 2)
 
     if projection == 'automatic':
-        d_x = (np.max(voxel_array[:, 0]) - np.min(voxel_array[:, 0]))
-        d_y = (np.max(voxel_array[:, 1]) - np.min(voxel_array[:, 1]))
+        d_x = (np.max(w_array[:, 0]) - np.min(w_array[:, 0]))
+        d_y = (np.max(w_array[:, 1]) - np.min(w_array[:, 1]))
         if d_x > d_y:
             projection = 'xz'
         else:
@@ -501,7 +511,7 @@ def get_lf_contact(fault_vertices, layer_vertices, w_array, \
         raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
         p = 0
 
-    intersection_surface = get_slip_surface(fault_vertices, layer_vertices)[0]
+    intersection_surface = get_slip_surface(geo_data, fault_vertices, layer_vertices)[0]
     extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection)
     maxpos_vox = np.argwhere(extrline_vox == True)
     # rescaling
@@ -545,16 +555,15 @@ def get_layer_fault_contact(geo_data, lith_sol, fault_sol, lith_n, \
             Returns:
                 2D array (XYZ) with the coordinates of the fault slip surface.
             """
-    if fault_side = 'both':
+    if fault_side == 'both':
         raise AttributeError(str(projection) + "can not be 'both' in this function.")
     w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
                                  lith_n, fault_n, fault_side)
-    top_contact_line = get_lf_contact(fault_v, layer_v, w_array, projection)
+    top_contact_line = get_lf_contact(geo_data, fault_v, layer_v, w_array, projection)
     return top_contact_line
 
-def get_c_peaks(fault_vertices, layer_vertices, voxel_array, \
-                      projection='yz', fault_side='footwall', \
-                      order='automatic'):
+def get_c_peaks(fault_vertices, layer_vertices, w_array, \
+                      projection='yz', order='automatic'):
     """
             Get peak and maxima plateaus for a layer-fault contact line.
 
@@ -579,17 +588,16 @@ def get_c_peaks(fault_vertices, layer_vertices, voxel_array, \
                 2D array (XYZ) with the coordinates of the fault contact peaks.
             """
     if order == 'automatic':
-        np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
-    top_line = get_layer_fault_contact(fault_vertices, layer_vertices, voxel_array, \
-                                       projection=projection, fault_side=fault_side)
+        order = np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
+    top_line = get_lf_contact(fault_vertices, layer_vertices, w_array, \
+                                       projection)
     relmaxpos = sg.argrelextrema(top_line[:, 2], np.greater_equal, order=order)
     peaks = top_line[relmaxpos]
     return peaks
 
-def get_contact_peaks(geo_data, lith_sol, fault_sol, lith_n, \
-                        fault_n, fault_vertices, layer_certives, \
-                        projection='automatic', fault_side='fw'
-                        order='automatic'):
+def get_contact_peaks(geo_data, lith_sol, fault_sol, lith_n, fault_n,
+                      fault_v, layer_v, projection='automatic',
+                      fault_side='fw', order='automatic'):
     """
             Get peak and maxima plateaus for a layer-fault contact line.
 
@@ -619,10 +627,65 @@ def get_contact_peaks(geo_data, lith_sol, fault_sol, lith_n, \
                 2D array (XYZ) with the coordinates of the fault contact peaks.
             """
     if order == 'automatic':
-        np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
+        order = np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
     top_line = get_layer_fault_contact(geo_data, lith_sol, fault_sol, lith_n, \
-                            fault_n, fault_vertices, layer_certives, \
+                            fault_n, fault_v, layer_v, \
                             projection, fault_side)
     relmaxpos = sg.argrelextrema(top_line[:, 2], np.greater_equal, order=order)
     peaks = top_line[relmaxpos]
     return peaks
+
+
+def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
+                      position='faultmax', projection='automatic', order='automatic'):
+    fw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side='fw')
+    hw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side='hw')
+    maxline_fw = get_extrema_line_voxels(fw_array,extrema_type='max',
+                                         projection=projection)
+    maxline_hw = get_extrema_line_voxels(hw_array,extrema_type='max',
+                                         projection=projection)
+    maxpos_fw = np.argwhere(maxline_fw == True)
+    possum_fw = np.sum(maxpos_fw, axis=0)
+    emptypos_fw = np.argwhere(possum_fw == 0)
+    maxpos_fw_red = np.delete(maxpos_fw, emptypos_fw, 1)
+
+    maxpos_hw = np.argwhere(maxline_hw == True)  # getting a shape too big for maxpos1, as HW side is bugged
+    maxpos_hw_red = np.delete(maxpos_hw, emptypos_fw, 1)
+    print('TEST 1')
+    print(maxpos_fw_red, '-',maxpos_hw_red)
+
+    if len(maxpos_fw_red) != len(maxpos_hw_red):
+        if len(maxpos_fw_red) > len(maxpos_hw_red):
+            maxpos_corrected = np.zeros_like(maxpos_hw_red)
+            maxpos_corrected[:, 0] = maxpos_hw_red[:,0]
+            for i in maxpos_corrected[:, 0]:
+                filter_max = np.max(maxpos_fw_red[np.argwhere(maxpos_fw_red[:, 0] == i), 1])
+                maxpos_corrected[i, 1] = filter_max
+            maxpos_fw_red = maxpos_corrected
+        elif len(maxpos_hw_red) > len(maxpos_fw_red):
+            maxpos_corrected = np.zeros_like(maxpos_fw_red)
+            maxpos_corrected[:, 0] = maxpos_fw_red[:,0]
+            for i in maxpos_corrected[:, 0]:
+                filter_max = np.max(maxpos_hw_red[np.argwhere(maxpos_hw_red[:, 0] == i), 1])
+                maxpos_corrected[i, 1] = filter_max
+            maxpos_hw_red = maxpos_corrected
+    print('TEST 2')
+    print(maxpos_fw_red,'-', maxpos_hw_red)
+    if position == 'faultmax':
+        # finding max for FW maxline only. should I make this optional? So possible to choose HW as reference?
+        if order == 'automatic':
+            comp_order = np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
+        else:
+            comp_order = order
+        faultmaxpos_fw = sg.find_peaks_cwt(maxpos_fw_red[:, 1], widths=np.array([comp_order * 2]))
+        z_fmax0 = maxpos_fw_red[faultmaxpos_fw, 1]
+        z_fmax1 = maxpos_hw_red[faultmaxpos_fw, 1]
+        z_diff = np.abs(z_fmax0 - z_fmax1)
+        print('Fault throw at %d = %d' % (faultmaxpos_fw, z_diff))
+        return z_diff
+    else:
+        z_fwp = maxpos_fw_red[position, 1]
+        z_hwp = maxpos_hw_red[position, 1]
+        z_diff = np.abs(z_fwp - z_hwp)
+        print('Fault throw at %d = %d' % (position, z_diff))
+        return z_diff
