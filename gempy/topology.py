@@ -27,7 +27,7 @@ try:
 except ImportError:
     warnings.warn("skimage package is not installed, which is required for geomodel topology analysis.")
 from gempy.utils.analysis import get_centroids, get_unique_regions
-from networkx import convert_node_labels_to_integers
+from networkx import convert_node_labels_to_integers, relabel_nodes
 
 
 def topology_analyze(lith_block, fault_block, n_faults,
@@ -37,7 +37,8 @@ def topology_analyze(lith_block, fault_block, n_faults,
                      filter_rogue=False,
                      noddy=False,
                      filter_threshold_area=10,
-                     neighbors=8):
+                     neighbors=8,
+                     enhanced_labels=True):
     """
     Analyses the block models adjacency topology. Every lithological entity is described by a uniquely labeled node
     (centroid) and its connections to other entities by edges.
@@ -56,7 +57,9 @@ def topology_analyze(lith_block, fault_block, n_faults,
         filter_threshold_area (int, optional): Specifies the threshold area value (number of pixels) for filtering
             small regions that may thow off topology analysis.
         neighbors (int, optional): Specifies the neighbor voxel connectivity taken into account for the topology
-            analysis. Must be either 4 or 8 (default: 8)
+            analysis. Must be either 4 or 8 (default: 8).
+        enhanced_labels (bool, optional): If True enhances the topology graph node labeling with fb_id, lb_id and instance
+            id (e.g. 1_6_b), if False reverses to just numeric labeling (default: True).
 
     Return:
         tuple:
@@ -86,17 +89,46 @@ def topology_analyze(lith_block, fault_block, n_faults,
         G = convert_node_labels_to_integers(G, first_label=1)
         centroids = {i+1: coords for i, coords in enumerate(centroids.values())}
 
-    # create look-up-tables in both directions
-    lith_to_labels_lot = lithology_labels_lot(labels_block, block_original)
-    labels_to_lith_lot = labels_lithology_lot(labels_block, block_original)
+    if enhanced_labels:
+        labels = []
+        for n, rp in zip(G.nodes(), rprops):
+            _c = np.array(rp.centroid).astype(int)  # centroid location
+            lid = lith_block[_c[0], _c[1], _c[2]].astype(int)  # inquire lb
+            fid = fault_block[_c[0], _c[1], _c[2]].astype(int)  # and fb id at centroid loc
+            label = str(fid) + "_" + str(lid)  # fuse label
+            labels.append(label)
+
+        # post-process for multiple lith region instances in single fault block
+        for label in labels:
+            ids = np.where(np.array(labels) == label)[0]
+            if len(ids) > 1:
+                for i, id_ in enumerate(ids):
+                    labels[id_] += ("_" + chr(ord("a") + i))
+        # fuse into dict mapping new labels to old
+        labels = {n: l for n, l in zip(G.nodes(), labels)}
+
+        # fix rprop labels
+        for rprop, l in zip(rprops, labels.values()):
+            rprop.label = l
+
+        G = relabel_nodes(G, labels)  # relabel graph
+
+    centroids = get_centroids(rprops)
+
+
+
+    topo = [G, centroids]
+
+    if not enhanced_labels:  # create look-up-tables in both directions
+        topo.append(lithology_labels_lot(labels_block, block_original))
+        topo.append(labels_lithology_lot(labels_block, block_original))
     # classify the edges (stratigraphic, across-fault)
-    classify_edges(G, centroids, block_original, fault_block)
+    # classify_edges(G, centroids, block_original, fault_block)
     # compute the adjacency areas for each edge
     if areas_bool:
         # TODO: 2d option (if slice only), right now it only works for 3d
         compute_areas(G, labels_block)
 
-    topo = [G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot]
     if return_block:
         topo.append(labels_block)
     if return_rprops:

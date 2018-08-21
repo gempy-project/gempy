@@ -809,7 +809,7 @@ def set_densities(interp_data, densities):
 def topology_compute(geo_data, lith_block, fault_block,
                      cell_number=None, direction=None,
                      compute_areas=False, return_label_block=False, return_rprops=False, filter_rogue=False,
-                     filter_threshold_area=10, neighbors=8):
+                     filter_threshold_area=10, neighbors=8, enhanced_labels=True):
     """
     Computes model topology and returns graph, centroids and look-up-tables.
 
@@ -850,7 +850,8 @@ def topology_compute(geo_data, lith_block, fault_block,
 
     return _topology_analyze(lb, fb, geo_data.n_faults, areas_bool=compute_areas, return_block=return_label_block,
                              return_rprops=return_rprops, filter_rogue=filter_rogue,
-                             filter_threshold_area=filter_threshold_area, neighbors=neighbors)
+                             filter_threshold_area=filter_threshold_area, neighbors=neighbors,
+                             enhanced_labels=enhanced_labels)
 
 
 # +++++++
