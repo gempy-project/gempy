@@ -71,17 +71,15 @@ def topology_analyze(lith_block, fault_block, n_faults,
             lith_to_labels_lot (dict): Dictionary look-up-table to go from lithology id to node id.
             labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithology id.
     """
-    block_original = lith_block.astype(int)
+    block_original = lith_block.astype(int)  # do we really still need this?
 
     # generate unique labels block by combining lith and fault blocks
     labels_block = get_unique_regions(lith_block, fault_block, n_faults, neighbors=neighbors, noddy=noddy)
 
-    labels_unique = np.unique(labels_block)
     # create adjacency graph from labeled block
     G = graph.RAG(labels_block)
-    # get properties of uniquely labeles regions
-    rprops = regionprops(labels_block)
-    centroids = get_centroids(rprops)
+    rprops = regionprops(labels_block)  # get properties of uniquely labeles regions
+    centroids = get_centroids(rprops)  # unique region centroids coordinates
 
     # filter rogue pixel nodes from graph if wanted
     if filter_rogue:
@@ -89,52 +87,64 @@ def topology_analyze(lith_block, fault_block, n_faults,
         G = convert_node_labels_to_integers(G, first_label=1)
         centroids = {i+1: coords for i, coords in enumerate(centroids.values())}
 
+    # enhanced node labeling containing fault block and lith id
     if enhanced_labels:
-        labels = []
-        for n, rp in zip(G.nodes(), rprops):
-            _c = np.array(rp.centroid).astype(int)  # centroid location
-            lid = lith_block[_c[0], _c[1], _c[2]].astype(int)  # inquire lb
-            fid = fault_block[_c[0], _c[1], _c[2]].astype(int)  # and fb id at centroid loc
-            label = str(fid) + "_" + str(lid)  # fuse label
-            labels.append(label)
-
-        # post-process for multiple lith region instances in single fault block
-        for label in labels:
-            ids = np.where(np.array(labels) == label)[0]
-            if len(ids) > 1:
-                for i, id_ in enumerate(ids):
-                    labels[id_] += ("_" + chr(ord("a") + i))
-        # fuse into dict mapping new labels to old
-        labels = {n: l for n, l in zip(G.nodes(), labels)}
-
-        # fix rprop labels
-        for rprop, l in zip(rprops, labels.values()):
-            rprop.label = l
-
+        labels = enhanced_labeling(G, rprops, lith_block, fault_block)
         G = relabel_nodes(G, labels)  # relabel graph
+        centroids = get_centroids(rprops)  # redo centroids for updated labeling
 
-    centroids = get_centroids(rprops)
+    # compute the adjacency areas for each edge
+    if areas_bool:
+       compute_areas(G, labels_block)   # TODO: 2d option (if slice only), right now it only works for 3d
 
-
-
+    # prep returned objects
     topo = [G, centroids]
 
     if not enhanced_labels:  # create look-up-tables in both directions
         topo.append(lithology_labels_lot(labels_block, block_original))
         topo.append(labels_lithology_lot(labels_block, block_original))
-    # classify the edges (stratigraphic, across-fault)
-    # classify_edges(G, centroids, block_original, fault_block)
-    # compute the adjacency areas for each edge
-    if areas_bool:
-        # TODO: 2d option (if slice only), right now it only works for 3d
-        compute_areas(G, labels_block)
-
-    if return_block:
+    if return_block:  # append the labeled block to return
         topo.append(labels_block)
-    if return_rprops:
+    if return_rprops:  # append rprops to return
         topo.append(rprops)
 
     return tuple(topo)
+
+
+def enhanced_labeling(G, rprops, lith_block, fault_block):
+    """Relabel the given graph's nodes with scheme "{fault_id}_{lith_id}_{instance}"
+
+    Args:
+        G (skimage.future.graph.rag.RAG): Region adjacency graph object containing the adjacency topology graph.
+        rprops (list): List of regionprops object for each unique region of the model.
+        lith_block (np.ndarray): Lithology block model (3d shape).
+        fault_block (np.ndarray): Fault block model (3d shape).
+
+    Returns:
+        (dict): Mapping of old to new labels to be used with networkx.relabel_nodes(G, Labels_dict)
+    """
+    labels = []
+    for n, rp in zip(G.nodes(), rprops):
+        _c = np.array(rp.centroid).astype(int)  # centroid location
+        lid = lith_block[_c[0], _c[1], _c[2]].astype(int)  # inquire lb
+        fid = fault_block[_c[0], _c[1], _c[2]].astype(int)  # and fb id at centroid loc
+        label = str(fid) + "_" + str(lid)  # fuse label
+        labels.append(label)
+
+    # post-process for multiple lith region instances in single fault block
+    for label in labels:
+        ids = np.where(np.array(labels) == label)[0]
+        if len(ids) > 1:
+            for i, id_ in enumerate(ids):
+                labels[id_] += ("_" + chr(ord("a") + i))
+    # fuse into dict mapping new labels to old
+    labels = {n: l for n, l in zip(G.nodes(), labels)}
+
+    # fix rprop labels
+    for rprop, l in zip(rprops, labels.values()):
+        rprop.label = l
+
+    return labels
 
 
 def filter_region_areas(g, c, rprops, area_threshold=10):
