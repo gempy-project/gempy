@@ -54,7 +54,8 @@ def get_geobody_volume(rprops):
     """Compute voxel counts per unique integer body in given block model
 
     Args:
-        rprops (list): List of regionprops object for each unique region of the model. (skimage.measure._regionprops._RegionProperties object)
+        rprops (list): List of regionprops object for each unique region of the model.
+        (skimage.measure._regionprops._RegionProperties object)
 
     Returns:
         (np.ndarray): 2d array with labels (col 0) and geobody volume (col 1).
@@ -66,7 +67,8 @@ def get_geobody_tops(rprops, geo_data=None):
     """Get the top vertical limit coordinate of geobodies (via bbox).
 
     Args:
-        rprops (list): List of regionprops object for each unique region of the model. (skimage.measure._regionprops._RegionProperties object)
+        rprops (list): List of regionprops object for each unique region of the model.
+        (skimage.measure._regionprops._RegionProperties object)
         geo_data (gempy.data_management.InputData):
 
     Returns:
@@ -82,7 +84,8 @@ def get_geobody_bots(rprops, geo_data=None):
     """Get the bottom vertical limit coordinate of geobodies (via bbox).
 
     Args:
-        rprops (list): List of regionprops object for each unique region of the model. (skimage.measure._regionprops._RegionProperties object)
+        rprops (list): List of regionprops object for each unique region of the model.
+        (skimage.measure._regionprops._RegionProperties object)
         geo_data (gempy.data_management.InputData):
 
     Returns:
@@ -135,5 +138,4 @@ def get_unique_regions(lith_block, fault_block, n_faults, neighbors=8, noddy=Fal
 
     return labels_block
 
-# TODO: top, bot of regions
 # TODO: curvature <- based on sim, ver of interfaces

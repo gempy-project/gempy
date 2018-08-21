@@ -181,14 +181,14 @@ def change_data(interp_data, geo_data_stoch, priors):
         if prior.index_interf is not None:
             if prior.replace:  # replace the value
                 # geo_data.interfaces.set_value(prior.index_interf, prior.column, prior.rvs() / rf)
-                interp_data.interfaces.loc[prior.index_interf, prior.column] = value
+                interp_data.geo_data_res.interfaces.loc[prior.index_interf, prior.column] = value
             else:  # add value
-                interp_data.interfaces.loc[prior.index_interf, prior.column] = geo_data_stoch.interfaces.loc[
+                interp_data.geo_data_res.interfaces.loc[prior.index_interf, prior.column] = geo_data_stoch.interfaces.loc[
                                                                                 prior.index_interf, prior.column] + value
         if prior.index_orient is not None:
             if prior.replace:  # replace the value
-                interp_data.orientations.loc[prior.index_orient, prior.column] = value
+                interp_data.geo_data_res.orientations.loc[prior.index_orient, prior.column] = value
             else:  # add value
-                interp_data.orientations.loc[prior.index_orient, prior.column] = geo_data_stoch.orientations.loc[
+                interp_data.geo_data_res.orientations.loc[prior.index_orient, prior.column] = geo_data_stoch.orientations.loc[
                                                                                   prior.index_orient, prior.column] + value
     return prior_draws
