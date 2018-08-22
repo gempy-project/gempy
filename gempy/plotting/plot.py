@@ -742,13 +742,12 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
             ax.set_title(formation, y=1.1)
 
         df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
-        colors = cmap(int(df_sub["formation_number"]))
 
         if poles:
-            ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='.', color=colors[i],
+            ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='.', color=cmap(int(df_sub["formation_number"]),
                     label=formation + ': ' + 'pole point')
         if planes:
-            ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=colors[i], linewidth=1.3,
+            ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=cmap(int(df_sub["formation_number"]), linewidth=1.3,
                      label=formation + ': ' + 'plane')
         if show_density:
             if single_plots is False:
