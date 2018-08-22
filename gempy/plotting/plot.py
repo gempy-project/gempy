@@ -720,8 +720,6 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
     single_plots: if True, orientations for every formation are plotted in single stereonet
     show_density: if True, density contour plot around the pole points is shown'''
 
-    # die umrechnung vom azimuth vorher machen
-    # legende schön und richtig machen: farben für planes sind falsch wenn single_plots = False
     # option zum mean berechnen und plotten
     # distinguish between fault and bedding planes
     # Farben sind nur richtig wenn litho none ist
@@ -730,9 +728,7 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
     import mplstereonet
     import matplotlib.pyplot as plt
     from gempy.plotting.colors import cmap
-
-    #formation_numbers = geo_data.orientations['formation_number'].unique()
-    #colors = [cmap(value) for value in formation_numbers]
+    from collections import OrderedDict
 
     if litho is None:
         litho = geo_data.orientations['formation'].unique()
@@ -756,7 +752,7 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
                     label=formation + ': ' + 'pole point')
 
         if planes:
-            ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=colors[i], linewidth=1,
+            ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=colors[i], linewidth=2,
                      label=formation + ': ' + 'plane')
 
         if show_density:
@@ -768,5 +764,6 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
 
         fig.subplots_adjust(top=0.8)
         handles, labels = ax.get_legend_handles_labels()  # avoid repetition in legend
-        ax.legend(set(labels), bbox_to_anchor=(1.8, 1.1))
+        by_label = OrderedDict(zip(labels, handles))
+        ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.8, 1.1))
         ax.grid()
