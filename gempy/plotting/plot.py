@@ -752,7 +752,7 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
                     label=formation + ': ' + 'pole point')
 
         if planes:
-            ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=colors[i], linewidth=2,
+            ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=colors[i], linewidth=1.3,
                      label=formation + ': ' + 'plane')
 
         if show_density:
