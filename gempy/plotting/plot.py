@@ -724,14 +724,15 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
     # legende schön und richtig machen: farben für planes sind falsch wenn single_plots = False
     # option zum mean berechnen und plotten
     # distinguish between fault and bedding planes
+    # Farben sind nur richtig wenn litho none ist
 
-    # is import mplstereonet working?
+
     import mplstereonet
     import matplotlib.pyplot as plt
     from gempy.plotting.colors import cmap
 
-    formation_numbers = geo_data.orientations['formation_number'].unique()
-    colors = [cmap(value) for value in formation_numbers]
+    #formation_numbers = geo_data.orientations['formation_number'].unique()
+    #colors = [cmap(value) for value in formation_numbers]
 
     if litho is None:
         litho = geo_data.orientations['formation'].unique()
@@ -747,6 +748,9 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
             ax.set_title(formation, y=1.1)
 
         df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
+
+        formation_numbers = df_sub['formation_number'].unique()
+        colors = [cmap(value) for value in formation_numbers]
 
         if poles:
             ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='.', color=colors[i],
