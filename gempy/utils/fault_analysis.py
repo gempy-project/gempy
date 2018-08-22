@@ -562,10 +562,10 @@ def get_layer_fault_contact(geo_data, lith_sol, fault_sol, lith_n, \
     top_contact_line = get_lf_contact(geo_data, fault_v, layer_v, w_array, projection)
     return top_contact_line
 
-def get_c_peaks(fault_vertices, layer_vertices, w_array, \
+def get_c_peaks_vert(fault_vertices, layer_vertices, w_array, \
                       projection='yz', order='automatic'):
     """
-            Get peak and maxima plateaus for a layer-fault contact line.
+            Get peak and maxima plateau vertices for a layer-fault contact line.
 
             Args:
                 fault_v (numpy.array): 2D array (XYZ) with the coordinates of fault vertices.
@@ -595,11 +595,11 @@ def get_c_peaks(fault_vertices, layer_vertices, w_array, \
     peaks = top_line[relmaxpos]
     return peaks
 
-def get_contact_peaks(geo_data, lith_sol, fault_sol, lith_n, fault_n,
+def get_contact_peaks_vert(geo_data, lith_sol, fault_sol, lith_n, fault_n,
                       fault_v, layer_v, projection='automatic',
                       fault_side='fw', order='automatic'):
     """
-            Get peak and maxima plateaus for a layer-fault contact line.
+            Get peak and maxima plateau vertices for a layer-fault contact line.
 
             Args:
                 geo_data (:class:`gempy.data_management.InputData`)
@@ -635,9 +635,126 @@ def get_contact_peaks(geo_data, lith_sol, fault_sol, lith_n, fault_n,
     peaks = top_line[relmaxpos]
     return peaks
 
+def get_contact_peaks_vox(geo_data, lith_sol, fault_sol, lith_n, \
+                            fault_n, projection='automatic', fault_side='fw',\
+                         order='automatic'):
+    """
+            Get peak and maxima plateau voxels for a layer-fault contact line.
+
+            Args:
+                geo_data (:class:`gempy.data_management.InputData`)
+                lith_sol (ndarray): Computed model lithology solution.
+                fault_sol (ndarray): Computed model fault solution.
+                lith_n (int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                fault_n (int): Number of the fault of interest.
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+                fault_side (string, optional, default='both'): The side of the fault for which the
+                    contact is to be returned:
+                        'footwall' or 'fw'
+                        'hanging wall' or 'hw'
+                        'both'.
+                order (int, optional): Order of neighboring cells used to compare to find peaks.
+                    Default is 'automatic' and takes half the average xy-resolution.
+
+            Returns:
+                2D array with voxel number along projection plane (so x- or y- coordinate) and
+                the voxel z_coordinate.
+            """
+    if order == 'automatic':
+        order = np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
+    w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                 lith_n, fault_n, fault_side)
+    extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection)
+    maxpos = np.argwhere(extrline_vox == True)
+    possum = np.sum(maxpos, axis=0)
+    emptypos = np.argwhere(possum == 0)
+    maxpos_red = np.delete(maxpos, emptypos, 1)
+    relmaxpos = sg.argrelextrema(maxpos_red[:, 1], np.greater_equal, order=order)
+    return maxpos_red[relmaxpos]
+    ### at the moment, this can return several peaks
+
+def arg_contact_peaks_vox(geo_data, lith_sol, fault_sol, lith_n, \
+                            fault_n, projection='automatic', fault_side='fw',\
+                         order='automatic'):
+    """
+            Get peak and maxima plateau voxel position for a layer-fault contact line.
+
+            Args:
+                geo_data (:class:`gempy.data_management.InputData`)
+                lith_sol (ndarray): Computed model lithology solution.
+                fault_sol (ndarray): Computed model fault solution.
+                lith_n (int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                fault_n (int): Number of the fault of interest.
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+                fault_side (string, optional, default='both'): The side of the fault for which the
+                    contact is to be returned:
+                        'footwall' or 'fw'
+                        'hanging wall' or 'hw'
+                        'both'.
+                order (int, optional): Order of neighboring cells used to compare to find peaks.
+                    Default is 'automatic' and takes half the average xy-resolution.
+
+            Returns:
+                1D array with voxel number along projection plane (so x- or y- coordinate) for the position of
+                peaks.
+            """
+    if order == 'automatic':
+        order = np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
+    w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                 lith_n, fault_n, fault_side)
+    extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection)
+    maxpos = np.argwhere(extrline_vox == True)
+    possum = np.sum(maxpos, axis=0)
+    emptypos = np.argwhere(possum == 0)
+    maxpos_red = np.delete(maxpos, emptypos, 1)
+    relmaxpos = sg.argrelextrema(maxpos_red[:, 1], np.greater_equal, order=order)
+    return relmaxpos
+    ### at the moment, this can return several peaks
 
 def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
-                      position='faultmax', projection='automatic', order='automatic'):
+                      position='faultmax_cwt', projection='automatic', \
+                      order='automatic'):
+    """
+            Get the voxel-based fault throw at a certain position along the fault.
+            The position is a choice of cell number parallel to the chosen projection plane.
+
+            Args:
+                geo_data (:class:`gempy.data_management.InputData`)
+                lith_sol (ndarray): Computed model lithology solution.
+                fault_sol (ndarray): Computed model fault solution.
+                lith_n (int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                fault_n (int): Number of the fault of interest.
+                position (1D numpy array or int, optional): Cell number along projection of fault plane at which
+                    the fault throw is to be measured. Several numbers can be passed as an array.
+                    Default is 'faultmax_cwt', takes maximal contact peaks of the layer interface with the fault
+                    plane as position as detected via the scipy.signal.find_peaks_cwt function.
+                    Using 'faultmax_argrelmax' uses the scipiy.signal.argrelmax to find those peaks.
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+                order (int, optional): Order of neighboring cells used to compare to find peaks.
+                    Using 'faultmax_cwt', order is regarded as the 'widths' parameter in the
+                    scipy.signal.find_peaks_cwt function. Else, it corresponds to the order parameter
+                    in scipiy.signal.argrelmax.
+                    Default is 'automatic' and takes half the average xy-resolution.
+
+            Returns:
+                Fault throw in the original unit [m].
+                (Number of throw voxels rescaled according to the z-extent and resolution)
+            """
     fw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side='fw')
     hw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side='hw')
     maxline_fw = get_extrema_line_voxels(fw_array,extrema_type='max',
@@ -668,21 +785,27 @@ def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
                 filter_max = np.max(maxpos_hw_red[posi, 1])
                 maxpos_corrected[i, 1] = filter_max
             maxpos_hw_red = maxpos_corrected
-    if position == 'faultmax':
+    if position == 'faultmax_cwt':
         # finding max for FW maxline only. should I make this optional? So possible to choose HW as reference?
         if order == 'automatic':
             comp_order = np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
         else:
             comp_order = order
-        faultmaxpos_fw = sg.find_peaks_cwt(maxpos_fw_red[:, 1], widths=np.array([comp_order * 2]))
+        faultmaxpos_fw = sg.find_peaks_cwt(maxpos_fw_red[:, 1], widths=comp_order/2)
         z_fmax0 = maxpos_fw_red[faultmaxpos_fw, 1]
         z_fmax1 = maxpos_hw_red[faultmaxpos_fw, 1]
         z_diff = np.abs(z_fmax0 - z_fmax1)
-        print('Fault throw at %d = %d' % (faultmaxpos_fw, z_diff))
-        return z_diff
+    elif position == 'faultmax_argrelmax':
+
+        position = arg_contact_peaks_vox(geo_data, lith_sol, fault_sol, lith_n, \
+                            fault_n, projection, fault_side='fw', order=order)
+        z_fwp = maxpos_fw_red[position, 1]
+        z_hwp = maxpos_hw_red[position, 1]
+        z_diff = np.abs(z_fwp - z_hwp)
     else:
         z_fwp = maxpos_fw_red[position, 1]
         z_hwp = maxpos_hw_red[position, 1]
         z_diff = np.abs(z_fwp - z_hwp)
-        print('Fault throw at %d = %d' % (position, z_diff))
-        return z_diff
+    vox_size_z = np.abs(geo_data.extent[5] - geo_data.extent[4]) / geo_data.resolution[2]
+    z_diff_res = z_diff * vox_size_z
+    return z_diff_res
