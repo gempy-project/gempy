@@ -50,7 +50,7 @@ def get_nearestneighbor_block(lb):
     return nn
 
 
-def get_geobody_volume(rprops):
+def get_geobody_volume(rprops, geo_data=None):
     """Compute voxel counts per unique integer body in given block model
 
     Args:
@@ -58,9 +58,12 @@ def get_geobody_volume(rprops):
         (skimage.measure._regionprops._RegionProperties object)
 
     Returns:
-        (np.ndarray): 2d array with labels (col 0) and geobody volume (col 1).
+        (dict): Dict with node labels as keys and geobody volume values.
     """
-    return np.array([[rprop.label, rprop.area] for rprop in rprops])
+    if geo_data is None:
+        return {rprop.label:rprop.area for rprop in rprops}
+    else:
+        return {rprop.label:rprop.area * np.product(geo_data.extent[1::2] / geo_data.resolution) for rprop in rprops}
 
 
 def get_geobody_tops(rprops, geo_data=None):
@@ -72,12 +75,13 @@ def get_geobody_tops(rprops, geo_data=None):
         geo_data (gempy.data_management.InputData):
 
     Returns:
-        (np.ndarray): 2d array with labels (col 0) and geobody top coordinate (col 1).
+        (dict): Dict with node labels as keys and geobody top coordinates as values.
     """
-    tops = np.array([[rprop.label, rprop.bbox[5]] for rprop in rprops])
-    if geo_data is not None:
-        tops[:, 1] = tops[:, 1] * geo_data.extent[5] / geo_data.resolution[2]
-    return tops
+
+    if geo_data is None:
+        return {rprop.label: rprop.bbox[5] for rprop in rprops}
+    else:
+        return {rprop.label: rprop.bbox[5] * geo_data.extent[5] / geo_data.resolution[2] for rprop in rprops}
 
 
 def get_geobody_bots(rprops, geo_data=None):
@@ -89,12 +93,12 @@ def get_geobody_bots(rprops, geo_data=None):
         geo_data (gempy.data_management.InputData):
 
     Returns:
-        (np.ndarray): 2d array with labels (col 0) and geobody bottom coordinate (col 1).
+        (dict): Dict with node labels as keys and geobody bottom coordinates as values.
     """
-    bots = np.array([[rprop.label, rprop.bbox[2]] for rprop in rprops])
-    if geo_data is not None:
-        bots[:, 1] = bots[:, 1] * geo_data.extent[5] / geo_data.resolution[2]
-    return bots
+    if geo_data is None:
+        return {rprop.label: rprop.bbox[2] for rprop in rprops}
+    else:
+        return {rprop.label: rprop.bbox[2] * geo_data.extent[5] / geo_data.resolution[2] for rprop in rprops}
 
 
 def get_centroids(rprops):
