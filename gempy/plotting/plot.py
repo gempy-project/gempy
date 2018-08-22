@@ -734,7 +734,6 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
     if single_plots is False:
         fig, ax = mplstereonet.subplots(figsize=(5, 5))
 
-
     for i, formation in enumerate(litho):
         if single_plots:
             fig = plt.figure(figsize=(5, 5))
@@ -742,7 +741,6 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
             ax.set_title(formation, y=1.1)
 
         df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
-        colors = [cmap(value) for value in df_sub['formation_number']]
 
         if poles:
             ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='.', color=cmap(df_sub['formation_number'].values[0]),
