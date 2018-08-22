@@ -714,16 +714,15 @@ def plot_topology(geo_data, G, centroids, direction="y"):
 
 
 def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=False, show_density=False):
-    '''Equal-area projection of the orientations dataframe using mplstereonet ('Schmidt Net').
+    '''
+    Equal-area projection of the orientations dataframe using mplstereonet ('Schmidt Net')
+
     litho: lithologies/formation names, as list. If None, all are plotted
-    planes/poles:
-    single_plots: if True, orientations for every formation are plotted in single stereonet
-    show_density: if True, density contour plot around the pole points is shown'''
-
-    # option zum mean berechnen und plotten
-    # distinguish between fault and bedding planes
-    # Farben sind nur richtig wenn litho none ist
-
+    planes: plots azimuth and dip as great circles
+    poles: plots corresponding pole points to planes (also known as plane normal vector or 'gradients')
+    single_plots: if True, single stereonet is plotted for every formation
+    show_density: if True, density contour plot around the pole points is shown
+    '''
 
     import mplstereonet
     import matplotlib.pyplot as plt
@@ -732,29 +731,24 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
 
     if litho is None:
         litho = geo_data.orientations['formation'].unique()
-
     if single_plots is False:
         fig, ax = mplstereonet.subplots(figsize=(5, 5))
 
     for i, formation in enumerate(litho):
-
         if single_plots:
             fig = plt.figure(figsize=(5, 5))
             ax = fig.add_subplot(111, projection='stereonet')
             ax.set_title(formation, y=1.1)
 
         df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
-
         colors = [cmap(value) for value in df_sub['formation_number']]
 
         if poles:
             ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='.', color=colors[i],
                     label=formation + ': ' + 'pole point')
-
         if planes:
             ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=colors[i], linewidth=1.3,
                      label=formation + ': ' + 'plane')
-
         if show_density:
             if single_plots is False:
                 ax.density_contourf(geo_data.orientations['azimuth']-90, geo_data.orientations['dip'],
