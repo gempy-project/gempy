@@ -749,7 +749,7 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
 
         df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
 
-        formation_numbers = df_sub['formation_number'].unique()
+        formation_numbers = df_sub['formation_number']
         colors = [cmap(value) for value in formation_numbers]
 
         if poles:
