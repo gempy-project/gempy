@@ -149,17 +149,17 @@ def get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
     fault_mask = get_fault_mask(geo_data, fault_sol, fault_n, fault_side)
     lith_block = lith_sol[0].astype(int).reshape(geo_data.resolution[0],
                                      geo_data.resolution[1],geo_data.resolution[2])
-    lith_cond = lith_block == lith_n
+    lith_cond = np.isin(lith_block, np.array(lith_n))
     if fault_side == 'hanging wall' or fault_side == 'hw':
         fs_cond = fault_block == fault_n
     elif fault_side == 'footwall' or fault_side == 'fw':
         fs_cond = fault_block == (fault_n+1)
     elif fault_side == 'both':
-        fs_cond = np.ones_like(fault_block)
+        fs_cond = np.ones_like(fault_block).astype(bool)
     else:
         raise AttributeError(str(form) + "must be 'footwall' ('fw'), 'hanging wall' ('hw') or 'both'.")
     lith_cut = lith_cond * fs_cond
-    vox_contact = fault_mask * lith_cut
+    vox_contact = lith_cut * fault_mask
     return vox_contact
 
 def project_voxels(voxel_array, projection='automatic'):
@@ -271,8 +271,8 @@ def get_juxtaposition(hw_array, fw_array):
     juxtapos = np.logical_and(hw_array, fw_array) # this should only work with projected arrays
     return juxtapos
 
-def plot_allan_diagram(geo_data, lith_sol, fault_sol, \
-                       lith_n, fault_n, projection='automatic'):
+def plot_allan_diagram(geo_data, lith_sol, fault_sol, fault_n,\
+                       lith_n, projection='automatic'):
     """
             Simple Allan diagram illustration (voxel-based).
 
@@ -345,6 +345,138 @@ def plot_allan_diagram(geo_data, lith_sol, fault_sol, \
     else:
         raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
 
+    plt.imshow(diagram.T, origin='bottom', cmap='viridis')
+    return diagram
+
+def plot_AD_multi(geo_data, lith_sol, fault_sol, fault_n,\
+                       lith_n, ref_n,\
+                  fault_side_ref='footwall', projection='automatic'):
+    """
+            Simple Allan diagram illustration (voxel-based).
+
+            Args:
+                geo_data (:class:`gempy.data_management.InputData`)
+                lith_sol (ndarray): Computed model lithology solution.
+                fault_sol (ndarray): Computed model fault solution.
+                lith_n (1d array, list or int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                ref_n (1d array, list or int):
+                fault_n (int): Number of the fault of interest.
+                fault_side_ref:
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+
+            Returns:
+                Allan diagram plot showing the layer-fault contact on footwall and hanging wall side, as well as
+                the resulting juxtaposition in different colors.
+            """
+    if fault_side_ref == 'hanging wall' or fault_side_ref == 'hw':
+        fw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                      lith_n, fault_n, fault_side='fw')
+        hw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                      ref_n, fault_n, fault_side='hw')
+    elif fault_side_ref == 'footwall' or fault_side_ref == 'fw':
+        fw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                      ref_n, fault_n, fault_side='fw')
+        hw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                      lith_n, fault_n, fault_side='hw')
+    else:
+        raise AttributeError(str(fault_side_ref) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
+
+
+    if projection == 'automatic':
+        d_x = (np.max(hw_array[:, 0]) - np.min(hw_array[:, 0]))
+        d_y = (np.max(hw_array[:, 1]) - np.min(hw_array[:, 1]))
+        if d_x > d_y:
+            projection = 'xz'
+        else:
+            projection = 'yz'
+    fw_proj = project_voxels(fw_array, projection)
+    hw_proj = project_voxels(hw_array, projection)
+    juxtapos = np.logical_and(fw_proj, hw_proj)
+
+    if projection == 'yz':
+        diagram = np.zeros_like(hw_array[0, :, :].astype(int))
+        diagram[hw_proj[0, :, :]] = 1
+        diagram[fw_proj[0, :, :]] = 2
+        diagram[juxtapos[0, :, :]] = 3
+    elif projection == 'xz':
+        diagram = np.zeros_like(hw_array[:, 0, :].astype(int))
+        diagram[hw_proj[:, 0, :]] = 1
+        diagram[fw_proj[:, 0, :]] = 2
+        diagram[juxtapos[:, 0, :]] = 3
+
+    else:
+        raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
+    plt.imshow(diagram.T, origin='bottom', cmap='viridis')
+    return diagram
+
+def plot_AD_full(geo_data, lith_sol, fault_sol, fault_n,\
+                       lith_n, ref_n,\
+                  fault_side_ref='footwall', projection='automatic'):
+    """
+            Simple Allan diagram illustration (voxel-based).
+
+            Args:
+                geo_data (:class:`gempy.data_management.InputData`)
+                lith_sol (ndarray): Computed model lithology solution.
+                fault_sol (ndarray): Computed model fault solution.
+                lith_n (1d array, list or int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                ref_n (1d array, list or int):
+                fault_n (int): Number of the fault of interest.
+                fault_side_ref:
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+
+            Returns:
+                Allan diagram plot showing the layer-fault contact on footwall and hanging wall side, as well as
+                the resulting juxtaposition in different colors.
+            """
+    if fault_side_ref == 'hanging wall' or fault_side_ref == 'hw':
+        fw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                      lith_n, fault_n, fault_side='fw')
+        hw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                      ref_n, fault_n, fault_side='hw')
+    elif fault_side_ref == 'footwall' or fault_side_ref == 'fw':
+        fw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                      ref_n, fault_n, fault_side='fw')
+        hw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                      lith_n, fault_n, fault_side='hw')
+    else:
+        raise AttributeError(str(fault_side_ref) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
+
+
+    if projection == 'automatic':
+        d_x = (np.max(hw_array[:, 0]) - np.min(hw_array[:, 0]))
+        d_y = (np.max(hw_array[:, 1]) - np.min(hw_array[:, 1]))
+        if d_x > d_y:
+            projection = 'xz'
+        else:
+            projection = 'yz'
+    fw_proj = project_voxels(fw_array, projection)
+    hw_proj = project_voxels(hw_array, projection)
+    juxtapos = np.logical_and(fw_proj, hw_proj)
+
+    if projection == 'yz':
+        diagram = np.zeros_like(hw_array[0, :, :].astype(int))
+        diagram[hw_proj[0, :, :]] = 1
+        diagram[fw_proj[0, :, :]] = 2
+        diagram[juxtapos[0, :, :]] = 3
+    elif projection == 'xz':
+        diagram = np.zeros_like(hw_array[:, 0, :].astype(int))
+        diagram[hw_proj[:, 0, :]] = 1
+        diagram[fw_proj[:, 0, :]] = 2
+        diagram[juxtapos[:, 0, :]] = 3
+
+    else:
+        raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
     plt.imshow(diagram.T, origin='bottom', cmap='viridis')
     return diagram
 
