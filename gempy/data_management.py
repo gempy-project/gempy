@@ -193,15 +193,11 @@ class InputData(object):
 
         self.orientations["dip"] = np.rad2deg(np.nan_to_num(np.arccos(self.orientations["G_z"] / self.orientations["polarity"])))
 
-        # TODO if this way to compute azimuth breaks there is in rgeomod=kml_to_plane line 170 a good way to do it
-        self.orientations["azimuth"] = np.rad2deg(np.nan_to_num(np.arctan(self.orientations["G_x"]/self.orientations["G_y"])))
-                                                  # np.arcsin(self.orientations["G_x"]) /
-                                                  # (np.sin(np.arccos(self.orientations["G_y"] /
-                                                  # self.orientations["polarity"])))))
-        self.orientations['azimuth'][(self.orientations['G_x'] < 0).as_matrix() * (self.orientations['G_y'] >= 0).as_matrix()] += 360
-        self.orientations['azimuth'][(self.orientations['G_y'] < 0).as_matrix()] += 180
-        self.orientations['azimuth'][(self.orientations['G_x'] > 0).as_matrix() * (self.orientations['G_y'] == 0).as_matrix()] = 90
-        self.orientations['azimuth'][(self.orientations['G_x'] < 0).as_matrix() * (self.orientations['G_y'] == 0).as_matrix()] = 270
+        self.orientations["azimuth"] = np.rad2deg(np.nan_to_num(np.arctan2(self.orientations["G_x"]/self.orientations["polarity"], self.orientations["G_y"]/self.orientations["polarity"])))
+        self.orientations["azimuth"][self.orientations["azimuth"] < 0] += 360  # shift values from [-pi, 0] to [pi,2*pi]
+        #self.orientations["azimuth"][self.orientations["dip"] < 0.001] = 0  # because if dip is zero azimuth is undefined
+
+
 
     def count_faults(self):
         """

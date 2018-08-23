@@ -450,8 +450,6 @@ class vtkPlot():
                       ' interface for each of them')
         #self.vv.interp_data.update_interpolator(self.geo_data)
 
-
-
         self.vv.interactor.Render()
 
     def qgrid_callBack_fr(self, change):
@@ -714,3 +712,51 @@ def plot_topology(geo_data, G, centroids, direction="y"):
     """
     PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)
 
+
+def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=False, show_density=False):
+    '''
+    Equal-area projection of the orientations dataframe using mplstereonet ('Schmidt Net')
+
+    litho: lithologies/formation names, as list. If None, all are plotted
+    planes: plots azimuth and dip as great circles
+    poles: plots corresponding pole points to planes (also known as plane normal vector or 'gradients')
+    single_plots: if True, single stereonet is plotted for every formation
+    show_density: if True, density contour plot around the pole points is shown
+    '''
+
+    import mplstereonet
+    import matplotlib.pyplot as plt
+    from gempy.plotting.colors import cmap
+    from collections import OrderedDict
+
+    if litho is None:
+        litho = geo_data.orientations['formation'].unique()
+    if single_plots is False:
+        fig, ax = mplstereonet.subplots(figsize=(5, 5))
+
+    for i, formation in enumerate(litho):
+        if single_plots:
+            fig = plt.figure(figsize=(5, 5))
+            ax = fig.add_subplot(111, projection='stereonet')
+            ax.set_title(formation, y=1.1)
+
+        df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
+
+        if poles:
+            ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='.', color=cmap(df_sub['formation_number'].values[0]),
+                    label=formation + ': ' + 'pole point')
+        if planes:
+            ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=cmap(df_sub['formation_number'].values[0]), linewidth=1.3,
+                     label=formation + ': ' + 'plane')
+        if show_density:
+            if single_plots is False:
+                ax.density_contourf(geo_data.orientations['azimuth']-90, geo_data.orientations['dip'],
+                                    measurement='poles', cmap='gist_yarg')
+            else:
+                ax.density_contourf(df_sub['azimuth']-90, df_sub['dip'], measurement='poles', cmap='gist_yarg')
+
+        fig.subplots_adjust(top=0.8)
+        handles, labels = ax.get_legend_handles_labels()  # avoid repetition in legend
+        by_label = OrderedDict(zip(labels, handles))
+        ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.8, 1.1))
+        ax.grid()

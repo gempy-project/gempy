@@ -1,4 +1,3 @@
-
 import pytest
 import gempy
 import sys, os

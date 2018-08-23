@@ -372,7 +372,7 @@ class PlotData2D(object):
             r1 = geo_data.resolution[0]
             r2 = geo_data.resolution[1]
 
-        for edge in G.edges_iter():
+        for edge in G.edges():
             a, b = edge
 
             plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
