@@ -23,6 +23,7 @@ import numpy as np
 import scipy.signal as sg
 from matplotlib import pyplot as plt
 from scipy.spatial import distance
+from gempy.plotting.colors import color_lot, cmap, norm
 
 
 def get_fault_mask(geo_data, fault_sol, fault_n, fault_side='both'):
@@ -452,7 +453,6 @@ def plot_AD_full(geo_data, lith_sol, fault_sol, fault_n,\
     else:
         raise AttributeError(str(fault_side_ref) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
 
-
     if projection == 'automatic':
         d_x = (np.max(hw_array[:, 0]) - np.min(hw_array[:, 0]))
         d_y = (np.max(hw_array[:, 1]) - np.min(hw_array[:, 1]))
@@ -474,7 +474,6 @@ def plot_AD_full(geo_data, lith_sol, fault_sol, fault_n,\
         diagram[hw_proj[:, 0, :]] = 1
         diagram[fw_proj[:, 0, :]] = 2
         diagram[juxtapos[:, 0, :]] = 3
-
     else:
         raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
     plt.imshow(diagram.T, origin='bottom', cmap='viridis')
