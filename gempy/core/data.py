@@ -156,6 +156,7 @@ class GridClass(object):
         self.resolution = None
         self.extent = None
         self.values = None
+        self.values_r = None
 
     def __str__(self):
         return self.grid_type
@@ -629,7 +630,7 @@ class Data(object):
 
         self.df["series"] = [(i == series_df).sum().idxmax() for i in self.df["formation"]]
         self.df["series"] = self.df["series"].astype('category')
-        self.df["order_series"] = [(i == series_df).sum().as_matrix().argmax().astype(int) + 1
+        self.df["order_series"] = [(i == series_df).sum().values.argmax().astype(int) + 1
                                    for i in self.df["formation"]]
         # We sort the series altough is only important for the computation (we will do it again just before computing)
         # if series_distribution is not None:
@@ -688,52 +689,6 @@ class Data(object):
         self.df[['Xr', 'Yr', 'Zr']] = (self.df[['X', 'Y', 'Z']] - centers) / rescaling_factor + 0.5001
 
 
-class RescaledData(object):
-    def __init__(self, interfaces, orientations, grid):
-
-        self.interfaces_r = interfaces.df
-        self.orientations_r = orientations.df
-        self.grid_r = grid.values_r
-
-    def get_rescaled_data(self):
-        pass
-
-
-def max_min_coord(interfaces=None, orientations=None):
-    if interfaces is None:
-        df = orientations
-        if orientations is None:
-            raise AttributeError('You must pass at least one Data object')
-        else:
-            df = orientations
-    else:
-        if orientations is None:
-            df = interfaces
-        else:
-            df = pn.concat(orientations.df, interfaces.df)
-
-    max_coord = df.max()[['X', 'Y', 'Z']]
-    min_coord = df.min()[['X', 'Y', 'Z']]
-    return max_coord, min_coord
-
-
-def data_center(interfaces=None, orientations=None,
-                max_coord=None, min_coord=None):
-
-    if max_coord is None or min_coord is None:
-        max_coord, min_coord = max_min_coord(interfaces, orientations)
-
-    # Get the centers of every axis
-    centers = ((max_coord + min_coord) / 2).astype(float)
-    return centers
-
-
-def rescaling_factor(interfaces=None, orientations=None,
-                     max_coord=None, min_coord=None):
-    if max_coord is None or min_coord is None:
-        max_coord, min_coord = max_min_coord(interfaces, orientations)
-    rescaling_factor_val = (2 * np.max(max_coord - min_coord))
-    return rescaling_factor_val
 
 
 class Interfaces(Data):
@@ -753,6 +708,9 @@ class Interfaces(Data):
 
        # self.set_basement()
        # self.df['isFault'] = self.df['isFault'].astype('bool')
+
+    def __str__(self):
+        return 'fooo'
 
     def read_interfaces(self, filepath, debug=False, inplace=False, append=False, **kwargs):
 
@@ -795,8 +753,12 @@ class Interfaces(Data):
             "One or more columns do not match with the expected values " + str(self._columns_i_1)
 
         interf_Dataframe[self._columns_i_num] = interf_Dataframe[self._columns_i_num].astype(float, copy=True)
-        interf_Dataframe[['formation_number', 'order_series']] = interf_Dataframe[
-            ['formation_number', 'order_series']].astype(int, copy=True)
+        try:
+            interf_Dataframe[['formation_number', 'order_series']] = interf_Dataframe[
+                ['formation_number', 'order_series']].astype(int, copy=True)
+        except ValueError:
+            print('No formation_number or order_series in the file')
+            pass
         interf_Dataframe['formation'] = interf_Dataframe['formation'].astype('category', copy=True)
         interf_Dataframe['series'] = interf_Dataframe['series'].astype('category', copy=True)
 
@@ -943,7 +905,7 @@ class Interfaces(Data):
     #
     #     self.df["series"] = [(i == series_df).sum().idxmax() for i in self.df["formation"]]
     #     self.df["series"] = self.df["series"].astype('category')
-    #     self.df["order_series"] = [(i == series_df).sum().as_matrix().argmax().astype(int) + 1
+    #     self.df["order_series"] = [(i == series_df).sum().values.argmax().astype(int) + 1
     #                                        for i in self.df["formation"]]
     #     # We sort the series altough is only important for the computation (we will do it again just before computing)
     #     # if series_distribution is not None:
@@ -1034,12 +996,12 @@ class Orientations(Data):
         self.df["azimuth"] = np.rad2deg(
             np.nan_to_num(np.arctan(self.df["G_x"] / self.df["G_y"])))
         self.df['azimuth'][
-            (self.df['G_x'] < 0).as_matrix() * (self.df['G_y'] >= 0).as_matrix()] += 360
-        self.df['azimuth'][(self.df['G_y'] < 0).as_matrix()] += 180
+            (self.df['G_x'] < 0).values * (self.df['G_y'] >= 0).values] += 360
+        self.df['azimuth'][(self.df['G_y'] < 0).values] += 180
         self.df['azimuth'][
-            (self.df['G_x'] > 0).as_matrix() * (self.df['G_y'] == 0).as_matrix()] = 90
+            (self.df['G_x'] > 0).values * (self.df['G_y'] == 0).values] = 90
         self.df['azimuth'][
-            (self.df['G_x'] < 0).as_matrix() * (self.df['G_y'] == 0).as_matrix()] = 270
+            (self.df['G_x'] < 0).values * (self.df['G_y'] == 0).values] = 270
 
     def create_orientation_from_interface(self, indices):
         selected_points = self.interfaces[['X', 'Y', 'Z']].loc[indices].values.T
@@ -1153,7 +1115,7 @@ class Orientations(Data):
     #     # assigned number to the series
     #     self.df["series"] = [(i == series_df).sum().idxmax() for i in self.df["formation"]]
     #     self.df["series"] = self.df["series"].astype('category')
-    #     self.df["order_series"] = [(i == series_df).sum().as_matrix().argmax().astype(int) + 1
+    #     self.df["order_series"] = [(i == series_df).sum().values.argmax().astype(int) + 1
     #                                          for i in self.df["formation"]]
     #
     #     # We sort the series altough is only important for the computation (we will do it again just before computing)
@@ -1267,6 +1229,106 @@ def plane_fit(point_list):
     return ctr, normal
 
 
+class RescaledData(object):
+    def __init__(self, interfaces:Interfaces, orientations:Orientations, grid:GridClass, rescaling_factor=None, centers=None):
+
+        self.interfaces = interfaces
+        self.orientations = orientations
+        self.grid = grid
+
+        max_coord, min_coord = self.max_min_coord(interfaces, orientations)
+        if not rescaling_factor:
+            self.rescaling_factor = self.compute_rescaling_factor(interfaces, orientations,
+                                                                  max_coord, min_coord)
+        else:
+            self.rescaling_factor = rescaling_factor
+        if not centers:
+            self.centers = self.compute_data_center(interfaces, orientations,
+                                                    max_coord, min_coord)
+        else:
+            self.centers = centers
+
+        self.set_rescaled_interfaces()
+        self.set_rescaled_orientations()
+        self.set_rescaled_grid()
+
+    def get_rescaled_data(self):
+        pass
+
+    @staticmethod
+    def max_min_coord(interfaces=None, orientations=None):
+        if interfaces is None:
+            #df = orientations
+            if orientations is None:
+                raise AttributeError('You must pass at least one Data object')
+            else:
+                df = orientations.df
+        else:
+            if orientations is None:
+                df = interfaces.df
+            else:
+                df = pn.concat([orientations.df, interfaces.df], sort=False)
+
+        max_coord = df.max()[['X', 'Y', 'Z']]
+        min_coord = df.min()[['X', 'Y', 'Z']]
+        return max_coord, min_coord
+
+
+    def compute_data_center(self, interfaces=None, orientations=None,
+                    max_coord=None, min_coord=None):
+
+        if max_coord is None or min_coord is None:
+            max_coord, min_coord = self.max_min_coord(interfaces, orientations)
+
+        # Get the centers of every axis
+        centers = ((max_coord + min_coord) / 2).astype(float)
+        return centers
+
+    def compute_rescaling_factor(self, interfaces=None, orientations=None,
+                                 max_coord=None, min_coord=None):
+        if max_coord is None or min_coord is None:
+            max_coord, min_coord = self.max_min_coord(interfaces, orientations)
+        rescaling_factor_val = (2 * np.max(max_coord - min_coord))
+        return rescaling_factor_val
+
+    @staticmethod
+    def rescale_interfaces(interfaces, rescaling_factor, centers):
+        # Change the coordinates of interfaces
+        new_coord_interfaces = (interfaces.df[['X', 'Y', 'Z']] -
+                                centers) / rescaling_factor + 0.5001
+        return new_coord_interfaces
+
+    def set_rescaled_interfaces(self):
+
+        self.interfaces.df[['X_r', 'Y_r', 'Z_r']] = self.rescale_interfaces(self.interfaces, self.rescaling_factor,
+                                                                            self.centers)
+
+        return self.interfaces
+
+    @staticmethod
+    def rescale_orientations(orientations, rescaling_factor, centers):
+        # Change the coordinates of orientations
+        new_coord_orientations = (orientations.df[['X', 'Y', 'Z']] -
+                                  centers) / rescaling_factor + 0.5001
+        return new_coord_orientations
+
+    def set_rescaled_orientations(self):
+
+        self.orientations.df[['X_r', 'Y_r', 'Z_r']] = self.rescale_orientations(self.orientations, self.rescaling_factor,
+                                                                                self.centers)
+
+        return self.orientations
+
+    @staticmethod
+    def rescale_grid(grid, rescaling_factor, centers):
+        new_grid_extent = (grid.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
+        new_grid_values = (grid.values - centers.values) / rescaling_factor + 0.5001
+        return new_grid_extent, new_grid_values
+
+    def set_rescaled_grid(self):
+        self.grid.values_r, self.grid.extent_r = self.rescale_grid(self.grid, self.rescaling_factor, self.centers)
+
+
 class Structure(object):
     def __init__(self, interfaces, orientations):
 
@@ -1305,9 +1367,13 @@ class Structure(object):
 
 
 class AdditionalData(Structure, RescaledData):
-    def __init__(self, interfaces, orientations, grid):
+    def __init__(self, interfaces, orientations, grid, faults, formations, rescaling):
+        # TODO: probably not all the attributes need to be present until I do a check before computing the thing.
 
         super().__init__(interfaces, orientations)
+
+        self.n_faults = faults.n_faults
+        self.n_formations = formations.df.shape[0]
 
         self.range_var = self.default_range(grid.extent)
         self.c_o = self.default_c_o()
@@ -1324,8 +1390,57 @@ class AdditionalData(Structure, RescaledData):
                                                    'nugget grad', 'nugget scalar'])
 
         self.rescaled_data = RescaledData(interfaces, orientations, grid)
-        self.options = pn.DataFrame()
 
+        self.options = pn.DataFrame(columns=['values'],
+                                    index=['dtype', 'output', 'theano_optimizer', 'device', 'verbosity'])
+        self.default_options()
+
+        self.structure_data = pn.DataFrame([self.is_lith_is_fault()[0], self.is_lith_is_fault()[1],
+                                            self.n_faults, self.n_formations,
+                                            self.len_formations_i, self.len_series_i,
+                                            self.len_series_o],
+                                           columns=['values'],
+                                           index=['isFault', 'isLith',
+                                                  'number faults', 'number formations',
+                                                  'len formations interfaces', 'len series interfaces',
+                                                  'len series orientations'])
+
+        self.rescaling_data = pn.DataFrame([rescaling.rescaling_factor, rescaling.centers],
+                                           columns=['values'],
+                                           index=['rescaling factor', 'centers'])
+
+    def __repr__(self):
+
+        concat_ = self.get_additional_data()
+        return concat_.to_string()
+
+    def _repr_html_(self):
+        concat_ = self.get_additional_data()
+        return concat_.to_html()
+
+    def get_additional_data(self):
+        concat_ = pn.concat([self.structure_data, self.options, self.kriging_data, self.rescaling_data],
+                            keys=['Structure', 'Options', 'Kringing', 'Rescaling'])
+        return concat_
+
+    def is_lith_is_fault(self):
+
+        is_fault = False
+        is_lith = False
+
+        if self.n_faults != 0:
+            is_fault = True
+
+        if self.n_formations - 1 > self.n_faults:
+            is_lith = True
+
+        return [is_fault, is_lith]
+
+    def default_options(self):
+        self.options.at['dtype'] = 'float64'
+        self.options.at['output'] = 'geology'
+        self.options.at['theano_optimizer'] = 'fast_compile'
+        self.options.at['device'] = 'cpu'
 
     @staticmethod
     def default_range(extent):
@@ -1366,25 +1481,25 @@ class AdditionalData(Structure, RescaledData):
     def get_kriging_parameters(self):
         pass
 
-    @staticmethod
-    def compute_rescaling_parameters(interfaces, orientations, rescaling_factor=None):
-        # Check which axis is the largest
-        max_coord = pn.concat(
-            [orientations.df, interfaces.df]).max()[['X', 'Y', 'Z']]
-        min_coord = pn.concat(
-            [orientations.df, interfaces.df]).min()[['X', 'Y', 'Z']]
-
-        # Compute rescalin factor if not given
-        if not rescaling_factor:
-            rescaling_factor = (2 * np.max(max_coord - min_coord))
-
-        # Get the centers of every axis
-        centers = ((max_coord + min_coord) / 2).astype(float)
-        return rescaling_factor, centers
-
-    def set_rescaling_parameters(self, interfaces, orientations, rescaling_factor=None):
-        self.rescaling_factor, self.centers = self.compute_rescaling_parameters(interfaces, orientations,
-                                                                                rescaling_factor)
+    # @staticmethod
+    # def compute_rescaling_parameters(interfaces, orientations, rescaling_factor=None):
+    #     # Check which axis is the largest
+    #     max_coord = pn.concat(
+    #         [orientations.df, interfaces.df]).max()[['X', 'Y', 'Z']]
+    #     min_coord = pn.concat(
+    #         [orientations.df, interfaces.df]).min()[['X', 'Y', 'Z']]
+    #
+    #     # Compute rescalin factor if not given
+    #     if not rescaling_factor:
+    #         rescaling_factor = (2 * np.max(max_coord - min_coord))
+    #
+    #     # Get the centers of every axis
+    #     centers = ((max_coord + min_coord) / 2).astype(float)
+    #     return rescaling_factor, centers
+    #
+    # def set_rescaling_parameters(self, interfaces, orientations, rescaling_factor=None):
+    #     self.rescaling_factor, self.centers = self.compute_rescaling_parameters(interfaces, orientations,
+    #                                                                             rescaling_factor)
 
 
 class GeoPhysiscs(object):
@@ -1400,18 +1515,114 @@ class GeoPhysiscs(object):
 
 
 class Interpolator(object):
-    def __init__(self, input_matrices: np.ndarray):
-        self.verbose = None
-        self.dtype = None
-        self.output = None
-        self.theano_optimizer = None
-        self.is_lith=None
-        self.is_fault=None
+    # TODO assert passed data is rescaled
+    def __init__(self, interfaces:Interfaces, orientations: Orientations, grid: GridClass,
+                 formations: Formations, faults: Faults, additional_data: AdditionalData):
+        # self.verbose = None
+        # self.dtype = None
+        # self.output = None
+        # self.theano_optimizer = None
+        # self.is_lith=None
+        # self.is_fault=None
+        self.interfaces = interfaces
+        self.orientations = orientations
+        self.grid = grid
+        self.additional_data = additional_data
+        self.formations = formations
+        self.faults = faults
 
-        import gempy.theano_graph as tg
-        self.input_matrices = input_matrices
-        self.theano_graph = tg
+        self.dtype = additional_data.get_additional_data().xs('Options')['dtype']
+
+
+        self.input_matrices = self.get_input_matrix()
+        self.theano_graph = self.create_theano_graph(additional_data)
         self.theano_function = None
+
+    def create_theano_graph(self, additional_data: AdditionalData = None, inplace=True):
+
+        import gempy.core.theano_graph as tg
+
+        if additional_data is None:
+            additional_data = self.additional_data
+
+        options = additional_data.get_additional_data().xs('Options')
+        graph = tg.TheanoGraph(output=options['output'], optimizer=options['theano_optimizer'], dtype=options['dtype'],
+                               verbose=options['verbosity'], is_lith=options['is_lith'], is_fault=options['is_fault'])
+        if inplace:
+            self.theano_graph = graph
+        else:
+            return graph
+
+    def set_theano_shared_parameters(self, **kwargs):
+
+        # Size of every layer in rests. SHARED (for theano)
+        len_rest_form = (self.additional_data.structure_data['len formations interfaces'] - 1)
+        self.theano_graph.number_of_points_per_formation_T.set_value(len_rest_form.astype('int32'))
+        self.theano_graph.npf.set_value(np.cumsum(np.concatenate(([0], len_rest_form))).astype('int32'))  # Last value is useless
+        # and breaks the basement
+        # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
+        self.theano_graph.len_series_i.set_value(np.insert(self.additional_data.structure_data['len series interfaces'], 0, 0).cumsum().astype('int32'))
+        # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
+        self.theano_graph.len_series_f.set_value(np.insert(self.additional_data.structure_data['len series orientations'], 0, 0).cumsum().astype('int32'))
+        # Setting shared variables
+        # Range
+        self.theano_graph.a_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data['range']))
+        # Covariance at 0
+        self.theano_graph.c_o_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data['$C_o$']))
+        # universal grades
+        self.theano_graph.n_universal_eq_T.set_value(list(self.additional_data.kriging_data['drift equations'].astype('int32')))
+        # nugget effect
+        self.theano_graph.nugget_effect_grad_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data['nugget grad']))
+        self.theano_graph.nugget_effect_scalar_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data['nugget scalar']))
+        # Just grid. I add a small number to avoid problems with the origin point
+        #x_0 = self.compute_x_0()
+        self.theano_graph.grid_val_T.set_value(np.cast[self.dtype](self.grid.values_r + 10e-9))
+        # Universal grid
+        # TODO: this goes inside
+       # self.theano_graph.universal_grid_matrix_T.set_value(np.cast[self.dtype](self.compute_universal_matrix(x_0) + 1e-10))
+        # Initialization of the block model
+        self.theano_graph.final_block.set_value(np.zeros((1, self.grid.values_r.shape[0] + self.interfaces.df.shape[0]),
+                                               dtype=self.dtype))
+        # Unique number assigned to each lithology
+        self.theano_graph.n_formation.set_value(self.formations.df['id'])
+        # Final values the lith block takes
+        self.theano_graph.formation_values.set_value(self.formations.df['value_0'])
+        # Number of formations per series. The function is not pretty but the result is quite clear
+        n_formations_per_serie = np.insert(self.interfaces.df.groupby('order_series').
+                                           formation.nunique().values.cumsum(), 0, 0).astype('int32')
+        self.theano_graph.n_formations_per_serie.set_value(n_formations_per_serie)
+        # Init the list to store the values at the interfaces. Here we init the shape for the given dataset
+        self.theano_graph.final_scalar_field_at_formations.set_value(np.zeros(self.theano_graph.n_formations_per_serie.get_value()[-1],
+                                                                     dtype=self.dtype))
+        self.theano_graph.final_scalar_field_at_faults.set_value(np.zeros(self.theano_graph.n_formations_per_serie.get_value()[-1],
+                                                                 dtype=self.dtype))
+
+        self.theano_graph.n_faults.set_value(self.additional_data.structure_data['number faults'])
+        # Set fault relation matrix
+       # self.check_fault_ralation()
+        self.theano_graph.fault_relation.set_value(self.faults.faults_relations.values.astype('int32'))
+
+    def get_input_matrix(self):
+        # orientations, this ones I tile them inside theano. PYTHON VAR
+        dips_position = self.orientations.df[['X_r', 'Y_r', 'Z_r']].values
+        dip_angles = self.orientations.df["dip"].values
+        azimuth = self.orientations.df["azimuth"].values
+        polarity = self.orientations.df["polarity"].values
+        interfaces_coord = self.interfaces.df[['X_r', 'Y_r', 'Z_r']].values
+        #ref_layer_points = self.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()
+        #rest_layer_points = self.pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix()
+
+        # Set all in a list casting them in the chosen dtype
+        idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, interfaces_coord)]
+        return idl
+
+    def set_x_0(self):
+        # TODO In principle this goes inside too
+        x_0 = np.vstack((self.grid.values_r,
+                         self.interfces.df[['X_r', 'Y_r', 'Z_r']].values
+                         ))
+
+        return x_0
 
     def compile_th_fn(self, output, **kwargs):
         """
@@ -1429,14 +1640,14 @@ class Interpolator(object):
         import theano
 
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
-        input_data_T = self.interpolator.tg.input_parameters_list()
+        input_data_T = self.theano_graph.input_parameters_list()
 
         print('Compiling theano function...')
 
         if output is 'geology':
             # then we compile we have to pass the number of formations that are faults!!
             th_fn = theano.function(input_data_T,
-                                    self.interpolator.tg.compute_geological_model(),
+                                    self.theano_graph.compute_geological_model(),
                                     # mode=NanGuardMode(nan_is_error=True),
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
@@ -1445,7 +1656,7 @@ class Interpolator(object):
         elif output is 'gravity':
             # then we compile we have to pass the number of formations that are faults!!
             th_fn = theano.function(input_data_T,
-                                    self.interpolator.tg.compute_forward_gravity(),
+                                    self.theano_graph.compute_forward_gravity(),
                                     #  mode=NanGuardMode(nan_is_error=True),
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
@@ -1454,11 +1665,12 @@ class Interpolator(object):
         elif output is 'gradients':
 
             gradients = kwargs.get('gradients', ['Gx', 'Gy', 'Gz'])
-            self.interpolator.tg.gradients = gradients
+            self.theano_graph.gradients = gradients
 
             # then we compile we have to pass the number of formations that are faults!!
             th_fn = theano.function(input_data_T,
-                                    self.interpolator.tg.compute_geological_model_gradient(self.geo_data_res.n_faults),
+                                    self.theano_graph.compute_geological_model_gradient(
+                                        self.additional_data.structure_data['number faults']),
                                     #  mode=NanGuardMode(nan_is_error=True),
                                     on_unused_input='ignore',
                                     allow_input_downcast=False,
@@ -1471,7 +1683,7 @@ class Interpolator(object):
         print('Level of Optimization: ', theano.config.optimizer)
         print('Device: ', theano.config.device)
         print('Precision: ', self.dtype)
-        print('Number of faults: ', self.geo_data_res.n_faults)
+        print('Number of faults: ', self.additional_data.structure_data['number faults'])
         return th_fn
 
 
