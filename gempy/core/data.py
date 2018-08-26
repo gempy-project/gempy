@@ -480,7 +480,7 @@ class Formations(object):
 
     @staticmethod
     def set_id(df):
-        df['id'] = df.index
+        df['id'] = df.index + 1
         return df
 
     def set_formations(self, values_array, values_names=np.empty(0), formation_names=None):
@@ -594,8 +594,8 @@ class Data(object):
 
         return table
 
-    @staticmethod
-    def sort_table(df):
+
+    def sort_table(self):
         """
         First we sort the dataframes by the series age. Then we set a unique number for every formation and resort
         the formations. All inplace
@@ -607,9 +607,9 @@ class Data(object):
         #                             inplace=True)
 
         # We order the pandas table by formation (also by series in case something weird happened)
-        df.sort_values(by=['order_series', 'id'],
+        self.df.sort_values(by=['order_series', 'id'],
                              ascending=True, kind='mergesort',
-                             inplace=False)
+                             inplace=True)
 
 
         # Pandas dataframe set an index to every row when the dataframe is created. Sorting the table does not reset
@@ -646,8 +646,6 @@ class Data(object):
         # formations_df = formations.df
         # formation_order = formations.df.index
 
-        if sort:
-            self.sort_table(new_df)
 
         # TODO: Substitute by ID
         if inplace:
@@ -655,6 +653,8 @@ class Data(object):
             self.df['formation_number'] = self.df['id']
             self.set_dypes()
             self.df['formation'].cat.set_categories(formations.df['formation'].cat.categories, inplace=True)
+            if sort:
+                self.sort_table()
 
         else:
             return new_df
@@ -1230,7 +1230,8 @@ def plane_fit(point_list):
 
 
 class RescaledData(object):
-    def __init__(self, interfaces:Interfaces, orientations:Orientations, grid:GridClass, rescaling_factor=None, centers=None):
+    def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: GridClass,
+                 rescaling_factor=None, centers=None):
 
         self.interfaces = interfaces
         self.orientations = orientations
@@ -1272,7 +1273,6 @@ class RescaledData(object):
         max_coord = df.max()[['X', 'Y', 'Z']]
         min_coord = df.min()[['X', 'Y', 'Z']]
         return max_coord, min_coord
-
 
     def compute_data_center(self, interfaces=None, orientations=None,
                     max_coord=None, min_coord=None):
@@ -1326,7 +1326,7 @@ class RescaledData(object):
         return new_grid_extent, new_grid_values
 
     def set_rescaled_grid(self):
-        self.grid.values_r, self.grid.extent_r = self.rescale_grid(self.grid, self.rescaling_factor, self.centers)
+        self.grid.extent_r, self.grid.values_r = self.rescale_grid(self.grid, self.rescaling_factor, self.centers)
 
 
 class Structure(object):
@@ -1336,6 +1336,7 @@ class Structure(object):
         self.len_series_i = self.set_length_series_i(interfaces)
         self.len_series_o = self.set_length_series_o(orientations)
         self.ref_position = self.set_ref_position()
+        self.nfs = self.set_number_of_formations_per_series(interfaces)
 
     def set_length_formations_i(self, interfaces):
         # ==================
@@ -1364,6 +1365,10 @@ class Structure(object):
     def set_ref_position(self):
         self.ref_position = np.insert(self.len_formations_i[:-1], 0, 0).cumsum()
         return self.ref_position
+
+    def set_number_of_formations_per_series(self, interfaces):
+        self.nfs = interfaces.df.groupby('order_series').formation.nunique().values.cumsum()
+        return self.nfs
 
 
 class AdditionalData(Structure, RescaledData):
@@ -1396,12 +1401,12 @@ class AdditionalData(Structure, RescaledData):
         self.default_options()
 
         self.structure_data = pn.DataFrame([self.is_lith_is_fault()[0], self.is_lith_is_fault()[1],
-                                            self.n_faults, self.n_formations,
+                                            self.n_faults, self.n_formations, self.nfs,
                                             self.len_formations_i, self.len_series_i,
                                             self.len_series_o],
                                            columns=['values'],
                                            index=['isFault', 'isLith',
-                                                  'number faults', 'number formations',
+                                                  'number faults', 'number formations', 'number formations per series',
                                                   'len formations interfaces', 'len series interfaces',
                                                   'len series orientations'])
 
@@ -1514,10 +1519,20 @@ class GeoPhysiscs(object):
         pass
 
 
-class Interpolator(object):
+class Solution(object):
+
+    def __init__(self):
+        self.scalar_field_at_interfaces = 0
+        self.scalar_field = np.array([])
+        self.lith_block = None
+        self.values_block = None
+        self.gradient = None
+
+
+class Interpolator(Solution):
     # TODO assert passed data is rescaled
-    def __init__(self, interfaces:Interfaces, orientations: Orientations, grid: GridClass,
-                 formations: Formations, faults: Faults, additional_data: AdditionalData):
+    def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: GridClass,
+                 formations: Formations, faults: Faults, additional_data: AdditionalData, **kwargs):
         # self.verbose = None
         # self.dtype = None
         # self.output = None
@@ -1531,49 +1546,62 @@ class Interpolator(object):
         self.formations = formations
         self.faults = faults
 
-        self.dtype = additional_data.get_additional_data().xs('Options')['dtype']
+        self.dtype = additional_data.get_additional_data().xs('Options').loc['dtype', 'values']
 
 
         self.input_matrices = self.get_input_matrix()
-        self.theano_graph = self.create_theano_graph(additional_data)
-        self.theano_function = None
+        self.theano_graph = self.create_theano_graph(additional_data, inplace=False)
+        if 'compile_theano' in kwargs:
+            self.theano_function = self.compile_th_fn(additional_data.options.loc['output'])
+        else:
+            self.theano_function = None
 
     def create_theano_graph(self, additional_data: AdditionalData = None, inplace=True):
 
         import gempy.core.theano_graph as tg
+        import importlib
+        importlib.reload(tg)
 
         if additional_data is None:
             additional_data = self.additional_data
 
         options = additional_data.get_additional_data().xs('Options')
-        graph = tg.TheanoGraph(output=options['output'], optimizer=options['theano_optimizer'], dtype=options['dtype'],
-                               verbose=options['verbosity'], is_lith=options['is_lith'], is_fault=options['is_fault'])
+        graph = tg.TheanoGraph(output=options.loc['output', 'values'], optimizer=options.loc['theano_optimizer', 'values'],
+                               dtype=options.loc['dtype', 'values'], verbose=options.loc['verbosity', 'values'],
+                               is_lith=additional_data.structure_data.loc['isLith', 'values'],
+                               is_fault=additional_data.structure_data.loc['isFault', 'values'])
         if inplace:
             self.theano_graph = graph
         else:
             return graph
 
     def set_theano_shared_parameters(self, **kwargs):
-
+        # TODO: I have to split this one between structure and init data
         # Size of every layer in rests. SHARED (for theano)
-        len_rest_form = (self.additional_data.structure_data['len formations interfaces'] - 1)
+        len_rest_form = (self.additional_data.structure_data.loc['len formations interfaces', 'values'] - 1)
         self.theano_graph.number_of_points_per_formation_T.set_value(len_rest_form.astype('int32'))
         self.theano_graph.npf.set_value(np.cumsum(np.concatenate(([0], len_rest_form))).astype('int32'))  # Last value is useless
         # and breaks the basement
         # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
-        self.theano_graph.len_series_i.set_value(np.insert(self.additional_data.structure_data['len series interfaces'], 0, 0).cumsum().astype('int32'))
+        self.theano_graph.len_series_i.set_value(
+            np.insert(self.additional_data.structure_data.loc['len series interfaces', 'values'] -
+                      self.additional_data.structure_data.loc['number formations per series', 'values'], 0, 0).cumsum().astype('int32'))
         # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
-        self.theano_graph.len_series_f.set_value(np.insert(self.additional_data.structure_data['len series orientations'], 0, 0).cumsum().astype('int32'))
+        self.theano_graph.len_series_f.set_value(
+            np.insert(self.additional_data.structure_data.loc['len series orientations', 'values'], 0, 0).cumsum().astype('int32'))
         # Setting shared variables
         # Range
-        self.theano_graph.a_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data['range']))
+        self.theano_graph.a_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data.loc['range', 'values']))
         # Covariance at 0
-        self.theano_graph.c_o_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data['$C_o$']))
+        self.theano_graph.c_o_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data.loc['$C_o$', 'values']))
         # universal grades
-        self.theano_graph.n_universal_eq_T.set_value(list(self.additional_data.kriging_data['drift equations'].astype('int32')))
+        self.theano_graph.n_universal_eq_T.set_value(
+            list(self.additional_data.kriging_data.loc['drift equations', 'values'].astype('int32')))
         # nugget effect
-        self.theano_graph.nugget_effect_grad_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data['nugget grad']))
-        self.theano_graph.nugget_effect_scalar_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data['nugget scalar']))
+        self.theano_graph.nugget_effect_grad_T.set_value(
+            np.cast[self.dtype](self.additional_data.kriging_data.loc['nugget grad', 'values']))
+        self.theano_graph.nugget_effect_scalar_T.set_value(
+            np.cast[self.dtype](self.additional_data.kriging_data.loc['nugget scalar', 'values']))
         # Just grid. I add a small number to avoid problems with the origin point
         #x_0 = self.compute_x_0()
         self.theano_graph.grid_val_T.set_value(np.cast[self.dtype](self.grid.values_r + 10e-9))
@@ -1588,8 +1616,8 @@ class Interpolator(object):
         # Final values the lith block takes
         self.theano_graph.formation_values.set_value(self.formations.df['value_0'])
         # Number of formations per series. The function is not pretty but the result is quite clear
-        n_formations_per_serie = np.insert(self.interfaces.df.groupby('order_series').
-                                           formation.nunique().values.cumsum(), 0, 0).astype('int32')
+        n_formations_per_serie = np.insert(self.additional_data.structure_data.loc['number formations per series', 'values'], 0, 0).\
+            astype('int32')
         self.theano_graph.n_formations_per_serie.set_value(n_formations_per_serie)
         # Init the list to store the values at the interfaces. Here we init the shape for the given dataset
         self.theano_graph.final_scalar_field_at_formations.set_value(np.zeros(self.theano_graph.n_formations_per_serie.get_value()[-1],
@@ -1597,7 +1625,7 @@ class Interpolator(object):
         self.theano_graph.final_scalar_field_at_faults.set_value(np.zeros(self.theano_graph.n_formations_per_serie.get_value()[-1],
                                                                  dtype=self.dtype))
 
-        self.theano_graph.n_faults.set_value(self.additional_data.structure_data['number faults'])
+        self.theano_graph.n_faults.set_value(self.additional_data.structure_data.loc['number faults', 'values'])
         # Set fault relation matrix
        # self.check_fault_ralation()
         self.theano_graph.fault_relation.set_value(self.faults.faults_relations.values.astype('int32'))
@@ -1616,15 +1644,15 @@ class Interpolator(object):
         idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, interfaces_coord)]
         return idl
 
-    def set_x_0(self):
-        # TODO In principle this goes inside too
-        x_0 = np.vstack((self.grid.values_r,
-                         self.interfces.df[['X_r', 'Y_r', 'Z_r']].values
-                         ))
+    # def set_x_0(self):
+    #     # TODO In principle this goes inside too
+    #     x_0 = np.vstack((self.grid.values_r,
+    #                      self.interfces.df[['X_r', 'Y_r', 'Z_r']].values
+    #                      ))
+    #
+    #     return x_0
 
-        return x_0
-
-    def compile_th_fn(self, output, **kwargs):
+    def compile_th_fn(self, output, inplace=True, **kwargs):
         """
         Compile the theano function given the input_data data.
 
@@ -1638,7 +1666,7 @@ class Interpolator(object):
             (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
         """
         import theano
-
+        self.set_theano_shared_parameters()
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.theano_graph.input_parameters_list()
 
@@ -1679,19 +1707,15 @@ class Interpolator(object):
         else:
             raise SyntaxError('The output given does not exist. Please use geology, gradients or gravity ')
 
+        if inplace is True:
+            self.theano_function = th_fn
+
         print('Compilation Done!')
         print('Level of Optimization: ', theano.config.optimizer)
         print('Device: ', theano.config.device)
         print('Precision: ', self.dtype)
-        print('Number of faults: ', self.additional_data.structure_data['number faults'])
+        print('Number of faults: ', self.additional_data.structure_data.loc['number faults', 'values'])
         return th_fn
 
 
-class Solution(object):
-    def __init__(self):
-        self.scalar_field_at_interfaces = 0
-        self.scalar_field = np.array([])
-        self.lith_block = None
-        self.values_block = None
-        self.gradient = None
 
