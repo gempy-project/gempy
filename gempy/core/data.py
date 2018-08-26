@@ -29,7 +29,7 @@ class Model(object):
         self.interfaces = None
         self.orientations = None
         self.structure = None
-        self.model = None
+        self.interpolator = None
 
     def save_data(self):
         pass
@@ -137,8 +137,6 @@ class Model(object):
        #  self.set_fault_relation()
 
 
-
-
 class MetaData(object):
     def __init__(self, name_project='default_project'):
         self.name_project = name_project
@@ -147,38 +145,61 @@ class MetaData(object):
 
 class GridClass(object):
     """
-    Class to generate grids to pass later on to a InputData class.
+    Class to generate grids to pass later on to a InputData class. This class is used to create points where to
+    evaluate the geological model.
+
+    Args:
+        grid_type (str): type of premade grids provide by GemPy
+        **kwargs: see args of the given grid type
+
+    Attributes:
+        grid_type (str): type of premade grids provide by GemPy
+        resolution (list[int]): [x_min, x_max, y_min, y_max, z_min, z_max]
+        extent (list[float]):  [nx, ny, nz]
+        values (np.ndarray): coordinates where the model is going to be evaluated
+        values_r (np.ndarray): rescaled coordinates where the model is going to be evaluated
+
     """
 
-    def __init__(self):
+    def __init__(self, grid_type=None, **kwargs):
 
-        self.grid_type = 'foo'
+        self.grid_type = grid_type
         self.resolution = None
         self.extent = None
         self.values = None
         self.values_r = None
 
+        if grid_type is 'regular_grid':
+            self.set_regular_grid(**kwargs)
+        elif grid_type is 'custom_grid':
+            self.create_custom_grid(**kwargs)
+        else:
+            warnings.warn('No valid grid_type. Grid is empty.')
+
     def __str__(self):
-        return self.grid_type
+        return self.values
 
     def __repr__(self):
         return np.array_repr(self.values)
 
-    def set_custom_grid(self, custom_grid):
+    def create_custom_grid(self, custom_grid, inplace=True):
         """
         Give the coordinates of an external generated grid
 
         Args:
             custom_grid (numpy.ndarray like): XYZ (in columns) of the desired coordinates
-
+            inplace (bool): If True, do operation inplace and return None.
         Returns:
               numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid
         """
         assert type(custom_grid) is np.ndarray and custom_grid.shape[1] is 3, 'The shape of new grid must be (n,3)' \
                                                                               ' where n is the number of points of ' \
                                                                               'the grid'
-        self.values = custom_grid
-        return self.values
+
+        if inplace is True:
+            self.values = custom_grid
+        else:
+            return custom_grid
 
     @staticmethod
     def create_regular_grid_3d(extent, resolution):
@@ -206,12 +227,30 @@ class GridClass(object):
         return values
 
     def set_regular_grid(self, extent, resolution):
+        """
+        Set a regular grid into the values parameters for further computations
+        Args:
+             extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]
+            resolution (list): [nx, ny, nz]
+        """
+
         self.extent = extent
         self.resolution = resolution
         self.values = self.create_regular_grid_3d(extent, resolution)
 
 
 class Series(object):
+    """
+    Series is a class that contains the relation between series/faults and each individual surface/layer. This can be
+    illustrated in the sequential pile.
+
+    Attributes:
+        df (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and the formations contained
+            on them
+        sequential_pile?
+
+    """
+
     def __init__(self):
         self.df = pn.DataFrame({"Default series": [None]}, dtype=str)
         self.sequential_pile = None
@@ -232,9 +271,7 @@ class Series(object):
                 random. This is important to set the erosion relations between the different series
 
         Returns:
-            self.series: A pandas DataFrame with the series and formations relations
-            self.interfaces: one extra column with the given series
-            self.orientations: one extra column with the given series
+            self.df: A pandas DataFrame with the series and formations relations
         """
 
         if isinstance(series_distribution, Interfaces):
@@ -687,8 +724,6 @@ class Data(object):
 
     def rescale_data(self, rescaling_factor, centers):
         self.df[['Xr', 'Yr', 'Zr']] = (self.df[['X', 'Y', 'Z']] - centers) / rescaling_factor + 0.5001
-
-
 
 
 class Interfaces(Data):
