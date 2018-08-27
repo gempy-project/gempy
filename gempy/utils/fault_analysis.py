@@ -25,6 +25,8 @@ from matplotlib import pyplot as plt
 from scipy.spatial import distance
 from gempy.plotting.colors import color_lot, cmap, norm
 
+plt.style.use(['seaborn-white', 'seaborn-talk'])
+
 
 def get_fault_mask(geo_data, fault_sol, fault_n, fault_side='both'):
     """
@@ -417,7 +419,8 @@ def plot_AD_multi(geo_data, lith_sol, fault_sol, fault_n,\
 
 def plot_AD_full(geo_data, lith_sol, fault_sol, fault_n,\
                        lith_n, ref_n,\
-                  fault_side_ref='footwall', projection='automatic'):
+                  fault_side_ref='footwall', projection='automatic',\
+                 **kwargs):
     """
             Simple Allan diagram illustration (voxel-based).
 
@@ -440,11 +443,29 @@ def plot_AD_full(geo_data, lith_sol, fault_sol, fault_n,\
                 Allan diagram plot showing the layer-fault contact on footwall and hanging wall side, as well as
                 the resulting juxtaposition in different colors.
             """
+    formation_names = geo_data.interfaces['formation'].unique()
+    formation_numbers = geo_data.interfaces['formation_number'].unique()
+
     if fault_side_ref == 'hanging wall' or fault_side_ref == 'hw':
-        fw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
-                                      lith_n, fault_n, fault_side='fw')
         hw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
                                       ref_n, fault_n, fault_side='hw')
+        if projection == 'automatic':
+            d_x = (np.max(hw_array[:, 0]) - np.min(hw_array[:, 0]))
+            d_y = (np.max(hw_array[:, 1]) - np.min(hw_array[:, 1]))
+            if d_x > d_y:
+                projection = 'xz'
+            else:
+                projection = 'yz'
+
+        hw_proj = project_voxels(hw_array, projection)
+
+        fw_proj = (np.ones_like(hw_proj)*np.max(formation_numbers))
+        for i in lith_n:
+            fw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                          i, fault_n, fault_side='fw')
+            proj = project_voxels(fw_array, projection)
+            fw_proj[proj] = i
+
     elif fault_side_ref == 'footwall' or fault_side_ref == 'fw':
         fw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
                                       ref_n, fault_n, fault_side='fw')
@@ -453,22 +474,16 @@ def plot_AD_full(geo_data, lith_sol, fault_sol, fault_n,\
     else:
         raise AttributeError(str(fault_side_ref) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
 
-    if projection == 'automatic':
-        d_x = (np.max(hw_array[:, 0]) - np.min(hw_array[:, 0]))
-        d_y = (np.max(hw_array[:, 1]) - np.min(hw_array[:, 1]))
-        if d_x > d_y:
-            projection = 'xz'
-        else:
-            projection = 'yz'
-    fw_proj = project_voxels(fw_array, projection)
-    hw_proj = project_voxels(hw_array, projection)
     juxtapos = np.logical_and(fw_proj, hw_proj)
 
     if projection == 'yz':
-        diagram = np.zeros_like(hw_array[0, :, :].astype(int))
-        diagram[hw_proj[0, :, :]] = 1
-        diagram[fw_proj[0, :, :]] = 2
-        diagram[juxtapos[0, :, :]] = 3
+        #diagram = np.zeros_like(hw_array[0, :, :].astype(int))
+        #diagram[hw_proj[0, :, :]] = 1
+        #diagram[fw_proj[0, :, :]] = 2
+        #diagram[juxtapos[0, :, :]] = 3
+        diagram = fw_proj[0,:,:]
+        diagram[hw_proj[0, :, :]] = (ref_n+0.5)
+        #diagram[juxtapos[0, :, :]] = 7
     elif projection == 'xz':
         diagram = np.zeros_like(hw_array[:, 0, :].astype(int))
         diagram[hw_proj[:, 0, :]] = 1
@@ -476,8 +491,22 @@ def plot_AD_full(geo_data, lith_sol, fault_sol, fault_n,\
         diagram[juxtapos[:, 0, :]] = 3
     else:
         raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
-    plt.imshow(diagram.T, origin='bottom', cmap='viridis')
-    return diagram
+
+    if 'cmap' not in kwargs:
+        kwargs['cmap'] = cmap  #
+    if 'norm' not in kwargs:
+        kwargs['norm'] = norm
+
+    im = plt.imshow(diagram.T, origin="bottom",
+                    **kwargs)
+
+    import matplotlib.patches as mpatches
+    colors = [im.cmap(im.norm(value)) for value in formation_numbers]
+    patches = [mpatches.Patch(color=colors[i], label=formation_names[i]) for i in range(len(formation_names))]
+    plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+    return plt.gcf()
+    #plt.imshow(diagram.T, origin='bottom', cmap='viridis')
+
 
 def plot_fault_contact_projection(geo_data, lith_sol, fault_sol, \
                        lith_n, fault_n, fault_side='footwall', projection='automatic'):
@@ -940,3 +969,88 @@ def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
     vox_size_z = np.abs(geo_data.extent[5] - geo_data.extent[4]) / geo_data.resolution[2]
     z_diff_res = z_diff * vox_size_z
     return z_diff_res
+
+class PlotFault2D(object):
+    """
+    Class to create the different plots related to fault surfaces,
+    e.g.: Allan Diagram
+
+    Args:
+        geo_data(gempy.InputData): All values of a DataManagement object
+        block(numpy.array): 3D array containing the lithology block
+        **kwargs: Arbitrary keyword arguments.
+    """
+
+    def __init__(self, geo_data, cmap=cmap, norm=norm, **kwargs):
+        self._data = geo_data
+        self._color_lot = color_lot
+        self._cmap = cmap
+        self._norm = norm
+        self.formation_names = self._data.interfaces['formation'].unique()
+        self.formation_numbers = self._data.interfaces['formation_number'].unique()
+
+        self._set_style()
+
+    def plot_lith_fault_contact(self, lith_sol, fault_sol, fault_n, \
+                        ref_n=None, fault_side='footwall', \
+                        projection='automatic', \
+                        **kwargs):
+        """
+
+                Args:
+                    geo_data (:class:`gempy.data_management.InputData`)
+                    lith_sol (ndarray): Computed model lithology solution.
+                    fault_sol (ndarray): Computed model fault solution.
+                    lith_n (1d array, list or int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                    ref_n (1d array, list or int):
+                    fault_n (int): Number of the fault of interest.
+                    fault_side_ref:
+                    projection (string, optional, default='automatic'): Choose the plane onto which the
+                        voxels are to be projected:
+                            'yz'
+                            'xz'
+                            'automatic': Automatically determines the plane which is parallel to the length
+                                of the voxel spread.
+
+                Returns:
+                    Allan diagram plot showing the layer-fault contact on footwall and hanging wall side, as well as
+                    the resulting juxtaposition in different colors.
+                """
+        formation_names = self._data.interfaces['formation'].unique()
+        formation_numbers = self._data.interfaces['formation_number'].unique()
+
+        w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                          formation_numbers, fault_n, fault_side=fault_side)
+        w_proj = project_voxels(w_array, projection)
+        w_proj[:,:,0]
+
+        if projection == 'yz':
+            # diagram = np.zeros_like(hw_array[0, :, :].astype(int))
+            # diagram[hw_proj[0, :, :]] = 1
+            # diagram[fw_proj[0, :, :]] = 2
+            # diagram[juxtapos[0, :, :]] = 3
+            diagram = fw_proj[0, :, :]
+            diagram[hw_proj[0, :, :]] = (ref_n + 0.5)
+            # diagram[juxtapos[0, :, :]] = 7
+        elif projection == 'xz':
+            diagram = np.zeros_like(hw_array[:, 0, :].astype(int))
+            diagram[hw_proj[:, 0, :]] = 1
+            diagram[fw_proj[:, 0, :]] = 2
+            diagram[juxtapos[:, 0, :]] = 3
+        else:
+            raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
+
+        if 'cmap' not in kwargs:
+            kwargs['cmap'] = cmap  #
+        if 'norm' not in kwargs:
+            kwargs['norm'] = norm
+
+        im = plt.imshow(diagram.T, origin="bottom",
+                        **kwargs)
+
+        import matplotlib.patches as mpatches
+        colors = [im.cmap(im.norm(value)) for value in formation_numbers]
+        patches = [mpatches.Patch(color=colors[i], label=formation_names[i]) for i in range(len(formation_names))]
+        plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        return plt.gcf()
+        # plt.imshow(diagram.T, origin='bottom', cmap='viridis')
