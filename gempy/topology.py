@@ -136,7 +136,8 @@ def enhanced_labeling(G, rprops, lith_block, fault_block):
         ids = np.where(np.array(labels) == label)[0]
         if len(ids) > 1:
             for i, id_ in enumerate(ids):
-                labels[id_] += ("_" + chr(ord("a") + i))
+                if i > 0:
+                    labels[id_] += ("_" + chr(ord("a") + i))
     # fuse into dict mapping new labels to old
     labels = {n: l for n, l in zip(G.nodes(), labels)}
 
