@@ -160,12 +160,12 @@ def get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
     elif fault_side == 'both':
         fs_cond = np.ones_like(fault_block).astype(bool)
     else:
-        raise AttributeError(str(form) + "must be 'footwall' ('fw'), 'hanging wall' ('hw') or 'both'.")
+        raise AttributeError(str(fault_side) + "must be 'footwall' ('fw'), 'hanging wall' ('hw') or 'both'.")
     lith_cut = lith_cond * fs_cond
     vox_contact = lith_cut * fault_mask
     return vox_contact
 
-def project_voxels(voxel_array, projection='automatic'):
+def project_voxels(voxel_array, projection='automatic', form='3D'):
     """
             Project the 'True' voxels in a boolean array onto either the 'yz'- or the 'xz'-plane.
 
@@ -199,8 +199,45 @@ def project_voxels(voxel_array, projection='automatic'):
     pos = np.argwhere(voxel_array == True)
     pos[:, p] = 0
     proj[pos[:, 0], pos[:, 1], pos[:, 2]] = True
-    return proj
-    ### This is currently still a 3D array. Unnecessary. Find a better format (2d array?) and adapt functions!
+    if form=='2D':
+        if projection == 'yz':
+            return proj[0,:,:]
+        elif projection == 'xz':
+            return proj[:,0,:]
+    elif form=='3D':
+        return proj
+    ### Keeping 3D form for now, as change will need reworks in other functions
+
+def get_full_LFcontact_projected(geo_data, lith_sol, fault_sol, \
+                                 formation_numbers, fault_n, fault_side='footwall',
+                                 projection='automatic'):
+    w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                 formation_numbers, fault_n, fault_side=fault_side)
+    w_proj = project_voxels(w_array, projection)
+    proj = np.zeros_like(w_proj).astype(int)
+
+    for i in formation_numbers:
+        i_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                     i, fault_n, fault_side=fault_side)
+        i_proj = project_voxels(i_array, projection)
+        proj[i_proj] = i
+
+    if projection == 'automatic':
+        d_x = (np.max(w_array[:, 0]) - np.min(w_array[:, 0]))
+        d_y = (np.max(w_array[:, 1]) - np.min(w_array[:, 1]))
+        if d_x > d_y:
+            projection = 'xz'
+        else:
+            projection = 'yz'
+
+    if projection == 'yz':
+        contact = proj[0, :, :]
+    elif projection == 'xz':
+
+        contact = proj[:, 0, :]
+    else:
+        raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
+    return contact
 
 def get_extrema_line_projected(projected_array, extrema_type='max'):
     """
@@ -270,8 +307,19 @@ def get_extrema_line_voxels(voxel_array, extrema_type='max', projection='automat
     else:
         raise AttributeError(str(form) + "must be 'projected' or 'original'")
 
-def get_juxtaposition(hw_array, fw_array):
-    juxtapos = np.logical_and(hw_array, fw_array) # this should only work with projected arrays
+def get_juxtapositions(geo_data, lith_sol, fault_sol, fault_n,\
+                        lith_target, lith_jux, target_side='fw',\
+                       jux_side='hw', projection='automatic'):
+    lith_j= get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                   lith_n=lith_jux, fault_n=fault_n, fault_side=jux_side)
+    lith_j_p = project_voxels(lith_j, projection, form='2D')
+
+    lith_t = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                                    lith_n=lith_target, fault_n=fault_n, fault_side=target_side)
+    lith_t_p = project_voxels(lith_t, projection, form='2D')
+    # target_contact[~lith_front_p] = 0
+    juxtapos = np.logical_and(lith_j_p, lith_t_p)
+    # this should only work with projected arrays
     return juxtapos
 
 def plot_allan_diagram(geo_data, lith_sol, fault_sol, fault_n,\
@@ -989,10 +1037,10 @@ class PlotFault2D(object):
         self.formation_names = self._data.interfaces['formation'].unique()
         self.formation_numbers = self._data.interfaces['formation_number'].unique()
 
-        self._set_style()
+        #self._set_style()
 
-    def plot_lith_fault_contact(self, lith_sol, fault_sol, fault_n, \
-                        ref_n=None, fault_side='footwall', \
+    def plot_lith_fault_contact_full(self, lith_sol, fault_sol, fault_n, \
+                        fault_side='footwall', \
                         projection='automatic', \
                         **kwargs):
         """
@@ -1016,36 +1064,19 @@ class PlotFault2D(object):
                     Allan diagram plot showing the layer-fault contact on footwall and hanging wall side, as well as
                     the resulting juxtaposition in different colors.
                 """
-        formation_names = self._data.interfaces['formation'].unique()
-        formation_numbers = self._data.interfaces['formation_number'].unique()
+        formation_names = self.formation_names
+        formation_numbers = self.formation_numbers
 
-        w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
-                                          formation_numbers, fault_n, fault_side=fault_side)
-        w_proj = project_voxels(w_array, projection)
-        w_proj[:,:,0]
-
-        if projection == 'yz':
-            # diagram = np.zeros_like(hw_array[0, :, :].astype(int))
-            # diagram[hw_proj[0, :, :]] = 1
-            # diagram[fw_proj[0, :, :]] = 2
-            # diagram[juxtapos[0, :, :]] = 3
-            diagram = fw_proj[0, :, :]
-            diagram[hw_proj[0, :, :]] = (ref_n + 0.5)
-            # diagram[juxtapos[0, :, :]] = 7
-        elif projection == 'xz':
-            diagram = np.zeros_like(hw_array[:, 0, :].astype(int))
-            diagram[hw_proj[:, 0, :]] = 1
-            diagram[fw_proj[:, 0, :]] = 2
-            diagram[juxtapos[:, 0, :]] = 3
-        else:
-            raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
+        contact = get_full_LFcontact_projected(self._data, lith_sol, fault_sol, \
+                                     formation_numbers, fault_n, fault_side=fault_side,
+                                     projection=projection)
 
         if 'cmap' not in kwargs:
-            kwargs['cmap'] = cmap  #
+            kwargs['cmap'] = self._cmap  #
         if 'norm' not in kwargs:
-            kwargs['norm'] = norm
+            kwargs['norm'] = self._norm
 
-        im = plt.imshow(diagram.T, origin="bottom",
+        im = plt.imshow(contact.T, origin="bottom",
                         **kwargs)
 
         import matplotlib.patches as mpatches
@@ -1053,4 +1084,199 @@ class PlotFault2D(object):
         patches = [mpatches.Patch(color=colors[i], label=formation_names[i]) for i in range(len(formation_names))]
         plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         return plt.gcf()
-        # plt.imshow(diagram.T, origin='bottom', cmap='viridis')
+
+    def plot_lith_fault_contact(self, lith_sol, fault_sol, fault_n, \
+                        lith_n, fault_side='footwall', \
+                        projection='automatic', \
+                        **kwargs):
+        """
+
+                Args:
+                    geo_data (:class:`gempy.data_management.InputData`)
+                    lith_sol (ndarray): Computed model lithology solution.
+                    fault_sol (ndarray): Computed model fault solution.
+                    lith_n (1d array, list or int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                    ref_n (1d array, list or int):
+                    fault_n (int): Number of the fault of interest.
+                    fault_side_ref:
+                    projection (string, optional, default='automatic'): Choose the plane onto which the
+                        voxels are to be projected:
+                            'yz'
+                            'xz'
+                            'automatic': Automatically determines the plane which is parallel to the length
+                                of the voxel spread.
+
+                Returns:
+                    Allan diagram plot showing the layer-fault contact on footwall and hanging wall side, as well as
+                    the resulting juxtaposition in different colors.
+                """
+        formation_names = self.formation_names
+        formation_numbers = self.formation_numbers
+
+        contact = get_full_LFcontact_projected(self._data, lith_sol, fault_sol, \
+                                     formation_numbers, fault_n, fault_side=fault_side,
+                                     projection=projection)
+        lith_c = get_vox_lf_contact(self._data, lith_sol, fault_sol, \
+                       lith_n=lith_n, fault_n=fault_n, fault_side=fault_side)
+        lith_c_proj = project_voxels(lith_c, projection, form='2D')
+        contact[~lith_c_proj] = 0
+
+        if 'cmap' not in kwargs:
+            kwargs['cmap'] = self._cmap  #
+        if 'norm' not in kwargs:
+            kwargs['norm'] = self._norm
+
+        im = plt.imshow(contact.T, origin="bottom",
+                        **kwargs)
+
+        import matplotlib.patches as mpatches
+        colors = [im.cmap(im.norm(value)) for value in formation_numbers]
+        patches = [mpatches.Patch(color=colors[i], label=formation_names[i]) for i in range(len(formation_names))]
+        plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        return plt.gcf()
+
+    def plot_AllanDiagram(self, lith_sol, fault_sol, fault_n, \
+                        lith_target, lith_jux, fault_side_ref='footwall',\
+                        projection='automatic', \
+                        **kwargs):
+
+        formation_names = self.formation_names
+        formation_numbers = self.formation_numbers
+        if fault_side_ref == 'footwall' or fault_side_ref == 'fw':
+            target_side = 'hw'
+        elif fault_side_ref == 'hanging wall' or fault_side_ref == 'hw':
+            target_side = 'fw'
+        else:
+            raise AttributeError(str(fault_side) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
+        # target_contact = get_full_LFcontact_projected(self._data, lith_sol, fault_sol, \
+        #                                       formation_numbers, fault_n, fault_side=target_side,
+        # projection = projection)
+        #
+        background_ref = get_full_LFcontact_projected(self._data, lith_sol, fault_sol, \
+                                               formation_numbers, fault_n, fault_side=fault_side_ref,
+                                               projection=projection)
+        #lith_back = get_vox_lf_contact(self._data, lith_sol, fault_sol, \
+        #                            lith_n=lith_jux, fault_n=fault_n, fault_side=fault_side_ref)
+        #lith_back_p = project_voxels(lith_back, projection, form='2D')
+
+        lith_front = get_vox_lf_contact(self._data, lith_sol, fault_sol, \
+                                       lith_n=lith_target, fault_n=fault_n, fault_side=target_side)
+        lith_front_p = project_voxels(lith_front, projection, form='2D')
+        #target_contact[~lith_front_p] = 0
+        #juxtapositions = np.logical_and(lith_back_p, lith_front_p)
+        juxtapositions = get_juxtapositions(self._data, lith_sol, fault_sol, fault_n,\
+                        lith_target, lith_jux, target_side=target_side,\
+                       jux_side=fault_side_ref, projection=projection)
+        background_ref[lith_front_p] = (np.max(formation_numbers)+1)
+        background_ref[juxtapositions] = (np.max(formation_numbers)+2)
+
+        if 'cmap' not in kwargs:
+            kwargs['cmap'] = self._cmap  #
+        if 'norm' not in kwargs:
+            kwargs['norm'] = self._norm
+
+        im = plt.imshow(background_ref.T, origin="bottom",
+                        **kwargs)
+
+        import matplotlib.patches as mpatches
+        colors = [im.cmap(im.norm(value)) for value in formation_numbers]
+        patches = [mpatches.Patch(color=colors[i], label=formation_names[i]) for i in range(len(formation_names))]
+        plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        return plt.gcf()
+
+    def plot_juxtapositions(self, lith_sol, fault_sol, fault_n, \
+                        lith_target, lith_jux, fault_side_ref='footwall',\
+                        projection='automatic', \
+                        **kwargs):
+
+        formation_names = self.formation_names
+        formation_numbers = self.formation_numbers
+        if fault_side_ref == 'footwall' or fault_side_ref == 'fw':
+            target_side = 'hw'
+        elif fault_side_ref == 'hanging wall' or fault_side_ref == 'hw':
+            target_side = 'fw'
+        else:
+            raise AttributeError(str(fault_side) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
+
+        juxtapositions = get_juxtapositions(self._data, lith_sol, fault_sol, fault_n,\
+                        lith_target, lith_jux, target_side=target_side,\
+                       jux_side=fault_side_ref, projection=projection)
+        juxta = (juxtapositions * (np.max(formation_numbers)+2))
+
+        if 'cmap' not in kwargs:
+            kwargs['cmap'] = self._cmap  #
+        if 'norm' not in kwargs:
+            kwargs['norm'] = self._norm
+
+        im = plt.imshow(juxta.T, origin="bottom",
+                        **kwargs)
+
+        import matplotlib.patches as mpatches
+        colors = [im.cmap(im.norm(value)) for value in formation_numbers]
+        patches = [mpatches.Patch(color=colors[i], label=formation_names[i]) for i in range(len(formation_names))]
+        plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        return plt.gcf()
+
+    def plot_AllanDiagram_multi(self, lith_sol, fault_sol, fault_n, \
+                        lith_target, lith_jux, fault_side_ref='footwall',\
+                        projection='automatic', \
+                        **kwargs):
+        if fault_side_ref == 'footwall' or fault_side_ref == 'fw':
+            target_side = 'hw'
+        elif fault_side_ref == 'hanging wall' or fault_side_ref == 'hw':
+            target_side = 'fw'
+        else:
+            raise AttributeError(str(fault_side) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
+
+        #figsize(18, 15)
+        #fig, ax = plt.subplots(3, 2, sharey=True)
+        plt.figure(1)
+        plt.subplot(321)
+        plt.title('%s contact' % (target_side))
+        hwc = self.plot_lith_fault_contact_full(lith_sol=lith_sol, fault_sol=fault_sol,\
+                                                fault_n=fault_n, fault_side=target_side, \
+                                                projection=projection, \
+                                           **kwargs)
+        plt.show()
+
+        plt.subplot(322)
+        plt.title('%s contact' % (fault_side_ref))
+        fwc = self.plot_lith_fault_contact_full(lith_sol=lith_sol, fault_sol=fault_sol, \
+                                                fault_n=fault_n, \
+                                                fault_side=fault_side_ref, \
+                                                projection=projection, **kwargs)
+        plt.show()
+        plt.subplot(323)
+        plt.title('%s contact for target formation' % (target_side))
+        twc_l = self.plot_lith_fault_contact(lith_sol=lith_sol, fault_sol=fault_sol,\
+                                                fault_n=fault_n, \
+                        lith_n=lith_target, fault_side=target_side, \
+                        projection=projection, **kwargs)
+        plt.show()
+        plt.subplot(324)
+        plt.title('%s contact for juxtaposition formations' % (fault_side_ref))
+        jwc_l = self.plot_lith_fault_contact(lith_sol=lith_sol, fault_sol=fault_sol,\
+                                                fault_n=fault_n, \
+                        lith_n=lith_jux, fault_side=fault_side_ref, \
+                        projection=projection, **kwargs)
+        plt.show()
+        plt.subplot(325)
+        plt.title('Allan Diagram')
+        AD = self.plot_AllanDiagram(lith_sol=lith_sol, fault_sol=fault_sol,\
+                                                fault_n=fault_n, \
+                        lith_target=lith_target, lith_jux=lith_jux, fault_side_ref=fault_side_ref, \
+                        projection=projection, **kwargs)
+        plt.show()
+        plt.subplot(326)
+        plt.title('juxtapositions')
+        jux = self.plot_juxtapositions(lith_sol=lith_sol, fault_sol=fault_sol,\
+                                                fault_n=fault_n, \
+                        lith_target=lith_target, lith_jux=lith_jux, fault_side_ref=fault_side_ref, \
+                        projection=projection, **kwargs)
+        plt.show()
+        #ax[0, 0].imshow(fwc)
+        #ax[0, 1].imshow(hwc)
+        #ax[1, 0].imshow(twc_l)
+        #ax[1, 1].imshow(jwc_l)
+        #ax[2, 0].imshow(AD)
+        #ax[2, 1].imshow(jux)

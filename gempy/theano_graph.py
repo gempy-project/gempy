@@ -1287,13 +1287,13 @@ class TheanoGraph(object):
         Returns:
             theano.tensor.vector: segmented values
         """
-
+        slice_init = slice_init
+        n_formation_0 = n_formation[slice_init:slice_init + 1]
+        n_formation_1 = n_formation[slice_init + 1:slice_init + 2]
+        drift = drift[slice_init:slice_init + 1][0]
         if True:
 
-            slice_init = slice_init
-            n_formation_0 = n_formation[slice_init:slice_init + 1]
-            n_formation_1 = n_formation[slice_init + 1:slice_init + 2]
-            drift = drift[slice_init:slice_init + 1][0]
+
 
             if 'compare' in self.verbose:
                 a = theano.printing.Print("a")(a)
@@ -1316,7 +1316,7 @@ class TheanoGraph(object):
             return sigm
 
         else:
-            return T.le(Zx, a) * T.ge(Zx, b) * n_formation_0
+            return T.le(Z_x, a) * T.ge(Z_x, b) * n_formation_1
 
     def select_finite_faults(self):
         fault_points = T.vertical_stack(T.stack(self.ref_layer_points[0]), self.rest_layer_points).T
@@ -1368,7 +1368,7 @@ class TheanoGraph(object):
         min_pot_sigm = 2*min_pot - self.scalar_field_at_interfaces_values[-1]
 
         boundaty_pad = (max_pot - min_pot)*0.01
-        l = slope / (max_pot - min_pot)
+        l = slope / (max_pot_sigm - min_pot_sigm)
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
