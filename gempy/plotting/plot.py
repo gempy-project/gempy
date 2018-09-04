@@ -715,16 +715,26 @@ def plot_topology(geo_data, G, centroids, direction="y"):
 
 def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=False, show_density=False):
     '''
-    Equal-area projection of the orientations dataframe using mplstereonet ('Schmidt Net')
+    Plot an equal-area projection of the orientations dataframe using mplstereonet.
 
-    litho: lithologies/formation names, as list. If None, all are plotted
-    planes: plots azimuth and dip as great circles
-    poles: plots corresponding pole points to planes (also known as plane normal vector or 'gradients')
-    single_plots: if True, single stereonet is plotted for every formation
-    show_density: if True, density contour plot around the pole points is shown
+    Args:
+        geo_data (gempy.DataManagement.InputData): Input data of the model
+        litho: selection of formation names, as list. If None, all are plotted
+        planes: If True, azimuth and dip are plotted as great circles
+        poles: If True, pole points (plane normal vectors) of azimuth and dip are plotted
+        single_plots: If True, each formation is plotted in a single stereonet
+        show_density: If True, density contour plot around the pole points is shown
+
+    Returns:
+        None
     '''
 
-    import mplstereonet
+    import warnings
+    try:
+        import mplstereonet
+    except ImportError:
+        warnings.warn('mplstereonet package is not installed. No stereographic projection available.')
+
     import matplotlib.pyplot as plt
     from gempy.plotting.colors import cmap
     from collections import OrderedDict
@@ -743,20 +753,23 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
         df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
 
         if poles:
-            ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='.', color=cmap(df_sub['formation_number'].values[0]),
-                    label=formation + ': ' + 'pole point')
+            ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=7,
+                    markerfacecolor=cmap(df_sub['formation_number'].values[0]),
+                    markeredgewidth=1.1, markeredgecolor='gray', label=formation+': '+'pole point')
         if planes:
-            ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=cmap(df_sub['formation_number'].values[0]), linewidth=1.3,
-                     label=formation + ': ' + 'plane')
+            ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=cmap(df_sub['formation_number'].values[0]),
+                     linewidth=1.5, label=formation+': '+'azimuth/dip')
         if show_density:
             if single_plots is False:
-                ax.density_contourf(geo_data.orientations['azimuth']-90, geo_data.orientations['dip'],
-                                    measurement='poles', cmap='gist_yarg')
+                ax.density_contourf(geo_data.orientations['azimuth'] - 90, geo_data.orientations['dip'],
+                                    measurement='poles', cmap='viridis', alpha=.5)
             else:
-                ax.density_contourf(df_sub['azimuth']-90, df_sub['dip'], measurement='poles', cmap='gist_yarg')
+                ax.density_contourf(df_sub['azimuth'] - 90, df_sub['dip'], measurement='poles', cmap='viridis',
+                                    alpha=.75)
 
         fig.subplots_adjust(top=0.8)
-        handles, labels = ax.get_legend_handles_labels()  # avoid repetition in legend
+        handles, labels = ax.get_legend_handles_labels()
         by_label = OrderedDict(zip(labels, handles))
-        ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.8, 1.1))
-        ax.grid()
+        ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
+        ax.grid(True, color='black', alpha=0.25)
+
