@@ -224,22 +224,6 @@ def get_full_LFcontact_projected(geo_data, lith_sol, fault_sol, \
         contact[i_proj] = i
 
     return contact
-    #if projection == 'automatic':
-    #    d_x = (np.max(w_array[:, 0]) - np.min(w_array[:, 0]))
-    #    d_y = (np.max(w_array[:, 1]) - np.min(w_array[:, 1]))
-    #    if d_x > d_y:
-    #        projection = 'xz'
-    #    else:
-    #        projection = 'yz'
-
-    #if projection == 'yz':
-    #    contact = proj[0, :, :]
-    #elif projection == 'xz':
-
-    #    contact = proj[:, 0, :]
-    #else:
-    #    raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
-    #return contact
 
 def get_extrema_line_of_projected(projected_array, extrema_type='max'):
     """
@@ -266,7 +250,7 @@ def get_extrema_line_of_projected(projected_array, extrema_type='max'):
         raise AttributeError(str(extrema_type) + "must be either 'min' or 'max.")
     return ext_line
 
-def get_extrema_line_voxels(voxel_array, extrema_type='max', projection='automatic', form='2D'):
+def get_extrema_line_voxels(voxel_array, extrema_type='max', projection='automatic', form='2D', output_form='projected'):
     """
         Get either the top or bottom edge of a lithology-fault contact (3D boolean array).
 
@@ -287,9 +271,9 @@ def get_extrema_line_voxels(voxel_array, extrema_type='max', projection='automat
                 """
     projected_array = project_voxels(voxel_array, projection, form)
     extrema_line_p = get_extrema_line_of_projected(projected_array, extrema_type)
-    if form == '2D':
+    if output_form == 'projected':
         return extrema_line_p
-    elif form == '3D':
+    elif output_formform == 'original':
         return extrema_line_o # original form not working yet
     # ext_line_r = np.zeros_like(voxel_array)
     # if projection == 'automatic':
@@ -323,6 +307,14 @@ def get_juxtapositions(geo_data, lith_sol, fault_sol, fault_n,\
     juxtapos = np.logical_and(lith_j_p, lith_t_p)
     # this should only work with projected arrays
     return juxtapos
+
+def get_juxtapositions_at(geo_data, lith_sol, fault_sol, position, fault_n,\
+                        lith_target, lith_jux, target_side='fw',\
+                       jux_side='hw', projection='automatic'):
+    juxta_full = get_juxtapositions(geo_data, lith_sol, fault_sol, fault_n,\
+                        lith_target, lith_jux, target_side,\
+                       jux_side, projection)
+    return juxta_full[position,:]
 
 def plot_fault_contact_projection(geo_data, lith_sol, fault_sol, \
                        lith_n, fault_n, fault_side='footwall', projection='automatic'):
@@ -424,12 +416,9 @@ def arg_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
         order = np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
     w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
                                  lith_n, fault_n, fault_side)
-    extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='3D')
+    extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='2D')
     maxpos = np.argwhere(extrline_vox == True)
-    possum = np.sum(maxpos, axis=0)
-    emptypos = np.argwhere(possum == 0)
-    maxpos_red = np.delete(maxpos, emptypos, 1)
-    relmaxpos = sg.argrelextrema(maxpos_red[:, 1], np.greater_equal, order=order)
+    relmaxpos = sg.argrelextrema(maxpos[:, 1], np.greater_equal, order=order)
     return relmaxpos
     ### at the moment, this can return several peaks
 
@@ -467,13 +456,10 @@ def get_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
         order = np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
     w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
                                  lith_n, fault_n, fault_side)
-    extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='3D')
+    extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='2D')
     maxpos = np.argwhere(extrline_vox == True)
-    possum = np.sum(maxpos, axis=0)
-    emptypos = np.argwhere(possum == 0)
-    maxpos_red = np.delete(maxpos, emptypos, 1)
     relmaxpos = sg.argrelextrema(maxpos_red[:, 1], np.greater_equal, order=order)
-    return maxpos_red[relmaxpos]
+    return maxpos[relmaxpos]
     ### at the moment, this can return several peaks
 
 def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
