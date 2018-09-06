@@ -182,8 +182,8 @@ def project_voxels(voxel_array, projection='automatic', form='3D'):
                 3D boolean array with True voxels projected onto one plane.
             """
     if projection == 'automatic':
-        d_x = (np.max(voxel_array[:, 0]) - np.min(voxel_array[:, 0]))
-        d_y = (np.max(voxel_array[:, 1]) - np.min(voxel_array[:, 1]))
+        d_x = (np.max(voxel_array[:, 0]) ^ np.min(voxel_array[:, 0]))
+        d_y = (np.max(voxel_array[:, 1]) ^ np.min(voxel_array[:, 1]))
         if d_x > d_y:
             projection = 'xz'
         else:
@@ -352,8 +352,8 @@ def plot_fault_contact_projection(geo_data, lith_sol, fault_sol, \
         raise AttributeError(str(form) + "must be 'footwall' ('fw'), 'hanging wall' ('hw') or 'both'.")
 
     if projection == 'automatic':
-        d_x = (np.max(w_array[:, 0]) - np.min(w_array[:, 0]))
-        d_y = (np.max(w_array[:, 1]) - np.min(w_array[:, 1]))
+        d_x = (np.max(w_array[:, 0]) ^ np.min(w_array[:, 0]))
+        d_y = (np.max(w_array[:, 1]) ^ np.min(w_array[:, 1]))
         if d_x > d_y:
             projection = 'xz'
         else:
@@ -368,8 +368,8 @@ def plot_fault_contact_projection(geo_data, lith_sol, fault_sol, \
 
 def plot_direct_wall_projection(w_array, projection='automatic'):
     if projection == 'automatic':
-        d_x = (np.max(w_array[:, 0]) - np.min(w_array[:, 0]))
-        d_y = (np.max(w_array[:, 1]) - np.min(w_array[:, 1]))
+        d_x = (np.max(w_array[:, 0]) ^ np.min(w_array[:, 0]))
+        d_y = (np.max(w_array[:, 1]) ^ np.min(w_array[:, 1]))
         if d_x > d_y:
             projection = 'xz'
         else:
@@ -544,6 +544,68 @@ def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
         z_fwp = maxpos_fw[position, 1]
         z_hwp = maxpos_hw[position, 1]
         z_diff = np.abs(z_fwp - z_hwp)
+    vox_size_z = np.abs(geo_data.extent[5] - geo_data.extent[4]) / geo_data.resolution[2]
+    z_diff_res = z_diff * vox_size_z
+    return z_diff_res
+
+def get_lithcontact_thickness_at(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side='fw',
+                      position='faultmax_argrelmax', projection='automatic', \
+                      order='automatic'):
+    """
+
+            Args:
+                geo_data (:class:`gempy.data_management.InputData`)
+                lith_sol (ndarray): Computed model lithology solution.
+                fault_sol (ndarray): Computed model fault solution.
+                lith_n (int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                fault_n (int): Number of the fault of interest.
+                position (1D numpy array or int, optional): Cell number along projection of fault plane at which
+                    the fault throw is to be measured. Several numbers can be passed as an array.
+                    Default is 'faultmax_cwt', takes maximal contact peaks of the layer interface with the fault
+                    plane as position as detected via the scipy.signal.find_peaks_cwt function.
+                    Using 'faultmax_argrelmax' uses the scipiy.signal.argrelmax to find those peaks.
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+                order (int, optional): Order of neighboring cells used to compare to find peaks.
+                    Using 'faultmax_cwt', order is regarded as the 'widths' parameter in the
+                    scipy.signal.find_peaks_cwt function. Else, it corresponds to the order parameter
+                    in scipiy.signal.argrelmax.
+                    Default is 'automatic' and takes half the average xy-resolution.
+
+            Returns:
+            """
+    w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side)
+    maxline_w = get_extrema_line_voxels(w_array,extrema_type='max',
+                                         projection=projection, form='2D')
+    minline_w = get_extrema_line_voxels(w_array,extrema_type='min',
+                                         projection=projection, form='2D')
+    maxpos_max = np.argwhere(maxline_w == True)
+    maxpos_min = np.argwhere(minline_w == True)  # getting a shape too big for maxpos1, as HW side is bugged
+    if position == 'faultmax_cwt':
+        # finding max for FW maxline only. should I make this optional? So possible to choose HW as reference?
+        if order == 'automatic':
+            comp_order = np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
+        else:
+            comp_order = order
+        faultmaxpos = sg.find_peaks_cwt(maxpos_w[:, 1], widths=[(np.round(comp_order/2))])
+        z_max = maxpos_max[faultmaxpos, 1]
+        z_min = maxpos_min[faultmaxpos, 1]
+        z_diff = np.abs(z_max - z_min)
+    elif position == 'faultmax_argrelmax':
+
+        position = arg_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
+                            fault_n, projection, fault_side, order=order)
+        z_max = maxpos_max[position, 1]
+        z_min = maxpos_min[position, 1]
+        z_diff = np.abs(z_max - z_min)
+    else:
+        z_max = maxpos_max[position, 1]
+        z_min = maxpos_min[position, 1]
+        z_diff = np.abs(z_max - z_min)
     vox_size_z = np.abs(geo_data.extent[5] - geo_data.extent[4]) / geo_data.resolution[2]
     z_diff_res = z_diff * vox_size_z
     return z_diff_res
@@ -895,8 +957,8 @@ def get_contact_VERT(geo_data, fault_vertices, layer_vertices, w_array, \
     vox_size_diag = np.sqrt(vox_size_x ** 2 + vox_size_y ** 2 + vox_size_z ** 2)
 
     if projection == 'automatic':
-        d_x = (np.max(w_array[:, 0]) - np.min(w_array[:, 0]))
-        d_y = (np.max(w_array[:, 1]) - np.min(w_array[:, 1]))
+        d_x = (np.max(w_array[:, 0]) ^ np.min(w_array[:, 0]))
+        d_y = (np.max(w_array[:, 1]) ^ np.min(w_array[:, 1]))
         if d_x > d_y:
             projection = 'xz'
         else:
