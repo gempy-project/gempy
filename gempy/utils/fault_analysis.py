@@ -125,17 +125,18 @@ def get_fault_mask(geo_data, fault_sol, fault_n, fault_side='both'):
     else:
         raise AttributeError(str(form) + "must be 'footwall' ('fw'), 'hanging wall' ('hw') or 'both'.")
 
-def get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+def get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
                        lith_n, fault_n, fault_side='both'):
     """
-            Get voxels of a lithology which are in contact with the fault surface, either on the footwall,
+            Get voxels for the contact of one or several lithologies
+            which are in contact with the fault surface, either on the footwall,
             the hanging wall or both sides.
 
             Args:
                 geo_data (:class:`gempy.data_management.InputData`)
                 lith_sol (ndarray): Computed model lithology solution.
                 fault_sol (ndarray): Computed model fault solution.
-                lith_n (int): Number of the lithology of interest (at the moment only one can be chosen at one time).
+                lith_n (int, list): Numbers of the lithologies of interest.
                 fault_n (int): Number of the fault of interest.
                 fault_side (string, optional, default='both'): The side of the fault for which the
                     contact is to be returned:
@@ -165,7 +166,7 @@ def get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
     vox_contact = lith_cut * fault_mask
     return vox_contact
 
-def project_voxels(voxel_array, projection='automatic', form='3D'):
+def project_voxels(voxel_array, projection='automatic', form='2D'):
     """
             Project the 'True' voxels in a boolean array onto either the 'yz'- or the 'xz'-plane.
 
@@ -177,9 +178,11 @@ def project_voxels(voxel_array, projection='automatic', form='3D'):
                         'xz'
                         'automatic': Automatically determines the plane which is parallel to the length
                             of the voxel spread.
+                form (string, optional, default='2D'): Output format of projection, either in '2D' or '3D' (the latter
+                    is still needed for somes vertices-based functions).
 
             Returns:
-                3D boolean array with True voxels projected onto one plane.
+                2D or 3D boolean array with True voxels projected onto one plane.
             """
     if projection == 'automatic':
         d_x = (np.max(voxel_array[:, 0]) ^ np.min(voxel_array[:, 0]))
@@ -211,14 +214,37 @@ def project_voxels(voxel_array, projection='automatic', form='3D'):
 def get_full_LFcontact_projected(geo_data, lith_sol, fault_sol, \
                                  fault_n, fault_side='footwall',
                                  projection='automatic'):
+    """
+                Get a projection of all lithologies in contact with the fault surface on
+                either the footwall or the hanging wall side.
+
+                Args:
+                    geo_data (:class:`gempy.data_management.InputData`)
+                    lith_sol (ndarray): Computed model lithology solution.
+                    fault_sol (ndarray): Computed model fault solution.
+                    fault_n (int): Number of the fault of interest.
+                    fault_side (string, optional, default='footwall'): The side of the fault for which the
+                        contact is to be returned:
+                            'footwall' or 'fw'
+                            'hanging wall' or 'hw'.
+                    projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+                Returns:
+                    2D array with lithology-fault contact projection. Each cell of
+                    the projection contains the number a lithology in contact with the fault.
+                """
     formation_numbers = geo_data.interfaces['formation_number'].unique()
-    w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+    w_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
                                  formation_numbers, fault_n, fault_side=fault_side)
     w_proj = project_voxels(w_array, projection, form='2D')
     contact = np.zeros_like(w_proj).astype(int)
 
     for i in formation_numbers:
-        i_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+        i_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
                                      i, fault_n, fault_side=fault_side)
         i_proj = project_voxels(i_array, projection, form='2D')
         contact[i_proj] = i
@@ -263,11 +289,16 @@ def get_extrema_line_voxels(voxel_array, extrema_type='max', projection='automat
                         'xz'
                         'automatic': Automatically determines the plane which is parallel to the length
                             of the voxel spread.
-                    form (string, optional, default='projected'): In which form the edge is to be returned,
-                        either 'projected' or 'original' (not working at this moment).
+                    form (string, optional, default='2D'): Output format of projection, either in '2D' or '3D' (the latter
+                    is still needed for somes vertices-based functions).
+                    output_form (string, optional, default='projected'): In which form the edge is to be returned,
+                        either 'projected' or 'original'.
+                        'Original' is supposed to return the
+                        edge voxels at their original position in the 3D space, however, this
+                        option is not working at this moment.
 
                 Returns:
-                    3D boolean array with 'True' voxels for the according edge.
+                    2D or 3D boolean array with 'True' cells or voxels for the according edge.
                 """
     projected_array = project_voxels(voxel_array, projection, form)
     extrema_line_p = get_extrema_line_of_projected(projected_array, extrema_type)
@@ -291,16 +322,53 @@ def get_extrema_line_voxels(voxel_array, extrema_type='max', projection='automat
     # ext_line_r[rcond1] = 1
     ### need to find out how to come back to original form
     else:
-        raise AttributeError(str(form) + "must be '2D' or '3D'")
+        raise AttributeError(str(output_form) + "must be 'projected' or 'original'")
 
 def get_juxtapositions(geo_data, lith_sol, fault_sol, fault_n,\
                         lith_target, lith_jux, target_side='fw',\
-                       jux_side='hw', projection='automatic'):
-    lith_j= get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+                        projection='automatic'):
+    """
+        Voxel-based determination of juxtapositions between a target lithology on one side
+        of the fault and lithologies of interest on the opposing side of the fault.
+
+        Args:
+            geo_data (:class:`gempy.data_management.InputData`)
+            lith_sol (ndarray): Computed model lithology solution.
+            fault_sol (ndarray): Computed model fault solution.
+            fault_n (int): Number of the fault of interest.
+            lith_target (int, list): Target lithology.
+            lith_jux (int, list): One or several lithologies that might be juxtaposed with
+                the target lithology on the other side.
+            target_side (string, optional, default='footwall'): The side of the fault on which the
+                    target lithology is located:
+                        'footwall' or 'fw'
+                        'hanging wall' or 'hw'.
+            target_side (string, optional, default='footwall'): The side of the fault on which the
+                    target lithology is located:
+                        'footwall' or 'fw'
+                        'hanging wall' or 'hw'.
+            projection (string, optional, default='automatic'): Choose the plane onto which the
+                    voxels are to be projected:
+                        'yz'
+                        'xz'
+                        'automatic': Automatically determines the plane which is parallel to the length
+                            of the voxel spread.
+
+            Returns:
+                2D boolean array for relevant lithological juxtapositions across the fault plane.
+            """
+    if target_side == 'hanging wall' or target_side == 'hw':
+        jux_side = 'fw'
+    elif target_side == 'footwall' or target_side == 'fw':
+        jux_side = 'hw'
+    else:
+        raise AttributeError(str(target_side) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
+
+    lith_j= get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
                                    lith_n=lith_jux, fault_n=fault_n, fault_side=jux_side)
     lith_j_p = project_voxels(lith_j, projection, form='2D')
 
-    lith_t = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+    lith_t = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
                                     lith_n=lith_target, fault_n=fault_n, fault_side=target_side)
     lith_t_p = project_voxels(lith_t, projection, form='2D')
     # target_contact[~lith_front_p] = 0
@@ -309,13 +377,53 @@ def get_juxtapositions(geo_data, lith_sol, fault_sol, fault_n,\
     return juxtapos
 
 def get_juxtapositions_at(geo_data, lith_sol, fault_sol, position, fault_n,\
-                        lith_target, lith_jux, target_side='fw',\
-                       jux_side='hw', projection='automatic'):
+                        lith_target, lith_jux, position, target_side='fw',\
+                       projection='automatic'):
+    """
+            Voxel-based determination of juxtapositions between a target lithology on one side
+            of the fault and lithologies of interest on the opposing side of the fault at a
+            certain position along the length of the fault plane.
+
+            Args:
+                geo_data (:class:`gempy.data_management.InputData`)
+                lith_sol (ndarray): Computed model lithology solution.
+                fault_sol (ndarray): Computed model fault solution.
+                fault_n (int): Number of the fault of interest.
+                lith_target (int, list): Target lithology.
+                lith_jux (int, list): One or several lithologies that might be juxtaposed with
+                    the target lithology on the other side.
+                position (int): Cell along the fault plane, at which the juxtapositional situation is to be returned.
+                target_side (string, optional, default='footwall'): The side of the fault on which the
+                        target lithology is located:
+                            'footwall' or 'fw'
+                            'hanging wall' or 'hw'.
+                target_side (string, optional, default='footwall'): The side of the fault on which the
+                        target lithology is located:
+                            'footwall' or 'fw'
+                            'hanging wall' or 'hw'.
+                projection (string, optional, default='automatic'): Choose the plane onto which the
+                        voxels are to be projected:
+                            'yz'
+                            'xz'
+                            'automatic': Automatically determines the plane which is parallel to the length
+                                of the voxel spread.
+
+                Returns:
+                    1D boolean array for relevant lithological juxtapositions on one vertical line on fault plane.
+                """
+    if target_side == 'hanging wall' or target_side == 'hw':
+        jux_side = 'fw'
+    elif target_side == 'footwall' or target_side == 'fw':
+        jux_side = 'hw'
+    else:
+        raise AttributeError(str(target_side) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
+
     juxta_full = get_juxtapositions(geo_data, lith_sol, fault_sol, fault_n,\
                         lith_target, lith_jux, target_side,\
                        jux_side, projection)
     return juxta_full[position,:]
 
+### is the following function this needed?
 def plot_fault_contact_projection(geo_data, lith_sol, fault_sol, \
                        lith_n, fault_n, fault_side='footwall', projection='automatic'):
     """
@@ -340,13 +448,13 @@ def plot_fault_contact_projection(geo_data, lith_sol, fault_sol, \
                             of the voxel spread.
             """
     if fault_side == 'hanging wall' or fault_side == 'hw':
-        w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+        w_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
                                      lith_n, fault_n, fault_side='hw')
     elif fault_side == 'footwall' or fault_side == 'fw':
-        w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+        w_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
                                      lith_n, fault_n, fault_side='fw')
     elif fault_side == 'both':
-        w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+        w_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
                                      lith_n, fault_n, fault_side='both')
     else:
         raise AttributeError(str(form) + "must be 'footwall' ('fw'), 'hanging wall' ('hw') or 'both'.")
@@ -366,21 +474,21 @@ def plot_fault_contact_projection(geo_data, lith_sol, fault_sol, \
     else:
         raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
 
-def plot_direct_wall_projection(w_array, projection='automatic'):
-    if projection == 'automatic':
-        d_x = (np.max(w_array[:, 0]) ^ np.min(w_array[:, 0]))
-        d_y = (np.max(w_array[:, 1]) ^ np.min(w_array[:, 1]))
-        if d_x > d_y:
-            projection = 'xz'
-        else:
-            projection = 'yz'
-    w_proj = project_voxels(w_array, projection, form='2D')
-    if projection == 'yz':
-        plt.imshow(w_proj.T, origin='bottom', cmap='viridis')
-    elif projection == 'xz':
-        plt.imshow(w_proj.T, origin='bottom', cmap='viridis')
-    else:
-        raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
+#def plot_direct_wall_projection(w_array, projection='automatic'):
+#    if projection == 'automatic':
+#        d_x = (np.max(w_array[:, 0]) ^ np.min(w_array[:, 0]))
+#        d_y = (np.max(w_array[:, 1]) ^ np.min(w_array[:, 1]))
+#        if d_x > d_y:
+#            projection = 'xz'
+#        else:
+#            projection = 'yz'
+#    w_proj = project_voxels(w_array, projection, form='2D')
+#    if projection == 'yz':
+#        plt.imshow(w_proj.T, origin='bottom', cmap='viridis')
+#    elif projection == 'xz':
+#        plt.imshow(w_proj.T, origin='bottom', cmap='viridis')
+#    else:
+#        raise AttributeError(str(projection) + "must be declared as planes on 'yz', 'xz' or as 'automatic'.")
 
 def arg_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
                             fault_n, projection='automatic', fault_side='fw',\
@@ -414,7 +522,7 @@ def arg_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
             """
     if order == 'automatic':
         order = np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
-    w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+    w_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
                                  lith_n, fault_n, fault_side)
     extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='2D')
     maxpos = np.argwhere(extrline_vox == True)
@@ -450,11 +558,11 @@ def get_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
 
             Returns:
                 2D array with voxel number along projection plane (so x- or y- coordinate) and
-                the voxel z_coordinate.
+                the voxel z-coordinate.
             """
     if order == 'automatic':
         order = np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
-    w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+    w_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
                                  lith_n, fault_n, fault_side)
     extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='2D')
     maxpos = np.argwhere(extrline_vox == True)
@@ -496,8 +604,8 @@ def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
                 Fault throw in the original unit [m].
                 (Number of throw voxels rescaled according to the z-extent and resolution)
             """
-    fw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side='fw')
-    hw_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side='hw')
+    fw_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side='fw')
+    hw_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side='hw')
     maxline_fw = get_extrema_line_voxels(fw_array,extrema_type='max',
                                          projection=projection, form='2D')
     maxline_hw = get_extrema_line_voxels(hw_array,extrema_type='max',
@@ -552,6 +660,13 @@ def get_lithcontact_thickness_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
                       position='faultmax_argrelmax', projection='automatic', \
                       order='automatic'):
     """
+        Get the voxel-based thickness of a lithology at a certain position along the fault.
+        The position is a choice of cell number parallel to the chosen projection plane.
+        The thickness is not necessarily the 'true' thickness, but apparent thickness parallel
+        to the fault surface. It is determined by the number of voxels in contact with the fault
+        counted in z-direction.
+        This type of thickness is the one relevant for determination fault-related aspects such as
+        the SSG and the SSF.
 
             Args:
                 geo_data (:class:`gempy.data_management.InputData`)
@@ -577,8 +692,10 @@ def get_lithcontact_thickness_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
                     Default is 'automatic' and takes half the average xy-resolution.
 
             Returns:
+                Thickness of the lithology-fault contact as a float in the original unit [m].
+                (Number of throw voxels rescaled according to the z-extent and resolution)
             """
-    w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side)
+    w_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side)
     maxline_w = get_extrema_line_voxels(w_array,extrema_type='max',
                                          projection=projection, form='2D')
     minline_w = get_extrema_line_voxels(w_array,extrema_type='min',
@@ -613,7 +730,7 @@ def get_lithcontact_thickness_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
 class PlotFault2D(object):
     """
     Class to create the different plots related to fault surfaces,
-    e.g.: Allan Diagram
+    e.g.: lith-fault contacts and Allan Diagram visualizations.
 
     Args:
         geo_data(gempy.InputData): All values of a DataManagement object
@@ -636,25 +753,24 @@ class PlotFault2D(object):
                         projection='automatic', \
                         **kwargs):
         """
+            Plot the full contact of lithologies with the fault surface on one side of the fault.
 
                 Args:
                     geo_data (:class:`gempy.data_management.InputData`)
                     lith_sol (ndarray): Computed model lithology solution.
                     fault_sol (ndarray): Computed model fault solution.
-                    lith_n (1d array, list or int): Number of the lithology of interest (at the moment only one can be chosen at one time).
-                    ref_n (1d array, list or int):
                     fault_n (int): Number of the fault of interest.
-                    fault_side_ref:
+                    fault_side (string, optional, default='both'): The side of the fault for which the
+                    contact is to be returned:
+                        'footwall' or 'fw'
+                        'hanging wall' or 'hw'
+                        'both'.
                     projection (string, optional, default='automatic'): Choose the plane onto which the
                         voxels are to be projected:
                             'yz'
                             'xz'
                             'automatic': Automatically determines the plane which is parallel to the length
                                 of the voxel spread.
-
-                Returns:
-                    Allan diagram plot showing the layer-fault contact on footwall and hanging wall side, as well as
-                    the resulting juxtaposition in different colors.
                 """
         formation_names = self.formation_names
         formation_numbers = self.formation_numbers
@@ -682,33 +798,34 @@ class PlotFault2D(object):
                         projection='automatic', \
                         **kwargs):
         """
+                    Plot the full contact of one or several lithologies with the fault surface on one side of the fault.
 
-                Args:
-                    geo_data (:class:`gempy.data_management.InputData`)
-                    lith_sol (ndarray): Computed model lithology solution.
-                    fault_sol (ndarray): Computed model fault solution.
-                    lith_n (1d array, list or int): Number of the lithology of interest (at the moment only one can be chosen at one time).
-                    ref_n (1d array, list or int):
-                    fault_n (int): Number of the fault of interest.
-                    fault_side_ref:
-                    projection (string, optional, default='automatic'): Choose the plane onto which the
-                        voxels are to be projected:
-                            'yz'
-                            'xz'
-                            'automatic': Automatically determines the plane which is parallel to the length
-                                of the voxel spread.
+                        Args:
+                            geo_data (:class:`gempy.data_management.InputData`)
+                            lith_sol (ndarray): Computed model lithology solution.
+                            fault_sol (ndarray): Computed model fault solution.
+                            fault_n (int): Number of the fault of interest.
+                            lith_n (list or int): Numbers of the lithologies of interest.
+                            fault_side (string, optional, default='both'): The side of the fault for which the
+                            contact is to be returned:
+                                'footwall' or 'fw'
+                                'hanging wall' or 'hw'
+                                'both'.
+                            projection (string, optional, default='automatic'): Choose the plane onto which the
+                                voxels are to be projected:
+                                    'yz'
+                                    'xz'
+                                    'automatic': Automatically determines the plane which is parallel to the length
+                                        of the voxel spread.
+                        """
 
-                Returns:
-                    Allan diagram plot showing the layer-fault contact on footwall and hanging wall side, as well as
-                    the resulting juxtaposition in different colors.
-                """
         formation_names = self.formation_names
         formation_numbers = self.formation_numbers
 
         contact = get_full_LFcontact_projected(self._data, lith_sol, fault_sol, \
                                      fault_n, fault_side=fault_side,
                                      projection=projection)
-        lith_c = get_vox_lf_contact(self._data, lith_sol, fault_sol, \
+        lith_c = get_LF_contact_VOX(self._data, lith_sol, fault_sol, \
                        lith_n=lith_n, fault_n=fault_n, fault_side=fault_side)
         lith_c_proj = project_voxels(lith_c, projection, form='2D')
         contact[~lith_c_proj] = 0
@@ -728,18 +845,40 @@ class PlotFault2D(object):
         return plt.gcf()
 
     def plot_AllanDiagram(self, lith_sol, fault_sol, fault_n, \
-                        lith_target, lith_jux, fault_side_ref='footwall',\
+                        lith_target, lith_jux, target_side='footwall',\
                         projection='automatic', \
                         **kwargs):
+        """
+            Plot a simple voxel-based Allan Diagram illustrating the contact of lithologies
+            with the fault surface and the occurrence of juxtapositions.
 
+                Args:
+                        geo_data (:class:`gempy.data_management.InputData`)
+                        lith_sol (ndarray): Computed model lithology solution.
+                        fault_sol (ndarray): Computed model fault solution.
+                        fault_n (int): Number of the fault of interest.
+                        lith_target (list or int): Target lithologies for juxtaposition.
+                        lith_jux (int, list): One or several lithologies that might be juxtaposed with
+                            the target lithology on the other side.
+                        target_side (string, optional, default='footwall'): The side of the fault on which the
+                            target lithology is located:
+                                'footwall' or 'fw'
+                                'hanging wall' or 'hw'.
+                        projection (string, optional, default='automatic'): Choose the plane onto which the
+                              voxels are to be projected:
+                                'yz'
+                                'xz'
+                                'automatic': Automatically determines the plane which is parallel to the length
+                                      of the voxel spread.
+                    """
         formation_names = self.formation_names
         formation_numbers = self.formation_numbers
-        if fault_side_ref == 'footwall' or fault_side_ref == 'fw':
-            target_side = 'hw'
-        elif fault_side_ref == 'hanging wall' or fault_side_ref == 'hw':
-            target_side = 'fw'
+        if target_side == 'hanging wall' or target_side == 'hw':
+            fault_side_ref = 'fw'
+        elif target_side == 'footwall' or target_side == 'fw':
+            fault_side_ref = 'hw'
         else:
-            raise AttributeError(str(fault_side) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
+            raise AttributeError(str(target_side) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
         # target_contact = get_full_LFcontact_projected(self._data, lith_sol, fault_sol, \
         #                                       formation_numbers, fault_n, fault_side=target_side,
         # projection = projection)
@@ -747,11 +886,11 @@ class PlotFault2D(object):
         background_ref = get_full_LFcontact_projected(self._data, lith_sol, fault_sol, \
                                                fault_n, fault_side=fault_side_ref,
                                                projection=projection)
-        #lith_back = get_vox_lf_contact(self._data, lith_sol, fault_sol, \
+        #lith_back = get_LF_contact_VOX(self._data, lith_sol, fault_sol, \
         #                            lith_n=lith_jux, fault_n=fault_n, fault_side=fault_side_ref)
         #lith_back_p = project_voxels(lith_back, projection, form='2D')
 
-        lith_front = get_vox_lf_contact(self._data, lith_sol, fault_sol, \
+        lith_front = get_LF_contact_VOX(self._data, lith_sol, fault_sol, \
                                        lith_n=lith_target, fault_n=fault_n, fault_side=target_side)
         lith_front_p = project_voxels(lith_front, projection, form='2D')
         #target_contact[~lith_front_p] = 0
@@ -777,22 +916,37 @@ class PlotFault2D(object):
         return plt.gcf()
 
     def plot_juxtapositions(self, lith_sol, fault_sol, fault_n, \
-                        lith_target, lith_jux, fault_side_ref='footwall',\
+                        lith_target, lith_jux, target_side='footwall',\
                         projection='automatic', \
                         **kwargs):
+        """
+            Plot a simple voxel-based illustration of juxtapositon between lithologies of interest.
 
+                Args:
+                        geo_data (:class:`gempy.data_management.InputData`)
+                        lith_sol (ndarray): Computed model lithology solution.
+                        fault_sol (ndarray): Computed model fault solution.
+                        fault_n (int): Number of the fault of interest.
+                        lith_target (list or int): Target lithologies for juxtaposition.
+                        lith_jux (int, list): One or several lithologies that might be juxtaposed with
+                            the target lithology on the other side.
+                        target_side (string, optional, default='footwall'): The side of the fault on which the
+                            target lithology is located:
+                            'footwall' or 'fw'
+                            'hanging wall' or 'hw'.
+                        projection (string, optional, default='automatic'): Choose the plane onto which the
+                                voxels are to be projected:
+                                'yz'
+                                'xz'
+                                'automatic': Automatically determines the plane which is parallel to the length
+                                      of the voxel spread.
+                    """
         formation_names = self.formation_names
         formation_numbers = self.formation_numbers
-        if fault_side_ref == 'footwall' or fault_side_ref == 'fw':
-            target_side = 'hw'
-        elif fault_side_ref == 'hanging wall' or fault_side_ref == 'hw':
-            target_side = 'fw'
-        else:
-            raise AttributeError(str(fault_side) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
 
         juxtapositions = get_juxtapositions(self._data, lith_sol, fault_sol, fault_n,\
                         lith_target, lith_jux, target_side=target_side,\
-                       jux_side=fault_side_ref, projection=projection)
+                        projection=projection)
         juxta = (juxtapositions * (np.max(formation_numbers)+2))
 
         if 'cmap' not in kwargs:
@@ -810,15 +964,45 @@ class PlotFault2D(object):
         return plt.gcf()
 
     def plot_AllanDiagram_multi(self, lith_sol, fault_sol, fault_n, \
-                        lith_target, lith_jux, fault_side_ref='footwall',\
+                        lith_target, lith_jux, target_side='footwall',\
                         projection='automatic', \
                         **kwargs):
-        if fault_side_ref == 'footwall' or fault_side_ref == 'fw':
-            target_side = 'hw'
-        elif fault_side_ref == 'hanging wall' or fault_side_ref == 'hw':
-            target_side = 'fw'
+        """
+            Ploting of several subplots showing:
+                (1): The full contact of lithologies with the fault on the target side.
+                (2): The full contact of lithologies with the fault on the opposing side.
+                (3): Contact of the target lithologies with the fault.
+                (4): Contact of the possibly juxtaposed lithologies with the fault
+                    on the opposing side.
+                (5): Simple Allan Diagram illustration (opposing side full contact in the background,
+                    target lithology and juxtapositions in the foreground).
+                (6): Illustration of the juxtapostions only.
+
+                Args:
+                        geo_data (:class:`gempy.data_management.InputData`)
+                        lith_sol (ndarray): Computed model lithology solution.
+                        fault_sol (ndarray): Computed model fault solution.
+                        fault_n (int): Number of the fault of interest.
+                        lith_target (list or int): Target lithologies for juxtaposition.
+                        lith_jux (int, list): One or several lithologies that might be juxtaposed with
+                            the target lithology on the other side.
+                        target_side (string, optional, default='footwall'): The side of the fault on which the
+                            target lithology is located:
+                            'footwall' or 'fw'
+                            'hanging wall' or 'hw'.
+                        projection (string, optional, default='automatic'): Choose the plane onto which the
+                                voxels are to be projected:
+                                'yz'
+                                'xz'
+                                'automatic': Automatically determines the plane which is parallel to the length
+                                      of the voxel spread.
+                    """
+        if target_side == 'hanging wall' or target_side == 'hw':
+            fault_side_ref = 'fw'
+        elif target_side == 'footwall' or target_side == 'fw':
+            fault_side_ref = 'hw'
         else:
-            raise AttributeError(str(fault_side) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
+            raise AttributeError(str(target_side) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
 
         #figsize(18, 15)
         #fig, ax = plt.subplots(3, 2, sharey=True)
@@ -1017,7 +1201,7 @@ def get_layer_fault_contact_VERT(geo_data, lith_sol, fault_sol, lith_n, \
             """
     if fault_side == 'both':
         raise AttributeError(str(projection) + "can not be 'both' in this function.")
-    w_array = get_vox_lf_contact(geo_data, lith_sol, fault_sol, \
+    w_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
                                  lith_n, fault_n, fault_side)
     top_contact_line = get_contact_VERT(geo_data, fault_v, layer_v, w_array, projection)
     return top_contact_line
