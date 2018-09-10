@@ -377,7 +377,7 @@ def get_juxtapositions(geo_data, lith_sol, fault_sol, fault_n,\
     return juxtapos
 
 def get_juxtapositions_at(geo_data, lith_sol, fault_sol, position, fault_n,\
-                        lith_target, lith_jux, position, target_side='fw',\
+                        lith_target, lith_jux, target_side='fw',\
                        projection='automatic'):
     """
             Voxel-based determination of juxtapositions between a target lithology on one side
@@ -388,11 +388,11 @@ def get_juxtapositions_at(geo_data, lith_sol, fault_sol, position, fault_n,\
                 geo_data (:class:`gempy.data_management.InputData`)
                 lith_sol (ndarray): Computed model lithology solution.
                 fault_sol (ndarray): Computed model fault solution.
+                position (int): Cell along the fault plane, at which the juxtapositional situation is to be returned.
                 fault_n (int): Number of the fault of interest.
                 lith_target (int, list): Target lithology.
                 lith_jux (int, list): One or several lithologies that might be juxtaposed with
                     the target lithology on the other side.
-                position (int): Cell along the fault plane, at which the juxtapositional situation is to be returned.
                 target_side (string, optional, default='footwall'): The side of the fault on which the
                         target lithology is located:
                             'footwall' or 'fw'
@@ -897,7 +897,7 @@ class PlotFault2D(object):
         #juxtapositions = np.logical_and(lith_back_p, lith_front_p)
         juxtapositions = get_juxtapositions(self._data, lith_sol, fault_sol, fault_n,\
                         lith_target, lith_jux, target_side=target_side,\
-                       jux_side=fault_side_ref, projection=projection)
+                       projection=projection)
         background_ref[lith_front_p] = (np.max(formation_numbers)+1)
         background_ref[juxtapositions] = (np.max(formation_numbers)+2)
 
@@ -1040,14 +1040,14 @@ class PlotFault2D(object):
         plt.title('Allan Diagram')
         AD = self.plot_AllanDiagram(lith_sol=lith_sol, fault_sol=fault_sol,\
                                                 fault_n=fault_n, \
-                        lith_target=lith_target, lith_jux=lith_jux, fault_side_ref=fault_side_ref, \
+                        lith_target=lith_target, lith_jux=lith_jux, target_side=target_side, \
                         projection=projection, **kwargs)
         plt.show()
         plt.subplot(326)
         plt.title('juxtapositions')
         jux = self.plot_juxtapositions(lith_sol=lith_sol, fault_sol=fault_sol,\
                                                 fault_n=fault_n, \
-                        lith_target=lith_target, lith_jux=lith_jux, fault_side_ref=fault_side_ref, \
+                        lith_target=lith_target, lith_jux=lith_jux, target_side=target_side, \
                         projection=projection, **kwargs)
         plt.show()
         #ax[0, 0].imshow(fwc)
