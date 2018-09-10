@@ -224,7 +224,7 @@ class InterpolatorData:
 
 
         # Updating properties
-        new_coord_extent = (geo_data.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
+        new_coord_extent = (geo_data.grid.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
 
         geo_data_rescaled = copy.copy(geo_data)
         geo_data_rescaled.interfaces = copy.copy(geo_data.interfaces)
