@@ -713,13 +713,14 @@ def plot_topology(geo_data, G, centroids, direction="y"):
     PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)
 
 
-def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=False, show_density=False):
+def plot_stereonet(geo_data, series_only=False, litho=None, planes=True, poles=True, single_plots=False, show_density=False):
     '''
     Plot an equal-area projection of the orientations dataframe using mplstereonet.
 
     Args:
         geo_data (gempy.DataManagement.InputData): Input data of the model
-        litho: selection of formation names, as list. If None, all are plotted
+        series_only: To select whether a stereonet is plotted per series or per formation
+        litho: selection of formation or series names, as list. If None, all are plotted
         planes: If True, azimuth and dip are plotted as great circles
         poles: If True, pole points (plane normal vectors) of azimuth and dip are plotted
         single_plots: If True, each formation is plotted in a single stereonet
@@ -740,7 +741,10 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
     from collections import OrderedDict
 
     if litho is None:
-        litho = geo_data.orientations['formation'].unique()
+        if series_only:
+            litho=geo_data.orientations['series'].unique()
+        else:
+            litho = geo_data.orientations['formation'].unique()
     if single_plots is False:
         fig, ax = mplstereonet.subplots(figsize=(5, 5))
 
@@ -750,7 +754,10 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
             ax = fig.add_subplot(111, projection='stereonet')
             ax.set_title(formation, y=1.1)
 
-        df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
+        if series_only:
+            df_sub = geo_data.orientations[geo_data.orientations['series'] == formation]
+        else:
+            df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
 
         if poles:
             ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=7,
