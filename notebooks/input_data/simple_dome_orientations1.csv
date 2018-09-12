@@ -1,0 +1,9 @@
+X,Y,Z,azimuth,dip,polarity,formation,group_id
+850,500,600,90,-30,1,Shale,nan
+500,150,600,180,-30,1,Shale,nan
+350,500,500,90,-30,1,Shale,nan
+500,350,500,180,30,1,Shale,nan
+500,650,500,180,-30,1,Shale,nan
+650,500,500,90,30,1,Shale,nan
+500,850,600,180,30,1,Shale,nan
+150,500,600,90,30,1,Shale,nan

@@ -20,6 +20,7 @@
 
 import numpy as np
 from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from skimage import measure
 from scipy.spatial import distance
 
@@ -250,7 +251,32 @@ def get_voxel_extrema(GX, GY, GZ=np.nan, direction='z'):
     vox_saddles = np.logical_or(np.logical_and(gx_min_final, gy_max_final),
                                 np.logical_and(gy_min_final, gx_max_final))
 
-    return vox_minima, vox_maxima, vox_saddles
+    # find DIAGONAL saddle points in addition:
+    signchange_gx2 = ((np.roll(gx_signs, 1, axis=1) - gx_signs) != 0).astype(int)
+    signchange_gx2[:, 0] = 0
+
+    signchange_gy2 = ((np.roll(gy_signs, 1, axis=0) - gy_signs) != 0).astype(int)
+    signchange_gy[0, :, :] = 0
+
+    s_condA1 = (signchange_gx2 == 1) & (signchange_gy2 == 1)
+    s_condA2 = (signchange_gx == 0) & (signchange_gy == 0)
+    sad_cond = np.logical_and(s_condA1, s_condA2)
+
+    diag_saddles_a = np.zeros_like(vox_maxima)
+    diag_saddles_a[sad_cond] = 1
+
+    diag_saddles_b = np.roll(diag_saddles_a, -1, axis=0)
+    diag_saddles_c = np.roll(diag_saddles_a, -1, axis=1)
+    diag_saddles_d = np.roll(diag_saddles_b, -1, axis=1)
+
+    diag_sadd_A = diag_saddles_a + diag_saddles_d
+    diag_sadd_B = diag_saddles_b + diag_saddles_c
+
+    diagonal_saddles = diag_sadd_A + diag_sadd_B
+
+    vox_saddles_all = np.logical_or(vox_saddles, diagonal_saddles)
+
+    return vox_minima, vox_maxima, vox_saddles_all
 
 def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
     """
