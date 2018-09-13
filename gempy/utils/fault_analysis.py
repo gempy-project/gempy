@@ -566,7 +566,7 @@ def get_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
                                  lith_n, fault_n, fault_side)
     extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='2D')
     maxpos = np.argwhere(extrline_vox == True)
-    relmaxpos = sg.argrelextrema(maxpos_red[:, 1], np.greater_equal, order=order)
+    relmaxpos = sg.argrelextrema(maxpo[:, 1], np.greater_equal, order=order)
     return maxpos[relmaxpos]
     ### at the moment, this can return several peaks
 
