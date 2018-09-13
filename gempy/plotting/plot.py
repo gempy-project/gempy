@@ -739,6 +739,7 @@ def plot_stereonet(geo_data, series_only=False, litho=None, planes=True, poles=T
     import matplotlib.pyplot as plt
     from gempy.plotting.colors import cmap
     from collections import OrderedDict
+    import pandas as pn
 
     if litho is None:
         if series_only:
