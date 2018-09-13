@@ -745,10 +745,17 @@ def plot_stereonet(geo_data, series_only=False, litho=None, planes=True, poles=T
             litho=geo_data.orientations['series'].unique()
         else:
             litho = geo_data.orientations['formation'].unique()
+
     if single_plots is False:
         fig, ax = mplstereonet.subplots(figsize=(5, 5))
+        df_sub2 = pn.DataFrame()
+        for i in litho:
+            if series_only:
+                df_sub2 = df_sub2.append(geo_data.orientations[geo_data.orientations['series'] == i])
+            else:
+                df_sub2 = df_sub2.append(geo_data.orientations[geo_data.orientations['formation'] == i])
 
-    for i, formation in enumerate(litho):
+    for formation in litho:
         if single_plots:
             fig = plt.figure(figsize=(5, 5))
             ax = fig.add_subplot(111, projection='stereonet')
@@ -767,11 +774,11 @@ def plot_stereonet(geo_data, series_only=False, litho=None, planes=True, poles=T
             ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=cmap(df_sub['formation_number'].values[0]),
                      linewidth=1.5, label=formation+': '+'azimuth/dip')
         if show_density:
-            if single_plots is False:
-                ax.density_contourf(geo_data.orientations['azimuth'] - 90, geo_data.orientations['dip'],
+            if single_plots:
+                ax.density_contourf(df_sub['azimuth'] - 90, df_sub['dip'],
                                     measurement='poles', cmap='viridis', alpha=.5)
             else:
-                ax.density_contourf(df_sub['azimuth'] - 90, df_sub['dip'], measurement='poles', cmap='viridis',
+                ax.density_contourf(df_sub2['azimuth'] - 90, df_sub2['dip'], measurement='poles', cmap='viridis',
                                     alpha=.75)
 
         fig.subplots_adjust(top=0.8)
