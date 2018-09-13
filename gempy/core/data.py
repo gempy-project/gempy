@@ -105,7 +105,7 @@ class GridClass(object):
         """
 
         dx, dy, dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0],\
-                                    (extent[5] - extent[4]) / resolution[0]
+                     (extent[5] - extent[4]) / resolution[0]
 
         g = np.meshgrid(
             np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0], dtype="float32"),
@@ -161,7 +161,7 @@ class Series(object):
     def _repr_html_(self):
         return self.df.to_html()
 
-    def set_series(self, series_distribution, order=None):
+    def set_series(self, series_distribution, order=None, add_basement=False):
         """
         Method to define the different series of the project.
 
@@ -198,12 +198,23 @@ class Series(object):
                                  ' series_distribution (dict or DataFrame),'
                                  ' see Docstring for more information')
 
-        if 'basement' not in self.df.iloc[:, -1].values:
-            self.df.loc[self.df.shape[0], self.df.columns[-1]] = 'basement'
+        if add_basement and 'basement' not in self.df.iloc[:, -1].values:
+            self.add_basement()
 
         return self.df
 
-    
+    def add_basement(self, name='basement'):
+        """
+        It is in place
+        Args:
+            name:
+
+        Returns:
+
+        """
+        self.df.loc[self.df.shape[0], self.df.columns[-1]] = name
+
+
 class Faults(object):
     """
     Class that encapsulate faulting related content. Mainly, which formations/surfaces are faults. The fault network
@@ -253,9 +264,6 @@ class Faults(object):
         self.faults['isFault'] = self.faults.index.isin(series_fault)
         self.n_faults = self.faults['isFault'].sum()
         return self.faults
-
-
-
 
     def check_fault_relations(self):
         # Method to check that only older faults offset newer ones?
@@ -343,6 +351,7 @@ class Formations(object):
         self.df = pn.DataFrame(columns=['formation', 'id', 'isBasement'])
         self.df['isBasement'] = self.df['isBasement'].astype(bool)
         self.df["formation"] = self.df["formation"].astype('category')
+        self.df["id"] = self.df["id"].astype('int32')
 
         self.formations_names = np.empty(0)
         self._formation_values_set = False
@@ -373,18 +382,23 @@ class Formations(object):
 
         self.map_formation_names_to_df()
 
+    def set_formation_order(self, list_names):
+        self.set_formation_names(list_names)
+
     def map_formation_names_to_df(self):
         if self.df['formation'].shape[0] == self.formations_names.shape[0]:
             self.df['formation'] = self.formations_names
 
-        elif self.df['formation'].shape[0] > self.formations_names.shape[0]:
+        elif self.df['formation'].shape[0] < self.formations_names.shape[0]:
             n_to_append = self.df['formation'].shape[0] - self.formations_names.shape[0]
             for i in range(n_to_append):
                 self.formations_names = np.append(self.formations_names, 'default_formation_' + str(i))
-            warnings.warn('Length of formation_names does not match number of formations')
+
+            if self.df['formation'].shape[0] is not 0:
+                warnings.warn('Length of formation_names does not match number of formations')
             self.df['formation'] = self.formations_names
 
-        elif self.df['formation'].shape[0] < self.formations_names.shape[0]:
+        elif self.df['formation'].shape[0] > self.formations_names.shape[0]:
             warnings.warn('Length of formation_names does not match number of formations')
             self.df['formation'] = self.formations_names[:self.df.shape[0]]
 
@@ -407,12 +421,15 @@ class Formations(object):
         new_formations = new_formations[~pn.isna(new_formations)]
         self.set_formation_names(new_formations)
 
-    def set_basement(self, basement_formation):
+    def set_basement(self, basement_formation=None):
 
         self.df['isBasement'] = self.df['formation'] == basement_formation
         assert self.df['isBasement'].values.astype(bool).sum() <= 1, 'Only one formation can be basement'
 
     def add_basement(self, name=None, inplace=True):
+       # self.set_basement()
+        self.df['isBasement'].fillna(False, inplace=True)
+        assert self.df['isBasement'].values.astype(bool).sum() < 1, 'Only one formation can be basement'
         if name is None:
             name = 'basement'
 
@@ -421,10 +438,10 @@ class Formations(object):
                                          columns=['formation', 'isBasement', 'id'])],
                             sort=False, ignore_index=True
                              )
+
         if inplace is True:
-            self.df = new_df
+            self.df = self.set_id(new_df)
             self.set_dtypes()
-            assert self.df['isBasement'].values.astype(bool).sum() <= 1, 'Only one formation can be basement'
         else:
             return new_df
 
@@ -478,7 +495,7 @@ class Formations(object):
                 for i in range(values_array.shape[1]):
                     values_names = np.append(values_names, 'value_' + str(i))
             vals_df = pn.DataFrame(values_array, columns=values_names)
-
+            self.set_formation_names(values_names)
         elif isinstance(values_array, pn.core.frame.DataFrame):
             vals_df = values_array
 
@@ -492,7 +509,7 @@ class Formations(object):
 
         self.df = self.set_id(f_df)
         self.map_formation_names_to_df()
-        self.set_basement(None)
+        self.df['isBasement'].fillna(False, inplace=True)
         return self.df
 
 
@@ -926,6 +943,7 @@ class Orientations(Data):
 
         self.df['annotations'] = foli_l
 
+
 def get_orientation(normal):
     """Get orientation (dip, azimuth, polarity ) for points in all point set"""
 
@@ -1016,15 +1034,21 @@ class RescaledData(object):
         self.interfaces = interfaces
         self.orientations = orientations
         self.grid = grid
+        self.centers = centers
+        self.rescaling_factor = rescaling_factor
 
-        max_coord, min_coord = self.max_min_coord(interfaces, orientations)
+        self.rescale_data(rescaling_factor=rescaling_factor, centers=centers)
+
+    def rescale_data(self, rescaling_factor=None, centers=None):
+
+        max_coord, min_coord = self.max_min_coord(self.interfaces, self.orientations)
         if not rescaling_factor:
-            self.rescaling_factor = self.compute_rescaling_factor(interfaces, orientations,
+            self.rescaling_factor = self.compute_rescaling_factor(self.interfaces, self.orientations,
                                                                   max_coord, min_coord)
         else:
             self.rescaling_factor = rescaling_factor
         if not centers:
-            self.centers = self.compute_data_center(interfaces, orientations,
+            self.centers = self.compute_data_center(self.interfaces, self.orientations,
                                                     max_coord, min_coord)
         else:
             self.centers = centers
@@ -1069,7 +1093,7 @@ class RescaledData(object):
         return max_coord, min_coord
 
     def compute_data_center(self, interfaces=None, orientations=None,
-                            max_coord=None, min_coord=None):
+                            max_coord=None, min_coord=None, inplace=True):
         """
         Calculate the center of the data once it is shifted between 0 and 1
         Args:
@@ -1087,10 +1111,12 @@ class RescaledData(object):
 
         # Get the centers of every axis
         centers = ((max_coord + min_coord) / 2).astype(float)
+        if inplace is True:
+            self.centers = centers
         return centers
 
     def compute_rescaling_factor(self, interfaces=None, orientations=None,
-                                 max_coord=None, min_coord=None):
+                                 max_coord=None, min_coord=None, inplace=True):
         """
         Calculate the rescaling factor of the data to keep all coordinates between 0 and 1
         Args:
@@ -1106,6 +1132,8 @@ class RescaledData(object):
         if max_coord is None or min_coord is None:
             max_coord, min_coord = self.max_min_coord(interfaces, orientations)
         rescaling_factor_val = (2 * np.max(max_coord - min_coord))
+        if inplace is True:
+            self.rescaling_factor = rescaling_factor_val
         return rescaling_factor_val
 
     @staticmethod
@@ -1121,9 +1149,11 @@ class RescaledData(object):
         Returns:
 
         """
-        self.interfaces.df[['X_r', 'Y_r', 'Z_r']] = self.rescale_interfaces(self.interfaces, self.rescaling_factor,
-                                                                            self.centers)
-        if inplace is False:
+
+        if inplace is True:
+            self.interfaces.df[['X_r', 'Y_r', 'Z_r']] = self.rescale_interfaces(self.interfaces, self.rescaling_factor,
+                                                                                self.centers)
+        else:
             return self.interfaces
 
     @staticmethod
@@ -1233,10 +1263,17 @@ class AdditionalData(Structure, RescaledData):
         rescaling (rescaling)
 
     """
-    def __init__(self, interfaces, orientations, grid, faults, formations, rescaling):
+    def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: GridClass,
+                 faults: Faults, formations:Formations, rescaling: RescaledData):
         # TODO: probably not all the attributes need to be present until I do a check before computing the thing.
         # TODO IMP: Right now there are two copies for most of the paramenters. One in self and one in the df
         #           this may lead to important confusion and bugs
+
+        self.interfaces = interfaces
+        self.orientations = orientations
+        self.faults = faults
+        self.formations = formations
+
         super().__init__(interfaces, orientations)
 
         self.n_faults = faults.n_faults
@@ -1255,14 +1292,14 @@ class AdditionalData(Structure, RescaledData):
                                          columns=['values'],
                                          index=['range', '$C_o$', 'drift equations',
                                                 'nugget grad', 'nugget scalar'])
-
+        self.grid = grid
         self.rescaled_data = rescaling
 
         self.options = pn.DataFrame(columns=['values'],
                                     index=['dtype', 'output', 'theano_optimizer', 'device', 'verbosity'])
         self.default_options()
 
-        self.structure_data = pn.DataFrame([self.is_lith_is_fault()[0], self.is_lith_is_fault()[1],
+        self.structure_data = pn.DataFrame([self.is_lith(), self.is_fault(),
                                             self.n_faults, self.n_formations, self.nfs,
                                             self.len_formations_i, self.len_series_i,
                                             self.len_series_o],
@@ -1285,28 +1322,61 @@ class AdditionalData(Structure, RescaledData):
         concat_ = self.get_additional_data()
         return concat_.to_html()
 
+    def update_rescaling_data(self):
+        self.rescaling_data.at['rescaling factor', 'values'] = self.rescaled_data.rescaling_factor
+        self.rescaling_data.at['centers', 'values'] = self.rescaled_data.centers
+
+    def update_default_kriging(self):
+
+        self.range_var = self.default_range(self.grid.extent)
+        self.c_o = self.default_c_o()
+
+        self.n_universal_eq = self.set_u_grade(None)
+
+        self.nugget_effect_gradient = 0.01
+        self.nugget_effect_scalar = 1e-6
+
+        self.kriging_data = pn.DataFrame([self.range_var, self.c_o, self.n_universal_eq,
+                                          self.nugget_effect_gradient, self.nugget_effect_scalar],
+                                         columns=['values'],
+                                         index=['range', '$C_o$', 'drift equations',
+                                                'nugget grad', 'nugget scalar'])
+
+    def update_structure(self):
+
+        super().__init__(self.interfaces, self.orientations)
+
+        self.structure_data = pn.DataFrame([self.is_lith(), self.is_fault(),
+                                            self.faults.n_faults,  self.formations.df.shape[0], self.nfs,
+                                            self.len_formations_i, self.len_series_i,
+                                            self.len_series_o],
+                                           columns=['values'],
+                                           index=['isFault', 'isLith',
+                                                  'number faults', 'number formations', 'number formations per series',
+                                                  'len formations interfaces', 'len series interfaces',
+                                                  'len series orientations'])
+
     def get_additional_data(self):
         concat_ = pn.concat([self.structure_data, self.options, self.kriging_data, self.rescaling_data],
                             keys=['Structure', 'Options', 'Kringing', 'Rescaling'])
         return concat_
 
-    def is_lith_is_fault(self):
+    def is_lith(self):
         """
         Check if there is lithologies in the data and/or faults
         Returns:
             list(bool)
         """
-
-        is_fault = False
         is_lith = False
-
-        if self.n_faults != 0:
-            is_fault = True
-
-        if self.n_formations - 1 > self.n_faults:
+        if self.formations.df.shape[0] - 1 > self.n_faults:
             is_lith = True
+        return is_lith
 
-        return [is_fault, is_lith]
+    def is_fault(self):
+        is_fault = False
+        if self.faults.n_faults != 0:
+            is_fault = True
+        return is_fault
 
     def default_options(self):
         """
@@ -1378,6 +1448,7 @@ class AdditionalData(Structure, RescaledData):
     def get_kriging_parameters(self):
         return self.kriging_data
 
+
 class GeoPhysiscs(object):
     def __init__(self):
         self.gravity = None
@@ -1396,6 +1467,7 @@ class Solution(object):
         self.scalar_field_at_interfaces = 0
         self.scalar_field = np.array([])
         self.lith_block = None
+        self.fault_block = None
         self.values_block = None
         self.gradient = None
 
@@ -1456,9 +1528,13 @@ class Interpolator(object):
             np.insert(self.additional_data.structure_data.loc['len series orientations', 'values'], 0, 0).cumsum().astype('int32'))
         # Setting shared variables
         # Range
-        self.theano_graph.a_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data.loc['range', 'values']))
+        self.theano_graph.a_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data.loc['range', 'values'] /
+                                                            self.additional_data.rescaling_data.loc['rescaling factor', 'values']))
         # Covariance at 0
-        self.theano_graph.c_o_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data.loc['$C_o$', 'values']))
+        self.theano_graph.c_o_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data.loc['$C_o$', 'values'] /
+                                                              self.additional_data.rescaling_data.loc[
+                                                                  'rescaling factor', 'values']
+                                                              ))
         # universal grades
         self.theano_graph.n_universal_eq_T.set_value(
             list(self.additional_data.kriging_data.loc['drift equations', 'values'].astype('int32')))
@@ -1477,9 +1553,12 @@ class Interpolator(object):
         self.theano_graph.final_block.set_value(np.zeros((1, self.grid.values_r.shape[0] + self.interfaces.df.shape[0]),
                                                dtype=self.dtype))
         # Unique number assigned to each lithology
-        self.theano_graph.n_formation.set_value(self.formations.df['id'])
+        self.theano_graph.n_formation.set_value(self.formations.df['id'].values.astype('int32'))
         # Final values the lith block takes
-        self.theano_graph.formation_values.set_value(self.formations.df['value_0'])
+        try:
+            self.theano_graph.formation_values.set_value(self.formations.df['value_0'].values)
+        except KeyError:
+            self.theano_graph.formation_values.set_value(self.formations.df['id'].values.astype(self.dtype))
         # Number of formations per series. The function is not pretty but the result is quite clear
         n_formations_per_serie = np.insert(self.additional_data.structure_data.loc['number formations per series', 'values'], 0, 0).\
             astype('int32')
@@ -1509,7 +1588,7 @@ class Interpolator(object):
         idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, interfaces_coord)]
         return idl
 
-    def compile_th_fn(self, output, inplace=True, **kwargs):
+    def compile_th_fn(self, output=None, inplace=True, **kwargs):
         """
         Compile the theano function given the input_data data.
 
@@ -1526,6 +1605,8 @@ class Interpolator(object):
         self.set_theano_shared_parameters()
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.theano_graph.input_parameters_list()
+        if output is None:
+            output = self.additional_data.options.loc['output']
 
         print('Compiling theano function...')
 

@@ -83,31 +83,32 @@ class Model(object):
         # dtype = 'object'
         # TODO adapt this
         if verbosity == 0:
-            show_par_f = self._columns_o_1
-            show_par_i = self._columns_i_1
+            show_par_f = self.orientations._columns_o_1
+            show_par_i = self.interfaces._columns_i_1
         else:
-            show_par_f = self.orientations.columns
-            show_par_i = self.interfaces.columns
+            show_par_f = self.orientations.df.columns
+            show_par_i = self.interfaces.df.columns
 
         if numeric:
-            show_par_f = self._columns_o_num
-            show_par_i = self._columns_i_num
+            show_par_f = self.orientations._columns_o_num
+            show_par_i = self.interfaces._columns_i_num
             dtype = 'float'
 
         if itype == 'orientations':
-            raw_data = self.orientations[show_par_f]  # .astype(dtype)
+            raw_data = self.orientations.df[show_par_f]  # .astype(dtype)
             # Be sure that the columns are in order when used for operations
             if numeric:
                 raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
         elif itype == 'interfaces':
-            raw_data = self.interfaces[show_par_i]  # .astype(dtype)
+            raw_data = self.interfaces.df[show_par_i]  # .astype(dtype)
             # Be sure that the columns are in order when used for operations
             if numeric:
                 raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
         elif itype == 'all':
-            raw_data = pn.concat([self.interfaces[show_par_i],  # .astype(dtype),
-                                  self.orientations[show_par_f]],  # .astype(dtype)],
-                                 keys=['interfaces', 'orientations'])
+            raw_data = pn.concat([self.interfaces.df[show_par_i],  # .astype(dtype),
+                                  self.orientations.df[show_par_f]],  # .astype(dtype)],
+                                 keys=['interfaces', 'orientations'],
+                                 sort=False)
             # Be sure that the columns are in order when used for operations
             if numeric:
                 raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
@@ -119,7 +120,7 @@ class Model(object):
         elif itype is 'faults':
             raw_data = self.faults
         elif itype is 'faults_relations':
-            raw_data = self.faults_relations
+            raw_data = self.faults.faults_relations
         else:
             raise AttributeError('itype has to be \'all\', \'interfaces\', \'orientations\', \'formations\', \
                                           \'serires\', \'faults\' or \'faults_relations\'')
