@@ -8,9 +8,8 @@ import gempy as gp
 import matplotlib.pyplot as plt
 import pdb
 
-
-
 input_path = os.path.dirname(__file__)+'/../notebooks'
+
 
 def test_set_orientations():
     # Importing the data from CSV-files and setting extent and resolution

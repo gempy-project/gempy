@@ -165,32 +165,6 @@ def create_model(name_project=None):
     return Model(name_project)
 
 
-def modify_grid(model: Model, grid_type:str, **kwargs):
-    model.grid.__init__(grid_type=grid_type, **kwargs)
-
-
-def set_grid(model: Model, grid: GridClass):
-    model.grid = grid
-
-
-def read_data(model, path_i=None, path_o=None):
-    """
-    For extra options in reading please look at the Interfaces methods
-    Args:
-        model:
-        path_i:
-        path_o:
-
-    Returns:
-
-    """
-
-    if path_i:
-        model.interfaces.read_interfaces(path_i, inplace=True)
-    if path_o:
-        model.orientations.read_orientations(path_o, inplace=True)
-
-
 def create_data(extent, resolution=(50, 50, 50), name_project=None, **kwargs):
     """
     DEP
@@ -213,13 +187,17 @@ def create_data(extent, resolution=(50, 50, 50), name_project=None, **kwargs):
     """
     warnings.warn(" ", FutureWarning)
     model = create_model(name_project)
-    modify_grid(model, grid_type='regular_grid', extent=extent, resolution=resolution)
+    set_grid(model, create_grid( grid_type='regular_grid', extent=extent, resolution=resolution))
     read_data(model, **kwargs)
 
     return model
 
 
-def data_to_pickle(geo_data, path=False):
+def create_grid(grid_type: str, **kwargs):
+    return GridClass(grid_type=grid_type, **kwargs)
+
+
+def save_model(model: Model, path=False):
     """
      Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
      versions used to export and import the pickle differ it may give problems
@@ -231,10 +209,10 @@ def data_to_pickle(geo_data, path=False):
      Returns:
          None
      """
-    geo_data.data_to_pickle(path)
+    model.save_model(path)
 
 
-def get_series(geo_data):
+def get_series(model: Model):
     """
     Args:
          geo_data (:class:`gempy.data_management.InputData`)
@@ -242,10 +220,10 @@ def get_series(geo_data):
     Returns:
         :class:`DataFrame`: Return series and formations relations
     """
-    return geo_data.series
+    return model.series
 
 
-def get_grid(geo_data):
+def get_grid(model: Model):
     """
     Coordinates can be found in :class:`gempy.data_management.GridClass.values`
 
@@ -255,15 +233,39 @@ def get_grid(geo_data):
      Returns:
         :class:`gempy.data_management.GridClass`
     """
-    return geo_data.grid
+    return model.grid
 
 
-def get_resolution(geo_data):
-    return geo_data.resolution
+def get_faults(model: Model):
+    return model.faults
 
 
-def get_extent(geo_data):
-    return geo_data.extent
+def get_formations(model: Model):
+    return model.formations
+
+
+def get_additional_data(model:Model):
+    return model.additional_data
+
+
+def get_interpolator(model: Model):
+    return model.interpolator
+
+
+def get_interfaces(model: Model):
+    return model.interfaces
+
+
+def get_orientations(model: Model):
+    return model.orientations
+
+
+def get_resolution(model: Model):
+    return model.grid.resolution
+
+
+def get_extent(model: Model):
+    return model.grid.extent
 
 
 def get_data(model: Model, itype='all', numeric=False, verbosity=0):
@@ -272,7 +274,7 @@ def get_data(model: Model, itype='all', numeric=False, verbosity=0):
     object.
 
     Args:
-        geo_data (:class:`gempy.interpolator.InterpolatorData`)
+        model (:class:`gempy.core.model.Model`)
         itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'faults', 'fautls_relations'}): input
             data type to be retrieved.
         numeric (bool): if True it only returns numberical properties. This may be useful due to memory issues
@@ -285,7 +287,7 @@ def get_data(model: Model, itype='all', numeric=False, verbosity=0):
     return model.get_data(itype=itype, numeric=numeric, verbosity=verbosity)
 
 
-def get_sequential_pile(geo_data):
+def get_sequential_pile(model: Model):
     """
     Visualize an interactive stratigraphic pile to move around the formations and the series. IMPORTANT NOTE:
     To have the interactive properties it is necessary the use of an interactive backend. (In notebook use:
@@ -297,14 +299,10 @@ def get_sequential_pile(geo_data):
     Returns:
         :class:`matplotlib.pyplot.Figure`
     """
-    return StratigraphicPile(geo_data)
+    return StratigraphicPile(model.series)
 
 
-# =====================================
-# Functions for the InterpolatorData
-# =====================================
-
-def get_kriging_parameters(interp_data, verbose=0):
+def get_kriging_parameters(model: Model):
     """
     Print the kringing parameters
 
@@ -315,12 +313,14 @@ def get_kriging_parameters(interp_data, verbose=0):
     Returns:
         None
     """
-    return interp_data.interpolator.get_kriging_parameters(verbose=verbose)
-
-# TODO check that is a interp_data object and if not try to create within the function one from the geo_data
+    return model.additional_data.kriging_data
 
 
-def get_th_fn(interp_data):
+# =====================================
+# Functions for the InterpolatorData
+# =====================================
+
+def get_th_fn(model: Model):
     """
     Get the compiled theano function
 
@@ -331,9 +331,9 @@ def get_th_fn(interp_data):
         :class:`theano.compile.function_module.Function`: Compiled function if C or CUDA which computes the interpolation given the input data
             (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
     """
-    assert getattr(interp_data, 'th_fn', False), 'Theano has not been compiled yet'
+    assert getattr(model.interpolator, 'theano_function', False) is not None, 'Theano has not been compiled yet'
 
-    return interp_data.compile_th_fn()
+    return model.interpolator.theano_function
 
 
 def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_formation='all',
@@ -549,6 +549,24 @@ def read_pickle(path):
         return data
 
 
+def read_data(model, path_i=None, path_o=None):
+    """
+    For extra options in reading please look at the Interfaces methods
+    Args:
+        model:
+        path_i:
+        path_o:
+
+    Returns:
+
+    """
+
+    if path_i:
+        model.interfaces.read_interfaces(path_i, inplace=True)
+    if path_o:
+        model.orientations.read_orientations(path_o, inplace=True)
+
+
 def rescale_factor_default(geo_data):
     """
     Returns the default rescaling factor for a given geo_data
@@ -588,6 +606,7 @@ def rescale_data(model: Model, rescaling_factor=None, centers=None):
 
     model.rescaling.rescale_data(rescaling_factor, centers)
 
+
 def update_additional_data(model: Model, update_structure=True, update_rescaling=True, update_kriging=True):
     if update_structure is True:
         model.additional_data.update_structure()
@@ -597,7 +616,6 @@ def update_additional_data(model: Model, update_structure=True, update_rescaling
         model.additional_data.update_default_kriging()
 
     return model.additional_data
-
 
 def select_series(geo_data, series):
     """
@@ -698,6 +716,9 @@ def set_values_to_default(model: Model, series_distribution=None, order_series=N
         return None
 
 
+
+
+
 def map_to_data(model: Model, series: Series=None, formations: Formations=None, faults: Faults=None):
     # TODO this function makes sense as Model method
     if series is not None:
@@ -769,19 +790,19 @@ def set_orientations(geo_data, orient_dataframe, append=False):
     geo_data.set_orientations(orient_dataframe, append=append)
 
 
-def set_grid(geo_data, grid):
-    """
-    Set a new :class:`gempy.data_management.GridClass` object into a :class:`gempy.data_management.InputData` object.
-
-    Args:
-        geo_data (:class:`gempy.data_management.InputData`):
-        grid (:class:`gempy.data_management.GridClass`):
-
-    """
-    assert isinstance(grid, GridClass)
-    geo_data.grid = grid
-    geo_data.extent = grid.extent
-    geo_data.resolution = grid.resolution
+# def set_grid(geo_data, grid):
+#     """
+#     Set a new :class:`gempy.data_management.GridClass` object into a :class:`gempy.data_management.InputData` object.
+#
+#     Args:
+#         geo_data (:class:`gempy.data_management.InputData`):
+#         grid (:class:`gempy.data_management.GridClass`):
+#
+#     """
+#     assert isinstance(grid, GridClass)
+#     geo_data.grid = grid
+#     geo_data.extent = grid.extent
+#     geo_data.resolution = grid.resolution
 
 
 def set_interpolation_data(model: Model, **kwargs):
@@ -828,7 +849,8 @@ def set_interpolation_data(model: Model, **kwargs):
 
     return model.interpolator
 
-
+def set_grid(model: Model, grid: GridClass):
+    model.grid = grid
 
 
 

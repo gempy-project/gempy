@@ -88,7 +88,7 @@ def test_rgeomod_integration(theano_f):
     dtmp = plt.imshow(dtm, origin='upper', cmap="viridis");
     plt.title("Digital elevation model");
     plt.colorbar(dtmp, label="Elevation [m]");
-    plt.savefig(input_path+"/DTM.pdf")
+    plt.savefig(input_path+"temp/DTM.pdf")
 
     # To be able to use gempy plotting functionality we need to create a dummy geo_data object with the
     # resoluion we want. In this case resolution=[339, 271, 1]
@@ -151,7 +151,7 @@ def test_rgeomod_integration(theano_f):
     # In[20]:
 
 
-    rgeomod.export_geotiff(input_path+"/geomap.tif", geo_map, gp.plotting.colors.cmap, geotiff_filepath)
+    rgeomod.export_geotiff(input_path+"temp/geomap.tif", geo_map, gp.plotting.colors.cmap, geotiff_filepath)
 
 
     # Export the interface data points:
@@ -170,4 +170,4 @@ def test_rgeomod_integration(theano_f):
 
     t = input_path+"/templates/ge_template_raw_fol.xml"
     pt = input_path+"/templates/ge_placemark_template_fol.xml"
-    rgeomod.gempy_export_fol_to_kml(input_path+"/dips.kml", geo_data, pt, t)
+    rgeomod.gempy_export_fol_to_kml(input_path+"temp/dips.kml", geo_data, pt, t)

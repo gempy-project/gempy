@@ -1463,14 +1463,156 @@ class GeoPhysiscs(object):
 
 class Solution(object):
 
-    def __init__(self):
-        self.scalar_field_at_interfaces = 0
-        self.scalar_field = np.array([])
-        self.lith_block = None
-        self.fault_block = None
-        self.values_block = None
-        self.gradient = None
+    def __init__(self, additional_data: AdditionalData=None, formations: Formations=None, values=None):
 
+        self.additional_data = additional_data
+        self.formations = formations
+
+        if values is None:
+
+            self.scalar_field_at_interfaces = 0
+            self.scalar_field_lith = np.array([])
+            self.scalar_field_faults = np.array([])
+
+            self.lith_block = None
+            self.fault_blocks = None
+            self.values_block = None
+            self.gradient = None
+        else:
+            self.set_values(values)
+
+    def set_values(self, values):
+
+        lith = values[0]
+        faults = values[1]
+        self.scalar_field_at_interfaces = values[2]
+
+        self.scalar_field_lith = lith[0]
+        self.lith_block = lith[1]
+
+        if self.additional_data.options.loc['output', 'values'] is 'gradients':
+            self.values_block = lith[2:-3]
+            self.gradient = lith[-3:]
+        else:
+            self.values_block = lith[2:]
+
+        self.scalar_field_faults = faults[::2]
+        self.fault_blocks = faults[1::2]
+
+    def get_surface(potential_block, interp_data, pot_int, n_formation, step_size, original_scale):
+        """
+        Get an individual surface
+
+        """
+
+        assert n_formation >= 0, 'Number of the formation has to be positive'
+
+        # In case the values are separated by series I put all in a vector
+        pot_int = interp_data.potential_at_interfaces.sum(axis=0)
+
+        from skimage import measure
+
+        if not potential_block.max() > pot_int[n_formation]:
+            pot_int[n_formation] = potential_block.max()
+            print('Potential field of the surface is outside the block. Probably is due to float errors')
+
+        if not potential_block.min() < pot_int[n_formation]:
+            pot_int[n_formation] = potential_block.min()
+            print('Potential field of the surface is outside the block. Probably is due to float errors')
+
+        vertices_p, simplices_p, normals, values = measure.marching_cubes_lewiner(
+            potential_block.reshape(interp_data.geo_data_res.resolution[0],
+                                    interp_data.geo_data_res.resolution[1],
+                                    interp_data.geo_data_res.resolution[2]),
+            pot_int[n_formation],
+            step_size=step_size,
+            spacing=((interp_data.geo_data_res.extent[1] - interp_data.geo_data_res.extent[0]) /
+                     interp_data.geo_data_res.resolution[0],
+                     (interp_data.geo_data_res.extent[3] - interp_data.geo_data_res.extent[2]) /
+                     interp_data.geo_data_res.resolution[1],
+                     (interp_data.geo_data_res.extent[5] - interp_data.geo_data_res.extent[4]) /
+                     interp_data.geo_data_res.resolution[2]))
+
+        if original_scale:
+            vertices_p = interp_data.rescaling_factor * vertices_p + _np.array([interp_data._geo_data.extent[0],
+                                                                                interp_data._geo_data.extent[2],
+                                                                                interp_data._geo_data.extent[
+                                                                                    4]]).reshape(1, 3)
+        else:
+            vertices_p += np.array([interp_data.geo_data_res.extent[0],
+                                     interp_data.geo_data_res.extent[2],
+                                     interp_data.geo_data_res.extent[4]]).reshape(1, 3)
+        return vertices_p, simplices_p
+
+    def get_surfaces(self, interp_data, potential_lith=None, potential_fault=None, n_formation='all',
+                     step_size=1, original_scale=True):
+        """
+        Compute vertices and simplices of the interfaces for its vtk visualization and further
+        analysis
+
+        Args:
+            interp_data (:class:`gempy.data_management.InputData`)
+            potential_lith (ndarray): 1D numpy array with the solution of the computation of the model
+             containing the scalar field of potentials (second row of lith solution)
+            potential_fault (ndarray): 1D numpy array with the solution of the computation of the model
+             containing the scalar field of the faults (every second row of fault solution)
+            n_formation (int or 'all'): Positive integer with the number of the formation of which the surface is returned.
+             use method get_formation_number() to get a dictionary back with the values
+            step_size (int): resolution of the method. This is every how many voxels the marching cube method is applied
+            original_scale (bool): choosing if the coordinates of the vertices are given in the original or the rescaled
+             coordinates
+
+        Returns:
+            vertices, simpleces
+        """
+        # try:
+        #     getattr(interp_data, 'potential_at_interfaces')
+        # except AttributeError:
+        #     raise AttributeError('You need to compute the model first')
+
+        vertices = []
+        simplices = []
+
+        n_formations = self.formations.df['id']
+        n_faults = self.additional_data.structure_data.loc['number faults', 'values']
+
+        potential_fault = self.scalar_field_faults
+        potential_lith = self.scalar_field_lith
+        # Looping the scalar fields of the faults
+
+        if potential_fault is not None:
+            assert len(np.atleast_2d(
+                potential_fault)) == n_faults, 'You need to pass a potential field per fault'
+
+            pot_int = self.scalar_field_at_interfaces[:n_faults + 1]
+            for n in n_formations[:n_faults]:
+                #TODO
+                v, s = self.get_surface(np.atleast_2d(potential_fault)[n], interp_data, pot_int, n,
+                                        step_size=step_size, original_scale=original_scale)
+                vertices.append(v)
+                simplices.append(s)
+
+        # Looping the scalar fields of the lithologies
+        if potential_lith is not None:
+            pot_int = interp_data.potential_at_interfaces[interp_data.geo_data_res.n_faults:]
+
+            # Compute the vertices of the lithologies
+            if n_formation == 'all':
+
+                for n in n_formations[
+                         interp_data.geo_data_res.n_faults:]:  # interp_data.geo_data_res.interfaces['formation_number'][~interp_data.geo_data_res.interfaces['isFault']].unique():
+                    # if n == 0:
+                    #     continue
+                    # else:
+                    v, s = get_surface(potential_lith, interp_data, pot_int, n,
+                                       step_size=step_size, original_scale=original_scale)
+                    vertices.append(v)
+                    simplices.append(s)
+            else:
+                vertices, simplices = get_surface(potential_lith, interp_data, pot_int, n_formation,
+                                                  step_size=step_size, original_scale=original_scale)
+
+        return vertices, simplices
 
 class Interpolator(object):
     # TODO assert passed data is rescaled

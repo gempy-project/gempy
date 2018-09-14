@@ -21,38 +21,41 @@ import matplotlib.pyplot as plt
 from gempy.plotting.colors import *
 import matplotlib.cm as cm
 from gempy.plotting.colors import color_lot, cmap, norm
+from gempy.core.model import Model
+from gempy.core.data import Series
+#
+# def _create_color_lot(model: Model, cd_rgb):
+#     """Returns color [r,g,b] LOT for formation_numbers."""
+#    # if "formation_number" not in geo_data.interfaces or "formation_number" not in geo_data.foliations:
+#    #     geo_data.set_formation_number()  # if not, set formation_numbers
+#
+#     c_names = ["indigo", "red", "yellow", "brown", "orange",
+#                 "green", "blue", "amber", "pink", "light-blue",
+#                 "lime", "blue-grey", "deep-orange", "grey", "cyan",
+#                 "deep-purple", "purple", "teal", "light-green"]
+#
+#     lot = {}
+#     ci = 0  # use as an independent running variable because of fault formations
+#     # get unique formation_numbers
+#     fmt_numbers = np.unique([val for val in model.formations.df['id']])
+#     # get unique fault formation_numbers
+#     fault_fmt_numbers = np.unique(model.formations
+#
+#                                   [geo_data.interfaces["isFault"] == True]["formation_number"])
+#     # iterate over all unique formation_numbers
+#     for i, n in enumerate(fmt_numbers):
+#         # if its a fault formation set it to black by default
+#         if n in fault_fmt_numbers:
+#             lot[n] = cd_rgb["black"]["400"]
+#         # if not, just go through
+#         else:
+#             lot[n] = cd_rgb[c_names[ci]]["400"]
+#             ci += 1
+#
+#     return lot
 
 
-def _create_color_lot(geo_data, cd_rgb):
-    """Returns color [r,g,b] LOT for formation_numbers."""
-    if "formation_number" not in geo_data.interfaces or "formation_number" not in geo_data.foliations:
-        geo_data.set_formation_number()  # if not, set formation_numbers
-
-    c_names = ["indigo", "red", "yellow", "brown", "orange",
-                "green", "blue", "amber", "pink", "light-blue",
-                "lime", "blue-grey", "deep-orange", "grey", "cyan",
-                "deep-purple", "purple", "teal", "light-green"]
-
-    lot = {}
-    ci = 0  # use as an independent running variable because of fault formations
-    # get unique formation_numbers
-    fmt_numbers = np.unique([val for val in geo_data.interfaces['formation_number'].unique()])
-    # get unique fault formation_numbers
-    fault_fmt_numbers = np.unique(geo_data.interfaces[geo_data.interfaces["isFault"] == True]["formation_number"])
-    # iterate over all unique formation_numbers
-    for i, n in enumerate(fmt_numbers):
-        # if its a fault formation set it to black by default
-        if n in fault_fmt_numbers:
-            lot[n] = cd_rgb["black"]["400"]
-        # if not, just go through
-        else:
-            lot[n] = cd_rgb[c_names[ci]]["400"]
-            ci += 1
-
-    return lot
-
-
-def set_anchor_points(geo_data):
+def set_anchor_points(series_object: Series):
     """
     Compute the location of each series and formation depending on the number of those
 
@@ -71,10 +74,9 @@ def set_anchor_points(geo_data):
 
     """
     # Formations per serie
-    for_ser = geo_data.interfaces.groupby('series')
-    series_names = geo_data.series.columns
+    series_names = series_object.df.columns
     # Get number of series
-    n_series = len(geo_data.series.columns)
+    n_series = len(series_object.df.columns)
 
     # Make anchor points for each serie
     anch_series_pos_aux = np.linspace(10, 0, n_series, endpoint=True)
@@ -88,7 +90,7 @@ def set_anchor_points(geo_data):
     thick_formations = []
     for series in series_names:
         try:
-            formations = geo_data.series[series].dropna().values
+            formations = series_object.df[series].dropna().values
         except KeyError:
             formations = np.empty(0, dtype='object')
         formations = np.insert(formations, 0, '0_aux' + series)
@@ -115,7 +117,7 @@ class StratigraphicPile(object):
     """
     Class to create the interactive stratigraphic pile
     """
-    def __init__(self, geo_data):
+    def __init__(self, series_class: Series):
 
         # Set the values of matplotlib
         fig = plt.figure()
@@ -126,23 +128,23 @@ class StratigraphicPile(object):
         ax.axis('off')
 
         # Compute the anchor values for the number of series. This is a DataFrame
-        self.anch_series, self.anch_formations, self.thick_series, self.thick_formations = set_anchor_points(geo_data)
+        self.anch_series, self.anch_formations, self.thick_series, self.thick_formations = set_anchor_points(series_class)
 
         # We create the list that contains rectangles that represent our series ang are global
         global series_rect
         series_rect = {}
 
         # Define the initial value of each rectangle
-        pos_anch = np.squeeze(self.anch_series.as_matrix())
+        pos_anch = np.squeeze(self.anch_series.values)
         rects = ax.barh(pos_anch, np.ones_like(pos_anch)*2, self.thick_series, )
 
         # We connect each rectangle
-        for e, series in enumerate(geo_data.series.columns):
+        for e, series in enumerate(series_class.df.columns):
             # TODO Alex set the colors of the series accordingly
 
             rects[e].set_color(cm.Dark2(e))
             rects[e].set_label(series)
-            dr = DraggableRectangle(rects[e], geo_data, series)
+            dr = DraggableRectangle(rects[e], series_class, series)
             dr.connect()
             dr.rect.f = None
             dr.rect.s = series
@@ -153,7 +155,7 @@ class StratigraphicPile(object):
         formation_rect = {}
 
         # Define the initial value of each rectangle
-        pos_anch = np.squeeze(self.anch_formations.as_matrix())
+        pos_anch = np.squeeze(self.anch_formations.values)
         rects = ax.barh(pos_anch, np.ones_like(pos_anch)*2, .5, left=3.)
 
         color = 1
@@ -169,7 +171,7 @@ class StratigraphicPile(object):
                 rects[e].set_label(formation)
                 color += 1
 
-            dr = DraggableRectangle(rects[e], geo_data, formation)
+            dr = DraggableRectangle(rects[e], series_class, formation)
             dr.connect()
             dr.rect.f = formation
             dr.rect.s = None
@@ -186,9 +188,9 @@ class StratigraphicPile(object):
 
 
 class DraggableRectangle:
-    def __init__(self, rect, geo_data, s):
+    def __init__(self, rect, series: Series, s):
         # The idea of passing geodata is to update the dataframes in place
-        self.geo_data = geo_data
+        self.series = series
 
         self.rect = rect
 
@@ -196,7 +198,7 @@ class DraggableRectangle:
         self.press = None
 
         # We initalize the placement of the anchors
-        self.anch_series, self.anch_formations, self.thick_series, self.thick_formations = set_anchor_points(self.geo_data)
+        self.anch_series, self.anch_formations, self.thick_series, self.thick_formations = set_anchor_points(self.series)
 
     def connect(self):
         'connect to all the events we need'
@@ -260,7 +262,7 @@ class DraggableRectangle:
             self.anch_series.iloc[0, dropping_arg] = selected_arch_position_s
 
             self.update_data_frame()
-            self.anch_series, self.anch_formations, self.thick_series, self.thick_formations = set_anchor_points(self.geo_data)
+            self.anch_series, self.anch_formations, self.thick_series, self.thick_formations = set_anchor_points(self.series)
 
             # We update the visualization of all the rectangles
             for series_name in self.anch_series.columns:
@@ -288,7 +290,7 @@ class DraggableRectangle:
             self.anch_formations.iloc[0, dropping_arg] = selected_arch_position_f
 
             self.update_data_frame()
-            self.anch_series, self.anch_formations, self.thick_series, self.thick_formations = set_anchor_points(self.geo_data)
+            self.anch_series, self.anch_formations, self.thick_series, self.thick_formations = set_anchor_points(self.series)
 
         # We update the visualization of all the rectangles
         for formations_name in self.anch_formations.columns:
@@ -306,14 +308,14 @@ class DraggableRectangle:
 
     def compute_new_arch_series(self):
 
-        dist = np.abs(self.anch_series.as_matrix() - self.rect.get_y())
+        dist = np.abs(self.anch_series.values - self.rect.get_y())
         arg_min = np.argmin(dist)
         new_arch = self.anch_series.iloc[0, arg_min]
         return new_arch, arg_min
 
     def compute_new_arch_formation(self):
 
-        dist = np.abs(self.anch_formations.as_matrix() - self.rect.get_y())
+        dist = np.abs(self.anch_formations.values - self.rect.get_y())
         arg_min = np.argmin(dist)
         new_arch = self.anch_formations.iloc[0, arg_min]
         return new_arch, arg_min
@@ -336,9 +338,9 @@ class DraggableRectangle:
              # Passing from array to tuple what a pain
              series_dict[name] = format_in_series.values
 
-        self.geo_data.set_series(series_dict, order=order_series)
-        self.geo_data.set_formation_number(order_formations.columns.values)
-        self.geo_data.order_table()
+        self.series.set_series(series_dict, order=order_series)
+        #self.series.set_formation_number(order_formations.columns.values)
+        #self.geo_data.order_table()
 
     def disconnect(self):
         'disconnect all the stored connection ids'

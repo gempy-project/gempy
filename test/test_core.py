@@ -4,7 +4,7 @@ import theano
 import numpy as np
 import sys, os
 sys.path.append("../..")
-import gempy
+import gempy.core.gempy_front as gempy
 import matplotlib.pyplot as plt
 import pdb
 
@@ -54,10 +54,10 @@ class TestNoFaults:
         real_sol = np.load(input_path + '/test_a_sol.npy')
 
         # Checking that the plots do not rise errors
-        gempy.plot_section(geo_data, np.round(sol[0][0, :]), 25, direction='y', plot_data=True)
+        gempy.plotting.plot_section(geo_data, np.round(sol[0][0, :]), 25, direction='y', plot_data=True)
         plt.savefig(os.path.dirname(__file__)+'/figs/test_a.png', dpi=100)
 
-        gempy.plot_scalar_field(geo_data, sol[0][1, :], 25)
+        gempy.plotting.plot_scalar_field(geo_data, sol[0][1, :], 25)
 
         # We only compare the block because the absolute pot field I changed it
         np.testing.assert_array_almost_equal(np.round(sol[0][0, :]), real_sol[0][0, :], decimal=0)
