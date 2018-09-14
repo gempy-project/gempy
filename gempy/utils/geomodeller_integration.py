@@ -42,6 +42,38 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 
+# TODO fix this function and importing it to gempy.utils.create_from_geomodeller_xml
+def create_from_geomodeller_xml(fp, resolution=(50, 50, 50), return_xml=False, **kwargs):
+    """
+    EXPERIMENTAL
+    Creates InputData object from a GeoModeller xml file. Automatically extracts and sets model extent, interface
+    and orientation data as well as the stratigraphic pile.
+
+    Args:
+        fp (str): Filepath for the GeoModeller xml file to be read.
+        resolution (tuple, optional): Tuple containing the number of voxels in dimensions (x,y,z). Defaults to 50.
+        return_xml (bool, optional): Toggles returning the ReadGeoModellerXML instance to leverage further info from the
+            xml file (e.g. for stratigraphic pile ordering). Defaults to True.
+        **kwargs: Keyword arguments for create_data function.
+
+    Returns:
+        gp.data_management.InputData
+    """
+    gmx = _ReadGeoModellerXML(fp)  # instantiate parser class with filepath of xml
+
+    # instantiate InputData object with extent and resolution
+    geo_data = create_data(gmx.extent, resolution, **kwargs)
+
+    # set interface and orientation dataframes
+    geo_data.interfaces = gmx.interfaces
+    geo_data.orientations = gmx.orientations
+
+    if return_xml:
+        return geo_data, gmx
+    else:
+        return geo_data
+
+
 
 class ReadGeoModellerXML:
     def __init__(self, fp):

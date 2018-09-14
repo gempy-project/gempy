@@ -45,11 +45,12 @@ from gempy.plotting.sequential_pile import StratigraphicPile
 from gempy.addons.topology import topology_analyze as _topology_analyze
 from gempy.utils.geomodeller_integration import ReadGeoModellerXML as _ReadGeoModellerXML
 import gempy.bayesian.posterior_analysis as pa # So far we use this type of import because the other one makes a copy and blows up some asserts
-
+import gempy.plotting as plotting
 from gempy.core.data import *
 from gempy.core.model import *
 
-def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_interfaces=False):
+
+def compute_model(interp_data: Interpolator, output='geology', u_grade=None, get_potential_at_interfaces=False):
     """
     Computes the geological model and any extra output given.
 
@@ -81,15 +82,18 @@ def compute_model(interp_data, output='geology', u_grade=None, get_potential_at_
         In addition if get_potential_at_interfaces is True, the value of the potential field at each of
         the interfaces is given as well
     """
-    if not getattr(interp_data, 'th_fn', None):
-        interp_data.th_fn = interp_data.compile_th_fn(output=output)
+    #if not getattr(interp_data, 'th_fn', None):
+    #    interp_data.th_fn = interp_data.compile_th_fn(output=output)
 
-    i = interp_data.get_input_data(u_grade=u_grade)
+    i = interp_data.get_input_matrix()
 
-    assert interp_data.interpolator.len_interfaces.min() > 1,  \
+    assert interp_data.additional_data.len_formations_i.min() > 1,  \
         'To compute the model is necessary at least 2 interface points per layer'
 
-    sol = interp_data.th_fn(*i)
+    sol = interp_data.theano_function(*i)
+    Solution
+
+
     interp_data.potential_at_interfaces = sol[-1]
 
     if get_potential_at_interfaces:
@@ -213,37 +217,6 @@ def create_data(extent, resolution=(50, 50, 50), name_project=None, **kwargs):
     read_data(model, **kwargs)
 
     return model
-
-
-def create_from_geomodeller_xml(fp, resolution=(50, 50, 50), return_xml=False, **kwargs):
-    """
-    EXPERIMENTAL
-    Creates InputData object from a GeoModeller xml file. Automatically extracts and sets model extent, interface
-    and orientation data as well as the stratigraphic pile.
-
-    Args:
-        fp (str): Filepath for the GeoModeller xml file to be read.
-        resolution (tuple, optional): Tuple containing the number of voxels in dimensions (x,y,z). Defaults to 50.
-        return_xml (bool, optional): Toggles returning the ReadGeoModellerXML instance to leverage further info from the
-            xml file (e.g. for stratigraphic pile ordering). Defaults to True.
-        **kwargs: Keyword arguments for create_data function.
-
-    Returns:
-        gp.data_management.InputData
-    """
-    gmx = _ReadGeoModellerXML(fp)  # instantiate parser class with filepath of xml
-
-    # instantiate InputData object with extent and resolution
-    geo_data = create_data(gmx.extent, resolution, **kwargs)
-
-    # set interface and orientation dataframes
-    geo_data.interfaces = gmx.interfaces
-    geo_data.orientations = gmx.orientations
-
-    if return_xml:
-        return geo_data, gmx
-    else:
-        return geo_data
 
 
 def data_to_pickle(geo_data, path=False):
@@ -597,8 +570,10 @@ def rescale_factor_default(geo_data):
     return rescaling_factor
 
 
-def rescale_data(geo_data, rescaling_factor=None):
+def rescale_data(model: Model, rescaling_factor=None, centers=None):
     """
+    Is always in place.
+
     Rescale the data of a :class:`gempy.data_management.InputData`
     object between 0 and 1 due to stability problem of the float32.
 
@@ -610,52 +585,18 @@ def rescale_data(geo_data, rescaling_factor=None):
         gempy.data_management.InputData: Rescaled data
 
     """
-    # TODO split this function in compute rescaling factor and rescale z
 
-    # Check which axis is the largest
-    max_coord = _pn.concat(
-        [geo_data.orientations, geo_data.interfaces]).max()[['X', 'Y', 'Z']]
-    min_coord = _pn.concat(
-        [geo_data.orientations, geo_data.interfaces]).min()[['X', 'Y', 'Z']]
+    model.rescaling.rescale_data(rescaling_factor, centers)
 
-    # Compute rescalin factor if not given
-    if not rescaling_factor:
-        rescaling_factor = 2 * _np.max(max_coord - min_coord)
+def update_additional_data(model: Model, update_structure=True, update_rescaling=True, update_kriging=True):
+    if update_structure is True:
+        model.additional_data.update_structure()
+    if update_rescaling is True:
+        model.additional_data.update_rescaling_data()
+    if update_kriging is True:
+        model.additional_data.update_default_kriging()
 
-    # Get the centers of every axis
-    centers = (max_coord + min_coord) / 2
-
-    # Change the coordinates of interfaces
-    new_coord_interfaces = (geo_data.interfaces[['X', 'Y', 'Z']] -
-                            centers) / rescaling_factor + 0.5001
-
-    # Change the coordinates of orientations
-    new_coord_orientations = (geo_data.orientations[['X', 'Y', 'Z']] -
-                              centers) / rescaling_factor + 0.5001
-
-    # Rescaling the std in case of stochastic values
-    try:
-        geo_data.interfaces[['X_std', 'Y_std', 'Z_std']] = (geo_data.interfaces[
-            ['X_std', 'Y_std', 'Z_std']]) / rescaling_factor
-        geo_data.orientations[['X_std', 'Y_std', 'Z_std']] = (geo_data.orientations[
-            ['X_std', 'Y_std', 'Z_std']]) / rescaling_factor
-    except KeyError:
-        pass
-
-    # Updating properties
-    new_coord_extent = (geo_data.extent - _np.repeat(centers, 2)) / rescaling_factor + 0.5001
-
-    geo_data_rescaled = copy.deepcopy(geo_data)
-    geo_data_rescaled.interfaces[['X', 'Y', 'Z']] = new_coord_interfaces
-    geo_data_rescaled.orientations[['X', 'Y', 'Z']] = new_coord_orientations
-    geo_data_rescaled.extent = new_coord_extent.as_matrix()
-
-    geo_data_rescaled.grid.values = (geo_data.grid.values - centers.as_matrix()) / rescaling_factor + 0.5001
-
-    # Saving useful values for later
-    geo_data_rescaled.rescaling_factor = rescaling_factor
-
-    return geo_data_rescaled
+    return model.additional_data
 
 
 def select_series(geo_data, series):
@@ -691,7 +632,7 @@ def select_series(geo_data, series):
 
 
 def set_series(model: Model, series_distribution, order_series=None, order_formations=None,
-               map_formations=True, verbose=0):
+               values_to_default=True, verbose=0):
     """
     Function to set in place the different series of the project with their correspondent formations
 
@@ -711,14 +652,31 @@ def set_series(model: Model, series_distribution, order_series=None, order_forma
             2) geo_data.interfaces: one extra column with the given series
             3) geo_data.orientations: one extra column with the given series
     """
-    # geo_data.update_df(series_distribution=series_distribution, order=order_series)
-    # if order_formations is not None:
-    #     geo_data.set_formations(formation_order=order_formations)
-    #     geo_data.order_table()
 
     model.series.set_series(series_distribution, order=order_series)
+    if values_to_default is True:
+        warnings.warn("This option will get deprecated in the next version of gempy. It still exist only to keep"
+                      "the behaviour equal to older version. See set_values_to_default.", FutureWarning)
 
-    if map_formations is True:
+        set_values_to_default(model, order_formations=None, set_faults=True,
+                              map_formations_from_series=True, call_map_to_data=True)
+
+    if verbose > 0:
+        return get_sequential_pile(model)
+    else:
+        return None
+
+
+def set_values_to_default(model: Model, series_distribution=None, order_series=None, order_formations=None,
+                          set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0):
+
+    if series_distribution:
+        model.series.set_series(series_distribution, order=order_series)
+
+    if set_faults is True:
+        model.faults.set_faults()
+
+    if map_formations_from_series is True:
         model.formations.map_formations_from_series(model.series)
         model.formations.df = model.formations.set_id(model.formations.df)
         try:
@@ -731,10 +689,28 @@ def set_series(model: Model, series_distribution, order_series=None, order_forma
         warnings.warn(" ", FutureWarning)
         model.formations.set_formation_order(order_formations)
 
+    if call_map_to_data is True:
+        map_to_data(model, model.series, model.formations, model.faults)
+
     if verbose > 0:
-         return get_sequential_pile(model)
+        return get_sequential_pile(model)
     else:
         return None
+
+
+def map_to_data(model: Model, series: Series=None, formations: Formations=None, faults: Faults=None):
+    # TODO this function makes sense as Model method
+    if series is not None:
+        model.interfaces.map_series_to_data(series)
+        model.orientations.map_series_to_data(series)
+
+    if formations is not None:
+        model.interfaces.map_formations_to_data(formations)
+        model.orientations.map_formations_to_data(formations)
+
+    if faults is not None:
+        model.interfaces.map_faults_to_data(faults)
+        model.orientations.map_faults_to_data(faults)
 
 
 def set_order_formations(geo_data, order_formations):
@@ -808,7 +784,7 @@ def set_grid(geo_data, grid):
     geo_data.resolution = grid.resolution
 
 
-def set_interpolation_data(geo_data, **kwargs):
+def set_interpolation_data(model: Model, **kwargs):
     """
     Create a :class:`gempy.interpolator.InterpolatorData`. InterpolatorData is a class that contains all the
      preprocessing operations to prepare the data to compute the model.
@@ -840,8 +816,20 @@ def set_interpolation_data(geo_data, **kwargs):
         dtype:  type of float
 
     """
-    in_data = InterpolatorData(geo_data, **kwargs)
-    return in_data
+    # TODO add kwargs
+    model.rescaling.rescale_data()
+    update_additional_data(model)
+    model.interpolator.create_theano_graph()
+    model.interpolator.set_theano_shared_parameters()
+
+    compile_theano = kwargs.get('compile_theano', True)
+    if compile_theano is True:
+        model.interpolator.compile_th_fn()
+
+    return model.interpolator
+
+
+
 
 
 def set_geophysics_obj(interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):

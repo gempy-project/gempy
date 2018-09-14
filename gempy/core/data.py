@@ -1039,7 +1039,7 @@ class RescaledData(object):
 
         self.rescale_data(rescaling_factor=rescaling_factor, centers=centers)
 
-    def rescale_data(self, rescaling_factor=None, centers=None):
+    def rescale_data(self, rescaling_factor=None, centers=None, inplace=True):
 
         max_coord, min_coord = self.max_min_coord(self.interfaces, self.orientations)
         if not rescaling_factor:
@@ -1606,7 +1606,7 @@ class Interpolator(object):
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.theano_graph.input_parameters_list()
         if output is None:
-            output = self.additional_data.options.loc['output']
+            output = self.additional_data.options.loc['output', 'values']
 
         print('Compiling theano function...')
 

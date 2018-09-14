@@ -228,8 +228,8 @@ class PlotData2D(object):
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
         return _a, _b, _c, extent_val, x, y, Gx, Gy
 
-    def plot_block_section(self, solution:Solution, cell_number=13, block_type='lithology', direction="y", interpolation='none',
-                           plot_data=False, ve=1, **kwargs):
+    def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
+                           plot_data=False, block_type='lithology', ve=1, **kwargs):
         """
         Plot a section of the block model
 
@@ -262,17 +262,22 @@ class PlotData2D(object):
         #         _block = self._data.interpolator.tg.final_block.get_value()
         #     except AttributeError:
         #         raise AttributeError('There is no block to plot')
-        
-        if block_type is 'lithology':
-            _block = solution.lith_block
-        
-        elif block_type is 'fault1':
-            _block = solution.fault_block
-            
+
+        if block is not None:
+            warnings.warn('Passing the block directly will get deprecated in the next version. Please use Solution'
+                          'and block_type instead', FutureWarning)
+            _block = block
         else:
-            assert block_type in self.model.formations.df.columns, 'The value to be plotted has to be in formations: \\' + \
-                                                               str(self.model.formations.df)  
-        
+            if block_type is 'lithology':
+                _block = solution.lith_block
+
+            elif block_type is 'fault1':
+                _block = solution.fault_block
+
+            else:
+                assert block_type in self.model.formations.df.columns, 'The value to be plotted has to be in formations: \\' + \
+                                                                   str(self.model.formations.df)
+
         plot_block = _block.reshape(self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
 
@@ -306,7 +311,7 @@ class PlotData2D(object):
         plt.ylabel(y)
         return plt.gcf()
 
-    def plot_scalar_field(self, solution: Solution, cell_number, N=20,
+    def plot_scalar_field(self, solution, cell_number, N=20,
                           direction="y", plot_data=True, series="all", *args, **kwargs):
         """
         Plot a scalar field in a given direction.
@@ -322,8 +327,13 @@ class PlotData2D(object):
         Returns:
             scalar field plot
         """
-        
-        scalar_field = solution.scalar_field
+
+        if isinstance(solution, Solution):
+            scalar_field = solution.scalar_field
+        else:
+            warnings.warn('Passing the block directly will get deprecated in the next version. Please use Solution'
+                          'and block_type instead', FutureWarning)
+            scalar_field = solution
         
         if 'cmap' not in kwargs:
             kwargs['cmap'] = 'magma'
