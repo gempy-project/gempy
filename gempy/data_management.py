@@ -68,7 +68,7 @@ class InputData(object):
     """
 
     def __init__(self,
-                 extent,
+                 extent=None,
                  resolution=[50, 50, 50],
                  path_i=None, path_o=None, path_f =None,
                  **kwargs):
@@ -80,7 +80,10 @@ class InputData(object):
             path_o = path_f
 
         # Set extent and resolution
-        self.extent = np.array(extent)
+        if extent:
+            self.extent = np.array(extent)
+        else:
+            self.extent = None # extent is then set in import_data_csv
         self.resolution = np.array(resolution)
 
         # Init number of faults
@@ -130,6 +133,15 @@ class InputData(object):
         # Set dtypes
         self.interfaces['isFault'] = self.interfaces['isFault'].astype('bool')
         self.orientations['isFault'] = self.orientations['isFault'].astype('bool')
+
+    def get_auto_extent(self):
+        X = np.concatenate((self.orientations['X'], self.interfaces['X']))
+        Y = np.concatenate((self.orientations['Y'], self.interfaces['Y']))
+        Z = np.concatenate((self.orientations['Z'], self.interfaces['Z']))
+        x_min, x_max, y_min, y_max, z_min, z_max = X.min(), X.max(), Y.min(), Y.max(), Z.min(), Z.max()
+        # some extra space at borders of model
+        xspace, yspace, zspace = (x_max-x_min) / 10, (y_max-y_min) / 10, (z_max-z_min) / 10
+        return np.array([x_min-xspace, x_max+xspace, y_min-yspace, y_max+yspace, z_min-zspace, z_max+zspace]).astype(int)
 
     def set_basement(self):
 
@@ -418,6 +430,8 @@ class InputData(object):
             self.set_interfaces(interfaces_read, append=True)
             #self.interfaces[interfaces_read.columns] = interfaces_read[interfaces_read.columns]
             #gagag
+        if self.extent is None:
+            self.extent = self.get_auto_extent()
         self.update_df()
 
     def modify_interface(self, index, **kwargs):

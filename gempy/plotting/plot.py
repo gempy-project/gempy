@@ -780,7 +780,7 @@ def plot_stereonet(geo_data, series_only=False, litho=None, planes=True, poles=T
                                     measurement='poles', cmap='viridis', alpha=.5)
             else:
                 ax.density_contourf(df_sub2['azimuth'] - 90, df_sub2['dip'], measurement='poles', cmap='viridis',
-                                    alpha=.75)
+                                    alpha=.5)
 
         fig.subplots_adjust(top=0.8)
         handles, labels = ax.get_legend_handles_labels()

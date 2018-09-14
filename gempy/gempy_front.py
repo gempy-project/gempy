@@ -155,7 +155,7 @@ def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None
     return sol
 
 
-def create_data(extent, resolution=(50, 50, 50), **kwargs):
+def create_data(extent=None, resolution=(50, 50, 50), **kwargs):
     """
     Method to create a :class:`gempy.data_management.InputData` object. It is analogous to gempy.InputData()
 
