@@ -1499,7 +1499,10 @@ class Solution(object):
         self.scalar_field_faults = faults[::2]
         self.fault_blocks = faults[1::2]
 
-    def get_surface(potential_block, interp_data, pot_int, n_formation, step_size, original_scale):
+    def get_surface(self, ):
+        pass
+
+    def get_surface_old(potential_block, interp_data, pot_int, n_formation, step_size, original_scale):
         """
         Get an individual surface
 
