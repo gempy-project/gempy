@@ -315,7 +315,6 @@ class Faults(object):
 
         return self.faults_relations
 
-
     @staticmethod
     def count_faults(list_of_names):
         """
@@ -1233,7 +1232,7 @@ class Structure(object):
 
     def set_length_series_o(self, orientations):
         # Array containing the size of every series. orientations.
-        self.len_series_o = orientations.df['id'].value_counts(sort=False).values
+        self.len_series_o = orientations.df['order_series'].value_counts(sort=False).values
         return self.len_series_o
 
     def set_ref_position(self):
@@ -1273,6 +1272,8 @@ class AdditionalData(Structure, RescaledData):
         self.orientations = orientations
         self.faults = faults
         self.formations = formations
+        self.grid = grid
+        self.rescaled_data = rescaling
 
         super().__init__(interfaces, orientations)
 
@@ -1292,8 +1293,7 @@ class AdditionalData(Structure, RescaledData):
                                          columns=['values'],
                                          index=['range', '$C_o$', 'drift equations',
                                                 'nugget grad', 'nugget scalar'])
-        self.grid = grid
-        self.rescaled_data = rescaling
+
 
         self.options = pn.DataFrame(columns=['values'],
                                     index=['dtype', 'output', 'theano_optimizer', 'device', 'verbosity'])

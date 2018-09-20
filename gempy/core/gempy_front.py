@@ -187,10 +187,14 @@ def create_data(extent, resolution=(50, 50, 50), name_project=None, **kwargs):
     """
     warnings.warn(" ", FutureWarning)
     model = create_model(name_project)
-    set_grid(model, create_grid( grid_type='regular_grid', extent=extent, resolution=resolution))
+    set_grid(model, create_grid(grid_type='regular_grid', extent=extent, resolution=resolution))
     read_data(model, **kwargs)
 
     return model
+
+
+def update_grid(model, grid_type: str, **kwargs):
+    model.grid.__init__(grid_type=grid_type, **kwargs)
 
 
 def create_grid(grid_type: str, **kwargs):
@@ -849,8 +853,18 @@ def set_interpolation_data(model: Model, **kwargs):
 
     return model.interpolator
 
-def set_grid(model: Model, grid: GridClass):
+def set_grid(model: Model, grid: GridClass, only_model=False):
+    """
+
+    Args:
+        model (object):
+    """
+
     model.grid = grid
+    if only_model is not True:
+        model.additional_data.grid = grid
+        model.interpolator.grid = grid
+        model.rescaling.grid = grid
 
 
 
