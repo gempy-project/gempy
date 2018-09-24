@@ -338,7 +338,7 @@ class DraggableRectangle:
              # Passing from array to tuple what a pain
              series_dict[name] = format_in_series.values
 
-        self.series.set_series(series_dict, order=order_series)
+        self.series.set_series_categories(series_dict, order=order_series)
         #self.series.set_formation_number(order_formations.columns.values)
         #self.geo_data.order_table()
 

@@ -165,6 +165,18 @@ def create_model(name_project=None):
     return Model(name_project)
 
 
+def create_series(series_distribution=None, order=None):
+    return Series(series_distribution=series_distribution, order=order)
+
+
+def create_faults(series: Series, series_fault=None, rel_matrix=None):
+    return Faults(series=series, series_fault=series_fault, rel_matrix=rel_matrix)
+
+
+def create_formations(values_array=None, values_names=np.empty(0), formation_names=np.empty(0)):
+    return Formations(values_array=values_array, properties_names=values_names, formation_names=formation_names)
+
+
 def create_data(extent, resolution=(50, 50, 50), name_project=None, **kwargs):
     """
     DEP
@@ -193,12 +205,12 @@ def create_data(extent, resolution=(50, 50, 50), name_project=None, **kwargs):
     return model
 
 
-def update_grid(model, grid_type: str, **kwargs):
-    model.grid.__init__(grid_type=grid_type, **kwargs)
-
-
 def create_grid(grid_type: str, **kwargs):
     return GridClass(grid_type=grid_type, **kwargs)
+
+
+def update_grid(model, grid_type: str, **kwargs):
+    model.grid.__init__(grid_type=grid_type, **kwargs)
 
 
 def save_model(model: Model, path=False):
@@ -675,7 +687,7 @@ def set_series(model: Model, series_distribution, order_series=None, order_forma
             3) geo_data.orientations: one extra column with the given series
     """
 
-    model.series.set_series(series_distribution, order=order_series)
+    model.series.set_series_categories(series_distribution, order=order_series)
     if values_to_default is True:
         warnings.warn("This option will get deprecated in the next version of gempy. It still exist only to keep"
                       "the behaviour equal to older version. See set_values_to_default.", FutureWarning)
@@ -693,10 +705,10 @@ def set_values_to_default(model: Model, series_distribution=None, order_series=N
                           set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0):
 
     if series_distribution:
-        model.series.set_series(series_distribution, order=order_series)
+        model.series.set_series_categories(series_distribution, order=order_series)
 
     if set_faults is True:
-        model.faults.set_faults()
+        model.faults.set_is_fault()
 
     if map_formations_from_series is True:
         model.formations.map_formations_from_series(model.series)
@@ -766,6 +778,12 @@ def set_formations(geo_data, formations=None, formations_order=None, formations_
 
     geo_data.set_formations(formation_order=formations_order, formation_values=formations_values)
     return  geo_data.formations
+
+
+def set_faults(model: Model, faults: Faults):
+    model.faults = faults
+
+#def set_is_fault(model: Model, )
 
 
 def set_interfaces(geo_data, interf_dataframe, append=False):
@@ -852,6 +870,7 @@ def set_interpolation_data(model: Model, **kwargs):
         model.interpolator.compile_th_fn()
 
     return model.interpolator
+
 
 def set_grid(model: Model, grid: GridClass, only_model=False):
     """
@@ -1032,6 +1051,7 @@ def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
     sec_plot = plot.plot_block_section(cell_number, block=block, direction=direction, **kwargs)
     # TODO saving options
 
+
 def plot_scalar_field(geo_data, potential_field, cell_number, N=20,
                       direction="y", plot_data=True, series="all", *args, **kwargs):
     """
@@ -1054,6 +1074,7 @@ def plot_scalar_field(geo_data, potential_field, cell_number, N=20,
     plot.plot_scalar_field(potential_field, cell_number, N=N,
                               direction=direction,  plot_data=plot_data, series=series,
                               *args, **kwargs)
+
 
 def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,
                       direction="y", plot_scalar=True, **kwargs):

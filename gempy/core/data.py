@@ -8,7 +8,7 @@ sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import copy
 import numpy as np
 import pandas as pn
-
+from typing import Union
 import warnings
 
 try:
@@ -72,7 +72,7 @@ class GridClass(object):
     def __repr__(self):
         return np.array_repr(self.values)
 
-    def create_custom_grid(self, custom_grid, inplace=True):
+    def create_custom_grid(self, custom_grid, inplace=False):
         """
         Give the coordinates of an external generated grid
 
@@ -151,7 +151,7 @@ class Series(object):
         if series_distribution is None:
             self.df = pn.DataFrame({"Default series": [None]}, dtype=str)
         else:
-            self.set_series(series_distribution, order=order)
+            self.set_series_categories(series_distribution, order=order)
 
         self.sequential_pile = None
 
@@ -161,7 +161,7 @@ class Series(object):
     def _repr_html_(self):
         return self.df.to_html()
 
-    def set_series(self, series_distribution, order=None, add_basement=False):
+    def set_series_categories(self, series_distribution: Union[pn.DataFrame, dict], order=None, add_basement=False):
         """
         Method to define the different series of the project.
 
@@ -190,7 +190,7 @@ class Series(object):
             self.df = pn.DataFrame(dict([(k, pn.Series(v)) for k, v in series_distribution.items()]),
                                    columns=order)
 
-        elif type(series_distribution) is pn.core.frame.DataFrame:
+        elif type(series_distribution) is pn.DataFrame:
                 self.df = series_distribution
 
         else:
@@ -236,7 +236,7 @@ class Faults(object):
         self.series = series
 
         self.faults = pn.DataFrame(columns=['isFault', 'isFinite'])
-        self.set_faults(series_fault=series_fault)
+        self.set_is_fault(series_fault=series_fault)
 
         self.faults_relations = pn.DataFrame(index=self.series.df.columns, columns=self.series.df.columns, dtype='bool')
         self.set_fault_relation(rel_matrix=rel_matrix)
@@ -248,7 +248,7 @@ class Faults(object):
     def _repr_html_(self):
         return self.faults.to_html()
 
-    def set_faults(self, series_fault=None):
+    def set_is_fault(self, series_fault=None):
         """
         Set a flag to the series that are faults.
 
@@ -305,7 +305,7 @@ class Faults(object):
             rel_matrix (numpy.array): 2D Boolean array with the logic. Rows affect (offset) columns
         """
         # TODO: Change the fault relation automatically every time we add a fault
-        if not rel_matrix:
+        if rel_matrix is None:
             rel_matrix = np.zeros((self.series.df.columns.shape[0],
                                    self.series.df.columns.shape[0]))
         else:
@@ -346,16 +346,17 @@ class Formations(object):
          used for each voxel in the final model and the lithological order
         formation_names (list[str]): List in order of the formations
     """
-    def __init__(self, values_array=None, values_names=np.empty(0), formation_names=np.empty(0)):
+    def __init__(self, values_array=None, properties_names=np.empty(0), formation_names=np.empty(0)):
         self.df = pn.DataFrame(columns=['formation', 'id', 'isBasement'])
         self.df['isBasement'] = self.df['isBasement'].astype(bool)
         self.df["formation"] = self.df["formation"].astype('category')
         self.df["id"] = self.df["id"].astype('int32')
 
-        self.formations_names = np.empty(0)
+        self.formations_names = formation_names
         self._formation_values_set = False
         if values_array is not None:
-            self.set_formations(values_array=values_array, values_names=values_names, formation_names=formation_names)
+            self.set_formations_values(values_array=values_array, properties_names=properties_names,
+                                       formation_names=formation_names)
 
     def __repr__(self):
         return self.df.to_string()
@@ -385,10 +386,11 @@ class Formations(object):
         self.set_formation_names(list_names)
 
     def map_formation_names_to_df(self):
+
         if self.df['formation'].shape[0] == self.formations_names.shape[0]:
             self.df['formation'] = self.formations_names
 
-        elif self.df['formation'].shape[0] < self.formations_names.shape[0]:
+        elif self.df['formation'].shape[0] > self.formations_names.shape[0]:
             n_to_append = self.df['formation'].shape[0] - self.formations_names.shape[0]
             for i in range(n_to_append):
                 self.formations_names = np.append(self.formations_names, 'default_formation_' + str(i))
@@ -397,8 +399,10 @@ class Formations(object):
                 warnings.warn('Length of formation_names does not match number of formations')
             self.df['formation'] = self.formations_names
 
-        elif self.df['formation'].shape[0] > self.formations_names.shape[0]:
+        elif self.df['formation'].shape[0] < self.formations_names.shape[0]:
             warnings.warn('Length of formation_names does not match number of formations')
+
+
             self.df['formation'] = self.formations_names[:self.df.shape[0]]
 
         self.df['formation'] = self.df['formation'].astype('category')
@@ -472,12 +476,12 @@ class Formations(object):
         self.df['isBasement'] = self.df['isBasement'].astype(bool)
         self.df["formation"] = self.df["formation"].astype('category')
 
-    def set_formations(self, values_array, values_names=np.empty(0), formation_names=None):
+    def set_formations_values(self, values_array, properties_names=np.empty(0), formation_names=None):
         """
         Set the df containing the values of each formation for the posterior evaluation (e.g. densities, susceptibility)
         Args:
             values_array (np.ndarray): 2D array with the values of each formation
-            values_names (list or np.ndarray): list containing the names of each properties
+            properties_names (list or np.ndarray): list containing the names of each properties
             formation_names (list or np.ndarray): list contatinig the names of the formations
 
         Returns:
@@ -488,13 +492,12 @@ class Formations(object):
         self.df['isBasement'] = self.df['isBasement'].astype(bool)
         self.df["formation"] = self.df["formation"].astype('category')
 
-        values_names = np.asarray(values_names)
+        properties_names = np.asarray(properties_names)
         if type(values_array) is np.ndarray:
-            if values_names.size is 0:
+            if properties_names.size is 0:
                 for i in range(values_array.shape[1]):
-                    values_names = np.append(values_names, 'value_' + str(i))
-            vals_df = pn.DataFrame(values_array, columns=values_names)
-            self.set_formation_names(values_names)
+                    properties_names = np.append(properties_names, 'value_' + str(i))
+            vals_df = pn.DataFrame(values_array, columns=properties_names)
         elif isinstance(values_array, pn.core.frame.DataFrame):
             vals_df = values_array
 
@@ -579,6 +582,16 @@ class Data(object):
         self.df['series'].cat.set_categories(series_df.columns, inplace=True)
         return self.df
 
+    def _find_columns_to_merge(self, formations: Formations):
+        # Drop formation column in the formation object
+        df_without_form = formations.df.columns.drop('formation')
+        # Check what parameters are in the data.df
+        select_pos = self.df.columns.isin(df_without_form)
+        select_name = self.df.columns[select_pos]
+        # Pick data.df without the columns that otherwise will repeat
+        return self.df.drop(select_name, axis=1)
+
+
     def map_formations_to_data(self, formations, sort=True, inplace=True):
         """
         Method to map formation ids and values to a data object on formations
@@ -590,7 +603,7 @@ class Data(object):
         Returns:
             pandas.core.frame.DataFrame: Data frame with the raw data
         """
-        i_df = self.df.drop('id', axis=1)
+        i_df = self._find_columns_to_merge(formations)#self.df.drop(['id'], axis=1)
         new_df = pn.merge(i_df, formations.df, on=['formation'], how='left')
 
         # TODO: Substitute by ID
@@ -698,13 +711,13 @@ class Interfaces(Data):
             if inplace:
                 c = np.array(self._columns_i_1)
                 interfaces_read = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
-                self.set_interfaces(interfaces_read, append=append)
+                self.set_interfaces_df(interfaces_read, append=append)
                 self.df['formation'] = self.df['formation'].astype('category')
 
             else:
                 return table
 
-    def set_interfaces(self, interf_dataframe, append=False):
+    def set_interfaces_df(self, interf_dataframe, append=False):
         """
         Method to change or append a Dataframe to interfaces in place. A equivalent Pandas Dataframe with
         ['X', 'Y', 'Z', 'formation'] has to be passed.
@@ -755,7 +768,7 @@ class Interfaces(Data):
         formation_name = formation.formations_names[0]
         extent = grid.extent
 
-        self.set_interfaces(pn.DataFrame({'X': [(extent[1] - extent[0]) / 2],
+        self.set_interfaces_df(pn.DataFrame({'X': [(extent[1] - extent[0]) / 2],
                                           'Y': [(extent[3] - extent[2]) / 2],
                                           'Z': [(extent[4] - extent[5]) / 2],
                                           'formation': [formation_name], 'order_series': [0],
@@ -869,7 +882,7 @@ class Orientations(Data):
                              'Default series',
                              1, 1, False]], columns=self._columns_o_1)
 
-        self.set_orientations(ori)
+        self.set_orientations_df(ori)
 
     def read_orientations(self, filepath, debug=False, inplace=False, append=False, **kwargs):
         """
@@ -899,14 +912,14 @@ class Orientations(Data):
                # self.df[table.columns] = table
                 c = np.array(self._columns_o_1)
                 orientations_read = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
-                self.set_orientations(orientations_read, append=append)
+                self.set_orientations_df(orientations_read, append=append)
                 #self.set_interfaces(interfaces_read, append=append)
                 self.df['formation'] = self.df['formation'].astype('category')
 
             else:
                 return table
 
-    def set_orientations(self, foliat_Dataframe, append=False, order_table=True):
+    def set_orientations_df(self, foliat_Dataframe, append=False, order_table=True):
         """
           Method to change or append a Dataframe to orientations in place.  A equivalent Pandas Dataframe with
         ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation'] has to be passed.
