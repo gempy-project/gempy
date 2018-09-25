@@ -1,6 +1,6 @@
 
 import pytest
-import gempy
+import gempy.core.gempy_front as gempy
 import sys, os
 
 input_path = os.path.dirname(__file__)+'/input_data'
@@ -17,6 +17,21 @@ def theano_f():
     interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=True,
                                          verbose=[])
     return interp_data
+
+
+@pytest.fixture(scope='session')
+def interpolator_islith_isfault():
+    # Importing the data from csv files and settign extent and resolution
+    geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+                                 path_o=input_path+"/GeoModeller/test_d/test_d_Foliations.csv",
+                                 path_i=input_path+"/GeoModeller/test_d/test_d_Points.csv")
+
+    gempy.set_series(geo_data, {'series': ('A', 'B'),
+                                'fault1': 'f1'}, order_series=['fault1', 'series'])
+
+    interp_data = gempy.set_interpolation_data(geo_data, dtype='float64', compile_theano=True, verbose=[])
+    return interp_data
+
 
 
 @pytest.fixture(scope='session')

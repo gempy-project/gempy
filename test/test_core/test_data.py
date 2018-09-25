@@ -65,6 +65,26 @@ class TestInterfaces:
         print(test_read_interfaces)
 
 
+class TestOrientations:
+    @pytest.fixture(scope='class')
+    def test_read_orientations(self):
+        orientations = gp.Orientations()
+        orientations.read_orientations(os.pardir + "/input_data/FabLessPoints_Foliations.csv", inplace=True)
+        return orientations
+
+    def test_map_all_to_data(self, test_create_series, test_read_orientations, test_create_formations,
+                             test_create_faults):
+        test_read_orientations.map_series_to_data(test_create_series)
+        test_create_formations.set_formation_names(['MainFault', 'SecondaryReservoir','Seal',
+                                                    'Reservoir', 'Overlying'])
+
+        test_read_orientations.map_formations_to_data(test_create_formations)
+        test_read_orientations.map_formations_to_data(test_create_formations)
+
+        test_read_orientations.map_faults_to_data(test_create_faults)
+        test_read_orientations.set_annotations()
+        print(test_read_orientations)
+
 
 class TestGrid:
     def test_set_regular_grid(self):
@@ -152,6 +172,21 @@ class TestFormations:
         test_create_formations.set_formation_names(['MainFault', 'SecondaryReservoir','Seal',
                                 'Reservoir', 'Overlying'])
 
+        print(test_create_formations)
+        formations = gp.Formations(values_array=np.arange(1, 8).reshape(-1, 1),
+                                 properties_names=np.array(['density']))
+
+        formations.set_formation_names(['MainFault', 'SecondaryReservoir','Seal',
+                                'Reservoir', 'Overlying'])
+        print(formations)
+
+        formations = gp.Formations(values_array=np.arange(1, 2).reshape(-1, 1),
+                                   properties_names=np.array(['density']))
+
+        formations.set_formation_names(['MainFault', 'SecondaryReservoir', 'Seal',
+                                        'Reservoir', 'Overlying'])
+
+        print(formations)
     def test_add_formation(self, test_create_formations):
         test_create_formations.add_basement()
         print(test_create_formations)
@@ -165,3 +200,10 @@ class TestFormations:
         test_create_formations.set_formations_values(np.random.rand(2,2))
         test_create_formations.set_formations_values(np.random.rand(5,2))
         test_create_formations.set_formations_values(np.random.rand(10,3))
+
+
+class TestSolution:
+    def test_representation(self):
+        sol = gp.Solution()
+        sol.set_values(np.random.rand(4, 5, 3))
+        print(sol)

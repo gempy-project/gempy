@@ -27,16 +27,20 @@ class Model(object):
         self.meta = MetaData(name_project=name_project)
         self.grid = GridClass()
         self.series = Series()
-        self.faults = Faults(self.series)
         self.formations = Formations()
+        self.faults = Faults(self.series)
         self.interfaces = Interfaces()
         self.orientations = Orientations()
-        self.solutions = Solution()
+
         self.rescaling = RescaledData(self.interfaces, self.orientations, self.grid)
         self.additional_data = AdditionalData(self.interfaces, self.orientations, self.grid, self.faults,
                                               self.formations, self.rescaling)
         self.interpolator = Interpolator(self.interfaces, self.orientations, self.grid, self.formations,
                                          self.faults, self.additional_data)
+        self.solutions = Solution(self.additional_data, self.formations)
+
+    def __str__(self):
+        return self.meta.name_project
 
     def new_model(self, name_project='default_project'):
         self.__init__(name_project)
@@ -66,7 +70,7 @@ class Model(object):
         # TODO orientations df, grid values etc.
         pass
 
-    def get_data(self, itype='all', numeric=False, verbosity=0):
+    def get_data(self, itype='data', numeric=False, verbosity=0):
         """
         Method that returns the interfaces and orientations pandas Dataframes. Can return both at the same time or only
         one of the two
@@ -104,7 +108,7 @@ class Model(object):
             # Be sure that the columns are in order when used for operations
             if numeric:
                 raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
-        elif itype == 'all':
+        elif itype == 'data':
             raw_data = pn.concat([self.interfaces.df[show_par_i],  # .astype(dtype),
                                   self.orientations.df[show_par_f]],  # .astype(dtype)],
                                  keys=['interfaces', 'orientations'],
@@ -121,30 +125,59 @@ class Model(object):
             raw_data = self.faults
         elif itype is 'faults_relations':
             raw_data = self.faults.faults_relations
+        elif itype is 'additional_data':
+            raw_data = self.additional_data
         else:
-            raise AttributeError('itype has to be \'all\', \'interfaces\', \'orientations\', \'formations\', \
-                                          \'serires\', \'faults\' or \'faults_relations\'')
-
-        # else:
-        #    raise AttributeError('itype has to be: \'orientations\', \'interfaces\', or \'all\'')
+            raise AttributeError('itype has to be \'data\', \'additional data\', \'interfaces\', \'orientations\','
+                                 ' \'formations\',\'series\', \'faults\' or \'faults_relations\'')
 
         return raw_data
 
-    def get_theano_input(self):
+    # def get_theano_input(self):
+    #     pass
+
+    # def update_df(self, series_distribution=None, order=None):
+    #    pass
+    #    #  self.interfaces['formation'] = self.interfaces['formation'].astype('category')
+    #    #  self.orientations['formation'] = self.orientations['formation'].astype('category')
+    #    #
+    #    #  self.set_series(series_distribution=series_distribution, order=order)
+    #    #  self.set_basement()
+    #    #  faults_series = self.count_faults()
+    #    #  self.set_faults(faults_series)
+    #    #
+    #    # # self.reset_indices()
+    #    #
+    #    #  self.set_formations()
+    #    #  self.order_table()
+    #    #  self.set_fault_relation()
+
+    def set_grid(self, grid: GridClass, only_model=False):
+        self.grid = grid
+        if only_model is not True:
+            self.additional_data.grid = grid
+            self.interpolator.grid = grid
+            self.rescaling.grid = grid
+
+    def set_series(self):
         pass
 
-    def update_df(self, series_distribution=None, order=None):
-       pass
-       #  self.interfaces['formation'] = self.interfaces['formation'].astype('category')
-       #  self.orientations['formation'] = self.orientations['formation'].astype('category')
-       #
-       #  self.set_series(series_distribution=series_distribution, order=order)
-       #  self.set_basement()
-       #  faults_series = self.count_faults()
-       #  self.set_faults(faults_series)
-       #
-       # # self.reset_indices()
-       #
-       #  self.set_formations()
-       #  self.order_table()
-       #  self.set_fault_relation()
+    def set_formations(self):
+        pass
+
+    def set_faults(self):
+        pass
+
+    def set_interfaces(self):
+        pass
+
+    def set_orientations(self):
+        pass
+
+    def set_interpolator(self, interpolator: Interpolator):
+        self.interpolator = interpolator
+
+    def set_theano_function(self, interpolator: Interpolator):
+        self.interpolator.theano_graph = interpolator.theano_graph
+        self.interpolator.theano_function = interpolator.theano_function
+        self.interpolator.set_theano_shared_parameters()

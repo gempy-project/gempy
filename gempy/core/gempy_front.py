@@ -50,7 +50,7 @@ from gempy.core.data import *
 from gempy.core.model import *
 
 
-def compute_model(interp_data: Interpolator, output='geology', u_grade=None, get_potential_at_interfaces=False):
+def compute_model(geo_model: Model, output='geology', u_grade=None, get_potential_at_interfaces=False):
     """
     Computes the geological model and any extra output given.
 
@@ -85,21 +85,17 @@ def compute_model(interp_data: Interpolator, output='geology', u_grade=None, get
     #if not getattr(interp_data, 'th_fn', None):
     #    interp_data.th_fn = interp_data.compile_th_fn(output=output)
 
-    i = interp_data.get_input_matrix()
+    i = geo_model.interpolator.get_input_matrix()
 
-    assert interp_data.additional_data.len_formations_i.min() > 1,  \
+    assert geo_model.additional_data.len_formations_i.min() > 1,  \
         'To compute the model is necessary at least 2 interface points per layer'
 
-    sol = interp_data.theano_function(*i)
-    Solution
+    sol = geo_model.interpolator.theano_function(*i)
+    geo_model.solutions.set_values(sol)
 
+   # interp_data.potential_at_interfaces = sol[-1]
 
-    interp_data.potential_at_interfaces = sol[-1]
-
-    if get_potential_at_interfaces:
-        return sol
-    else:
-        return sol[:-1]
+    return geo_model.solutions
 
 
 def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None, get_potential_at_interfaces=False):
@@ -169,15 +165,17 @@ def create_series(series_distribution=None, order=None):
     return Series(series_distribution=series_distribution, order=order)
 
 
+def create_formations(values_array=None, values_names=np.empty(0), formation_names=np.empty(0)):
+    f = Formations(values_array=values_array, properties_names=values_names, formation_names=formation_names)
+    return f
+
+
 def create_faults(series: Series, series_fault=None, rel_matrix=None):
     return Faults(series=series, series_fault=series_fault, rel_matrix=rel_matrix)
 
 
-def create_formations(values_array=None, values_names=np.empty(0), formation_names=np.empty(0)):
-    return Formations(values_array=values_array, properties_names=values_names, formation_names=formation_names)
+def create_data(extent, resolution=(50, 50, 50), name_project=None, **kwargs) -> Model:
 
-
-def create_data(extent, resolution=(50, 50, 50), name_project=None, **kwargs):
     """
     DEP
     Method to create a :class:`gempy.data_management.InputData` object. It is analogous to gempy.InputData()
@@ -201,6 +199,7 @@ def create_data(extent, resolution=(50, 50, 50), name_project=None, **kwargs):
     model = create_model(name_project)
     set_grid(model, create_grid(grid_type='regular_grid', extent=extent, resolution=resolution))
     read_data(model, **kwargs)
+    update_additional_data(model)
 
     return model
 
@@ -284,7 +283,7 @@ def get_extent(model: Model):
     return model.grid.extent
 
 
-def get_data(model: Model, itype='all', numeric=False, verbosity=0):
+def get_data(model: Model, itype='data', numeric=False, verbosity=0):
     """
     Method to return the data stored in :class:`DataFrame` within a :class:`gempy.interpolator.InterpolatorData`
     object.
@@ -546,23 +545,24 @@ def precomputations_gravity(interp_data, n_chunck=25, densities=None):
     return tz, select
 
 
-def read_pickle(path):
-    """
-    Read InputData object from python pickle.
-
-    Args:
-       path (str): path where save the pickle
-
-    Returns:
-        :class:`gempy.data_management.InputData`
-
-    """
-    import pickle
-    with open(path, 'rb') as f:
-        # The protocol version used is detected automatically, so we do not
-        # have to specify it.
-        data = pickle.load(f)
-        return data
+# TODO ====== DEP 20.09.2018 ===========
+# def read_pickle(path):
+#     """
+#     Read InputData object from python pickle.
+#
+#     Args:
+#        path (str): path where save the pickle
+#
+#     Returns:
+#         :class:`gempy.data_management.InputData`
+#
+#     """
+#     import pickle
+#     with open(path, 'rb') as f:
+#         # The protocol version used is detected automatically, so we do not
+#         # have to specify it.
+#         data = pickle.load(f)
+#         return data
 
 
 def read_data(model, path_i=None, path_o=None):
@@ -582,6 +582,8 @@ def read_data(model, path_i=None, path_o=None):
     if path_o:
         model.orientations.read_orientations(path_o, inplace=True)
 
+    model.rescaling.rescale_data()
+    update_additional_data(model)
 
 def rescale_factor_default(geo_data):
     """
@@ -632,6 +634,7 @@ def update_additional_data(model: Model, update_structure=True, update_rescaling
         model.additional_data.update_default_kriging()
 
     return model.additional_data
+
 
 def select_series(geo_data, series):
     """
@@ -695,6 +698,8 @@ def set_series(model: Model, series_distribution, order_series=None, order_forma
         set_values_to_default(model, order_formations=None, set_faults=True,
                               map_formations_from_series=True, call_map_to_data=True)
 
+    update_additional_data(model)
+
     if verbose > 0:
         return get_sequential_pile(model)
     else:
@@ -730,9 +735,6 @@ def set_values_to_default(model: Model, series_distribution=None, order_series=N
         return get_sequential_pile(model)
     else:
         return None
-
-
-
 
 
 def map_to_data(model: Model, series: Series=None, formations: Formations=None, faults: Faults=None):
@@ -783,8 +785,6 @@ def set_formations(geo_data, formations=None, formations_order=None, formations_
 def set_faults(model: Model, faults: Faults):
     model.faults = faults
 
-#def set_is_fault(model: Model, )
-
 
 def set_interfaces(geo_data, interf_dataframe, append=False):
     """
@@ -827,7 +827,7 @@ def set_orientations(geo_data, orient_dataframe, append=False):
 #     geo_data.resolution = grid.resolution
 
 
-def set_interpolation_data(model: Model, **kwargs):
+def set_interpolation_data(model: Model, inplace=True, **kwargs):
     """
     Create a :class:`gempy.interpolator.InterpolatorData`. InterpolatorData is a class that contains all the
      preprocessing operations to prepare the data to compute the model.
@@ -862,12 +862,13 @@ def set_interpolation_data(model: Model, **kwargs):
     # TODO add kwargs
     model.rescaling.rescale_data()
     update_additional_data(model)
+
     model.interpolator.create_theano_graph()
     model.interpolator.set_theano_shared_parameters()
 
     compile_theano = kwargs.get('compile_theano', True)
     if compile_theano is True:
-        model.interpolator.compile_th_fn()
+        model.interpolator.compile_th_fn(inplace=inplace)
 
     return model.interpolator
 
@@ -878,13 +879,7 @@ def set_grid(model: Model, grid: GridClass, only_model=False):
     Args:
         model (object):
     """
-
-    model.grid = grid
-    if only_model is not True:
-        model.additional_data.grid = grid
-        model.interpolator.grid = grid
-        model.rescaling.grid = grid
-
+    model.set_grid(grid=grid, only_model=only_model)
 
 
 def set_geophysics_obj(interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):

@@ -402,8 +402,12 @@ class Formations(object):
         elif self.df['formation'].shape[0] < self.formations_names.shape[0]:
             warnings.warn('Length of formation_names does not match number of formations')
 
-
+            # Set the names to the formations already there
             self.df['formation'] = self.formations_names[:self.df.shape[0]]
+
+            # Append the names which are not in the df and drop if there is duplicated
+            self.df = self.df.append(pn.DataFrame({'formation':self.formations_names}), sort=False)
+            self.df.drop_duplicates(subset='formation', keep='first', inplace=True)
 
         self.df['formation'] = self.df['formation'].astype('category')
 
@@ -423,6 +427,8 @@ class Formations(object):
         # Dropping nans
         new_formations = new_formations[~pn.isna(new_formations)]
         self.set_formation_names(new_formations)
+        self.set_basement()
+        self.set_id()
 
     def set_basement(self, basement_formation=None):
 
@@ -459,8 +465,7 @@ class Formations(object):
         """
         pass
 
-    @staticmethod
-    def set_id(df):
+    def set_id(self, df=None):
         """
         Set id of the layers (1 based)
         Args:
@@ -469,8 +474,12 @@ class Formations(object):
         Returns:
 
         """
+        if df is None:
+            df = self.df
+
         df['id'] = df.index + 1
-        return df
+        self.df = df
+        return self.df
 
     def set_dtypes(self):
         self.df['isBasement'] = self.df['isBasement'].astype(bool)
@@ -1487,14 +1496,22 @@ class Solution(object):
             self.scalar_field_lith = np.array([])
             self.scalar_field_faults = np.array([])
 
-            self.lith_block = None
-            self.fault_blocks = None
-            self.values_block = None
-            self.gradient = None
+            self.lith_block = np.empty(0)
+            self.fault_blocks = np.empty(0)
+            self.values_block = np.empty(0)
+            self.gradient = np.empty(0)
         else:
             self.set_values(values)
 
-    def set_values(self, values):
+    def __repr__(self):
+        return '\nLithology ids \n  %s \n' \
+               'Lithology scalar field \n  %s \n' \
+               'Fault block \n  %s' \
+               % (np.array2string(self.lith_block), np.array2string(self.scalar_field_lith),
+                  np.array2string(self.fault_blocks))
+
+    def set_values(self, values: Union[list, np.ndarray]):
+        # TODO ============ Set asserts of give flexibility 20.09.18 =============
 
         lith = values[0]
         faults = values[1]
@@ -1503,10 +1520,13 @@ class Solution(object):
         self.scalar_field_lith = lith[0]
         self.lith_block = lith[1]
 
-        if self.additional_data.options.loc['output', 'values'] is 'gradients':
-            self.values_block = lith[2:-3]
-            self.gradient = lith[-3:]
-        else:
+        try:
+            if self.additional_data.options.loc['output', 'values'] is 'gradients':
+                self.values_block = lith[2:-3]
+                self.gradient = lith[-3:]
+            else:
+                self.values_block = lith[2:]
+        except AttributeError:
             self.values_block = lith[2:]
 
         self.scalar_field_faults = faults[::2]
@@ -1630,6 +1650,7 @@ class Solution(object):
 
         return vertices, simplices
 
+
 class Interpolator(object):
     # TODO assert passed data is rescaled
     def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: GridClass,
@@ -1644,6 +1665,7 @@ class Interpolator(object):
 
         self.dtype = additional_data.get_additional_data().xs('Options').loc['dtype', 'values']
         self.input_matrices = self.get_input_matrix()
+
         self.theano_graph = self.create_theano_graph(additional_data, inplace=False)
 
         if 'compile_theano' in kwargs:
@@ -1670,7 +1692,7 @@ class Interpolator(object):
         else:
             return graph
 
-    def set_theano_shared_parameters(self, **kwargs):
+    def set_theano_shared_parameters(self):
         # TODO: I have to split this one between structure and init data
         # Size of every layer in rests. SHARED (for theano)
         len_rest_form = (self.additional_data.structure_data.loc['len formations interfaces', 'values'] - 1)

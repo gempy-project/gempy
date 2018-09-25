@@ -71,7 +71,7 @@ def change_input_data_avrg(db, interp_data):
     """Calculates average posterior parameters and updates interp_data.geo_data_res dataframes."""
 
     # get input data
-    trace = db.input_data.gettrace()
+    trace = db.geo_model.gettrace()
     # set average in df
     interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = trace[:, 0][:].mean(axis=0)
     interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = trace[:, 1][:].mean(axis=0)
@@ -228,7 +228,7 @@ class Posterior:
             self.topo_analyze()
 
         # load input data
-        self.input_data = self.db.input_data.gettrace()
+        self.input_data = self.db.geo_model.gettrace()
 
         self.lith_prob = None
         self.ie = None
