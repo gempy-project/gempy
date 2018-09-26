@@ -168,6 +168,11 @@ class TestFormations:
         test_create_formations.map_formations_from_series(test_create_series)
         print(test_create_formations)
 
+    def test_map_formations_from_series2(self, test_create_series):
+        formations = gp.Formations()
+        formations.map_formations_from_series(test_create_series)
+        print(formations)
+
     def test_set_formation_names(self, test_create_formations):
         test_create_formations.set_formation_names(['MainFault', 'SecondaryReservoir','Seal',
                                 'Reservoir', 'Overlying'])
@@ -202,8 +207,19 @@ class TestFormations:
         test_create_formations.set_formations_values(np.random.rand(10,3))
 
 
+@pytest.fixture(scope='module')
+def test_load_model():
+    model = gp.load_model(os.pardir + "/input_data/test_solution.pickle")
+    return model
+
+
 class TestSolution:
-    def test_representation(self):
-        sol = gp.Solution()
-        sol.set_values(np.random.rand(4, 5, 3))
+    def test_representation(self, test_load_model):
+        sol = test_load_model.solutions
+        sol.set_values(np.random.rand(4, 2, 3))
         print(sol)
+
+    def test_get_surfaces(self, test_load_model):
+        model = test_load_model
+        print(model.solutions)
+        print(model.solutions.compute_all_surfaces())

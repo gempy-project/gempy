@@ -47,6 +47,7 @@ class TestFabianModel:
     def test_compute_model(self, interpolator_islith_isfault, geo_model):
         geo_model.set_theano_function(interpolator_islith_isfault)
         sol = gp.compute_model(geo_model)
+
         print(interpolator_islith_isfault)
         print(sol)
         return sol

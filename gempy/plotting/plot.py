@@ -621,10 +621,11 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     plot = PlotData2D(geo_data)
 
     # TODO saving options
-    return plot.plot_data(direction=direction, data_type=data_type, series=series, legend_font_size=legend_font_size, **kwargs)
+    return plot.plot_data(direction=direction, data_type=data_type, series=series,
+                          legend_font_size=legend_font_size, **kwargs)
 
 
-def plot_section(model, block_type, cell_number, direction="y", **kwargs):
+def plot_section(model, cell_number, block_type=None, direction="y", **kwargs):
     """
     Plot a section of the block model
 
@@ -647,7 +648,7 @@ def plot_section(model, block_type, cell_number, direction="y", **kwargs):
     # TODO saving options
 
 
-def plot_scalar_field(geo_data, potential_field, cell_number, N=20,
+def plot_scalar_field(model, cell_number, N=20,
                       direction="y", plot_data=True, series="all", *args, **kwargs):
     """
     Plot a potential field in a given direction.
@@ -663,8 +664,8 @@ def plot_scalar_field(geo_data, potential_field, cell_number, N=20,
     Returns:
         None
     """
-    plot = PlotData2D(geo_data)
-    plot.plot_scalar_field(potential_field, cell_number, N=N,
+    plot = PlotData2D(model)
+    plot.plot_scalar_field(model.solutions, cell_number, N=N,
                               direction=direction,  plot_data=plot_data, series=series,
                               *args, **kwargs)
 

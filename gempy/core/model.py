@@ -22,9 +22,9 @@ from .data import *
 
 
 class Model(object):
-    def __init__(self, name_project='default_project'):
+    def __init__(self, project_name='default_project'):
 
-        self.meta = MetaData(name_project=name_project)
+        self.meta = MetaData(project_name=project_name)
         self.grid = GridClass()
         self.series = Series()
         self.formations = Formations()
@@ -37,10 +37,10 @@ class Model(object):
                                               self.formations, self.rescaling)
         self.interpolator = Interpolator(self.interfaces, self.orientations, self.grid, self.formations,
                                          self.faults, self.additional_data)
-        self.solutions = Solution(self.additional_data, self.formations)
+        self.solutions = Solution(self.additional_data, self.formations, self.grid)
 
     def __str__(self):
-        return self.meta.name_project
+        return self.meta.project_name
 
     def new_model(self, name_project='default_project'):
         self.__init__(name_project)
@@ -56,6 +56,7 @@ class Model(object):
         Returns:
             None
         """
+        sys.setrecursionlimit(10000)
 
         if not path:
             # TODO: Update default to meta name
@@ -69,6 +70,7 @@ class Model(object):
         # TODO saving the main attributes in a seriealize way independent on the package i.e. interfaces and
         # TODO orientations df, grid values etc.
         pass
+
 
     def get_data(self, itype='data', numeric=False, verbosity=0):
         """
@@ -158,6 +160,7 @@ class Model(object):
             self.additional_data.grid = grid
             self.interpolator.grid = grid
             self.rescaling.grid = grid
+            self.solutions.grid = grid
 
     def set_series(self):
         pass

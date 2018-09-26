@@ -2,7 +2,7 @@ import os
 import sys
 import pytest
 import numpy as np
-from .context import gempy as gp
+from test.context import gempy as gp
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 

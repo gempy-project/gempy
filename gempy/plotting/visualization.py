@@ -329,7 +329,7 @@ class PlotData2D(object):
         """
 
         if isinstance(solution, Solution):
-            scalar_field = solution.scalar_field
+            scalar_field = solution.scalar_field_lith
         else:
             warnings.warn('Passing the block directly will get deprecated in the next version. Please use Solution'
                           'and block_type instead', FutureWarning)

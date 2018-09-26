@@ -20,15 +20,15 @@ pn.options.mode.chained_assignment = None
 
 
 class MetaData(object):
-    def __init__(self, name_project='default_project'):
+    def __init__(self, project_name='default_project'):
         import datetime
         now = datetime.datetime.now()
         self.date = now.strftime(" %Y-%m-%d %H:%M")
 
-        if name_project is 'default_project':
-            name_project += self.date
+        if project_name is 'default_project':
+            project_name += self.date
 
-        self.name_project = name_project
+        self.project_name = project_name
 
 
 class GridClass(object):
@@ -431,6 +431,12 @@ class Formations(object):
         self.set_id()
 
     def set_basement(self, basement_formation=None):
+
+        self.df['isBasement'].fillna(False, inplace=True)
+        if basement_formation is None:
+            basement_formation = self.df['formation'][self.df['isBasement']].values
+            if basement_formation.shape[0] is 0:
+                basement_formation = None
 
         self.df['isBasement'] = self.df['formation'] == basement_formation
         assert self.df['isBasement'].values.astype(bool).sum() <= 1, 'Only one formation can be basement'
@@ -1326,7 +1332,7 @@ class AdditionalData(Structure, RescaledData):
                                             self.len_formations_i, self.len_series_i,
                                             self.len_series_o],
                                            columns=['values'],
-                                           index=['isFault', 'isLith',
+                                           index=['isLith', 'isFault',
                                                   'number faults', 'number formations', 'number formations per series',
                                                   'len formations interfaces', 'len series interfaces',
                                                   'len series orientations'])
@@ -1373,7 +1379,7 @@ class AdditionalData(Structure, RescaledData):
                                             self.len_formations_i, self.len_series_i,
                                             self.len_series_o],
                                            columns=['values'],
-                                           index=['isFault', 'isLith',
+                                           index=['isLith', 'isFault',
                                                   'number faults', 'number formations', 'number formations per series',
                                                   'len formations interfaces', 'len series interfaces',
                                                   'len series orientations'])
@@ -1485,14 +1491,15 @@ class GeoPhysiscs(object):
 
 class Solution(object):
 
-    def __init__(self, additional_data: AdditionalData=None, formations: Formations=None, values=None):
+    def __init__(self, additional_data: AdditionalData=None, formations: Formations=None, grid: GridClass=None, values=None):
 
         self.additional_data = additional_data
         self.formations = formations
+        self.grid = grid
 
         if values is None:
 
-            self.scalar_field_at_interfaces = 0
+            self.scalar_field_at_interfaces = np.array([])
             self.scalar_field_lith = np.array([])
             self.scalar_field_faults = np.array([])
 
@@ -1503,6 +1510,9 @@ class Solution(object):
         else:
             self.set_values(values)
 
+        self.vertices = {}
+        self.edges = {}
+
     def __repr__(self):
         return '\nLithology ids \n  %s \n' \
                'Lithology scalar field \n  %s \n' \
@@ -1510,15 +1520,15 @@ class Solution(object):
                % (np.array2string(self.lith_block), np.array2string(self.scalar_field_lith),
                   np.array2string(self.fault_blocks))
 
-    def set_values(self, values: Union[list, np.ndarray]):
+    def set_values(self, values: Union[list, np.ndarray], compute_mesh=True):
         # TODO ============ Set asserts of give flexibility 20.09.18 =============
 
         lith = values[0]
         faults = values[1]
         self.scalar_field_at_interfaces = values[2]
 
-        self.scalar_field_lith = lith[0]
-        self.lith_block = lith[1]
+        self.scalar_field_lith = lith[1]
+        self.lith_block = lith[0]
 
         try:
             if self.additional_data.options.loc['output', 'values'] is 'gradients':
@@ -1529,126 +1539,79 @@ class Solution(object):
         except AttributeError:
             self.values_block = lith[2:]
 
-        self.scalar_field_faults = faults[::2]
-        self.fault_blocks = faults[1::2]
+        self.scalar_field_faults = faults[1::2]
+        self.fault_blocks = faults[::2]
+        assert len(np.atleast_2d(
+            self.scalar_field_faults)) == self.additional_data.structure_data.loc['number faults', 'values'],\
+            'The number of faults computed does not match to the number of faults in the input data.'
 
-    def get_surface(self, ):
-        pass
+        if compute_mesh is True:
+            self.compute_all_surfaces()
 
-    def get_surface_old(potential_block, interp_data, pot_int, n_formation, step_size, original_scale):
-        """
-        Get an individual surface
-
-        """
-
-        assert n_formation >= 0, 'Number of the formation has to be positive'
-
-        # In case the values are separated by series I put all in a vector
-        pot_int = interp_data.potential_at_interfaces.sum(axis=0)
-
+    def compute_surface_regular_grid(self, surface_id, scalar_field, **kwargs):
+        
         from skimage import measure
+        assert surface_id >= 0, 'Number of the formation has to be positive'
+        # In case the values are separated by series I put all in a vector
+        pot_int = self.scalar_field_at_interfaces.sum(axis=0)
+        
+        # Check that the scalar field of the surface is whithin the boundaries
+        if not scalar_field.max() > pot_int[surface_id]:
+            pot_int[surface_id] = scalar_field.max()
+            print('Scalar field value at the surface %i is outside the grid boundaries. Probably is due to an error'
+                  'in the implementation.' % surface_id)
 
-        if not potential_block.max() > pot_int[n_formation]:
-            pot_int[n_formation] = potential_block.max()
-            print('Potential field of the surface is outside the block. Probably is due to float errors')
+        if not scalar_field.min() < pot_int[surface_id]:
+            pot_int[surface_id] = scalar_field.min()
+            print('Scalar field value at the surface %i is outside the grid boundaries. Probably is due to an error'
+                  'in the implementation.' % surface_id)
 
-        if not potential_block.min() < pot_int[n_formation]:
-            pot_int[n_formation] = potential_block.min()
-            print('Potential field of the surface is outside the block. Probably is due to float errors')
+        vertices, simplices, normals, values = measure.marching_cubes_lewiner(
+            scalar_field.reshape(self.grid.resolution[0],
+                                           self.grid.resolution[1],
+                                           self.grid.resolution[2]),
+            pot_int[surface_id],
+            spacing=((self.grid.extent[1] - self.grid.extent[0]) / self.grid.resolution[0],
+                     (self.grid.extent[3] - self.grid.extent[2]) / self.grid.resolution[1],
+                     (self.grid.extent[5] - self.grid.extent[4]) / self.grid.resolution[2]),
+            **kwargs
+        )
 
-        vertices_p, simplices_p, normals, values = measure.marching_cubes_lewiner(
-            potential_block.reshape(interp_data.geo_data_res.resolution[0],
-                                    interp_data.geo_data_res.resolution[1],
-                                    interp_data.geo_data_res.resolution[2]),
-            pot_int[n_formation],
-            step_size=step_size,
-            spacing=((interp_data.geo_data_res.extent[1] - interp_data.geo_data_res.extent[0]) /
-                     interp_data.geo_data_res.resolution[0],
-                     (interp_data.geo_data_res.extent[3] - interp_data.geo_data_res.extent[2]) /
-                     interp_data.geo_data_res.resolution[1],
-                     (interp_data.geo_data_res.extent[5] - interp_data.geo_data_res.extent[4]) /
-                     interp_data.geo_data_res.resolution[2]))
+        return [vertices, simplices, normals, values]
 
-        if original_scale:
-            vertices_p = interp_data.rescaling_factor * vertices_p + _np.array([interp_data._geo_data.extent[0],
-                                                                                interp_data._geo_data.extent[2],
-                                                                                interp_data._geo_data.extent[
-                                                                                    4]]).reshape(1, 3)
-        else:
-            vertices_p += np.array([interp_data.geo_data_res.extent[0],
-                                     interp_data.geo_data_res.extent[2],
-                                     interp_data.geo_data_res.extent[4]]).reshape(1, 3)
-        return vertices_p, simplices_p
-
-    def get_surfaces(self, interp_data, potential_lith=None, potential_fault=None, n_formation='all',
-                     step_size=1, original_scale=True):
+    def compute_all_surfaces(self, **kwargs):
         """
-        Compute vertices and simplices of the interfaces for its vtk visualization and further
-        analysis
 
         Args:
-            interp_data (:class:`gempy.data_management.InputData`)
-            potential_lith (ndarray): 1D numpy array with the solution of the computation of the model
-             containing the scalar field of potentials (second row of lith solution)
-            potential_fault (ndarray): 1D numpy array with the solution of the computation of the model
-             containing the scalar field of the faults (every second row of fault solution)
-            n_formation (int or 'all'): Positive integer with the number of the formation of which the surface is returned.
-             use method get_formation_number() to get a dictionary back with the values
-            step_size (int): resolution of the method. This is every how many voxels the marching cube method is applied
-            original_scale (bool): choosing if the coordinates of the vertices are given in the original or the rescaled
-             coordinates
+            **kwargs: Marching_cube args
 
         Returns:
-            vertices, simpleces
+
         """
-        # try:
-        #     getattr(interp_data, 'potential_at_interfaces')
-        # except AttributeError:
-        #     raise AttributeError('You need to compute the model first')
-
-        vertices = []
-        simplices = []
-
-        n_formations = self.formations.df['id']
+        n_surfaces = self.formations.df[~self.formations.df['isBasement']]['id'] - 1
         n_faults = self.additional_data.structure_data.loc['number faults', 'values']
 
-        potential_fault = self.scalar_field_faults
-        potential_lith = self.scalar_field_lith
-        # Looping the scalar fields of the faults
+        if n_faults > 0:
+            for n in n_surfaces[:n_faults]:
 
-        if potential_fault is not None:
-            assert len(np.atleast_2d(
-                potential_fault)) == n_faults, 'You need to pass a potential field per fault'
+                v, s, norm, val = self.compute_surface_regular_grid(n, np.atleast_2d(self.scalar_field_faults)[n], **kwargs)
+                self.vertices[self.formations.df['formation'].iloc[n]] = v
+                self.edges[self.formations.df['formation'].iloc[n]] = s
 
-            pot_int = self.scalar_field_at_interfaces[:n_faults + 1]
-            for n in n_formations[:n_faults]:
-                #TODO
-                v, s = self.get_surface(np.atleast_2d(potential_fault)[n], interp_data, pot_int, n,
-                                        step_size=step_size, original_scale=original_scale)
-                vertices.append(v)
-                simplices.append(s)
+        if n_faults < len(n_surfaces):
+            n_formations = np.arange(0, n_faults - len(n_surfaces))
 
-        # Looping the scalar fields of the lithologies
-        if potential_lith is not None:
-            pot_int = interp_data.potential_at_interfaces[interp_data.geo_data_res.n_faults:]
+            for n in n_formations:
+                # TODO ======== split each_scalar_field ===========
+                v, s, norms, val = self.compute_surface_regular_grid(n, self.scalar_field_lith, **kwargs)
+                self.vertices[self.formations.df['formation'].iloc[n]] = v
+                self.edges[self.formations.df['formation'].iloc[n]] = s
 
-            # Compute the vertices of the lithologies
-            if n_formation == 'all':
+    def set_vertices(self, formation_name, vertices):
+        self.vertices[formation_name] = vertices
 
-                for n in n_formations[
-                         interp_data.geo_data_res.n_faults:]:  # interp_data.geo_data_res.interfaces['formation_number'][~interp_data.geo_data_res.interfaces['isFault']].unique():
-                    # if n == 0:
-                    #     continue
-                    # else:
-                    v, s = get_surface(potential_lith, interp_data, pot_int, n,
-                                       step_size=step_size, original_scale=original_scale)
-                    vertices.append(v)
-                    simplices.append(s)
-            else:
-                vertices, simplices = get_surface(potential_lith, interp_data, pot_int, n_formation,
-                                                  step_size=step_size, original_scale=original_scale)
-
-        return vertices, simplices
+    def set_edges(self, formation_name, edges):
+        self.edges[formation_name] = edges
 
 
 class Interpolator(object):
@@ -1723,15 +1686,10 @@ class Interpolator(object):
             np.cast[self.dtype](self.additional_data.kriging_data.loc['nugget grad', 'values']))
         self.theano_graph.nugget_effect_scalar_T.set_value(
             np.cast[self.dtype](self.additional_data.kriging_data.loc['nugget scalar', 'values']))
-        # Just grid. I add a small number to avoid problems with the origin point
-        #x_0 = self.compute_x_0()
         self.theano_graph.grid_val_T.set_value(np.cast[self.dtype](self.grid.values_r + 10e-9))
-        # Universal grid
-        # TODO: this goes inside
-       # self.theano_graph.universal_grid_matrix_T.set_value(np.cast[self.dtype](self.compute_universal_matrix(x_0) + 1e-10))
         # Initialization of the block model
         self.theano_graph.final_block.set_value(np.zeros((1, self.grid.values_r.shape[0] + self.interfaces.df.shape[0]),
-                                               dtype=self.dtype))
+                                                dtype=self.dtype))
         # Unique number assigned to each lithology
         self.theano_graph.n_formation.set_value(self.formations.df['id'].values.astype('int32'))
         # Final values the lith block takes

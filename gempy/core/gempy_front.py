@@ -35,18 +35,12 @@ from numpy import ndarray
 import pandas as _pn
 from pandas import DataFrame
 
-import copy
-import warnings
-
 from gempy.plotting.visualization import PlotData2D, vtkVisualization
-from gempy.data_management import InputData, GridClass
+from gempy.data_management import GridClass
 from gempy.interpolator import InterpolatorData
 from gempy.plotting.sequential_pile import StratigraphicPile
-from gempy.addons.topology import topology_analyze as _topology_analyze
-from gempy.utils.geomodeller_integration import ReadGeoModellerXML as _ReadGeoModellerXML
+from gempy.assets.topology import topology_analyze as _topology_analyze
 import gempy.bayesian.posterior_analysis as pa # So far we use this type of import because the other one makes a copy and blows up some asserts
-import gempy.plotting as plotting
-from gempy.core.data import *
 from gempy.core.model import *
 
 
@@ -82,9 +76,6 @@ def compute_model(geo_model: Model, output='geology', u_grade=None, get_potentia
         In addition if get_potential_at_interfaces is True, the value of the potential field at each of
         the interfaces is given as well
     """
-    #if not getattr(interp_data, 'th_fn', None):
-    #    interp_data.th_fn = interp_data.compile_th_fn(output=output)
-
     i = geo_model.interpolator.get_input_matrix()
 
     assert geo_model.additional_data.len_formations_i.min() > 1,  \
@@ -92,8 +83,6 @@ def compute_model(geo_model: Model, output='geology', u_grade=None, get_potentia
 
     sol = geo_model.interpolator.theano_function(*i)
     geo_model.solutions.set_values(sol)
-
-   # interp_data.potential_at_interfaces = sol[-1]
 
     return geo_model.solutions
 
@@ -157,8 +146,8 @@ def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None
     return sol
 
 
-def create_model(name_project=None):
-    return Model(name_project)
+def create_model(project_name='default_project'):
+    return Model(project_name)
 
 
 def create_series(series_distribution=None, order=None):
@@ -174,7 +163,7 @@ def create_faults(series: Series, series_fault=None, rel_matrix=None):
     return Faults(series=series, series_fault=series_fault, rel_matrix=rel_matrix)
 
 
-def create_data(extent, resolution=(50, 50, 50), name_project=None, **kwargs) -> Model:
+def create_data(extent, resolution=(50, 50, 50), project_name='default_project', **kwargs) -> Model:
 
     """
     DEP
@@ -196,9 +185,11 @@ def create_data(extent, resolution=(50, 50, 50), name_project=None, **kwargs) ->
 
     """
     warnings.warn(" ", FutureWarning)
-    model = create_model(name_project)
+    model = create_model(project_name)
     set_grid(model, create_grid(grid_type='regular_grid', extent=extent, resolution=resolution))
     read_data(model, **kwargs)
+    set_values_to_default(model, series_distribution=model.interfaces, order_series = None, order_formations=None,
+                          set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0)
     update_additional_data(model)
 
     return model
@@ -225,6 +216,13 @@ def save_model(model: Model, path=False):
          None
      """
     model.save_model(path)
+
+
+# def load_model(path: str):
+#     import pickle
+#     with open(path, 'rb') as pickle_file:
+#         model = pickle.load(pickle_file)
+#     return model
 
 
 def get_series(model: Model):
@@ -351,8 +349,7 @@ def get_th_fn(model: Model):
     return model.interpolator.theano_function
 
 
-def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_formation='all',
-                 step_size=1, original_scale=True):
+def get_surfaces(model: Model):
     """
     Compute vertices and simplices of the interfaces for its vtk visualization and further
     analysis
@@ -372,89 +369,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
     Returns:
         vertices, simpleces
     """
-    try:
-        getattr(interp_data, 'potential_at_interfaces')
-    except AttributeError:
-        raise AttributeError('You need to compute the model first')
-
-    def get_surface(potential_block, interp_data, pot_int, n_formation, step_size, original_scale):
-        """
-        Get an individual surface
-
-        """
-
-        assert n_formation >= 0, 'Number of the formation has to be positive'
-
-        # In case the values are separated by series I put all in a vector
-        pot_int = interp_data.potential_at_interfaces.sum(axis=0)
-
-        from skimage import measure
-
-        if not potential_block.max() > pot_int[n_formation]:
-            pot_int[n_formation] = potential_block.max()
-            print('Potential field of the surface is outside the block. Probably is due to float errors')
-
-        if not potential_block.min() < pot_int[n_formation]:
-            pot_int[n_formation] = potential_block.min()
-            print('Potential field of the surface is outside the block. Probably is due to float errors')
-
-        vertices_p, simplices_p, normals, values = measure.marching_cubes_lewiner(
-            potential_block.reshape(interp_data.geo_data_res.resolution[0],
-                                    interp_data.geo_data_res.resolution[1],
-                                    interp_data.geo_data_res.resolution[2]),
-            pot_int[n_formation],
-            step_size=step_size,
-            spacing=((interp_data.geo_data_res.extent[1] - interp_data.geo_data_res.extent[0]) / interp_data.geo_data_res.resolution[0],
-                     (interp_data.geo_data_res.extent[3] - interp_data.geo_data_res.extent[2]) / interp_data.geo_data_res.resolution[1],
-                     (interp_data.geo_data_res.extent[5] - interp_data.geo_data_res.extent[4]) / interp_data.geo_data_res.resolution[2]))
-
-        if original_scale:
-            vertices_p = interp_data.rescaling_factor * vertices_p + _np.array([interp_data._geo_data.extent[0],
-                                                                            interp_data._geo_data.extent[2],
-                                                                            interp_data._geo_data.extent[4]]).reshape(1, 3)
-        else:
-            vertices_p += _np.array([interp_data.geo_data_res.extent[0],
-                                   interp_data.geo_data_res.extent[2],
-                                   interp_data.geo_data_res.extent[4]]).reshape(1, 3)
-        return vertices_p, simplices_p
-
-    vertices = []
-    simplices = []
-
-    n_formations = _np.arange(interp_data.geo_data_res.interfaces['formation'].nunique())
-
-    # Looping the scalar fields of the faults
-    if potential_fault is not None:
-
-        assert len(_np.atleast_2d(potential_fault)) == interp_data.geo_data_res.n_faults, 'You need to pass a potential field per fault'
-
-        pot_int = interp_data.potential_at_interfaces[:interp_data.geo_data_res.n_faults + 1]
-        for n in n_formations[:interp_data.geo_data_res.n_faults]:
-            v, s = get_surface(_np.atleast_2d(potential_fault)[n], interp_data, pot_int, n,
-                               step_size=step_size, original_scale=original_scale)
-            vertices.append(v)
-            simplices.append(s)
-
-    # Looping the scalar fields of the lithologies
-    if potential_lith is not None:
-        pot_int = interp_data.potential_at_interfaces[interp_data.geo_data_res.n_faults:]
-
-        # Compute the vertices of the lithologies
-        if n_formation == 'all':
-
-            for n in n_formations[interp_data.geo_data_res.n_faults:]: #interp_data.geo_data_res.interfaces['formation_number'][~interp_data.geo_data_res.interfaces['isFault']].unique():
-                # if n == 0:
-                #     continue
-                #else:
-                    v, s = get_surface(potential_lith, interp_data, pot_int, n,
-                                       step_size=step_size, original_scale=original_scale)
-                    vertices.append(v)
-                    simplices.append(s)
-        else:
-            vertices, simplices = get_surface(potential_lith, interp_data, pot_int, n_formation,
-                                              step_size=step_size, original_scale=original_scale)
-
-    return vertices, simplices
+    return model.solutions.vertices, model.solutions.edges
 
 
 def interactive_df_open(geo_data, itype):
@@ -545,24 +460,23 @@ def precomputations_gravity(interp_data, n_chunck=25, densities=None):
     return tz, select
 
 
-# TODO ====== DEP 20.09.2018 ===========
-# def read_pickle(path):
-#     """
-#     Read InputData object from python pickle.
-#
-#     Args:
-#        path (str): path where save the pickle
-#
-#     Returns:
-#         :class:`gempy.data_management.InputData`
-#
-#     """
-#     import pickle
-#     with open(path, 'rb') as f:
-#         # The protocol version used is detected automatically, so we do not
-#         # have to specify it.
-#         data = pickle.load(f)
-#         return data
+def load_model(path):
+    """
+    Read InputData object from python pickle.
+
+    Args:
+       path (str): path where save the pickle
+
+    Returns:
+        :class:`gempy.data_management.InputData`
+
+    """
+    import pickle
+    with open(path, 'rb') as f:
+        # The protocol version used is detected automatically, so we do not
+        # have to specify it.
+        model = pickle.load(f)
+        return model
 
 
 def read_data(model, path_i=None, path_o=None):
@@ -1021,54 +935,6 @@ def plot_data(geo_data, direction="y", data_type='all', series="all", legend_fon
 
     # TODO saving options
     return plot.plot_data(direction=direction, data_type=data_type, series=series, legend_font_size=legend_font_size, **kwargs)
-
-
-def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
-    """
-    Plot a section of the block model
-
-    Args:
-        cell_number(int): position of the array to plot
-        direction(str): xyz. Caartesian direction to be plotted
-        interpolation(str): Type of interpolation of plt.imshow. Default 'none'.  Acceptable values are 'none'
-        ,'nearest', 'bilinear', 'bicubic',
-        'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser',
-        'quadric', 'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc',
-        'lanczos'
-       **kwargs: imshow keywargs
-
-    Returns:
-        None
-    """
-    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plotting module instead", FutureWarning)
-    plot = PlotData2D(geo_data)
-    sec_plot = plot.plot_block_section(cell_number, block=block, direction=direction, **kwargs)
-    # TODO saving options
-
-
-def plot_scalar_field(geo_data, potential_field, cell_number, N=20,
-                      direction="y", plot_data=True, series="all", *args, **kwargs):
-    """
-    Plot a potential field in a given direction.
-
-    Args:
-        cell_number(int): position of the array to plot
-        potential_field(str): name of the potential field (or series) to plot
-        n_pf(int): number of the  potential field (or series) to plot
-        direction(str): xyz. Caartesian direction to be plotted
-        serie: *Deprecated*
-        **kwargs: plt.contour kwargs
-
-    Returns:
-        None
-    """
-    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plotting module instead", FutureWarning)
-    plot = PlotData2D(geo_data)
-    plot.plot_scalar_field(potential_field, cell_number, N=N,
-                              direction=direction,  plot_data=plot_data, series=series,
-                              *args, **kwargs)
 
 
 def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,

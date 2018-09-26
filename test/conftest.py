@@ -1,22 +1,11 @@
 
 import pytest
 import gempy.core.gempy_front as gempy
+
 import sys, os
 
 input_path = os.path.dirname(__file__)+'/input_data'
 input_path2 = os.path.dirname(__file__)+'/../../notebooks'
-
-
-@pytest.fixture(scope='session')
-def theano_f():
-    # Importing the data from csv files and settign extent and resolution
-    geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
-                                 path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
-                                 path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
-
-    interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=True,
-                                         verbose=[])
-    return interp_data
 
 
 @pytest.fixture(scope='session')
@@ -32,6 +21,30 @@ def interpolator_islith_isfault():
     interp_data = gempy.set_interpolation_data(geo_data, dtype='float64', compile_theano=True, verbose=[])
     return interp_data
 
+
+@pytest.fixture(scope='session')
+def interpolator_islith_nofault():
+    # Importing the data from csv files and settign extent and resolution
+    geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+                                 path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
+                                 path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
+
+    interp_data = gempy.set_interpolation_data(geo_data, dtype='float64', compile_theano=True, verbose=[])
+    return interp_data
+
+
+
+
+@pytest.fixture(scope='session')
+def theano_f():
+    # Importing the data from csv files and settign extent and resolution
+    geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+                                 path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
+                                 path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
+
+    interp_data = gempy.InterpolatorData(geo_data, dtype='float64', compile_theano=True,
+                                         verbose=[])
+    return interp_data
 
 
 @pytest.fixture(scope='session')
