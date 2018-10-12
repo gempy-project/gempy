@@ -666,11 +666,12 @@ def plot_scalar_field(model, cell_number, N=20,
     """
     plot = PlotData2D(model)
     plot.plot_scalar_field(model.solutions, cell_number, N=N,
-                              direction=direction,  plot_data=plot_data, series=series,
-                              *args, **kwargs)
+                           direction=direction,  plot_data=plot_data, series=series,
+                           *args, **kwargs)
+
 
 def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,
-                      direction="y", plot_scalar=True, **kwargs):
+                  direction="y", plot_scalar=True, **kwargs):
     """
         Plot the gradient of the scalar field in a given direction.
 

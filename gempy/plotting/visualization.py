@@ -1500,11 +1500,11 @@ class vtkVisualization:
 
         # Dimensions
 
-        nx, ny, nz = geo_data.resolution
+        nx, ny, nz = geo_data.grid.resolution
 
-        lx = geo_data.extent[1] - geo_data.extent[0]
-        ly = geo_data.extent[3] - geo_data.extent[2]
-        lz = geo_data.extent[5] - geo_data.extent[4]
+        lx = geo_data.grid.extent[1] - geo_data.grid.extent[0]
+        ly = geo_data.grid.extent[3] - geo_data.grid.extent[2]
+        lz = geo_data.grid.extent[5] - geo_data.grid.extent[4]
 
         dx, dy, dz = lx / nx, ly / ny, lz / nz
 
@@ -1513,11 +1513,11 @@ class vtkVisualization:
         npoints = (nx + 1) * (ny + 1) * (nz + 1)
 
         # Coordinates
-        x = np.arange(geo_data.extent[0], geo_data.extent[1] + 0.1, dx, dtype='float64')
+        x = np.arange(geo_data.grid.extent[0], geo_data.grid.extent[1] + 0.1, dx, dtype='float64')
 
-        y = np.arange(geo_data.extent[2], geo_data.extent[3] + 0.1, dy, dtype='float64')
+        y = np.arange(geo_data.grid.extent[2], geo_data.grid.extent[3] + 0.1, dy, dtype='float64')
 
-        z = np.arange(geo_data.extent[4], geo_data.extent[5] + 0.1, dz, dtype='float64')
+        z = np.arange(geo_data.grid.extent[4], geo_data.grid.extent[5] + 0.1, dz, dtype='float64')
 
         lith = lith_block.reshape((nx, ny, nz))
 
@@ -1529,7 +1529,7 @@ class vtkVisualization:
         gridToVTK(path+'_lith_block', x, y, z, cellData={"Lithology": lith})
 
     @staticmethod
-    def export_vtk_surfaces(vertices, simplices, path=None, name='_surfaces', alpha=1):
+    def export_vtk_surfaces(vertices:dict, simplices, path=None, name='_surfaces', alpha=1):
         """
         Export data to a vtk file for posterior visualizations
 
@@ -1543,19 +1543,21 @@ class vtkVisualization:
         """
         import vtk
 
-        for s_n in range(len(vertices)):
+        s_n = 0
+        for key, values in vertices.items():
             # setup points and vertices
+            s_n += 1
             Points = vtk.vtkPoints()
             Triangles = vtk.vtkCellArray()
             Triangle = vtk.vtkTriangle()
-            for p in vertices[s_n]:
+            for p in values:
                 Points.InsertNextPoint(p)
 
             # Unfortunately in this simple example the following lines are ambiguous.
             # The first 0 is the index of the triangle vertex which is ALWAYS 0-2.
             # The second 0 is the index into the point (geometry) array, so this can range from 0-(NumPoints-1)
             # i.e. a more general statement is triangle->GetPointIds()->SetId(0, PointId);
-            for i in simplices[s_n]:
+            for i in simplices[key]:
                 Triangle.GetPointIds().SetId(0, i[0])
                 Triangle.GetPointIds().SetId(1, i[1])
                 Triangle.GetPointIds().SetId(2, i[2])
@@ -1585,7 +1587,7 @@ class vtkVisualization:
             if not path:
                 path = "./default_"
 
-            writer.SetFileName(path+'_surfaces'+str(s_n)+'.vtp')
+            writer.SetFileName(path+'_surfaces_'+str(key)+'.vtp')
             if vtk.VTK_MAJOR_VERSION <= 5:
                 writer.SetInput(polydata)
             else:

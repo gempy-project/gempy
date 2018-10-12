@@ -1,4 +1,4 @@
-import gempy.core.gempy_front as gp
+import gempy as gp
 import pandas as pn
 import numpy as np
 import os
@@ -54,7 +54,7 @@ class TestFabianModel:
 
     def test_plot_section(self, geo_model, compute_model):
 
-        gp.plotting.plot_section(geo_model, compute_model.lith_block, cell_number=25,
+        gp.plotting.plot_section(geo_model, cell_number=25,
                                  direction='y', plot_data=True)
 
         plt.savefig(os.pardir+'/figs/example1.png')

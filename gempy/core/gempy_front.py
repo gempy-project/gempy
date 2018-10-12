@@ -76,6 +76,8 @@ def compute_model(geo_model: Model, output='geology', u_grade=None, get_potentia
         In addition if get_potential_at_interfaces is True, the value of the potential field at each of
         the interfaces is given as well
     """
+    # TODO: Assert frame by frame that all data is like is supposed. Otherwise,
+    # return clear messages
     i = geo_model.interpolator.get_input_matrix()
 
     assert geo_model.additional_data.len_formations_i.min() > 1,  \
@@ -479,22 +481,22 @@ def load_model(path):
         return model
 
 
-def read_data(model, path_i=None, path_o=None):
+def read_data(model, path_i=None, path_o=None, **kwargs):
     """
     For extra options in reading please look at the Interfaces methods
     Args:
         model:
         path_i:
         path_o:
-
+        **kwargs: pandas read table kwargs
     Returns:
 
     """
 
     if path_i:
-        model.interfaces.read_interfaces(path_i, inplace=True)
+        model.interfaces.read_interfaces(path_i, inplace=True, **kwargs)
     if path_o:
-        model.orientations.read_orientations(path_o, inplace=True)
+        model.orientations.read_orientations(path_o, inplace=True, **kwargs)
 
     model.rescaling.rescale_data()
     update_additional_data(model)
@@ -666,13 +668,14 @@ def map_to_data(model: Model, series: Series=None, formations: Formations=None, 
         model.orientations.map_faults_to_data(faults)
 
 
-def set_order_formations(geo_data, order_formations):
+def set_order_formations(geo_data, formation_order):
     warnings.warn("set_order_formations will be removed in version 1.2, "
                   "use gempy.set_formations function instead", FutureWarning)
-    geo_data.set_formations_values(formation_order=order_formations)
+    set_formations(geo_data, formations_order=formation_order)
 
 
-def set_formations(geo_data, formations=None, formations_order=None, formations_values=None):
+def set_formations(geo_data: Model, formations=None, formations_order=None, formations_values=None,
+                   properties_names=None):
     """
     Function to order and change the value of the model formations. The values of the formations will be the final
     numerical value that each formation will take in the interpolated geological model (lithology block)
@@ -691,9 +694,14 @@ def set_formations(geo_data, formations=None, formations_order=None, formations_
     """
     if formations and not formations_order:
         formations_order = formations
+    if formations_order is not None and formations_values is not None:
+        geo_data.formations.set_formations_values(formations_values, formation_order=formations_order,
+                                                  properties_names=properties_names)
+    elif formations_order is not None:
+        geo_data.formations.set_formation_order(formations_order)
+        geo_data.formations.set_id()
 
-    geo_data.set_formations(formation_order=formations_order, formation_values=formations_values)
-    return  geo_data.formations
+    return geo_data.formations
 
 
 def set_faults(model: Model, faults: Faults):
@@ -858,7 +866,7 @@ def topology_compute(geo_data, lith_block, fault_block,
 # +++++++
 # DEP visualization
 #
-def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None, simplices=None):
+def export_to_vtk(geo_data: Model, path=None, name=None, voxels=True, surfaces=True):
     """
       Export data to a vtk file for posterior visualizations
 
@@ -873,10 +881,12 @@ def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None
 
     warnings.warn("gempy plotting functionality will be moved in version 1.2, "
                   "use gempy.plotting module instead", FutureWarning)
-    if lith_block is not None:
-        vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path)
-    if vertices is not None and simplices is not None:
-        vtkVisualization.export_vtk_surfaces(vertices, simplices, path=path, name=name)
+    if voxels is True:
+        vtkVisualization.export_vtk_lith_block(geo_data, geo_data.solutions.lith_block, path=path)
+    if surfaces is True:
+        geo_data.solutions.compute_all_surfaces()
+        ver, sim = get_surfaces(geo_data)
+        vtkVisualization.export_vtk_surfaces(ver, sim, path=path, name=name)
 
 
 def plot_surfaces_3D(geo_data, vertices_l, simplices_l,

@@ -1438,8 +1438,8 @@ class TheanoGraph(object):
    #     min_pot = theano.printing.Print("min_pot")(min_pot)
 
 
-        max_pot_sigm = 2*max_pot - self.scalar_field_at_interfaces_values[0]
-        min_pot_sigm = 2*min_pot - self.scalar_field_at_interfaces_values[-1]
+        max_pot_sigm = 2 * max_pot - self.scalar_field_at_interfaces_values[0]
+        min_pot_sigm = 2 * min_pot - self.scalar_field_at_interfaces_values[-1]
 
         boundary_pad = (max_pot - min_pot)*0.01
         l = slope / (max_pot - min_pot)

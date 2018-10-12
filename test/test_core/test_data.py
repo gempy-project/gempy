@@ -216,10 +216,16 @@ def test_load_model():
 class TestSolution:
     def test_representation(self, test_load_model):
         sol = test_load_model.solutions
-        sol.set_values(np.random.rand(4, 2, 3))
+        sol.set_values(np.random.rand(4, 2, 3), compute_mesh=False)
         print(sol)
 
     def test_get_surfaces(self, test_load_model):
         model = test_load_model
         print(model.solutions)
         print(model.solutions.compute_all_surfaces())
+        print(gp.get_surfaces(model))
+
+
+def test_export_vtk(test_load_model):
+    model = test_load_model
+    gp.export_to_vtk(model, os.path.dirname(__file__)+'/vtk/expert_test')

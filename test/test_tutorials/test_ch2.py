@@ -26,7 +26,8 @@ input_path = os.path.dirname(__file__)+'/../../notebooks'
 import numpy as np
 import pytest
 
-def test_ch2(theano_f):
+
+def test_ch2(interpolator_islith_nofault):
     # Importing the data from csv files and settign extent and resolution
     geo_data = gp.create_data([696000,747000,6863000,6930000,-20000, 200], [50, 50, 50],
                              path_o=input_path+"/input_data/tut_SandStone/SandStone_Foliations.csv",
@@ -45,41 +46,26 @@ def test_ch2(theano_f):
                           order_formations= ['EarlyGranite', 'SimpleMafic2', 'SimpleBIF', 'SimpleMafic1'],
                   verbose=1)
 
-
-    # interp_data = gp.InterpolatorData(geo_data, theano_optimizer='fast_run',
-    #                                   compile_theano=True, verbose=[])
-    interp_data = theano_f
-    interp_data.update_interpolator(geo_data)
-
-
-    lith_block, fault_block = gp.compute_model(interp_data)
-
-
+    geo_data.set_theano_function(interpolator_islith_nofault)
+    sol = gp.compute_model(geo_data)
 
     import matplotlib.pyplot as plt
 
-    gp.plot_section(geo_data, lith_block[0], -2, plot_data=True, direction='z')
+    gp.plotting.plot_section(geo_data, -2, plot_data=True, direction='z')
     fig = plt.gcf()
     fig.set_size_inches(18.5, 10.5)
 
-
-
-    gp.plot_section(geo_data, lith_block[0],25, plot_data=True, direction='x')
+    gp.plotting.plot_section(geo_data,25, plot_data=True, direction='x')
     fig = plt.gcf()
     fig.set_size_inches(18.5, 10.5)
 
-
-    # In[14]:
-
-
-    gp.plot_scalar_field(geo_data, lith_block[1], 11, cmap='viridis', N=100)
+    gp.plotting.plot_scalar_field(geo_data, 11, cmap='viridis', N=100)
     import matplotlib.pyplot as plt
     plt.colorbar(orientation='horizontal')
 
-
-    vertices, simplices = gp.get_surfaces(interp_data, lith_block[1], None, original_scale=False)
+    vertices, simplices = gp.get_surfaces(geo_data)
     pyevtk = pytest.importorskip("pyevtk")
-    gp.export_to_vtk(geo_data, path=os.path.dirname(__file__)+'/vtk_files', lith_block=lith_block[0], vertices=vertices, simplices=simplices)
+    gp.export_to_vtk(geo_data, path=os.path.dirname(__file__)+'/vtk_files/test2')
 
     # gp.plot_surfaces_3D_real_time(interp_data, vertices, simplices, alpha=1)
 

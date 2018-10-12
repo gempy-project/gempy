@@ -67,7 +67,7 @@ class GridClass(object):
             warnings.warn('No valid grid_type. Grid is empty.')
 
     def __str__(self):
-        return self.values
+        return np.array2string(self.values)
 
     def __repr__(self):
         return np.array_repr(self.values)
@@ -384,6 +384,7 @@ class Formations(object):
 
     def set_formation_order(self, list_names):
         self.set_formation_names(list_names)
+        self.set_basement(list_names[-1])
 
     def map_formation_names_to_df(self):
 
@@ -442,7 +443,6 @@ class Formations(object):
         assert self.df['isBasement'].values.astype(bool).sum() <= 1, 'Only one formation can be basement'
 
     def add_basement(self, name=None, inplace=True):
-       # self.set_basement()
         self.df['isBasement'].fillna(False, inplace=True)
         assert self.df['isBasement'].values.astype(bool).sum() < 1, 'Only one formation can be basement'
         if name is None:
@@ -491,6 +491,10 @@ class Formations(object):
         self.df['isBasement'] = self.df['isBasement'].astype(bool)
         self.df["formation"] = self.df["formation"].astype('category')
 
+    def _default_values(self):
+        values = np.arange(1, len(self.formations_names))
+        return values
+
     def set_formations_values(self, values_array, properties_names=np.empty(0), formation_names=None):
         """
         Set the df containing the values of each formation for the posterior evaluation (e.g. densities, susceptibility)
@@ -520,7 +524,7 @@ class Formations(object):
             raise AttributeError('values_array must be either numpy array or pandas df')
 
         if formation_names:
-            self.set_formation_names(formation_names)
+            self.set_formation_order(formation_names)
 
         f_df = pn.concat([self.df, vals_df], sort=False, axis=1, verify_integrity=True, ignore_index=False)
 
@@ -625,6 +629,8 @@ class Data(object):
         if inplace:
             self.df = new_df
             self.df['formation_number'] = self.df['id']
+            self.df['id'] = self.df['id']
+
             self.set_dypes()
             self.df['formation'].cat.set_categories(formations.df['formation'].cat.categories, inplace=True)
             if sort:
@@ -698,7 +704,7 @@ class Interfaces(Data):
         self.set_dypes()
         self.df.itype = 'interfaces'
 
-    def read_interfaces(self, filepath, debug=False, inplace=False, append=False, **kwargs):
+    def read_interfaces(self, filepath, debug=False, inplace=True, append=False, **kwargs):
         """
         Read tabular using pandas tools and if inplace set it properly to the Interace object
         Args:
@@ -899,7 +905,7 @@ class Orientations(Data):
 
         self.set_orientations_df(ori)
 
-    def read_orientations(self, filepath, debug=False, inplace=False, append=False, **kwargs):
+    def read_orientations(self, filepath, debug=False, inplace=True, append=False, **kwargs):
         """
         Read tabular using pandas tools and if inplace set it properly to the Orientations object
         Args:
@@ -1594,18 +1600,20 @@ class Solution(object):
         if n_faults > 0:
             for n in n_surfaces[:n_faults]:
 
-                v, s, norm, val = self.compute_surface_regular_grid(n, np.atleast_2d(self.scalar_field_faults)[n], **kwargs)
+                v, s, norm, val = self.compute_surface_regular_grid(n, np.atleast_2d(self.scalar_field_faults)[n],
+                                                                    **kwargs)
                 self.vertices[self.formations.df['formation'].iloc[n]] = v
                 self.edges[self.formations.df['formation'].iloc[n]] = s
 
         if n_faults < len(n_surfaces):
-            n_formations = np.arange(0, n_faults - len(n_surfaces))
+            n_formations = np.arange(n_faults, len(n_surfaces) - n_faults)
 
             for n in n_formations:
                 # TODO ======== split each_scalar_field ===========
                 v, s, norms, val = self.compute_surface_regular_grid(n, self.scalar_field_lith, **kwargs)
                 self.vertices[self.formations.df['formation'].iloc[n]] = v
                 self.edges[self.formations.df['formation'].iloc[n]] = s
+        return self.vertices, self.edges
 
     def set_vertices(self, formation_name, vertices):
         self.vertices[formation_name] = vertices
