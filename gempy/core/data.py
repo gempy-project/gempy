@@ -56,7 +56,6 @@ class GridClass(object):
         self.extent = np.empty(6)
         self.values = np.empty((1,3))
         self.values_r = np.empty((1,3))
-
         if grid_type is 'regular_grid':
             self.set_regular_grid(**kwargs)
         elif grid_type is 'custom_grid':
@@ -67,10 +66,10 @@ class GridClass(object):
             warnings.warn('No valid grid_type. Grid is empty.')
 
     def __str__(self):
-        return np.array2string(self.values)
+        return 'Grid Object. Values: \n' + np.array2string(self.values)
 
     def __repr__(self):
-        return np.array_repr(self.values)
+        return 'Grid Object. Values: \n' + np.array_repr(self.values)
 
     def create_custom_grid(self, custom_grid, inplace=False):
         """
@@ -85,7 +84,6 @@ class GridClass(object):
         assert type(custom_grid) is np.ndarray and custom_grid.shape[1] is 3, 'The shape of new grid must be (n,3)' \
                                                                               ' where n is the number of points of ' \
                                                                               'the grid'
-
         if inplace is True:
             self.values = custom_grid
         else:

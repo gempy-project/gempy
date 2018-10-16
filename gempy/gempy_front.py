@@ -874,7 +874,7 @@ def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None
         vtkVisualization.export_vtk_surfaces(vertices, simplices, path=path, name=name)
 
 
-def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
+def plot_surfaces_3D(geo_data, vertices_l: Union[np.array, list], simplices_l,
                      #formations_names_l, formation_numbers_l,
                      alpha=1, plot_data=True,
                      size=(1920, 1080), fullscreen=False, bg_color=None):

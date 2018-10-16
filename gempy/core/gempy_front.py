@@ -36,8 +36,8 @@ import pandas as _pn
 from pandas import DataFrame
 
 from gempy.plotting.visualization import PlotData2D, vtkVisualization
-from gempy.data_management import GridClass
-from gempy.interpolator import InterpolatorData
+#from gempy.data_management import GridClass
+#from gempy.interpolator import InterpolatorData
 from gempy.plotting.sequential_pile import StratigraphicPile
 from gempy.assets.topology import topology_analyze as _topology_analyze
 import gempy.bayesian.posterior_analysis as pa # So far we use this type of import because the other one makes a copy and blows up some asserts
@@ -49,8 +49,7 @@ def compute_model(geo_model: Model, output='geology', u_grade=None, get_potentia
     Computes the geological model and any extra output given.
 
     Args:
-
-        interp_data (:class:`gempy.interpolator.InterpolatorData`)
+        geo_model (:obj:`gempy.core.data.Model`): lalal
         output ({'geology', 'gravity', 'gradients'}): Only if theano functions has not been compiled yet
         u_grade (array-like of {0, 1, 2}): grade of the polynomial for the universal part of the Kriging interpolations. The value has to
             be either 0, 1 or 2  and the length has to be the number of series. By default the value
@@ -116,32 +115,7 @@ def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None
         the interfaces is given as well
     """
 
-    # First Create a new custom grid using the GridClass
-    new_grid = GridClass()
-
-    # Here we can pass the new coordinates as a 2D numpy array XYZ
-    new_grid.set_custom_grid(new_grid_array)
-
-    # Next we rescale the data. For this the main parameters are already stored in interp_data
-    new_grid_res = (new_grid.values - interp_data.centers.as_matrix()) / interp_data.rescaling_factor + 0.5001
-
-    # We stack the input data
-    x_to_interpolate = _np.vstack((new_grid_res,
-                                  interp_data.interpolator.pandas_rest_layer_points[['X', 'Y', 'Z']].as_matrix(),
-                                  interp_data.interpolator.pandas_ref_layer_points_rep[['X', 'Y', 'Z']].as_matrix()))
-
-    # And create the drift function matrix. (This step could be done within theano to speed up a bit)
-    universal_matrix = _np.vstack((x_to_interpolate.T,
-                                  (x_to_interpolate ** 2).T,
-                                  x_to_interpolate[:, 0] * x_to_interpolate[:, 1],
-                                  x_to_interpolate[:, 0] * x_to_interpolate[:, 2],
-                                  x_to_interpolate[:, 1] * x_to_interpolate[:, 2],
-                                  ))
-
-    # Last step is to change the variables in the theano graph
-    interp_data.interpolator.tg.grid_val_T.set_value(_np.cast[interp_data.interpolator.dtype](x_to_interpolate + 10e-9))
-    interp_data.interpolator.tg.universal_grid_matrix_T.set_value(
-        _np.cast[interp_data.interpolator.dtype](universal_matrix + 1e-10))
+    set_grid(interp_data, create_grid('custom_grid', custom_grid=new_grid_array))
 
     # Now we are good to compute the model agai only in the new point
     sol = compute_model(interp_data, output=output, u_grade=u_grade, get_potential_at_interfaces=get_potential_at_interfaces)
@@ -186,7 +160,8 @@ def create_data(extent, resolution=(50, 50, 50), project_name='default_project',
         :class:`gempy.data_management.InputData`
 
     """
-    warnings.warn(" ", FutureWarning)
+    warnings.warn("This method will get deprecated in the next version of gempy. It still exist only to keep"
+                  "the behaviour equal to older version. See create_model.", FutureWarning)
     model = create_model(project_name)
     set_grid(model, create_grid(grid_type='regular_grid', extent=extent, resolution=resolution))
     read_data(model, **kwargs)
@@ -198,7 +173,7 @@ def create_data(extent, resolution=(50, 50, 50), project_name='default_project',
 
 
 def create_grid(grid_type: str, **kwargs):
-    return GridClass(grid_type=grid_type, **kwargs)
+    return GridClass(grid_type=grid_type, inplace=True, **kwargs)
 
 
 def update_grid(model, grid_type: str, **kwargs):
@@ -218,13 +193,6 @@ def save_model(model: Model, path=False):
          None
      """
     model.save_model(path)
-
-
-# def load_model(path: str):
-#     import pickle
-#     with open(path, 'rb') as pickle_file:
-#         model = pickle.load(pickle_file)
-#     return model
 
 
 def get_series(model: Model):
@@ -259,7 +227,7 @@ def get_formations(model: Model):
     return model.formations
 
 
-def get_additional_data(model:Model):
+def get_additional_data(model: Model):
     return model.additional_data
 
 
@@ -650,7 +618,7 @@ def set_values_to_default(model: Model, series_distribution=None, order_series=N
     if verbose > 0:
         return get_sequential_pile(model)
     else:
-        return None
+        return True
 
 
 def map_to_data(model: Model, series: Series=None, formations: Formations=None, faults: Faults=None):
@@ -1058,3 +1026,15 @@ def plot_topology(geo_data, G, centroids, direction="y"):
     warnings.warn("gempy plotting functionality will be moved in version 1.2, "
                   "use gempy.plotting module instead", FutureWarning)
     PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)
+
+
+def _setdoc(docstring):
+    def decor(func):
+        if func.__doc__ is None:
+            func.__doc__ = docstring
+        else:
+            func.__doc__ += docstring
+
+        return func
+
+    return decor
