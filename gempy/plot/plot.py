@@ -35,6 +35,7 @@ import pandas as _pn
 import copy
 from .visualization import PlotData2D, steno3D, vtkVisualization
 import gempy as _gempy
+from gempy.core.model import Model
 
 
 class vtkPlot():
@@ -586,7 +587,7 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
     return vv
 
 
-def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None, simplices=None):
+def export_to_vtk(geo_data: Model, path=None, name=None, voxels=True, surfaces=True):
     """
       Export data to a vtk file for posterior visualizations
 
@@ -598,10 +599,15 @@ def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None
       Returns:
           None
       """
-    if lith_block is not None:
-        vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path)
-    if vertices is not None and simplices is not None:
-        vtkVisualization.export_vtk_surfaces(vertices, simplices, path=path, name=name)
+
+    _gempy.warnings.warn("gempy plotting functionality will be moved in version 1.2, "
+                  "use gempy.plotting module instead", FutureWarning)
+    if voxels is True:
+        vtkVisualization.export_vtk_lith_block(geo_data, geo_data.solutions.lith_block, path=path)
+    if surfaces is True:
+        geo_data.solutions.compute_all_surfaces()
+        ver, sim = _gempy.get_surfaces(geo_data)
+        vtkVisualization.export_vtk_surfaces(ver, sim, path=path, name=name)
 
 
 def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
