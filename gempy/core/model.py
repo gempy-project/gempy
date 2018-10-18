@@ -71,7 +71,6 @@ class Model(object):
         # TODO orientations df, grid values etc.
         pass
 
-
     def get_data(self, itype='data', numeric=False, verbosity=0):
         """
         Method that returns the interfaces and orientations pandas Dataframes. Can return both at the same time or only
@@ -137,22 +136,6 @@ class Model(object):
 
     # def get_theano_input(self):
     #     pass
-
-    # def update_df(self, series_distribution=None, order=None):
-    #    pass
-    #    #  self.interfaces['formation'] = self.interfaces['formation'].astype('category')
-    #    #  self.orientations['formation'] = self.orientations['formation'].astype('category')
-    #    #
-    #    #  self.set_series(series_distribution=series_distribution, order=order)
-    #    #  self.set_basement()
-    #    #  faults_series = self.count_faults()
-    #    #  self.set_faults(faults_series)
-    #    #
-    #    # # self.reset_indices()
-    #    #
-    #    #  self.set_formations()
-    #    #  self.order_table()
-    #    #  self.set_fault_relation()
 
     def set_grid(self, grid: GridClass, only_model=False):
         self.grid = grid

@@ -233,7 +233,7 @@ def compute_crossvariogram(df, properties_names, euclidian_distances=None, **kwa
             values = compute_variogram(df, [i, j], euclidian_distances, lags=lags)
             experimental_variograms_frame[col_name] = values
 
-    # Add lags column for plotting mainly
+    # Add lags column for plot mainly
     experimental_variograms_frame['lags'] = lags
 
     return experimental_variograms_frame

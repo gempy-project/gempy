@@ -8,7 +8,7 @@
 # 
 # ## Preparation
 # 
-# Import GemPy, matplotlib for plotting, numpy and pandas for data handling.
+# Import GemPy, matplotlib for plot, numpy and pandas for data handling.
 
 # In[2]:
 
@@ -89,7 +89,7 @@ def test_ch3_a(interpolator_islith_nofault):
 
     #
     # # And plot a section:
-    # gp.plotting.plot_section(geo_data, 2, plot_data = True)
+    # gp.plot.plot_section(geo_data, 2, plot_data = True)
     #
     # import pymc
     # gp.get_data(geo_data, 'orientations', verbosity=1).head()
@@ -282,7 +282,7 @@ def test_ch3_a(interpolator_islith_nofault):
 #     gp.plot_section(geo_data, lith_block[0], 2)
 #
 #     ver, sim = gp.get_surfaces(interp_data, lith_block[1], None, original_scale= True)
-#     #gp.plotting.plot_surfaces_3D_real_time(geo_data, interp_data,
+#     #gp.plot.plot_surfaces_3D_real_time(geo_data, interp_data,
 #      #                                      ver, sim, posterior=post, alpha=1)
 #
 

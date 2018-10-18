@@ -32,7 +32,7 @@ import weakref
 import numpy
 import scipy
 import gempy
-#from gempy.plotting.colors import color_lot, cmap, norm
+#from gempy.plot.colors import color_lot, cmap, norm
 from itertools import count
 from PIL import Image
 import ipywidgets as widgets

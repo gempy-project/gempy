@@ -190,3 +190,27 @@ class GravityPreprocessing(object):
         vox_size = np.array([x_extent, y_extent, z_extent]) / self.interp_data.geo_data_res.resolution
         return vox_size
 
+def precomputations_gravity(interp_data, n_chunck=25, densities=None):
+    try:
+        getattr(interp_data, 'geophy')
+    except:
+        raise AttributeError('You need to set a geophysical object first. See set_geophysics_obj')
+
+    tz, select = interp_data.geophy.compute_gravity(n_chunck)
+    interp_data.interpolator.set_z_comp(tz, select)
+
+    if densities is not None:
+        set_densities(interp_data, densities)
+    return tz, select
+
+def set_densities(interp_data, densities):
+
+    interp_data.interpolator.set_densities(densities)
+
+def set_geophysics_obj(interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
+
+    assert isinstance(interp_data, InterpolatorData), 'The object has to be instance of the InterpolatorInput'
+    interp_data.create_geophysics_obj(ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
+    return interp_data.geophy
+
+

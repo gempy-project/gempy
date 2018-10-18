@@ -38,10 +38,10 @@ from pandas import DataFrame
 import copy
 import warnings
 
-from gempy.plotting.visualization import PlotData2D, vtkVisualization
+from gempy.plot.visualization import PlotData2D, vtkVisualization
 from gempy.data_management import InputData, GridClass
 from gempy.interpolator import InterpolatorData
-from gempy.plotting.sequential_pile import StratigraphicPile
+from gempy.plot.sequential_pile import StratigraphicPile
 from gempy.assets.topology import topology_analyze as _topology_analyze
 from gempy.utils.geomodeller_integration import ReadGeoModellerXML as _ReadGeoModellerXML
 import gempy.bayesian.posterior_analysis as pa # So far we use this type of import because the other one makes a copy and blows up some asserts
@@ -866,8 +866,8 @@ def export_to_vtk(geo_data, path=None, name=None, lith_block=None, vertices=None
           None
       """
 
-    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plotting module instead", FutureWarning)
+    warnings.warn("gempy plot functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
     if lith_block is not None:
         vtkVisualization.export_vtk_lith_block(geo_data, lith_block, path=path)
     if vertices is not None and simplices is not None:
@@ -895,8 +895,8 @@ def plot_surfaces_3D(geo_data, vertices_l: Union[np.array, list], simplices_l,
         None
     """
 
-    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plotting module instead", FutureWarning)
+    warnings.warn("gempy plot functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
 
     w = vtkVisualization(geo_data, bg_color=bg_color)
     w.set_surfaces(vertices_l, simplices_l,
@@ -924,7 +924,7 @@ def plot_data(geo_data, direction="y", data_type='all', series="all", legend_fon
         None
     """
 
-    warnings.warn("gempy plotting functionality will be moved in version 1.2, use gempy.plotting module instead", FutureWarning)
+    warnings.warn("gempy plot functionality will be moved in version 1.2, use gempy.plot module instead", FutureWarning)
 
     plot = PlotData2D(geo_data)
 
@@ -949,8 +949,8 @@ def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
     Returns:
         None
     """
-    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plotting module instead", FutureWarning)
+    warnings.warn("gempy plot functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
     plot = PlotData2D(geo_data)
     sec_plot = plot.plot_block_section(cell_number, block=block, direction=direction, **kwargs)
     # TODO saving options
@@ -971,8 +971,8 @@ def plot_scalar_field(geo_data, potential_field, cell_number, N=20,
     Returns:
         None
     """
-    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plotting module instead", FutureWarning)
+    warnings.warn("gempy plot functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
     plot = PlotData2D(geo_data)
     plot.plot_scalar_field(potential_field, cell_number, N=N,
                               direction=direction,  plot_data=plot_data, series=series,
@@ -1012,8 +1012,8 @@ def plot_data_3D(geo_data, **kwargs):
     Returns:
         None
     """
-    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plotting module instead", FutureWarning)
+    warnings.warn("gempy plot functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
     vv = vtkVisualization(geo_data)
     vv.set_interfaces()
     vv.set_orientations()
@@ -1044,8 +1044,8 @@ def plot_surfaces_3D_real_time(interp_data, vertices_l, simplices_l,
     Returns:
         None
     """
-    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plotting module instead", FutureWarning)
+    warnings.warn("gempy plot functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
     assert isinstance(interp_data, InterpolatorData), 'The object has to be instance of the InterpolatorInput'
     w = vtkVisualization(interp_data.geo_data_res, real_time=True)
     w.set_surfaces(vertices_l, simplices_l,
@@ -1086,6 +1086,6 @@ def plot_topology(geo_data, G, centroids, direction="y"):
     Returns:
         Nothing, it just plots.
     """
-    warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plotting module instead", FutureWarning)
+    warnings.warn("gempy plot functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
     PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)

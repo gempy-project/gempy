@@ -90,7 +90,7 @@ def test_rgeomod_integration(theano_f):
     plt.colorbar(dtmp, label="Elevation [m]");
     plt.savefig(input_path+"temp/DTM.pdf")
 
-    # To be able to use gempy plotting functionality we need to create a dummy geo_data object with the
+    # To be able to use gempy plot functionality we need to create a dummy geo_data object with the
     # resoluion we want. In this case resolution=[339, 271, 1]
     import copy
     geo_data_dummy = copy.deepcopy(geo_data)

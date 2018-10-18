@@ -215,4 +215,4 @@ class TestFaults:
 
         ver, sim = gempy.get_surfaces(geo_data)
         print(ver, sim)
-        # gempy.plotting.plot_surfaces_3D(geo_data, ver, sim)
+        # gempy.plot.plot_surfaces_3D(geo_data, ver, sim)

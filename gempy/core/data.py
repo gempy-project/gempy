@@ -59,7 +59,7 @@ class GridClass(object):
         if grid_type is 'regular_grid':
             self.set_regular_grid(**kwargs)
         elif grid_type is 'custom_grid':
-            self.create_custom_grid(**kwargs)
+            self.set_custom_grid(**kwargs)
         elif grid_type is None:
             pass
         else:
@@ -71,7 +71,7 @@ class GridClass(object):
     def __repr__(self):
         return 'Grid Object. Values: \n' + np.array_repr(self.values)
 
-    def create_custom_grid(self, custom_grid, inplace=False):
+    def set_custom_grid(self, custom_grid):
         """
         Give the coordinates of an external generated grid
 
@@ -84,10 +84,8 @@ class GridClass(object):
         assert type(custom_grid) is np.ndarray and custom_grid.shape[1] is 3, 'The shape of new grid must be (n,3)' \
                                                                               ' where n is the number of points of ' \
                                                                               'the grid'
-        if inplace is True:
-            self.values = custom_grid
-        else:
-            return custom_grid
+
+        self.values = custom_grid
 
     @staticmethod
     def create_regular_grid_3d(extent, resolution):
@@ -1494,7 +1492,25 @@ class GeoPhysiscs(object):
 
 
 class Solution(object):
-
+    """
+    TODO: update this
+        list of :class:`_np.array`: depending on the chosen out returns different number of solutions:
+            if output is geology:
+                1) Lithologies: block and scalar field
+                2) Faults: block and scalar field for each faulting plane
+            if output is 'gravity':
+                1) Weights: block and scalar field
+                2) Faults: block and scalar field for each faulting plane
+                3) Forward gravity
+            if output is gradients:
+                1) Lithologies: block and scalar field
+                2) Faults: block and scalar field for each faulting plane
+                3) Gradients of scalar field x
+                4) Gradients of scalar field y
+                5) Gradients of scalar field z
+        In addition if get_potential_at_interfaces is True, the value of the potential field at each of
+        the interfaces is given as well
+    """
     def __init__(self, additional_data: AdditionalData=None, formations: Formations=None, grid: GridClass=None, values=None):
 
         self.additional_data = additional_data
