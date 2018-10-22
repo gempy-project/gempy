@@ -1,5 +1,4 @@
-import gempy.core.data as gd
-import gempy.core.gempy_front as gp
+import gempy as gp
 import pandas as pn
 import numpy as np
 import os
@@ -46,6 +45,7 @@ def test_create_formations():
 
     return formations
 
+
 class TestModel:
     pass
 
@@ -89,7 +89,7 @@ class TestOrientations:
 class TestGrid:
     def test_set_regular_grid(self):
         # Test creating an empty list
-        grid = gd.GridClass()
+        grid = gp.GridClass()
         print(grid.create_regular_grid_3d([0,2000, 0, 2000, -2000, 0], [50, 50, 50]))
 
         # Test set regular grid by hand
@@ -228,4 +228,4 @@ class TestSolution:
 
 def test_export_vtk(test_load_model):
     model = test_load_model
-    gp.export_to_vtk(model, os.path.dirname(__file__)+'/vtk/expert_test')
+    gp.plot.export_to_vtk(model, os.path.dirname(__file__)+'/vtk/expert_test')

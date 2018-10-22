@@ -34,7 +34,7 @@ class TestFabianModel:
         gp.get_sequential_pile(geo_model)
 
     def test_plotting_data(self, geo_model):
-        gp.plotting.plot_data(geo_model)
+        gp.plot.plot_data(geo_model)
 
     @pytest.fixture(scope='class')
     def compute_model(self, interpolator_islith_isfault, geo_model):
@@ -54,7 +54,7 @@ class TestFabianModel:
 
     def test_plot_section(self, geo_model, compute_model):
 
-        gp.plotting.plot_section(geo_model, cell_number=25,
+        gp.plot.plot_section(geo_model, cell_number=25,
                                  direction='y', plot_data=True)
 
         plt.savefig(os.pardir+'/figs/example1.png')

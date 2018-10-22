@@ -1,11 +1,9 @@
-import os
 import sys
 from os import path
 
 # This is for sphenix to find the packages
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
-import copy
 import numpy as np
 import pandas as pn
 from typing import Union
@@ -153,6 +151,7 @@ class Series(object):
     """
 
     def __init__(self, series_distribution=None, order=None):
+
         if series_distribution is None:
             self.df = pn.DataFrame({"Default series": [None]}, dtype=str)
         else:
@@ -224,8 +223,7 @@ class Series(object):
         return True
 
     def update_sequential_pile(self):
-        self.sequential_pile.__init__(self)
-
+        self.sequential_pile = StratigraphicPile(self)
 
 
 class Faults(object):

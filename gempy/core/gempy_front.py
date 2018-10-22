@@ -501,7 +501,7 @@ def compute_model_at(new_grid_array: ndarray, model: Model):
 
 
 # region Solution
-#TODO compute, set? Right now is computed always
+# TODO compute, set? Right now is computed always
 def get_surfaces(model: Model):
     """
     gey vertices and simplices of the interfaces for its vtk visualization and further

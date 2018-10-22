@@ -39,7 +39,6 @@ except ImportError:
     STENO_IMPORT = False
 
 import matplotlib.pyplot as plt
-import matplotlib
 import seaborn as sns
 import numpy as np
 import pandas as pn
