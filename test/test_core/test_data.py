@@ -15,7 +15,7 @@ def test_read_interfaces():
     series = gp.Series(series_distribution={"fault": 'MainFault',
                                             "Rest": ('SecondaryReservoir', 'Seal3', 'Reservoir', 'Overlying'),
                                             })
-    interfaces.map_series_to_data(series)
+    interfaces.map_data_from_series(series)
     return interfaces
 
 
@@ -53,14 +53,14 @@ class TestModel:
 class TestInterfaces:
     def test_map_all_to_data(self, test_create_series, test_read_interfaces, test_create_formations,
                              test_create_faults):
-        test_read_interfaces.map_series_to_data(test_create_series)
+        test_read_interfaces.map_data_from_series(test_create_series)
         test_create_formations.set_formation_names(['MainFault', 'SecondaryReservoir','Seal',
                                                     'Reservoir', 'Overlying'])
 
         test_read_interfaces.map_formations_to_data(test_create_formations)
         test_read_interfaces.map_formations_to_data(test_create_formations)
 
-        test_read_interfaces.map_faults_to_data(test_create_faults)
+        test_read_interfaces.map_data_from_faults(test_create_faults)
         test_read_interfaces.set_annotations()
         print(test_read_interfaces)
 
@@ -74,14 +74,14 @@ class TestOrientations:
 
     def test_map_all_to_data(self, test_create_series, test_read_orientations, test_create_formations,
                              test_create_faults):
-        test_read_orientations.map_series_to_data(test_create_series)
+        test_read_orientations.map_data_from_series(test_create_series)
         test_create_formations.set_formation_names(['MainFault', 'SecondaryReservoir','Seal',
                                                     'Reservoir', 'Overlying'])
 
         test_read_orientations.map_formations_to_data(test_create_formations)
         test_read_orientations.map_formations_to_data(test_create_formations)
 
-        test_read_orientations.map_faults_to_data(test_create_faults)
+        test_read_orientations.map_data_from_faults(test_create_faults)
         test_read_orientations.set_annotations()
         print(test_read_orientations)
 

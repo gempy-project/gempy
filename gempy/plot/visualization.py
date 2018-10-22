@@ -25,15 +25,18 @@ Created on 23/09/2016
 """
 
 import warnings
+
 try:
     import vtk
+    VTK_IMPORT = True
 except ImportError:
-    warnings.warn('Vtk package is not installed. No vtk visualization available.')
+    VTK_IMPORT = False
 
 try:
     import steno3d
+    STENO_IMPORT = True
 except ImportError:
-    warnings.warn('Steno 3D package is not installed. No 3D online visualization available.')
+    STENO_IMPORT = False
 
 import matplotlib.pyplot as plt
 import matplotlib
@@ -44,7 +47,7 @@ from os import path
 import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-from gempy.plotting.colors import color_lot, cmap, norm
+from gempy.plot.colors import color_lot, cmap, norm
 import gempy as gp
 import copy
 from gempy.core.model import Model
@@ -82,7 +85,7 @@ class PlotData2D(object):
     @staticmethod
     def _set_style():
         """
-        Private function to set some plotting options
+        Private function to set some plot options
 
         """
 
@@ -197,7 +200,7 @@ class PlotData2D(object):
 
     def _slice(self, direction, cell_number=25):
         """
-        Slice the 3D array (blocks or scalar field) in the specific direction selected in the plotting functions
+        Slice the 3D array (blocks or scalar field) in the specific direction selected in the plot functions
 
         """
         _a, _b, _c = (slice(0, self.model.grid.resolution[0]),
@@ -502,8 +505,8 @@ class PlotData2D(object):
 
 class steno3D():
     def __init__(self, geo_data, project, **kwargs ):
-
-
+        if VTK_IMPORT is False:
+            raise ImportError( 'Steno 3D package is not installed. No 3D online visualization available.')
         description = kwargs.get('description', 'Nothing')
 
         self._data = geo_data
@@ -575,7 +578,11 @@ class vtkVisualization:
         camera_list (list): list of cameras for the distinct renderers
         ren_list (list): list containing the vtk renderers
     """
+
     def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, real_time=False, bg_color=None, ve=1):
+        if VTK_IMPORT is False:
+            raise ImportError('vtk is not installed. Not vtk capabilities are possible')
+
         self.ve = ve
 
         self.real_time = real_time

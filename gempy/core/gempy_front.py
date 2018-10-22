@@ -15,11 +15,7 @@
     along with gempy.  If not, see <http://www.gnu.org/licenses/>.
 
 
-    Module with classes and methods to perform implicit regional modelling based on
-    the potential field method.
-    Tested on Ubuntu 16
-
-    Created on 10/10 /2016
+    Created on 10/10 /2018
 
     @author: Miguel de la Varga
 """
@@ -33,130 +29,33 @@ sys.path.append(path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import numpy as _np
 from numpy import ndarray
 from pandas import DataFrame
-from gempy.plot.sequential_pile import StratigraphicPile
 from gempy.core.model import *
-
-
-# region Model level functions
-def create_data(extent, resolution=(50, 50, 50), project_name='default_project', **kwargs) -> Model:
-
-    """
-    DEP
-    Method to create a :class:`gempy.data_management.InputData` object. It is analogous to gempy.InputData()
-
-    Args:
-        extent (list or array):  [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data
-         and default of for the grid class.
-        resolution (list or array): [nx, ny, nz]. Resolution for the visualization of data
-         and default of for the grid class.
-
-    Keyword Args:
-
-        path_i: Path to the data bases of interfaces. Default os.getcwd(),
-        path_o: Path to the data bases of orientations. Default os.getcwd()
-
-    Returns:
-        :class:`gempy.data_management.InputData`
-
-    """
-    warnings.warn("This method will get deprecated in the next version of gempy. It still exist only to keep"
-                  "the behaviour equal to older version. See create_model.", FutureWarning)
-    model = create_model(project_name)
-    set_grid(model, create_grid(grid_type='regular_grid', extent=extent, resolution=resolution))
-    read_data(model, **kwargs)
-    set_values_to_default(model, series_distribution=model.interfaces, order_series = None, order_formations=None,
-                          set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0)
-    update_additional_data(model)
-
-    return model
-
-
-def set_values_to_default(model: Model, series_distribution=None, order_series=None, order_formations=None,
-                          set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0):
-
-    if series_distribution:
-        model.series.set_series_categories(series_distribution, order=order_series)
-
-    if set_faults is True:
-        model.faults.set_is_fault()
-
-    if map_formations_from_series is True:
-        model.formations.map_formations_from_series(model.series)
-        model.formations.df = model.formations.set_id(model.formations.df)
-        try:
-            model.formations.add_basement()
-            model.series.add_basement()
-        except AssertionError:
-            print('already basement')
-            pass
-    if order_formations is not None:
-        warnings.warn(" ", FutureWarning)
-        model.formations.set_formation_order(order_formations)
-
-    if call_map_to_data is True:
-        map_to_data(model, model.series, model.formations, model.faults)
-
-    if verbose > 0:
-        return get_sequential_pile(model)
-    else:
-        return True
-
-
-def map_to_data(model: Model, series: Series=None, formations: Formations=None, faults: Faults=None):
-    # TODO this function makes sense as Model method
-    if series is not None:
-        model.interfaces.map_series_to_data(series)
-        model.orientations.map_series_to_data(series)
-
-    if formations is not None:
-        model.interfaces.map_formations_to_data(formations)
-        model.orientations.map_formations_to_data(formations)
-
-    if faults is not None:
-        model.interfaces.map_faults_to_data(faults)
-        model.orientations.map_faults_to_data(faults)
-
-
-def get_data(model: Model, itype='data', numeric=False, verbosity=0):
-    """
-    Method to return the data stored in :class:`DataFrame` within a :class:`gempy.interpolator.InterpolatorData`
-    object.
-
-    Args:
-        model (:class:`gempy.core.model.Model`)
-        itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'faults', 'fautls_relations'}): input
-            data type to be retrieved.
-        numeric (bool): if True it only returns numberical properties. This may be useful due to memory issues
-        verbosity (int): Number of properties shown
-
-    Returns:
-        pandas.core.frame.DataFrame
-
-    """
-    return model.get_data(itype=itype, numeric=numeric, verbosity=verbosity)
-# endregion
+from typing import Union
+from gempy.utils.meta import _setdoc
 
 
 # region Model
+@_setdoc(Model.__doc__)
 def create_model(project_name='default_project'):
+    """
+    Create Model Object
+
+
+    Returns:
+        Model
+    """
+
     return Model(project_name)
 
 
-def save_model(model: Model, path=False):
-    """
-     Save InputData object to a python pickle (serialization of python). Be aware that if the dependencies
-     versions used to export and import the pickle differ it may give problems
+@_setdoc(Model.save_model.__doc__)
+def save_model(model: Model, path=None):
 
-     Args:
-         geo_data (:class:`gempy.data_management.InputData`)
-         path (str): path where save the pickle (without .pickle)
-
-     Returns:
-         None
-     """
     model.save_model(path)
+    return True
 
 
+@_setdoc(Model.load_model.__doc__)
 def load_model(path):
     """
     Read InputData object from python pickle.
@@ -168,16 +67,12 @@ def load_model(path):
         :class:`gempy.data_management.InputData`
 
     """
-    import pickle
-    with open(path, 'rb') as f:
-        # The protocol version used is detected automatically, so we do not
-        # have to specify it.
-        model = pickle.load(f)
-        return model
+    return Model.load_model(path)
 # endregion
 
 
 # region Series functionality
+@_setdoc(Series.__doc__)
 def create_series(series_distribution=None, order=None):
     return Series(series_distribution=series_distribution, order=order)
 
@@ -188,20 +83,20 @@ def set_series(model: Model, series_distribution, order_series=None, order_forma
     Function to set in place the different series of the project with their correspondent formations
 
     Args:
-        geo_data (:class:`gempy.data_management.InputData`)
+        model (:class:`gempy.core.model.Model`)
         series_distribution (dict or :class:`DataFrame`): with the name of the series as key and the name of the
           formations as values.
         order_series(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
              dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
         order_formations(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
             dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
-        verbose(int): if verbose is True plot hte sequential pile
-
-    Notes:
-        The following dataframes will be modified in place
-            1) geo_data.series: A pandas DataFrame with the series and formations relations
-            2) geo_data.interfaces: one extra column with the given series
-            3) geo_data.orientations: one extra column with the given series
+        values_to_default (bool): If true set values to default
+            - Interfaces and orientations: From csv files and prepare structure to GemPy's
+            - Formations :class:`gempy.core.data.Formations`: Using formations read in the csv file
+            - Series :class:`gempy.core.data.Series`: Using formations read in the csv file
+            - Faults :class:`gempy.core.data.Faults`: Using formations read in the csv file. If fault string is contained in
+              the name
+        verbose(int): if verbose is True plot the sequential pile
     """
 
     model.series.set_series_categories(series_distribution, order=order_series)
@@ -217,7 +112,7 @@ def set_series(model: Model, series_distribution, order_series=None, order_forma
     if verbose > 0:
         return get_sequential_pile(model)
     else:
-        return None
+        return True
 
 
 def select_series(geo_data, series):
@@ -253,13 +148,6 @@ def select_series(geo_data, series):
 
 
 def get_series(model: Model):
-    """
-    Args:
-         geo_data (:class:`gempy.data_management.InputData`)
-
-    Returns:
-        :class:`DataFrame`: Return series and formations relations
-    """
     return model.series
 
 
@@ -270,49 +158,53 @@ def get_sequential_pile(model: Model):
     %matplotlib qt5 or notebook)
 
     Args:
-        geo_data (:class:`gempy.interpolator.InterpolatorData`)
+        model (:class:`gempy.core.model.Model`)
 
     Returns:
         :class:`matplotlib.pyplot.Figure`
     """
-    return StratigraphicPile(model.series)
+    return model.series.sequential_pile.figure
 # endregion
 
 
 # region Formations functionality
+@_setdoc(Formations.__doc__)
 def create_formations(values_array=None, values_names=np.empty(0), formation_names=np.empty(0)):
     f = Formations(values_array=values_array, properties_names=values_names, formation_names=formation_names)
     return f
 
 
-def set_formations(geo_data: Model, formations=None, formations_order=None, formations_values=None,
+def set_formations(model: Model, formation_names=None, formations_order=None, values_array=None,
                    properties_names=None):
     """
-    Function to order and change the value of the model formations. The values of the formations will be the final
+    Function to order and change the value of the model formation_names. The values of the formation_names will be the final
     numerical value that each formation will take in the interpolated geological model (lithology block)
+
     Args:
-        geo_data (:class:`gempy.data_management.InputData`):
-        formations_order (list of str): List with a given order of the formations. Due to the interpolation algorithm
+        model (:class:`gempy.core.model.Model`)
+        values_array (np.ndarray): values of the formation_names will be the final
+            numerical value that each formation will take in the interpolated geological model (lithology block)
+        properties_names (list or np.ndarray): list containing the names of each properties
+        formations_order (list of str): List with a given order of the formation_names. Due to the interpolation algorithm
             this order is only relevant to keep consistent the colors of layers and input data. The order ultimately is
             determined by the geometric sedimentary order
-        formations (list of str): same as formations order. you can use any
-        formations_values (list of floats or int):  values of the formations will be the final
-    numerical value that each formation will take in the interpolated geological model (lithology block)
+        formation_names (list of str): same as formation_names order. you can use any
+        values_array (list of floats or int):
 
     Returns:
-        :class:`DataFrame`: formations dataframe already updated in place
+        :class:`DataFrame`: formation_names dataframe already updated in place
 
     """
-    if formations and not formations_order:
-        formations_order = formations
-    if formations_order is not None and formations_values is not None:
-        geo_data.formations.set_formations_values(formations_values, formation_order=formations_order,
-                                                  properties_names=properties_names)
+    if formation_names and not formations_order:
+        formations_order = formation_names
+    if formations_order is not None and values_array is not None:
+        model.formations.set_formations_values(values_array, formation_order=formations_order,
+                                               properties_names=properties_names)
     elif formations_order is not None:
-        geo_data.formations.set_formation_order(formations_order)
-        geo_data.formations.set_id()
+        model.formations.set_formation_order(formations_order)
+        model.formations.set_id()
 
-    return geo_data.formations
+    return True
 
 
 def set_order_formations(geo_model, formation_order):
@@ -327,6 +219,7 @@ def get_formations(model: Model):
 
 
 # region Fault functionality
+@_setdoc(Faults.__doc__)
 def create_faults(series: Series, series_fault=None, rel_matrix=None):
     return Faults(series=series, series_fault=series_fault, rel_matrix=rel_matrix)
 
@@ -341,25 +234,22 @@ def get_faults(model: Model):
 
 
 # region Grid functionality
+@_setdoc(GridClass.__doc__)
 def create_grid(grid_type: str, **kwargs):
     return GridClass(grid_type=grid_type, **kwargs)
 
 
+@_setdoc(Model.set_grid.__doc__)
 def set_grid(model: Model, grid: GridClass, only_model=False):
-    """
-
-    Args:
-        model (object):
-    """
     model.set_grid(grid=grid, only_model=only_model)
 
 
 def get_grid(model: Model):
     """
-    Coordinates can be found in :class:`gempy.data_management.GridClass.values`
+    Coordinates can be found in :class:`gempy.core.data.GridClass.values`
 
      Args:
-          geo_data (:class:`gempy.interpolator.InterpolatorData`)
+        model (:class:`gempy.core.model.Model`)
 
      Returns:
         :class:`gempy.data_management.GridClass`
@@ -375,31 +265,22 @@ def get_extent(model: Model):
     return model.grid.extent
 
 
-def update_grid(model, grid_type: str, **kwargs):
-    model.grid.__init__(grid_type=grid_type, **kwargs)
+# def update_grid(model, grid_type: str, **kwargs):
+#     model.grid.__init__(grid_type=grid_type, **kwargs)
 # endregion
 
 
 # region Point-Orientation functionality
-def read_data(geo_model: Model, path_i=None, path_o=None, **kwargs):
-    """
-    For extra options in reading please look at the Interfaces methods
-    Args:
-        model:
-        path_i:
-        path_o:
-        **kwargs: pandas read table kwargs
-    Returns:
-
-    """
+@_setdoc([Interfaces.read_interfaces.__doc__, Orientations.read_orientations.__doc__])
+def read_data(model: Model, path_i=None, path_o=None, **kwargs):
 
     if path_i:
-        geo_model.interfaces.read_interfaces(path_i, inplace=True, **kwargs)
+        model.interfaces.read_interfaces(path_i, inplace=True, **kwargs)
     if path_o:
-        geo_model.orientations.read_orientations(path_o, inplace=True, **kwargs)
+        model.orientations.read_orientations(path_o, inplace=True, **kwargs)
 
-    geo_model.rescaling.rescale_data()
-    update_additional_data(geo_model)
+    model.rescaling.rescale_data()
+    update_additional_data(model)
 
 
 def set_interfaces(geo_data, interf_dataframe, append=False):
@@ -425,7 +306,7 @@ def set_orientations(geo_data, orient_dataframe, append=False):
 
     Args:
          geo_data(:class:`gempy.data_management.InputData`)
-         interf_dataframe (:class:`DataFrame`)
+         orient_dataframe (:class:`DataFrame`)
          append (Bool): if you want to append the new data frame or substitute it
     """
 
@@ -441,7 +322,7 @@ def set_orientation_from_interfaces(geo_data, indices_array):
         indices_array (array-like): 1D or 2D array with the pandas indices of the
           :attr:`gempy.data_management.InputData.interfaces`. If 2D every row of the 2D matrix will be used to create an
           orientation
-        verbose:
+
 
     Returns:
         :attr:`gempy.data_management.InputData.orientations`: Already updated inplace
@@ -479,65 +360,43 @@ def get_orientations(model: Model):
 
 def rescale_data(model: Model, rescaling_factor=None, centers=None):
     """
-    Is always in place.
 
-    Rescale the data of a :class:`gempy.data_management.InputData`
     object between 0 and 1 due to stability problem of the float32.
 
     Args:
-        geo_data(:class:`gempy.data_management.InputData`)
+        model (:class:`gempy.core.model.Model`)
         rescaling_factor(float): factor of the rescaling. Default to maximum distance in one the axis
 
     Returns:
-        gempy.data_management.InputData: Rescaled data
-
+        True
     """
 
     model.rescaling.rescale_data(rescaling_factor, centers)
+    return True
 # endregion
 
 
 # region Interpolator functionality
-def set_interpolation_data(model: Model, inplace=True, **kwargs):
+@_setdoc([Interpolator.__doc__,
+         Interpolator.set_theano_shared_parameters.__doc__])
+def set_interpolation_data(model: Model, inplace=True, compile_theano: bool=True):
     """
-    Create a :class:`gempy.interpolator.InterpolatorData`. InterpolatorData is a class that contains all the
-     preprocessing operations to prepare the data to compute the model.
-     Also is the object that has to be manipulated to vary the data without recompile the modeling function.
 
     Args:
-        geo_data(gempy.DataManagement.InputData): All values of a DataManagement object
-        compile_theano (bool): select if the theano function is compiled during the initialization. Default: True
-        compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
-         the block model of faults. If False only return the block model of lithologies. This may be important to speed
-          up the computation. Default True
-        u_grade (list): grade of the polynomial for the universal part of the Kriging interpolations. The value has to
-        be either 0, 3 or 9 (number of equations) and the length has to be the number of series. By default the value
-        depends on the number of points given as input to try to avoid singular matrix. NOTE: if during the computation
-        of the model a singular matrix is returned try to reduce the u_grade of the series.
-        rescaling_factor (float): rescaling factor of the input data to improve the stability when float32 is used. By
-        defaut the rescaling factor is calculated to obtein values between 0 and 1.
+        model:
+        inplace:
+        compile_theano
 
-    Keyword Args:
-         dtype ('str'): Choosing if using float32 or float64. This is important if is intended to use the GPU
-         See Also InterpolatorClass kwargs
-
-    Attributes:
-        geo_data: Original gempy.DataManagement.InputData object
-        geo_data_res: Rescaled data. It has the same structure has gempy.InputData
-        interpolator: Instance of the gempy.DataManagement.InterpolaorInput.InterpolatorClass. See Also
-         gempy.DataManagement.InterpolaorInput.InterpolatorClass docs
-         th_fn: Theano function which compute the interpolation
-        dtype:  type of float
+    Returns:
 
     """
     # TODO add kwargs
     model.rescaling.rescale_data()
     update_additional_data(model)
 
-    model.interpolator.create_theano_graph()
+    model.interpolator.set_theano_graph(model.interpolator.create_theano_graph())
     model.interpolator.set_theano_shared_parameters()
 
-    compile_theano = kwargs.get('compile_theano', True)
     if compile_theano is True:
         model.interpolator.compile_th_fn(inplace=inplace)
 
@@ -553,7 +412,7 @@ def get_th_fn(model: Model):
     Get the compiled theano function
 
     Args:
-        interp_data (:class:`gempy.data_management.InputData`)
+        model (:class:`gempy.core.model.Model`)
 
     Returns:
         :class:`theano.compile.function_module.Function`: Compiled function if C or CUDA which computes the interpolation given the input data
@@ -586,8 +445,7 @@ def get_kriging_parameters(model: Model):
     Print the kringing parameters
 
     Args:
-        interp_data (:class:`gempy.data_management.InputData`)
-        verbose (int): if > 0 print all the shape values as well.
+        model (:obj:`gempy.core.data.Model`)
 
     Returns:
         None
@@ -597,12 +455,12 @@ def get_kriging_parameters(model: Model):
 
 
 # region Computing the model
-def compute_model(geo_model: Model)-> Solution:
+def compute_model(model: Model)-> Solution:
     """
     Computes the geological model and any extra output given in the additional data option.
 
     Args:
-        geo_model (:obj:`gempy.core.data.Model`)
+        model (:obj:`gempy.core.data.Model`)
 
     Returns:
         gempy.core.data.Solution
@@ -610,55 +468,48 @@ def compute_model(geo_model: Model)-> Solution:
     """
     # TODO: Assert frame by frame that all data is like is supposed. Otherwise,
     # return clear messages
-    i = geo_model.interpolator.get_input_matrix()
+    i = model.interpolator.get_input_matrix()
 
-    assert geo_model.additional_data.len_formations_i.min() > 1,  \
+    assert model.additional_data.len_formations_i.min() > 1,  \
         'To compute the model is necessary at least 2 interface points per layer'
 
-    sol = geo_model.interpolator.theano_function(*i)
-    geo_model.solutions.set_values(sol)
+    sol = model.interpolator.theano_function(*i)
+    model.solutions.set_values(sol)
 
-    return geo_model.solutions
+    return model.solutions
 
 
-def compute_model_at(new_grid_array: ndarray, geo_model: Model):
+def compute_model_at(new_grid_array: ndarray, model: Model):
     """
     This function does the same as :func:`gempy.core.gempy_front.compute_model` plus the addion functionallity of
      passing a given array of points where evaluate the model instead of using the :class:`gempy.core.data.GridClass`.
 
     Args:
-        geo_model:
+        model:
         new_grid_array (:class:`_np.array`): 2D array with XYZ (columns) coorinates
 
     Returns:
         gempy.core.data.Solution
     """
 
-    set_grid(geo_model, create_grid('custom_grid', custom_grid=new_grid_array))
+    set_grid(model, create_grid('custom_grid', custom_grid=new_grid_array))
 
     # Now we are good to compute the model again only in the new point
-    sol = compute_model(geo_model)
+    sol = compute_model(model)
     return sol
 # endregion
 
 
 # region Solution
+#TODO compute, set? Right now is computed always
 def get_surfaces(model: Model):
     """
-    Compute vertices and simplices of the interfaces for its vtk visualization and further
+    gey vertices and simplices of the interfaces for its vtk visualization and further
     analysis
 
     Args:
-        interp_data (:class:`gempy.data_management.InputData`)
-        potential_lith (ndarray): 1D numpy array with the solution of the computation of the model
-         containing the scalar field of potentials (second row of lith solution)
-        potential_fault (ndarray): 1D numpy array with the solution of the computation of the model
-         containing the scalar field of the faults (every second row of fault solution)
-        n_formation (int or 'all'): Positive integer with the number of the formation of which the surface is returned.
-         use method get_formation_number() to get a dictionary back with the values
-        step_size (int): resolution of the method. This is every how many voxels the marching cube method is applied
-        original_scale (bool): choosing if the coordinates of the vertices are given in the original or the rescaled
-         coordinates
+       model (:class:`gempy.core.model.Model`)
+
 
     Returns:
         vertices, simpleces
@@ -666,15 +517,135 @@ def get_surfaces(model: Model):
     return model.solutions.vertices, model.solutions.edges
 # endregion
 
-# region Auxiliary
-def _setdoc(docstring):
-    def decor(func):
-        if func.__doc__ is None:
-            func.__doc__ = docstring
-        else:
-            func.__doc__ += '/n' + docstring
 
-        return func
+# region Model level functions
+@_setdoc([Series.set_series_categories.__doc__, Faults.set_is_fault.__doc__])
+def set_values_to_default(model: Model, series_distribution=None, order_series=None, order_formations=None,
+                          set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0) -> bool:
+    """
+    Set the attributes of most of the objects to its default value to be able to compute a geological model.
 
-    return decor
+    - Interfaces and orientations: From csv files and prepare structure to GemPy's
+    - Formations :class:`gempy.core.data.Formations`: Using formations read in the csv file
+    - Series :class:`gempy.core.data.Series`: Using formations read in the csv file
+    - Faults :class:`gempy.core.data.Faults`: Using formations read in the csv file. If fault string is contained in
+      the name
+
+    Args:
+        model:
+        series_distribution:
+        order_series:
+        order_formations:
+        set_faults:
+        map_formations_from_series:
+        call_map_to_data:
+        verbose:
+
+    Returns:
+        True
+
+    ---------
+    See Also:
+    ---------
+
+    """
+    if series_distribution:
+        model.series.set_series_categories(series_distribution, order=order_series)
+
+    if set_faults is True:
+        model.faults.set_is_fault()
+
+    if map_formations_from_series is True:
+        model.formations.map_formations_from_series(model.series)
+        model.formations.df = model.formations.set_id(model.formations.df)
+        try:
+            model.formations.add_basement()
+            model.series.add_basement()
+        except AssertionError:
+            print('already basement')
+            pass
+    if order_formations is not None:
+        warnings.warn(" ", FutureWarning)
+        model.formations.set_formation_order(order_formations)
+
+    if call_map_to_data is True:
+        map_to_data(model, model.series, model.formations, model.faults)
+
+    if verbose > 0:
+        return get_sequential_pile(model)
+    else:
+        return True
+
+
+def map_to_data(model: Model, series: Series = None, formations: Formations = None, faults: Faults = None):
+    # TODO this function makes sense as Model method
+    if series is not None:
+        model.interfaces.map_data_from_series(series)
+        model.orientations.map_data_from_series(series)
+
+    if formations is not None:
+        model.interfaces.map_formations_to_data(formations)
+        model.orientations.map_formations_to_data(formations)
+
+    if faults is not None:
+        model.interfaces.map_data_from_faults(faults)
+        model.orientations.map_data_from_faults(faults)
+
+
+def get_data(model: Model, itype='data', numeric=False, verbosity=0):
+    """
+    Method to return the data stored in :class:`DataFrame` within a :class:`gempy.interpolator.InterpolatorData`
+    object.
+
+    Args:
+        model (:class:`gempy.core.model.Model`)
+        itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'faults', 'fautls_relations'}): input
+            data type to be retrieved.
+        numeric (bool): if True it only returns numberical properties. This may be useful due to memory issues
+        verbosity (int): Number of properties shown
+
+    Returns:
+        pandas.core.frame.DataFrame
+
+    """
+    return model.get_data(itype=itype, numeric=numeric, verbosity=verbosity)
+
+
+@_setdoc([set_values_to_default.__doc__])
+def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] = (50, 50, 50),
+                project_name: str='default_project', **kwargs) -> Model:
+    """
+    Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
+
+    - Grid :class:`gempy.core.data.GridClass`: To regular grid.
+    - read_data: Interfaces and orientations: From csv files
+    - set_values to default
+
+
+    Args:
+        extent (list or array):  [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data
+         and default of for the grid class.
+        resolution (list or array): [nx, ny, nz]. Resolution for the visualization of data
+         and default of for the grid class.
+        project_name (str)
+
+    Keyword Args:
+
+        path_i: Path to the data bases of interfaces. Default os.getcwd(),
+        path_o: Path to the data bases of orientations. Default os.getcwd()
+
+    Returns:
+        :class:`gempy.data_management.InputData`
+
+    """
+    warnings.warn("This method will get deprecated in the next version of gempy. It still exist only to keep"
+                  "the behaviour equal to older version. See create_model.", FutureWarning)
+    model = create_model(project_name)
+    set_grid(model, create_grid(grid_type='regular_grid', extent=extent, resolution=resolution))
+    read_data(model, **kwargs)
+    set_values_to_default(model, series_distribution=model.interfaces, order_series=None, order_formations=None,
+                          set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0)
+    update_additional_data(model)
+
+    return model
 # endregion

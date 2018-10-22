@@ -18,11 +18,12 @@
 import numpy as np
 import pandas as pn
 import matplotlib.pyplot as plt
-from gempy.plotting.colors import *
+from gempy.plot.colors import *
 import matplotlib.cm as cm
-from gempy.plotting.colors import color_lot, cmap, norm
-from gempy.core.model import Model
-from gempy.core.data import Series
+from gempy.plot.colors import color_lot, cmap, norm
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from gempy.core.data import Series
 #
 # def _create_color_lot(model: Model, cd_rgb):
 #     """Returns color [r,g,b] LOT for formation_numbers."""
@@ -55,7 +56,7 @@ from gempy.core.data import Series
 #     return lot
 
 
-def set_anchor_points(series_object: Series):
+def set_anchor_points(series_object):
     """
     Compute the location of each series and formation depending on the number of those
 
@@ -117,7 +118,7 @@ class StratigraphicPile(object):
     """
     Class to create the interactive stratigraphic pile
     """
-    def __init__(self, series_class: Series):
+    def __init__(self, series_class):
 
         # Set the values of matplotlib
         fig = plt.figure()
@@ -188,7 +189,7 @@ class StratigraphicPile(object):
 
 
 class DraggableRectangle:
-    def __init__(self, rect, series: Series, s):
+    def __init__(self, rect, series, s):
         # The idea of passing geodata is to update the dataframes in place
         self.series = series
 

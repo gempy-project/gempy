@@ -214,3 +214,14 @@ def set_geophysics_obj(interp_data, ai_extent, ai_resolution, ai_z=None, range_m
     return interp_data.geophy
 
 
+class GeoPhysiscs(object):
+    def __init__(self):
+        self.gravity = None
+        self.magnetics = None
+
+    def create_geophy(self):
+        pass
+
+    def set_gravity_precomputations(self):
+        pass
+

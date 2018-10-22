@@ -4,24 +4,18 @@ from os import path
 
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-
-import copy
-import numpy as np
 import pandas as pn
-
-import warnings
-
-try:
-    import qgrid
-except ImportError:
-    warnings.warn('qgrid package is not installed. No interactive dataframes available.')
-
 pn.options.mode.chained_assignment = None
-
 from .data import *
+from gempy.utils.meta import _setdoc
 
 
+@_setdoc([MetaData.__doc__, GridClass.__doc__])
 class Model(object):
+    """
+    Container class of all objects that constitute a GemPy model. In addition the class provides the methods that
+    act in more than one of this class.
+    """
     def __init__(self, project_name='default_project'):
 
         self.meta = MetaData(project_name=project_name)
@@ -54,7 +48,7 @@ class Model(object):
             path (str): path where save the pickle
 
         Returns:
-            None
+            True
         """
         sys.setrecursionlimit(10000)
 
@@ -65,6 +59,26 @@ class Model(object):
         with open(path+'.pickle', 'wb') as f:
             # Pickle the 'data' dictionary using the highest protocol available.
             pickle.dump(self, f, pickle.HIGHEST_PROTOCOL)
+        return True
+
+    @staticmethod
+    def load_model(path):
+        """
+        Read InputData object from python pickle.
+
+        Args:
+           path (str): path where save the pickle
+
+        Returns:
+            :class:`gempy.core.model.Model`
+
+        """
+        import pickle
+        with open(path, 'rb') as f:
+            # The protocol version used is detected automatically, so we do not
+            # have to specify it.
+            model = pickle.load(f)
+            return model
 
     def save_model_long_term(self):
         # TODO saving the main attributes in a seriealize way independent on the package i.e. interfaces and

@@ -1,4 +1,11 @@
 
+import warnings
+try:
+    import qgrid
+except ImportError:
+    warnings.warn('qgrid package is not installed. No interactive dataframes available.')
+
+
 def interactive_df_open(geo_data, itype):
     """
     Open the qgrid interactive DataFrame (http://qgrid.readthedocs.io/en/latest/).

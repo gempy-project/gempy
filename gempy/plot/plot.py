@@ -600,8 +600,8 @@ def export_to_vtk(geo_data: Model, path=None, name=None, voxels=True, surfaces=T
           None
       """
 
-    _gempy.warnings.warn("gempy plotting functionality will be moved in version 1.2, "
-                  "use gempy.plotting module instead", FutureWarning)
+    _gempy.warnings.warn("gempy plot functionality will be moved in version 1.2, "
+                  "use gempy.plot module instead", FutureWarning)
     if voxels is True:
         vtkVisualization.export_vtk_lith_block(geo_data, geo_data.solutions.lith_block, path=path)
     if surfaces is True:
