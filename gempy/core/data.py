@@ -59,7 +59,7 @@ class GridClass(object):
 
         self.grid_type = grid_type
         self.resolution = np.empty(3)
-        self.extent = np.empty(6)
+        self.extent = np.empty(6, dtype='float64')
         self.values = np.empty((1, 3))
         self.values_r = np.empty((1, 3))
         if grid_type is 'regular_grid':
@@ -88,6 +88,7 @@ class GridClass(object):
               numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular
                grid
         """
+        custom_grid = np.atleast_2d(custom_grid)
         assert type(custom_grid) is np.ndarray and custom_grid.shape[1] is 3, 'The shape of new grid must be (n,3)' \
                                                                               ' where n is the number of points of ' \
                                                                               'the grid'
@@ -111,12 +112,12 @@ class GridClass(object):
                      (extent[5] - extent[4]) / resolution[0]
 
         g = np.meshgrid(
-            np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0], dtype="float32"),
-            np.linspace(extent[2] + dy / 2, extent[3] - dy / 2, resolution[1], dtype="float32"),
-            np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2], dtype="float32"), indexing="ij"
+            np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0], dtype="float64"),
+            np.linspace(extent[2] + dy / 2, extent[3] - dy / 2, resolution[1], dtype="float64"),
+            np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2], dtype="float64"), indexing="ij"
         )
 
-        values = np.vstack(map(np.ravel, g)).T.astype("float32")
+        values = np.vstack(map(np.ravel, g)).T.astype("float64")
         return values
 
     def set_regular_grid(self, extent, resolution):
@@ -127,8 +128,8 @@ class GridClass(object):
             resolution (list): [nx, ny, nz]
         """
 
-        self.extent = extent
-        self.resolution = resolution
+        self.extent = np.asarray(extent, dtype='float64')
+        self.resolution = np.asarray(resolution)
         self.values = self.create_regular_grid_3d(extent, resolution)
 
 
@@ -414,11 +415,11 @@ class Formations(object):
                 self.formations_names = np.append(self.formations_names, 'default_formation_' + str(i))
 
             if self.df['formation'].shape[0] is not 0:
-                warnings.warn('Length of formation_names does not match number of formations')
+                print('Length of formation_names does not match number of formations')
             self.df['formation'] = self.formations_names
 
         elif self.df['formation'].shape[0] < self.formations_names.shape[0]:
-            warnings.warn('Length of formation_names does not match number of formations')
+            print('Length of formation_names does not match number of formations')
 
             # Set the names to the formations already there
             self.df['formation'] = self.formations_names[:self.df.shape[0]]
@@ -789,7 +790,7 @@ class Interfaces(Data):
             interf_dataframe[['formation_number', 'order_series']] = interf_dataframe[
                 ['formation_number', 'order_series']].astype(int, copy=True)
         except ValueError:
-            warnings.warn('No formation_number or order_series in the file')
+            print('No formation_number or order_series in the file')
             pass
         interf_dataframe['formation'] = interf_dataframe['formation'].astype('category', copy=True)
         interf_dataframe['series'] = interf_dataframe['series'].astype('category', copy=True)

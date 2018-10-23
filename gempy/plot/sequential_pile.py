@@ -186,6 +186,7 @@ class StratigraphicPile(object):
                 fontweight='bold', bbox={'facecolor':'gray', 'alpha':0.5, 'pad':10}, horizontalalignment='center')
 
         self.figure = plt.gcf()
+        plt.close(self.figure)
 
 
 class DraggableRectangle:

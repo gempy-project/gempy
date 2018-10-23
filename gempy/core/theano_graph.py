@@ -1802,7 +1802,6 @@ class TheanoGraph(object):
         self.fault_matrix = T.zeros((self.n_faults * 2, self.grid_val_T.shape[0] + 2 * self.len_points))
         self.fault_matrix_f = T.zeros((self.n_faults * 2, self.grid_val_T.shape[0] + 2 * self.len_points))
 
-
         self.final_scalar_field_at_formations_op = self.final_scalar_field_at_formations
         self.final_potential_field_at_faults_op = self.final_scalar_field_at_faults
 

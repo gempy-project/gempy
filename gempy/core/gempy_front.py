@@ -33,6 +33,11 @@ from gempy.core.model import *
 from typing import Union
 from gempy.utils.meta import _setdoc
 
+warnings.filterwarnings("ignore",
+                        message='.* a non-tuple sequence for multidimensional indexing is deprecated; use'
+                                ' `arr[tuple(seq)]` instead of `arr[seq]`. In the future this will be interpreted as '
+                                'an array index, `arr[np.array(seq)]`, which will result either in an error or a '
+                                'different result*.')
 
 # region Model
 @_setdoc(Model.__doc__)
@@ -126,6 +131,7 @@ def select_series(geo_data, series):
     Returns:
          :class:`gempy.data_management.InputData`: New object only containing the selected series
     """
+    import copy
     new_geo_data = copy.deepcopy(geo_data)
 
     if type(series) == int or type(series[0]) == int:
@@ -379,7 +385,8 @@ def rescale_data(model: Model, rescaling_factor=None, centers=None):
 # region Interpolator functionality
 @_setdoc([Interpolator.__doc__,
          Interpolator.set_theano_shared_parameters.__doc__])
-def set_interpolation_data(model: Model, inplace=True, compile_theano: bool=True):
+def set_interpolation_data(model: Model, inplace=True, compile_theano: bool=True, output='geology',
+                           theano_optimizer='fast_compile', verbose:list=np.nan):
     """
 
     Args:
@@ -390,6 +397,10 @@ def set_interpolation_data(model: Model, inplace=True, compile_theano: bool=True
     Returns:
 
     """
+    model.additional_data.options.at['output', 'values'] = output
+    model.additional_data.options.at['theano_optimizer', 'values'] = theano_optimizer
+    model.additional_data.options.at['verbose', 'values'] = verbose
+
     # TODO add kwargs
     model.rescaling.rescale_data()
     update_additional_data(model)
@@ -400,7 +411,7 @@ def set_interpolation_data(model: Model, inplace=True, compile_theano: bool=True
     if compile_theano is True:
         model.interpolator.compile_th_fn(inplace=inplace)
 
-    return model.interpolator
+    return model.additional_data.options
 
 
 def get_interpolator(model: Model):
@@ -455,12 +466,13 @@ def get_kriging_parameters(model: Model):
 
 
 # region Computing the model
-def compute_model(model: Model)-> Solution:
+def compute_model(model: Model, compute_mesh=True)-> Solution:
     """
     Computes the geological model and any extra output given in the additional data option.
 
     Args:
         model (:obj:`gempy.core.data.Model`)
+        compute_mesh (bool): If true compute polydata
 
     Returns:
         gempy.core.data.Solution
@@ -474,7 +486,7 @@ def compute_model(model: Model)-> Solution:
         'To compute the model is necessary at least 2 interface points per layer'
 
     sol = model.interpolator.theano_function(*i)
-    model.solutions.set_values(sol)
+    model.solutions.set_values(sol, compute_mesh=compute_mesh)
 
     return model.solutions
 
@@ -491,11 +503,11 @@ def compute_model_at(new_grid_array: ndarray, model: Model):
     Returns:
         gempy.core.data.Solution
     """
-
+    #TODO create backup of the mesh and a method to go back to it
     set_grid(model, create_grid('custom_grid', custom_grid=new_grid_array))
 
     # Now we are good to compute the model again only in the new point
-    sol = compute_model(model)
+    sol = compute_model(model, compute_mesh=False)
     return sol
 # endregion
 
@@ -639,7 +651,38 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
 
     """
     warnings.warn("This method will get deprecated in the next version of gempy. It still exist only to keep"
-                  "the behaviour equal to older version. See create_model.", FutureWarning)
+                  "the behaviour equal to older version. Use init_data.", FutureWarning)
+    return init_data(extent=extent, resolution=resolution, project_name=project_name, **kwargs)
+
+
+@_setdoc([set_values_to_default.__doc__])
+def init_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] = (50, 50, 50),
+                project_name: str='default_project', **kwargs) -> Model:
+    """
+    Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
+
+    - Grid :class:`gempy.core.data.GridClass`: To regular grid.
+    - read_data: Interfaces and orientations: From csv files
+    - set_values to default
+
+
+    Args:
+        extent (list or array):  [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data
+         and default of for the grid class.
+        resolution (list or array): [nx, ny, nz]. Resolution for the visualization of data
+         and default of for the grid class.
+        project_name (str)
+
+    Keyword Args:
+
+        path_i: Path to the data bases of interfaces. Default os.getcwd(),
+        path_o: Path to the data bases of orientations. Default os.getcwd()
+
+    Returns:
+        :class:`gempy.data_management.InputData`
+
+    """
+
     model = create_model(project_name)
     set_grid(model, create_grid(grid_type='regular_grid', extent=extent, resolution=resolution))
     read_data(model, **kwargs)
@@ -648,4 +691,6 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
     update_additional_data(model)
 
     return model
+
+
 # endregion
