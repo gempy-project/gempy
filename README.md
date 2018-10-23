@@ -138,8 +138,18 @@ Optional:
 
 Overall we recommend the use of a dedicated Python distribution, such as 
 [Anaconda](https://www.continuum.io/what-is-anaconda), for hassle-free package installation. 
-We are curently working on providing GemPy also via Anaconda Cloud, for easier installation of 
+We are currently working on providing GemPy also via Anaconda Cloud, for easier installation of
 its dependencies.
+
+#### Conflictive packages.
+
+Installing Theano (specially in windows) and vtk sometimes is problematic. Here we give a few advices that
+usually works for us:
+* Theano: Make sure a compiler gcc is installed before using conda to install theano. If you installed theano first,
+  simply uninstall it with conda uninstall and install it again
+
+* vtk: Right now (Fall 2018), does not have compatibility with python 3.7. The simplest solution to install it is to
+use `conda install python=3.6` to downgrade the python version and then using `pip install vtk`.
 
 ### Installation
 
