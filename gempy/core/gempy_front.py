@@ -33,11 +33,11 @@ from gempy.core.model import *
 from typing import Union
 from gempy.utils.meta import _setdoc
 
+# This warning comes from numpy complaining about a theano optimization
 warnings.filterwarnings("ignore",
-                        message='.* a non-tuple sequence for multidimensional indexing is deprecated; use'
-                                ' `arr[tuple(seq)]` instead of `arr[seq]`. In the future this will be interpreted as '
-                                'an array index, `arr[np.array(seq)]`, which will result either in an error or a '
-                                'different result*.')
+                        message='.* a non-tuple sequence for multidimensional indexing is deprecated; use*.',
+                        append=True)
+
 
 # region Model
 @_setdoc(Model.__doc__)
@@ -478,6 +478,11 @@ def compute_model(model: Model, compute_mesh=True)-> Solution:
         gempy.core.data.Solution
 
     """
+    # with warnings.catch_warnings(record=True):
+    #     warnings.filterwarnings("ignore",
+    #                             message='.* a non-tuple sequence for multidimensional indexing is deprecated; use*.',
+    #                             append=True)
+
     # TODO: Assert frame by frame that all data is like is supposed. Otherwise,
     # return clear messages
     i = model.interpolator.get_input_matrix()
