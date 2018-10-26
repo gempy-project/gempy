@@ -35,20 +35,22 @@ def compare_extent(dtm, geo_data, show=True):
     
 def gdal2geodata_extent(dtm, nanval=0):
     '''can return dtm.extent and dtm.resolution'''
-    ulx, xres, xskew, uly, yskew, yres  = dtm.GetGeoTransform()
+    ulx, xres, xskew, uly, yskew, yres  = dtm.GetGeoTransform() #res means pixel size
     dtma = dtm.ReadAsArray()
     if np.any(np.array([xskew,yskew]))!= 0:
+        #xskew = 0 if north-oriented
         print('Obacht! DTM is not north-oriented. Stop.')
-    lrx = ulx + (dtm.RasterXSize * xres)
+    #lower right x coord = upper left x coord + (number of raster cells in x direction * width of raster cells in x dirction)
+    lrx = ulx + (dtm.RasterXSize * xres)  
     lry = uly + (dtm.RasterYSize * yres)
-    if dtma.min() == nanval:
+    if dtma.min() == nanval:  #filter if there is a numeric value for nans
         print('Min z val is equal to nan val - making a copy of the array as floats with np.nan to find true min')
         dtmf = dtma.astype(float)       #make a copy array with floats
         dtmf[dtmf[:]==nanval]=np.nan      #replace nan vals with np.nan
         zmin = np.nanmin(dtmf)          #get min value excluding nans
     else: zmin = dtma.min()              #if no nan conflicts, proceed as normal
     extent = np.array([ulx, lrx, lry, uly, zmin, dtma.max()]).astype(int)
-    res = np.array([(uly-lry)/(-yres),(lrx-ulx)/xres]).astype(int)   
+    res = np.array([abs((uly-lry)/yres),abs((lrx-ulx)/xres)]).astype(int)   #this should be x,y not y,x. Also here res means size of each cell (how is this different than RasterXSize?)
     return extent, res
 
 def get_cornerpoints(extent):
