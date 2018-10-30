@@ -20,6 +20,8 @@ def compare_extent(dtm, geo_data, show=True):
     cornerpoints_geo = get_cornerpoints(geo_data.extent)
     cornerpoints_dtm = get_cornerpoints(dtm_extent)
     
+    
+    
     if show:
         plt.style.use('bmh')
         plt.plot(cornerpoints_geo[:,0], cornerpoints_geo[:,1], 'ro', markersize = 12, label = 'Geo_data extent')
