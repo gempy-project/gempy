@@ -8,7 +8,7 @@ TEST_DIR = os.path.dirname(os.path.abspath(__file__))
 
 @pytest.fixture
 def topo_geodata():
-    # initialize geo_data object
+    # initialize geo_model object
 
     sys.path.insert(0, TEST_DIR)
 

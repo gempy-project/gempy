@@ -16,24 +16,24 @@ class TestPerfomance:
         # TODO Update!!!
         #
         # # Importing the data from csv files and settign extent and resolution
-        # geo_data = gempy.read_pickle(os.path.dirname(__file__)+"/input_data/geo_data.pickle")
-        # geo_data.interfaces['formation'] = geo_data.interfaces['formation'].astype('category')
-        # geo_data.orientations['formation'] = geo_data.orientations['formation'].astype('category')
-        # geo_data.add_orientation(X=-2.88043478e+04, Y=6.21413043e+06, Z=-1.17648965e+02, dip=0, azimuth=0, polarity=1,
+        # geo_model = gempy.read_pickle(os.path.dirname(__file__)+"/input_data/geo_model.pickle")
+        # geo_model.interfaces['formation'] = geo_model.interfaces['formation'].astype('category')
+        # geo_model.orientations['formation'] = geo_model.orientations['formation'].astype('category')
+        # geo_model.add_orientation(X=-2.88043478e+04, Y=6.21413043e+06, Z=-1.17648965e+02, dip=0, azimuth=0, polarity=1,
         #                          formation='basement')
-        # geo_data.faults_relations = None
+        # geo_model.faults_relations_df = None
         # new_grid = gempy.GridClass()
         # res = 100
         #
         # # Create a new grid object with the new resolution
-        # new_grid.set_regular_grid(geo_data.extent, [res, res, res])
+        # new_grid.set_regular_grid(geo_model.extent, [res, res, res])
         #
         # # Setting the new grid to the geodata
-        # gempy.set_grid(geo_data, new_grid)
+        # gempy.set_grid(geo_model, new_grid)
         #
         # n_faults = 0
         #
-        # interp_data = gempy.InterpolatorData(geo_data, dtype='float32', compile_theano=False, verbose=[],
+        # interp_data = gempy.InterpolatorData(geo_model, dtype='float32', compile_theano=False, verbose=[],
         #                                      theano_optimizer='fast_run')
         #
         # interp_data.interpolator.tg.fault_matrix = theano.tensor.zeros((n_faults * 2,

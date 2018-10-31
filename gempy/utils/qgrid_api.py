@@ -14,7 +14,7 @@ def interactive_df_open(geo_data, itype):
 
     Args:
         geo_data (:class:`gempy.data_management.InputData`)
-        itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'faults', 'fautls_relations'}): input
+        itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'df', 'fautls_relations'}): input
             data type to be retrieved.
 
     Returns:
@@ -26,7 +26,7 @@ def interactive_df_open(geo_data, itype):
 def interactive_df_change_df(geo_data, only_selected=False):
     """
     Confirm and return the changes made to a dataframe using qgrid interactively. To update the
-    :class:`gempy.data_management.InputData` with the modify df use the correspondant set function.
+    :class:`gempy.data_management.InputData` with the modify categories_df use the correspondant set function.
 
     Args:
         geo_data (:class:`gempy.data_management.InputData`): the same :class:`gempy.data_management.InputData`

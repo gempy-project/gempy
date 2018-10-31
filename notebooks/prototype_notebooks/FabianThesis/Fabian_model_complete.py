@@ -52,7 +52,7 @@ resolution = geo_data.resolution[1] #resolution, standard: 50
 model_size = geo_data.extent[:2][1] # 'real' model extent, here: 2000 m - cubic (what if not cubic?)
 scale_factor = (model_size/resolution) # scale factor used for calculating voxel volumes in [m]
                                         # here: 2000/50 = 40
-#rescale_f = interp_data.rescaling_factor # rescaling factor from geo_data to interp_data
+#rescale_f = interp_data.rescaling_factor # rescaling factor from geo_model to interp_data
 
 minmax_buffer = True # buffer around local min and max values [on/off] - not used atm
 

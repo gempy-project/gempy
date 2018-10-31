@@ -45,9 +45,18 @@ def test_create_formations():
 
     return formations
 
+@pytest.fixture(scope='module')
+def test_load_model():
+    model = gp.load_model(os.pardir + "/input_data/test_solution.pickle")
+    return model
+
 
 class TestModel:
-    pass
+    def test_modify_inteterfaces(self, test_load_model):
+        test_load_model.modify_interfaces([0, 10, 5], X=[90, 20, 30], Y=[30, 20, 40])
+        test_load_model.modify_interfaces(0, X=[60])
+
+        test_load_model.modify_interfaces([0,1,4], X=[60])
 
 
 class TestInterfaces:
@@ -63,6 +72,9 @@ class TestInterfaces:
         test_read_interfaces.map_data_from_faults(test_create_faults)
         test_read_interfaces.set_annotations()
         print(test_read_interfaces)
+
+    def test_map_formations_to_data(self, test_read_interfaces, test_create_formations):
+        test_read_interfaces.map_formations_to_data(test_create_formations)
 
 
 class TestOrientations:
@@ -110,7 +122,7 @@ class TestSeries:
 
     def test_set_series(self, test_read_interfaces):
         series = gp.Series()
-        # We can pass a pandas df
+        # We can pass a pandas categories_df
         series.set_series_categories(pn.DataFrame({"fault": ['test2'],
                                         "Rest": 'SecondaryReservoir'}))
 
@@ -160,10 +172,13 @@ class TestFaults:
         test_create_faults.set_fault_relation(np.array([[0, 1],
                                                         [0, 0]]))
 
-        print(test_create_faults.faults_relations)
+        print(test_create_faults.faults_relations_df)
 
 
 class TestFormations:
+    def test_create_formation(self, test_create_formations):
+        print(test_create_formations)
+
     def test_map_formations_from_series(self, test_create_formations, test_create_series):
         test_create_formations.map_formations_from_series(test_create_series)
         print(test_create_formations)
@@ -205,12 +220,6 @@ class TestFormations:
         test_create_formations.set_formations_values(np.random.rand(2,2))
         test_create_formations.set_formations_values(np.random.rand(5,2))
         test_create_formations.set_formations_values(np.random.rand(10,3))
-
-
-@pytest.fixture(scope='module')
-def test_load_model():
-    model = gp.load_model(os.pardir + "/input_data/test_solution.pickle")
-    return model
 
 
 class TestSolution:

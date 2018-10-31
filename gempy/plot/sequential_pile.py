@@ -27,8 +27,8 @@ if TYPE_CHECKING:
 #
 # def _create_color_lot(model: Model, cd_rgb):
 #     """Returns color [r,g,b] LOT for formation_numbers."""
-#    # if "formation_number" not in geo_data.interfaces or "formation_number" not in geo_data.foliations:
-#    #     geo_data.set_formation_number()  # if not, set formation_numbers
+#    # if "formation_number" not in geo_model.interfaces or "formation_number" not in geo_model.foliations:
+#    #     geo_model.set_formation_number()  # if not, set formation_numbers
 #
 #     c_names = ["indigo", "red", "yellow", "brown", "orange",
 #                 "green", "blue", "amber", "pink", "light-blue",
@@ -38,11 +38,11 @@ if TYPE_CHECKING:
 #     lot = {}
 #     ci = 0  # use as an independent running variable because of fault formations
 #     # get unique formation_numbers
-#     fmt_numbers = np.unique([val for val in model.formations.df['id']])
+#     fmt_numbers = np.unique([val for val in model.formations.categories_df['id']])
 #     # get unique fault formation_numbers
 #     fault_fmt_numbers = np.unique(model.formations
 #
-#                                   [geo_data.interfaces["isFault"] == True]["formation_number"])
+#                                   [geo_model.interfaces["isFault"] == True]["formation_number"])
 #     # iterate over all unique formation_numbers
 #     for i, n in enumerate(fmt_numbers):
 #         # if its a fault formation set it to black by default
@@ -61,7 +61,7 @@ def set_anchor_points(series_object):
     Compute the location of each series and formation depending on the number of those
 
     Args:
-        geo_data (gempy.data_management.InputData):
+        geo_model (gempy.data_management.InputData):
 
     Returns:
         list:
@@ -75,9 +75,9 @@ def set_anchor_points(series_object):
 
     """
     # Formations per serie
-    series_names = series_object.df.columns
+    series_names = series_object.categories_df.columns
     # Get number of series
-    n_series = len(series_object.df.columns)
+    n_series = len(series_object.categories_df.columns)
 
     # Make anchor points for each serie
     anch_series_pos_aux = np.linspace(10, 0, n_series, endpoint=True)
@@ -91,7 +91,7 @@ def set_anchor_points(series_object):
     thick_formations = []
     for series in series_names:
         try:
-            formations = series_object.df[series].dropna().values
+            formations = series_object.categories_df[series].dropna().values
         except KeyError:
             formations = np.empty(0, dtype='object')
         formations = np.insert(formations, 0, '0_aux' + series)
@@ -140,7 +140,7 @@ class StratigraphicPile(object):
         rects = ax.barh(pos_anch, np.ones_like(pos_anch)*2, self.thick_series, )
 
         # We connect each rectangle
-        for e, series in enumerate(series_class.df.columns):
+        for e, series in enumerate(series_class.categories_df.columns):
             # TODO Alex set the colors of the series accordingly
 
             rects[e].set_color(cm.Dark2(e))
@@ -342,7 +342,7 @@ class DraggableRectangle:
 
         self.series.set_series_categories(series_dict, order=order_series)
         #self.series.set_formation_number(order_formations.columns.values)
-        #self.geo_data.order_table()
+        #self.geo_model.order_table()
 
     def disconnect(self):
         'disconnect all the stored connection ids'

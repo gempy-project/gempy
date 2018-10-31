@@ -119,9 +119,9 @@ class TheanoGraph(object):
                                                       [0, 0, 1, 1],
                                                       [0, 0, 0, 1],
                                                       [0, 0, 0, 0]]), 'fault relation matrix')
-        self.inf_factor = theano.shared(np.ones(200, dtype='int32') * 10, 'Arbitrary scalar to make faults infinite')
+        self.inf_factor = theano.shared(np.ones(200, dtype='int32') * 10, 'Arbitrary scalar to make df infinite')
 
-        self.n_faults = theano.shared(0, 'Number of faults')
+        self.n_faults = theano.shared(0, 'Number of df')
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T
         self.n_formation_op = self.n_formation
         self.n_formation_op_float = self.formation_values
@@ -165,9 +165,9 @@ class TheanoGraph(object):
         self.lith_block_init = T.zeros((2, self.grid_val_T.shape[0]))
         self.lith_block_init.name = 'final block of lithologies init'
 
-        # Init faults block. Here we store the block and potential field results of one iteration
+        # Init df block. Here we store the block and potential field results of one iteration
         self.fault_block_init = T.zeros((2, self.grid_val_T.shape[0]))
-        self.fault_block_init.name = 'final block of faults init'
+        self.fault_block_init.name = 'final block of df init'
         self.yet_simulated = T.nonzero(T.eq(self.fault_block_init[0, :], 0))[0]
 
         # Init gradient block.
@@ -523,23 +523,23 @@ class TheanoGraph(object):
 
     def faults_matrix(self):
         """
-        This function creates the part of the graph that generates the faults function creating a "block model" at the
+        This function creates the part of the graph that generates the df function creating a "block model" at the
         references and the rest of the points. Then this vector has to be appended to the covariance function
 
         Returns:
 
             list:
 
-            - theano.tensor.matrix: Drift matrix for the interfaces. Shape number of points in rest x n faults. This drif
+            - theano.tensor.matrix: Drift matrix for the interfaces. Shape number of points in rest x n df. This drif
               is a simple addition of an arbitrary number
 
-            - theano.tensor.matrix: Drift matrix for the gradients. Shape number of points in dips x n faults. For
+            - theano.tensor.matrix: Drift matrix for the gradients. Shape number of points in dips x n df. For
               discrete values this matrix will be null since the derivative of a constant is 0
         """
 
         length_of_CG, length_of_CGI, length_of_U_I, length_of_faults = self.matrices_shapes()[:4]
 
-        # self.fault_matrix contains the faults volume of the grid and the rest and ref points. For the drift we need
+        # self.fault_matrix contains the df volume of the grid and the rest and ref points. For the drift we need
         # to make it relative to the reference point
         if False:
             self.fault_matrix = theano.printing.Print('self.fault_matrix')(self.fault_matrix)
@@ -1048,11 +1048,11 @@ class TheanoGraph(object):
 
     def faults_contribution(self, weights=None, a=0, b=100000000):
         """
-        Computation of the contribution of the faults drift at every point to interpolate. To get these we need to
-        compute a whole block model with the faults data
+        Computation of the contribution of the df drift at every point to interpolate. To get these we need to
+        compute a whole block model with the df data
 
         Returns:
-            theano.tensor.vector: Contribution of the faults drift (input) at every point to interpolate
+            theano.tensor.vector: Contribution of the df drift (input) at every point to interpolate
         """
         if weights is None:
             weights = self.extend_dual_kriging()
@@ -1514,7 +1514,7 @@ class TheanoGraph(object):
             n_form_per_serie_1: Number of formations of the computed series
 
         Returns:
-            theano.tensor.matrix: block model derived from the faults that afterwards is used as a drift for the "real"
+            theano.tensor.matrix: block model derived from the df that afterwards is used as a drift for the "real"
             data
         """
 
@@ -1661,7 +1661,7 @@ class TheanoGraph(object):
         self.ref_layer_points = self.ref_layer_points_all[len_i_0: len_i_1, :]
         self.rest_layer_points = self.rest_layer_points_all[len_i_0: len_i_1, :]
 
-        # For the contribution of the faults I did not find a better way
+        # For the contribution of the df I did not find a better way
         self.len_i_0 = len_i_0
         self.len_i_1 = len_i_1
 
@@ -1725,13 +1725,13 @@ class TheanoGraph(object):
                 fn=self.compute_a_fault,
                     outputs_info=[
                               dict(initial=self.fault_matrix, taps=[-1]),
-                              None],  # This line may be used for the faults network
+                              None],  # This line may be used for the df network
                 sequences=[dict(input=self.len_series_i[:self.n_faults + 1], taps=[0, 1]),
                            dict(input=self.len_series_f[:self.n_faults + 1], taps=[0, 1]),
                            dict(input=self.n_formations_per_serie[:self.n_faults + 1], taps=[0, 1]),
                            dict(input=self.n_universal_eq_T[:self.n_faults + 1], taps=[0])],
                 non_sequences=self.fault_block_init,
-                name='Looping faults',
+                name='Looping df',
                 return_list=True,
                 profile=False
             )
@@ -1779,7 +1779,7 @@ class TheanoGraph(object):
 
         self.lith_block_init = T.zeros((5, self.grid_val_T.shape[0]))
         self.fault_block_init = T.zeros((5, self.grid_val_T.shape[0]))
-        self.fault_block_init.name = 'final block of faults init'
+        self.fault_block_init.name = 'final block of df init'
         # Compute Faults
         if self.n_faults.get_value()  != 0 or self.is_fault:
 
@@ -1788,13 +1788,13 @@ class TheanoGraph(object):
                 fn=self.compute_a_fault,
                     outputs_info=[
                               dict(initial=self.fault_matrix, taps=[-1]),
-                              None],  # This line may be used for the faults network
+                              None],  # This line may be used for the df network
                 sequences=[dict(input=self.len_series_i[:self.n_faults + 1], taps=[0, 1]),
                            dict(input=self.len_series_f[:self.n_faults + 1], taps=[0, 1]),
                            dict(input=self.n_formations_per_serie[:self.n_faults + 1], taps=[0, 1]),
                            dict(input=self.n_universal_eq_T[:self.n_faults + 1], taps=[0])],
                 non_sequences=self.fault_block_init,
-                name='Looping faults',
+                name='Looping df',
                 return_list=True,
                 profile=False
             )
@@ -1855,7 +1855,7 @@ class TheanoGraph(object):
     #     self.ref_layer_points = self.ref_layer_points_all[len_i_0: len_i_1, :]
     #     self.rest_layer_points = self.rest_layer_points_all[len_i_0: len_i_1, :]
     #
-    #     # For the contribution of the faults I did not find a better way
+    #     # For the contribution of the df I did not find a better way
     #     self.len_i_0 = len_i_0
     #     self.len_i_1 = len_i_1
     #
@@ -1891,7 +1891,7 @@ class TheanoGraph(object):
 
     def compute_forward_gravity(self): # densities, tz, select,
 
-        # TODO: Assert outside that densities is the same size as formations (minus faults)
+        # TODO: Assert outside that densities is the same size as formations (minus df)
         # Compute the geological model
         lith_matrix, fault_matrix, pfai = self.compute_geological_model()
 

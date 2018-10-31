@@ -35,4 +35,4 @@ layers = [1]
 
 for l in layers:
     i_df = ex.export_interfaces_gempy(x, y, layer=l, group_id="l"+str(l)+"_a")
-   # gp.set_interfaces(geo_data, i_df, append=True)
+   # gp.set_interfaces(geo_model, i_df, append=True)

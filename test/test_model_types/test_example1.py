@@ -26,6 +26,9 @@ class TestFabianModel:
                                         ], verbose=0)
         return model
 
+    def test_save_model(self, geo_model):
+        geo_model.save_model(os.pardir +"/input_data/test_solution.pickle")
+
     def test_get_data(self, geo_model):
         print(gp.get_data(geo_model))
         print(gp.get_data(geo_model, itype='additional_data'))

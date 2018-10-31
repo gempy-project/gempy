@@ -257,7 +257,7 @@ def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
         Compute possible extrema (minima, maxima and saddle points)
         for a surface of interest.
         This works for standard non-extreme topographies,
-        but does not consider the presence of faults.
+        but does not consider the presence of df.
 
         Note: This will currently return various points and also
         several points for one extrema. To attain single points,

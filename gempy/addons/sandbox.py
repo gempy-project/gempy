@@ -527,7 +527,7 @@ def run():
 
     def render_frame_old(self, outfile=None):
         lith_block, fault_block = gempy.compute_model_at(self.depth_grid, self.model)
-        #gp.plot_section(geo_data, lith_block[0], cell_number=0, direction='z', ar_output='current_out.png')
+        #gp.plot_section(geo_model, lith_block[0], cell_number=0, direction='z', ar_output='current_out.png')
         cell_number = 0
         direction = 'z'
         plotter=gempy.PlotData2D(self.model._geo_data)

@@ -42,7 +42,7 @@ class InterpolatorData:
         geophysics(gempy.geophysics): Object with the corresponding geophysical precomputations
         compile_theano (bool): select if the theano function is compiled during the initialization. Default: True
         compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
-         the block model of faults. If False only return the block model of lithologies. This may be important to speed
+         the block model of df. If False only return the block model of lithologies. This may be important to speed
           up the computation. Default True
         u_grade (list): grade of the polynomial for the universal part of the Kriging interpolations. The value has to
         be either 0, 3 or 9 (number of equations) and the length has to be the number of series. By default the value
@@ -90,7 +90,7 @@ class InterpolatorData:
         # This two properties get set calling rescale data
         self.rescaling_factor = None
         self.centers = None
-        #self.extent_original = copy.copy(geo_data.extent)
+        #self.extent_original = copy.copy(geo_model.extent)
 
         # Rescaling
         self.geo_data_res = self.rescale_data(geo_data, rescaling_factor=rescaling_factor)
@@ -108,7 +108,7 @@ class InterpolatorData:
 
         Args:
             compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
-             the block model of faults. If False only return the block model of lithologies. This may be important to speed
+             the block model of df. If False only return the block model of lithologies. This may be important to speed
               up the computation. Default True
 
         Returns:
@@ -122,7 +122,7 @@ class InterpolatorData:
         print('Compiling theano function...')
 
         if output is 'geology':
-            # then we compile we have to pass the number of formations that are faults!!
+            # then we compile we have to pass the number of formations that are df!!
             th_fn = theano.function(input_data_T,
                                     self.interpolator.tg.compute_geological_model(),
                                   # mode=NanGuardMode(nan_is_error=True),
@@ -131,7 +131,7 @@ class InterpolatorData:
                                     profile=False)
 
         elif output is 'gravity':
-            # then we compile we have to pass the number of formations that are faults!!
+            # then we compile we have to pass the number of formations that are df!!
             th_fn = theano.function(input_data_T,
                                     self.interpolator.tg.compute_forward_gravity(),
                                   #  mode=NanGuardMode(nan_is_error=True),
@@ -144,7 +144,7 @@ class InterpolatorData:
             gradients = kwargs.get('gradients', ['Gx', 'Gy', 'Gz'])
             self.interpolator.tg.gradients = gradients
 
-            # then we compile we have to pass the number of formations that are faults!!
+            # then we compile we have to pass the number of formations that are df!!
             th_fn = theano.function(input_data_T,
                                     self.interpolator.tg.compute_geological_model_gradient(self.geo_data_res.n_faults),
                                     #  mode=NanGuardMode(nan_is_error=True),
@@ -159,7 +159,7 @@ class InterpolatorData:
         print('Level of Optimization: ', theano.config.optimizer)
         print('Device: ', theano.config.device)
         print('Precision: ', self.dtype)
-        print('Number of faults: ', self.geo_data_res.n_faults)
+        print('Number of df: ', self.geo_data_res.n_faults)
         return th_fn
 
     def data_to_pickle(self, path=False, recursionlimit=3000):
@@ -283,7 +283,7 @@ class InterpolatorData:
             # Checking is geodata is already rescaled
             try:
                 getattr(geo_data, 'rescaling_factor')
-                # warnings.warn('You are passing a rescaled geo_data')
+                # warnings.warn('You are passing a rescaled geo_model')
                 geo_data_in = self.geo_data_res
             except AttributeError:
                 geo_data_in = self.rescale_data(geo_data)
@@ -876,13 +876,13 @@ class InterpolatorData:
             # Set fault relation matrix
             self.check_fault_ralation()
             self.tg.fault_relation.set_value(self.fault_rel.astype('int32'))
-            # if self.geo_data_res_no_basement.faults_relations is not None:
-            #     self.tg.faults_relations.set_value(self.geo_data_res_no_basement.faults_relations.values.astype('int32'))
+            # if self.geo_data_res_no_basement.faults_relations_df is not None:
+            #     self.tg.faults_relations_df.set_value(self.geo_data_res_no_basement.faults_relations_df.values.astype('int32'))
             # else:
             #     fault_rel = np.zeros((self.geo_data_res_no_basement.interfaces['series'].nunique(),
             #                           self.geo_data_res_no_basement.interfaces['series'].nunique()))
             #
-            #     self.tg.faults_relations.set_value(fault_rel.astype('int32'))
+            #     self.tg.faults_relations_df.set_value(fault_rel.astype('int32'))
 
         def check_fault_ralation(self):
             # Set fault relation matrix

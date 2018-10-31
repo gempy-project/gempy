@@ -262,7 +262,7 @@ def get_data(geo_data, itype='all', numeric=False, verbosity=0):
 
     Args:
         geo_data (:class:`gempy.interpolator.InterpolatorData`)
-        itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'faults', 'fautls_relations'}): input
+        itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'df', 'fautls_relations'}): input
             data type to be retrieved.
         numeric (bool): if True it only returns numberical properties. This may be useful due to memory issues
         verbosity (int): Number of properties shown
@@ -306,7 +306,7 @@ def get_kriging_parameters(interp_data, verbose=0):
     """
     return interp_data.interpolator.get_kriging_parameters(verbose=verbose)
 
-# TODO check that is a interp_data object and if not try to create within the function one from the geo_data
+# TODO check that is a interp_data object and if not try to create within the function one from the geo_model
 
 
 def get_th_fn(interp_data):
@@ -336,7 +336,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
         potential_lith (ndarray): 1D numpy array with the solution of the computation of the model
          containing the scalar field of potentials (second row of lith solution)
         potential_fault (ndarray): 1D numpy array with the solution of the computation of the model
-         containing the scalar field of the faults (every second row of fault solution)
+         containing the scalar field of the df (every second row of fault solution)
         n_formation (int or 'all'): Positive integer with the number of the formation of which the surface is returned.
          use method get_formation_number() to get a dictionary back with the values
         step_size (int): resolution of the method. This is every how many voxels the marching cube method is applied
@@ -397,7 +397,7 @@ def get_surfaces(interp_data, potential_lith=None, potential_fault=None, n_forma
 
     n_formations = _np.arange(interp_data.geo_data_res.interfaces['formation'].nunique())
 
-    # Looping the scalar fields of the faults
+    # Looping the scalar fields of the df
     if potential_fault is not None:
 
         assert len(_np.atleast_2d(potential_fault)) == interp_data.geo_data_res.n_faults, 'You need to pass a potential field per fault'
@@ -439,7 +439,7 @@ def interactive_df_open(geo_data, itype):
 
     Args:
         geo_data (:class:`gempy.data_management.InputData`)
-        itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'faults', 'fautls_relations'}): input
+        itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'df', 'fautls_relations'}): input
             data type to be retrieved.
 
     Returns:
@@ -451,7 +451,7 @@ def interactive_df_open(geo_data, itype):
 def interactive_df_change_df(geo_data, only_selected=False):
     """
     Confirm and return the changes made to a dataframe using qgrid interactively. To update the
-    :class:`gempy.data_management.InputData` with the modify df use the correspondant set function.
+    :class:`gempy.data_management.InputData` with the modify categories_df use the correspondant set function.
 
     Args:
         geo_data (:class:`gempy.data_management.InputData`): the same :class:`gempy.data_management.InputData`
@@ -540,7 +540,7 @@ def read_pickle(path):
 
 def rescale_factor_default(geo_data):
     """
-    Returns the default rescaling factor for a given geo_data
+    Returns the default rescaling factor for a given geo_model
 
     Args:
         geo_data(:class:`gempy.data_management.InputData`)
@@ -640,7 +640,7 @@ def select_series(geo_data, series):
         new_geo_data.interfaces = geo_data.interfaces[geo_data.interfaces['series'].isin(series)]
         new_geo_data.orientations = geo_data.orientations[geo_data.orientations['series'].isin(series)]
 
-    # Count faults
+    # Count df
     new_geo_data.set_faults(new_geo_data.count_faults())
 
     # Change the dataframe with the series
@@ -669,9 +669,9 @@ def set_series(geo_data, series_distribution=None, order_series=None, order_form
 
     Notes:
         The following dataframes will be modified in place
-            1) geo_data.series: A pandas DataFrame with the series and formations relations
-            2) geo_data.interfaces: one extra column with the given series
-            3) geo_data.orientations: one extra column with the given series
+            1) geo_model.series: A pandas DataFrame with the series and formations relations
+            2) geo_model.interfaces: one extra column with the given series
+            3) geo_model.orientations: one extra column with the given series
     """
     geo_data.update_df(series_distribution=series_distribution, order=order_series)
     if order_formations is not None:
@@ -765,7 +765,7 @@ def set_interpolation_data(geo_data, **kwargs):
         geo_data(gempy.DataManagement.InputData): All values of a DataManagement object
         compile_theano (bool): select if the theano function is compiled during the initialization. Default: True
         compute_all (bool): If true the solution gives back the block model of lithologies, the potential field and
-         the block model of faults. If False only return the block model of lithologies. This may be important to speed
+         the block model of df. If False only return the block model of lithologies. This may be important to speed
           up the computation. Default True
         u_grade (list): grade of the polynomial for the universal part of the Kriging interpolations. The value has to
         be either 0, 3 or 9 (number of equations) and the length has to be the number of series. By default the value

@@ -72,7 +72,7 @@ def change_input_data_avrg(db, interp_data):
 
     # get input data
     trace = db.geo_model.gettrace()
-    # set average in df
+    # set average in categories_df
     interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = trace[:, 0][:].mean(axis=0)
     interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = trace[:, 1][:].mean(axis=0)
     recalc_gradients(interp_data.geo_data_res.orientations)  # recalc gradients
@@ -266,7 +266,7 @@ class Posterior:
         # average input data
         interf_avrg = self.input_data[:, 0][:].mean(axis=0)
         orient_avrg = self.input_data[:, 1][:].mean(axis=0)
-        # set average in df
+        # set average in categories_df
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = interf_avrg
         interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = orient_avrg
         recalc_gradients(interp_data.geo_data_res.orientations)  # recalc gradients
@@ -449,7 +449,7 @@ def modify_plane_dip(dip, group_id, data_obj):
     Args:
         dip (float): Desired dip angle of the plane.
         group_id (str): Group id identifying the data points belonging to the plane.
-        data_obj (:obj:): Data object to be modified (geo_data or interp_data.geo_data_res_no_basement)
+        data_obj (:obj:): Data object to be modified (geo_model or interp_data.geo_data_res_no_basement)
 
     Returns:
         Directly modifies the given data object.

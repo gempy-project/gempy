@@ -56,10 +56,10 @@ class InputData(object):
             used for each voxel in the final model and the lithological order
         series (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and the formations contained
             on them
-        faults (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and if they are faults or
+        faults (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and if they are df or
             not (otherwise they are lithologies) and in case of being fault if is finite
         faults_relations (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the offsetting relations
-            between each fault and the rest of the series (either other faults or lithologies)
+            between each fault and the rest of the series (either other df or lithologies)
         grid (:class:`gempy.data_management.GridClass`): grid object containing mainly the coordinates to interpolate
             the model
         extent(list):  [x_min, x_max, y_min, y_max, z_min, z_max]
@@ -83,7 +83,7 @@ class InputData(object):
         self.extent = np.array(extent)
         self.resolution = np.array(resolution)
 
-        # Init number of faults
+        # Init number of df
         self.n_faults = 0
         self.faults_relations = None
         self.formations = None
@@ -115,7 +115,7 @@ class InputData(object):
             # TODO choose the default source of data. So far only csv
             self.import_data_csv(path_i=path_i, path_o=path_o)
 
-        # Init all df
+        # Init all categories_df
         self.update_df()
         self.set_basement()
 
@@ -205,7 +205,7 @@ class InputData(object):
 
     def count_faults(self):
         """
-        Read the string names of the formations to detect automatically the number of faults.
+        Read the string names of the formations to detect automatically the number of df.
         """
         faults_series = []
         for i in self.interfaces['series'].unique():
@@ -238,7 +238,7 @@ class InputData(object):
         """
 
         if not path:
-            path = './geo_data'
+            path = './geo_model'
         import pickle
         with open(path+'.pickle', 'wb') as f:
             # Pickle the 'data' dictionary using the highest protocol available.
@@ -332,13 +332,13 @@ class InputData(object):
             raw_data = self.formations
         elif itype is 'series':
             raw_data = self.series
-        elif itype is 'faults':
+        elif itype is 'df':
             raw_data = self.faults
-        elif itype is 'faults_relations':
+        elif itype is 'faults_relations_df':
             raw_data = self.faults_relations
         else:
             raise AttributeError('itype has to be \'all\', \'interfaces\', \'orientations\', \'formations\', \
-                                       \'serires\', \'faults\' or \'faults_relations\'')
+                                       \'serires\', \'df\' or \'faults_relations_df\'')
 
         #else:
         #    raise AttributeError('itype has to be: \'orientations\', \'interfaces\', or \'all\'')
@@ -367,9 +367,9 @@ class InputData(object):
             toolbar = False
         elif itype is 'formations':
             toolbar = False
-        elif itype is 'faults':
+        elif itype is 'df':
             toolbar = False
-        elif itype is 'faults_relations':
+        elif itype is 'faults_relations_df':
             toolbar = False
 
         if not toolbar:
@@ -672,7 +672,7 @@ class InputData(object):
             self.set_series()
             self.order_table()
 
-        # # We check if in the df we are setting there is a new formation. if yes we append it to to the cat
+        # # We check if in the categories_df we are setting there is a new formation. if yes we append it to to the cat
         # new_cat = interf_Dataframe['formation'].cat.categories[~np.in1d(interf_Dataframe['formation'].cat.categories,
         #                                                                self.formations)]
         # self.formations.index.insert(0, new_cat)
@@ -780,7 +780,7 @@ class InputData(object):
             if self.series is None:
                 self.series = pn.DataFrame({"Default series": self.interfaces["formation"].unique().astype(list)},
                                            dtype=str)
-            #     # Check if there is already a df
+            #     # Check if there is already a categories_df
             #     self.series
             # except AttributeError:
             #     # set to default series
@@ -801,7 +801,7 @@ class InputData(object):
             else:
                 raise AttributeError('series_distribution must be a dictionary, see Docstring for more information')
 
-            # Addind the formations of the new series to the formations df
+            # Addind the formations of the new series to the formations categories_df
             new_formations = self.series.values.reshape(1, -1)
             # Dropping nans
             new_formations = new_formations[~pn.isna(new_formations)]
@@ -873,7 +873,7 @@ class InputData(object):
             #if self._formation_values_set is False:
                 formation_order = self.interfaces['formation'].cat.categories
             else:
-                # We check if in the df we are setting there is a new formation. if yes we append it to to the cat
+                # We check if in the categories_df we are setting there is a new formation. if yes we append it to to the cat
                 new_cat = self.interfaces['formation'].cat.categories[
                     ~np.in1d(self.interfaces['formation'].cat.categories,
                              self.formations.index)]
@@ -882,7 +882,7 @@ class InputData(object):
                 else:
                     formation_order = np.insert(self.formations.index.get_values(), 0, new_cat)
             # try:
-            #     # Check if there is already a df
+            #     # Check if there is already a categories_df
             #     formation_order = self.formations.index
             #
             # except AttributeError:
@@ -893,7 +893,7 @@ class InputData(object):
 
         if formation_values is None:
             if self._formation_values_set:
-                # Check if there is already a df
+                # Check if there is already a categories_df
                 formation_values = self.formations['value'].squeeze()
             else:
                 formation_values = np.arange(1, formation_order.shape[0]+1)
@@ -956,7 +956,7 @@ class InputData(object):
 
         if formation_values is None:
         #     try:
-        #         # Check if there is already a df
+        #         # Check if there is already a categories_df
         #         self.formations
         #         print('I am changing formations1')
         #     except AttributeError:
@@ -980,14 +980,14 @@ class InputData(object):
 
     def set_faults(self, series_name=None):
         """
-        Set a flag to the series that are faults.
+        Set a flag to the series that are df.
 
         Args:
-            series_name(list or array_like): Name of the series which are faults
+            series_name(list or array_like): Name of the series which are df
         """
 
         try:
-            # Check if there is already a df
+            # Check if there is already a categories_df
             self.faults
 
             try:
@@ -1035,7 +1035,7 @@ class InputData(object):
 
     def set_fault_relation(self, rel_matrix = None):
         """
-        Method to set the faults that offset a given sequence and therefore also another fault
+        Method to set the df that offset a given sequence and therefore also another fault
 
         Args:
             rel_matrix (numpy.array): 2D Boolean array with the logic. Rows affect (offset) columns

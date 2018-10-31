@@ -20,7 +20,7 @@ input_path = os.path.dirname(__file__)+'/../../notebooks'
 def test_ch6(theano_f_1f):
 
 
-    # initialize geo_data object
+    # initialize geo_model object
     geo_data = gp.create_data([0, 3000, 0, 20, 0, 2000], resolution=[50, 3, 67])
     # import data points
     geo_data.import_data_csv(input_path+"/input_data/tut_chapter6/ch6_data_interf.csv",

@@ -44,7 +44,7 @@ def test_ch5(theano_f_grav, theano_f):
     gp.plot_data(geo_data)
 
 
-    #interp_data = gp.InterpolatorData(geo_data, compile_theano=True)
+    #interp_data = gp.InterpolatorData(geo_model, compile_theano=True)
     interp_data = theano_f
     interp_data.update_interpolator(geo_data)
 

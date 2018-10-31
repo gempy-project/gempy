@@ -98,7 +98,7 @@ class ReadGeoModellerXML:
         self.interfaces, self.orientations = self.get_dataframes()
 
         # self.stratigraphic_column = self.get_stratigraphic_column()
-        # self.faults = self.get_faults()
+        # self.df = self.get_faults()
         #
         # self.series_info = self._get_series_fmt_dict()
         # self.series_distribution = self.get_series_distribution()
@@ -268,7 +268,7 @@ class ReadGeoModellerXML:
 
     def get_series_distribution(self):
         """
-        Combines faults and stratigraphic series into an unordered dictionary as keys and maps the correct
+        Combines df and stratigraphic series into an unordered dictionary as keys and maps the correct
         formations to them as a list value. Faults series get a list of their own string assigned as formation.
 
         Returns:
@@ -424,9 +424,9 @@ def read_vox(geo_data, path):
 
     geo_res = geo_res.iloc[9:]
 
-    # ip_addresses = geo_res['nx 50'].unique()  # geo_data.interfaces["formation"].unique()
+    # ip_addresses = geo_res['nx 50'].unique()  # geo_model.interfaces["formation"].unique()
     ip_dict = geo_data.get_formation_number()
-  #  ip_dict = geo_data.interfaces['formation_number'].unique()
+  #  ip_dict = geo_model.interfaces['formation_number'].unique()
 
     geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
     block_geomodeller = np.ravel(geo_res_num.as_matrix().reshape(
@@ -530,7 +530,7 @@ class GeomodellerClass:
             faults_parent = self.rootelement.findall("{"+self.xmlns+"}Faults")[0]
             self.faults = faults_parent.findall("{"+self.xmlns+"}Fault")
         except IndexError:
-            print("No faults found in model")
+            print("No df found in model")
         return self.faults
 
     def get_formations(self):

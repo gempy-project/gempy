@@ -81,7 +81,7 @@ def topology_analyze(lith_block, fault_block, n_faults,
     Args:
         lith_block (np.ndarray): Lithology block model
         fault_block (np.ndarray): Fault block model
-        n_faults (int): Number of faults.
+        n_faults (int): Number of df.
 
 
     Keyword Args:
@@ -113,7 +113,7 @@ def topology_analyze(lith_block, fault_block, n_faults,
         lith_block -= n_faults  # lower by n_faults to equal with pynoddy models
         # so the block starts at 1 and goes continuously to max
 
-    # make sure that faults seperate lithologies in labeling, YUGE clever algorithm of the narcisist
+    # make sure that df seperate lithologies in labeling, YUGE clever algorithm of the narcisist
     ublock = (lith_block.max() + 1) * fault_block + lith_block
 
     # label the block for unique regions

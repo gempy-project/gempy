@@ -52,7 +52,7 @@ def test_rgeomod_integration(theano_f):
     gp.plot_data(geo_data, direction="z")
 
 
-    #interp_data = gp.InterpolatorData(geo_data, compile_theano=True)
+    #interp_data = gp.InterpolatorData(geo_model, compile_theano=True)
     interp_data = theano_f
     interp_data.update_interpolator(geo_data)
 
@@ -77,7 +77,7 @@ def test_rgeomod_integration(theano_f):
     #plt.savefig("../data/surfaces_3D.pdf", bbox_inches="tight")
 
     # try:
-    #     gp.plot_surfaces_3D(geo_data, vertices, simplices)
+    #     gp.plot_surfaces_3D(geo_model, vertices, simplices)
     # except NameError:
     #     print("3-D visualization library vtk not installed.")
 
@@ -90,7 +90,7 @@ def test_rgeomod_integration(theano_f):
     plt.colorbar(dtmp, label="Elevation [m]");
     plt.savefig(input_path+"temp/DTM.pdf")
 
-    # To be able to use gempy plot functionality we need to create a dummy geo_data object with the
+    # To be able to use gempy plot functionality we need to create a dummy geo_model object with the
     # resoluion we want. In this case resolution=[339, 271, 1]
     import copy
     geo_data_dummy = copy.deepcopy(geo_data)
@@ -107,7 +107,7 @@ def test_rgeomod_integration(theano_f):
     # In[17]:
 
 
-    # interp_data_geomap = gp.InterpolatorInput(geo_data, dtype="float64")
+    # interp_data_geomap = gp.InterpolatorInput(geo_model, dtype="float64")
     lith_block, fault_block = gp.compute_model_at(points, interp_data)
 
 

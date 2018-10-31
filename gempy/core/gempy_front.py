@@ -106,8 +106,8 @@ def set_series(model: Model, series_distribution, order_series=None, order_forma
 
     model.series.set_series_categories(series_distribution, order=order_series)
     if values_to_default is True:
-        warnings.warn("This option will get deprecated in the next version of gempy. It still exist only to keep"
-                      "the behaviour equal to older version. See set_values_to_default.", FutureWarning)
+        warnings.warn("values_to_default option will get deprecated in the next version of gempy. It still exist only "
+                      "to keep the behaviour equal to older version. See set_values_to_default.", FutureWarning)
 
         set_values_to_default(model, order_formations=None, set_faults=True,
                               map_formations_from_series=True, call_map_to_data=True)
@@ -141,7 +141,7 @@ def select_series(geo_data, series):
         new_geo_data.interfaces = geo_data.interfaces[geo_data.interfaces['series'].isin(series)]
         new_geo_data.orientations = geo_data.orientations[geo_data.orientations['series'].isin(series)]
 
-    # Count faults
+    # Count df
     new_geo_data.set_faults(new_geo_data.count_faults())
 
     # Change the dataframe with the series
@@ -399,11 +399,13 @@ def set_interpolation_data(model: Model, inplace=True, compile_theano: bool=True
     """
     model.additional_data.options.at['output', 'values'] = output
     model.additional_data.options.at['theano_optimizer', 'values'] = theano_optimizer
-    model.additional_data.options.at['verbose', 'values'] = verbose
+    model.additional_data.options.at['verbosity', 'values'] = verbose
 
     # TODO add kwargs
     model.rescaling.rescale_data()
     update_additional_data(model)
+    model.interfaces.sort_table()
+    model.orientations.sort_table()
 
     model.interpolator.set_theano_graph(model.interpolator.create_theano_graph())
     model.interpolator.set_theano_shared_parameters()
@@ -596,13 +598,17 @@ def set_values_to_default(model: Model, series_distribution=None, order_series=N
 
 def map_to_data(model: Model, series: Series = None, formations: Formations = None, faults: Faults = None):
     # TODO this function makes sense as Model method
-    if series is not None:
-        model.interfaces.map_data_from_series(series)
-        model.orientations.map_data_from_series(series)
 
     if formations is not None:
-        model.interfaces.map_formations_to_data(formations)
-        model.orientations.map_formations_to_data(formations)
+        model.interfaces.map_data_from_formations(formations, 'id')
+        model.orientations.map_data_from_formations(formations, 'id')
+
+        model.interfaces.map_data_from_formations(formations, 'series')
+        model.orientations.map_data_from_formations(formations, 'series')
+
+    if series is not None:
+        model.interfaces.map_data_from_series(series, 'order_series')
+        model.orientations.map_data_from_series(series, 'order_series')
 
     if faults is not None:
         model.interfaces.map_data_from_faults(faults)
@@ -616,7 +622,7 @@ def get_data(model: Model, itype='data', numeric=False, verbosity=0):
 
     Args:
         model (:class:`gempy.core.model.Model`)
-        itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'faults', 'fautls_relations'}): input
+        itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'df', 'fautls_relations'}): input
             data type to be retrieved.
         numeric (bool): if True it only returns numberical properties. This may be useful due to memory issues
         verbosity (int): Number of properties shown
@@ -647,7 +653,6 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
         project_name (str)
 
     Keyword Args:
-
         path_i: Path to the data bases of interfaces. Default os.getcwd(),
         path_o: Path to the data bases of orientations. Default os.getcwd()
 

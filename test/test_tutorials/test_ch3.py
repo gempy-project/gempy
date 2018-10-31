@@ -39,7 +39,7 @@ def test_ch3_a(interpolator_islith_nofault):
     res = (120, 4, 80)
 
 
-    # initialize geo_data object
+    # initialize geo_model object
     geo_data = gp.create_data([0, extent[0],
                                0, extent[1],
                                0, extent[2]],
@@ -51,15 +51,15 @@ def test_ch3_a(interpolator_islith_nofault):
                  path_i=input_path+"/input_data/tut_chapter3/tutorial_ch3_interfaces",
                  path_o=input_path + "/input_data/tut_chapter3/tutorial_ch3_foliations",
                          index_col='Unnamed: 0')
-    # geo_data.interfaces.read_interfaces(input_path+"/input_data/tut_chapter3/tutorial_ch3_interfaces",
+    # geo_model.interfaces.read_interfaces(input_path+"/input_data/tut_chapter3/tutorial_ch3_interfaces",
     #                                     index_col="Unnamed: 0")
     #
-    # geo_data.orientations.read_orientations(input_path + "/input_data/tut_chapter3/tutorial_ch3_foliations",
+    # geo_model.orientations.read_orientations(input_path + "/input_data/tut_chapter3/tutorial_ch3_foliations",
     #                                         index_col="Unnamed: 0")
 
-    # geo_data.set_interfaces(pn.read_csv(input_path+"/input_data/tut_chapter3/tutorial_ch3_interfaces",
+    # geo_model.set_interfaces(pn.read_csv(input_path+"/input_data/tut_chapter3/tutorial_ch3_interfaces",
     #                                     index_col="Unnamed: 0"), append=True)
-    # geo_data.set_orientations(pn.read_csv(input_path+"/input_data/tut_chapter3/tutorial_ch3_foliations",
+    # geo_model.set_orientations(pn.read_csv(input_path+"/input_data/tut_chapter3/tutorial_ch3_foliations",
     #                                     index_col="Unnamed: 0"))
 
     # let's have a look at the upper five interface data entries in the dataframe
@@ -69,7 +69,7 @@ def test_ch3_a(interpolator_islith_nofault):
     gp.get_sequential_pile(geo_data)
 
     # Ordered pile
-    #gp.set_order_formations(geo_data, ['Layer 2', 'Layer 3', 'Layer 4','Layer 5'])
+    #gp.set_order_formations(geo_model, ['Layer 2', 'Layer 3', 'Layer 4','Layer 5'])
     gp.set_formations(geo_data, formations_order=['Layer 2', 'Layer 3', 'Layer 4','Layer 5'])
     gp.get_sequential_pile(geo_data)
 
@@ -89,10 +89,10 @@ def test_ch3_a(interpolator_islith_nofault):
 
     #
     # # And plot a section:
-    # gp.plot.plot_section(geo_data, 2, plot_data = True)
+    # gp.plot.plot_section(geo_model, 2, plot_data = True)
     #
     # import pymc
-    # gp.get_data(geo_data, 'orientations', verbosity=1).head()
+    # gp.get_data(geo_model, 'orientations', verbosity=1).head()
     #
     # # So let's assume the vertical location of our layer interfaces is uncertain, and we want to represent this
     # #  uncertainty by using a normal distribution. To define a normal distribution, we need a mean and a measure
@@ -103,25 +103,25 @@ def test_ch3_a(interpolator_islith_nofault):
     #
     # # These are our unique group id's, the number representing the layer, and a/b the side of the anticline.
     #
-    # group_ids = geo_data.interfaces.df["group_id"].dropna().unique()
+    # group_ids = geo_model.interfaces.categories_df["group_id"].dropna().unique()
     # print(group_ids)
     #
     #
-    # # As a reminder, GemPy stores data in two main objects, an InputData object (called geo_data in the tutorials) and
-    # # a InpterpolatorInput object (interp_data) in tutorials. geo_data contains the original data while interp_data the
+    # # As a reminder, GemPy stores data in two main objects, an InputData object (called geo_model in the tutorials) and
+    # # a InpterpolatorInput object (interp_data) in tutorials. geo_model contains the original data while interp_data the
     # # data prepared (and compiled) to compute the 3D model.
     # #
     # # Since we do not want to compile our code at every new stochastic realization, from here on we will need to work
     # # with thte interp_data. And remember that to improve float32 to stability we need to work with rescaled data
     # # (between 0 and 1). Therefore all the stochastic data needs to be rescaled accordingly. The object interp_data
     # #  contains a property with the rescale factor (see below. As default depends on the model extent), or it is
-    # # possible to add the stochastic data to the pandas dataframe of the geo_data---when the InterpolatorInput object
+    # # possible to add the stochastic data to the pandas dataframe of the geo_model---when the InterpolatorInput object
     # # is created the rescaling happens under the hood.
     #
     # interface_Z_modifier = []
     #
     # # We rescale the standard deviation
-    # std = 20./geo_data.additional_data.rescaling_data.loc['rescaling factor', 'values']
+    # std = 20./geo_model.additional_data.rescaling_data.loc['rescaling factor', 'values']
     #
     # # loop over the unique group id's and create a pymc.Normal distribution for each
     # for gID in group_ids:
@@ -233,27 +233,27 @@ def test_ch3_a(interpolator_islith_nofault):
 #
 # def test_ch3_b(theano_f):
 #
-#     geo_data = gp.read_pickle(os.path.dirname(__file__)+"/ch3-pymc2_tutorial_geo_data.pickle")
+#     geo_model = gp.read_pickle(os.path.dirname(__file__)+"/ch3-pymc2_tutorial_geo_data.pickle")
 #
 #     # Check the stratigraphic pile for correctness:
 #
 #
-#     gp.get_sequential_pile(geo_data)
+#     gp.get_sequential_pile(geo_model)
 #
 #
 #     # Then we can then compile the GemPy modeling function:
 #
 #
-#     #interp_data = gp.InterpolatorData(geo_data, u_grade=[1])
+#     #interp_data = gp.InterpolatorData(geo_model, u_grade=[1])
 #     interp_data = theano_f
-#     interp_data.update_interpolator(geo_data)
+#     interp_data.update_interpolator(geo_model)
 #
 #     # Now we can reproduce the original model:
 #
 #
 #
 #     lith_block, fault_block = gp.compute_model(interp_data)
-#     gp.plot_section(geo_data, lith_block[0], 0)
+#     gp.plot_section(geo_model, lith_block[0], 0)
 #
 #
 #     # But of course we want to look at the perturbation results. We have a class for that:
@@ -279,10 +279,10 @@ def test_ch3_a(interpolator_islith_nofault):
 #
 #     post.change_input_data(interp_data, 95)
 #     lith_block, fault_block = gp.compute_model(interp_data)
-#     gp.plot_section(geo_data, lith_block[0], 2)
+#     gp.plot_section(geo_model, lith_block[0], 2)
 #
 #     ver, sim = gp.get_surfaces(interp_data, lith_block[1], None, original_scale= True)
-#     #gp.plot.plot_surfaces_3D_real_time(geo_data, interp_data,
+#     #gp.plot.plot_surfaces_3D_real_time(geo_model, interp_data,
 #      #                                      ver, sim, posterior=post, alpha=1)
 #
 
