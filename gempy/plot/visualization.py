@@ -953,7 +953,6 @@ class vtkVisualization:
                 self.s_rend_4.at[index] = (self.create_sphere(row['X'], row['Y'], row['Z'], row['id'],
                                            n_sphere=e, n_render=3, n_index=index))
         else:
-            #print('indices', indices)
             for e, val in enumerate(self.geo_model.interfaces.df.loc[np.atleast_1d(indices)].iterrows()):
                 index = val[0]
                 row = val[1]
@@ -1055,14 +1054,14 @@ class vtkVisualization:
         # TODO Check post class
         self.post.change_input_data(self.geo_model, obj.GetRepresentation().GetValue())
         try:
-            for surf in self.surf_rend_1:
-                self.ren_list[0].RemoveActor(surf)
-                self.ren_list[1].RemoveActor(surf)
-                self.ren_list[2].RemoveActor(surf)
-                self.ren_list[3].RemoveActor(surf)
-
-            ver, sim = self.update_surfaces_real_time()
-            self.set_surfaces(ver, sim)
+            # for surf in self.surf_rend_1:
+            #     self.ren_list[0].RemoveActor(surf)
+            #     self.ren_list[1].RemoveActor(surf)
+            #     self.ren_list[2].RemoveActor(surf)
+            #     self.ren_list[3].RemoveActor(surf)
+            self.update_surfaces_real_time()
+          #  ver, sim =
+          #  self.set_surfaces(ver, sim)
         except AttributeError:
             print('no surf')
             pass
@@ -1124,18 +1123,9 @@ class vtkVisualization:
 
         if self.real_time:
             try:
-                for surf in self.surf_rend_1:
-                    self.ren_list[0].RemoveActor(surf)
-                    self.ren_list[1].RemoveActor(surf)
-                    self.ren_list[2].RemoveActor(surf)
-                    self.ren_list[3].RemoveActor(surf)
-            except AttributeError:
-                pass
-
-            try:
-                vertices, simpleces = self.update_surfaces_real_time()
-                print(vertices)
-                self.set_surfaces(vertices, simpleces)
+                self.update_surfaces_real_time()
+                #vertices, simpleces =
+                #self.set_surfaces(vertices, simpleces)
             except AssertionError:
                 print('Not enough data to compute the model')
 
@@ -1241,19 +1231,20 @@ class vtkVisualization:
         self.planesCallback_move_changes(index)
 
         if self.real_time:
-            try:
-                if self.real_time:
-                    for surf in self.surf_rend_1:
-                        self.ren_list[0].RemoveActor(surf)
-                        self.ren_list[1].RemoveActor(surf)
-                        self.ren_list[2].RemoveActor(surf)
-                        self.ren_list[3].RemoveActor(surf)
-            except AttributeError:
-                pass
+            # try:
+            #     if self.real_time:
+            #         for surf in self.surf_rend_1:
+            #             self.ren_list[0].RemoveActor(surf)
+            #             self.ren_list[1].RemoveActor(surf)
+            #             self.ren_list[2].RemoveActor(surf)
+            #             self.ren_list[3].RemoveActor(surf)
+            # except AttributeError:
+            #     pass
 
             try:
-                vertices, simpleces = self.update_surfaces_real_time()
-                self.set_surfaces(vertices, simpleces)
+                self.update_surfaces_real_time()
+              #  vertices, simpleces =
+              #  self.set_surfaces(vertices, simpleces)
             except AssertionError:
                 os.system('cls')
                 print('Not enough data to compute the model')
@@ -1479,10 +1470,20 @@ class vtkVisualization:
 
         return cube_axes_actor
 
+    def delete_surfaces(self):
+        try:
+            for surf in self.surf_rend_1:
+                self.ren_list[0].RemoveActor(surf)
+                self.ren_list[1].RemoveActor(surf)
+                self.ren_list[2].RemoveActor(surf)
+                self.ren_list[3].RemoveActor(surf)
+        except AttributeError:
+            pass
+
     def update_surfaces_real_time(self):
 
+        self.delete_surfaces()
         gp.compute_model(self.geo_model, compute_mesh=True)
-        print('computing model')
         try:
             v_l, s_l = gp.get_surfaces(self.geo_model)
         except IndexError:
@@ -1490,7 +1491,9 @@ class vtkVisualization:
                 v_l, s_l = gp.get_surfaces(self.geo_model)
             except IndexError:
                 v_l, s_l = gp.get_surfaces(self.geo_model)
-        return list(v_l.values()), list(s_l.values())
+
+        self.set_surfaces(list(v_l.values()), list(s_l.values()))
+        return True
 
     @staticmethod
     def export_vtk_lith_block(geo_data, lith_block, path=None):

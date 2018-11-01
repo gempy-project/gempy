@@ -91,6 +91,10 @@ class vtkPlot():
             None
         """
         self.restart()
+        if vertices_l is None or simplices_l is None:
+            vertices_l, simplices_l = (list(self.geo_model.solution.vertices.values()),
+                                       list(self.geo_model.solution.simpleces.values()))
+
         self.vv.set_surfaces(vertices_l, simplices_l, self.alpha)
 
         if plot_data:
@@ -117,6 +121,9 @@ class vtkPlot():
 
         self.restart()
         self.vv.real_time = True
+
+    def set_real_time_off(self):
+        self.vv.real_time = False
 
     def plot_surfaces_3D_real_time(self, vertices_l=None, simplices_l=None,
                                    # formations_names_l, formation_numbers_l,
@@ -146,8 +153,7 @@ class vtkPlot():
         if vertices_l and simplices_l:
             self.vv.set_surfaces(vertices_l, simplices_l, self.alpha)
         else:
-            ver, sim =self.vv.update_surfaces_real_time()
-            self.vv.set_surfaces(ver, sim)
+            self.vv.update_surfaces_real_time()
 
         if posterior is not None:
             assert isinstance(posterior, _gempy.posterior_analysis.Posterior), 'The object has to be instance of the Posterior class'
@@ -169,26 +175,38 @@ class vtkPlot():
 
     def render_move_interfaces(self, indices):
         self.vv.SphereCallbak_move_changes(indices)
+        if self.vv.real_time is True:
+            self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
 
     def render_add_interfaces(self, indices):
         self.vv.set_interfaces(indices)
+        if self.vv.real_time is True:
+            self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
 
     def render_delete_interfaes(self, indices):
         self.vv.SphereCallback_delete_point(indices)
+        if self.vv.real_time is True:
+            self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
 
     def render_move_orientations(self, indices):
         self.vv.planesCallback_move_changes()(indices)
+        if self.vv.real_time is True:
+            self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
 
     def render_add_orientations(self, indices):
         self.vv.set_orientations(indices)
+        if self.vv.real_time is True:
+            self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
 
     def render_delete_orientations(self, indices):
         self.vv.planesCallback_delete_point(indices)
+        if self.vv.real_time is True:
+            self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
 
     def _move_interface(self, new_df):
@@ -544,10 +562,8 @@ def plot_surfaces_3D_real_time(geo_model, vertices_l, simplices_l,
     return vv
 
 
-def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
-                     # formations_names_l, formation_numbers_l,
+def plot_surfaces_3D(geo_data, vertices_l=None, simplices_l=None,
                      alpha=1, plot_data=True,
-                     #size=(1920, 1080), fullscreen=False, bg_color=None
                      **kwargs):
     """
     Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
@@ -566,22 +582,8 @@ def plot_surfaces_3D(geo_data, vertices_l, simplices_l,
         None
     """
     vv = vtkPlot(geo_data, **kwargs)
-
-    vv.plot_surfaces_3D( vertices_l, simplices_l,
-                     #formations_names_l, formation_numbers_l,
-                      plot_data=plot_data)
-    # w = vtkVisualization(geo_model, bg_color=bg_color)
-    # w.set_surfaces(vertices_l, simplices_l,
-    #                # formations_names_l, formation_numbers_l,
-    #                alpha)
-    #
-    # if plot_data:
-    #     w.set_interfaces()
-    #     w.set_orientations()
-    # w.render_model(size=size, fullscreen=fullscreen)
-    #
-    # w.close_window()
-
+    vv.plot_surfaces_3D(vertices_l, simplices_l,
+                        plot_data=plot_data)
     return vv
 
 

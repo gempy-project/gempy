@@ -622,7 +622,8 @@ def get_data(model: Model, itype='data', numeric=False, verbosity=0):
 
     Args:
         model (:class:`gempy.core.model.Model`)
-        itype(str {'all', 'interfaces', 'orientaions', 'formations', 'series', 'df', 'fautls_relations'}): input
+        itype(str {'all', 'interfaces', 'orientations', 'formations', 'series', 'faults', 'faults_relations',
+        additional data}): input
             data type to be retrieved.
         numeric (bool): if True it only returns numberical properties. This may be useful due to memory issues
         verbosity (int): Number of properties shown
@@ -660,7 +661,7 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
         :class:`gempy.data_management.InputData`
 
     """
-    warnings.warn("This method will get deprecated in the next version of gempy. It still exist only to keep"
+    warnings.warn("create_data will get deprecated in the next version of gempy. It still exist only to keep"
                   "the behaviour equal to older version. Use init_data.", FutureWarning)
     return init_data(extent=extent, resolution=resolution, project_name=project_name, **kwargs)
 

@@ -95,6 +95,7 @@ class Model(object):
             numeric(bool): Return only the numerical values of the dataframe. This is much lighter database for storing
                 traces
             verbosity (int): Number of properties shown
+
         Returns:
             pandas.core.frame.DataFrame: Data frame with the raw data
 
@@ -138,13 +139,13 @@ class Model(object):
             raw_data = self.series
         elif itype == 'faults':
             raw_data = self.faults
-        elif itype == 'faults_relations_df':
+        elif itype == 'faults_relations_df' or itype == 'faults_relations':
             raw_data = self.faults.faults_relations_df
         elif itype == 'additional data' or itype == 'additional_data':
             raw_data = self.additional_data
         else:
             raise AttributeError('itype has to be \'data\', \'additional data\', \'interfaces\', \'orientations\','
-                                 ' \'formations\',\'series\', \'df\' or \'faults_relations_df\'')
+                                 ' \'formations\',\'series\', \'faults\' or \'faults_relations_df\'')
 
         return raw_data
 
