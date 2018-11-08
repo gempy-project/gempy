@@ -158,18 +158,20 @@ class Series(object):
         else:
             self.set_series_categories(series_distribution, order=order)
 
-        self.sequential_pile = StratigraphicPile(self)
-        self.df = pn.DataFrame(index=self.categories_df.columns, columns=['order_series', 'BottomRelation'])
+        #self.sequential_pile = StratigraphicPile(self)
+        self.df = pn.DataFrame(index=pn.CategoricalIndex(self.categories_df.columns, ordered=True), columns=['order_series', 'BottomRelation'])
 
     def __repr__(self):
-        return self.categories_df.to_string()
+        return self.df.to_string()
 
     def _repr_html_(self):
         return self.df.to_html()
 
     def update_order_series(self):
-
         self.df.at[:, 'order_series'] = pn.RangeIndex(1, self.df.shape[0] + 1)
+
+    def categories_to_index(self):
+        pass
 
     def set_series_categories(self, series_distribution: Union[pn.DataFrame, dict], order: list = None,
                               add_basement=False):
@@ -212,8 +214,8 @@ class Series(object):
         if add_basement and 'basement' not in self.categories_df.iloc[:, -1].values:
             self.add_basement()
 
-        self.update_sequential_pile()
-        self.update_df()
+        #self.update_sequential_pile()
+        self.update_df_from_cat_df()
         return True
 
     def add_basement(self, name: str = 'basement'):
@@ -225,15 +227,18 @@ class Series(object):
         Returns:
             True
         """
-        self.categories_df.loc[self.categories_df.shape[0], self.categories_df.columns[-1]] = name
+        self.categories_df.loc[self.categories_df.shape[0], self.df.index[-1]] = name
         self.update_sequential_pile()
         return True
 
     def update_sequential_pile(self):
-        self.sequential_pile = StratigraphicPile(self)
+        pass
+    #    self.sequential_pile = StratigraphicPile(self)
 
-    def update_df(self):
-        self.df = pn.DataFrame(index=self.categories_df.columns, columns=['order_series', 'BottomRelation'])
+    def update_df_from_cat_df(self):
+        # TODO: DEP
+        self.df = pn.DataFrame(index=pn.CategoricalIndex(self.df.index, ordered=True),
+                               columns=['order_series', 'BottomRelation'])
         self.update_order_series()
 
     def map_isFault_from_faults(self, faults):
@@ -261,10 +266,10 @@ class Faults(object):
     def __init__(self, series: Series, series_fault=None, rel_matrix=None):
 
         self.series = series
-        self.df = pn.DataFrame(columns=['isFault', 'isFinite'])
+        self.df = pn.DataFrame(index=self.series.df.index, columns=['isFault', 'isFinite'])
         self.set_is_fault(series_fault=series_fault)
-        self.faults_relations_df = pn.DataFrame(index=self.series.categories_df.columns,
-                                                columns=self.series.categories_df.columns, dtype='bool')
+        self.faults_relations_df = pn.DataFrame(index=self.series.df.index,
+                                                columns=self.series.df.index, dtype='bool')
         self.set_fault_relation(rel_matrix=rel_matrix)
         self.n_faults = 0
 
@@ -284,10 +289,11 @@ class Faults(object):
         """
 
         if series_fault is None:
-            series_fault = self.count_faults(self.series.categories_df.columns)
+            series_fault = self.count_faults(self.series.df.index)
 
-        self.df = pn.DataFrame(index=self.series.categories_df.columns, columns=['isFault'])
+        #self.df = pn.DataFrame(index=self.series.df.index, columns=['isFault'])
         self.df['isFault'] = self.df.index.isin(series_fault)
+        print(self.df.index.isin(series_fault))
         self.n_faults = self.df['isFault'].sum()
         return self.df
 
@@ -300,12 +306,12 @@ class Faults(object):
         """
         # TODO: Change the fault relation automatically every time we add a fault
         if rel_matrix is None:
-            rel_matrix = np.zeros((self.series.categories_df.columns.shape[0],
-                                   self.series.categories_df.columns.shape[0]))
+            rel_matrix = np.zeros((self.series.df.index.shape[0],
+                                   self.series.df.index.shape[0]))
         else:
             assert type(rel_matrix) is np.ndarray, 'rel_matrix muxt be a 2D numpy array'
-        self.faults_relations_df = pn.DataFrame(rel_matrix, index=self.series.categories_df.columns,
-                                                columns=self.series.categories_df.columns, dtype='bool')
+        self.faults_relations_df = pn.DataFrame(rel_matrix, index=self.series.df.index,
+                                                columns=self.series.df.index, dtype='bool')
 
         return self.faults_relations_df
 
@@ -344,17 +350,17 @@ class Formations(object):
     def __init__(self, series: Series, values_array=None, properties_names=np.empty(0), formation_names=np.empty(0),
                  ):
 
-        self.series= series
+        self.series = series
         self.df = pn.DataFrame(columns=['formation', 'series', 'id', 'isBasement'])
         self.df['isBasement'] = self.df['isBasement'].astype(bool)
-        self.df["formation"] = self.df["formation"].astype('category')
-      #  self.df["id"] = self.df["id"].astype('int32')
+        self.df["series"] = self.df["series"].astype('category')
 
         self.formations_names = formation_names
         self._formation_values_set = False
         if values_array is not None:
             self.set_formations_values(values_array=values_array, properties_names=properties_names,
                                        formation_names=formation_names)
+        self.sequential_pile = StratigraphicPile(self.series, self.df)
 
     def __repr__(self):
         return self.df.to_string()
@@ -362,9 +368,17 @@ class Formations(object):
     def _repr_html_(self):
         return self.df.to_html()
 
+    def update_sequential_pile(self):
+        """
+        Method to update the sequential pile plot
+        Returns:
+
+        """
+        self.sequential_pile = StratigraphicPile(self.series, self.df)
+
     def set_formation_names(self, list_names):
         """
-        Method to set the name of the formations in order
+        Method to set the names of the formations in order
         Args:
             list_names (list[str]):
 
@@ -374,15 +388,35 @@ class Formations(object):
         if type(list_names) is list or type(list_names) is np.ndarray:
             self.formations_names = np.asarray(list_names)
         elif isinstance(list_names, Interfaces):
-            self.formations_names = np.asarray(list_names.df['formation'].cat.categories)
+            self.formations_names = np.asarray(list_names.df['formation'].unique())
         else:
             raise AttributeError('list_names must be either array_like type or Interfaces')
 
         self.map_formation_names_to_df()
+        self.df['series'].fillna('Default series', inplace=True)
 
     def set_formation_order(self, list_names):
-        self.set_formation_names(list_names)
-        self.set_basement(list_names[-1])
+        """"""
+        # self.set_formation_names(list_names)
+        # self.set_basement(list_names[-1])
+        self.df['formation'].cat.reorder_categoreis(list_names, inplace=True)
+        self.df['formation'].cat.as_ordered(inplace=True)
+
+    def map_series(self, mapping_object:Union[dict, pn.Series]):
+        if type(mapping_object) is dict:
+            s = []
+            f = []
+            for k, v in mapping_object.items():
+                for form in np.atleast_1d(v):
+                    s.append(k)
+                    f.append(form)
+            self.df['series'] = self.df['formation'].map(pn.DataFrame(s, f, columns=['series'])['series'])
+
+        elif isinstance(mapping_object, pn.Series):
+            self.df['series'] = self.df['formation'].map(mapping_object['series'])
+
+        else:
+            raise AttributeError(str(type(mapping_object))+' is not the right attribute type.')
 
     def map_formation_names_to_df(self):
         """
@@ -400,21 +434,22 @@ class Formations(object):
                 self.formations_names = np.append(self.formations_names, 'default_formation_' + str(i))
 
             if self.df['formation'].shape[0] is not 0:
-                print('Length of formation_names does not match number of formations')
+                print('Length of formation_names does not match number of formations. Too few.')
             self.df['formation'] = self.formations_names
 
         elif self.df['formation'].shape[0] < self.formations_names.shape[0]:
-            print('Length of formation_names does not match number of formations')
+            print('Length of formation_names does not match number of formations. Too many.')
 
             # Set the names to the formations already there
-            self.df['formation'] = self.formations_names[:self.df.shape[0]]
-
+        #    self.df['formation'] = self.formations_names[:self.df.shape[0]]
+            print(self.df)
             # Append the names which are not in the categories_df and drop if there is duplicated
             self.df = self.df.append(pn.DataFrame({'formation': self.formations_names}), sort=False)
+            print(self.df)
             self.df.drop_duplicates(subset='formation', keep='first', inplace=True)
 
         self.df['formation'] = self.df['formation'].astype('category')
-        self.map_series_from_series(self.series)
+        #self.map_series_cat_from_series(self.series)
 
         return True
 
@@ -437,7 +472,7 @@ class Formations(object):
         self.set_basement()
         self.set_id()
 
-    def map_series_from_series(self, series):
+    def map_series_cat_from_series(self, series):
         series_categories = series.categories_df
         self.df['series'] = [(i == series_categories).sum().idxmax() for i in self.df["formation"]]
 
@@ -480,7 +515,11 @@ class Formations(object):
                            sort=False, ignore_index=True
                            )
 
-        self.df = self.set_id(new_df)
+        #self.df = self.set_id(new_df)
+        self.df['formation'].cat.add_categories(name, inplace=True)
+        self.df.loc[self.df.last_valid_index()+1, ['formation', 'isBasement']] = [name, True]
+        self.set_id()
+
         self.set_dtypes()
 
         return True
@@ -514,7 +553,7 @@ class Formations(object):
 
     def set_dtypes(self):
         self.df['isBasement'] = self.df['isBasement'].astype(bool)
-        self.df["formation"] = self.df["formation"].astype('category')
+        self.df["series"] = self.df["series"].astype('category')
 
     def _default_values(self):
         values = np.arange(1, len(self.formations_names))
@@ -532,9 +571,9 @@ class Formations(object):
 
             Dataframe
         """
-        self.df = pn.DataFrame(columns=['formation', 'isBasement', 'id'])
-        self.df['isBasement'] = self.df['isBasement'].astype(bool)
-        self.df["formation"] = self.df["formation"].astype('category')
+        # self.df = pn.DataFrame(columns=['formation', 'isBasement', 'id'])
+        # self.df['isBasement'] = self.df['isBasement'].astype(bool)
+        # self.df["formation"] = self.df["formation"].astype('category')
 
         properties_names = np.asarray(properties_names)
         if type(values_array) is np.ndarray:

@@ -193,6 +193,18 @@ class Model(object):
         self.additional_data.update_structure()
         self.interpolator.set_theano_shared_structure()
 
+    def update_plot(self, plot_object: Union[vtkPlot]):
+        if plot_object is not None:
+            if isinstance(plot_object, vtkPlot):
+                if plot_object.vv.real_time is True:
+                    plot_object.vv.update_surfaces_real_time()
+                plot_object.vv.interactor.Render()
+
+    def modify_kriging_parameters(self, vtk_object: vtkPlot=None, **properties):
+        d = pn.DataFrame(properties).T
+        self.additional_data.kriging_data.loc[d.index, 'values'] = d
+        self.update_plot(vtk_object)
+
     def add_interfaces(self, vtk_object: vtkPlot=None, **properties):
 
         d = pn.DataFrame(properties)
@@ -205,6 +217,7 @@ class Model(object):
         for index, frame in d.iterrows():
             new_ind = self.interfaces.df.last_valid_index() + 1
             self.interfaces.df.loc[new_ind, d.columns] = frame
+
             if vtk_object is not None:
                 vtk_object.render_add_interfaces(new_ind)
 
@@ -243,6 +256,9 @@ class Model(object):
             raise AttributeError('Not enough angular data to calculate the gradients. Pass orientations or gradients')
 
         self.update_structure()
+
+    def add_series(self, vtk_object: vtkPlot=None, **properties):
+        pass
 
     def delete_interfaces(self, indices: Union[list, int], vtk_object: vtkPlot=None,):
         self.interfaces.df.drop(indices)
@@ -310,7 +326,6 @@ class Model(object):
                 raise AttributeError('add orientation only accept either orientation data [dip, azimuth, polarity] or'
                                      'gradient data [G_x, G_y, G_z]')
 
-       # if np.any(xyz_check):
         # To be sure that we
         xyz_exist = np.array(['X', 'Y', 'Z'])
         xyz_res = np.array(['X_r', 'Y_r', 'Z_r'])

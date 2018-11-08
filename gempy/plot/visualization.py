@@ -1480,9 +1480,10 @@ class vtkVisualization:
         except AttributeError:
             pass
 
-    def update_surfaces_real_time(self):
+    def update_surfaces_real_time(self, delete=True):
 
-        self.delete_surfaces()
+        if delete is True:
+            self.delete_surfaces()
         gp.compute_model(self.geo_model, compute_mesh=True)
         try:
             v_l, s_l = gp.get_surfaces(self.geo_model)

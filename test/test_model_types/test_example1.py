@@ -26,6 +26,9 @@ class TestFabianModel:
                                         ], verbose=0)
         return model
 
+    def test_init_model(self, geo_model):
+        print(geo_model)
+
     def test_save_model(self, geo_model):
         geo_model.save_model(os.pardir +"/input_data/test_solution.pickle")
 

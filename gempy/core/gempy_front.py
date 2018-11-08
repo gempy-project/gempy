@@ -285,6 +285,8 @@ def read_data(model: Model, path_i=None, path_o=None, **kwargs):
     if path_o:
         model.orientations.read_orientations(path_o, inplace=True, **kwargs)
 
+    model.formations.set_formation_names(model.interfaces)
+
     model.rescaling.rescale_data()
     update_additional_data(model)
 
@@ -569,13 +571,14 @@ def set_values_to_default(model: Model, series_distribution=None, order_series=N
 
     """
     if series_distribution:
-        model.series.set_series_categories(series_distribution, order=order_series)
+        model.formations.map_series(series_distribution)
+        print('line 574')
 
     if set_faults is True:
         model.faults.set_is_fault()
 
     if map_formations_from_series is True:
-        model.formations.map_formations_from_series(model.series)
+       # model.formations.map_formations_from_series(model.series)
         model.formations.df = model.formations.set_id(model.formations.df)
         try:
             model.formations.add_basement()
@@ -697,7 +700,7 @@ def init_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] = (
     model = create_model(project_name)
     set_grid(model, create_grid(grid_type='regular_grid', extent=extent, resolution=resolution))
     read_data(model, **kwargs)
-    set_values_to_default(model, series_distribution=model.interfaces, order_series=None, order_formations=None,
+    set_values_to_default(model, series_distribution=None, order_series=None, order_formations=None,
                           set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0)
     update_additional_data(model)
 

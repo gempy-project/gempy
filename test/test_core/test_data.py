@@ -14,7 +14,7 @@ def test_read_interfaces():
     series = gp.Series(series_distribution={"fault": 'MainFault',
                                             "Rest": ('SecondaryReservoir', 'Seal3', 'Reservoir', 'Overlying'),
                                             })
-    interfaces.map_data_from_series(series)
+    interfaces.map_data_from_series(series, 'id')
     return interfaces
 
 
