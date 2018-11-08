@@ -156,8 +156,11 @@ class Model(object):
         self.grid = grid
         if only_model is not True:
             self.additional_data.grid = grid
-            self.interpolator.grid = grid
             self.rescaling.grid = grid
+            self.rescaling.set_rescaled_grid()
+            self.interpolator.grid = grid
+            self.interpolator.set_theano_share_input()
+
             self.solutions.grid = grid
 
     def set_series(self):

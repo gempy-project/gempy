@@ -33,6 +33,7 @@ import numpy as _np
 import pandas as _pn
 import copy
 from .visualization import PlotData2D, steno3D, vtkVisualization
+from .colors import cmap, norm, color_lot
 import gempy as _gempy
 
 
