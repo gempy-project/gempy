@@ -80,45 +80,70 @@ def load_model(path):
 @_setdoc(Series.__doc__)
 def create_series(series_distribution=None, order=None):
     return Series(series_distribution=series_distribution, order=order)
+#
+#
+# def set_series(model: Model, series_distribution, order_series=None, order_formations=None,
+#                values_to_default=True, verbose=0):
+#     """
+#     Function to set in place the different series of the project with their correspondent formations
+#
+#     Args:
+#         model (:class:`gempy.core.model.Model`)
+#         series_distribution (dict or :class:`DataFrame`): with the name of the series as key and the name of the
+#           formations as values.
+#         order_series(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
+#              dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
+#         order_formations(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
+#             dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
+#         values_to_default (bool): If true set values to default
+#             - Interfaces and orientations: From csv files and prepare structure to GemPy's
+#             - Formations :class:`gempy.core.data.Formations`: Using formations read in the csv file
+#             - Series :class:`gempy.core.data.Series`: Using formations read in the csv file
+#             - Faults :class:`gempy.core.data.Faults`: Using formations read in the csv file. If fault string is contained in
+#               the name
+#         verbose(int): if verbose is True plot the sequential pile
+#     """
+#
+#     model.series.set_series_categories(series_distribution, order=order_series)
+#     if values_to_default is True:
+#         warnings.warn("values_to_default option will get deprecated in the next version of gempy. It still exist only "
+#                       "to keep the behaviour equal to older version. See set_values_to_default.", FutureWarning)
+#
+#         set_values_to_default(model, order_formations=None, set_faults=True,
+#                               map_formations_from_series=True, call_map_to_data=True)
+#
+#     update_additional_data(model)
+#
+#     if verbose > 0:
+#         return get_sequential_pile(model)
+#     else:
+#         return True
 
-
-def set_series(model: Model, series_distribution, order_series=None, order_formations=None,
-               values_to_default=True, verbose=0):
-    """
-    Function to set in place the different series of the project with their correspondent formations
-
-    Args:
-        model (:class:`gempy.core.model.Model`)
-        series_distribution (dict or :class:`DataFrame`): with the name of the series as key and the name of the
-          formations as values.
-        order_series(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
-             dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
-        order_formations(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
-            dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
-        values_to_default (bool): If true set values to default
-            - Interfaces and orientations: From csv files and prepare structure to GemPy's
-            - Formations :class:`gempy.core.data.Formations`: Using formations read in the csv file
-            - Series :class:`gempy.core.data.Series`: Using formations read in the csv file
-            - Faults :class:`gempy.core.data.Faults`: Using formations read in the csv file. If fault string is contained in
-              the name
-        verbose(int): if verbose is True plot the sequential pile
-    """
-
-    model.series.set_series_categories(series_distribution, order=order_series)
-    if values_to_default is True:
-        warnings.warn("values_to_default option will get deprecated in the next version of gempy. It still exist only "
-                      "to keep the behaviour equal to older version. See set_values_to_default.", FutureWarning)
-
-        set_values_to_default(model, order_formations=None, set_faults=True,
-                              map_formations_from_series=True, call_map_to_data=True)
-
-    update_additional_data(model)
-
-    if verbose > 0:
-        return get_sequential_pile(model)
-    else:
-        return True
-
+def set_series(geo_model, d, order_series=None, order_formations=None):
+    geo_model.formations.map_series(d)
+    series_idx = geo_model.series.df.index.set_categories(d.keys(), rename=True)
+    # If order, it has to go here
+    order_series = order_series
+    # ----------------------------
+    geo_model.series.df.index = series_idx
+    geo_model.faults.df.index = series_idx
+    geo_model.faults.faults_relations_df.index = series_idx
+    geo_model.faults.faults_relations_df.columns = series_idx
+    # Add series
+    for c in d.keys():
+        geo_model.series.df.loc[c] = np.nan
+        geo_model.faults.df.loc[c, 'isFault'] = np.nan
+        geo_model.faults.faults_relations_df.loc[c, c] = np.nan
+    geo_model.series.update_order_series()
+    geo_model.faults.set_is_fault()
+   # order_formations = ['Main_Fault', 'Sandstone_2', 'Siltstone', 'Shale', 'Sandstone_1', 'basement']
+    geo_model.formations.df['formation'].cat.reorder_categories(order_formations, inplace=True)
+    geo_model.formations.df.sort_values(['formation'], inplace=True)
+    geo_model.formations.df.reset_index(drop=True, inplace=True)
+    geo_model.formations.set_id()
+    map_to_data(geo_model, geo_model.series, geo_model.formations, geo_model.faults)
+    geo_model.interfaces.sort_table()
+    geo_model.orientations.sort_table()
 
 def select_series(geo_data, series):
     """
@@ -586,6 +611,9 @@ def set_values_to_default(model: Model, series_distribution=None, order_series=N
             model.formations.add_basement()
             model.series.add_basement()
         except AssertionError:
+            print('already basement')
+            pass
+        except ValueError:
             print('already basement')
             pass
     if order_formations is not None:
