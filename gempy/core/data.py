@@ -1749,7 +1749,7 @@ class Solution(object):
                 self.edges[self.formations.df['formation'].iloc[n]] = s
 
         if n_faults < len(n_surfaces):
-            n_formations = np.arange(n_faults, len(n_surfaces) - n_faults + 1)
+            n_formations = np.arange(n_faults, len(n_surfaces))
 
             for n in n_formations:
                 # TODO ======== split each_scalar_field ===========
