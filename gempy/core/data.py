@@ -1399,6 +1399,7 @@ class AdditionalData(Structure, RescaledData):
         self.orientations = orientations
         self.faults = faults
         self.formations = formations
+        # TODO DEP grid
         self.grid = grid
         self.rescaled_data = rescaling
 
@@ -1683,7 +1684,10 @@ class Solution(object):
 
         # TODO I do not like this here
         if compute_mesh is True:
-            self.compute_all_surfaces()
+            try:
+                self.compute_all_surfaces()
+            except RuntimeError:
+                warnings.warn('It is not possible to compute the mesh.')
 
     def compute_surface_regular_grid(self, surface_id: int, scalar_field, **kwargs):
         """

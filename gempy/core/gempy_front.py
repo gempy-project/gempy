@@ -246,8 +246,8 @@ def create_grid(grid_type: str, **kwargs):
 
 
 @_setdoc(Model.set_grid.__doc__)
-def set_grid(model: Model, grid: GridClass, only_model=False):
-    model.set_grid(grid=grid, only_model=only_model)
+def set_grid(model: Model, grid: GridClass, update_model=True):
+    model.set_grid(grid=grid, update_model=update_model)
 
 
 def get_grid(model: Model):
@@ -500,23 +500,25 @@ def compute_model(model: Model, compute_mesh=True)-> Solution:
     return model.solutions
 
 
-def compute_model_at(new_grid_array: ndarray, model: Model):
+def compute_model_at(new_grid: Union[GridClass, ndarray], model: Model, compute_mesh=False):
     """
     This function does the same as :func:`gempy.core.gempy_front.compute_model` plus the addion functionallity of
      passing a given array of points where evaluate the model instead of using the :class:`gempy.core.data.GridClass`.
 
     Args:
         model:
-        new_grid_array (:class:`_np.array`): 2D array with XYZ (columns) coorinates
+        new_grid (:class:`_np.array`): 2D array with XYZ (columns) coorinates
 
     Returns:
         gempy.core.data.Solution
     """
+    if type(new_grid) is np.ndarray:
     #TODO create backup of the mesh and a method to go back to it
-    set_grid(model, create_grid('custom_grid', custom_grid=new_grid_array))
-
+        set_grid(model, create_grid('custom_grid', custom_grid=new_grid))
+    elif isinstance(new_grid, GridClass):
+        set_grid(model, new_grid)
     # Now we are good to compute the model again only in the new point
-    sol = compute_model(model, compute_mesh=False)
+    sol = compute_model(model, compute_mesh=compute_mesh)
     return sol
 # endregion
 

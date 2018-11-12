@@ -152,9 +152,9 @@ class Model(object):
     # def get_theano_input(self):
     #     pass
 
-    def set_grid(self, grid: GridClass, only_model=False):
+    def set_grid(self, grid: GridClass, update_model=True):
         self.grid = grid
-        if only_model is not True:
+        if update_model is True:
             self.additional_data.grid = grid
             self.rescaling.grid = grid
             self.rescaling.set_rescaled_grid()
@@ -172,8 +172,14 @@ class Model(object):
     def set_faults(self):
         pass
 
-    def set_interfaces(self):
-        pass
+    def set_interfaces(self, interfaces: Interfaces, update_model=True):
+        self.interfaces = interfaces
+        if update_model is True:
+            self.additional_data.interfaces = interfaces
+            self.update_structure()
+            self.rescaling.interfaces = interfaces
+            self.rescaling.set_rescaled_interfaces()
+            self.interpolator.interfaces = interfaces
 
     def set_orientations(self):
         pass
@@ -283,8 +289,7 @@ class Model(object):
         indices = np.array(indices, ndmin=1)
         keys = list(properties.keys())
         xyz_check = ~np.isin(['X', 'Y', 'Z'], keys)
-
-        d = pn.DataFrame(properties, columns=np.append(np.array(['X', 'Y', 'Z'])[xyz_check], keys))
+        d = pn.DataFrame(properties, columns=np.append(np.array(['X', 'Y', 'Z'])[xyz_check], keys), index=indices)
         is_formation = any(d.columns.isin(['formation']))
 
         if is_formation:
@@ -312,7 +317,7 @@ class Model(object):
         keys = list(properties.keys())
         xyz_check = ~np.isin(['X', 'Y', 'Z'], keys)
 
-        d = pn.DataFrame(properties, columns=np.append(np.array(['X', 'Y', 'Z'])[xyz_check], keys))
+        d = pn.DataFrame(properties, columns=np.append(np.array(['X', 'Y', 'Z'])[xyz_check], keys),  index=indices)
         is_formation = any(d.columns.isin(['formation']))
 
         if is_formation:
