@@ -151,15 +151,17 @@ class Series(object):
 
     """
 
-    def __init__(self, series_distribution=None, order=None):
+    def __init__(self, series_order=None):
 
-        if series_distribution is None:
-            self.categories_df = pn.DataFrame({"Default series": [None]}, dtype=str)
-        else:
-            self.set_series_categories(series_distribution, order=order)
-
-        #self.sequential_pile = StratigraphicPile(self)
-        self.df = pn.DataFrame(index=pn.CategoricalIndex(self.categories_df.columns, ordered=True), columns=['order_series', 'BottomRelation'])
+        # TODO Dep now we only have a df with the series properties
+        # if series_distribution is None:
+        #     self.categories_df = pn.DataFrame({"Default series": [None]}, dtype=str)
+        # else:
+        #     self.set_series_categories(series_distribution, order=order)
+        if series_order is None:
+            series_order = ['Default series']
+        self.df = pn.DataFrame(index=pn.CategoricalIndex(series_order, ordered=True),
+                               columns=['order_series', 'BottomRelation'])
 
     def __repr__(self):
         return self.df.to_string()
@@ -168,78 +170,106 @@ class Series(object):
         return self.df.to_html()
 
     def update_order_series(self):
+        """
+        Inex of df is categorical and order, but we need to numerate that order to map it later on to the Data dfs
+        """
         self.df.at[:, 'order_series'] = pn.RangeIndex(1, self.df.shape[0] + 1)
 
-    def categories_to_index(self):
-        pass
-
-    def set_series_categories(self, series_distribution: Union[pn.DataFrame, dict], order: list = None,
-                              add_basement=False):
+    def set_series_index(self, series_order: Union[pn.DataFrame, list], update_order_series=True):
         """
-        Method to define the different series of the project.
-
+        Rewrite the index of the series df
         Args:
-            series_distribution (dict): with the name of the serie as key and the name of the formations as values.
-            order(Optional[list]): order of the series by default takes the dictionary keys which until python 3.6 are
-                random. This is important to set the erosion relations between the different series
-            add_basement (bool): If true add a basement layer if it does not exist
+            series_order:
+            update_order_series:
+
         Returns:
-            True
+
         """
-
-        if isinstance(series_distribution, Interfaces):
-            # TODO: Extract not only the formations but also the series from an interface object (in case it exist)
-            self.categories_df = pn.DataFrame({"Default series": series_distribution.df["formation"].unique().astype(list)},
-                                              dtype=str)
-
-        elif type(series_distribution) is dict:
-            if order is None:
-                order = series_distribution.keys()
-            else:
-                assert all(
-                    np.in1d(order, list(series_distribution.keys()))), 'Order series must contain the same keys as' \
-                                                                       'the passed dictionary ' + str(
-                    series_distribution.keys())
-            self.categories_df = pn.DataFrame(dict([(k, pn.Series(v)) for k, v in series_distribution.items()]),
-                                              columns=order)
-
-        elif type(series_distribution) is pn.DataFrame:
-            self.categories_df = series_distribution
+        if isinstance(series_order, Interfaces):
+            try:
+                list_of_series = series_order.df['series'].unique()
+            except KeyError:
+                raise KeyError('Interface does not have series attribute')
+        elif type(series_order) is list:
+            list_of_series = np.atleast_1d(series_order)
 
         else:
-            raise AttributeError('You must pass either a Interface object (or container with it) or'
-                                 ' series_distribution (dict or DataFrame),'
-                                 ' see Docstring for more information')
+            raise AttributeError
 
-        if add_basement and 'basement' not in self.categories_df.iloc[:, -1].values:
-            self.add_basement()
+        # Categoriacal index does not have inplace
+        # This update the categories
+        self.df.index = self.df.index.set_categories(list_of_series, rename=True)
+        # But we need to update the values too
+        for c in series_order:
+            self.df.loc[c] = np.nan
+        if update_order_series is True:
+            self.update_order_series()
 
-        #self.update_sequential_pile()
-        self.update_df_from_cat_df()
-        return True
+    def add_series(self, series_list: Union[pn.DataFrame, list], update_order_series=True):
+        series_list = np.atleast_1d(series_list)
+        self.df.index = self.df.index.add_categories(series_list)
+        for c in series_list:
+            self.df.loc[c] = np.nan
+        if update_order_series is True:
+            self.update_order_series()
 
-    def add_basement(self, name: str = 'basement'):
-        """
-        Add a layer that behaves as a layer
-        Args:
-            name (str): Name of the basement layer.
+    def delete_series(self, indices):
+        self.df = self.df.drop(indices)
+        self.df.index = self.df.index.remove_unused_categories()
 
-        Returns:
-            True
-        """
-        self.categories_df.loc[self.categories_df.shape[0], self.df.index[-1]] = name
-        self.update_sequential_pile()
-        return True
+    @_setdoc(pn.CategoricalIndex.rename_categories.__doc__)
+    def rename_series(self, new_categories:Union[dict, list]):
+        self.df.index = self.df.index.rename_categories(new_categories)
 
-    def update_sequential_pile(self):
-        pass
-    #    self.sequential_pile = StratigraphicPile(self)
+    @_setdoc([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
+    def reorder_series(self, new_categories:list):
+        self.df.index = self.df.index.reorder_categories(new_categories).sort_values()
 
-    def update_df_from_cat_df(self):
-        # TODO: DEP
-        self.df = pn.DataFrame(index=pn.CategoricalIndex(self.df.index, ordered=True),
-                               columns=['order_series', 'BottomRelation'])
-        self.update_order_series()
+    # TODO series Categoris it is deprecated and moved to the formation df
+    # def set_series_categories(self, series_distribution: Union[pn.DataFrame, dict], order: list = None,
+    #                           add_basement=False):
+    #     """
+    #     Method to define the different series of the project.
+    #
+    #     Args:
+    #         series_distribution (dict): with the name of the serie as key and the name of the formations as values.
+    #         order(Optional[list]): order of the series by default takes the dictionary keys which until python 3.6 are
+    #             random. This is important to set the erosion relations between the different series
+    #         add_basement (bool): If true add a basement layer if it does not exist
+    #     Returns:
+    #         True
+    #     """
+    #
+    #     if isinstance(series_distribution, Interfaces):
+    #         # TODO: Extract not only the formations but also the series from an interface object (in case it exist)
+    #         self.categories_df = pn.DataFrame({"Default series": series_distribution.df["formation"].unique().astype(list)},
+    #                                           dtype=str)
+    #
+    #     elif type(series_distribution) is dict:
+    #         if order is None:
+    #             order = series_distribution.keys()
+    #         else:
+    #             assert all(
+    #                 np.in1d(order, list(series_distribution.keys()))), 'Order series must contain the same keys as' \
+    #                                                                    'the passed dictionary ' + str(
+    #                 series_distribution.keys())
+    #         self.categories_df = pn.DataFrame(dict([(k, pn.Series(v)) for k, v in series_distribution.items()]),
+    #                                           columns=order)
+    #
+    #     elif type(series_distribution) is pn.DataFrame:
+    #         self.categories_df = series_distribution
+    #
+    #     else:
+    #         raise AttributeError('You must pass either a Interface object (or container with it) or'
+    #                              ' series_distribution (dict or DataFrame),'
+    #                              ' see Docstring for more information')
+    #
+    #     if add_basement and 'basement' not in self.categories_df.iloc[:, -1].values:
+    #         self.add_basement()
+    #
+    #     #self.update_sequential_pile()
+    #     self.update_df_from_cat_df()
+    #     return True
 
     def map_isFault_from_faults(self, faults):
         self.df['isFault'] = self.df.index.map(faults.faults['isFault'])
@@ -293,7 +323,6 @@ class Faults(object):
 
         #self.df = pn.DataFrame(index=self.series.df.index, columns=['isFault'])
         self.df['isFault'] = self.df.index.isin(series_fault)
-        print(self.df.index.isin(series_fault))
         self.n_faults = self.df['isFault'].sum()
         return self.df
 
@@ -394,11 +423,11 @@ class Formations(object):
 
         self.map_formation_names_to_df()
         self.df['series'].fillna('Default series', inplace=True)
+        self.update_sequential_pile()
 
     def set_formation_order(self, list_names):
         """"""
-        # self.set_formation_names(list_names)
-        # self.set_basement(list_names[-1])
+
         self.df['formation'].cat.reorder_categoreis(list_names, inplace=True)
         self.df['formation'].cat.as_ordered(inplace=True)
 
@@ -442,15 +471,12 @@ class Formations(object):
 
             # Set the names to the formations already there
         #    self.df['formation'] = self.formations_names[:self.df.shape[0]]
-            print(self.df)
             # Append the names which are not in the categories_df and drop if there is duplicated
             self.df = self.df.append(pn.DataFrame({'formation': self.formations_names}), sort=False)
-            print(self.df)
             self.df.drop_duplicates(subset='formation', keep='first', inplace=True)
 
         self.df['formation'] = self.df['formation'].astype('category')
-        #self.map_series_cat_from_series(self.series)
-
+        self.df.reset_index(inplace=True, drop=True)
         return True
 
     def map_formations_from_series(self, series):

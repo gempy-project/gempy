@@ -119,6 +119,7 @@ def create_series(series_distribution=None, order=None):
 #     else:
 #         return True
 
+
 def set_series(geo_model, d, order_series=None, order_formations=None):
     geo_model.formations.map_series(d)
     series_idx = geo_model.series.df.index.set_categories(d.keys(), rename=True)
@@ -144,6 +145,7 @@ def set_series(geo_model, d, order_series=None, order_formations=None):
     map_to_data(geo_model, geo_model.series, geo_model.formations, geo_model.faults)
     geo_model.interfaces.sort_table()
     geo_model.orientations.sort_table()
+
 
 def select_series(geo_data, series):
     """
@@ -194,7 +196,7 @@ def get_sequential_pile(model: Model):
     Returns:
         :class:`matplotlib.pyplot.Figure`
     """
-    return model.series.sequential_pile.figure
+    return model.formations.sequential_pile.figure
 # endregion
 
 
@@ -567,7 +569,7 @@ def get_surfaces(model: Model):
 
 
 # region Model level functions
-@_setdoc([Series.set_series_categories.__doc__, Faults.set_is_fault.__doc__])
+@_setdoc([Series.set_series_index.__doc__, Faults.set_is_fault.__doc__])
 def set_values_to_default(model: Model, series_distribution=None, order_series=None, order_formations=None,
                           set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0) -> bool:
     """
@@ -609,7 +611,6 @@ def set_values_to_default(model: Model, series_distribution=None, order_series=N
         model.formations.df = model.formations.set_id(model.formations.df)
         try:
             model.formations.add_basement()
-            model.series.add_basement()
         except AssertionError:
             print('already basement')
             pass
