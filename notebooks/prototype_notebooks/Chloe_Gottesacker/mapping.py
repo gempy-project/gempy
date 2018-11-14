@@ -185,7 +185,7 @@ def set_colorscheme(namestring):
     '''Get list of unit names, colors, and colormap and normalization. Use GemPy colors, or set custom colors by modifying the ArcMap scheme.
     For now, choose namestring = either 'GemPy' or 'ArcMap'.'''
     if namestring=='GemPy':
-        unitnames = ['NaN','Quaternary','Amdener','Garschella','Schrattenkalk','Drusberg','Basement'] #GemPy unit names (NaN required)
+        unitnames = ['NaN','Garschella','Schrattenkalk','Drusberg','Basement'] #GemPy unit names (NaN required)
         cmap = gp.plotting.colors.cmap                     #get GemPy colormap
         colors = [cmap(i) for i in range(len(unitnames))]  #get list of rgb values from GemPy colormap (but this is not a good way to do it)
         norm = gp.plotting.colors.norm                     #color normalization from GemPy
