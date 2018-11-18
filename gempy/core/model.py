@@ -20,9 +20,9 @@ class Model(object):
 
         self.meta = MetaData(project_name=project_name)
         self.grid = GridClass()
-        self.series = Series()
+        self.faults = Faults()
+        self.series = Series(self.faults)
         self.formations = Formations(self.series)
-        self.faults = Faults(self.series)
         self.interfaces = Interfaces()
         self.orientations = Orientations()
 

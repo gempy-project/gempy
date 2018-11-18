@@ -151,13 +151,16 @@ class Series(object):
 
     """
 
-    def __init__(self, series_order=None):
+    def __init__(self, faults, series_order=None, ):
 
         # TODO Dep now we only have a df with the series properties
         # if series_distribution is None:
         #     self.categories_df = pn.DataFrame({"Default series": [None]}, dtype=str)
         # else:
         #     self.set_series_categories(series_distribution, order=order)
+
+        self.faults = faults
+
         if series_order is None:
             series_order = ['Default series']
         self.df = pn.DataFrame(index=pn.CategoricalIndex(series_order, ordered=True),
@@ -195,81 +198,68 @@ class Series(object):
 
         else:
             raise AttributeError
-
+        series_idx = list_of_series
         # Categoriacal index does not have inplace
         # This update the categories
-        self.df.index = self.df.index.set_categories(list_of_series, rename=True)
+        self.df.index = self.df.index.set_categories(series_idx, rename=True)
+        self.faults.df.index = self.faults.df.index.set_categories(series_idx, rename=True)
+        self.faults.faults_relations_df.index = self.faults.faults_relations_df.index.set_categories(series_idx, rename=True)
+        self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.set_categories(series_idx, rename=True)
+
+
         # But we need to update the values too
         for c in series_order:
             self.df.loc[c] = np.nan
+            self.faults.df.loc[c, 'isFault'] = np.nan
+            self.faults.faults_relations_df.loc[c, c] = np.nan
+
         if update_order_series is True:
             self.update_order_series()
 
     def add_series(self, series_list: Union[pn.DataFrame, list], update_order_series=True):
         series_list = np.atleast_1d(series_list)
-        self.df.index = self.df.index.add_categories(series_list)
+        idx = self.df.index.add_categories(series_list)
+        self.df.index = idx
+        self.faults.df.index = idx
+        self.faults.faults_relations_df.index = idx
+        self.faults.faults_relations_df.columns = idx
+
         for c in series_list:
             self.df.loc[c] = np.nan
+            self.faults.df.loc[c, 'isFault'] = np.nan
+            self.faults.faults_relations_df.loc[c, c] = np.nan
+
         if update_order_series is True:
             self.update_order_series()
 
     def delete_series(self, indices):
-        self.df = self.df.drop(indices)
-        self.df.index = self.df.index.remove_unused_categories()
+        self.df.drop(indices, inplace=True)
+        self.faults.df.drop(indices, inplace=True)
+        self.faults.faults_relations_df.drop(indices, axis=0, inplace=True)
+        self.faults.faults_relations_df.drop(indices, axis=1, inplace=True)
+
+        idx = self.df.index.remove_unused_categories()
+        self.df.index = idx
+        self.faults.df.index = idx
+        self.faults.faults_relations_df.index = idx
+        self.faults.faults_relations_df.columns = idx
 
     @_setdoc(pn.CategoricalIndex.rename_categories.__doc__)
     def rename_series(self, new_categories:Union[dict, list]):
-        self.df.index = self.df.index.rename_categories(new_categories)
+        idx = self.df.index.rename_categories(new_categories)
+        self.df.index = idx
+        self.faults.df.index = idx
+        self.faults.faults_relations_df.index = idx
+        self.faults.faults_relations_df.columns = idx
+
 
     @_setdoc([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
     def reorder_series(self, new_categories:list):
-        self.df.index = self.df.index.reorder_categories(new_categories).sort_values()
-
-    # TODO series Categoris it is deprecated and moved to the formation df
-    # def set_series_categories(self, series_distribution: Union[pn.DataFrame, dict], order: list = None,
-    #                           add_basement=False):
-    #     """
-    #     Method to define the different series of the project.
-    #
-    #     Args:
-    #         series_distribution (dict): with the name of the serie as key and the name of the formations as values.
-    #         order(Optional[list]): order of the series by default takes the dictionary keys which until python 3.6 are
-    #             random. This is important to set the erosion relations between the different series
-    #         add_basement (bool): If true add a basement layer if it does not exist
-    #     Returns:
-    #         True
-    #     """
-    #
-    #     if isinstance(series_distribution, Interfaces):
-    #         # TODO: Extract not only the formations but also the series from an interface object (in case it exist)
-    #         self.categories_df = pn.DataFrame({"Default series": series_distribution.df["formation"].unique().astype(list)},
-    #                                           dtype=str)
-    #
-    #     elif type(series_distribution) is dict:
-    #         if order is None:
-    #             order = series_distribution.keys()
-    #         else:
-    #             assert all(
-    #                 np.in1d(order, list(series_distribution.keys()))), 'Order series must contain the same keys as' \
-    #                                                                    'the passed dictionary ' + str(
-    #                 series_distribution.keys())
-    #         self.categories_df = pn.DataFrame(dict([(k, pn.Series(v)) for k, v in series_distribution.items()]),
-    #                                           columns=order)
-    #
-    #     elif type(series_distribution) is pn.DataFrame:
-    #         self.categories_df = series_distribution
-    #
-    #     else:
-    #         raise AttributeError('You must pass either a Interface object (or container with it) or'
-    #                              ' series_distribution (dict or DataFrame),'
-    #                              ' see Docstring for more information')
-    #
-    #     if add_basement and 'basement' not in self.categories_df.iloc[:, -1].values:
-    #         self.add_basement()
-    #
-    #     #self.update_sequential_pile()
-    #     self.update_df_from_cat_df()
-    #     return True
+        idx = self.df.index.reorder_categories(new_categories).sort_values()
+        self.df.index = idx
+        self.faults.df.index = idx
+        self.faults.faults_relations_df.index = idx
+        self.faults.faults_relations_df.columns = idx
 
     def map_isFault_from_faults(self, faults):
         self.df['isFault'] = self.df.index.map(faults.faults['isFault'])
@@ -293,13 +283,13 @@ class Faults(object):
            n_faults (int): Number of faults in the object
     """
 
-    def __init__(self, series: Series, series_fault=None, rel_matrix=None):
+    def __init__(self, series_fault=None, rel_matrix=None):
 
-        self.series = series
-        self.df = pn.DataFrame(index=self.series.df.index, columns=['isFault', 'isFinite'])
+     #   self.series = series
+        self.df = pn.DataFrame(index=pn.CategoricalIndex(['Default series']), columns=['isFault', 'isFinite'])
         self.set_is_fault(series_fault=series_fault)
-        self.faults_relations_df = pn.DataFrame(index=self.series.df.index,
-                                                columns=self.series.df.index, dtype='bool')
+        self.faults_relations_df = pn.DataFrame(index=pn.CategoricalIndex(['Default series']),
+                                                columns=pn.CategoricalIndex(['Default series']), dtype='bool')
         self.set_fault_relation(rel_matrix=rel_matrix)
         self.n_faults = 0
 
@@ -308,6 +298,15 @@ class Faults(object):
 
     def _repr_html_(self):
         return self.df.to_html()
+
+    # def update_faults_df(self, series):
+    #     series_idx = series.df.index
+    #     self.df.index = self.df.index.set_categories(series_idx, rename=True)
+    #     self.faults_relations_df.index = self.faults_relations_df.index.set_categories(series_idx, rename=True)
+    #     self.faults_relations_df.columns = self.faults_relations_df.columns.set_categories(series_idx, rename=True)
+    #     for c in self.df.index.categories:
+    #         self.df.loc[c, 'isFault'] = np.nan
+    #         self.faults_relations_df.loc[c, c] = np.nan
 
     def set_is_fault(self, series_fault=None):
         """
@@ -319,9 +318,8 @@ class Faults(object):
         """
 
         if series_fault is None:
-            series_fault = self.count_faults(self.series.df.index)
+            series_fault = self.count_faults(self.df.index)
 
-        #self.df = pn.DataFrame(index=self.series.df.index, columns=['isFault'])
         self.df['isFault'] = self.df.index.isin(series_fault)
         self.n_faults = self.df['isFault'].sum()
         return self.df
@@ -335,12 +333,12 @@ class Faults(object):
         """
         # TODO: Change the fault relation automatically every time we add a fault
         if rel_matrix is None:
-            rel_matrix = np.zeros((self.series.df.index.shape[0],
-                                   self.series.df.index.shape[0]))
+            rel_matrix = np.zeros((self.df.index.shape[0],
+                                   self.df.index.shape[0]))
         else:
             assert type(rel_matrix) is np.ndarray, 'rel_matrix muxt be a 2D numpy array'
-        self.faults_relations_df = pn.DataFrame(rel_matrix, index=self.series.df.index,
-                                                columns=self.series.df.index, dtype='bool')
+        self.faults_relations_df = pn.DataFrame(rel_matrix, index=self.df.index,
+                                                columns=self.df.index, dtype='bool')
 
         return self.faults_relations_df
 
@@ -383,7 +381,9 @@ class Formations(object):
         self.df = pn.DataFrame(columns=['formation', 'series', 'id', 'isBasement'])
         self.df['isBasement'] = self.df['isBasement'].astype(bool)
         self.df["series"] = self.df["series"].astype('category')
+        self.df["formation"] = self.df["formation"].astype('category')
 
+        self.series_mapping = pn.DataFrame([pn.Categorical(['Default series'])], columns=['series'])
         self.formations_names = formation_names
         self._formation_values_set = False
         if values_array is not None:
@@ -405,9 +405,10 @@ class Formations(object):
         """
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
+# region set formation names
     def set_formation_names(self, list_names):
         """
-        Method to set the names of the formations in order
+        Method to set the names of the formations in order. This applies in the formation column of the df
         Args:
             list_names (list[str]):
 
@@ -421,33 +422,11 @@ class Formations(object):
         else:
             raise AttributeError('list_names must be either array_like type or Interfaces')
 
-        self.map_formation_names_to_df()
+        self._map_formation_names_to_df()
         self.df['series'].fillna('Default series', inplace=True)
         self.update_sequential_pile()
 
-    def set_formation_order(self, list_names):
-        """"""
-
-        self.df['formation'].cat.reorder_categoreis(list_names, inplace=True)
-        self.df['formation'].cat.as_ordered(inplace=True)
-
-    def map_series(self, mapping_object:Union[dict, pn.Series]):
-        if type(mapping_object) is dict:
-            s = []
-            f = []
-            for k, v in mapping_object.items():
-                for form in np.atleast_1d(v):
-                    s.append(k)
-                    f.append(form)
-            self.df['series'] = self.df['formation'].map(pn.DataFrame(s, f, columns=['series'])['series'])
-
-        elif isinstance(mapping_object, pn.Series):
-            self.df['series'] = self.df['formation'].map(mapping_object['series'])
-
-        else:
-            raise AttributeError(str(type(mapping_object))+' is not the right attribute type.')
-
-    def map_formation_names_to_df(self):
+    def _map_formation_names_to_df(self):
         """
         Method to map data from lists to the categories_df
         Returns:
@@ -479,28 +458,62 @@ class Formations(object):
         self.df.reset_index(inplace=True, drop=True)
         return True
 
-    def map_formations_from_series(self, series):
+    def set_formation_names_pro(self, list_names):
         """
-        Update the a Formations object with a Series object
-        Args:
-            series (Series):
+             Method to set the names of the formations in order. This applies in the formation column of the df
+             Args:
+                 list_names (list[str]):
 
-        Returns:
-            None
-        """
+             Returns:
+                 None
+             """
+        if type(list_names) is list or type(list_names) is np.ndarray:
+            self.formations_names = np.asarray(list_names)
+        elif isinstance(list_names, Interfaces):
+            self.formations_names = np.asarray(list_names.df['formation'].unique())
+        else:
+            raise AttributeError('list_names must be either array_like type or Interfaces')
 
-        # TODO review
-        # Addind the formations of the new series to the formations categories_df
-        new_formations = series.categories_df.values.reshape(1, -1)
-        # Dropping nans
-        new_formations = new_formations[~pn.isna(new_formations)]
-        self.set_formation_names(new_formations)
-        self.set_basement()
+        self.df['formation'] = pn.Categorical(list_names)
+        self.map_series()
         self.set_id()
+        self.set_basement()
+        self.update_sequential_pile()
 
-    def map_series_cat_from_series(self, series):
-        series_categories = series.categories_df
-        self.df['series'] = [(i == series_categories).sum().idxmax() for i in self.df["formation"]]
+    def set_formation_values_por(self, values_array, properties_names=np.empty(0)):
+        properties_names = np.asarray(properties_names)
+        if properties_names.shape[0] != values_array.shape[1]:
+            for i in range(values_array.shape[1]):
+                properties_names = np.append(properties_names, 'value_' + str(i))
+
+
+    def add_formation(self, formation_list: Union[pn.DataFrame, list], update_id=True):
+        formation_list = np.atleast_1d(formation_list)
+        self.df['formation'].cat.add_categories(formation_list, inplace=True)
+        for c in formation_list:
+            self.df.loc[self.df.last_valid_index() + 1, 'formation'] = c
+        if update_id is True:
+            self.set_id()
+
+    def delete_fomation(self, indices):
+        # TODO passing names of the formation instead the index
+        self.df.drop(indices, inplace=True)
+
+    @_setdoc([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
+    def reorder_formations(self, list_names):
+        """"""
+
+        self.df['formation'].cat.reorder_categories(list_names, inplace=True)
+        self.df['formation'].cat.as_ordered(inplace=True)
+
+    @_setdoc(pn.CategoricalIndex.rename_categories.__doc__)
+    def rename_formations(self, new_categories:Union[dict, list]):
+        self.df['formation'].cat.rename_categories(new_categories)
+
+    def sort_formations(self):
+
+        self.df.sort_values(by=['series', 'formation'])
+        self.set_id()
 
     def set_basement(self, basement_formation: str = None):
         """
@@ -534,21 +547,62 @@ class Formations(object):
         assert self.df['isBasement'].values.astype(bool).sum() < 1, 'Only one formation can be basement'
         if name is None:
             name = 'basement'
+        #
+        # new_df = pn.concat([self.df,
+        #                     pn.DataFrame(data=np.array([name, True, 9999]).reshape(1, -1),
+        #                                  columns=['formation', 'isBasement', 'id'])],
+        #                    sort=False, ignore_index=True
+        #                    )
 
-        new_df = pn.concat([self.df,
-                            pn.DataFrame(data=np.array([name, True, 9999]).reshape(1, -1),
-                                         columns=['formation', 'isBasement', 'id'])],
-                           sort=False, ignore_index=True
-                           )
-
-        #self.df = self.set_id(new_df)
+        # self.df = self.set_id(new_df)
         self.df['formation'].cat.add_categories(name, inplace=True)
-        self.df.loc[self.df.last_valid_index()+1, ['formation', 'isBasement']] = [name, True]
+        self.df.loc[self.df.last_valid_index() + 1, ['formation', 'isBasement']] = [name, True]
         self.set_id()
 
-        self.set_dtypes()
+        #self.set_dtypes()
 
         return True
+# endregion
+
+# set_series
+    def map_series(self, mapping_object: Union[dict, pn.Categorical]=None):
+
+        if mapping_object is None:
+            pass
+
+        elif type(mapping_object) is dict:
+
+            s = []
+            f = []
+            for k, v in mapping_object.items():
+                for form in np.atleast_1d(v):
+                    s.append(k)
+                    f.append(form)
+
+            self.series_mapping = pn.DataFrame([pn.Categorical(s, self.series.df.index)],
+                                               f, columns=['series'])
+            # TODO delete this since it is outside
+            self.df['series'] = self.df['formation'].map(self.series_mapping['series'])
+
+        elif isinstance(mapping_object, pn.Categorical):
+            self.series_mapping = mapping_object
+            s = mapping_object['series']
+            # TODO delete this
+            self.df['series'] = self.df['formation'].map(s)
+
+        else:
+            raise AttributeError(str(type(mapping_object))+' is not the right attribute type.')
+
+        self.df['series'] = self.df['formation'].map(self.series_mapping['series'])
+
+        # Check that all formations have been assigned a series
+        if any(self.df['series'].isna()) and mapping_object is not None:
+            nans = self.df['series'].isna()
+            missfit = self.df['formation'][nans]
+            warnings.warn('Some of the formations are not in the dictionary or some of the keys are not in the'
+                          'series object. \n Formations:' + missfit.to_string() +
+                          '\n Series: '+str(np.array(s)[nans]))
+# endregion
 
     def sort_formations(self, series):
         """
@@ -561,6 +615,7 @@ class Formations(object):
         """
         pass
 
+# region set_id
     def set_id(self, df=None):
         """
         Set id of the layers (1 based)
@@ -576,14 +631,15 @@ class Formations(object):
         df['id'] = df.index + 1
         self.df = df
         return self.df
+# endregion
 
-    def set_dtypes(self):
-        self.df['isBasement'] = self.df['isBasement'].astype(bool)
-        self.df["series"] = self.df["series"].astype('category')
-
-    def _default_values(self):
-        values = np.arange(1, len(self.formations_names))
-        return values
+    # def set_dtypes(self):
+    #     self.df['isBasement'] = self.df['isBasement'].astype(bool)
+    #     self.df["series"] = self.df["series"].astype('category')
+    #
+    # def _default_values(self):
+    #     values = np.arange(1, len(self.formations_names))
+    #     return values
 
     def set_formations_values(self, values_array, properties_names=np.empty(0), formation_names=None):
         """
@@ -619,7 +675,7 @@ class Formations(object):
         f_df = pn.concat([self.df, vals_df], sort=False, axis=1, verify_integrity=True, ignore_index=False)
 
         self.df = self.set_id(f_df)
-        self.map_formation_names_to_df()
+        self._map_formation_names_to_df()
         self.df['isBasement'].fillna(False, inplace=True)
         return self.df
 
