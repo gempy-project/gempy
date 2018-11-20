@@ -6,7 +6,9 @@ from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 import mplstereonet
 
-'''https://github.com/pymc-devs/pymc3/issues/2458'''
+'''This solution for vMF sampling originally appeared here: 
+- https://github.com/pymc-devs/pymc3/issues/2458 and
+- https://github.com/jasonlaska/spherecluster/blob/master/spherecluster/util.py'''
 
 
 class vMF():
@@ -127,7 +129,7 @@ class vMF():
         # return fig, ax
 
     def xyz_to_spherical_coordinates(self, gamma1):
-        '''conversion of cartesian to spherical coordinates (for plotting)'''
+        '''conversion of cartesian to spherical coordinates'''
         if gamma1.ndim == 1:
             theta = np.rad2deg(np.nan_to_num(np.arccos(gamma1[2])))
             phi = np.round(np.rad2deg(np.nan_to_num(np.arctan2(gamma1[0], gamma1[1]))), 0)
