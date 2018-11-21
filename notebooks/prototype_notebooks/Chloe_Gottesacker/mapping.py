@@ -92,9 +92,9 @@ def get_surflith(dem, dema, interp_data, output_filename='DEMxyz.csv'):
     
     #Format the geologic data:
     surflith, fault2 = gp.compute_model_at(demlist, interp_data) #compute the model values at the locations specified (aka the land surface) (why is fault a required output?)
-    surflith = surflith[0].reshape(dema.shape) #reshape lith block (a list) to an array with same dimensions as dem (yres,xres,zres) (note: xres*yres must equal length of lith)
+    surfgeo = surflith[0].reshape(dema.shape) #reshape lith block (a list) to an array with same dimensions as dem (yres,xres,zres) (note: xres*yres must equal length of lith)
     #now we have a discretized array with the same resolution as the dem, with a value for the lithology at the surface elevation for each xy point
-    return surflith
+    return surfgeo, surflith 
 
 
 
