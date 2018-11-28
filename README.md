@@ -145,8 +145,9 @@ its dependencies.
 
 Installing Theano (specially in windows) and vtk sometimes is problematic. Here we give a few advices that
 usually works for us:
-* Theano: Make sure a compiler gcc is installed before using conda to install theano. If you installed theano first,
-  simply uninstall it with conda uninstall and install it again
+* Theano: install the following packages before installing theano: `conda install mingw libpython m2w64-toolchain`. Then install Theano via `conda install theano`. 
+if the installation fails at some point try to re-install anaconda for a single user (no administrator priveleges) and with the Path Environment set.
+
 
 * vtk: Right now (Fall 2018), does not have compatibility with python 3.7. The simplest solution to install it is to
 use `conda install python=3.6` to downgrade the python version and then using `pip install vtk`.
