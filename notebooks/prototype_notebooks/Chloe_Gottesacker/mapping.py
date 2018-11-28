@@ -286,6 +286,9 @@ def plotXsection(startpoints, endpoints, names, grid_info, lith, surflith, vscal
         #Calculate line equation between points A and B:
         m = (rowB - rowA) / (colB - colA)   #calculate slope     m = (y2-y1)/(x2-x1)
         b = -m*colA + rowA                  #calculate intercept b = m*x1 + y1 (slope is neg here bc y axis is flipped)
+        
+        #Calculate true distance (not # of cells) between points A and B:
+        distance = ((xB-xA)**2 + (yB-yA)**2)**.5
 
         #Get xy indices for cells intersected by the x-sec line, then get z values for those xy points:
         xvals = np.arange(colA,colB)    #generate array of x values between the two points
@@ -315,7 +318,7 @@ def plotXsection(startpoints, endpoints, names, grid_info, lith, surflith, vscal
             cax = plt.gca()
         cax.imshow(xsec, origin="lower", cmap=cmap, norm=norm)   #plot (with down=lower z indices)
         cax.set_aspect(vscale*dz/dx)                             #apply vertical exaggeration
-        cax.set_ylim(bottom=0, top=zres)                     
+        cax.set_ylim(bottom=0, top=zres)                         #set y limit to zres
         cax.set_title(names[i][0]+names[i][1])
         cax.set_anchor('W')                                      #align left (West)
 
