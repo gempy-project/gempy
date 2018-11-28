@@ -62,7 +62,8 @@ def importDEM(filename, show=True):
 
     #Print results & display raster:
     if show==True:
-        print('Raster dimensions: \nxmin: {} \txmax: {} \t\txres: {} \nymin: {} \tymax: {} \tyres: {} \nzmin: {} \t\t\tzmax: {} \t\t\tzres: {}'.format(xmin,xmax,xres,ymin,ymax,yres,zmin,zmax,zres))
+        print('Raster dimensions: \nxmin: {:<12} xmax: {:<12} xres: {} \nymin: {:<12} ymax: {:<12} yres: {} \nzmin: {:<12} zmax: {:<12} zres: {}'.format(
+            xmin,xmax,xres,ymin,ymax,yres,zmin,zmax,zres))
         plt.imshow(dema, extent=(xmin,xmax,ymin,ymax), vmin=zmin, vmax=zmax) #plot raster as image
         #print(gdal.Info(dem))  #for more detailed file info, uncomment this line
         
@@ -71,30 +72,39 @@ def importDEM(filename, show=True):
 
 
 #############################################################################
-def get_surflith(dem, dema, interp_data, output_filename='DEMxyz.csv'):
+def get_surflith(dem, dema, interp_data, grid_info, output_filename='DEMxyz.csv'):
     '''Reshape DEM and use it to compute the lithology values of the GemPy model at the land surface.
     Returns an array of lith values at the surface z elevation for each xy point.
     
     dem:                dem object returned by importDEM() or dem = gdal.Open(filename)
     dema:               dem array returned by importDEM() or dema = dem.ReadAsArray()
     interp_data:        interpolated data returned by gempy.InterpolatorData()
+    grid_info:          [xmin,xmax,xres,dx,ymin,ymax,yres,dy,zmin,zmax,zres,dz] array of model grid and resolution info from importDEM()
     output_filename:    string to name gdal's output csv file (can be a throw-away - not used again)
     
     returns:
     surflith:           an array of lith values at the surface z elevation for each xy point, dim (yres,xres)'''
+    
+    #Get required grid info: 
+    ##grid_info = [xmin,xmax,xres,dx,ymin,ymax,yres,dy,zmin,zmax,zres,dz]
+    xres = grid_info[2]
+    yres = grid_info[6]
     
     #Get an array with xyz values from the DEM:
     #can this be streamlined to avoid having to export and re-import?
     translate_options = gdal.TranslateOptions(options = ['format'],format = "XYZ")  #set options for gdal.Translate()
     gdal.Translate(output_filename, dem, options=translate_options)  #convert dem to a csv with one column of points, each with an xyz value
     xyz = pn.read_csv(output_filename, header=None, sep = ' ')       #read xyz csv with pandas
-    demlist = xyz.as_matrix()  #convert to np array of (x,y,z) values with dim (ncol*nrow, 3)
+    demlist = xyz.values  #convert to np array of (x,y,z) values with dim (ncol*nrow, 3)
     
-    #Format the geologic data:
-    surflith, fault2 = gp.compute_model_at(demlist, interp_data) #compute the model values at the locations specified (aka the land surface) (why is fault a required output?)
-    surfgeo = surflith[0].reshape(dema.shape) #reshape lith block (a list) to an array with same dimensions as dem (yres,xres,zres) (note: xres*yres must equal length of lith)
+    #Get and format the geologic data:
+    surfall, fault2 = gp.compute_model_at(demlist, interp_data) #compute the model values at the locations specified (aka the land surface) (why is fault a required output?)
+    surflith = surfall[0].reshape(dema.shape) #reshape lith block (a list) to an array with same dimensions as dem (yres,xres,zres) (note: xres*yres must equal length of lith)
     #now we have a discretized array with the same resolution as the dem, with a value for the lithology at the surface elevation for each xy point
-    return surfgeo, surflith 
+    surflith[np.isnan(dema)] = np.nan       #crop to dem boundary (insert nan values everywhere where the dem has no data) 
+    surflist = surflith.reshape(xres*yres)  #reshape cropped data to list format (with dimensions xres*yres)
+    
+    return surflith, surflist 
 
 
 
@@ -152,6 +162,7 @@ def crop2raster(lith, grid_info, rasterfilename, nanval=0):
     
     lith:           array of lithologic unit indices of dimensions (yres,xres,zres) OR dimensions (yres,xres)
                     this can be the array of surface lith values, all lith values, or elevation-cropped lith values
+    grid_info:  [xmin,xmax,xres,dx,ymin,ymax,yres,dy,zmin,zmax,zres,dz] array of model grid and resolution info from importDEM()
     rasterfilename: string indicating the name of the raster file to use for cropping (can be bigger but not smaller than model extent) 
     nanval:         value indicating empty cells in raster file
     

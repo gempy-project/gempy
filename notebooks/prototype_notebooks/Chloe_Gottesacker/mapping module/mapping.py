@@ -1,5 +1,6 @@
 '''Mapping module for GemPy.
-
+Chloé Fandel, 2018.
+cfandel@email.arizona.edu
 Adds functions to crop the model based on the land surface or irregularly-shaped boundaries, and to plot custom diagonal cross-sections.
 Based on code from Elisa.
 
