@@ -1,0 +1,13 @@
+,Unnamed: 0,X,Y,Z,annotations,formation,formation_number,formation_value,isFault,order_series,series
+0,11.0,2000.0,2000.0,1500.0,"${\bf{x}}_{\alpha \,{\bf{1}},0}$",Sandstone,1,1,False,2,Strat_Series
+1,12.0,0.0,500.0,1500.0,"${\bf{x}}_{\alpha \,{\bf{1}},1}$",Sandstone,1,1,False,2,Strat_Series
+2,0.0,0.0,500.0,1400.0,"${\bf{x}}_{\alpha \,{\bf{2}},0}$",Siltstone,2,2,False,2,Strat_Series
+3,10.0,2000.0,2000.0,1400.0,"${\bf{x}}_{\alpha \,{\bf{2}},1}$",Siltstone,2,2,False,2,Strat_Series
+4,1.0,2000.0,2000.0,1150.0,"${\bf{x}}_{\alpha \,{\bf{3}},0}$",Shale,3,3,False,2,Strat_Series
+5,2.0,0.0,500.0,1150.0,"${\bf{x}}_{\alpha \,{\bf{3}},1}$",Shale,3,3,False,2,Strat_Series
+6,3.0,2000.0,2000.0,1000.0,"${\bf{x}}_{\alpha \,{\bf{4}},0}$",Sandstone_2,4,4,False,2,Strat_Series
+7,4.0,0.0,500.0,1000.0,"${\bf{x}}_{\alpha \,{\bf{4}},1}$",Sandstone_2,4,4,False,2,Strat_Series
+8,5.0,2000.0,2000.0,700.0,"${\bf{x}}_{\alpha \,{\bf{5}},0}$",Schist,5,5,False,2,Strat_Series
+9,6.0,0.0,500.0,700.0,"${\bf{x}}_{\alpha \,{\bf{5}},1}$",Schist,5,5,False,2,Strat_Series
+10,7.0,2000.0,2000.0,10.0,"${\bf{x}}_{\alpha \,{\bf{6}},0}$",Gneiss,6,6,False,2,Strat_Series
+11,8.0,0.0,500.0,10.0,"${\bf{x}}_{\alpha \,{\bf{6}},1}$",Gneiss,6,6,False,2,Strat_Series

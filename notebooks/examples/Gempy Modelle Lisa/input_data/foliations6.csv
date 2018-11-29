@@ -1,0 +1,4 @@
+,X,Y,Z,G_x,G_y,G_z,dip,azimuth,polarity,formation,series,formation_number,order_series,isFault,annotations,formation_value
+2,1000,1000,1500,1e-12,1e-12,1.000000000001,0,90,1,Sandstone,Strat_Series,2,2,False,"${\bf{x}}_{\beta \,{\bf{2}},0}$",2
+1,1000,1000,1000,1e-12,1e-12,1.000000000001,0,90,1,Siltstone,Strat_Series,3,2,False,"${\bf{x}}_{\beta \,{\bf{3}},0}$",3
+0,1000,1000,500,1e-12,1e-12,1.000000000001,0,90,1,Shale,Strat_Series,4,2,False,"${\bf{x}}_{\beta \,{\bf{4}},0}$",4
