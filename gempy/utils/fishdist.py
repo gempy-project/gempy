@@ -114,7 +114,7 @@ class vMF():
             Arrow3D([0, self.mu[0]], [0, self.mu[1]], [0, self.mu[2]], mutation_scale=20, lw=1, arrowstyle="-|>",
                     color="darkorange"))  # mean
         plt.show()
-        # return fig, ax
+        return fig
 
     def plot_vMF_2D(self, poles=True):
         mean = self.xyz_to_spherical_coordinates(self.mu)
@@ -122,11 +122,12 @@ class vMF():
         fig, ax = mplstereonet.subplots(figsize=(5, 5))
         if poles is True:
             for point in points_sph:
-                ax.pole(point[0] - 90, point[1], color='darkgreen', linewidth=1, marker='v', label=('samples'))
-            ax.pole(mean[0] - 90, mean[1], color='darkorange', label='mean')
+                ax.pole(point[0] - 90, point[1], color='k', linewidth=1, marker='v', markersize=6,label=('samples'))
+            ax.pole(mean[0] - 90, mean[1], color='r', markersize=6, label='mean')
         ax.grid()
-        ax.density_contourf(points_sph[:, 0] - 90, points_sph[:, 1], measurement='poles', cmap='Oranges', alpha=0.7)
-        # return fig, ax
+        ax.density_contourf(points_sph[:, 0] - 90, points_sph[:, 1], measurement='poles', cmap='inferno', alpha=0.7)
+        ax.set_title('kappa = '+str(self.kappa),y=1.1)
+        return fig
 
     def xyz_to_spherical_coordinates(self, gamma1):
         '''conversion of cartesian to spherical coordinates'''
