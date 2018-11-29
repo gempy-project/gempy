@@ -17,6 +17,7 @@ from copy import copy
 sys.path.append("../../..")   #optional: if gempy has been downloaded from GitHub rather than installed normally, look for it in the folders above the current folder
 import gempy as gp
 
+
 #############################################################################
 def importDEM(filename, show=True):
     '''Import DEM from a tif file using gdal package.
@@ -190,7 +191,36 @@ def crop2raster(lith, grid_info, rasterfilename, nanval=0):
     return lithxycrop
 
 
-
+########################################################################################################
+def export2gslib(export_filename, lith_array, grid_info):
+    '''Export a lithology array to a gslib format that can be used with SKS (GeoModeller format).
+    Inputs: 
+    export_filename: name string of file to create (ex: 'surfgeo.csv')
+    lith_array:      1D array of lithology values (for example, surflist returned by get_surflith()). Should have dimensions (xres*yres)
+    grid_info:       [xmin,xmax,xres,dx,ymin,ymax,yres,dy,zmin,zmax,zres,dz] array of model grid and resolution info from importDEM()   
+    
+    Outputs:
+    'geo.gslib':     csv gslib file of dimensions (2,xres*yres) with lithology integer values for each cell, formatted for SKS (GeoModeller format)
+    '''
+    
+    #Get grid info:
+    xres = grid_info[2]
+    yres = grid_info[6]
+    
+    g = np.reshape(lith_array,(yres,xres)) #reshape 1D lith array to an array with dimensions (yres,xres)
+    #print(np.shape(g))                     #print shape to check that reshape worked correctly (should be (xres,yres))
+    g = np.flip(g,axis=0)                  #flip y axis 
+    g = np.reshape(g,yres*xres)            #reshape 2D array back to 1D array
+    #print(np.shape(g))                     #print shape to check that reshape worked correctly (should be (xres*yres))
+    df = pn.DataFrame(g)                   #store in a pandas dataframe
+    df = np.round(df)                      #round formation values to closest integer
+    df = df.astype(np.int)                 #convert floats to integers
+    header = pn.DataFrame(['Gottesacker geologic model from GemPy',1,'lith']) #set gslib file header
+    df = header.append(df)                                   #attach header and data
+    df.to_csv(export_filename, header=False, index=False)    #write the text file in gslib format
+    
+    
+    
 #############################################################################
 def set_colorscheme(namestring):
     '''Get list of unit names, colors, and colormap and normalization. Use GemPy colors, or set custom colors by modifying the ArcMap scheme.
