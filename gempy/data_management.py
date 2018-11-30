@@ -68,7 +68,7 @@ class InputData(object):
     """
 
     def __init__(self,
-                 extent,
+                 extent=None,
                  resolution=[50, 50, 50],
                  path_i=None, path_o=None, path_f =None,
                  **kwargs):
@@ -80,7 +80,10 @@ class InputData(object):
             path_o = path_f
 
         # Set extent and resolution
-        self.extent = np.array(extent)
+        if extent:
+            self.extent = np.array(extent)
+        else:
+            self.extent = None # extent is then set in import_data_csv
         self.resolution = np.array(resolution)
 
         # Init number of faults
@@ -130,6 +133,15 @@ class InputData(object):
         # Set dtypes
         self.interfaces['isFault'] = self.interfaces['isFault'].astype('bool')
         self.orientations['isFault'] = self.orientations['isFault'].astype('bool')
+
+    def get_auto_extent(self):
+        X = np.concatenate((self.orientations['X'], self.interfaces['X']))
+        Y = np.concatenate((self.orientations['Y'], self.interfaces['Y']))
+        Z = np.concatenate((self.orientations['Z'], self.interfaces['Z']))
+        x_min, x_max, y_min, y_max, z_min, z_max = X.min(), X.max(), Y.min(), Y.max(), Z.min(), Z.max()
+        # some extra space at borders of model
+        xspace, yspace, zspace = (x_max-x_min) / 10, (y_max-y_min) / 10, (z_max-z_min) / 10
+        return np.array([x_min-xspace, x_max+xspace, y_min-yspace, y_max+yspace, z_min-zspace, z_max+zspace]).astype(int)
 
     def set_basement(self):
 
@@ -193,15 +205,11 @@ class InputData(object):
 
         self.orientations["dip"] = np.rad2deg(np.nan_to_num(np.arccos(self.orientations["G_z"] / self.orientations["polarity"])))
 
-        # TODO if this way to compute azimuth breaks there is in rgeomod=kml_to_plane line 170 a good way to do it
-        self.orientations["azimuth"] = np.rad2deg(np.nan_to_num(np.arctan(self.orientations["G_x"]/self.orientations["G_y"])))
-                                                  # np.arcsin(self.orientations["G_x"]) /
-                                                  # (np.sin(np.arccos(self.orientations["G_y"] /
-                                                  # self.orientations["polarity"])))))
-        self.orientations['azimuth'][(self.orientations['G_x'] < 0).values * (self.orientations['G_y'] >= 0).values] += 360
-        self.orientations['azimuth'][(self.orientations['G_y'] < 0).values] += 180
-        self.orientations['azimuth'][(self.orientations['G_x'] > 0).values * (self.orientations['G_y'] == 0).values] = 90
-        self.orientations['azimuth'][(self.orientations['G_x'] < 0).values * (self.orientations['G_y'] == 0).values] = 270
+        self.orientations["azimuth"] = np.rad2deg(np.nan_to_num(np.arctan2(self.orientations["G_x"]/self.orientations["polarity"], self.orientations["G_y"]/self.orientations["polarity"])))
+        self.orientations["azimuth"][self.orientations["azimuth"] < 0] += 360  # shift values from [-pi, 0] to [pi,2*pi]
+        #self.orientations["azimuth"][self.orientations["dip"] < 0.001] = 0  # because if dip is zero azimuth is undefined
+
+
 
     def count_faults(self):
         """

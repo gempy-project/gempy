@@ -43,7 +43,8 @@ from gempy.data_management import InputData, GridClass
 from gempy.interpolator import InterpolatorData
 from gempy.plotting.sequential_pile import StratigraphicPile
 from gempy.topology import topology_analyze as _topology_analyze
-from gempy.utils.geomodeller_integration import ReadGeoModellerXML as _ReadGeoModellerXML
+#from gempy.utils.geomodeller_integration import ReadGeoModellerXML as _ReadGeoModellerXML
+from gempy.utils.extract_geomodeller_data import ReadGeoModellerXML as _ReadGeoModellerXML
 import gempy.posterior_analysis as pa # So far we use this type of import because the other one makes a copy and blows up some asserts
 
 
@@ -155,7 +156,7 @@ def compute_model_at(new_grid_array, interp_data, output='geology', u_grade=None
     return sol
 
 
-def create_data(extent, resolution=(50, 50, 50), **kwargs):
+def create_data(extent=None, resolution=(50, 50, 50), **kwargs):
     """
     Method to create a :class:`gempy.data_management.InputData` object. It is analogous to gempy.InputData()
 
