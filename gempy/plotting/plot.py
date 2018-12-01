@@ -621,6 +621,7 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     plot = PlotData2D(geo_data)
 
     # TODO saving options
+
     return plot.plot_data(direction=direction, data_type=data_type, series=series, legend_font_size=legend_font_size, **kwargs)
 
 
@@ -712,18 +713,20 @@ def plot_topology(geo_data, G, centroids, direction="y"):
     PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)
 
 
-def plot_stereonet(geo_data, series_only=False, litho=None, planes=True, poles=True, single_plots=False, show_density=False):
+def plot_stereonet(geo_data, litho=None, series_only=False, planes=True, poles=True, single_plots=False, show_density=False, legend=True):
     '''
-    Plot an equal-area projection of the orientations dataframe using mplstereonet.
+    Plots an equal-area projection of the orientations dataframe using mplstereonet.
+    Only works after assigning the series for the right color assignment.
 
     Args:
         geo_data (gempy.DataManagement.InputData): Input data of the model
-        series_only: To select whether a stereonet is plotted per series or per formation
-        litho: selection of formation or series names, as list. If None, all are plotted
-        planes: If True, azimuth and dip are plotted as great circles
-        poles: If True, pole points (plane normal vectors) of azimuth and dip are plotted
-        single_plots: If True, each formation is plotted in a single stereonet
-        show_density: If True, density contour plot around the pole points is shown
+        litho (list): selection of formation or series names. If None, all are plotted
+        series_only (bool): to decide if the data is plotted per series or per formation
+        planes (bool): plots azimuth and dip as great circles
+        poles (bool): plots pole points (plane normal vectors) of azimuth and dip
+        single_plots (bool): plots each formation in a single stereonet
+        show_density (bool): shows density contour plot around the pole points
+        legend (bool): shows legend
 
     Returns:
         None
@@ -769,10 +772,10 @@ def plot_stereonet(geo_data, series_only=False, litho=None, planes=True, poles=T
         if poles:
             ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=7,
                     markerfacecolor=cmap(df_sub['formation_number'].values[0]),
-                    markeredgewidth=1.1, markeredgecolor='gray', label=formation+': '+'pole point')
+                    markeredgewidth=1.1, markeredgecolor='gray', label=formation)#+': '+'pole point')
         if planes:
             ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=cmap(df_sub['formation_number'].values[0]),
-                     linewidth=1.5, label=formation+': '+'azimuth/dip')
+                     linewidth=1.5, label=formation)
         if show_density:
             if single_plots:
                 ax.density_contourf(df_sub['azimuth'] - 90, df_sub['dip'],
@@ -782,8 +785,9 @@ def plot_stereonet(geo_data, series_only=False, litho=None, planes=True, poles=T
                                     alpha=.5)
 
         fig.subplots_adjust(top=0.8)
-        handles, labels = ax.get_legend_handles_labels()
-        by_label = OrderedDict(zip(labels, handles))
-        ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
+        if legend:
+            handles, labels = ax.get_legend_handles_labels()
+            by_label = OrderedDict(zip(labels, handles))
+            ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
         ax.grid(True, color='black', alpha=0.25)
-
+    return fig

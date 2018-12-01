@@ -14,16 +14,19 @@ except ImportError:
 import matplotlib.pyplot as plt
 
 class Posterior:
-    def __init__(self, dbname, verbose=False, entropy=False, interp_data = None):
+
+
+    def __init__(self, dbname, verbose=False, entropy=False, interp_data=None):
         """
         Posterior database analysis for GemPy-pymc2 hdf5 databases.
         Args:
             dbname (str): Path of the hdf5 database.
-            pymc_model_f (str, optional): name of the model output function used (default: "gempy_model).
-            pymc_topo_f (str, optional): name of the topology output function used (default: "gempy_topo).
-            topology (bool, optional):  if a topology trace should be loaded from the database (default: False).
+            entropy (bool): if true, all postmodels are calculated (may take some time!) to visualize entropy
             verbose (bool, optional): Verbosity switch.
         """
+        if entropy:
+            warnings.warn('All post models are calculated. Based on the model complexity and the number of iterations, '
+                          'this may take some time!')
         # TODO: Add a method to set the lith_block and fault_block
         self.interp_data = interp_data
         self.verbose = verbose
@@ -37,10 +40,6 @@ class Posterior:
         # load input data
         self.input_data = self.db.input_data.gettrace()
 
-        self.lith_prob = None
-        self.ie = None
-        self.ie_total = None
-
         if entropy is True:
             self.lbs, self.fbs = self.all_post_models()
 
@@ -52,7 +51,7 @@ class Posterior:
 
             self.ie_total = self.calculate_ie_total()
 
-    def plot_lith_entropy(self, resolution):
+    def plot_lith_entropy(self, extent, resolution):
         '''plots information entropy in middle of block model in y-direction'''
         y = int(resolution[1] / 2)
         ie_reshaped = self.lb_ie.reshape(resolution)
@@ -60,11 +59,13 @@ class Posterior:
         fig, ax = plt.subplots(1)
         plt.rc('xtick', labelsize=18)
         plt.rc('ytick', labelsize=18)
-        plt.imshow(ie_reshaped[:, y, :].T, origin="lower", cmap="viridis")
+        plt.imshow(ie_reshaped[:, y, :].T, origin="lower", cmap="viridis", extent=[extent[0], extent[1], extent[4], extent[5]])
+        plt.xlabel('X')
+        plt.ylabel('Y')
         plt.colorbar()
         return fig
 
-    def plot_fault_entropy(self, resolution):
+    def plot_fault_entropy(self, extent, resolution):
         '''plots information entropy in middle of block model in y-direction'''
         y = int(resolution[1] / 2)
         # print(y, resolution)
@@ -74,7 +75,9 @@ class Posterior:
         fig, ax = plt.subplots(1)
         plt.rc('xtick', labelsize=18)
         plt.rc('ytick', labelsize=18)
-        plt.imshow(ie_reshaped[:, y, :].T, origin="lower", cmap="viridis")
+        plt.imshow(ie_reshaped[:, y, :].T, origin="lower", cmap="viridis", extent=[extent[0], extent[1], extent[4], extent[5]])
+        plt.xlabel('X')
+        plt.ylabel('Y')
         plt.colorbar()
         return fig
 
@@ -115,7 +118,6 @@ class Posterior:
         return lbs, fbs
 
     def compute_prob(self, lith_blocks):
-        """Blocks must be just the lith blocks!"""
         lith_id = np.unique(lith_blocks)
         # print(len(lith_id))
         # lith_count = np.zeros_like(lith_blocks[0:len(lith_id)])
