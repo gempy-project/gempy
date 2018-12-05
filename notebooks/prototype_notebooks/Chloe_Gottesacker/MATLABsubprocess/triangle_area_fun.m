@@ -4,5 +4,5 @@
 % Calculate area:
 function [a] = triangle_area(b,h)
 a = 0.5*(b.* h);   %area
-save('a.mat','a')
+save('a.txt','a', '-ASCII')
 end

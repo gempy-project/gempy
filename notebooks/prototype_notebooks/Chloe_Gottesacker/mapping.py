@@ -293,6 +293,7 @@ def plotXsection(startpoints, endpoints, names, grid_info, lith, surflith, vscal
     f1 = plt.figure(figsize=(10,10))                            #create empty figure
     plt.imshow(surflith, cmap=cmap, norm=norm)                  #plot geology (normalized to gempy color range)
     f2,ax2 = plt.subplots(len(startpoints),1,figsize=(10,20))   #create figure and axes objects for subplots (one per xsection)
+    #xsizes = []                                                 #create empty list to store size of x axes
     
     for i in range(len(startpoints)):   #loop over number of sections
         #Get starting coordinates:
@@ -318,7 +319,8 @@ def plotXsection(startpoints, endpoints, names, grid_info, lith, surflith, vscal
         b = -m*colA + rowA                  #calculate intercept b = m*x1 + y1 (slope is neg here bc y axis is flipped)
         
         #Calculate true distance (not # of cells) between points A and B:
-        distance = ((xB-xA)**2 + (yB-yA)**2)**.5
+        #distance = ((xB-xA)**2 + (yB-yA)**2)**.5
+        #xsizes.append(distance*.001)
 
         #Get xy indices for cells intersected by the x-sec line, then get z values for those xy points:
         xvals = np.arange(colA,colB)    #generate array of x values between the two points
@@ -357,5 +359,5 @@ def plotXsection(startpoints, endpoints, names, grid_info, lith, surflith, vscal
         nlabels = len(cax.get_yticklabels())                  #get number of initial ticks 
         labels = np.linspace(zmin, zmax, nlabels)             #generate list of tick labels
         ticks = cax.set(yticks=locs,yticklabels=labels)       #set tick locations and labels
-    
+        
     return f1,f2,ax2
