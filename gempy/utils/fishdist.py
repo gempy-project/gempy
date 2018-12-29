@@ -127,7 +127,7 @@ class vMF():
         ax.grid()
         ax.density_contourf(points_sph[:, 0] - 90, points_sph[:, 1], measurement='poles', cmap='inferno', alpha=0.7)
         ax.set_title('kappa = '+str(self.kappa), y=1.2)
-        return fig
+        #return fig
 
     def xyz_to_spherical_coordinates(self, gamma1):
         '''conversion of cartesian to spherical coordinates'''

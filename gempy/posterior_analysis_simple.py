@@ -15,8 +15,7 @@ import matplotlib.pyplot as plt
 
 class Posterior:
 
-
-    def __init__(self, dbname, verbose=False, entropy=False, interp_data=None):
+    def __init__(self, dbname, verbose=False, entropy=False, interp_data=None, geo_data = None):
         """
         Posterior database analysis for GemPy-pymc2 hdf5 databases.
         Args:
@@ -27,8 +26,9 @@ class Posterior:
         if entropy:
             warnings.warn('All post models are calculated. Based on the model complexity and the number of iterations, '
                           'this may take some time!')
-        # TODO: Add a method to set the lith_block and fault_block
+
         self.interp_data = interp_data
+        self.geo_data = geo_data
         self.verbose = verbose
         # load db
         self.db = pymc.database.hdf5.load(dbname)
@@ -43,16 +43,22 @@ class Posterior:
         if entropy is True:
             self.lbs, self.fbs = self.all_post_models()
 
-            self.lith_prob = self.compute_prob(np.round(self.lbs).astype(int))
-            self.fault_prob = self.compute_prob(np.round(self.fbs).astype(int))
+            if len(self.lbs) != 0:
+                self.lith_prob = self.compute_prob(np.round(self.lbs).astype(int))
+                self.lb_ie = self.calculate_ie_masked(self.lith_prob)
 
-            self.lb_ie = self.calculate_ie_masked(self.lith_prob)
-            self.fb_ie = self.calculate_ie_masked(self.fault_prob)
+            if len(self.fbs) != 0:
+                self.fault_prob = self.compute_prob(np.round(self.fbs).astype(int))
+                self.fb_ie = self.calculate_ie_masked(self.fault_prob)
+
+
 
             self.ie_total = self.calculate_ie_total()
 
-    def plot_lith_entropy(self, extent, resolution):
+    def plot_lith_entropy(self):
         '''plots information entropy in middle of block model in y-direction'''
+        resolution = self.geo_data.resolution
+        extent = self.geo_data.extent
         y = int(resolution[1] / 2)
         ie_reshaped = self.lb_ie.reshape(resolution)
         plt.figure(figsize=(15, 5))
@@ -63,10 +69,12 @@ class Posterior:
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.colorbar()
-        return fig
+        #return fig
 
-    def plot_fault_entropy(self, extent, resolution):
+    def plot_fault_entropy(self):
         '''plots information entropy in middle of block model in y-direction'''
+        resolution = self.geo_data.resolution
+        extent = self.geo_data.extent
         y = int(resolution[1] / 2)
         # print(y, resolution)
         ie_reshaped = self.fb_ie.reshape(resolution)
@@ -79,7 +87,7 @@ class Posterior:
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.colorbar()
-        return fig
+        #return fig
 
     def change_input_data(self, i):
         """
@@ -113,8 +121,10 @@ class Posterior:
             # print(i)
             self.change_input_data(i)
             lith_block, fault_block = gp.compute_model(self.interp_data)
-            lbs.insert(i, lith_block[0])
-            fbs.insert(i, fault_block[0])
+            if lith_block.shape[0] != 0:
+                lbs.insert(i, lith_block[0])
+            if fault_block.shape[0] != 0:
+                fbs.insert(i, fault_block[0])
         return lbs, fbs
 
     def compute_prob(self, lith_blocks):
@@ -129,6 +139,15 @@ class Posterior:
         lith_prob = lith_count / len(lith_blocks)
         # print(lith_prob)
         return lith_prob
+
+    def plot_section(self, iteration=1, block='lith', cell_number=2):
+        self.change_input_data(iteration)
+        lith_block, fault_block = gp.compute_model(self.interp_data)
+        if block == 'lith':
+            gp.plotting.plot_section(self.geo_data, lith_block[0], cell_number, plot_data=True)
+        else:
+            gp.plotting.plot_section(self.geo_data, fault_block[0], cell_number, plot_data=True)
+        #gp.plotting.plot_section(interp_data.geo_data_res, lith_block[0], 2, plot_data=True)
 
     def calculate_ie_masked(self, lith_prob):
         ie = np.zeros_like(lith_prob[0])
