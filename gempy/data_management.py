@@ -121,9 +121,10 @@ class InputData(object):
         # Init all df
         self.update_df()
         self.set_basement()
-
+        self.check_data()
         # Compute gradients given azimuth and dips to plot data
         self.calculate_gradient()
+
 
         # Create default grid object. TODO: (Is this necessary now?)
         self.grid = self.set_grid(extent=None, resolution=None, grid_type="regular_3D", **kwargs)
@@ -1145,6 +1146,27 @@ class InputData(object):
             return np.array([rd(ext[0], stop0=1), ru(ext[1]), rd(ext[2], stop0=1), ru(ext[3]), rd(ext[4], stop0=1), ru(ext[5])])
         else:
             return np.array([rd(ext[0]), ru(ext[1]), rd(ext[2]), ru(ext[3]), rd(ext[4]), ru(ext[5])])
+
+    def check_data(self):
+        '''checks whether it has at least 2 interfaces and 1 orientation for each
+        formation and whether formations match in orientations and interface dataframes'''
+        missing_interf = []
+        missing_orient = []
+        interf_formations = self.interfaces['formation'].unique()
+        orient_formations = self.orientations['formation'].unique()
+        for formation in interf_formations:
+            if formation not in orient_formations and not 'basement':
+                missing_orient = np.append(missing_orient, formation)
+            if len(self.interfaces[self.interfaces['formation'] == formation]) < 2:
+                if formation != 'basement':
+                    missing_interf = np.append(missing_interf, formation)
+        for formation in orient_formations:
+            if formation not in interf_formations:
+                print('formation in geo_data.orientations without interfaces:', formation)
+        if len(missing_interf) is not 0:
+            print('formation(s) with less than 2 interface points: ', missing_interf)
+        if len(missing_orient) is not 0:
+            print('formation(s) without orientation data: ', missing_orient)
 
 
 def get_orientation(normal):
