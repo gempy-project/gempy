@@ -134,15 +134,6 @@ class InputData(object):
         self.interfaces['isFault'] = self.interfaces['isFault'].astype('bool')
         self.orientations['isFault'] = self.orientations['isFault'].astype('bool')
 
-    def get_auto_extent(self):
-        X = np.concatenate((self.orientations['X'], self.interfaces['X']))
-        Y = np.concatenate((self.orientations['Y'], self.interfaces['Y']))
-        Z = np.concatenate((self.orientations['Z'], self.interfaces['Z']))
-        x_min, x_max, y_min, y_max, z_min, z_max = X.min(), X.max(), Y.min(), Y.max(), Z.min(), Z.max()
-        # some extra space at borders of model
-        xspace, yspace, zspace = (x_max-x_min) / 10, (y_max-y_min) / 10, (z_max-z_min) / 10
-        return np.array([x_min-xspace, x_max+xspace, y_min-yspace, y_max+yspace, z_min-zspace, z_max+zspace]).astype(int)
-
     def set_basement(self):
 
         try:
@@ -429,7 +420,10 @@ class InputData(object):
             interfaces_read = interfaces_read.assign(**dict.fromkeys(c[~np.in1d(c, interfaces_read.columns)], False))
             self.set_interfaces(interfaces_read, append=True)
             #self.interfaces[interfaces_read.columns] = interfaces_read[interfaces_read.columns]
-            #gagag
+
+        # set auto extent if it is not defined yet
+        if self.extent is None:
+            self.extent = self.get_auto_extent()
         self.update_df()
 
     def modify_interface(self, index, **kwargs):
@@ -1120,6 +1114,37 @@ class InputData(object):
         block_geomodeller = np.ravel(geo_res_num.values.reshape(
                                         self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
         return block_geomodeller
+
+
+    def get_auto_extent(self):
+        """
+        calculates the extent based in the minumum and maximum coordinates in the input data.
+        Returns: np.array([x_min, x_max, y_min, y_max, z_min, z_max])
+        """
+
+        def ru(x, n=100):
+            """rounds up to the nearest n of x+40"""
+            return x+100 if x % n < 40 else x+n - x % n
+
+        def rd(x, n=100, stop0=None):
+            """rounds down to the nearest n of x+40, if stop0 zero is the minimum"""
+            if x % n < 40:
+                return x-100 if x > 40 else 0 if stop0 else ru(x)-n
+            elif x < 0:
+                return 0 if stop0 else ru(x)-n
+            else:
+                return x-x % n
+
+        X = np.concatenate((self.orientations['X'], self.interfaces['X']))
+        Y = np.concatenate((self.orientations['Y'], self.interfaces['Y']))
+        Z = np.concatenate((self.orientations['Z'], self.interfaces['Z']))
+
+        ext = np.array([X.min(), X.max(), Y.min(), Y.max(), Z.min(), Z.max()])
+
+        if not any(x < 0 for x in ext): #avoids rounding below 0 if there is no negative number in the input data
+            return np.array([rd(ext[0], stop0=1), ru(ext[1]), rd(ext[2], stop0=1), ru(ext[3]), rd(ext[4], stop0=1), ru(ext[5])])
+        else:
+            return np.array([rd(ext[0]), ru(ext[1]), rd(ext[2]), ru(ext[3]), rd(ext[4]), ru(ext[5])])
 
 
 def get_orientation(normal):

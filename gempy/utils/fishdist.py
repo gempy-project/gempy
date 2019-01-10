@@ -6,13 +6,13 @@ from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 import mplstereonet
 
-'''This solution for vMF sampling originally appeared here: 
+'''Parts of this solution for vMF sampling originally appeared here: 
 - https://github.com/pymc-devs/pymc3/issues/2458 and
 - https://github.com/jasonlaska/spherecluster/blob/master/spherecluster/util.py'''
 
 
 class vMF():
-    '''draws and visualizes samples from a van mises fisher distribution based on mean, concentration and number of
+    '''draws and visualizes samples from a von mises fisher distribution based on mean, concentration and number of
     samples for stochastic simulations with orientation uncertainty'''
 
     def __init__(self, mu, kappa, num_samples):
@@ -126,7 +126,7 @@ class vMF():
             ax.pole(mean[0] - 90, mean[1], color='r', markersize=6, label='mean')
         ax.grid()
         ax.density_contourf(points_sph[:, 0] - 90, points_sph[:, 1], measurement='poles', cmap='inferno', alpha=0.7)
-        ax.set_title('kappa = '+str(self.kappa),y=1.1)
+        ax.set_title('kappa = '+str(self.kappa), y=1.2)
         return fig
 
     def xyz_to_spherical_coordinates(self, gamma1):
