@@ -12,6 +12,7 @@ try:
 except ImportError:
     warnings.warn("tqdm package not installed. No support for dynamic progress bars.")
 import matplotlib.pyplot as plt
+from mpl_toolkits import axes_grid1
 
 class Posterior:
 
@@ -61,14 +62,15 @@ class Posterior:
         extent = self.geo_data.extent
         y = int(resolution[1] / 2)
         ie_reshaped = self.lb_ie.reshape(resolution)
-        plt.figure(figsize=(15, 5))
-        fig, ax = plt.subplots(1)
-        plt.rc('xtick', labelsize=18)
-        plt.rc('ytick', labelsize=18)
-        plt.imshow(ie_reshaped[:, y, :].T, origin="lower", cmap="viridis", extent=[extent[0], extent[1], extent[4], extent[5]])
+        plt.figure()
+        ax = plt.gca()
+        im = ax.imshow(ie_reshaped[:, y, :].T, origin="lower", cmap="viridis",
+                       extent=[extent[0], extent[1], extent[4], extent[5]])
         plt.xlabel('X')
         plt.ylabel('Y')
-        plt.colorbar()
+        plt.rc('xtick', labelsize=18)
+        plt.rc('ytick', labelsize=18)
+        self.add_colorbar(im)
         #return fig
 
     def plot_fault_entropy(self):
@@ -78,15 +80,15 @@ class Posterior:
         y = int(resolution[1] / 2)
         # print(y, resolution)
         ie_reshaped = self.fb_ie.reshape(resolution)
-        # print(ie_reshaped.shape)
-        plt.figure(figsize=(15, 5))
-        fig, ax = plt.subplots(1)
-        plt.rc('xtick', labelsize=18)
-        plt.rc('ytick', labelsize=18)
-        plt.imshow(ie_reshaped[:, y, :].T, origin="lower", cmap="viridis", extent=[extent[0], extent[1], extent[4], extent[5]])
+        plt.figure()
+        ax = plt.gca()
+        im = ax.imshow(ie_reshaped[:, y, :].T, origin="lower", cmap="viridis",
+                       extent=[extent[0], extent[1], extent[4], extent[5]])
         plt.xlabel('X')
         plt.ylabel('Y')
-        plt.colorbar()
+        plt.rc('xtick', labelsize=18)
+        plt.rc('ytick', labelsize=18)
+        self.add_colorbar(im)
         #return fig
 
     def change_input_data(self, i):
@@ -124,7 +126,11 @@ class Posterior:
             if lith_block.shape[0] != 0:
                 lbs.insert(i, lith_block[0])
             if fault_block.shape[0] != 0:
-                fbs.insert(i, fault_block[0])
+                n = 0
+                while n < fault_block.shape[0]:
+                    # print(fault_block.shape[0])
+                    fbs.insert(i, fault_block[n])
+                    n += 2
         return lbs, fbs
 
     def compute_prob(self, lith_blocks):
@@ -164,5 +170,15 @@ class Posterior:
             return np.sum(self.lb_ie)
         else:
             return np.sum(self.lb_ie) / np.size(self.lb_ie)
+
+    def add_colorbar(self, im, aspect=20, pad_fraction=1, **kwargs):
+        """Add a vertical color bar to an image plot."""
+        divider = axes_grid1.make_axes_locatable(im.axes)
+        width = axes_grid1.axes_size.AxesY(im.axes, aspect=2. / aspect)
+        pad = axes_grid1.axes_size.Fraction(pad_fraction, width)
+        current_ax = plt.gca()
+        cax = divider.append_axes("right", size=width, pad=pad)
+        plt.sca(current_ax)
+        return im.axes.figure.colorbar(im, cax=cax, **kwargs)
 
 
