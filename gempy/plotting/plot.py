@@ -625,7 +625,7 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     return plot.plot_data(direction=direction, data_type=data_type, series=series, legend_font_size=legend_font_size, **kwargs)
 
 
-def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
+def plot_section(geo_data, block, cell_number, direction="y", topography=None,**kwargs):
     """
     Plot a section of the block model
 
@@ -644,7 +644,7 @@ def plot_section(geo_data, block, cell_number, direction="y", **kwargs):
         None
     """
     plot = PlotData2D(geo_data)
-    plot.plot_block_section(cell_number, block=block, direction=direction, **kwargs)
+    plot.plot_block_section(cell_number, block=block, direction=direction, topography=None, **kwargs)
     # TODO saving options
 
 

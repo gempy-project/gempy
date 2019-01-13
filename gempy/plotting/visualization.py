@@ -230,7 +230,7 @@ class PlotData2D(object):
         return _a, _b, _c, extent_val, x, y, Gx, Gy
 
     def plot_block_section(self, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data=False, ve=1, **kwargs):
+                           plot_data=False, topography = None, ve=1, **kwargs):
         """
         Plot a section of the block model
 
@@ -271,7 +271,7 @@ class PlotData2D(object):
             self.plot_data(direction, 'all')
         # TODO: plot_topo option - need fault_block for that
 
-        # apply vertical exageration
+        # apply vertical exaggeration
         if direction == 'x' or direction == 'y':
             aspect = ve
         else:
@@ -287,6 +287,10 @@ class PlotData2D(object):
                         interpolation=interpolation,
                         aspect=aspect,
                         **kwargs)
+        if topography:
+            # TODO: apply vertical exxageration to topography
+            topoline = topography._slice(direction = direction, extent = extent_val, cell_number = cell_number)
+            plt.fill(topoline[:, 0], topoline[:, 1], color='k')
 
         import matplotlib.patches as mpatches
         colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
