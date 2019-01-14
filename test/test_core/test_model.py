@@ -1,5 +1,5 @@
 import gempy.core.data as gd
-import gempy.core.gempy_front as gp
+import gempy.core.gempy_API as gp
 import pandas as pn
 import numpy as np
 import os

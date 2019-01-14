@@ -261,7 +261,8 @@ class Series(object):
         self.faults.faults_relations_df.index = idx
         self.faults.faults_relations_df.columns = idx
 
-    def map_isFault_from_faults(self, faults):
+    def map_isFault_from_faults_DEP(self, faults):
+        # TODO is this necessary?
         self.df['isFault'] = self.df.index.map(faults.faults['isFault'])
 
 
@@ -386,9 +387,10 @@ class Formations(object):
         self.series_mapping = pn.DataFrame([pn.Categorical(['Default series'])], columns=['series'])
         self.formations_names = formation_names
         self._formation_values_set = False
+        if formation_names is not None:
+            self.set_formation_names_pro(formation_names)
         if values_array is not None:
-            self.set_formations_values(values_array=values_array, properties_names=properties_names,
-                                       formation_names=formation_names)
+            self.set_formation_values_pro(values_array=values_array, properties_names=properties_names)
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
     def __repr__(self):
@@ -406,7 +408,7 @@ class Formations(object):
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
 # region set formation names
-    def set_formation_names(self, list_names):
+    def set_formation_names_DEP(self, list_names):
         """
         Method to set the names of the formations in order. This applies in the formation column of the df
         Args:
@@ -426,7 +428,7 @@ class Formations(object):
         self.df['series'].fillna('Default series', inplace=True)
         self.update_sequential_pile()
 
-    def _map_formation_names_to_df(self):
+    def _map_formation_names_to_df_DEP(self):
         """
         Method to map data from lists to the categories_df
         Returns:
@@ -458,7 +460,7 @@ class Formations(object):
         self.df.reset_index(inplace=True, drop=True)
         return True
 
-    def set_formation_names_pro(self, list_names):
+    def set_formation_names_pro(self, list_names, update_df=True):
         """
              Method to set the names of the formations in order. This applies in the formation column of the df
              Args:
@@ -468,36 +470,43 @@ class Formations(object):
                  None
              """
         if type(list_names) is list or type(list_names) is np.ndarray:
-            self.formations_names = np.asarray(list_names)
+            list_names = np.asarray(list_names)
         elif isinstance(list_names, Interfaces):
-            self.formations_names = np.asarray(list_names.df['formation'].unique())
+            list_names = np.asarray(list_names.df['formation'].unique())
         else:
             raise AttributeError('list_names must be either array_like type or Interfaces')
 
         self.df['formation'] = pn.Categorical(list_names)
-        self.map_series()
-        self.set_id()
-        self.set_basement()
-        self.update_sequential_pile()
+        # Changing the name of the series is the only way to mutate the series object from formations
+        if update_df is True:
+            self.map_series()
+            self.set_id()
+            self.set_basement()
+            self.update_sequential_pile()
+        return True
 
-    def set_formation_values_por(self, values_array, properties_names=np.empty(0)):
-        properties_names = np.asarray(properties_names)
-        if properties_names.shape[0] != values_array.shape[1]:
-            for i in range(values_array.shape[1]):
-                properties_names = np.append(properties_names, 'value_' + str(i))
-
-
-    def add_formation(self, formation_list: Union[pn.DataFrame, list], update_id=True):
+    def add_formation(self, formation_list: Union[pn.DataFrame, list], update_df=True):
         formation_list = np.atleast_1d(formation_list)
         self.df['formation'].cat.add_categories(formation_list, inplace=True)
         for c in formation_list:
-            self.df.loc[self.df.last_valid_index() + 1, 'formation'] = c
-        if update_id is True:
+            idx = self.df.last_valid_index()
+            if idx is None:
+                idx = 0
+            self.df.loc[idx + 1, 'formation'] = c
+        if update_df is True:
+            self.map_series()
             self.set_id()
+            self.set_basement()
+            self.update_sequential_pile()
+        return True
 
-    def delete_fomation(self, indices):
+    def delete_formation(self, indices, update_id=True):
         # TODO passing names of the formation instead the index
         self.df.drop(indices, inplace=True)
+        if update_id is True:
+            self.set_id()
+            self.update_sequential_pile()
+        return True
 
     @_setdoc([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
     def reorder_formations(self, list_names):
@@ -508,11 +517,11 @@ class Formations(object):
 
     @_setdoc(pn.CategoricalIndex.rename_categories.__doc__)
     def rename_formations(self, new_categories:Union[dict, list]):
-        self.df['formation'].cat.rename_categories(new_categories)
+        self.df['formation'].cat.rename_categories(new_categories, inplace=True)
 
     def sort_formations(self):
 
-        self.df.sort_values(by=['series', 'formation'])
+        self.df.sort_values(by=['series', 'formation'], inplace=True)
         self.set_id()
 
     def set_basement(self, basement_formation: str = None):
@@ -565,12 +574,13 @@ class Formations(object):
 # endregion
 
 # set_series
-    def map_series(self, mapping_object: Union[dict, pn.Categorical]=None):
+    def map_series(self, mapping_object: Union[dict, pn.Categorical] = None):
 
         if mapping_object is None:
-            pass
+            # If none is passed and series exist we will take the name of the first series as a default
+            mapping_object = {self.series.df.index.values[0]: self.df['formation']}
 
-        elif type(mapping_object) is dict:
+        if type(mapping_object) is dict:
 
             s = []
             f = []
@@ -579,12 +589,14 @@ class Formations(object):
                     s.append(k)
                     f.append(form)
 
+            # TODO does series_mapping have to be in self?
             self.series_mapping = pn.DataFrame([pn.Categorical(s, self.series.df.index)],
                                                f, columns=['series'])
             # TODO delete this since it is outside
             self.df['series'] = self.df['formation'].map(self.series_mapping['series'])
 
         elif isinstance(mapping_object, pn.Categorical):
+            # This condition is for the case we have formation on the index and in 'series' the category
             self.series_mapping = mapping_object
             s = mapping_object['series']
             # TODO delete this
@@ -604,7 +616,7 @@ class Formations(object):
                           '\n Series: '+str(np.array(s)[nans]))
 # endregion
 
-    def sort_formations(self, series):
+    def sort_formations_DEP(self, series):
         """
         Sort formations categories_df regarding series order
         Args:
@@ -640,8 +652,40 @@ class Formations(object):
     # def _default_values(self):
     #     values = np.arange(1, len(self.formations_names))
     #     return values
+    def add_formation_values_pro(self, values_array, properties_names=np.empty(0)):
+        values_array = np.atleast_2d(values_array)
+        properties_names = np.asarray(properties_names)
+        if properties_names.shape[0] != values_array.shape[0]:
+            for i in range(values_array.shape[0]):
+                properties_names = np.append(properties_names, 'value_' + str(i))
 
-    def set_formations_values(self, values_array, properties_names=np.empty(0), formation_names=None):
+        for e, p_name in enumerate(properties_names):
+            try:
+                self.df.loc[:, p_name] = values_array[e]
+            except ValueError:
+                raise ValueError('value_array must have the same length in axis 0 as the number of formations')
+        return True
+
+    def delete_formation_values(self, properties_names):
+        properties_names = np.asarray(properties_names)
+        self.df.drop(properties_names, axis=1, inplace=True)
+        return True
+
+    def set_formation_values_pro(self, values_array, properties_names=np.empty(0)):
+        # Check if there are values columns already
+        old_prop_names = self.df.columns[~self.df.columns.isin(['formation', 'series', 'id', 'isBasement'])]
+        # Delete old
+        self.delete_formation_values(old_prop_names)
+
+        # Create new
+        self.add_formation_values_pro(values_array, properties_names)
+        return True
+
+    def modify_formation_values(self):
+        """Method to modify values using loc of pandas"""
+        pass
+
+    def _set_formations_values_DEP(self, values_array, properties_names=np.empty(0), formation_names=None):
         """
         Set the categories_df containing the values of each formation for the posterior evaluation (e.g. densities, susceptibility)
         Args:

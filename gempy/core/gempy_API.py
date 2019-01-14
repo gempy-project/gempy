@@ -312,7 +312,7 @@ def read_data(model: Model, path_i=None, path_o=None, **kwargs):
     if path_o:
         model.orientations.read_orientations(path_o, inplace=True, **kwargs)
 
-    model.formations.set_formation_names(model.interfaces)
+    model.formations.set_formation_names_pro(model.interfaces)
 
     model.rescaling.rescale_data()
     update_additional_data(model)
@@ -671,7 +671,7 @@ def get_data(model: Model, itype='data', numeric=False, verbosity=0):
 
 @_setdoc([set_values_to_default.__doc__])
 def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] = (50, 50, 50),
-                project_name: str='default_project', **kwargs) -> Model:
+                project_name: str = 'default_project', **kwargs) -> Model:
     """
     Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
 
@@ -702,7 +702,7 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
 
 @_setdoc([set_values_to_default.__doc__])
 def init_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] = (50, 50, 50),
-                project_name: str='default_project', **kwargs) -> Model:
+              project_name: str='default_project', default_values=True, **kwargs) -> Model:
     """
     Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
 
@@ -731,8 +731,9 @@ def init_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] = (
     model = create_model(project_name)
     set_grid(model, create_grid(grid_type='regular_grid', extent=extent, resolution=resolution))
     read_data(model, **kwargs)
-    set_values_to_default(model, series_distribution=None, order_series=None, order_formations=None,
-                          set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0)
+    if default_values is True:
+        set_values_to_default(model, series_distribution=None, order_series=None, order_formations=None,
+                              set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0)
     update_additional_data(model)
 
     return model

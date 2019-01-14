@@ -63,7 +63,10 @@ def set_anchor_points(series_object, formation_object):
     thick_formations = []
     for series in series_names:
         try:
-            formations = formation_object.set_index('series').loc[series]['formation'].values
+            formations = formation_object.set_index('series').loc[series, 'formation']
+            if type(formations) is not str:
+                formations = formations.values
+
         except KeyError:
             formations = np.empty(0, dtype='object')
 

@@ -1,6 +1,6 @@
 
 import pytest
-import gempy.core.gempy_front as gempy
+import gempy.core.gempy_API as gempy
 
 import sys, os
 
