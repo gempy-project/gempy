@@ -632,6 +632,7 @@ def plot_section(geo_data, block, cell_number, direction="y", topography=None,**
     Args:
         cell_number(int): position of the array to plot
         direction(str): xyz. Caartesian direction to be plotted
+        topography: gp.utils.topography.DEM object, to cut model plots at the land surface
         interpolation(str): Type of interpolation of plt.imshow. Default 'none'.  Acceptable values are 'none'
         ,'nearest', 'bilinear', 'bicubic',
         'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser',
@@ -645,6 +646,11 @@ def plot_section(geo_data, block, cell_number, direction="y", topography=None,**
     """
     plot = PlotData2D(geo_data)
     plot.plot_block_section(cell_number, block=block, direction=direction, topography=None, **kwargs)
+    # TODO saving options
+
+def plot_map(geo_data, topography, **kwargs):
+    plot = PlotData2D(geo_data)
+    plot.plot_geomap(topography, **kwargs)
     # TODO saving options
 
 

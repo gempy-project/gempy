@@ -282,15 +282,18 @@ class PlotData2D(object):
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
 
+
         im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
                         extent=extent_val,
                         interpolation=interpolation,
                         aspect=aspect,
                         **kwargs)
-        if topography:
-            # TODO: apply vertical exxageration to topography
-            topoline = topography._slice(direction = direction, extent = extent_val, cell_number = cell_number)
-            plt.fill(topoline[:, 0], topoline[:, 1], color='k')
+        if direction == 'x' or direction=='y':
+            if topography:
+                 # TODO: apply vertical exaggeration to topography
+                topoline = topography._slice(direction = direction, extent = extent_val, cell_number = cell_number)
+                plt.fill(topoline[:, 0], topoline[:, 1], color='k')
+
 
         import matplotlib.patches as mpatches
         colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
@@ -299,6 +302,27 @@ class PlotData2D(object):
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.xlabel(x)
         plt.ylabel(y)
+        return plt.gcf()
+
+    def plot_geomap(self, topography, plot_data=False):
+        if topography is None:
+            raise AttributeError('There is no topography to generate a map from')
+        else:
+            geomap = topography.calculate_geomap(plot=False)
+            im = plt.imshow(geomap, origin="lower", extent=self._data.extent[:4],cmap=gp.plotting.colors.cmap, norm=gp.plotting.colors.norm)
+
+        if plot_data:
+            self.plot_data(direction, 'all')
+
+        import matplotlib.patches as mpatches
+        colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
+        patches = [mpatches.Patch(color=colors[i], label=self.formation_names[i]) for i in range(len(self.formation_names))]
+        if not plot_data:
+            plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.title("Geological map", fontsize=15)
+
         return plt.gcf()
 
     def plot_scalar_field(self, scalar_field, cell_number, N=20,

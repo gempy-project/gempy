@@ -5,14 +5,18 @@ import matplotlib.pyplot as plt
 import pandas as pn
 import gdal
 import skimage
+import gempy as gp
 
-
-
-class topography():
+class DEM():
     '''Class to combine height elevation data (DEM, file format e.g. tif, asc) with the geological model '''
 
-    def __init__(self, path_dem, geodata=None, output_path=None):
-
+    def __init__(self, path_dem, geodata=None, interpdata=None, output_path=None):
+        '''
+        Args:
+            path_dem:
+            geodata:
+            output_path:
+        '''
         if path_dem:
             self.dem = gdal.Open(path_dem)
         else:
@@ -32,7 +36,8 @@ class topography():
                 self.raster_extent, self.raster_resolution = self._get_raster_dimensions()
                 self.extent_match = self.compare_extent()
             else:
-                print('extents of dem and geodata do not match. please define output path for automatic cropping')
+                print('extents of DEM and geodata do not match. To see a comparison, use self.show(compare=True). '
+                      'For automatic cropping, define an output path')
 
         self.grid_info = self._get_grid_info()  # daraus tabelle machen für übersicht
         self.dem_resized = skimage.transform.resize(self.dem_zval,
@@ -40,11 +45,16 @@ class topography():
                                                     preserve_range=True)
 
         if output_path:  # create file only when extents match
-            self.surface_coordinates = self.convertDEM2xyz(output_path)  # [0]: shape(a,b,3), [1]: shape(a*b,3)
+            self.surface_coordinates = self.convertDEM2xyz(output_path)
         else:
             print('for the full spectrum of plotting with topography, please define an output path')
+        if interpdata:
+            self.interp_data = interpdata
 
     def compare_extent(self):
+        '''
+        Returns:
+        '''
         if self.geo_data:
             cornerpoints_geo = self._get_cornerpoints(self.geo_data.extent)
             cornerpoints_dtm = self._get_cornerpoints(self.raster_extent)
@@ -56,6 +66,11 @@ class topography():
                 return True
 
     def show(self, compare=False):
+        '''
+        Args:
+            compare:
+        Returns:
+        '''
         print('Raster extent:', self.raster_extent,
               '\nRaster resolution:', self.raster_resolution)
         plt.imshow(self.dem_zval, extent=(self.raster_extent[:4]))
@@ -72,7 +87,11 @@ class topography():
                     print('geodata and dem extents match')
 
     def cropDEM2geodata(self, output_path):
-        '''returns new topography object'''
+        '''
+        Args:
+            output_path:
+        Returns:
+        '''
         path_dest = output_path + '_cropped_DEM.tif'
         print('Extents of geo_data and DEM do not match. DEM is cropped and stored as', path_dest)
         new_bounds = (
@@ -85,15 +104,29 @@ class topography():
         return gdal.Open(path_dest)
 
     def convertDEM2xyz(self, output_path):
-        '''returns array with the x,y,z coordinates of the topography.'''
+        '''
+        Args:
+            output_path:
+        Returns: array with the x,y,z coordinates of the topography  [0]: shape(a,b,3), [1]: shape(a*b,3)
+        '''
+
         path_dest = output_path + '_gempytopo.xyz'
         shape = self.dem_zval.shape
         gdal.Translate(path_dest, self.dem, options=gdal.TranslateOptions(options=['format'], format="XYZ"))
         xyz = pn.read_csv(path_dest, header=None, sep=' ').as_matrix()
         return xyz, np.dstack([xyz[:, 0].reshape(shape), xyz[:, 1].reshape(shape), xyz[:, 2].reshape(shape)])
 
-    def calculate_geomap(self, interpdata, plot=True):
-        geomap, fault = gp.compute_model_at(self.surface_coordinates[1], interpdata)
+    def calculate_geomap(self, interpdata = None, plot=True):
+        '''
+        Args:
+            interpdata:
+            plot:
+        Returns:
+        '''
+        if interpdata:
+            geomap, fault = gp.compute_model_at(self.surface_coordinates[0], interpdata)
+        else:
+            geomap, fault = gp.compute_model_at(self.surface_coordinates[0], self.interp_data)
         geomap = geomap[0].reshape(self.dem_zval.shape)  # resolution of topo gives much better map
         if plot:
             plt.imshow(geomap, origin="lower", cmap=gp.plotting.colors.cmap, norm=gp.plotting.colors.norm)  # set extent
@@ -101,10 +134,17 @@ class topography():
         return geomap
 
     def _slice(self, direction, extent, cell_number=25):
+        '''
+        Args:
+            direction:
+            extent:
+            cell_number:
+        Returns:
+        '''
         xyzarray = self.surface_coordinates[1]
         if direction == "x":
             y = xyzarray[:, :, 1][:, cell_number]  # for y axis
-            z = xyzarray[:, :, 2][:, cell_number]  # for y axis
+            z = xyzarray[:, :, 2][:, cell_number]  # for z axis
             topoline = np.dstack((y, z)).reshape(-1, 2).astype(int)
             upleft = np.array([extent[0], extent[3]])
             upright = np.array([extent[1], extent[3]])

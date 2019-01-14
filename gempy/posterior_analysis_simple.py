@@ -73,7 +73,7 @@ class Posterior:
         self.add_colorbar(im)
         #return fig
 
-    def plot_fault_entropy(self):
+    def plot_fault_entropy(self, topography = None):
         '''plots information entropy in middle of block model in y-direction'''
         resolution = self.geo_data.resolution
         extent = self.geo_data.extent
@@ -84,6 +84,8 @@ class Posterior:
         ax = plt.gca()
         im = ax.imshow(ie_reshaped[:, y, :].T, origin="lower", cmap="viridis",
                        extent=[extent[0], extent[1], extent[4], extent[5]])
+        #if topography:
+
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.rc('xtick', labelsize=18)
@@ -154,6 +156,12 @@ class Posterior:
         else:
             gp.plotting.plot_section(self.geo_data, fault_block[0], cell_number, plot_data=True)
         #gp.plotting.plot_section(interp_data.geo_data_res, lith_block[0], 2, plot_data=True)
+
+    #def plot_section2(self, iteration=1, block, cell_number, direction="y", topography=None, **kwargs):
+        #self.change_input_data(iteration)
+        #lith_block, fault_block = gp.compute_model(self.interp_data)
+        #plot = PlotData2D(self.geo_data)
+        #plot.plot_block_section(cell_number, block=block, direction=direction, topography=None, **kwargs)
 
     def calculate_ie_masked(self, lith_prob):
         ie = np.zeros_like(lith_prob[0])
