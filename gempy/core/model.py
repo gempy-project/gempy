@@ -233,7 +233,7 @@ class Model(object):
         self.interfaces.sort_table()
         self.update_structure()
 
-    def add_orientations(self, vtk_object: vtkPlot=None, **properties):
+    def add_orientations(self, vtk_object: vtkPlot = None, **properties):
 
         d = pn.DataFrame(properties)
         d[['X_r', 'Y_r', 'Z_r']] = self.rescaling.rescale_data_point(d[['X', 'Y', 'Z']])

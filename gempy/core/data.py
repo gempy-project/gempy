@@ -4,6 +4,7 @@ from os import path
 # This is for sphenix to find the packages
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 
+import os
 import numpy as np
 import pandas as pn
 from typing import Union
@@ -317,7 +318,7 @@ class Faults(object):
             series (Series): Series object
             series_fault(list or Interfaces): Name of the series which are df
         """
-
+        # TODO: Change the fault relation automatically every time we add a fault convering previous setting
         if series_fault is None:
             series_fault = self.count_faults(self.df.index)
 
@@ -332,7 +333,7 @@ class Faults(object):
         Args:
             rel_matrix (numpy.array): 2D Boolean array with the logic. Rows affect (offset) columns
         """
-        # TODO: Change the fault relation automatically every time we add a fault
+        # TODO: Change the fault relation automatically every time we add a fault convering previous setting
         if rel_matrix is None:
             rel_matrix = np.zeros((self.df.index.shape[0],
                                    self.df.index.shape[0]))
@@ -590,22 +591,30 @@ class Formations(object):
                     f.append(form)
 
             # TODO does series_mapping have to be in self?
-            self.series_mapping = pn.DataFrame([pn.Categorical(s, self.series.df.index)],
+            new_series_mapping = pn.DataFrame([pn.Categorical(s, self.series.df.index)],
                                                f, columns=['series'])
+
+
             # TODO delete this since it is outside
-            self.df['series'] = self.df['formation'].map(self.series_mapping['series'])
+            #self.df['series'] = self.df['formation'].map(self.series_mapping['series'])
 
         elif isinstance(mapping_object, pn.Categorical):
             # This condition is for the case we have formation on the index and in 'series' the category
-            self.series_mapping = mapping_object
-            s = mapping_object['series']
+            new_series_mapping = mapping_object
+            #s = mapping_object['series']
             # TODO delete this
-            self.df['series'] = self.df['formation'].map(s)
+            #self.df['series'] = self.df['formation'].map(self.series_mapping['series'])
 
         else:
             raise AttributeError(str(type(mapping_object))+' is not the right attribute type.')
 
-        self.df['series'] = self.df['formation'].map(self.series_mapping['series'])
+        if hasattr(self, '_series_mapping'):
+            new_series_mapping = new_series_mapping.append(self._series_mapping, verify_integrity=False)
+
+        # Check for duplicat es given priority to the new series
+        sm = new_series_mapping.loc[~new_series_mapping.index.duplicated(keep='first')]
+        self._series_mapping = sm
+        self.df['series'] = self.df['formation'].map(self._series_mapping['series'])
 
         # Check that all formations have been assigned a series
         if any(self.df['series'].isna()) and mapping_object is not None:
@@ -730,7 +739,9 @@ class Data(object):
     the common methods for both types of data sets.
     """
 
-    def __init__(self):
+    def __init__(self, formation: Formations):
+
+        self.formations = formation
         self.df = pn.DataFrame()
         self.agg_index = self.df.index
 
@@ -739,6 +750,37 @@ class Data(object):
 
     def _repr_html_(self):
         return self.df.to_html()
+
+    def update_formation_category(self):
+        self.df['formation'].cat.set_categories(self.formations.df['formation'].cat.categories, inplace=True)
+
+    def update_series_category(self):
+        self.df['series'].cat.set_categories(self.formations.df['series'].cat.categories, inplace=True)
+
+    # def init_dataframe(self, values=None):
+    #     self.df = pn.DataFrame(columns=self._columns_i_1)
+    #
+    #     # Choose types
+    #     self.df[self._columns_i_num] = self.df[self._columns_i_num].astype(float)
+    #     self.set_dypes()
+    #     self.update_formation_category()
+    #     self.update_series_category()
+    #
+    #     if values is not None:
+    #         pass
+
+    def set_dependent_properties(self):
+        # series
+        self.df['series'] = np.nan
+        self.df['series'] = self.df['series'].astype('category', copy=True)
+        self.df['series'].cat.set_categories(self.formations.df['series'].cat.categories, inplace=True)
+
+        # id
+        self.df['id'] = np.nan
+
+        # order_series
+        self.df['order_series'] = np.nan
+
 
     @staticmethod
     def read_data(file_path, **kwargs):
@@ -796,7 +838,7 @@ class Data(object):
                 raise AttributeError('Formations does not have the correspondent series assigned. See'
                                      'Formations.map_series_from_series.')
 
-        self.df[property] = self.df['formation'].map(formations.df.set_index('formation')[property])
+        self.df[property] = self.df['surface'].map(formations.df.set_index('formation')[property])
 
     def add_formation_categories_from_formations(self, formations):
         self.df['formation'].cat.set_categories(formations.df['formation'].cat.categories, inplace=True)
@@ -817,7 +859,7 @@ class Data(object):
 
         self.df['isFault'] = self.df['series'].map(faults.df['isFault'])
 
-    def set_dypes(self):
+    def set_dypes_DEP(self):
         """
         Method to set each column of the dataframe to the right data type. Inplace
         Returns:
@@ -844,19 +886,90 @@ class Interfaces(Data):
             the interface points of the model
     """
 
-    def __init__(self):
+    def __init__(self, formations: Formations, coord=None, surface=None):
 
-        super().__init__()
+        super().__init__(formations)
         self._columns_i_all = ['X', 'Y', 'Z', 'formation', 'series', 'X_std', 'Y_std', 'Z_std',
                                'order_series', 'formation_number']
         self._columns_i_1 = ['X', 'Y', 'Z', 'formation', 'series', 'id', 'order_series', 'isFault']
         self._columns_i_num = ['X', 'Y', 'Z']
-        self.df = pn.DataFrame(columns=self._columns_i_1)
+        #self.df = pn.DataFrame(columns=self._columns_i_1)
+        if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
+            self.df: pn.DataFrame
+
+        self.set_interfaces(coord, surface)
+        # # Choose types
+        # self.df[self._columns_i_num] = self.df[self._columns_i_num].astype(float)
+        # self.set_dypes()
+        # self.update_formation_category()
+        # self.update_series_category()
+        # # TODO: Do I need this for anything
+        # self.df.itype = 'interfaces'
+
+    def set_interfaces(self, coord: np.ndarray = None, surface: list = None):
+        if coord is None or surface is None:
+            self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'surface'])
+
+        else:
+            #values = np.hstack([np.random.rand(6,3), np.array(surface).reshape(-1, 1)])
+            self.df = pn.DataFrame(coord, columns=self._columns_i_num, dtype=float)
+            self.df['surface'] = surface
+
+        # formation
+        #self.df['surface'] = np.nan
+        self.df['surface'] = self.df['surface'].astype('category', copy=True)
+        self.df['surface'].cat.set_categories(self.formations.df['formation'].cat.categories, inplace=True)
 
         # Choose types
-        self.df[self._columns_i_num] = self.df[self._columns_i_num].astype(float)
-        self.set_dypes()
-        self.df.itype = 'interfaces'
+      #  self.df[self._columns_i_num] = self.df[self._columns_i_num].astype(float)
+        self.set_dependent_properties()
+        assert ~self.df['surface'].isna().any(), 'Some of the formation passed does not exist in the Formation' \
+                                                 'object. %s' % self.df['surface'][self.df['surface'].isna()]
+
+        #self.set_dypes()
+        #self.update_formation_category()
+        #self.update_series_category()
+
+        #if values is not None:
+
+    def add_interface(self, X, Y, Z, surface, idx=None):
+        # TODO: Add the option to pass the surface number
+
+        if idx is None:
+            idx = self.df.last_valid_index() + 1
+            if idx is None:
+                idx = 0
+
+        self.df.loc[idx, ['X', 'Y', 'Z', 'formation']] = np.array([X, Y, Z, surface])
+
+    def del_interface(self, idx):
+
+        self.df.drop(idx, inplace=True)
+
+    def modify_interface(self, idx, **kwargs):
+        """
+         Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
+
+         Args:
+             index: dataframe index of the orientation point
+             **kwargs: X, Y, Z (int or float), surface
+
+         Returns:
+             None
+         """
+
+        # Check idx exist in the df
+        assert self.df.index.isin(np.atleast_1d(idx)).all(), 'Indices must exist in the dataframe to be modified.'
+
+        # Check the properties are valid
+        assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'surface']).all(), 'Properties must be one or more of the' \
+                                                                                 'following: \'X\', \'Y\', \'Z\', ' \
+                                                                                 '\'surface\''
+        # stack properties values
+        values = np.vstack(list(kwargs.values())).T
+
+        # Selecting the properties passed to be modified
+        self.df.loc[idx, list(kwargs.keys())] = values
 
     def read_interfaces(self, file_path, debug=False, inplace=True, append=False, **kwargs):
         """
@@ -982,8 +1095,8 @@ class Orientations(Data):
          the orientations of the model
     """
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, formation: Formations):
+        super().__init__(formation)
         self._columns_o_all = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
                                'formation', 'series', 'id', 'order_series', 'formation_number']
         self._columns_o_1 = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity', 'formation',
@@ -1492,7 +1605,7 @@ class Structure(object):
         return self.ref_position
 
     def set_number_of_formations_per_series(self, interfaces):
-        self.nfs = interfaces.df.groupby('order_series').formation.nunique().values.cumsum()
+        self.nfs = interfaces.df.groupby('order_series').surface.nunique().values.cumsum()
         return self.nfs
 
 

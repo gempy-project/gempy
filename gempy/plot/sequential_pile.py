@@ -64,9 +64,11 @@ def set_anchor_points(series_object, formation_object):
     for series in series_names:
         try:
             formations = formation_object.set_index('series').loc[series, 'formation']
-            if type(formations) is not str:
+            #if type(formations) is not str or type(formations) is not np.str_:
+            try:
                 formations = formations.values
-
+            except AttributeError:
+                pass
         except KeyError:
             formations = np.empty(0, dtype='object')
 
