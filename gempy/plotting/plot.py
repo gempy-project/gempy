@@ -648,9 +648,9 @@ def plot_section(geo_data, block, cell_number, direction="y", topography=None,**
     plot.plot_block_section(cell_number, block=block, direction=direction, topography=None, **kwargs)
     # TODO saving options
 
-def plot_map(geo_data, topography, **kwargs):
+def plot_map(geo_data, topography=None, geomap=None, **kwargs):
     plot = PlotData2D(geo_data)
-    plot.plot_geomap(topography, **kwargs)
+    plot.plot_geomap(topography, geomap, **kwargs)
     # TODO saving options
 
 

@@ -1,14 +1,35 @@
-import math
+
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
+#from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 import mplstereonet
 
-'''Parts of this solution for vMF sampling originally appeared here: 
-- https://github.com/pymc-devs/pymc3/issues/2458 and
-- https://github.com/jasonlaska/spherecluster/blob/master/spherecluster/util.py'''
+"""
+    This file is part of gempy.
+
+    gempy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    gempy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with gempy.  If not, see <http://www.gnu.org/licenses/>.
+
+    Parts of this solution for vMF sampling originally appeared here (12.12.2018): 
+    - https://github.com/pymc-devs/pymc3/issues/2458 and
+    - https://github.com/jasonlaska/spherecluster/blob/master/spherecluster/util.py
+
+    @author: Elisa Heim
+"""
+
+
 
 
 class vMF():

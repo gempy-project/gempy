@@ -1,21 +1,36 @@
+"""
+    This file is part of gempy.
 
+    gempy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
-import numpy as np
-import matplotlib.pyplot as plt
-import pandas as pn
-import gdal
-import skimage
-import gempy as gp
+    gempy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with gempy.  If not, see <http://www.gnu.org/licenses/>.
+
+    @author: Elisa Heim
+"""
+
+try:
+    import gdal
+except ImportError:
+    warnings.warn("gdal package is not installed. No support for raster functions")
 
 class DEM():
-    '''Class to combine height elevation data (DEM, file format e.g. tif, asc) with the geological model '''
+    '''Class to include height elevation data (e.g. DEMs) with the geological model '''
 
     def __init__(self, path_dem, geodata=None, interpdata=None, output_path=None):
         '''
         Args:
-            path_dem:
-            geodata:
-            output_path:
+            path_dem: path where dem is stored. file format: GDAL raster formats
+            geodata: geo_data object
+            output_path: path to a folder. Must be defined for gdal to perform modifications on the raster
         '''
         if path_dem:
             self.dem = gdal.Open(path_dem)
@@ -113,7 +128,7 @@ class DEM():
         path_dest = output_path + '_gempytopo.xyz'
         shape = self.dem_zval.shape
         gdal.Translate(path_dest, self.dem, options=gdal.TranslateOptions(options=['format'], format="XYZ"))
-        xyz = pn.read_csv(path_dest, header=None, sep=' ').as_matrix()
+        xyz = pn.read_csv(path_dest, header=None, sep=' ').values
         return xyz, np.dstack([xyz[:, 0].reshape(shape), xyz[:, 1].reshape(shape), xyz[:, 2].reshape(shape)])
 
     def calculate_geomap(self, interpdata = None, plot=True):

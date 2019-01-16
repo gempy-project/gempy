@@ -1,3 +1,23 @@
+"""
+    This file is part of gempy.
+
+    gempy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    gempy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with gempy.  If not, see <http://www.gnu.org/licenses/>.
+
+
+    @author: Elisa Heim, Alexander Schaaf, Miguel de la Varga
+    (I guess, copied some code from posterior_analysis.py)
+"""
 
 import warnings
 try:
@@ -13,117 +33,78 @@ except ImportError:
     warnings.warn("tqdm package not installed. No support for dynamic progress bars.")
 import matplotlib.pyplot as plt
 from mpl_toolkits import axes_grid1
+import matplotlib.colors
 
-class Posterior:
 
-    def __init__(self, dbname, verbose=False, entropy=False, interp_data=None, geo_data = None):
-        """
-        Posterior database analysis for GemPy-pymc2 hdf5 databases.
-        Args:
-            dbname (str): Path of the hdf5 database.
-            entropy (bool): if true, all postmodels are calculated (may take some time!) to visualize entropy
-            verbose (bool, optional): Verbosity switch.
-        """
+class Posterior():
+    def __init__(self, dbname, model_type='map', entropy=False, topography=None, interpdata=None, geodata=None):
+
         if entropy:
-            warnings.warn('All post models are calculated. Based on the model complexity and the number of iterations, '
-                          'this may take some time!')
+            print('All post models are calculated. Based on the model complexity and the number of iterations, '
+                  'this could take a while')
+        # if topography:
+        self.topography = topography
+        # else:
+        # print('no topography defined. Methods that contain the word _map_ are not available')
 
-        self.interp_data = interp_data
-        self.geo_data = geo_data
-        self.verbose = verbose
-        # load db
-        self.db = pymc.database.hdf5.load(dbname)
+        self.interp_data = interpdata
 
+        self.geo_data = geodata
+        # self.verbose = verbose
+
+        self.db = pymc.database.hdf5.load(dbname)  # load database
         self.n_iter = self.db.getstate()['sampler']['_iter'] - self.db.getstate()["sampler"]["_burn"]
-        # get trace names
         self.trace_names = self.db.trace_names[0]
-
-        # load input data
         self.input_data = self.db.input_data.gettrace()
 
-        if entropy is True:
-            self.lbs, self.fbs = self.all_post_models()
+        if entropy:
+            if topography and model_type == 'map':  # better resolution
+                self.all_maps = self.all_post_maps()
+                self.map_prob = self.compute_prob(np.round(self.all_maps).astype(int))
+                self.map_ie = self.calculate_ie_masked(self.map_prob)
 
-            if len(self.lbs) != 0:
-                self.lith_prob = self.compute_prob(np.round(self.lbs).astype(int))
-                self.lb_ie = self.calculate_ie_masked(self.lith_prob)
+            elif model_type == 'model':
+                self.lbs, self.fbs = self.all_post_models()
 
-            if len(self.fbs) != 0:
-                self.fault_prob = self.compute_prob(np.round(self.fbs).astype(int))
-                self.fb_ie = self.calculate_ie_masked(self.fault_prob)
+                if len(self.lbs) != 0:
+                    self.lith_prob = self.compute_prob(np.round(self.lbs).astype(int))
+                    self.lb_ie = self.calculate_ie_masked(self.lith_prob)
 
+                if len(self.fbs) != 0:
+                    self.fault_prob = self.compute_prob(np.round(self.fbs).astype(int))
+                    self.fb_ie = self.calculate_ie_masked(self.fault_prob)
+            else:
+                print('if there is no topography defined, model_type must be set to model')
+            # self.ie_total = self.calculate_ie_total()
 
-
-            self.ie_total = self.calculate_ie_total()
-
-    def plot_lith_entropy(self):
-        '''plots information entropy in middle of block model in y-direction'''
-        resolution = self.geo_data.resolution
-        extent = self.geo_data.extent
-        y = int(resolution[1] / 2)
-        ie_reshaped = self.lb_ie.reshape(resolution)
-        plt.figure()
-        ax = plt.gca()
-        im = ax.imshow(ie_reshaped[:, y, :].T, origin="lower", cmap="viridis",
-                       extent=[extent[0], extent[1], extent[4], extent[5]])
-        plt.xlabel('X')
-        plt.ylabel('Y')
-        plt.rc('xtick', labelsize=18)
-        plt.rc('ytick', labelsize=18)
-        self.add_colorbar(im)
-        #return fig
-
-    def plot_fault_entropy(self, topography = None):
-        '''plots information entropy in middle of block model in y-direction'''
-        resolution = self.geo_data.resolution
-        extent = self.geo_data.extent
-        y = int(resolution[1] / 2)
-        # print(y, resolution)
-        ie_reshaped = self.fb_ie.reshape(resolution)
-        plt.figure()
-        ax = plt.gca()
-        im = ax.imshow(ie_reshaped[:, y, :].T, origin="lower", cmap="viridis",
-                       extent=[extent[0], extent[1], extent[4], extent[5]])
-        #if topography:
-
-        plt.xlabel('X')
-        plt.ylabel('Y')
-        plt.rc('xtick', labelsize=18)
-        plt.rc('ytick', labelsize=18)
-        self.add_colorbar(im)
-        #return fig
-
-    def change_input_data(self, i):
-        """
-        Changes input data in interp_data to posterior input data at iteration i.
-        Args:
-            interp_data (gempy.data_management.InterpolationData): An interp_data object with the structure we want to
-            compute.
-            i (int): Iteration we want to recompute
-        Returns:
-             gempy.data_management.InterpolationData: interp_data with the data of the given iteration
-        """
+    def _change_input_data(self, i):
         i = int(i)
         # replace interface data
         self.interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
         # replace foliation data
         self.interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = \
-        self.input_data[i][1]
-
-        # recalc_gradients(interp_data.geo_data_res.orientations)
-
-        # update interpolator
+            self.input_data[i][1]
         self.interp_data.update_interpolator()
-        if self.verbose:
-            print("interp_data parameters changed.")
+        # if self.verbose:
+        # print("interp_data parameters changed.")
         return self.interp_data
+
+    def all_post_maps(self):
+        all_maps = []
+        for i in range(0, self.n_iter):
+            # print(i)
+            self._change_input_data(i)
+            # geomap = self.topography.calculate_geomap(interpdata = self.interp_data, plot=True)
+            geomap, faultmap = gp.compute_model_at(self.topography.surface_coordinates[0], self.interp_data)
+            all_maps.insert(i, geomap[0])
+        return all_maps
 
     def all_post_models(self):
         lbs = []
         fbs = []
         for i in range(0, self.n_iter):
             # print(i)
-            self.change_input_data(i)
+            self._change_input_data(i)
             lith_block, fault_block = gp.compute_model(self.interp_data)
             if lith_block.shape[0] != 0:
                 lbs.insert(i, lith_block[0])
@@ -135,52 +116,86 @@ class Posterior:
                     n += 2
         return lbs, fbs
 
-    def compute_prob(self, lith_blocks):
-        lith_id = np.unique(lith_blocks)
-        # print(len(lith_id))
+    def compute_prob(self, blocks):
+        lith_id = np.unique(blocks)
         # lith_count = np.zeros_like(lith_blocks[0:len(lith_id)])
-        lith_count = np.zeros((len(np.unique(lith_blocks)), lith_blocks.shape[1]))
-        # print(lith_count)
+        count = np.zeros((len(np.unique(blocks)), blocks.shape[1]))
         for i, l_id in enumerate(lith_id):
-            # print(i, l_id)
-            lith_count[i] = np.sum(lith_blocks == l_id, axis=0)
-        lith_prob = lith_count / len(lith_blocks)
+            count[i] = np.sum(blocks == l_id, axis=0)
+        prob = count / len(blocks)
         # print(lith_prob)
-        return lith_prob
+        return prob
 
-    def plot_section(self, iteration=1, block='lith', cell_number=2):
-        self.change_input_data(iteration)
-        lith_block, fault_block = gp.compute_model(self.interp_data)
-        if block == 'lith':
-            gp.plotting.plot_section(self.geo_data, lith_block[0], cell_number, plot_data=True)
-        else:
-            gp.plotting.plot_section(self.geo_data, fault_block[0], cell_number, plot_data=True)
-        #gp.plotting.plot_section(interp_data.geo_data_res, lith_block[0], 2, plot_data=True)
-
-    #def plot_section2(self, iteration=1, block, cell_number, direction="y", topography=None, **kwargs):
-        #self.change_input_data(iteration)
-        #lith_block, fault_block = gp.compute_model(self.interp_data)
-        #plot = PlotData2D(self.geo_data)
-        #plot.plot_block_section(cell_number, block=block, direction=direction, topography=None, **kwargs)
-
-    def calculate_ie_masked(self, lith_prob):
-        ie = np.zeros_like(lith_prob[0])
-        for l in lith_prob:
-            # print(l)
-            pm = np.ma.masked_equal(l, 0)  # mask where layer prob is 0
-            # print(pm.shape)
-            # print(pm * np.ma.log2(pm))
+    def calculate_ie_masked(self, prob):
+        ie = np.zeros_like(prob[0])
+        for l in prob:
+            pm = np.ma.masked_equal(l, 0)  # mask where prob is 0
             ie -= (pm * np.ma.log2(pm)).filled(0)
         return ie
 
-    def calculate_ie_total(self, absolute=False):
+    def calculate_ie_total(self, ie, absolute=False):
         if absolute:
-            return np.sum(self.lb_ie)
+            return np.sum(ie)
         else:
-            return np.sum(self.lb_ie) / np.size(self.lb_ie)
+            return np.sum(ie) / np.size(ie)
+
+        ##### plotting methods #####
+
+    def plot_section(self, iteration=1, block='lith', cell_number=3, **kwargs):
+        '''kwargs: gempy.plotting.plot_section keyword arguments'''
+        self._change_input_data(iteration)
+        lith_block, fault_block = gp.compute_model(self.interp_data)
+
+        if 'topography' not in kwargs:
+            if self.topography:
+                topography = self.topography
+            else:
+                topography = None
+            if block == 'lith':
+                gp.plot_section(self.geo_data, lith_block[0], cell_number=cell_number, topography=topography, **kwargs)
+            else:
+                gp.plot_section(self.geo_data, block, cell_number=cell_number, topography=topography, **kwargs)
+
+        else:
+            if block == 'lith':
+                gp.plot_section(self.geo_data, lith_block[0], cell_number=cell_number, **kwargs)
+            else:
+                gp.plot_section(self.geo_data, block, cell_number=cell_number, **kwargs)
+
+    def plot_map(self, iteration=1, **kwargs):
+        self._change_input_data(iteration)
+        # geomap = self.topography.calculate_geomap(interpdata = self.interp_data, plot=True)
+        geomap, faultmap = gp.compute_model_at(self.topography.surface_coordinates[0], self.interp_data)
+        # gp.plotting.plot_map(geomap)
+        gp.plotting.plot_map(self.geo_data, geomap=geomap[0].reshape(self.topography.dem_zval.shape), **kwargs)
+
+    def plot_map_ie(self, plot_data=False):
+        if plot_data:
+            gp.plotting.plot_data(geo_data, direction='z')
+            dist = 12
+        else:
+            dist = 1
+
+        im = plt.imshow(self.map_ie.reshape(self.topography.dem_zval.shape), extent=self.geo_data.extent[:4],
+                        cmap='viridis')
+        self.add_colorbar(im, pad_fraction=dist)
+        plt.title('Cell entropy of geological map')
+
+    def plot_section_ie(self, block='lith', cell_number=10, direction='y', **kwargs):
+        # for lithblock
+        if block == 'lith':
+            norm = matplotlib.colors.Normalize(self.lb_ie.min(), self.lb_ie.max())
+            gp.plotting.plot_section(geo_data, self.lb_ie, cell_number=cell_number, direction=direction, cmap='viridis',
+                                     norm=norm, **kwargs)
+            # self.add_colorbar(im)
+        elif block == 'fault':
+            norm = matplotlib.colors.Normalize(self.fb_ie.min(), self.fb_ie.max())
+            gp.plotting.plot_section(geo_data, self.fb_ie, cell_number=cell_number, direction=direction, cmap='viridis',
+                                     norm=norm, **kwargs)
+            # self.add_colorbar(im)
 
     def add_colorbar(self, im, aspect=20, pad_fraction=1, **kwargs):
-        """Add a vertical color bar to an image plot."""
+        """Add a vertical color bar to an image plot. Source: stackoverflow"""
         divider = axes_grid1.make_axes_locatable(im.axes)
         width = axes_grid1.axes_size.AxesY(im.axes, aspect=2. / aspect)
         pad = axes_grid1.axes_size.Fraction(pad_fraction, width)
@@ -188,5 +203,3 @@ class Posterior:
         cax = divider.append_axes("right", size=width, pad=pad)
         plt.sca(current_ax)
         return im.axes.figure.colorbar(im, cax=cax, **kwargs)
-
-

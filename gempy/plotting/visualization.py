@@ -304,15 +304,21 @@ class PlotData2D(object):
         plt.ylabel(y)
         return plt.gcf()
 
-    def plot_geomap(self, topography, plot_data=False):
-        if topography is None:
-            raise AttributeError('There is no topography to generate a map from')
-        else:
-            geomap = topography.calculate_geomap(plot=False)
-            im = plt.imshow(geomap, origin="lower", extent=self._data.extent[:4],cmap=gp.plotting.colors.cmap, norm=gp.plotting.colors.norm)
-
+    def plot_geomap(self, topography=None, geomap=None, plot_data=False):
         if plot_data:
-            self.plot_data(direction, 'all')
+            self.plot_data(direction='z', data_type='all')
+
+        if geomap is None:
+            if topography is None:
+                raise AttributeError('There is no topography to generate a map from and no geomap defined')
+            else:
+                geomap_plot = topography.calculate_geomap(plot=False)
+        else:
+            geomap_plot = geomap
+            assert geomap_plot.ndim == 2
+            #print('hallo')
+
+        im = plt.imshow(geomap_plot, origin="lower", extent=self._data.extent[:4],cmap=gp.plotting.colors.cmap, norm=gp.plotting.colors.norm)
 
         import matplotlib.patches as mpatches
         colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
