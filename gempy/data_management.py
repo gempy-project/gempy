@@ -1127,7 +1127,7 @@ class InputData(object):
         Z = np.concatenate((self.orientations['Z'], self.interfaces['Z']))
 
         ext = np.array([X.min(), X.max(), Y.min(), Y.max(), Z.min(), Z.max()])
-        print(ext.astype(int))
+        #print(ext.astype(int))
 
         ord_mag_x = np.log10(ext[1] - ext[0])
         ord_mag_y = np.log10(ext[3] - ext[2])

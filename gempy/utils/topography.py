@@ -20,7 +20,16 @@
 try:
     import gdal
 except ImportError:
+    import warnings
     warnings.warn("gdal package is not installed. No support for raster functions")
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+import gempy as gp
+import pandas as pn
+
+import skimage
 
 class DEM():
     '''Class to include height elevation data (e.g. DEMs) with the geological model '''
@@ -35,7 +44,7 @@ class DEM():
         if path_dem:
             self.dem = gdal.Open(path_dem)
         else:
-            print('Define path to file')
+            print('Define path to raster file')
 
         self.dem_zval = self.dem.ReadAsArray()
         self.raster_extent, self.raster_resolution = self._get_raster_dimensions()
@@ -80,14 +89,17 @@ class DEM():
                 # print('geodata and dem extents match')
                 return True
 
-    def show(self, compare=False):
+    def show(self, compare=False,plot_data=False):
         '''
         Args:
             compare:
         Returns:
         '''
+        #Todo add legend that shows elevation
         print('Raster extent:', self.raster_extent,
               '\nRaster resolution:', self.raster_resolution)
+        if plot_data:
+            gp.plotting.plot_data(self.geo_data, direction='z', data_type='all')
         plt.imshow(self.dem_zval, extent=(self.raster_extent[:4]))
         if compare == True:
             if self.geo_data:
@@ -129,7 +141,15 @@ class DEM():
         shape = self.dem_zval.shape
         gdal.Translate(path_dest, self.dem, options=gdal.TranslateOptions(options=['format'], format="XYZ"))
         xyz = pn.read_csv(path_dest, header=None, sep=' ').values
-        return xyz, np.dstack([xyz[:, 0].reshape(shape), xyz[:, 1].reshape(shape), xyz[:, 2].reshape(shape)])
+        #xyz_box = np.dstack([xyz[:, 0].reshape(shape), xyz[:, 1].reshape(shape), xyz[:, 2].reshape(shape)])
+        x = xyz[:, 0].reshape(shape)
+        y = xyz[:, 1].reshape(shape)
+        z = xyz[:, 2].reshape(shape)
+        x = np.flip(x, axis=0)
+        y = np.flip(y, axis=0)
+        z = np.flip(z, axis=0)
+        xyz_box = np.dstack([x,y,z])
+        return xyz, xyz_box
 
     def calculate_geomap(self, interpdata = None, plot=True):
         '''
@@ -143,6 +163,7 @@ class DEM():
         else:
             geomap, fault = gp.compute_model_at(self.surface_coordinates[0], self.interp_data)
         geomap = geomap[0].reshape(self.dem_zval.shape)  # resolution of topo gives much better map
+        geomap = np.flip(geomap, axis=0) #to match the orientation of the other plotting options
         if plot:
             plt.imshow(geomap, origin="lower", cmap=gp.plotting.colors.cmap, norm=gp.plotting.colors.norm)  # set extent
             plt.title("Geological map", fontsize=15)
@@ -156,19 +177,27 @@ class DEM():
             cell_number:
         Returns:
         '''
-        xyzarray = self.surface_coordinates[1]
-        if direction == "x":
-            y = xyzarray[:, :, 1][:, cell_number]  # for y axis
-            z = xyzarray[:, :, 2][:, cell_number]  # for z axis
-            topoline = np.dstack((y, z)).reshape(-1, 2).astype(int)
+        surface_dem = self.surface_coordinates[1]
+        x = surface_dem[:, :, 0]
+        y = surface_dem[:, :, 1]
+        z = surface_dem[:, :, 2]
+
+        if direction == 'y':
+            a = x[cell_number, :]
+            b = y[cell_number, :]
+            c = z[cell_number, :]
+            assert len(np.unique(b)) == 1
+            topoline = np.dstack((a, c)).reshape(-1, 2).astype(int)
             upleft = np.array([extent[0], extent[3]])
             upright = np.array([extent[1], extent[3]])
-            topolinebox = np.append(topoline, (upleft, upright), axis=0)
+            topolinebox = np.append(topoline, (upright, upleft), axis=0)
 
-        elif direction == "y":
-            y = xyzarray[:, :, 0][cell_number, :]
-            z = xyzarray[:, :, 2][cell_number, :]
-            topoline = np.dstack((y, z)).reshape(-1, 2).astype(int)
+        elif direction == 'x':
+            a = x[:, cell_number]
+            b = y[:, cell_number]
+            c = z[:, cell_number]
+            assert len(np.unique(a)) == 1
+            topoline = np.dstack((b, c)).reshape(-1, 2).astype(int)
             upleft = np.array([extent[0], extent[3]])
             upright = np.array([extent[1], extent[3]])
             topolinebox = np.append(topoline, (upright, upleft), axis=0)

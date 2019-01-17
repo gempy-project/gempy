@@ -304,7 +304,7 @@ class PlotData2D(object):
         plt.ylabel(y)
         return plt.gcf()
 
-    def plot_geomap(self, topography=None, geomap=None, plot_data=False):
+    def plot_geomap(self, topography=None, geomap=None, plot_data=False, **kwargs):
         if plot_data:
             self.plot_data(direction='z', data_type='all')
 
