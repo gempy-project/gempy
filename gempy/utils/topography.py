@@ -89,17 +89,22 @@ class DEM():
                 # print('geodata and dem extents match')
                 return True
 
-    def show(self, compare=False,plot_data=False):
+    def show(self, compare=False,plot_data=False, **kwargs):
         '''
+
         Args:
             compare:
+            plot_data:
+            **kwargs: gp.plotting.plot_data kwargs
+
         Returns:
+
         '''
         #Todo add legend that shows elevation
         print('Raster extent:', self.raster_extent,
               '\nRaster resolution:', self.raster_resolution)
         if plot_data:
-            gp.plotting.plot_data(self.geo_data, direction='z', data_type='all')
+            gp.plotting.plot_data(self.geo_data, direction='z', data_type='all', **kwargs)
         plt.imshow(self.dem_zval, extent=(self.raster_extent[:4]))
         if compare == True:
             if self.geo_data:
