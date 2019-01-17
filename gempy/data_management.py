@@ -121,9 +121,10 @@ class InputData(object):
         # Init all df
         self.update_df()
         self.set_basement()
-
+        self.check_input_data()
         # Compute gradients given azimuth and dips to plot data
         self.calculate_gradient()
+
 
         # Create default grid object. TODO: (Is this necessary now?)
         self.grid = self.set_grid(extent=None, resolution=None, grid_type="regular_3D", **kwargs)
@@ -1115,36 +1116,67 @@ class InputData(object):
                                         self.resolution[0], self.resolution[1], self.resolution[2], order='C').T)
         return block_geomodeller
 
-
     def get_auto_extent(self):
         """
-        calculates the extent based in the minumum and maximum coordinates in the input data.
+        calculates the extent based on the minumum and maximum coordinates in the input data.
         Returns: np.array([x_min, x_max, y_min, y_max, z_min, z_max])
         """
-
-        def ru(x, n=100):
-            """rounds up to the nearest n of x+40"""
-            return x+100 if x % n < 40 else x+n - x % n
-
-        def rd(x, n=100, stop0=None):
-            """rounds down to the nearest n of x+40, if stop0 zero is the minimum"""
-            if x % n < 40:
-                return x-100 if x > 40 else 0 if stop0 else ru(x)-n
-            elif x < 0:
-                return 0 if stop0 else ru(x)-n
-            else:
-                return x-x % n
 
         X = np.concatenate((self.orientations['X'], self.interfaces['X']))
         Y = np.concatenate((self.orientations['Y'], self.interfaces['Y']))
         Z = np.concatenate((self.orientations['Z'], self.interfaces['Z']))
 
         ext = np.array([X.min(), X.max(), Y.min(), Y.max(), Z.min(), Z.max()])
+        #print(ext.astype(int))
 
-        if not any(x < 0 for x in ext): #avoids rounding below 0 if there is no negative number in the input data
-            return np.array([rd(ext[0], stop0=1), ru(ext[1]), rd(ext[2], stop0=1), ru(ext[3]), rd(ext[4], stop0=1), ru(ext[5])])
+        ord_mag_x = np.log10(ext[1] - ext[0])
+        ord_mag_y = np.log10(ext[3] - ext[2])
+        ord_mag_z = np.log10(ext[5] - ext[4])
+        ord_mag = round((ord_mag_x + ord_mag_y + ord_mag_z) / 3)
+        ord_mag -= 2 if ord_mag > 2 else 1
+
+        def ru(x, n=pow(10, ord_mag)):
+            """rounds up to the nearest n of x+n/2"""
+            # return x+n if x % n < n/2 else x+n - x % n if x%n != 0 else x+n
+            return x + n if x % n == 0 else x + (n - (x % n))  # if x % n < n/2 else x+ (2*n-(x % n))
+
+        # return x+100 if x % n < 40 else x+n - x % n
+
+        def rd(x, n=pow(10, ord_mag), stop0=None):
+            """rounds down to the nearest n of x+n/2, if stop0 zero is the minimum"""
+            if x % n < n / 2:
+                return (x - x % n) - n if x > n / 2 else 0 if stop0 else ru(x) - 2 * n
+            elif x < 0:
+                return 0 if stop0 else ru(x) - n
+            else:
+                return x - x % n
+
+        if not any(x < 0 for x in ext):  # avoids rounding below 0 if there is no negative number in the input data
+            return np.array([rd(ext[0], stop0=1), ru(ext[1]), rd(ext[2], stop0=1), ru(ext[3]), rd(ext[4], stop0=1),
+                             ru(ext[5])]).astype(int)
         else:
-            return np.array([rd(ext[0]), ru(ext[1]), rd(ext[2]), ru(ext[3]), rd(ext[4]), ru(ext[5])])
+            return np.array([rd(ext[0]), ru(ext[1]), rd(ext[2]), ru(ext[3]), rd(ext[4]), ru(ext[5])]).astype(int)
+
+    def check_input_data(self):
+        '''checks whether it has at least 2 interfaces and 1 orientation for each
+        formation and whether formations match in orientations and interface dataframes'''
+        missing_interf = []
+        missing_orient = []
+        interf_formations = self.interfaces['formation'].unique()
+        orient_formations = self.orientations['formation'].unique()
+        for formation in interf_formations:
+            if formation not in orient_formations and not 'basement':
+                missing_orient = np.append(missing_orient, formation)
+            if len(self.interfaces[self.interfaces['formation'] == formation]) < 2:
+                if formation != 'basement':
+                    missing_interf = np.append(missing_interf, formation)
+        for formation in orient_formations:
+            if formation not in interf_formations:
+                print('formation in geo_data.orientations without interfaces:', formation)
+        if len(missing_interf) is not 0:
+            print('formation(s) with less than 2 interface points: ', missing_interf)
+        if len(missing_orient) is not 0:
+            print('formation(s) without orientation data: ', missing_orient)
 
 
 def get_orientation(normal):
