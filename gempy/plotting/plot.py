@@ -649,6 +649,7 @@ def plot_section(geo_data, block, cell_number, direction="y", topography=None,**
     # TODO saving options
 
 def plot_map(geo_data, topography=None, geomap=None, **kwargs):
+    #Todo if this is called before the blocks are computed interp_data changes
     plot = PlotData2D(geo_data)
     plot.plot_geomap(topography, geomap, **kwargs)
     # TODO saving options

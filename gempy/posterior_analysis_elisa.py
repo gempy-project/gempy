@@ -37,13 +37,9 @@ import matplotlib.colors
 
 
 class Posterior():
-    def __init__(self, dbname, model_type='map', entropy=False, topography=None, interpdata=None, geodata=None):
-
-        if entropy:
-            print('All post models are calculated. Based on the model complexity and the number of iterations, '
-                  'this could take a while')
+    def __init__(self, dbname, entropy=False, topography=None, interpdata=None, geodata=None):
+        #print('hallo ich wurde neu geladen!')
         # if topography:
-        self.topography = topography
         # else:
         # print('no topography defined. Methods that contain the word _map_ are not available')
 
@@ -57,24 +53,37 @@ class Posterior():
         self.trace_names = self.db.trace_names[0]
         self.input_data = self.db.input_data.gettrace()
 
+        if topography:
+            self.topography = topography
+
         if entropy:
-            if topography and model_type == 'map':  # better resolution
-                self.all_maps = self.all_post_maps()
-                self.map_prob = self.compute_prob(np.round(self.all_maps).astype(int))
+            print('Lithology probability for all post models are calculated. Based on the model complexity and the number of iterations, '
+                  'this could take a while')
+            self.lith_prob = self.compute_lith_prob_sequentially('model')
+            self.lb_ie = self.calculate_ie_masked(self.lith_prob)
+
+            if topography:
+                self.map_prob = self.compute_lith_prob_sequentially('map')
                 self.map_ie = self.calculate_ie_masked(self.map_prob)
 
-            elif model_type == 'model':
-                self.lbs, self.fbs = self.all_post_models()
+        #if entropy:
+            #if topography and model_type == 'map':  # better resolution
+                #self.all_maps = self.all_post_maps()
+                #self.map_prob = self.compute_prob(np.round(self.all_maps).astype(int))
+                #self.map_ie = self.calculate_ie_masked(self.map_prob)
 
-                if len(self.lbs) != 0:
-                    self.lith_prob = self.compute_prob(np.round(self.lbs).astype(int))
-                    self.lb_ie = self.calculate_ie_masked(self.lith_prob)
+            #elif model_type == 'model':
+                #self.lbs, self.fbs = self.all_post_models()
 
-                if len(self.fbs) != 0:
-                    self.fault_prob = self.compute_prob(np.round(self.fbs).astype(int))
-                    self.fb_ie = self.calculate_ie_masked(self.fault_prob)
-            else:
-                print('if there is no topography defined, model_type must be set to model')
+                #if len(self.lbs) != 0:
+                    #self.lith_prob = self.compute_prob(np.round(self.lbs).astype(int))
+                    #self.lb_ie = self.calculate_ie_masked(self.lith_prob)
+
+                #if len(self.fbs) != 0:
+                    #self.fault_prob = self.compute_prob(np.round(self.fbs).astype(int))
+                    #self.fb_ie = self.calculate_ie_masked(self.fault_prob)
+            #else:
+                #print('if there is no topography defined, model_type must be set to model')
             # self.ie_total = self.calculate_ie_total()
 
     def _change_input_data(self, i):
@@ -89,42 +98,80 @@ class Posterior():
         # print("interp_data parameters changed.")
         return self.interp_data
 
-    def all_post_maps(self):
-        all_maps = []
-        for i in range(0, self.n_iter):
-            # print(i)
-            self._change_input_data(i)
-            # geomap = self.topography.calculate_geomap(interpdata = self.interp_data, plot=True)
-            geomap, faultmap = gp.compute_model_at(self.topography.surface_coordinates[0], self.interp_data)
-            all_maps.insert(i, geomap[0])
-        return all_maps
 
-    def all_post_models(self):
-        lbs = []
-        fbs = []
-        for i in range(0, self.n_iter):
+    #def all_post_maps(self):
+       #all_maps = []
+        #for i in range(0, self.n_iter):
+            ## print(i)
+            #self._change_input_data(i)
+            ## geomap = self.topography.calculate_geomap(interpdata = self.interp_data, plot=True)
+            #geomap, faultmap = gp.compute_model_at(self.topography.surface_coordinates[0], self.interp_data)
+            #all_maps.insert(i, geomap[0])
+        #return all_maps
+
+    #def all_post_models(self):
+        #lbs = []
+        #fbs = []
+        #for i in range(0, self.n_iter):
             # print(i)
-            self._change_input_data(i)
-            lith_block, fault_block = gp.compute_model(self.interp_data)
-            if lith_block.shape[0] != 0:
-                lbs.insert(i, lith_block[0])
-            if fault_block.shape[0] != 0:
-                n = 0
-                while n < fault_block.shape[0]:
+            #self._change_input_data(i)
+            #lith_block, fault_block = gp.compute_model(self.interp_data)
+            #if lith_block.shape[0] != 0:
+                #lbs.insert(i, lith_block[0])
+            #if fault_block.shape[0] != 0:
+                #n = 0
+                #while n < fault_block.shape[0]:
                     # print(fault_block.shape[0])
-                    fbs.insert(i, fault_block[n])
-                    n += 2
-        return lbs, fbs
+                    #fbs.insert(i, fault_block[n])
+                   # n += 2
+        #return lbs, fbs
 
-    def compute_prob(self, blocks):
-        lith_id = np.unique(blocks)
+    #def compute_prob(self, blocks):
+        #lith_id = np.unique(blocks)
         # lith_count = np.zeros_like(lith_blocks[0:len(lith_id)])
-        count = np.zeros((len(np.unique(blocks)), blocks.shape[1]))
-        for i, l_id in enumerate(lith_id):
-            count[i] = np.sum(blocks == l_id, axis=0)
-        prob = count / len(blocks)
+        #count = np.zeros((len(np.unique(blocks)), blocks.shape[1]))
+        #for i, l_id in enumerate(lith_id):
+            #count[i] = np.sum(blocks == l_id, axis=0)
+        #prob = count / len(blocks)
         # print(lith_prob)
-        return prob
+        #return prob
+
+    def compute_lith_prob_sequentially(self, model_type):
+        '''
+
+        Args:
+            model_type: 'map' to use resolution of topography and calculate a geological map,
+                        'model' to use geo_data.resolution
+
+        Returns:
+
+        '''
+        ### calculate first model to get lith_id and count
+        self._change_input_data(0)
+        if model_type == 'model':
+            lith_block, fault_block = gp.compute_model(self.interp_data)
+        elif model_type == 'map':
+            lith_block, fault_block = gp.compute_model_at(self.topography.surface_coordinates[0], self.interp_data)
+
+        ### this is by now only for first entry of lithblock
+        block = lith_block[0]
+        ### get number of different lithologies
+        lith_id = np.unique(np.round(block).astype(int))
+        ### create one array for every lithology to count frequency
+        count = np.zeros((len(lith_id), block.shape[0]))
+        ### loop through all other model realizations
+        for i in range(0, self.n_iter):
+            self._change_input_data(i)  # change input data and compute new block
+
+            if model_type == 'model':
+                lith_block, fault_block = gp.compute_model(self.interp_data)
+            elif model_type == 'map':
+                lith_block, fault_block = gp.compute_model_at(self.topography.surface_coordinates[0], self.interp_data)
+
+            block = np.round(lith_block[0]).astype(int)
+            for i, l_id in enumerate(lith_id):
+                count[i][block == l_id] += 1 #sum up frequency
+        return count / self.n_iter
 
     def calculate_ie_masked(self, prob):
         ie = np.zeros_like(prob[0])
@@ -171,30 +218,29 @@ class Posterior():
 
     def plot_map_ie(self, plot_data=False):
         if plot_data:
-            gp.plotting.plot_data(geo_data, direction='z')
+            gp.plotting.plot_data(self.geo_data, direction='z')
             dist = 12
         else:
             dist = 1
-
         im = plt.imshow(self.map_ie.reshape(self.topography.dem_zval.shape), extent=self.geo_data.extent[:4],
                         cmap='viridis')
-        self.add_colorbar(im, pad_fraction=dist)
+        self._add_colorbar(im, pad_fraction=dist)
         plt.title('Cell entropy of geological map')
 
     def plot_section_ie(self, block='lith', cell_number=10, direction='y', **kwargs):
         # for lithblock
         if block == 'lith':
             norm = matplotlib.colors.Normalize(self.lb_ie.min(), self.lb_ie.max())
-            gp.plotting.plot_section(geo_data, self.lb_ie, cell_number=cell_number, direction=direction, cmap='viridis',
+            gp.plotting.plot_section(self.geo_data, self.lb_ie, cell_number=cell_number, direction=direction, cmap='viridis',
                                      norm=norm, **kwargs)
-            # self.add_colorbar(im)
+            # self._add_colorbar(im)
         elif block == 'fault':
             norm = matplotlib.colors.Normalize(self.fb_ie.min(), self.fb_ie.max())
-            gp.plotting.plot_section(geo_data, self.fb_ie, cell_number=cell_number, direction=direction, cmap='viridis',
+            gp.plotting.plot_section(self.geo_data, self.fb_ie, cell_number=cell_number, direction=direction, cmap='viridis',
                                      norm=norm, **kwargs)
-            # self.add_colorbar(im)
+            # self._add_colorbar(im)
 
-    def add_colorbar(self, im, aspect=20, pad_fraction=1, **kwargs):
+    def _add_colorbar(self, im, aspect=20, pad_fraction=1, **kwargs):
         """Add a vertical color bar to an image plot. Source: stackoverflow"""
         divider = axes_grid1.make_axes_locatable(im.axes)
         width = axes_grid1.axes_size.AxesY(im.axes, aspect=2. / aspect)

@@ -899,7 +899,7 @@ class InputData(object):
                 # Check if there is already a df
                 formation_values = self.formations['value'].squeeze()
             else:
-                formation_values = np.arange(1, formation_order.shape[0]+1)
+                formation_values = np.arange(1, np.asarray(formation_order).shape[0]+1)
         else:
             self._formation_values_set = True
 

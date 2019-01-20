@@ -305,6 +305,7 @@ class PlotData2D(object):
         return plt.gcf()
 
     def plot_geomap(self, topography=None, geomap=None, plot_data=False, **kwargs):
+        #Todo if this is called before blocks are computed interp data changes?!?
         if plot_data:
             self.plot_data(direction='z', data_type='all')
 
