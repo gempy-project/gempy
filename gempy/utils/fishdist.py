@@ -9,7 +9,7 @@ import mplstereonet
 try:
     from spherecluster import VonMisesFisherMixture
 except ImportError:
-    print('for some purposes spherecluster package would be good to have')
+    print('for some purposes spherecluster package would be good (or I copy the respective file?!')
 
 """
     This file is part of gempy.
@@ -38,66 +38,110 @@ except ImportError:
 
 
 class vMF():
-    '''draws and visualizes samples from a von mises fisher distribution based on mean, concentration and number of
-    samples for stochastic simulations with orientation uncertainty'''
 
-    def __init__(self, mu=None, kappa=None, num_samples=100):
-        if mu is not None:#kappa and num_samples:
-            self.mu = mu
+    def __init__(self, mean=None, kappa=None):
+        """
+        Class to generate and/or load orientation data (azimuth and dip or pole vectors) based on the von-Mises-Fisher
+        distribution. Contains methods for visualization and parameter estimation.
+        Args:
+            mean:
+            kappa:
+        """
+
         if kappa:
             self.kappa = kappa
-        if num_samples:
-            self.num_samples = num_samples
-        # print(self.mu, self.kappa, self.num_samples)
-            self.samples_xyz = self.sample_vMF(self.mu, self.kappa, self.num_samples)
-            self.samples_azdip = self.cartesian2spherical(self.samples_xyz)
 
-    def sample_vMF(self, mu, kappa, num_samples):
-        """Generate num_samples N-dimensional samples from von Mises Fisher
-        distribution around center mu \in R^N with concentration kappa.
+        if mean is not None:
+            self.mean = mean
+
+
+
+    def sample(self, mean=None, kappa=None, num_samples=100, direct_output = False):
         """
-        dim = len(mu)
-        result = np.zeros((num_samples, dim))
-        for nn in range(num_samples):
-            # sample offset from center (on sphere) with spread kappa
-            w = self._sample_weight(kappa, dim)
+        Generates num_samples N-dimensional samples from von Mises Fisher
+        distribution around center mu in R^N with concentration kappa.
+        Args:
+            mean: mean direction, as np.
+            kappa: concentration parameter
+            num_samples:number of samples
+            direct_output: whether the sampled orientations should be returned directly as np.ndarray
 
-            # sample a point v on the unit sphere that's orthogonal to mu
-            v = self._sample_orthonormal_to(mu)
+        Returns: self.samples_xyz, self.samples_sph
 
-            # compute new point
-            result[nn, :] = v * np.sqrt(1. - w ** 2) + w * mu
-
-        return result
-
-    def _sample_weight(self, kappa, dim):
-        """Rejection sampling scheme for sampling distance from center on
-        surface of the sphere.
         """
-        dim = dim - 1  # since S^{n-1}
-        b = dim / (np.sqrt(4. * kappa ** 2 + dim ** 2) + 2 * kappa)
-        x = (1. - b) / (1. + b)
-        c = kappa * x + dim * np.log(1 - x ** 2)
+        if mean is not None:
+            if kappa is not None:
+                self.mean = mean
+                self.kappa = kappa
 
-        while True:
-            z = np.random.beta(dim / 2., dim / 2.)
-            w = (1. - (1. + b) * z) / (1. - (1. - b) * z)
-            u = np.random.uniform(low=0, high=1)
-            if kappa * w + dim * np.log(1. - x * w) - c >= np.log(u):
-                return w
+        self.num_samples = num_samples
 
-    def _sample_orthonormal_to(self, mu):
-        """Sample point on sphere orthogonal to mu."""
-        v = np.random.randn(mu.shape[0])
-        proj_mu_v = mu * np.dot(mu, v) / np.linalg.norm(mu)
-        orthto = v - proj_mu_v
-        return orthto / np.linalg.norm(orthto)
+        try:
+            self.samples_xyz = self._generate_samples()
+            self.samples_azdip = self._cartesian2spherical(self.samples_xyz)
 
-    #def plot(self):
-        #self.plot_vectors()
-        #self.plot_stereonet()
+            if direct_output is True:
+                return self.samples_xyz
 
-    def plot_vectors(self):
+        except AttributeError:
+            print('mean and kappa must be defined')
+
+
+    def add_orientation_data(self, orient):
+        """
+        Method to load manually orientation measurements (e.g. to plot stereonets or estimate concentration)
+        Args:
+            orient: np.ndarray with orientations, can be either azimuth and dip or pole vectors (normalized)
+
+        Returns: self.kappa, self.num_samples
+
+        """
+        try: # check if there are already samples loaded to not overwrite them
+            getattr(self, 'samples_xyz')
+            old_samples = self.samples_xyz
+        except AttributeError:
+            old_samples = None
+
+        assert type(orient) == np.ndarray
+
+        if orient.shape[1] == 2:
+            self.samples_xyz = self._spherical2cartesian(orient)
+            self.samples_azdip = orient
+
+        elif orient.shape[1] == 3:
+            self.samples_xyz = orient
+            self.samples_azdip = self._cartesian2spherical(orient)
+
+        else:
+            print('No.')
+
+        self.num_samples = orient.shape[0]
+
+        if old_samples is not None: #append new samples to old samples
+            self.samples_xyz = np.concatenate((old_samples,self.samples_xyz))
+            self.samples_azdip = self._cartesian2spherical(self.samples_xyz)
+
+    def estimate_vMF_params(self):
+        """
+
+        Returns:
+
+        """
+        vmf_soft = VonMisesFisherMixture(n_clusters=1, posterior_type='soft')
+        try:
+            vmf_soft.fit(self.samples_xyz)
+            self.kappa = vmf_soft.concentrations_[0]
+            self.mean = vmf_soft.cluster_centers_[0]
+            print('concentration parameter ', self.kappa, 'mean direction ', self.mean)
+        except AttributeError:
+            print('object has no orientations. Use add_orientations to load orientation data manually or sample from a vMF distribution with the .sample method')
+
+    def plot_samples_3D(self):
+        """
+
+        Returns:
+
+        """
         # this code is partially from somewhere (stackoverflow)
         fig = plt.figure(figsize=[5, 5])
         ax = fig.gca(projection='3d')
@@ -141,7 +185,7 @@ class vMF():
                                   color="darkgreen"))  # samples
         try:
             ax.add_artist(
-                Arrow3D([0, self.mu[0]], [0, self.mu[1]], [0, self.mu[2]], mutation_scale=20, lw=1, arrowstyle="-|>",
+                Arrow3D([0, self.mean[0]], [0, self.mean[1]], [0, self.mean[2]], mutation_scale=20, lw=1, arrowstyle="-|>",
                         color="darkorange"))  # mean
         except AttributeError:
             pass
@@ -149,12 +193,20 @@ class vMF():
         return fig
 
     def plot_stereonet(self, poles=True):
+        """
+
+        Args:
+            poles:
+
+        Returns:
+
+        """
         fig, ax = mplstereonet.subplots(figsize=(5, 5))
         if poles is True:
             for point in self.samples_azdip:
                 ax.pole(point[0] - 90, point[1], color='k', linewidth=1, marker='v', markersize=6,label=('samples'))
             try:
-                ax.pole(self.mu[0] - 90, self.mu[1], color='r', markersize=6, label='mean')
+                ax.pole(self.mean[0] - 90, self.mean[1], color='r', markersize=6, label='mean')
             except AttributeError:
                 pass
         ax.grid()
@@ -165,8 +217,61 @@ class vMF():
             pass
         #return fig
 
-    def cartesian2spherical(self, xyz):
-        '''conversion of cartesian to spherical coordinates'''
+    def _generate_samples(self):
+
+        dim = len(self.mean)
+        result = np.zeros((self.num_samples, dim))
+        for nn in range(self.num_samples):
+            # sample offset from center (on sphere) with spread kappa
+            w = self._sample_weight(dim=dim)
+
+            # sample a point v on the unit sphere that's orthogonal to mu
+            v = self._sample_orthonormal_to()
+
+            # compute new point
+            result[nn, :] = v * np.sqrt(1. - w ** 2) + w * self.mean
+
+        return result
+
+    def _sample_weight(self, dim):
+        """
+        Rejection sampling scheme for sampling distance from center on
+        surface of the sphere.
+        """
+        dim = dim - 1  # since S^{n-1}
+        b = dim / (np.sqrt(4. * self.kappa ** 2 + dim ** 2) + 2 * self.kappa)
+        x = (1. - b) / (1. + b)
+        c = self.kappa * x + dim * np.log(1 - x ** 2)
+
+        while True:
+            z = np.random.beta(dim / 2., dim / 2.)
+            w = (1. - (1. + b) * z) / (1. - (1. - b) * z)
+            u = np.random.uniform(low=0, high=1)
+            if self.kappa * w + dim * np.log(1. - x * w) - c >= np.log(u):
+                return w
+
+    def _sample_orthonormal_to(self):
+        """
+        Sample point on sphere orthogonal to mu.
+        """
+        v = np.random.randn(self.mean.shape[0])
+        proj_mu_v = self.mean * np.dot(self.mean, v) / np.linalg.norm(self.mean)
+        orthto = v - proj_mu_v
+        return orthto / np.linalg.norm(orthto)
+
+    #def plot(self):
+        #self.plot_vectors()
+        #self.plot_stereonet()
+
+    def _cartesian2spherical(self, xyz):
+        """
+
+        Args:
+            xyz:
+
+        Returns:
+
+        """
         if xyz.ndim == 1:
             theta = np.rad2deg(np.nan_to_num(np.arccos(xyz[2])))
             phi = np.round(np.rad2deg(np.nan_to_num(np.arctan2(xyz[0], xyz[1]))), 0)
@@ -174,7 +279,7 @@ class vMF():
                 phi += 360
             return np.array([phi, theta])
         else:
-            a = np.empty(shape=(xyz.shape[0], 2))
+            a = np.empty((xyz.shape[0], 2))
             theta = np.rad2deg(np.nan_to_num(np.arccos(xyz[:, 2])))
             # theta = theta*(-1)
             phi = np.round(np.rad2deg(np.nan_to_num(np.arctan2(xyz[:, 0], xyz[:, 1]))), 0)
@@ -183,7 +288,15 @@ class vMF():
             a[:, 1] = theta
             return a
 
-    def spherical2cartesian(self, orient):
+    def _spherical2cartesian(self, orient):
+        """
+
+        Args:
+            orient:
+
+        Returns:
+
+        """
         azimuth = orient[:, 0]
         dip = orient[:, 1]
         xyz = np.empty((orient.shape[0], 3))
@@ -193,27 +306,6 @@ class vMF():
         return xyz
 
 
-    def add_orientations(self, orient):
-        '''
 
-        Args:
-            orient: np.ndarray with orientations, can be either azimuth and dip or pole vectors (normed)
 
-        Returns: self.kappa, self.num_samples
-
-        '''
-        if orient.shape[1] == 2:
-            self.samples_xyz = self.spherical2cartesian(orient)
-            self.samples_azdip = orient
-
-        elif orient.shape[1] == 3:
-            self.samples_xyz = orient
-            self.samples_azdip = self.cartesian2spherical(orient)
-        self.num_samples = orient.shape[0]
-
-    def estimate_concentration_param(self):
-        vmf_soft = VonMisesFisherMixture(n_clusters=1, posterior_type='soft')
-        vmf_soft.fit(self.samples_xyz)
-        self.kappa = vmf_soft.concentrations_[0]
-        print('concentration parameter is approximately ', self.kappa)
 
