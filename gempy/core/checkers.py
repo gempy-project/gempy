@@ -1,6 +1,12 @@
 # TODO
 # - Check the basement layer is not in in Interfaces and Orientations
 
+def check_kriging():
+    # TODO check range and covariance are not 0
+    pass
+
+def check_faults_are_set():
+    pass
 
 def check_fault_relations(self):
     # Method to check that only older df offset newer ones?

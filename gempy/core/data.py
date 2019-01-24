@@ -461,21 +461,21 @@ class Formations(object):
         self.df.reset_index(inplace=True, drop=True)
         return True
 
-    def set_formation_names_pro(self, list_names, update_df=True):
+    def set_formation_names_pro(self, list_names: list, update_df=True):
         """
-             Method to set the names of the formations in order. This applies in the formation column of the df
-             Args:
-                 list_names (list[str]):
+         Method to set the names of the formations in order. This applies in the formation column of the df
+         Args:
+             list_names (list[str]):
 
-             Returns:
-                 None
-             """
+         Returns:
+             None
+         """
         if type(list_names) is list or type(list_names) is np.ndarray:
             list_names = np.asarray(list_names)
-        elif isinstance(list_names, Interfaces):
-            list_names = np.asarray(list_names.df['formation'].unique())
+        #elif isinstance(list_names, Interfaces):
+        #    list_names = np.asarray(list_names.df['formation'].unique())
         else:
-            raise AttributeError('list_names must be either array_like type or Interfaces')
+            raise AttributeError('list_names must be either array_like type')
 
         self.df['formation'] = pn.Categorical(list_names)
         # Changing the name of the series is the only way to mutate the series object from formations
@@ -486,13 +486,20 @@ class Formations(object):
             self.update_sequential_pile()
         return True
 
+    def set_formation_names_from_interfaces(self, interfaces):
+        self.set_formation_names_pro(interfaces.df['surface'].unique())
+
     def add_formation(self, formation_list: Union[pn.DataFrame, list], update_df=True):
         formation_list = np.atleast_1d(formation_list)
+
+        # Remove from the list categories that already exist
+        formation_list = formation_list[~np.in1d(formation_list, self.df['formation'].cat.categories)]
+
         self.df['formation'].cat.add_categories(formation_list, inplace=True)
         for c in formation_list:
             idx = self.df.last_valid_index()
             if idx is None:
-                idx = 0
+                idx = -1
             self.df.loc[idx + 1, 'formation'] = c
         if update_df is True:
             self.map_series()
@@ -576,7 +583,14 @@ class Formations(object):
 
 # set_series
     def map_series(self, mapping_object: Union[dict, pn.Categorical] = None):
+        """
 
+        Args:
+            mapping_object:
+
+        Returns:
+
+        """
         if mapping_object is None:
             # If none is passed and series exist we will take the name of the first series as a default
             mapping_object = {self.series.df.index.values[0]: self.df['formation']}
@@ -593,7 +607,6 @@ class Formations(object):
             # TODO does series_mapping have to be in self?
             new_series_mapping = pn.DataFrame([pn.Categorical(s, self.series.df.index)],
                                                f, columns=['series'])
-
 
             # TODO delete this since it is outside
             #self.df['series'] = self.df['formation'].map(self.series_mapping['series'])
@@ -781,7 +794,6 @@ class Data(object):
         # order_series
         self.df['order_series'] = np.nan
 
-
     @staticmethod
     def read_data(file_path, **kwargs):
         """
@@ -811,12 +823,14 @@ class Data(object):
                             ascending=True, kind='mergesort',
                             inplace=True)
 
-    def map_data_from_series(self, series, property:str):
+    def map_data_from_series(self, series, property:str, idx=None):
         """
 
         """
+        if idx is None:
+            idx = self.df.index
 
-        self.df[property] = self.df['series'].map(series.df[property])
+        self.df.loc[idx, property] = self.df['series'].map(series.df[property])
 
     def add_series_categories_from_series(self, series):
         self.df['series'].cat.set_categories(series.df.index, inplace=True)
@@ -831,20 +845,24 @@ class Data(object):
     #     # Pick data.categories_df without the columns that otherwise will repeat
     #     return self.df.drop(select_name, axis=1)
 
-    def map_data_from_formations(self, formations, property:str):
+    def map_data_from_formations(self, formations, property:str, idx=None):
         """Map properties of formations---series, id, values--- into a data df"""
+
+        if idx is None:
+            idx = self.df.index
+
         if property is 'series':
-            if formations.df[~formations.df['isBasement']]['series'].isna().sum() != 0:
+            if formations.df.loc[~formations.df['isBasement']]['series'].isna().sum() != 0:
                 raise AttributeError('Formations does not have the correspondent series assigned. See'
                                      'Formations.map_series_from_series.')
 
-        self.df[property] = self.df['surface'].map(formations.df.set_index('formation')[property])
+        self.df.loc[idx, property] = self.df.loc[idx, 'surface'].map(formations.df.set_index('formation')[property])
 
     def add_formation_categories_from_formations(self, formations):
         self.df['formation'].cat.set_categories(formations.df['formation'].cat.categories, inplace=True)
         return True
 
-    def map_data_from_faults(self, faults):
+    def map_data_from_faults(self, faults, idx=None):
         """
         Method to map a df object into the data object on formations. Either if the formation is fault or not
         Args:
@@ -854,10 +872,13 @@ class Data(object):
             pandas.core.frame.DataFrame: Data frame with the raw data
 
         """
+        if idx is None:
+            idx = self.df.index
+
         if any(self.df['series'].isna()):
             warnings.warn('Some points do not have series/fault')
 
-        self.df['isFault'] = self.df['series'].map(faults.df['isFault'])
+        self.df.loc[idx, 'isFault'] = self.df.loc[idx, 'series'].map(faults.df['isFault'])
 
     def set_dypes_DEP(self):
         """
@@ -891,8 +912,9 @@ class Interfaces(Data):
         super().__init__(formations)
         self._columns_i_all = ['X', 'Y', 'Z', 'formation', 'series', 'X_std', 'Y_std', 'Z_std',
                                'order_series', 'formation_number']
-        self._columns_i_1 = ['X', 'Y', 'Z', 'formation', 'series', 'id', 'order_series', 'isFault']
-        self._columns_i_num = ['X', 'Y', 'Z']
+        self._columns_i_1 = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'formation', 'series', 'id',
+                             'order_series', 'isFault']
+        self._columns_i_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r']
         #self.df = pn.DataFrame(columns=self._columns_i_1)
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
             self.df: pn.DataFrame
@@ -908,7 +930,7 @@ class Interfaces(Data):
 
     def set_interfaces(self, coord: np.ndarray = None, surface: list = None):
         if coord is None or surface is None:
-            self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'surface'])
+            self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'surface'])
 
         else:
             #values = np.hstack([np.random.rand(6,3), np.array(surface).reshape(-1, 1)])
@@ -921,7 +943,7 @@ class Interfaces(Data):
         self.df['surface'].cat.set_categories(self.formations.df['formation'].cat.categories, inplace=True)
 
         # Choose types
-      #  self.df[self._columns_i_num] = self.df[self._columns_i_num].astype(float)
+        #  self.df[self._columns_i_num] = self.df[self._columns_i_num].astype(float)
         self.set_dependent_properties()
         assert ~self.df['surface'].isna().any(), 'Some of the formation passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
@@ -940,7 +962,7 @@ class Interfaces(Data):
             if idx is None:
                 idx = 0
 
-        self.df.loc[idx, ['X', 'Y', 'Z', 'formation']] = np.array([X, Y, Z, surface])
+        self.df.loc[idx, ['X', 'Y', 'Z', 'surface']] = np.array([X, Y, Z, surface])
 
     def del_interface(self, idx):
 
@@ -971,7 +993,7 @@ class Interfaces(Data):
         # Selecting the properties passed to be modified
         self.df.loc[idx, list(kwargs.keys())] = values
 
-    def read_interfaces(self, file_path, debug=False, inplace=True, append=False, **kwargs):
+    def read_interfaces(self, file_path, debug=False, inplace=False, append=False, kwargs_pandas:dict = {}, **kwargs,):
         """
         Read tabular using pandas tools and if inplace set it properly to the Interace object
         Args:
@@ -987,7 +1009,18 @@ class Interfaces(Data):
         if 'sep' not in kwargs:
             kwargs['sep'] = ','
 
-        table = pn.read_table(file_path, **kwargs)
+        coord_x_name = kwargs.get('coord_x_name', "X")
+        coord_y_name = kwargs.get('coord_y_name', "Y")
+        coord_z_name = kwargs.get('coord_z_name', "Z")
+        surface_name = kwargs.get('surface_name', "formation")
+        if 'sep' not in kwargs_pandas:
+            kwargs_pandas['sep'] = ','
+
+        table = pn.read_table(file_path, **kwargs_pandas)
+
+        if 'update_formations' in kwargs:
+            if kwargs['update_formations'] is True:
+                self.formations.add_formation(table[surface_name].unique())
 
         if debug is True:
             print('Debugging activated. Changes won\'t be saved.')
@@ -999,13 +1032,12 @@ class Interfaces(Data):
             if inplace:
                 c = np.array(self._columns_i_1)
                 interfaces_read = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
-                self.set_interfaces_df(interfaces_read, append=append)
-                self.df['formation'] = self.df['formation'].astype('category')
-
+                self.set_interfaces(interfaces_read[[coord_x_name, coord_y_name, coord_z_name]],
+                                    surface=interfaces_read[surface_name])
             else:
                 return table
 
-    def set_interfaces_df(self, interf_dataframe, append=False):
+    def set_interfaces_df_DEP(self, interf_dataframe, append=False):
         """
         Method to change or append a Dataframe to interfaces in place. A equivalent Pandas Dataframe with
         ['X', 'Y', 'Z', 'formation'] has to be passed.
@@ -1043,7 +1075,7 @@ class Interfaces(Data):
         if not self.df.index.is_unique:
             self.df.reset_index(drop=True, inplace=True)
 
-    def set_default_interface(self, formation: Formations, grid: GridClass):
+    def set_default_interface_TO_BE_UPDATED(self, formation: Formations, grid: GridClass):
         """
         Set a default point at the middle of the extent area to be able to start making the model
         Args:
@@ -1095,53 +1127,184 @@ class Orientations(Data):
          the orientations of the model
     """
 
-    def __init__(self, formation: Formations):
+    def __init__(self, formation: Formations, coord=None, pole_vector=None, orientation=None, surface=None):
         super().__init__(formation)
         self._columns_o_all = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
                                'formation', 'series', 'id', 'order_series', 'formation_number']
-        self._columns_o_1 = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity', 'formation',
-                             'series', 'id', 'order_series', 'isFault']
-        self._columns_o_num = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
-        self.df = pn.DataFrame(columns=self._columns_o_1)
-        self.df[self._columns_o_num] = self.df[self._columns_o_num].astype(float)
-        self.df.itype = 'orientations'
+        self._columns_o_1 = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
+                             'surface', 'series', 'id', 'order_series', 'isFault']
+        self._columns_o_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
+        if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
+            self.df: pn.DataFrame
 
-        self.calculate_gradient()
+        self.set_orientations(coord, pole_vector, orientation, surface)
 
-    def calculate_gradient(self):
+
+     #   self.df = pn.DataFrame(columns=self._columns_o_1)
+     #   self.df[self._columns_o_num] = self.df[self._columns_o_num].astype(float)
+     #   self.df.itype = 'orientations'
+
+     #   self.calculate_gradient()
+
+    def set_orientations(self, coord: np.ndarray = None, pole_vector: np.ndarray = None,
+                         orientation: np.ndarray = None, surface: list = None ):
+        """
+        Pole vector has priority over orientation
+        Args:
+            coord:
+            pole_vector:
+            orientation:
+            surface:
+
+        Returns:
+
+        """
+
+        # Check that the minimum parameters are passed. Otherwise create an empty df
+        if coord is None or ((pole_vector is None) and (orientation is None)) or surface is None:
+            self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'G_x', 'G_y', 'G_z', 'dip',
+                                            'azimuth', 'polarity', 'surface'])
+        else:
+            self.df = pn.DataFrame(coord, columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r'], dtype=float)
+            self.df['surface'] = surface
+            if pole_vector is not None:
+                self.df['G_x'] = pole_vector[:, 0]
+                self.df['G_y'] = pole_vector[:, 1]
+                self.df['G_z'] = pole_vector[:, 2]
+                self.calculate_orientations()
+
+                if orientation is not None:
+                    warnings.warn('If pole_vector and orientation are passed pole_vector is used/')
+            else:
+                if orientation is not None:
+                    self.df['azimuth'] = orientation[:, 0]
+                    self.df['dip'] = orientation[:, 1]
+                    self.df['polarity'] = orientation[:, 2]
+                    self.calculate_gradient()
+                else:
+                    raise AttributeError('At least pole_vector or orientation should have been passed to reach'
+                                         'this point. Check previous condition')
+        # Choose types
+        #  self.df[self._columns_i_num] = self.df[self._columns_i_num].astype(float)
+        self.set_dependent_properties()
+        assert ~self.df['surface'].isna().any(), 'Some of the formation passed does not exist in the Formation' \
+                                                 'object. %s' % self.df['surface'][self.df['surface'].isna()]
+
+    def add_orientation(self, X, Y, Z, surface, pole_vector: np.ndarray = None,
+                        orientation: np.ndarray = None, idx=None):
+        if pole_vector is None and orientation is None:
+            raise AttributeError('Either pole_vector or orientation must have a value. If both are passed pole_vector'
+                                 'has preference')
+
+        if idx is None:
+            idx = self.df.last_valid_index() + 1
+            if idx is None:
+                idx = 0
+        if pole_vector is not None:
+            self.df.loc[idx, 'X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'surface'] = np.array([X, Y, Z, *pole_vector, surface])
+            self.calculate_orientations(idx)
+
+            if orientation is not None:
+                warnings.warn('If pole_vector and orientation are passed pole_vector is used/')
+        else:
+            if orientation is not None:
+                self.df.loc[idx, 'X', 'Y', 'Z', 'azimuth', 'dip', 'polarioty', 'surface'] = np.array(
+                    [X, Y, Z, *orientation, surface])
+                self.calculate_gradient(idx)
+            else:
+                raise AttributeError('At least pole_vector or orientation should have been passed to reach'
+                                     'this point. Check previous condition')
+
+    def del_orientation(self, idx):
+
+        self.df.drop(idx, inplace=True)
+
+    def modify_orientation(self, idx, **kwargs):
+        """
+         Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
+
+         Args:
+             index: dataframe index of the orientation point
+             **kwargs: X, Y, Z, 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity', 'surface' (int or float), surface
+
+         Returns:
+             None
+         """
+
+        # Check idx exist in the df
+        assert self.df.index.isin(np.atleast_1d(idx)).all(), 'Indices must exist in the dataframe to be modified.'
+
+        # Check the properties are valid
+        assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip',
+                                             'azimuth', 'polarity', 'surface']).all(),\
+            'Properties must be one or more of the following: \'X\', \'Y\', \'Z\', \'G_x\', \'G_y\', \'G_z\', \'dip,\''\
+            '\'azimuth\', \'polarity\', \'surface\''
+        # stack properties values
+        values = np.vstack(list(kwargs.values())).T
+
+        # Selecting the properties passed to be modified
+        self.df.loc[idx, list(kwargs.keys())] = values
+
+        if np.isin(list(kwargs.keys()), ['G_x', 'G_y', 'G_z']).any():
+            self.calculate_orientations(idx)
+        else:
+            if np.isin(list(kwargs.keys()), ['azimuth', 'dip', 'polarity']).any():
+                self.calculate_gradient(idx)
+
+    def calculate_gradient(self, idx=None):
         """
         Calculate the gradient vector of module 1 given dip and azimuth to be able to plot the orientations
         """
+        # TODO @Elisa is this already the last version?
+        if idx is None:
+            self.df['G_x'] = np.sin(np.deg2rad(self.df["dip"].astype('float'))) * \
+                             np.sin(np.deg2rad(self.df["azimuth"].astype('float'))) * \
+                             self.df["polarity"].astype('float') + 1e-12
+            self.df['G_y'] = np.sin(np.deg2rad(self.df["dip"].astype('float'))) * \
+                             np.cos(np.deg2rad(self.df["azimuth"].astype('float'))) * \
+                             self.df["polarity"].astype('float') + 1e-12
+            self.df['G_z'] = np.cos(np.deg2rad(self.df["dip"].astype('float'))) * \
+                             self.df["polarity"].astype('float') + 1e-12
+        else:
+            self.df.loc[idx, 'G_x'] = np.sin(np.deg2rad(self.df.loc[idx, "dip"].astype('float'))) * \
+                                      np.sin(np.deg2rad(self.df.loc[idx, "azimuth"].astype('float'))) * \
+                                      self.df.loc[idx, "polarity"].astype('float') + 1e-12
+            self.df.loc[idx, 'G_y'] = np.sin(np.deg2rad(self.df.loc[idx, "dip"].astype('float'))) * \
+                                      np.cos(np.deg2rad(self.df.loc[idx, "azimuth"].astype('float'))) * \
+                                      self.df.loc[idx, "polarity"].astype('float') + 1e-12
+            self.df.loc[idx, 'G_z'] = np.cos(np.deg2rad(self.df.loc[idx, "dip"].astype('float'))) * \
+                                      self.df.loc[idx, "polarity"].astype('float') + 1e-12
 
-        self.df['G_x'] = np.sin(np.deg2rad(self.df["dip"].astype('float'))) * \
-                         np.sin(np.deg2rad(self.df["azimuth"].astype('float'))) * \
-                         self.df["polarity"].astype('float') + 1e-12
-        self.df['G_y'] = np.sin(np.deg2rad(self.df["dip"].astype('float'))) * \
-                         np.cos(np.deg2rad(self.df["azimuth"].astype('float'))) * \
-                         self.df["polarity"].astype('float') + 1e-12
-        self.df['G_z'] = np.cos(np.deg2rad(self.df["dip"].astype('float'))) * \
-                         self.df["polarity"].astype('float') + 1e-12
-
-    def calculate_orientations(self):
+    def calculate_orientations(self, idx=None):
         """
         Calculate and update the orientation data (azimuth and dip) from gradients in the data frame.
-        """
 
-        self.df["dip"] = np.rad2deg(
-            np.nan_to_num(np.arccos(self.df["G_z"] / self.df["polarity"])))
-        # TODO if this way to compute azimuth breaks there is in rgeomod=kml_to_plane line 170 a good way to do it
-        self.df["azimuth"] = np.rad2deg(
-            np.nan_to_num(np.arctan(self.df["G_x"] / self.df["G_y"])))
-        self.df['azimuth'][
-            (self.df['G_x'] < 0).values * (self.df['G_y'] >= 0).values] += 360
-        self.df['azimuth'][(self.df['G_y'] < 0).values] += 180
-        self.df['azimuth'][
-            (self.df['G_x'] > 0).values * (self.df['G_y'] == 0).values] = 90
-        self.df['azimuth'][
-            (self.df['G_x'] < 0).values * (self.df['G_y'] == 0).values] = 270
+        Authors: Elisa Heim, Miguel de la Varga
+        """
+        if idx is None:
+            self.df['polarity'] = 1
+            self.df["dip"] = np.rad2deg(np.nan_to_num(np.arccos(self.df["G_z"] / self.df["polarity"])))
+
+            self.df["azimuth"] = np.rad2deg(np.nan_to_num(np.arctan2(self.df["G_x"] / self.df["polarity"],
+                                                                     self.df["G_y"] / self.df["polarity"])))
+            self.df["azimuth"][self.df["azimuth"] < 0] += 360  # shift values from [-pi, 0] to [pi,2*pi]
+            self.df["azimuth"][self.df["dip"] < 0.001] = 0  # because if dip is zero azimuth is undefined
+
+        else:
+
+            self.df.loc[idx, 'polarity'] = 1
+            self.df.loc[idx, "dip"] = np.rad2deg(np.nan_to_num(np.arccos(self.df.loc[idx, "G_z"] /
+                                                                         self.df.loc[idx, "polarity"])))
+
+            self.df.loc[idx, "azimuth"] = np.rad2deg(np.nan_to_num(
+                np.arctan2(self.df.loc[idx, "G_x"] / self.df.loc[idx, "polarity"],
+                           self.df.loc[idx, "G_y"] / self.df.loc[idx, "polarity"])))
+            self.df.loc[idx, "azimuth"][self.df.loc[idx, "azimuth"] < 0] += 360  # shift values from [-pi, 0] to [pi,2*pi]
+            self.df.loc[idx, "azimuth"][self.df.loc[idx, "dip"] < 0.001] = 0  # because if dip is zero azimuth is undefined
 
     @staticmethod
     def create_orientation_from_interface(interfaces: Interfaces, indices):
+        # TODO test!!!!
         """
         Create and set orientations from at least 3 points categories_df
         Args:
@@ -1157,6 +1320,7 @@ class Orientations(Data):
         return np.array([*center, *orientation, *normal])
 
     def set_default_orientation(self, grid: GridClass):
+        # TODO: TEST
         """
         Set a default point at the middle of the extent area to be able to start making the model
         """
@@ -1174,7 +1338,7 @@ class Orientations(Data):
 
         self.set_orientations_df(ori)
 
-    def read_orientations(self, filepath, debug=False, inplace=True, append=False, **kwargs):
+    def read_orientations(self, filepath, debug=False, inplace=True, append=False, kwargs_pandas = {}, **kwargs):
         """
         Read tabular using pandas tools and if inplace set it properly to the Orientations object
         Args:
@@ -1187,13 +1351,30 @@ class Orientations(Data):
         Returns:
 
         """
-        if 'sep' not in kwargs:
-            kwargs['sep'] = ','
+        if 'sep' not in kwargs_pandas:
+            kwargs_pandas['sep'] = ','
 
-        table = pn.read_table(filepath, **kwargs)
+        coord_x_name = kwargs.get('coord_x_name', "X")
+        coord_y_name = kwargs.get('coord_y_name', "Y")
+        coord_z_name = kwargs.get('coord_z_name', "Z")
+        G_x_name = kwargs.get('G_x_name', 'G_x')
+        G_y_name = kwargs.get('G_y_name', 'G_y')
+        G_z_name = kwargs.get('G_z_name', 'G_z')
+        azimuth_name = kwargs.get('azimuth_name', 'azimuth')
+        dip_name = kwargs.get('dip_name', 'dip')
+        polarity_name = kwargs.get('polarity_name', 'polarity')
+        surface_name = kwargs.get('surface_name', "formation")
+
+        table = pn.read_table(filepath, **kwargs_pandas)
+
+        if 'update_formations' in kwargs:
+            if kwargs['update_formations'] is True:
+                self.formations.add_formation(table[surface_name].unique())
+
         if debug is True:
             print('Debugging activated. Changes won\'t be saved.')
             return table
+
         else:
             assert set(['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation']).issubset(table.columns), \
                 "One or more columns do not match with the expected values " + str(table.columns)
@@ -1202,14 +1383,14 @@ class Orientations(Data):
                 # self.categories_df[table.columns] = table
                 c = np.array(self._columns_o_1)
                 orientations_read = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
-                self.set_orientations_df(orientations_read, append=append)
-                # self.set_interfaces(interfaces_read, append=append)
-                self.df['formation'] = self.df['formation'].astype('category')
-
+                self.set_orientations(coord=orientations_read[[coord_x_name, coord_y_name, coord_z_name]],
+                                      pole_vector=orientations_read[[azimuth_name, dip_name, polarity_name]].values,
+                                      orientation=orientations_read[[G_x_name, G_y_name, G_z_name]].values,
+                                      surface=orientations_read[surface_name])
             else:
                 return table
 
-    def set_orientations_df(self, foliat_dataframe, append=False, order_table=True):
+    def set_orientations_df_DEP(self, foliat_dataframe, append=False, order_table=True):
         """
           Method to change or append a Dataframe to orientations in place.  A equivalent Pandas Dataframe with
         ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation'] has to be passed.
@@ -1239,9 +1420,9 @@ class Orientations(Data):
             None
         """
 
-        orientation_num = self.df.groupby('formation_number').cumcount()
+        orientation_num = self.df.groupby('id').cumcount()
         foli_l = [r'${\bf{x}}_{\beta \,{\bf{' + str(f) + '}},' + str(p) + '}$'
-                  for p, f in zip(orientation_num, self.df['formation_number'])]
+                  for p, f in zip(orientation_num, self.df['id'])]
 
         self.df['annotations'] = foli_l
 
@@ -1270,6 +1451,9 @@ def get_orientation(normal):
     # if dip is just straight up vertical
     elif normal[0] == 0 and normal[1] == 0:
         dip_direction = 0
+
+    else:
+        raise ValueError('The values of normal are not valid.')
 
     if -90 < dip < 90:
         polarity = 1
@@ -1332,7 +1516,7 @@ class RescaledData(object):
     """
 
     def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: GridClass,
-                 rescaling_factor: float = None, centers: pn.DataFrame = None):
+                 rescaling_factor: float = None, centers: Union[list, pn.DataFrame] = None):
 
         self.interfaces = interfaces
         self.orientations = orientations
@@ -1371,7 +1555,8 @@ class RescaledData(object):
 
     def get_rescaled_interfaces(self):
         """
-        Get the rescaled coordinates. return an image of the interface and orientations categories_df with the X_r.. columns
+        Get the rescaled coordinates. return an image of the interface and orientations categories_df with the X_r..
+         columns
         Returns:
 
         """
@@ -1381,7 +1566,8 @@ class RescaledData(object):
 
     def get_rescaled_orientations(self):
         """
-        Get the rescaled coordinates. return an image of the interface and orientations categories_df with the X_r.. columns
+        Get the rescaled coordinates. return an image of the interface and orientations categories_df with the X_r..
+         columns
         Returns:
 
         """
@@ -1469,7 +1655,7 @@ class RescaledData(object):
 
     @staticmethod
     @_setdoc([compute_data_center.__doc__, compute_rescaling_factor.__doc__])
-    def rescale_interfaces(interfaces, rescaling_factor, centers):
+    def rescale_interfaces(interfaces, rescaling_factor, centers, idx: list = None):
         """
         Rescale interfaces
         Args:
@@ -1481,20 +1667,31 @@ class RescaledData(object):
 
         """
 
+        if idx is None:
+            idx = interfaces.df.index
+
         # Change the coordinates of interfaces
-        new_coord_interfaces = (interfaces.df[['X', 'Y', 'Z']] -
+        new_coord_interfaces = (interfaces.df.loc[idx, ['X', 'Y', 'Z']] -
                                 centers) / rescaling_factor + 0.5001
+
+        new_coord_interfaces.rename(columns={"X": "X_r", "Y": "Y_r", "Z": 'Z_r'}, inplace=True)
         return new_coord_interfaces
 
-    def set_rescaled_interfaces(self):
+    def set_rescaled_interfaces(self, idx: list = None):
         """
         Set the rescaled coordinates into the interfaces categories_df
         Returns:
 
         """
+        if idx is None:
+            idx = self.interfaces.df.index
+            # if idx.empty:
+            #     idx = 0
 
-        self.interfaces.df[['X_r', 'Y_r', 'Z_r']] = self.rescale_interfaces(self.interfaces, self.rescaling_factor,
-                                                                            self.centers)
+        self.interfaces.df.loc[idx, ['X_r', 'Y_r', 'Z_r']] = self.rescale_interfaces(self.interfaces,
+                                                                                     self.rescaling_factor,
+                                                                                     self.centers, idx=idx)
+
         return True
 
     def rescale_data_point(self, data_points: np.ndarray, rescaling_factor=None, centers=None):
@@ -1509,7 +1706,7 @@ class RescaledData(object):
 
     @staticmethod
     @_setdoc([compute_data_center.__doc__, compute_rescaling_factor.__doc__])
-    def rescale_orientations(orientations, rescaling_factor, centers):
+    def rescale_orientations(orientations, rescaling_factor, centers, idx: list = None):
         """
         Rescale orientations
         Args:
@@ -1520,22 +1717,33 @@ class RescaledData(object):
         Returns:
 
         """
+        if idx is None:
+            idx = orientations.df.index
 
+            # if idx.empty:
+            #     idx = 0
         # Change the coordinates of orientations
-        new_coord_orientations = (orientations.df[['X', 'Y', 'Z']] -
+        new_coord_orientations = (orientations.df.loc[idx, ['X', 'Y', 'Z']] -
                                   centers) / rescaling_factor + 0.5001
+
+        new_coord_orientations.rename(columns={"X": "X_r", "Y": "Y_r", "Z": 'Z_r'}, inplace=True)
+
         return new_coord_orientations
 
-    def set_rescaled_orientations(self):
+    def set_rescaled_orientations(self, idx: list = None):
         """
         Set the rescaled coordinates into the orientations categories_df
         Returns:
 
         """
 
-        self.orientations.df[['X_r', 'Y_r', 'Z_r']] = self.rescale_orientations(self.orientations,
-                                                                                self.rescaling_factor,
-                                                                                self.centers)
+        if idx is None:
+            idx = self.orientations.df.index
+
+        self.orientations.df.loc[idx, ['X_r', 'Y_r', 'Z_r']] = self.rescale_orientations(self.orientations,
+                                                                                         self.rescaling_factor,
+                                                                                         self.centers,
+                                                                                         idx=idx)
         return True
 
     @staticmethod
@@ -1814,6 +2022,10 @@ class AdditionalData(Structure, RescaledData):
 
     def get_kriging_parameters(self):
         return self.kriging_data
+
+    def modify_kriging_parameters(self, **properties):
+        d = pn.DataFrame(properties).T
+        self.kriging_data.loc[d.index, 'values'] = d
 
 
 class Solution(object):

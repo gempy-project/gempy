@@ -305,17 +305,8 @@ def get_extent(model: Model):
 
 # region Point-Orientation functionality
 @_setdoc([Interfaces.read_interfaces.__doc__, Orientations.read_orientations.__doc__])
-def read_data(model: Model, path_i=None, path_o=None, **kwargs):
-
-    if path_i:
-        model.interfaces.read_interfaces(path_i, inplace=True, **kwargs)
-    if path_o:
-        model.orientations.read_orientations(path_o, inplace=True, **kwargs)
-
-    model.formations.set_formation_names_pro(model.interfaces)
-
-    model.rescaling.rescale_data()
-    update_additional_data(model)
+def read_data(geo_model: Model, path_i=None, path_o=None, **kwargs):
+    geo_model.read_data(path_i, path_o, **kwargs)
 
 
 def set_interfaces(geo_data, interf_dataframe, append=False):
@@ -697,12 +688,15 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
     """
     warnings.warn("create_data will get deprecated in the next version of gempy. It still exist only to keep"
                   "the behaviour equal to older version. Use init_data.", FutureWarning)
-    return init_data(extent=extent, resolution=resolution, project_name=project_name, **kwargs)
+
+    geo_model = create_model(project_name)
+    return init_data(geo_model, extent=extent, resolution=resolution, project_name=project_name, **kwargs)
 
 
 @_setdoc([set_values_to_default.__doc__])
-def init_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] = (50, 50, 50),
-              project_name: str='default_project', default_values=True, **kwargs) -> Model:
+def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
+              resolution: Union[list, ndarray] = None,
+              default_values=True, **kwargs) -> Model:
     """
     Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
 
@@ -728,8 +722,12 @@ def init_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] = (
 
     """
 
-    model = create_model(project_name)
-    set_grid(model, create_grid(grid_type='regular_grid', extent=extent, resolution=resolution))
+    if extent is None or resolution is None:
+        warnings.warn('Regular grid won\'t be initialize, you will have to create a gridafterwards. See gempy.set_grid')
+    else:
+        geo_model.set_regular_grid(extent, resolution)
+
+
     read_data(model, **kwargs)
     if default_values is True:
         set_values_to_default(model, series_distribution=None, order_series=None, order_formations=None,
