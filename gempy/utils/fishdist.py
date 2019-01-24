@@ -6,6 +6,11 @@ from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 import mplstereonet
 
+try:
+    from spherecluster import VonMisesFisherMixture
+except ImportError:
+    print('for some purposes spherecluster package would be good to have')
+
 """
     This file is part of gempy.
 
@@ -36,13 +41,16 @@ class vMF():
     '''draws and visualizes samples from a von mises fisher distribution based on mean, concentration and number of
     samples for stochastic simulations with orientation uncertainty'''
 
-    def __init__(self, mu, kappa, num_samples):
-        self.mu = mu
-        self.kappa = kappa
-        self.num_samples = num_samples
+    def __init__(self, mu=None, kappa=None, num_samples=100):
+        if mu is not None:#kappa and num_samples:
+            self.mu = mu
+        if kappa:
+            self.kappa = kappa
+        if num_samples:
+            self.num_samples = num_samples
         # print(self.mu, self.kappa, self.num_samples)
-        self.points = self.sample_vMF(self.mu, self.kappa, self.num_samples)
-        self.pointssph = self.xyz_to_spherical_coordinates(self.points)
+            self.samples_xyz = self.sample_vMF(self.mu, self.kappa, self.num_samples)
+            self.samples_azdip = self.cartesian2spherical(self.samples_xyz)
 
     def sample_vMF(self, mu, kappa, num_samples):
         """Generate num_samples N-dimensional samples from von Mises Fisher
@@ -85,11 +93,11 @@ class vMF():
         orthto = v - proj_mu_v
         return orthto / np.linalg.norm(orthto)
 
-    def plot(self):
-        self.plot_vMF_3D()
-        self.plot_vMF_2D()
+    #def plot(self):
+        #self.plot_vectors()
+        #self.plot_stereonet()
 
-    def plot_vMF_3D(self):
+    def plot_vectors(self):
         # this code is partially from somewhere (stackoverflow)
         fig = plt.figure(figsize=[5, 5])
         ax = fig.gca(projection='3d')
@@ -128,42 +136,84 @@ class vMF():
                 FancyArrowPatch.draw(self, renderer)
 
         # Plot arrows
-        for i in self.points:
+        for i in self.samples_xyz:
             ax.add_artist(Arrow3D([0, i[0]], [0, i[1]], [0, i[2]], mutation_scale=20, lw=1, arrowstyle="-|>",
                                   color="darkgreen"))  # samples
-        ax.add_artist(
-            Arrow3D([0, self.mu[0]], [0, self.mu[1]], [0, self.mu[2]], mutation_scale=20, lw=1, arrowstyle="-|>",
-                    color="darkorange"))  # mean
+        try:
+            ax.add_artist(
+                Arrow3D([0, self.mu[0]], [0, self.mu[1]], [0, self.mu[2]], mutation_scale=20, lw=1, arrowstyle="-|>",
+                        color="darkorange"))  # mean
+        except AttributeError:
+            pass
         plt.show()
         return fig
 
-    def plot_vMF_2D(self, poles=True):
-        mean = self.xyz_to_spherical_coordinates(self.mu)
-        points_sph = self.pointssph
+    def plot_stereonet(self, poles=True):
         fig, ax = mplstereonet.subplots(figsize=(5, 5))
         if poles is True:
-            for point in points_sph:
+            for point in self.samples_azdip:
                 ax.pole(point[0] - 90, point[1], color='k', linewidth=1, marker='v', markersize=6,label=('samples'))
-            ax.pole(mean[0] - 90, mean[1], color='r', markersize=6, label='mean')
+            try:
+                ax.pole(self.mu[0] - 90, self.mu[1], color='r', markersize=6, label='mean')
+            except AttributeError:
+                pass
         ax.grid()
-        ax.density_contourf(points_sph[:, 0] - 90, points_sph[:, 1], measurement='poles', cmap='inferno', alpha=0.7)
-        ax.set_title('kappa = '+str(self.kappa), y=1.2)
+        ax.density_contourf(self.samples_azdip[:, 0] - 90, self.samples_azdip[:, 1], measurement='poles', cmap='inferno', alpha=0.7)
+        try:
+            ax.set_title('kappa = '+str(self.kappa), y=1.2)
+        except AttributeError:
+            pass
         #return fig
 
-    def xyz_to_spherical_coordinates(self, gamma1):
+    def cartesian2spherical(self, xyz):
         '''conversion of cartesian to spherical coordinates'''
-        if gamma1.ndim == 1:
-            theta = np.rad2deg(np.nan_to_num(np.arccos(gamma1[2])))
-            phi = np.round(np.rad2deg(np.nan_to_num(np.arctan2(gamma1[0], gamma1[1]))), 0)
+        if xyz.ndim == 1:
+            theta = np.rad2deg(np.nan_to_num(np.arccos(xyz[2])))
+            phi = np.round(np.rad2deg(np.nan_to_num(np.arctan2(xyz[0], xyz[1]))), 0)
             if phi < 0:
                 phi += 360
             return np.array([phi, theta])
         else:
-            a = np.empty(shape=(gamma1.shape[0], 2))
-            theta = np.rad2deg(np.nan_to_num(np.arccos(gamma1[:, 2])))
+            a = np.empty(shape=(xyz.shape[0], 2))
+            theta = np.rad2deg(np.nan_to_num(np.arccos(xyz[:, 2])))
             # theta = theta*(-1)
-            phi = np.round(np.rad2deg(np.nan_to_num(np.arctan2(gamma1[:, 0], gamma1[:, 1]))), 0)
+            phi = np.round(np.rad2deg(np.nan_to_num(np.arctan2(xyz[:, 0], xyz[:, 1]))), 0)
             phi[phi < 0] += 360
             a[:, 0] = phi
             a[:, 1] = theta
             return a
+
+    def spherical2cartesian(self, orient):
+        azimuth = orient[:, 0]
+        dip = orient[:, 1]
+        xyz = np.empty((orient.shape[0], 3))
+        xyz[:, 0] = np.sin(np.deg2rad(dip.astype('float'))) * np.sin(np.deg2rad(azimuth.astype('float')))
+        xyz[:, 1] = np.sin(np.deg2rad(dip.astype('float'))) * np.cos(np.deg2rad(azimuth.astype('float')))
+        xyz[:, 2] = np.cos(np.deg2rad(dip.astype('float')))
+        return xyz
+
+
+    def add_orientations(self, orient):
+        '''
+
+        Args:
+            orient: np.ndarray with orientations, can be either azimuth and dip or pole vectors (normed)
+
+        Returns: self.kappa, self.num_samples
+
+        '''
+        if orient.shape[1] == 2:
+            self.samples_xyz = self.spherical2cartesian(orient)
+            self.samples_azdip = orient
+
+        elif orient.shape[1] == 3:
+            self.samples_xyz = orient
+            self.samples_azdip = self.cartesian2spherical(orient)
+        self.num_samples = orient.shape[0]
+
+    def estimate_concentration_param(self):
+        vmf_soft = VonMisesFisherMixture(n_clusters=1, posterior_type='soft')
+        vmf_soft.fit(self.samples_xyz)
+        self.kappa = vmf_soft.concentrations_[0]
+        print('concentration parameter is approximately ', self.kappa)
+
