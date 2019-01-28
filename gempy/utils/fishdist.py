@@ -4,7 +4,10 @@ import matplotlib.pyplot as plt
 #from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
-import mplstereonet
+try:
+    import mplstereonet
+except ImportError:
+    print('mplstereonet package required for visualization in stereonets')
 
 try:
     from spherecluster import VonMisesFisherMixture
@@ -113,7 +116,7 @@ class vMF():
             self.samples_azdip = self._cartesian2spherical(orient)
 
         else:
-            print('No.')
+            print('No. Something is wrong with the orientation data')
 
         self.num_samples = orient.shape[0]
 
@@ -206,7 +209,8 @@ class vMF():
             for point in self.samples_azdip:
                 ax.pole(point[0] - 90, point[1], color='k', linewidth=1, marker='v', markersize=6,label=('samples'))
             try:
-                ax.pole(self.mean[0] - 90, self.mean[1], color='r', markersize=6, label='mean')
+                mean_sph = self._cartesian2spherical(self.mean)
+                ax.pole(mean_sph[0] - 90, mean_sph[1], color='r', markersize=6, label='mean')
             except AttributeError:
                 pass
         ax.grid()
