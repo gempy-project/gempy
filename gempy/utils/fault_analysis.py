@@ -419,8 +419,7 @@ def get_juxtapositions_at(geo_data, lith_sol, fault_sol, position, fault_n,\
         raise AttributeError(str(target_side) + "must be 'footwall' ('fw') or 'hanging wall' ('hw').")
 
     juxta_full = get_juxtapositions(geo_data, lith_sol, fault_sol, fault_n,\
-                        lith_target, lith_jux, target_side,\
-                       jux_side, projection)
+                        lith_target, lith_jux, target_side, projection)
     return juxta_full[position,:]
 
 ### is the following function this needed?
@@ -527,7 +526,7 @@ def arg_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
     extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='2D')
     maxpos = np.argwhere(extrline_vox == True)
     relmaxpos = sg.argrelextrema(maxpos[:, 1], np.greater_equal, order=order)
-    return relmaxpos
+    return relmaxpos[0]
     ### at the moment, this can return several peaks
 
 def get_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
@@ -566,7 +565,7 @@ def get_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
                                  lith_n, fault_n, fault_side)
     extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='2D')
     maxpos = np.argwhere(extrline_vox == True)
-    relmaxpos = sg.argrelextrema(maxpo[:, 1], np.greater_equal, order=order)
+    relmaxpos = sg.argrelextrema(maxpos[:, 1], np.greater_equal, order=order)
     return maxpos[relmaxpos]
     ### at the moment, this can return several peaks
 

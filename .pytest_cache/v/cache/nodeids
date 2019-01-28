@@ -1,0 +1,14 @@
+[
+  "test/test_util_faultanalysis.py::test_get_fault_mask",
+  "test/test_util_faultanalysis.py::test_contact",
+  "test/test_util_faultanalysis.py::test_get_extrema_line_voxels",
+  "test/test_util_faultanalysis.py::test_project_voxels",
+  "test/test_util_faultanalysis.py::test_FA_plotting",
+  "test/test_util_faultanalysis.py::test_arg_contact_peaks_VOX",
+  "test/test_util_faultanalysis.py::test_get_full_LFcontact_projected",
+  "test/test_util_faultanalysis.py::test_get_contact_peaks_VOX",
+  "test/test_util_faultanalysis.py::test_get_faultthrow_at",
+  "test/test_util_faultanalysis.py::test_get_lithcontact_thickness_at",
+  "test/test_util_faultanalysis.py::test_get_juxtapositions",
+  "test/test_util_faultanalysis.py::test_get_juxtapositions_at"
+]
