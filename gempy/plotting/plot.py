@@ -797,4 +797,4 @@ def plot_stereonet(geo_data, litho=None, series_only=False, planes=True, poles=T
             by_label = OrderedDict(zip(labels, handles))
             ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
         ax.grid(True, color='black', alpha=0.25)
-    return fig
+    #return fig

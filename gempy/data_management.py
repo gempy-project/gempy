@@ -72,7 +72,7 @@ class InputData(object):
                  resolution=[50, 50, 50],
                  path_i=None, path_o=None, path_f =None,
                  **kwargs):
-
+        #print('hallo i bims')
         self._formation_values_set = False
 
         if path_f and path_o is None:
