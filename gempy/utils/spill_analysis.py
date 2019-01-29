@@ -20,10 +20,11 @@
 
 import numpy as np
 from matplotlib import pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 from skimage import measure
 from scipy.spatial import distance
 
-def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z', ref='x'):
+def get_gradient_minima(geo_data, GX,GY,GZ=np.array([]), direction='z', ref='x'):
     """
         Compute the shared minima of two gradient fields in 3D space.
         The positions of minima are returned as surface vertices.
@@ -53,6 +54,11 @@ def get_gradient_minima(geo_data, GX,GY,GZ=np.nan, direction='z', ref='x'):
     vox_size_y = np.abs(geo_data.extent[3]-geo_data.extent[2]) / geo_data.resolution[1]
     vox_size_z = np.abs(geo_data.extent[5]-geo_data.extent[4]) / geo_data.resolution[2]
     vox_size_diag = np.sqrt(vox_size_x ** 2 + vox_size_y ** 2 + vox_size_z ** 2)
+
+    GX = GX.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
+    GY = GY.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
+    if GZ.size > 0:
+        GZ = GZ.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
 
     if direction == 'z':
         gx = GX
@@ -168,7 +174,7 @@ def get_gradmin_intersect(geo_data, surface_vertices, grad_minima):
     intersect = v_l[l_cut_bool]
     return intersect
 
-def get_voxel_extrema(GX, GY, GZ=np.nan, direction='z'):
+def get_voxel_extrema(geo_data, GX, GY, GZ=np.array([]), direction='z'):
     """
         Detects gradient extrema in voxels and classifies them as
         minima, maxima or saddle point based on changes in sign of the
@@ -191,6 +197,11 @@ def get_voxel_extrema(GX, GY, GZ=np.nan, direction='z'):
             [1]: maxima voxels (ndarray)
             [2]: saddle voxels (ndarray)
         """
+    GX = GX.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
+    GY = GY.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
+    if GZ.size > 0:
+        GZ = GZ.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
+
     if direction == 'z':
         gx = GX
         gy = GY
@@ -250,7 +261,32 @@ def get_voxel_extrema(GX, GY, GZ=np.nan, direction='z'):
     vox_saddles = np.logical_or(np.logical_and(gx_min_final, gy_max_final),
                                 np.logical_and(gy_min_final, gx_max_final))
 
-    return vox_minima, vox_maxima, vox_saddles
+    # find DIAGONAL saddle points in addition:
+    signchange_gx2 = ((np.roll(gx_signs, 1, axis=1) - gx_signs) != 0).astype(int)
+    signchange_gx2[:, 0] = 0
+
+    signchange_gy2 = ((np.roll(gy_signs, 1, axis=0) - gy_signs) != 0).astype(int)
+    signchange_gy[0, :, :] = 0
+
+    s_condA1 = (signchange_gx2 == 1) & (signchange_gy2 == 1)
+    s_condA2 = (signchange_gx == 0) & (signchange_gy == 0)
+    sad_cond = np.logical_and(s_condA1, s_condA2)
+
+    diag_saddles_a = np.zeros_like(vox_maxima)
+    diag_saddles_a[sad_cond] = 1
+
+    diag_saddles_b = np.roll(diag_saddles_a, -1, axis=0)
+    diag_saddles_c = np.roll(diag_saddles_a, -1, axis=1)
+    diag_saddles_d = np.roll(diag_saddles_b, -1, axis=1)
+
+    diag_sadd_A = diag_saddles_a + diag_saddles_d
+    diag_sadd_B = diag_saddles_b + diag_saddles_c
+
+    diagonal_saddles = diag_sadd_A + diag_sadd_B
+
+    vox_saddles_all = np.logical_or(vox_saddles, diagonal_saddles)
+
+    return vox_minima, vox_maxima, vox_saddles_all
 
 def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
     """
@@ -283,14 +319,17 @@ def get_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
             [1]: maxima coordinates (ndarray)
             [2]: saddle coordinates (ndarray)
         """
+    GX = GX.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
+    GY = GY.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
+
     vox_size_x = np.abs(geo_data.extent[1] - geo_data.extent[0]) / geo_data.resolution[0]
     vox_size_y = np.abs(geo_data.extent[3] - geo_data.extent[2]) / geo_data.resolution[1]
     vox_size_z = np.abs(geo_data.extent[5] - geo_data.extent[4]) / geo_data.resolution[2]
     vox_size_diag = np.sqrt(vox_size_x ** 2 + vox_size_y ** 2 + vox_size_z ** 2)
 
-    grad_minima = get_gradient_minima(geo_data, GX,GY, ref)
+    grad_minima = get_gradient_minima(geo_data, GX,GY, ref=ref)
     intersect = get_gradmin_intersect(geo_data, surface_vertices, grad_minima)
-    vox_minima, vox_maxima, vox_saddles = get_voxel_extrema(GX, GY)
+    vox_minima, vox_maxima, vox_saddles = get_voxel_extrema(geo_data, GX, GY)
 
     if np.any(vox_minima):
         # get the coordinates for minima, maxima and saddles
@@ -363,7 +402,10 @@ def get_highest_saddle_point(geo_data, surface_vertices, GX, GY, ref='x'):
         Returns:
             3D coordinates for the highest saddle point (ndarray).
         """
-    intersect_saddles_all = get_surface_extrema(geo_data, surface_vertices, GX, GY, ref)[2]
+    GX = GX.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
+    GY = GY.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
+
+    intersect_saddles_all = get_surface_extrema(geo_data, surface_vertices, GX, GY, ref=ref)[2]
     if len(intersect_saddles_all) > 0:
         max_SADD = intersect_saddles_all[np.argmax(intersect_saddles_all[:, 2])]
     else:
@@ -391,7 +433,10 @@ def get_highest_max(geo_data, surface_vertices, GX, GY, ref='x'):
         Returns:
             3D coordinates for the highest maximum (ndarray).
         """
-    intersect_maxima_all = get_surface_extrema(geo_data, surface_vertices, GX, GY, ref)[1]
+    GX = GX.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
+    GY = GY.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
+
+    intersect_maxima_all = get_surface_extrema(geo_data, surface_vertices, GX, GY, ref=ref)[1]
     if len(intersect_maxima_all) > 0:
         it_final_MAX = intersect_maxima_all[np.argmax(intersect_maxima_all[:, 2])]
     else:
@@ -417,8 +462,11 @@ def plot_surface_extrema(geo_data, surface_vertices, GX, GY, ref='x'):
                 not recommended in most cases.
 
         """
+    GX = GX.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
+    GY = GY.reshape(geo_data.resolution[0], geo_data.resolution[1], geo_data.resolution[2])
+
     intersect_minima_all, intersect_maxima_all, intersect_saddles_all \
-        = get_surface_extrema(geo_data, surface_vertices, GX, GY, ref)
+        = get_surface_extrema(geo_data, surface_vertices, GX, GY, ref=ref)
     v_l = surface_vertices
     fig = plt.figure()
     ax = fig.add_subplot(111, projection='3d')
