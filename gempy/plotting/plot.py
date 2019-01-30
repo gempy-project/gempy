@@ -35,6 +35,9 @@ import pandas as _pn
 import copy
 from .visualization import PlotData2D, steno3D, vtkVisualization
 import gempy as _gempy
+import matplotlib.colors
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 class vtkPlot():
@@ -798,3 +801,50 @@ def plot_stereonet(geo_data, litho=None, series_only=False, planes=True, poles=T
             ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
         ax.grid(True, color='black', alpha=0.25)
     #return fig
+
+def extract_countours(geo_data,interp_data,cell_number,direction='y',fb=None,lb=None):
+    """
+    To extract the boundaries between lithologies and plot faults as lines in 2D plots.
+    Args: the same as gp.plotting.plot_section or plot_map
+        geo_data:
+        interp_data:
+        fb: fault block
+        lb: lithology block
+        direction:
+        cell_number:
+
+    Returns: nothing, it just plots
+
+    """
+    fault_colors = ['#9f0052', '#ff3f20', '#ffbe00']
+    cm_fault = matplotlib.colors.LinearSegmentedColormap.from_list('faults', fault_colors, N=5)
+    lith_colors = ['#000000', '#000000', '#000000', '#000000', '#000000']
+    cm_lith = matplotlib.colors.LinearSegmentedColormap.from_list('lith_colors', lith_colors, N=5)
+
+    n_faults = int(fb.shape[0] / 2)
+    level = []
+    block_id = []
+
+    all_levels = interp_data.potential_at_interfaces[np.where(interp_data.potential_at_interfaces != 0)]
+
+    for i in range(fb.shape[0]):
+        if i % 2:
+            block_id.append(i)
+
+    if direction == 'y':
+        _slice = np.s_[:, cell_number, :]
+    elif direction == 'x':
+        _slice = np.s_[cell_number, :, :]
+    elif direction == 'z':
+        _slice = np.s_[:, :, cell_number]
+    else:
+        print('not a direction')
+
+    for i in range(len(block_id)):
+        cp = plt.contour(fb[block_id[i]].reshape(geo_data.resolution)[_slice].T, 0,
+                         extent=geo_data.extent[[0, 1, 4, 5]], levels=all_levels[i], cmap=cm_fault)
+    if lb is not None:
+        cp2 = plt.contour(lb[1].reshape(geo_data.resolution)[_slice].T, 0,
+                          extent=geo_data.extent[[0, 1, 4, 5]], levels=np.sort(all_levels[len(block_id):]),
+                          cmap=cm_lith)
+

@@ -135,6 +135,29 @@ class InputData(object):
         self.interfaces['isFault'] = self.interfaces['isFault'].astype('bool')
         self.orientations['isFault'] = self.orientations['isFault'].astype('bool')
 
+    def set_colors(self, colordict):
+        """
+        add a colordictionary where each formation has a hex string defining its color.
+        Args:
+            colordict:
+
+        Returns: self.formations with the colorstrings mapped to the formations
+
+        """
+        #self.colors = colordict
+        assert len(colordict) >= len(self.formations)
+
+        for form in self.formations.index:
+            for form2, color in colordict.items():
+                if form == form2:
+                    self.formations.at[form, 'color'] = str(color)
+
+        def color(value):
+            if type(value) == str:
+                return "background-color: %s" % value
+
+        return self.formations.style.applymap(color,subset=['color'])
+
     def set_basement(self):
 
         try:
