@@ -151,9 +151,12 @@ def get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
     fault_block = np.round(fault_sol[0]).reshape(geo_data.resolution[0],
                                      geo_data.resolution[1],geo_data.resolution[2])
     fault_mask = get_fault_mask(geo_data, fault_sol, fault_n, fault_side)
-    lith_block = np.round(lith_sol[0]).reshape(geo_data.resolution[0],
-                                     geo_data.resolution[1],geo_data.resolution[2])
-    lith_cond = np.isin(lith_block, np.array(lith_n))
+    #lith_block = np.round(lith_sol[0]).reshape(geo_data.resolution[0],
+    #                                 geo_data.resolution[1],geo_data.resolution[2])
+    #lith_cond = np.isin(lith_block, np.array(lith_n)) # this only works with numpy version >= 1.13.0
+    lith_cond = np.in1d(np.round(lith_sol[0]), lith_n).reshape(geo_data.resolution[0],
+                                                                  geo_data.resolution[1], geo_data.resolution[2])
+                                                                # for older numpy versions (and pymc2)
     if fault_side == 'hanging wall' or fault_side == 'hw':
         fs_cond = fault_block == fault_n
     elif fault_side == 'footwall' or fault_side == 'fw':
