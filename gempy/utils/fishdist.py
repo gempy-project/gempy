@@ -42,7 +42,7 @@ except ImportError:
 
 class vMF():
 
-    def __init__(self, mean=None, kappa=None):
+    def __init__(self, name = None, mean=None, kappa=None):
         """
         Class to generate and/or load orientation data (azimuth and dip or pole vectors) based on the von-Mises-Fisher
         distribution. Contains methods for visualization and parameter estimation.
@@ -56,6 +56,23 @@ class vMF():
 
         if mean is not None:
             self.mean = mean
+
+
+        self.name = name
+
+    def __repr__(self):
+        info_string = "Von Mises Fisher distribution\n"
+        if self.name:
+            info_string += "Formation:{0!r}\n".format(self.name)
+
+        #if self.samples_xyz is not None:
+        info_string += "n = %.d\n" % len(self.samples_xyz)
+        if self.mean is not None:
+            mean = self._cartesian2spherical(self.mean)
+            info_string += "Mean orientation = (%.d, %.d)\n" % (mean[0],mean[1])
+        #if self.kappa:
+        info_string += "Kappa = %.d\n" % self.kappa
+        return info_string
 
 
 
@@ -80,11 +97,15 @@ class vMF():
         self.num_samples = num_samples
 
         try:
-            self.samples_xyz = self._generate_samples()
-            self.samples_azdip = self._cartesian2spherical(self.samples_xyz)
+            samples_xyz = self._generate_samples()
+            self.samples_azdip = self._cartesian2spherical(samples_xyz)
 
             if direct_output is True:
-                return self.samples_xyz
+                return samples_xyz
+
+            else:
+                self.add_orientation_data(samples_xyz)
+                #self.samples_azdip = self._cartesian2spherical(samples_xyz)
 
         except AttributeError:
             print('mean and kappa must be defined')
@@ -135,7 +156,7 @@ class vMF():
             vmf_soft.fit(self.samples_xyz)
             self.kappa = vmf_soft.concentrations_[0]
             self.mean = vmf_soft.cluster_centers_[0]
-            print('concentration parameter ', self.kappa, 'mean direction ', self.mean)
+            print('concentration parameter ', self.kappa.astype(int), 'mean direction ', self._cartesian2spherical(self.mean).astype(int))
         except AttributeError:
             print('object has no orientations. Use add_orientations to load orientation data manually or sample from a vMF distribution with the .sample method')
 
@@ -216,10 +237,13 @@ class vMF():
         ax.grid()
         ax.density_contourf(self.samples_azdip[:, 0] - 90, self.samples_azdip[:, 1], measurement='poles', cmap='inferno', alpha=0.7)
         try:
-            ax.set_title('kappa = '+str(self.kappa), y=1.2)
+            ax.set_title('kappa = '+str(round(self.kappa)), y=1.2)
         except AttributeError:
             pass
         #return fig
+
+    #def info(self):
+
 
     def _generate_samples(self):
 
@@ -290,7 +314,7 @@ class vMF():
             phi[phi < 0] += 360
             a[:, 0] = phi
             a[:, 1] = theta
-            return a
+            return a.astype(int)
 
     def _spherical2cartesian(self, orient):
         """
