@@ -308,8 +308,8 @@ class PlotData2D(object):
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
 
-        print(self._norm)
-        print(self._cmap)
+        #print(self._norm)
+        #print(self._cmap)
 
         im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
                         extent=extent_val,
@@ -326,7 +326,7 @@ class PlotData2D(object):
         import matplotlib.patches as mpatches
         colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
         #colors = list(self._color_lot.values())
-        print(colors,len(self.formation_names),self.formation_names)
+        #print(colors,len(self.formation_names),self.formation_names)
         patches = [mpatches.Patch(color=colors[i], label=self.formation_names[i]) for i in range(len(self.formation_names))]
         if not plot_data:
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)

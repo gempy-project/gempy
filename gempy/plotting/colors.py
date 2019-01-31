@@ -603,7 +603,7 @@ color_dict_hex = {
 }
 
 # create dictionary color LOT, e.g. for seaborn use and basis for listed colormap in matplotlib
-color_lot = _create_color_lot(color_names, color_subnames, color_dict_rgb)
+color_lot = _create_color_lot(color_names, color_subnames, color_dict_hex)
 # listed colormap for matplotlib
 bounds = [key for key in color_lot.keys()]
 c = []

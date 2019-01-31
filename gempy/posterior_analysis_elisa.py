@@ -57,10 +57,13 @@ class Posterior():
             self.topography = topography
 
         if entropy:
+            assert self.interp_data is not None
+
             print('Lithology probability for all post models are calculated. Based on the model complexity and the number of iterations, '
                   'this could take a while')
-            self.lith_prob = self.compute_lith_prob_sequentially('model')
+            self.lith_prob, self.fault_prob = self.compute_lith_prob_sequentially('model')
             self.lb_ie = self.calculate_ie_masked(self.lith_prob)
+            self.fb_ie = self.calculate_ie_masked(self.fault_prob)
 
             if topography:
                 self.map_prob = self.compute_lith_prob_sequentially('map')
@@ -159,6 +162,10 @@ class Posterior():
         lith_id = np.unique(np.round(block).astype(int))
         ### create one array for every lithology to count frequency
         count = np.zeros((len(lith_id), block.shape[0]))
+        ### the same for faults (by now only first fault block)
+        block_fb = fault_block[0]
+        fault_id = np.unique(np.round(block).astype(int))
+        count_fb = np.zeros((len(fault_id), block_fb.shape[0]))
         ### loop through all other model realizations
         for i in range(0, self.n_iter):
             self._change_input_data(i)  # change input data and compute new block
@@ -169,9 +176,16 @@ class Posterior():
                 lith_block, fault_block = gp.compute_model_at(self.topography.surface_coordinates[0], self.interp_data)
 
             block = np.round(lith_block[0]).astype(int)
+            block_fb = np.round(fault_block[0]).astype(int)
             for i, l_id in enumerate(lith_id):
                 count[i][block == l_id] += 1 #sum up frequency
-        return count / self.n_iter
+            #Todo make this for multiple faults
+            for i, f_id in enumerate(fault_id):
+                count_fb[i][block_fb == f_id] += 1 #sum up frequency
+        count_lith = count / self.n_iter
+        count_fault = count_fb/self.n_iter
+
+        return count_lith, count_fault
 
     def calculate_ie_masked(self, prob):
         ie = np.zeros_like(prob[0])
@@ -194,14 +208,15 @@ class Posterior():
         lith_block, fault_block = gp.compute_model(self.interp_data)
 
         if 'topography' not in kwargs:
-            if self.topography:
-                topography = self.topography
-            else:
-                topography = None
+            try:
+                topo = self.topography
+            except AttributeError:
+                topo = kwargs.get('topography', None)
+
             if block == 'lith':
-                gp.plot_section(self.geo_data, lith_block[0], cell_number=cell_number, topography=topography, **kwargs)
+                gp.plot_section(self.geo_data, lith_block[0], cell_number=cell_number, topography=topo, **kwargs)
             else:
-                gp.plot_section(self.geo_data, block, cell_number=cell_number, topography=topography, **kwargs)
+                gp.plot_section(self.geo_data, block, cell_number=cell_number, topography=topo, **kwargs)
 
         else:
             if block == 'lith':
@@ -227,7 +242,7 @@ class Posterior():
         self._add_colorbar(im, pad_fraction=dist)
         plt.title('Cell entropy of geological map')
 
-    def plot_section_ie(self, block='lith', cell_number=10, direction='y', **kwargs):
+    def plot_section_ie(self, block='lith', cell_number=1, direction='y', **kwargs):
         # for lithblock
         if block == 'lith':
             norm = matplotlib.colors.Normalize(self.lb_ie.min(), self.lb_ie.max())
