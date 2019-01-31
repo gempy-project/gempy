@@ -727,14 +727,14 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
     else:
         geo_model.set_regular_grid(extent, resolution)
 
+    read_data(geo_model, **kwargs)
 
-    read_data(model, **kwargs)
     if default_values is True:
-        set_values_to_default(model, series_distribution=None, order_series=None, order_formations=None,
+        set_values_to_default(geo_model, series_distribution=None, order_series=None, order_formations=None,
                               set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0)
-    update_additional_data(model)
+    #update_additional_data(model)
 
-    return model
+    return geo_model
 
 
 # endregion

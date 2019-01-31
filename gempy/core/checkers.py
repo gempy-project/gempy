@@ -1,6 +1,14 @@
 # TODO
 # - Check the basement layer is not in in Interfaces and Orientations
 
+import pandas as pn
+import numpy as np
+
+def check_for_nans(array_like):
+    if ~(pn.notnull(np.atleast_1d(array_like))).any():
+        array_like = None
+    return array_like
+
 def check_kriging():
     # TODO check range and covariance are not 0
     pass

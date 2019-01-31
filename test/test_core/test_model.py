@@ -7,6 +7,10 @@ import pytest
 
 
 class TestModel:
+
+    def test_test(self):
+        print('whatthe f ')
+
     @pytest.fixture(scope='class')
     def test_create_model(self):
         model = gp.Model()

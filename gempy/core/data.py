@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pn
 from typing import Union
 import warnings
+from gempy.core.checkers import check_for_nans
 from gempy.utils.meta import _setdoc
 from gempy.plot.sequential_pile import StratigraphicPile
 
@@ -219,6 +220,10 @@ class Series(object):
 
     def add_series(self, series_list: Union[pn.DataFrame, list], update_order_series=True):
         series_list = np.atleast_1d(series_list)
+
+        # Remove from the list categories that already exist
+        series_list = series_list[~np.in1d(series_list, self.df.index.categories)]
+
         idx = self.df.index.add_categories(series_list)
         self.df.index = idx
         self.faults.df.index = idx
@@ -383,8 +388,9 @@ class Formations(object):
         self.df = pn.DataFrame(columns=['formation', 'series', 'id', 'isBasement'])
         self.df['isBasement'] = self.df['isBasement'].astype(bool)
         self.df["series"] = self.df["series"].astype('category')
-        self.df["formation"] = self.df["formation"].astype('category')
+        self.df['series'].cat.add_categories(['Default series'], inplace=True)
 
+        self.df["formation"] = self.df["formation"].astype('category')
         self.series_mapping = pn.DataFrame([pn.Categorical(['Default series'])], columns=['series'])
         self.formations_names = formation_names
         self._formation_values_set = False
@@ -621,21 +627,40 @@ class Formations(object):
         else:
             raise AttributeError(str(type(mapping_object))+' is not the right attribute type.')
 
-        if hasattr(self, '_series_mapping'):
-            new_series_mapping = new_series_mapping.append(self._series_mapping, verify_integrity=False)
+        # This code was to preserve the previous map but it added to much complexity
+        # -----------------------------------------------------------------------------------------------------
+        # if hasattr(self, '_series_mapping'):
+        #     old_cat = self._series_mapping['series'].cat.categories
+        #     new_cat = new_series_mapping['series'].cat.categories
+        #
+        #     self._series_mapping['series'].cat.add_categories(new_cat[~new_cat.isin(old_cat)], inplace=True)
+        #     new_series_mapping['series'].cat.add_categories(old_cat[~old_cat.isin(new_cat)], inplace=True)
+        #
+        #     new_series_mapping = new_series_mapping.append(self._series_mapping, verify_integrity=False)
+        #
+        # # Check for duplicat es given priority to the new series
+        # sm = new_series_mapping.loc[~new_series_mapping.index.duplicated(keep='first')]
+        # self._series_mapping = sm
+        # -------------------------------------------------------------------------------------------------------
 
-        # Check for duplicat es given priority to the new series
-        sm = new_series_mapping.loc[~new_series_mapping.index.duplicated(keep='first')]
-        self._series_mapping = sm
-        self.df['series'] = self.df['formation'].map(self._series_mapping['series'])
+        # Updating formations['series'] categories
+        self.df['series'].cat.set_categories(self.series.df.index, inplace=True)
 
-        # Check that all formations have been assigned a series
-        if any(self.df['series'].isna()) and mapping_object is not None:
-            nans = self.df['series'].isna()
-            missfit = self.df['formation'][nans]
-            warnings.warn('Some of the formations are not in the dictionary or some of the keys are not in the'
-                          'series object. \n Formations:' + missfit.to_string() +
-                          '\n Series: '+str(np.array(s)[nans]))
+        # Checking which formations are on the list to be mapped
+        b = self.df['formation'].isin(new_series_mapping.index)
+        idx = self.df.index[b]
+        # self.df['series'] = self.df['formation'].map(new_series_mapping['series'])
+
+        # Mapping
+        self.df.loc[idx, 'series'] = self.df.loc[idx, 'formation'].map(new_series_mapping['series'])
+
+        # # Check that all formations have been assigned a series
+        # if any(self.df['series'].isna()) and mapping_object is not None:
+        #     nans = self.df['series'].isna()
+        #     missfit = self.df['formation'][nans]
+        #     warnings.warn('Some of the formations are not in the dictionary or some of the keys are not in the'
+        #                   'series object. \n Formations:' + missfit.to_string() +
+        #                   '\n Series: '+str(np.array(s)[nans]))
 # endregion
 
     def sort_formations_DEP(self, series):
@@ -910,9 +935,9 @@ class Interfaces(Data):
     def __init__(self, formations: Formations, coord=None, surface=None):
 
         super().__init__(formations)
-        self._columns_i_all = ['X', 'Y', 'Z', 'formation', 'series', 'X_std', 'Y_std', 'Z_std',
+        self._columns_i_all = ['X', 'Y', 'Z', 'surface', 'series', 'X_std', 'Y_std', 'Z_std',
                                'order_series', 'formation_number']
-        self._columns_i_1 = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'formation', 'series', 'id',
+        self._columns_i_1 = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'surface', 'series', 'id',
                              'order_series', 'isFault']
         self._columns_i_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r']
         #self.df = pn.DataFrame(columns=self._columns_i_1)
@@ -929,22 +954,30 @@ class Interfaces(Data):
         # self.df.itype = 'interfaces'
 
     def set_interfaces(self, coord: np.ndarray = None, surface: list = None):
-        if coord is None or surface is None:
-            self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'surface'])
+        self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'surface'], dtype=float)
+        self.df['surface'] = self.df['surface'].astype('category', copy=True)
+        self.df['surface'].cat.set_categories(self.formations.df['formation'].cat.categories, inplace=True)
 
-        else:
-            #values = np.hstack([np.random.rand(6,3), np.array(surface).reshape(-1, 1)])
-            self.df = pn.DataFrame(coord, columns=self._columns_i_num, dtype=float)
+        if coord is not None and surface is not None:
+            self.df[['X', 'Y', 'Z']] = coord
             self.df['surface'] = surface
+
+        # if coord is None or surface is None:
+        #     self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'surface'])
+        #
+        # else:
+        #     #values = np.hstack([np.random.rand(6,3), np.array(surface).reshape(-1, 1)])
+        #     self.df = pn.DataFrame(coord, columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'surface'], dtype=float)
+        #     self.df['surface'] = surface
 
         # formation
         #self.df['surface'] = np.nan
-        self.df['surface'] = self.df['surface'].astype('category', copy=True)
-        self.df['surface'].cat.set_categories(self.formations.df['formation'].cat.categories, inplace=True)
+
 
         # Choose types
         #  self.df[self._columns_i_num] = self.df[self._columns_i_num].astype(float)
         self.set_dependent_properties()
+
         assert ~self.df['surface'].isna().any(), 'Some of the formation passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
 
@@ -1130,7 +1163,7 @@ class Orientations(Data):
     def __init__(self, formation: Formations, coord=None, pole_vector=None, orientation=None, surface=None):
         super().__init__(formation)
         self._columns_o_all = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
-                               'formation', 'series', 'id', 'order_series', 'formation_number']
+                               'surface', 'series', 'id', 'order_series', 'formation_number']
         self._columns_o_1 = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
                              'surface', 'series', 'id', 'order_series', 'isFault']
         self._columns_o_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
@@ -1138,16 +1171,13 @@ class Orientations(Data):
             self.df: pn.DataFrame
 
         self.set_orientations(coord, pole_vector, orientation, surface)
-
-
      #   self.df = pn.DataFrame(columns=self._columns_o_1)
      #   self.df[self._columns_o_num] = self.df[self._columns_o_num].astype(float)
      #   self.df.itype = 'orientations'
-
      #   self.calculate_gradient()
 
     def set_orientations(self, coord: np.ndarray = None, pole_vector: np.ndarray = None,
-                         orientation: np.ndarray = None, surface: list = None ):
+                         orientation: np.ndarray = None, surface: list = None):
         """
         Pole vector has priority over orientation
         Args:
@@ -1159,13 +1189,19 @@ class Orientations(Data):
         Returns:
 
         """
+        self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'G_x', 'G_y', 'G_z', 'dip',
+                                        'azimuth', 'polarity', 'surface'], dtype=float)
 
-        # Check that the minimum parameters are passed. Otherwise create an empty df
-        if coord is None or ((pole_vector is None) and (orientation is None)) or surface is None:
-            self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'G_x', 'G_y', 'G_z', 'dip',
-                                            'azimuth', 'polarity', 'surface'])
-        else:
-            self.df = pn.DataFrame(coord, columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r'], dtype=float)
+        self.df['surface'] = self.df['surface'].astype('category', copy=True)
+        self.df['surface'].cat.set_categories(self.formations.df['formation'].cat.categories, inplace=True)
+
+        pole_vector = check_for_nans(pole_vector)
+        orientation = check_for_nans(orientation)
+
+        if coord is not None and ((pole_vector is not None) or (orientation is not None)) and surface is not None:
+            #self.df = pn.DataFrame(coord, columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r'], dtype=float)
+
+            self.df[['X', 'Y', 'Z']] = coord
             self.df['surface'] = surface
             if pole_vector is not None:
                 self.df['G_x'] = pole_vector[:, 0]
@@ -1184,8 +1220,35 @@ class Orientations(Data):
                 else:
                     raise AttributeError('At least pole_vector or orientation should have been passed to reach'
                                          'this point. Check previous condition')
+
+
+        # Check that the minimum parameters are passed. Otherwise create an empty df
+        # if coord is None or ((pole_vector is None) and (orientation is None)) or surface is None:
+        #     self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'G_x', 'G_y', 'G_z', 'dip',
+        #                                     'azimuth', 'polarity', 'surface'])
+        # else:
+        #     self.df = pn.DataFrame(coord, columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r'], dtype=float)
+        #     self.df['surface'] = surface
+        #     if pole_vector is not None:
+        #         self.df['G_x'] = pole_vector[:, 0]
+        #         self.df['G_y'] = pole_vector[:, 1]
+        #         self.df['G_z'] = pole_vector[:, 2]
+        #         self.calculate_orientations()
+        #
+        #         if orientation is not None:
+        #             warnings.warn('If pole_vector and orientation are passed pole_vector is used/')
+        #     else:
+        #         if orientation is not None:
+        #             self.df['azimuth'] = orientation[:, 0]
+        #             self.df['dip'] = orientation[:, 1]
+        #             self.df['polarity'] = orientation[:, 2]
+        #             self.calculate_gradient()
+        #         else:
+        #             raise AttributeError('At least pole_vector or orientation should have been passed to reach'
+        #                                  'this point. Check previous condition')
         # Choose types
         #  self.df[self._columns_i_num] = self.df[self._columns_i_num].astype(float)
+
         self.set_dependent_properties()
         assert ~self.df['surface'].isna().any(), 'Some of the formation passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
@@ -1384,8 +1447,8 @@ class Orientations(Data):
                 c = np.array(self._columns_o_1)
                 orientations_read = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
                 self.set_orientations(coord=orientations_read[[coord_x_name, coord_y_name, coord_z_name]],
-                                      pole_vector=orientations_read[[azimuth_name, dip_name, polarity_name]].values,
-                                      orientation=orientations_read[[G_x_name, G_y_name, G_z_name]].values,
+                                      pole_vector=orientations_read[[G_x_name, G_y_name, G_z_name]].values,
+                                      orientation=orientations_read[[azimuth_name, dip_name, polarity_name]].values,
                                       surface=orientations_read[surface_name])
             else:
                 return table

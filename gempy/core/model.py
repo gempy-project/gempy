@@ -58,10 +58,10 @@ class DataMutation(object):
         if set_series is True:
             if type(mapping_object) is dict:
                 series_list = list(mapping_object.keys())
-                self.series.set_series_index(series_list)
+                self.series.add_series(series_list)
             elif isinstance(mapping_object, pn.Categorical):
                 series_list = mapping_object['series'].values
-                self.series.set_series_index(series_list)
+                self.series.add_series(series_list)
             else:
                 raise AttributeError(str(type(mapping_object)) + ' is not the right attribute type.')
 
@@ -120,6 +120,10 @@ class DataMutation(object):
         Returns:
 
         """
+        # Add categories from series to formation
+        # Updating formations['series'] categories
+        self.formations.df['series'].cat.set_categories(self.series.df.index, inplace=True)
+
         # Add categories from series
         self.interfaces.add_series_categories_from_series(self.series)
         self.orientations.add_series_categories_from_series(self.series)
@@ -436,7 +440,7 @@ class Model(DataMutation):
         # TODO orientations categories_df, grid values etc.
         pass
 
-    def get_data(self, itype='data', numeric=False, verbosity=0):
+    def get_data(self, itype='data', numeric=False):
         """
         Method that returns the interfaces and orientations pandas Dataframes. Can return both at the same time or only
         one of the two
@@ -453,12 +457,9 @@ class Model(DataMutation):
         """
         # dtype = 'object'
         # TODO adapt this
-        if verbosity == 0:
-            show_par_f = self.orientations._columns_o_1
-            show_par_i = self.interfaces._columns_i_1
-        else:
-            show_par_f = self.orientations.df.columns
-            show_par_i = self.interfaces.df.columns
+
+        show_par_f = self.orientations.df.columns
+        show_par_i = self.interfaces.df.columns
 
         if numeric:
             show_par_f = self.orientations._columns_o_num
