@@ -24,7 +24,7 @@ Check out the documentaion either in [github pages](https://gempy.rocks) (better
 
 ## Table of Contents
 
-* [Features](## Features)
+* [Features](##Features)
 * [Getting Started](##GettingStarted)
     * [Dependecies](###Dependecies)
     * [Installation](###Installation)
