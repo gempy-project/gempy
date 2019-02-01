@@ -135,6 +135,8 @@ class InputData(object):
         self.interfaces['isFault'] = self.interfaces['isFault'].astype('bool')
         self.orientations['isFault'] = self.orientations['isFault'].astype('bool')
 
+
+
     def set_colors(self, colordict):
         """
         add a colordictionary where each formation has a hex string defining its color.
@@ -1114,8 +1116,8 @@ class InputData(object):
         # the index. For some of the methods (pn.drop) we have to apply afterwards we need to reset these indeces
        # self.reset_indices()
         # DEP
-        # self.interfaces.reset_index(drop=True, inplace=True)
-        # self.orientations.reset_index(drop=True, inplace=True)
+        self.interfaces.reset_index(drop=True, inplace=True)
+        self.orientations.reset_index(drop=True, inplace=True)
 
         # Update labels for anotations
         self.set_annotations()

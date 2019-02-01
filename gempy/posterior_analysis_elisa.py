@@ -88,18 +88,29 @@ class Posterior():
             #else:
                 #print('if there is no topography defined, model_type must be set to model')
             # self.ie_total = self.calculate_ie_total()
+    def i_need_this(self):
+        return self.input_data
 
-    def _change_input_data(self, i):
+    def _change_input_data(self, i, update_geodata = False):
         i = int(i)
         # replace interface data
         self.interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
         # replace foliation data
-        self.interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = \
-            self.input_data[i][1]
+        #Todo carfeful with the order of the entries, must be same like the one that the input data function returns
+        self.interp_data.geo_data_res.orientations[["X", "Y", "Z","G_x", "G_y", "G_z", 'dip', 'azimuth', 'polarity']] = self.input_data[i][1]
         self.interp_data.update_interpolator()
         # if self.verbose:
         # print("interp_data parameters changed.")
-        return self.interp_data
+        if update_geodata is True:
+            self.geo_data.orientations[['X','Y','Z']] = self.rescaled2real(self.interp_data.geo_data_res.orientations[["X", "Y", "Z"]])
+            self.geo_data.interfaces[['X','Y','Z']] = self.rescaled2real(self.interp_data.geo_data_res.interfaces[["X", "Y", "Z"]])
+
+        #return self.interp_data, self.geo_data
+
+    def rescaled2real(self, xyz):
+        """rescales the rescaled coordinates to the original values"""
+        return np.multiply(self.interp_data.rescaling_factor, (xyz - 0.5001)) + self.interp_data.centers.values
+
 
 
     #def all_post_maps(self):
@@ -155,7 +166,8 @@ class Posterior():
             lith_block, fault_block = gp.compute_model(self.interp_data)
         elif model_type == 'map':
             lith_block, fault_block = gp.compute_model_at(self.topography.surface_coordinates[0], self.interp_data)
-
+        else:
+            print('Obacht')
         ### this is by now only for first entry of lithblock
         block = lith_block[0]
         ### get number of different lithologies
@@ -204,7 +216,8 @@ class Posterior():
 
     def plot_section(self, iteration=1, block='lith', cell_number=3, **kwargs):
         '''kwargs: gempy.plotting.plot_section keyword arguments'''
-        self._change_input_data(iteration)
+        self._change_input_data(iteration, update_geodata=True)
+
         lith_block, fault_block = gp.compute_model(self.interp_data)
 
         if 'topography' not in kwargs:
@@ -215,14 +228,14 @@ class Posterior():
 
             if block == 'lith':
                 gp.plot_section(self.geo_data, lith_block[0], cell_number=cell_number, topography=topo, **kwargs)
-            else:
-                gp.plot_section(self.geo_data, block, cell_number=cell_number, topography=topo, **kwargs)
+            elif block == 'fault':
+                gp.plot_section(self.geo_data, fault_block[0], cell_number=cell_number, topography=topo, **kwargs)
 
         else:
             if block == 'lith':
                 gp.plot_section(self.geo_data, lith_block[0], cell_number=cell_number, **kwargs)
-            else:
-                gp.plot_section(self.geo_data, block, cell_number=cell_number, **kwargs)
+            elif block == 'fault':
+                gp.plot_section(self.geo_data, fault_block[0], cell_number=cell_number, **kwargs)
 
     def plot_map(self, iteration=1, **kwargs):
         self._change_input_data(iteration)

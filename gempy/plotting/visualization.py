@@ -138,7 +138,7 @@ class PlotData2D(object):
         extent = self._slice(direction)[3]
         aspect = (extent[1] - extent[0])/(extent[3] - extent[2])
 
-        # apply vertical exageration
+        # apply vertical exaggeration
         if direction == 'x' or direction == 'y':
             aspect /= ve
 
