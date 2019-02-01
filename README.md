@@ -25,7 +25,7 @@ Check out the documentaion either in [github pages](https://gempy.rocks) (better
 ## Table of Contents
 
 * [Features](#feat)
-    * [Sandbox] (#sandbox)
+    * [Sandbox](#sandbox)
     * [Remote Geomod](#remotegeo)
 * [Getting Started](#getstart)
     * [Dependencies](#depend)
@@ -82,8 +82,9 @@ For a more detailed elaboration of the theory behind *GemPy*, take a look at the
 
 Besides the main functionality GemPy is powering currently some further projects:
 
-### Sandbox
 <a name="sandbox"></a>
+### Sandbox
+
 New developments in the field of augmented reality, i.e. the superimposition of real and digital objects, offer interesting and diverse possibilities that have hardly been exploited to date.
 The aim of the project is therefore the development and realization of an augmented reality sandbox for interaction with geoscientific data and models.
 In this project, methods are to be developed to project geoscientific data (such as the outcrop of a geological layer surface or geophysical measurement data) onto real surfaces.
@@ -97,9 +98,9 @@ The finished sandbox can be used in numerous lectures and public events , but is
 
 <p align="center"><img src="docs/source/images/Sandbox.gif" width="600"></p>
 
-
-### Remote Geomod: From GoogleEarth to 3-D Geology
 <a name="remotegeo"></a>
+### Remote Geomod: From GoogleEarth to 3-D Geology
+
 We support this effort here with a full 3-D geomodeling exercise
 on the basis of the excellent possibilities offered by open global data sets, implemented in
 GoogleEarth, and dedicated geoscientific open-source software and motivate the use of 3-D
