@@ -16,11 +16,9 @@ class TestModel:
         model.read_data(path_i=input_path + "/input_data/tut_chapter1/simple_fault_model_points.csv",
                         path_o=input_path + "/input_data/tut_chapter1/simple_fault_model_orientations.csv")
 
-        # In[9]:
-
-        a = model.formations.df['series'].cat
-        a.set_categories(model.series.df.index)
-
+        gp.map_series_to_formations(model, {"Fault_Series": 'Main_Fault',
+                                                "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                                                 'Shale', 'Sandstone_1', 'basement')})
         # In[20]:
 
         model.map_series_to_formations({"Fault_Series": ('Main_Fault', 'Silstone'),

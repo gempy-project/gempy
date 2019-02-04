@@ -86,10 +86,10 @@ def set_interfaces_from_block(geo_data, block, block_grid=None, n_points=20, res
     for e, value in enumerate(values):
         block_bool = find_interfaces_from_block(block, value)
 
-        geo_data.set_interfaces(interfaces_from_interfaces_block(block_bool, block_grid,
-                                                                 formation='formation_'+str(e), series='Default_series',
-                                                                 formation_number=e, order_series=1,
-                                                                 n_points=n_points), append=True)
+        geo_data.set_interface_object(interfaces_from_interfaces_block(block_bool, block_grid,
+                                                                       formation='formation_'+str(e), series='Default_series',
+                                                                       formation_number=e, order_series=1,
+                                                                       n_points=n_points), append=True)
         if reset_index:
             geo_data.interfaces.reset_index(drop=True, inplace=True)
 

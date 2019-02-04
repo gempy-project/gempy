@@ -96,8 +96,8 @@ def test_ch5(theano_f_grav, theano_f):
     interp_data_extended = interp_data
     interp_data_extended.update_interpolator(geo_data_extended)
 
-    geo_data_extended.set_formations(formation_values=[2.61,2.92,3.1,2.92,2.61],
-                            formation_order=['EarlyGranite', 'SimpleMafic2',
+    geo_data_extended.set_formations_object(formation_values=[2.61, 2.92, 3.1, 2.92, 2.61],
+                                            formation_order=['EarlyGranite', 'SimpleMafic2',
                                              'SimpleBIF', 'SimpleMafic1',
                                              'basement'])
 

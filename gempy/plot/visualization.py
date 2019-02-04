@@ -142,15 +142,15 @@ class PlotData2D(object):
 
         #fig, ax = plt.subplots()
 
-        series_to_plot_i['formation'] = series_to_plot_i['formation'].cat.remove_unused_categories()
-        series_to_plot_f['formation'] = series_to_plot_f['formation'].cat.remove_unused_categories()
+    #    series_to_plot_i['surface'] = series_to_plot_i['surface'].cat.remove_unused_categories()
+    #    series_to_plot_f['surface'] = series_to_plot_f['surface'].cat.remove_unused_categories()
 
         if data_type == 'all':
             p = sns.lmplot(x, y,
                            data=series_to_plot_i,
                            fit_reg=False,
                            aspect=aspect,
-                           hue="formation",
+                           hue="surface",
                            #scatter_kws=scatter_kws,
                            legend=False,
                            legend_out=False,
@@ -595,7 +595,7 @@ class vtkVisualization:
         # Number of renders
         self.n_ren = 4
         self.id = geo_data.interfaces.df['id'].unique().squeeze()
-        self.formation_name = geo_data.interfaces.df['formation'].unique()
+        self.formation_name = geo_data.interfaces.df['surface'].unique()
 
         # Extents
         self.extent = self.geo_model.grid.extent

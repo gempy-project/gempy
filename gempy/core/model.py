@@ -80,7 +80,7 @@ class DataMutation(object):
     # --------------------------------------
     # ======================================
 
-    def set_grid(self, grid: GridClass, update_model=True):
+    def set_grid_object(self, grid: GridClass, update_model=True):
         self.grid = grid
         self.additional_data.grid = grid
         self.rescaling.grid = grid
@@ -106,7 +106,7 @@ class DataMutation(object):
         self.rescaling.set_rescaled_grid()
         self.interpolator.set_theano_share_input()
 
-    def set_series(self):
+    def set_series_object(self):
         """
         Not implemented yet. Exchange the series object of the Model object
         Returns:
@@ -135,7 +135,7 @@ class DataMutation(object):
         # For the drift equations. TODO disentagle this property
         self.additional_data.update_default_kriging()
 
-    def set_formations(self):
+    def set_formations_object(self):
         """
         Not implemented yet. Exchange the formation object of the Model object
         Returns:
@@ -166,7 +166,7 @@ class DataMutation(object):
         self.additional_data.update_structure()
         return s
 
-    def set_interfaces(self, interfaces: Interfaces, update_model=True):
+    def set_interface_object(self, interfaces: Interfaces, update_model=True):
         self.interfaces = interfaces
         self.rescaling.interfaces = interfaces
         self.interpolator.interfaces = interfaces
@@ -183,7 +183,7 @@ class DataMutation(object):
         self.update_structure()
         self.rescaling.set_rescaled_interfaces(idx=idx)
 
-    def set_orientations(self):
+    def set_orientations_object(self):
         pass
 
     def update_to_orientations(self):

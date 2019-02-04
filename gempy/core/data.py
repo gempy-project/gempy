@@ -165,7 +165,7 @@ class Series(object):
 
         if series_order is None:
             series_order = ['Default series']
-        self.df = pn.DataFrame(index=pn.CategoricalIndex(series_order, ordered=True),
+        self.df = pn.DataFrame(np.array([[1, np.nan]]), index=pn.CategoricalIndex(series_order, ordered=True),
                                columns=['order_series', 'BottomRelation'])
 
     def __repr__(self):
@@ -180,7 +180,7 @@ class Series(object):
         """
         self.df.at[:, 'order_series'] = pn.RangeIndex(1, self.df.shape[0] + 1)
 
-    def set_series_index(self, series_order: Union[pn.DataFrame, list], update_order_series=True):
+    def set_series_index(self, series_order: Union[pn.DataFrame, list, np.ndarray], update_order_series=True):
         """
         Rewrite the index of the series df
         Args:
@@ -195,11 +195,12 @@ class Series(object):
                 list_of_series = series_order.df['series'].unique()
             except KeyError:
                 raise KeyError('Interface does not have series attribute')
-        elif type(series_order) is list:
+        elif type(series_order) is list or type(series_order) is np.ndarray:
             list_of_series = np.atleast_1d(series_order)
 
         else:
-            raise AttributeError
+            raise AttributeError('series_order is not neither list or Interfaces object.')
+
         series_idx = list_of_series
         # Categoriacal index does not have inplace
         # This update the categories
@@ -208,8 +209,8 @@ class Series(object):
         self.faults.faults_relations_df.index = self.faults.faults_relations_df.index.set_categories(series_idx, rename=True)
         self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.set_categories(series_idx, rename=True)
 
-
         # But we need to update the values too
+        # TODO: isnt this the behaviour we get fif we do not do the rename=True?
         for c in series_order:
             self.df.loc[c] = np.nan
             self.faults.df.loc[c, 'isFault'] = np.nan
@@ -675,7 +676,7 @@ class Formations(object):
         pass
 
 # region set_id
-    def set_id(self, df=None):
+    def set_id(self, df: pn.DataFrame = None):
         """
         Set id of the layers (1 based)
         Args:
@@ -687,7 +688,7 @@ class Formations(object):
         if df is None:
             df = self.df
 
-        df['id'] = df.index + 1
+        df['id'] = df.reset_index().index + 1
         self.df = df
         return self.df
 # endregion

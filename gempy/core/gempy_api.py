@@ -77,9 +77,7 @@ def load_model(path):
 
 
 # region Series functionality
-@_setdoc(Series.__doc__)
-def create_series(series_distribution=None, order=None):
-    return Series(series_distribution=series_distribution, order=order)
+
 #
 #
 # def set_series(model: Model, series_distribution, order_series=None, order_formations=None,
@@ -120,7 +118,7 @@ def create_series(series_distribution=None, order=None):
 #         return True
 
 
-def set_series(geo_model, d, order_series=None, order_formations=None):
+def set_series_DEP(geo_model, d, order_series=None, order_formations=None):
     geo_model.formations.map_series(d)
     series_idx = geo_model.series.df.index.set_categories(d.keys(), rename=True)
     # If order, it has to go here
@@ -147,7 +145,40 @@ def set_series(geo_model, d, order_series=None, order_formations=None):
     geo_model.orientations.sort_table()
 
 
-def select_series(geo_data, series):
+def set_series(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = None,
+               set_series=True, sort_data: bool = True):
+    warnings.warn("set_series will get deprecated in the next version of gempy. It still exist only to keep"
+                  "the behaviour equal to older version. Use map_series_to_formations isnead.", FutureWarning)
+
+    map_series_to_formations(geo_model, mapping_object, set_series, sort_data)
+
+
+def map_series_to_formations(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = None,
+                             set_series=True, sort_data: bool = True, remove_unused_series=True, quiet=False):
+
+    geo_model.map_series_to_formations(mapping_object, set_series, sort_data)
+
+    if remove_unused_series is True:
+        geo_model.formations.df['series'].cat.remove_unused_categories(inplace=True)
+        unused_cat = geo_model.series.df.index[~geo_model.series.df.index.isin(
+            geo_model.formations.df['series'].cat.categories)]
+        geo_model.series.delete_series(unused_cat)
+
+    # TODO: Give the same name to sort formations and seires
+    geo_model.series.update_order_series()
+    geo_model.formations.sort_formations()
+
+    geo_model.update_from_series()
+    geo_model.update_from_formations()
+
+    if quiet is True:
+        return True
+    else:
+        geo_model.formations.update_sequential_pile()
+        return geo_model.formations.sequential_pile.figure
+
+
+def select_series_TOUPDATE(geo_data, series):
     """
     Return the formations of a given serie in string
 
@@ -201,13 +232,10 @@ def get_sequential_pile(model: Model):
 
 
 # region Formations functionality
-@_setdoc(Formations.__doc__)
-def create_formations(values_array=None, values_names=np.empty(0), formation_names=np.empty(0)):
-    f = Formations(values_array=values_array, properties_names=values_names, formation_names=formation_names)
-    return f
 
 
-def set_formations(model: Model, formation_names=None, formations_order=None, values_array=None,
+
+def set_formations_DEP(model: Model, formation_names=None, formations_order=None, values_array=None,
                    properties_names=None):
     """
     Function to order and change the value of the model formation_names. The values of the formation_names will be the final
@@ -240,7 +268,13 @@ def set_formations(model: Model, formation_names=None, formations_order=None, va
     return True
 
 
-def set_order_formations(geo_model, formation_order):
+@_setdoc([Formations.reorder_formations])
+def reorder_formations(geo_model: Model, list_names):
+    geo_model.formations.reorder_formations(list_names)
+    return True
+
+
+def set_order_formations_DEP(geo_model, formation_order):
     warnings.warn("set_order_formations will be removed in version 1.2, "
                   "use gempy.set_formations function instead", FutureWarning)
     set_formations(geo_model, formations_order=formation_order)
@@ -252,11 +286,6 @@ def get_formations(model: Model):
 
 
 # region Fault functionality
-@_setdoc(Faults.__doc__)
-def create_faults(series: Series, series_fault=None, rel_matrix=None):
-    return Faults(series=series, series_fault=series_fault, rel_matrix=rel_matrix)
-
-
 def set_faults(model: Model, faults: Faults):
     model.faults = faults
 
@@ -267,14 +296,12 @@ def get_faults(model: Model):
 
 
 # region Grid functionality
-@_setdoc(GridClass.__doc__)
-def create_grid(grid_type: str, **kwargs):
-    return GridClass(grid_type=grid_type, **kwargs)
 
 
-@_setdoc(Model.set_grid.__doc__)
+
+@_setdoc(Model.set_grid_object.__doc__)
 def set_grid(model: Model, grid: GridClass, update_model=True):
-    model.set_grid(grid=grid, update_model=update_model)
+    model.set_grid_object(grid=grid, update_model=update_model)
 
 
 def get_grid(model: Model):
@@ -307,25 +334,25 @@ def get_extent(model: Model):
 @_setdoc([Interfaces.read_interfaces.__doc__, Orientations.read_orientations.__doc__])
 def read_data(geo_model: Model, path_i=None, path_o=None, **kwargs):
     geo_model.read_data(path_i, path_o, **kwargs)
+    return True
 
 
-def set_interfaces(geo_data, interf_dataframe, append=False):
+def set_interfaces_object(geo_data: Model, interfaces: Interfaces, update_model=True):
     """
-     Method to change or append a Dataframe to interfaces in place.
+     Method to change the Interfaces object of a Model object
 
      Args:
-         geo_data(:class:`gempy.data_management.InputData`)
-         interf_dataframe (:class:`DataFrame`)
-         append (Bool): if you want to append the new data frame or substitute it
+
      """
-    geo_data.set_interfaces(interf_dataframe, append=append)
+    geo_data.set_interface_object(interfaces, update_model)
+    return True
 
 
 def get_interfaces(model: Model):
     return model.interfaces
 
 
-def set_orientations(geo_data, orient_dataframe, append=False):
+def set_orientations_object(geo_data, orient_dataframe, append=False):
     """
     Method to change or append a dataframe to orientations in place.  A equivalent Pandas Dataframe with
     ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation'] has to be passed.
@@ -336,10 +363,12 @@ def set_orientations(geo_data, orient_dataframe, append=False):
          append (Bool): if you want to append the new data frame or substitute it
     """
 
-    geo_data.set_orientations(orient_dataframe, append=append)
+    # TODO implmented
+    raise NotImplementedError
+    #geo_data.set_orientations(orient_dataframe, append=append)
 
 
-def set_orientation_from_interfaces(geo_data, indices_array):
+def set_orientation_from_interfaces_TOUPDATE(geo_data, indices_array):
     """
     Create and set orientations from at least 3 points of the :attr:`gempy.data_management.InputData.interfaces`
      Dataframe
@@ -384,20 +413,20 @@ def get_orientations(model: Model):
     return model.orientations
 
 
-def rescale_data(model: Model, rescaling_factor=None, centers=None):
+def rescale_data(geo_model: Model, rescaling_factor=None, centers=None):
     """
 
     object between 0 and 1 due to stability problem of the float32.
 
     Args:
-        model (:class:`gempy.core.model.Model`)
+        geo_model (:class:`gempy.core.model.Model`)
         rescaling_factor(float): factor of the rescaling. Default to maximum distance in one the axis
 
     Returns:
         True
     """
 
-    model.rescaling.rescale_data(rescaling_factor, centers)
+    geo_model.rescaling.rescale_data(rescaling_factor, centers)
     return True
 # endregion
 
@@ -405,35 +434,35 @@ def rescale_data(model: Model, rescaling_factor=None, centers=None):
 # region Interpolator functionality
 @_setdoc([Interpolator.__doc__,
          Interpolator.set_theano_shared_parameters.__doc__])
-def set_interpolation_data(model: Model, inplace=True, compile_theano: bool=True, output='geology',
+def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=True, output='geology',
                            theano_optimizer='fast_compile', verbose:list=np.nan):
     """
 
     Args:
-        model:
+        geo_model:
         inplace:
         compile_theano
 
     Returns:
 
     """
-    model.additional_data.options.at['output', 'values'] = output
-    model.additional_data.options.at['theano_optimizer', 'values'] = theano_optimizer
-    model.additional_data.options.at['verbosity', 'values'] = verbose
+    geo_model.additional_data.options.at['output', 'values'] = output
+    geo_model.additional_data.options.at['theano_optimizer', 'values'] = theano_optimizer
+    geo_model.additional_data.options.at['verbosity', 'values'] = verbose
 
     # TODO add kwargs
-    model.rescaling.rescale_data()
-    update_additional_data(model)
-    model.interfaces.sort_table()
-    model.orientations.sort_table()
+    geo_model.rescaling.rescale_data()
+    update_additional_data(geo_model)
+    geo_model.interfaces.sort_table()
+    geo_model.orientations.sort_table()
 
-    model.interpolator.set_theano_graph(model.interpolator.create_theano_graph())
-    model.interpolator.set_theano_shared_parameters()
+    geo_model.interpolator.set_theano_graph(geo_model.interpolator.create_theano_graph())
+    geo_model.interpolator.set_theano_shared_parameters()
 
     if compile_theano is True:
-        model.interpolator.compile_th_fn(inplace=inplace)
+        geo_model.interpolator.compile_th_fn(inplace=inplace)
 
-    return model.additional_data.options
+    return geo_model.additional_data.options
 
 
 def get_interpolator(model: Model):
@@ -532,7 +561,7 @@ def compute_model_at(new_grid: Union[GridClass, ndarray], model: Model, compute_
     """
     if type(new_grid) is np.ndarray:
     #TODO create backup of the mesh and a method to go back to it
-        set_grid(model, create_grid('custom_grid', custom_grid=new_grid))
+        set_grid(model, GridClass('custom_grid', custom_grid=new_grid))
     elif isinstance(new_grid, GridClass):
         set_grid(model, new_grid)
     # Now we are good to compute the model again only in the new point
@@ -561,7 +590,7 @@ def get_surfaces(model: Model):
 
 # region Model level functions
 @_setdoc([Series.set_series_index.__doc__, Faults.set_is_fault.__doc__])
-def set_values_to_default(model: Model, series_distribution=None, order_series=None, order_formations=None,
+def set_values_to_default_DEP(model: Model, series_distribution=None, order_series=None, order_formations=None,
                           set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0) -> bool:
     """
     Set the attributes of most of the objects to its default value to be able to compute a geological model.
@@ -621,7 +650,7 @@ def set_values_to_default(model: Model, series_distribution=None, order_series=N
         return True
 
 
-def map_to_data(model: Model, series: Series = None, formations: Formations = None, faults: Faults = None):
+def map_to_data_DEP(model: Model, series: Series = None, formations: Formations = None, faults: Faults = None):
     # TODO this function makes sense as Model method
 
     if formations is not None:
@@ -640,7 +669,7 @@ def map_to_data(model: Model, series: Series = None, formations: Formations = No
         model.orientations.map_data_from_faults(faults)
 
 
-def get_data(model: Model, itype='data', numeric=False, verbosity=0):
+def get_data(model: Model, itype='data', numeric=False):
     """
     Method to return the data stored in :class:`DataFrame` within a :class:`gempy.interpolator.InterpolatorData`
     object.
@@ -657,10 +686,10 @@ def get_data(model: Model, itype='data', numeric=False, verbosity=0):
         pandas.core.frame.DataFrame
 
     """
-    return model.get_data(itype=itype, numeric=numeric, verbosity=verbosity)
+    return model.get_data(itype=itype, numeric=numeric)
 
 
-@_setdoc([set_values_to_default.__doc__])
+#@_setdoc([set_values_to_default.__doc__])
 def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] = (50, 50, 50),
                 project_name: str = 'default_project', **kwargs) -> Model:
     """
@@ -693,7 +722,7 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
     return init_data(geo_model, extent=extent, resolution=resolution, project_name=project_name, **kwargs)
 
 
-@_setdoc([set_values_to_default.__doc__])
+#@_setdoc([set_values_to_default.__doc__])
 def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
               resolution: Union[list, ndarray] = None,
               default_values=True, **kwargs) -> Model:
@@ -730,8 +759,10 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
     read_data(geo_model, **kwargs)
 
     if default_values is True:
-        set_values_to_default(geo_model, series_distribution=None, order_series=None, order_formations=None,
-                              set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0)
+        # set_values_to_default_DEP(geo_model, series_distribution=None, order_series=None, order_formations=None,
+        #                       set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0)
+        geo_model.update_from_formations()
+        geo_model.update_from_series()
     #update_additional_data(model)
 
     return geo_model
