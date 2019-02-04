@@ -618,7 +618,7 @@ def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
         if len(maxpos_fw) > len(maxpos_hw):
             print('FW array too long - correcting...')
             maxpos_corrected = np.zeros_like(maxpos_hw)
-            maxpos_corrected[:, 0] = maxpos_hw_red[:,0]
+            maxpos_corrected[:, 0] = maxpos_hw[:,0]
             for i in maxpos_corrected[:, 0]:
                 posi = np.argwhere(maxpos_fw[:, 0] == i)
                 filter_max = np.max(maxpos_fw[posi, 1])
