@@ -232,7 +232,11 @@ def get_sequential_pile(model: Model):
 
 
 # region Formations functionality
-
+@_setdoc(Formations.set_formation_names_pro.__doc__)
+def set_formation_names(geo_model: Model, list_names: list, update_df=True):
+    geo_model.formations.set_formation_names_pro(list_names, update_df)
+    geo_model.update_from_formations()
+    return geo_model.formations
 
 
 def set_formations_DEP(model: Model, formation_names=None, formations_order=None, values_array=None,
@@ -268,7 +272,7 @@ def set_formations_DEP(model: Model, formation_names=None, formations_order=None
     return True
 
 
-@_setdoc([Formations.reorder_formations])
+@_setdoc([Formations.reorder_formations.__doc__])
 def reorder_formations(geo_model: Model, list_names):
     geo_model.formations.reorder_formations(list_names)
     return True

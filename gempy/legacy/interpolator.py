@@ -24,7 +24,7 @@ sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import copy
 import numpy as np
 import pandas as pn
-from gempy import theano_graph
+from gempy.legacy import theano_graph
 import theano
 import warnings
 from .data_management import InputData
