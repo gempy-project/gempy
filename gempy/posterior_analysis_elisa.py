@@ -88,7 +88,24 @@ class Posterior():
                 #print('if there is no topography defined, model_type must be set to model')
             # self.ie_total = self.calculate_ie_total()
     def i_need_this(self):
-        return self.input_data
+        loc_df = self.input_data[:,0]
+        orient_df = self.input_data[:, 1]
+        for i in range(0, len(loc_df)): #rescale to original coordinates
+            loc_df[i] = self.rescaled2real(loc_df[i])
+        for i in range(0, len(orient_df)):
+            orient_df[i][:, :3] = self.rescaled2real(orient_df[i][:, :3])
+        self.loc_df = loc_df
+        self.orient_df=orient_df
+        #return self.loc_df, self.orient_df
+
+    # extract all points for plotting
+    def get_points(self):
+        plot_points = np.array([])
+        for i in range(0, len(self.loc_df)):
+            # plt.plot(loc_df[i][:,0],loc_df[i][:,1],'o',color='k')
+            plot_points = np.append(plot_points, self.loc_df[i])
+        self.plot_points = plot_points.reshape(-1, 3)
+        #return
 
     def _change_input_data(self, i, update_geodata = False):
         i = int(i)
@@ -254,17 +271,28 @@ class Posterior():
         self._add_colorbar(im, pad_fraction=dist)
         plt.title('Cell entropy of geological map')
 
-    def plot_section_ie(self, block='lith', cell_number=1, direction='y', **kwargs):
-        # for lithblock
+    def plot_section_ie(self, block='lith', cell_number=1, direction='y', plot_all_data=True,**kwargs):
+        if plot_all_data:
+            if direction == 'y':
+                a, b = self.plot_points[:,0],self.plot_points[:,2]
+            elif direction == 'x':
+                a, b = self.plot_points[:, 1], self.plot_points[:, 2]
+            elif direction == 'z':
+                a, b = self.plot_points[:, 0], self.plot_points[:, 1]
+
         if block == 'lith':
             norm = matplotlib.colors.Normalize(self.lb_ie.min(), self.lb_ie.max())
             gp.plotting.plot_section(self.geo_data, self.lb_ie, cell_number=cell_number, direction=direction, cmap='viridis',
                                      norm=norm, **kwargs)
+            if plot_all_data:
+                plt.plot(a,b,'ko',markersize=2)
             # self._add_colorbar(im)
         elif block == 'fault':
             norm = matplotlib.colors.Normalize(self.fb_ie.min(), self.fb_ie.max())
             gp.plotting.plot_section(self.geo_data, self.fb_ie, cell_number=cell_number, direction=direction, cmap='viridis',
                                      norm=norm, **kwargs)
+            if plot_all_data:
+                plt.plot(a,b,'ko',markersize=2)
             # self._add_colorbar(im)
 
     def _add_colorbar(self, im, aspect=20, pad_fraction=1, **kwargs):
