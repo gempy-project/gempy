@@ -16,7 +16,6 @@
 
 
     @author: Elisa Heim, Alexander Schaaf, Miguel de la Varga
-    (I guess, copied some code from posterior_analysis.py)
 """
 
 import warnings

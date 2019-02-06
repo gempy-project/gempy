@@ -135,8 +135,6 @@ class InputData(object):
         self.interfaces['isFault'] = self.interfaces['isFault'].astype('bool')
         self.orientations['isFault'] = self.orientations['isFault'].astype('bool')
 
-
-
     def set_colors(self, colordict):
         """
         add a colordictionary where each formation has a hex string defining its color.
@@ -153,12 +151,7 @@ class InputData(object):
             for form2, color in colordict.items():
                 if form == form2:
                     self.formations.at[form, 'color'] = str(color)
-
-        def color(value):
-            if type(value) == str:
-                return "background-color: %s" % value
-
-        return self.formations.style.applymap(color,subset=['color'])
+        return self.formations.style.applymap(background_color, subset=['color'])
 
     def set_basement(self):
 
@@ -937,6 +930,7 @@ class InputData(object):
         self.formations['value'] = formation_values
         self.formations['formation_number'] = np.arange(1, self.formations.shape[0]+1)
 
+
         self.interfaces['formation_number'] = self.interfaces['formation'].map(self.formations.iloc[:, 1])
         self.orientations['formation_number'] = self.orientations['formation'].map(self.formations.iloc[:, 1])
 
@@ -1202,6 +1196,12 @@ class InputData(object):
             print('formation(s) with less than 2 interface points: ', missing_interf)
         if len(missing_orient) is not 0:
             print('formation(s) without orientation data: ', missing_orient)
+
+
+def background_color(value):
+    if type(value) == str:
+        return "background-color: %s" % value
+
 
 
 def get_orientation(normal):

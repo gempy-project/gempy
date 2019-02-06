@@ -816,13 +816,13 @@ def extract_countours(geo_data,interp_data,cell_number,direction='y',fb=None,lb=
     Returns: nothing, it just plots
 
     """
-    fault_colors = ['#9f0052', '#ff3f20', '#ffbe00']
+    fault_colors = ['#000000', '#000000', '#000000', '#000000', '#000000']
     cm_fault = matplotlib.colors.LinearSegmentedColormap.from_list('faults', fault_colors, N=5)
     lith_colors = ['#000000', '#000000', '#000000', '#000000', '#000000']
     cm_lith = matplotlib.colors.LinearSegmentedColormap.from_list('lith_colors', lith_colors, N=5)
 
-    n_faults = int(fb.shape[0] / 2)
-    level = []
+    #n_faults = int(fb.shape[0] / 2)
+    #level = []
     block_id = []
 
     all_levels = interp_data.potential_at_interfaces[np.where(interp_data.potential_at_interfaces != 0)]
@@ -840,11 +840,12 @@ def extract_countours(geo_data,interp_data,cell_number,direction='y',fb=None,lb=
     else:
         print('not a direction')
 
-    for i in range(len(block_id)):
-        cp = plt.contour(fb[block_id[i]].reshape(geo_data.resolution)[_slice].T, 0,
-                         extent=geo_data.extent[[0, 1, 4, 5]], levels=all_levels[i], cmap=cm_fault)
+    if fb is not None:
+        for i in range(len(block_id)):
+            plt.contour(fb[block_id[i]].reshape(geo_data.resolution)[_slice].T, 0,
+                        extent=geo_data.extent[[0, 1, 4, 5]], levels=all_levels[i], cmap=cm_fault)
     if lb is not None:
-        cp2 = plt.contour(lb[1].reshape(geo_data.resolution)[_slice].T, 0,
-                          extent=geo_data.extent[[0, 1, 4, 5]], levels=np.sort(all_levels[len(block_id):]),
-                          cmap=cm_lith)
+        plt.contour(lb[1].reshape(geo_data.resolution)[_slice].T, 0,
+                    extent=geo_data.extent[[0, 1, 4, 5]], levels=np.sort(all_levels[len(block_id):]),
+                    cmap=cm_lith)
 

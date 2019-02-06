@@ -74,28 +74,20 @@ class PlotData2D(object):
         self.formation_numbers = self._data.interfaces['formation_number'].unique()
 
         try:
-            #self.colors = list(self._data.formations['color'])
-            self._color_lot = dict(zip(self._data.formations['formation_number'], self._data.formations['color']))
-            #bounds = [key for key in self._color_lot.keys()]
-            #c = []
-            #for key in bounds:
-                #c.append(self._color_lot[key])
-
-            #self._cmap = matplotlib.colors.ListedColormap(c)
-            #self._norm = matplotlib.colors.Normalize()
-            #self._norm = matplotlib.colors.BoundaryNorm(np.asarray(bounds)-.502, self._cmap.N)
+            self._color_lot = dict(zip(self._data.formations['formation_number'], list(self._data.formations['color'])))
+            self._cmap = matplotlib.colors.ListedColormap(list(self._data.formations['color']))
+            self._norm = matplotlib.colors.Normalize(vmin=1, vmax=len(self._cmap.colors))
 
         except KeyError:
             self._color_lot = color_lot
-
-        self._cmap = cmap
-        self._norm = norm
+            self._cmap = cmap
+            self._norm = norm
             # Change dictionary keys numbers for formation names
 
-        for i in zip(self.formation_names, self.formation_numbers):
-            self._color_lot[i[0]] = self._color_lot[i[1]]
+            for i in zip(self.formation_names, self.formation_numbers):
+                self._color_lot[i[0]] = self._color_lot[i[1]]
 
-
+        #print(self._cmap.colors, self._norm.boundaries, self._color_lot)
 
         # DEP?
         # if 'scalar_field' in kwargs:
@@ -159,14 +151,15 @@ class PlotData2D(object):
             series_to_plot_f = self._data.orientations[self._data.orientations["series"] == series]
 
         # Change dictionary keys numbers for formation names
-        #for i in zip(self.formation_names, self.formation_numbers):
-            #self._color_lot[i[0]] = self._color_lot[i[1]]
+        for i in zip(self.formation_names, self.formation_numbers):
+            self._color_lot[i[0]] = self._color_lot[i[1]]
         #print(self._color_lot)
 
         #fig, ax = plt.subplots()
 
         series_to_plot_i['formation'] = series_to_plot_i['formation'].cat.remove_unused_categories()
         series_to_plot_f['formation'] = series_to_plot_f['formation'].cat.remove_unused_categories()
+        #print(series_to_plot_i)
 
         if data_type == 'all':
             #print(self._color_lot)
@@ -301,22 +294,17 @@ class PlotData2D(object):
         else:
             aspect = 1
 
-        #self._norm = matplotlib.colors.Normalize()
         if 'cmap' not in kwargs:
             kwargs['cmap'] = self._cmap #
-            #kwargs['cmap'] = matplotlib.colors.ListedColormap(list(self._color_lot.values()))
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
-
-        #print(self._norm)
-        #print(self._cmap)
 
         im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
                         extent=extent_val,
                         interpolation=interpolation,
                         aspect=aspect,
                         **kwargs)
-        if direction == 'x' or direction=='y':
+        if direction == 'x' or direction == 'y':
             if topography:
                  # TODO: apply vertical exaggeration to topography
                 topoline = topography._slice(direction = direction, extent = extent_val, cell_number = cell_number)
@@ -325,9 +313,8 @@ class PlotData2D(object):
 
         import matplotlib.patches as mpatches
         colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
-        #colors = list(self._color_lot.values())
-        #print(colors,len(self.formation_names),self.formation_names)
         patches = [mpatches.Patch(color=colors[i], label=self.formation_names[i]) for i in range(len(self.formation_names))]
+
         if not plot_data:
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.xlabel(x)
@@ -335,7 +322,17 @@ class PlotData2D(object):
         return plt.gcf()
 
     def plot_geomap(self, topography=None, geomap=None, plot_data=False, **kwargs):
-        #Todo if this is called before blocks are computed interp data changes?!?
+        """
+        Compute and plot the model at the coordinates of the surface coordinates.
+        Args:
+            topography: gp.utils.topopgraphy.DEM object
+            geomap: np.array of already computed geomap, if none, map is computed (can take a bit depending on resolution of DEM)
+            plot_data:
+            **kwargs:
+
+        Returns:
+
+        """
         if plot_data:
             self.plot_data(direction='z', data_type='all')
 
