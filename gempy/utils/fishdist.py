@@ -55,6 +55,9 @@ class vMF():
             self.kappa = kappa
 
         if mean is not None:
+            #if mean.shape[1] == 2:
+            #self.mean = self._spherical2cartesian(mean)
+            #else:
             self.mean = mean
 
 
@@ -98,10 +101,11 @@ class vMF():
 
         try:
             samples_xyz = self._generate_samples()
-            self.samples_azdip = self._cartesian2spherical(samples_xyz)
 
+            #self.add_orientation_data(samples_xyz)
             if direct_output is True:
-                return samples_xyz
+                samples_azdip = self._cartesian2spherical(samples_xyz)
+                return samples_xyz, samples_azdip
 
             else:
                 self.add_orientation_data(samples_xyz)
@@ -216,7 +220,7 @@ class vMF():
         plt.show()
         return fig
 
-    def plot_stereonet(self, poles=True):
+    def plot_stereonet(self, poles=True, samples=None):
         """
 
         Args:
@@ -225,17 +229,21 @@ class vMF():
         Returns:
 
         """
+        if samples is None:
+            samples = self.samples_azdip
         fig, ax = mplstereonet.subplots(figsize=(5, 5))
         if poles is True:
-            for point in self.samples_azdip:
-                ax.pole(point[0] - 90, point[1], color='k', linewidth=1, marker='v', markersize=6,label=('samples'))
             try:
                 mean_sph = self._cartesian2spherical(self.mean)
-                ax.pole(mean_sph[0] - 90, mean_sph[1], color='r', markersize=6, label='mean')
+                #ax.pole(mean_sph[0] - 90, mean_sph[1], color='#015482', markersize=10, label='mean',
+                        #markeredgewidth=1, markeredgecolor='black')
             except AttributeError:
                 pass
+            for point in samples:
+                ax.pole(point[0] - 90, point[1], linewidth=1, color='#015482', markersize=4,markeredgewidth=0.5, markeredgecolor='black')
+
         ax.grid()
-        ax.density_contourf(self.samples_azdip[:, 0] - 90, self.samples_azdip[:, 1], measurement='poles', cmap='inferno', alpha=0.7)
+        ax.density_contour(samples[:, 0] - 90, samples[:, 1], measurement='poles',sigma=4, cmap='Blues_r')
         try:
             ax.set_title('kappa = '+str(round(self.kappa)), y=1.2)
         except AttributeError:
@@ -315,6 +323,21 @@ class vMF():
             a[:, 0] = phi
             a[:, 1] = theta
             return a.astype(int)
+
+    def cart2sph_real(self, xyz):
+        #r = np.sqrt(x ** 2 + y ** 2 + z ** 2)
+        #lat = np.arcsin(z / r)
+        #lon = np.arctan2(y, x)
+        #return lon, lat
+
+        a = np.empty((xyz.shape[0], 2))
+        theta = np.rad2deg(np.nan_to_num(np.arcsin(xyz[:, 2])))
+        # theta = theta*(-1)
+        phi = np.round(np.rad2deg(np.nan_to_num(np.arctan2(xyz[:, 1], xyz[:, 0]))), 0)
+        phi[phi < 0] += 360
+        a[:, 0] = phi
+        a[:, 1] = theta
+        return a.astype(int)
 
     def _spherical2cartesian(self, orient):
         """

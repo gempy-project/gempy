@@ -84,9 +84,9 @@ class PlotData2D(object):
             self._norm = norm
             # Change dictionary keys numbers for formation names
 
-            for i in zip(self.formation_names, self.formation_numbers):
-                self._color_lot[i[0]] = self._color_lot[i[1]]
-
+        for i in zip(self.formation_names, self.formation_numbers):
+            self._color_lot[i[0]] = self._color_lot[i[1]]
+        #print(self.formation_names,self.formation_numbers)
         #print(self._cmap.colors, self._norm.boundaries, self._color_lot)
 
         # DEP?
@@ -358,6 +358,92 @@ class PlotData2D(object):
         plt.title("Geological map", fontsize=15)
 
         return plt.gcf()
+
+    def plot_stereonet(self, litho=None, series_only=False, planes=True, poles=True, single_plots=False,
+                       show_density=False, legend=True, **kwargs):
+        '''
+        Plots an equal-area projection of the orientations dataframe using mplstereonet.
+        Only works after assigning the series for the right color assignment.
+
+        Args:
+            geo_data (gempy.DataManagement.InputData): Input data of the model
+            litho (list): selection of formation or series names. If None, all are plotted
+            series_only (bool): to decide if the data is plotted per series or per formation
+            planes (bool): plots azimuth and dip as great circles
+            poles (bool): plots pole points (plane normal vectors) of azimuth and dip
+            single_plots (bool): plots each formation in a single stereonet
+            show_density (bool): shows density contour plot around the pole points
+            legend (bool): shows legend
+
+        Returns:
+            None
+        '''
+        try:
+            import mplstereonet
+        except ImportError:
+            warnings.warn('mplstereonet package is not installed. No stereographic projection available.')
+
+        from collections import OrderedDict
+        import pandas as pn
+
+        #['scatter_kws'] = {"marker": "D",
+                                 #"s": 100,
+                                 #"edgecolors": "black",
+                                 #"linewidths": 1}
+
+        #if hasattr(self, 'colors'):
+            #colors = self.colors
+        #else:
+            #colors = [self._cmap(self._norm(value)) for value in self.formation_numbers]
+        #print(self._color_lot)
+        if litho is None:
+            if series_only:
+                litho = self._data.orientations['series'].unique()
+            else:
+                litho = self._data.orientations['formation'].unique()
+
+        if single_plots is False:
+            fig, ax = mplstereonet.subplots(figsize=(5, 5))
+            df_sub2 = pn.DataFrame()
+            for i in litho:
+                if series_only:
+                    df_sub2 = df_sub2.append(self._data.orientations[self._data.orientations['series'] == i])
+                else:
+                    df_sub2 = df_sub2.append(self._data.orientations[self._data.orientations['formation'] == i])
+
+        for formation in litho:
+            if single_plots:
+                fig = plt.figure(figsize=(5, 5))
+                ax = fig.add_subplot(111, projection='stereonet')
+                ax.set_title(formation, y=1.1)
+
+            if series_only:
+                df_sub = self._data.orientations[self._data.orientations['series'] == formation]
+            else:
+                df_sub = self._data.orientations[self._data.orientations['formation'] == formation]
+
+            if poles:
+                ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=10,
+                        markerfacecolor=self._color_lot[formation],
+                        markeredgewidth=1, markeredgecolor='black', label=formation)  # +': '+'pole point')
+            if planes:
+                ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=self._color_lot[formation],
+                         linewidth=2, label=formation)
+            if show_density:
+                if single_plots:
+                    ax.density_contourf(df_sub['azimuth'] - 90, df_sub['dip'],
+                                        measurement='poles', cmap='viridis', alpha=.5)
+                else:
+                    ax.density_contourf(df_sub2['azimuth'] - 90, df_sub2['dip'], measurement='poles', cmap='viridis',
+                                        alpha=.5)
+
+            fig.subplots_adjust(top=0.8)
+            if legend:
+                handles, labels = ax.get_legend_handles_labels()
+                by_label = OrderedDict(zip(labels, handles))
+                ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
+            ax.grid(True, color='black', alpha=0.25)
+
 
     def plot_scalar_field(self, scalar_field, cell_number, N=20,
                              direction="y", plot_data=True, series="all", *args, **kwargs):

@@ -230,7 +230,7 @@ class Posterior():
 
         ##### plotting methods #####
 
-    def plot_section(self, iteration=1, block='lith', cell_number=3, **kwargs):
+    def plot_section(self, iteration=1, block='lith', cell_number=3, direction='y', fault=True,**kwargs):
         '''kwargs: gempy.plotting.plot_section keyword arguments'''
         self._change_input_data(iteration, update_geodata=True)
 
@@ -246,12 +246,13 @@ class Posterior():
                 gp.plot_section(self.geo_data, lith_block[0], cell_number=cell_number, topography=topo, **kwargs)
             elif block == 'fault':
                 gp.plot_section(self.geo_data, fault_block[0], cell_number=cell_number, topography=topo, **kwargs)
+            else:
+                print("block must be fault or lith")
+            if fault is True:
+                #print('hey')
+                gp.plotting.extract_countours(self.geo_data,self.interp_data,cell_number=cell_number,
+                                              direction=direction,fb=fault_block)
 
-        else:
-            if block == 'lith':
-                gp.plot_section(self.geo_data, lith_block[0], cell_number=cell_number, **kwargs)
-            elif block == 'fault':
-                gp.plot_section(self.geo_data, fault_block[0], cell_number=cell_number, **kwargs)
 
     def plot_map(self, iteration=1, **kwargs):
         self._change_input_data(iteration)

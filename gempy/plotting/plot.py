@@ -723,7 +723,8 @@ def plot_topology(geo_data, G, centroids, direction="y"):
     PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)
 
 
-def plot_stereonet(geo_data, litho=None, series_only=False, planes=True, poles=True, single_plots=False, show_density=False, legend=True):
+def plot_stereonet(geo_data, litho=None, series_only=False, planes=True, poles=True, single_plots=False,
+                   show_density=False, legend=True, **kwargs):
     '''
     Plots an equal-area projection of the orientations dataframe using mplstereonet.
     Only works after assigning the series for the right color assignment.
@@ -741,32 +742,38 @@ def plot_stereonet(geo_data, litho=None, series_only=False, planes=True, poles=T
     Returns:
         None
     '''
+    plot= PlotData2D(geo_data)
+    plot.plot_stereonet(litho=litho, series_only=series_only, planes=planes, poles=poles,single_plots=single_plots,
+                              show_density=show_density, legend=legend)
 
-    import warnings
+    """
     try:
         import mplstereonet
     except ImportError:
         warnings.warn('mplstereonet package is not installed. No stereographic projection available.')
 
-    import matplotlib.pyplot as plt
-    from gempy.plotting.colors import cmap
     from collections import OrderedDict
     import pandas as pn
 
+    if hasattr(self, 'colors'):
+        colors = self.colors
+    else:
+        colors = [self._cmap(self._norm(value)) for value in self.formation_numbers]
+
     if litho is None:
         if series_only:
-            litho=geo_data.orientations['series'].unique()
+            litho = self._data.orientations['series'].unique()
         else:
-            litho = geo_data.orientations['formation'].unique()
+            litho = self._data.orientations['formation'].unique()
 
     if single_plots is False:
         fig, ax = mplstereonet.subplots(figsize=(5, 5))
         df_sub2 = pn.DataFrame()
         for i in litho:
             if series_only:
-                df_sub2 = df_sub2.append(geo_data.orientations[geo_data.orientations['series'] == i])
+                df_sub2 = df_sub2.append(self._data.orientations[self._data.orientations['series'] == i])
             else:
-                df_sub2 = df_sub2.append(geo_data.orientations[geo_data.orientations['formation'] == i])
+                df_sub2 = df_sub2.append(self._data.orientations[self._data.orientations['formation'] == i])
 
     for formation in litho:
         if single_plots:
@@ -775,14 +782,14 @@ def plot_stereonet(geo_data, litho=None, series_only=False, planes=True, poles=T
             ax.set_title(formation, y=1.1)
 
         if series_only:
-            df_sub = geo_data.orientations[geo_data.orientations['series'] == formation]
+            df_sub = self._data.orientations[self._data.orientations['series'] == formation]
         else:
-            df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
+            df_sub = self._data.orientations[geo_data.orientations['formation'] == formation]
 
         if poles:
             ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=7,
                     markerfacecolor=cmap(df_sub['formation_number'].values[0]),
-                    markeredgewidth=1.1, markeredgecolor='gray', label=formation)#+': '+'pole point')
+                    markeredgewidth=1.1, markeredgecolor='gray', label=formation)  # +': '+'pole point')
         if planes:
             ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=cmap(df_sub['formation_number'].values[0]),
                      linewidth=1.5, label=formation)
@@ -800,7 +807,9 @@ def plot_stereonet(geo_data, litho=None, series_only=False, planes=True, poles=T
             by_label = OrderedDict(zip(labels, handles))
             ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
         ax.grid(True, color='black', alpha=0.25)
-    #return fig
+
+#return fig
+"""
 
 def extract_countours(geo_data,interp_data,cell_number,direction='y',fb=None,lb=None):
     """
