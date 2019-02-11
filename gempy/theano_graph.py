@@ -1669,6 +1669,25 @@ class TheanoGraph(object):
         if 'n_formation' in self.verbose:
             self.n_formation_op = theano.printing.Print('n_formation_series')(self.n_formation_op)
 
+        if 'fault_matrix_fix_loop' in self.verbose:
+            self.fault_matrix_fixed = theano.printing.Print('self fault matrix fix')(self.fault_matrix_fixed)
+
+        # Extracting a the subset of the fault matrix to the scalar field of the current iterations
+        faults_relation_op = self.fault_relation[:, T.cast(self.n_formation_op[0] - 1, 'int8')]
+        faults_relation_rep = T.repeat(faults_relation_op, 1)
+
+        if 'faults_relation' in self.verbose:
+            faults_relation_rep = theano.printing.Print('SELECT')(faults_relation_rep)
+        if len(self.gradients) is not 0:
+            self.fault_matrix = self.fault_matrix_fixed[T.nonzero(T.cast(faults_relation_rep, "int8"))[0], :]
+        else:
+            self.fault_matrix = self.fault_matrix_fixed[T.nonzero(T.cast(faults_relation_rep, "int8"))[0], :]
+
+        if 'fault_matrix_loop' in self.verbose:
+            self.fault_matrix = theano.printing.Print('self fault matrix')(self.fault_matrix)
+
+
+
         # ====================
         # Computing the series
         # ====================
@@ -1738,7 +1757,10 @@ class TheanoGraph(object):
 
             # We return the last iteration of the fault matrix
             self.fault_matrix_f = fault_loop[0][-1]
+
+            # TODO change fixed to op
             self.fault_matrix = self.fault_matrix_f[::2]
+            self.fault_matrix_fixed = self.fault_matrix_f[::2]
           #  fault_block = self.fault_matrix[:, :-2 * self.len_points]
             # For this we return every iteration since is each potential field at interface
             self.pfai_fault = fault_loop[1]
