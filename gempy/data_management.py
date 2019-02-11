@@ -80,7 +80,7 @@ class InputData(object):
             path_o = path_f
 
         # Set extent and resolution
-        if extent:
+        if extent is not None:
             self.extent = np.array(extent)
         else:
             self.extent = None # extent is then set in import_data_csv
