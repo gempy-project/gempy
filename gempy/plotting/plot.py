@@ -35,6 +35,9 @@ import pandas as _pn
 import copy
 from .visualization import PlotData2D, steno3D, vtkVisualization
 import gempy as _gempy
+import matplotlib.colors
+import numpy as np
+import matplotlib.pyplot as plt
 
 
 class vtkPlot():
@@ -649,6 +652,7 @@ def plot_section(geo_data, block, cell_number, direction="y", topography=None,**
     # TODO saving options
 
 def plot_map(geo_data, topography=None, geomap=None, **kwargs):
+    #Todo if this is called before the blocks are computed interp_data changes
     plot = PlotData2D(geo_data)
     plot.plot_geomap(topography, geomap, **kwargs)
     # TODO saving options
@@ -719,7 +723,8 @@ def plot_topology(geo_data, G, centroids, direction="y"):
     PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)
 
 
-def plot_stereonet(geo_data, litho=None, series_only=False, planes=True, poles=True, single_plots=False, show_density=False, legend=True):
+def plot_stereonet(geo_data, litho=None, series_only=False, planes=True, poles=True, single_plots=False,
+                   show_density=False, legend=True, **kwargs):
     '''
     Plots an equal-area projection of the orientations dataframe using mplstereonet.
     Only works after assigning the series for the right color assignment.
@@ -737,32 +742,38 @@ def plot_stereonet(geo_data, litho=None, series_only=False, planes=True, poles=T
     Returns:
         None
     '''
+    plot= PlotData2D(geo_data)
+    plot.plot_stereonet(litho=litho, series_only=series_only, planes=planes, poles=poles,single_plots=single_plots,
+                              show_density=show_density, legend=legend)
 
-    import warnings
+    """
     try:
         import mplstereonet
     except ImportError:
         warnings.warn('mplstereonet package is not installed. No stereographic projection available.')
 
-    import matplotlib.pyplot as plt
-    from gempy.plotting.colors import cmap
     from collections import OrderedDict
     import pandas as pn
 
+    if hasattr(self, 'colors'):
+        colors = self.colors
+    else:
+        colors = [self._cmap(self._norm(value)) for value in self.formation_numbers]
+
     if litho is None:
         if series_only:
-            litho=geo_data.orientations['series'].unique()
+            litho = self._data.orientations['series'].unique()
         else:
-            litho = geo_data.orientations['formation'].unique()
+            litho = self._data.orientations['formation'].unique()
 
     if single_plots is False:
         fig, ax = mplstereonet.subplots(figsize=(5, 5))
         df_sub2 = pn.DataFrame()
         for i in litho:
             if series_only:
-                df_sub2 = df_sub2.append(geo_data.orientations[geo_data.orientations['series'] == i])
+                df_sub2 = df_sub2.append(self._data.orientations[self._data.orientations['series'] == i])
             else:
-                df_sub2 = df_sub2.append(geo_data.orientations[geo_data.orientations['formation'] == i])
+                df_sub2 = df_sub2.append(self._data.orientations[self._data.orientations['formation'] == i])
 
     for formation in litho:
         if single_plots:
@@ -771,14 +782,14 @@ def plot_stereonet(geo_data, litho=None, series_only=False, planes=True, poles=T
             ax.set_title(formation, y=1.1)
 
         if series_only:
-            df_sub = geo_data.orientations[geo_data.orientations['series'] == formation]
+            df_sub = self._data.orientations[self._data.orientations['series'] == formation]
         else:
-            df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
+            df_sub = self._data.orientations[geo_data.orientations['formation'] == formation]
 
         if poles:
             ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=7,
                     markerfacecolor=cmap(df_sub['formation_number'].values[0]),
-                    markeredgewidth=1.1, markeredgecolor='gray', label=formation)#+': '+'pole point')
+                    markeredgewidth=1.1, markeredgecolor='gray', label=formation)  # +': '+'pole point')
         if planes:
             ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=cmap(df_sub['formation_number'].values[0]),
                      linewidth=1.5, label=formation)
@@ -796,4 +807,54 @@ def plot_stereonet(geo_data, litho=None, series_only=False, planes=True, poles=T
             by_label = OrderedDict(zip(labels, handles))
             ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
         ax.grid(True, color='black', alpha=0.25)
-    return fig
+
+#return fig
+"""
+
+def extract_countours(geo_data,interp_data,cell_number,direction='y',fb=None,lb=None):
+    """
+    To extract the boundaries between lithologies and plot faults as lines in 2D plots.
+    Args: the same as gp.plotting.plot_section or plot_map
+        geo_data:
+        interp_data:
+        fb: fault block
+        lb: lithology block
+        direction:
+        cell_number:
+
+    Returns: nothing, it just plots
+
+    """
+    fault_colors = ['#000000', '#000000', '#000000', '#000000', '#000000']
+    cm_fault = matplotlib.colors.LinearSegmentedColormap.from_list('faults', fault_colors, N=5)
+    lith_colors = ['#000000', '#000000', '#000000', '#000000', '#000000']
+    cm_lith = matplotlib.colors.LinearSegmentedColormap.from_list('lith_colors', lith_colors, N=5)
+
+    #n_faults = int(fb.shape[0] / 2)
+    #level = []
+    block_id = []
+
+    all_levels = interp_data.potential_at_interfaces[np.where(interp_data.potential_at_interfaces != 0)]
+
+    for i in range(fb.shape[0]):
+        if i % 2:
+            block_id.append(i)
+
+    if direction == 'y':
+        _slice = np.s_[:, cell_number, :]
+    elif direction == 'x':
+        _slice = np.s_[cell_number, :, :]
+    elif direction == 'z':
+        _slice = np.s_[:, :, cell_number]
+    else:
+        print('not a direction')
+
+    if fb is not None:
+        for i in range(len(block_id)):
+            plt.contour(fb[block_id[i]].reshape(geo_data.resolution)[_slice].T, 0,
+                        extent=geo_data.extent[[0, 1, 4, 5]], levels=all_levels[i], cmap=cm_fault)
+    if lb is not None:
+        plt.contour(lb[1].reshape(geo_data.resolution)[_slice].T, 0,
+                    extent=geo_data.extent[[0, 1, 4, 5]], levels=np.sort(all_levels[len(block_id):]),
+                    cmap=cm_lith)
+

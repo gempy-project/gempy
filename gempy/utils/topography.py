@@ -164,15 +164,15 @@ class DEM():
         Returns:
         '''
         if interpdata:
-            geomap, fault = gp.compute_model_at(self.surface_coordinates[0], interpdata)
+            lith, fault = gp.compute_model_at(self.surface_coordinates[0], interpdata)
         else:
-            geomap, fault = gp.compute_model_at(self.surface_coordinates[0], self.interp_data)
-        geomap = geomap[0].reshape(self.dem_zval.shape)  # resolution of topo gives much better map
+            lith, fault = gp.compute_model_at(self.surface_coordinates[0], self.interp_data)
+        geomap = lith[0].reshape(self.dem_zval.shape)  # resolution of topo gives much better map
         geomap = np.flip(geomap, axis=0) #to match the orientation of the other plotting options
         if plot:
             plt.imshow(geomap, origin="lower", cmap=gp.plotting.colors.cmap, norm=gp.plotting.colors.norm)  # set extent
             plt.title("Geological map", fontsize=15)
-        return geomap
+        return geomap#, lith, fault
 
     def _slice(self, direction, extent, cell_number=25):
         '''

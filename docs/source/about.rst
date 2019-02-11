@@ -39,5 +39,6 @@ Remote Geomod:
 
 Contributors:
 *************
-1. Fabian Stamm (fabian.stamm@rwth-aachen.de)
-2. Marco van Veen (marco.vanveen@rwth-aachen.de)
+1. Elisa Heim (elisa.heim@rwth-aachen.de)
+2. Fabian Stamm (fabian.stamm@rwth-aachen.de)
+3. Marco van Veen (marco.vanveen@rwth-aachen.de)
