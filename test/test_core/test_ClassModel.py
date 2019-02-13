@@ -253,7 +253,7 @@ class TestModel:
 
         # The class `gempy.core.model.Model` works as the parent container of our project. Therefore the main step of any project is to create an instance of this class. In the official documentation we use normally geo_model (geo_data in the past) as name of this instance.
         #
-        # When we instiantiate a `Model` object we full data structure is created. By using `gp.init_data` and `set_series` we set the default values -- given the attributes -- to all of fields. Data is stored in pandas dataframes. With `gp.get_data` and the name of the data object it is possible to have access to the dataframes:
+        # When we instiantiate a `Model` object we full data structure_data is created. By using `gp.init_data` and `set_series` we set the default values -- given the attributes -- to all of fields. Data is stored in pandas dataframes. With `gp.get_data` and the name of the data object it is possible to have access to the dataframes:
         #
         # `str`['all', 'interfaces', 'orientations', 'formations', 'series', 'faults', 'faults_relations',
         #         additional data]

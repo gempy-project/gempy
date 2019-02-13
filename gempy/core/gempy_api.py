@@ -94,7 +94,7 @@ def load_model(path):
 #         order_formations(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
 #             dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
 #         values_to_default (bool): If true set values to default
-#             - Interfaces and orientations: From csv files and prepare structure to GemPy's
+#             - Interfaces and orientations: From csv files and prepare structure_data to GemPy's
 #             - Formations :class:`gempy.core.data.Formations`: Using formations read in the csv file
 #             - Series :class:`gempy.core.data.Series`: Using formations read in the csv file
 #             - Faults :class:`gempy.core.data.Faults`: Using formations read in the csv file. If fault string is contained in
@@ -450,9 +450,9 @@ def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=
     Returns:
 
     """
-    geo_model.additional_data.options.at['output', 'values'] = output
-    geo_model.additional_data.options.at['theano_optimizer', 'values'] = theano_optimizer
-    geo_model.additional_data.options.at['verbosity', 'values'] = verbose
+    geo_model.additional_data.options.df.at['values', 'output'] = output
+    geo_model.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
+    geo_model.additional_data.options.df.at['values', 'verbosity'] = verbose
 
     # TODO add kwargs
     geo_model.rescaling.rescale_data()
@@ -494,8 +494,8 @@ def get_th_fn(model: Model):
 def update_additional_data(model: Model, update_structure=True, update_rescaling=True, update_kriging=True):
     if update_structure is True:
         model.additional_data.update_structure()
-    if update_rescaling is True:
-        model.additional_data.update_rescaling_data()
+    # if update_rescaling is True:
+    #     model.additional_data.update_rescaling_data()
     if update_kriging is True:
         model.additional_data.update_default_kriging()
 
@@ -542,7 +542,7 @@ def compute_model(model: Model, compute_mesh=True)-> Solution:
     # return clear messages
     i = model.interpolator.get_input_matrix()
 
-    assert model.additional_data.len_formations_i.min() > 1,  \
+    assert model.additional_data.structure_data.df.loc['values', 'len formations interfaces'].min() > 1,  \
         'To compute the model is necessary at least 2 interface points per layer'
 
     sol = model.interpolator.theano_function(*i)
@@ -599,7 +599,7 @@ def set_values_to_default_DEP(model: Model, series_distribution=None, order_seri
     """
     Set the attributes of most of the objects to its default value to be able to compute a geological model.
 
-    - Interfaces and orientations: From csv files and prepare structure to GemPy's
+    - Interfaces and orientations: From csv files and prepare structure_data to GemPy's
     - Formations :class:`gempy.core.data.Formations`: Using formations read in the csv file
     - Series :class:`gempy.core.data.Series`: Using formations read in the csv file
     - Faults :class:`gempy.core.data.Faults`: Using formations read in the csv file. If fault string is contained in
@@ -773,3 +773,30 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
 
 # endregion
+
+def activate_interactive_df(geo_model: Model, vtk_object=None):
+    """
+    TODO evaluate the use of this functionality
+
+    Notes: Since this feature is for advance levels we will keep only object oriented functionality. Should we
+    add in the future,
+
+    TODO: copy docstrings to QgridModelIntegration
+    Args:
+        geo_model:
+        vtk_object:
+
+    Returns:
+
+    """
+    try:
+        from gempy.core.qgrid_integration import QgridModelIntegration
+    except ImportError:
+        raise ImportError('qgrid package is not installed. No interactive dataframes available.')
+
+    try:
+        isinstance(geo_model.qi, QgridModelIntegration)
+    except AttributeError:
+        geo_model.qi = QgridModelIntegration(geo_model, vtk_object)
+
+    return geo_model.qi

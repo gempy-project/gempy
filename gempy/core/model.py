@@ -12,6 +12,7 @@ from gempy.plot.plot import vtkPlot
 
 
 class DataMutation(object):
+    # TODO Add dummy input when a df is empty
     def __init__(self):
         self.grid = GridClass()
         self.faults = Faults()
@@ -48,7 +49,7 @@ class DataMutation(object):
         self.rescaling.rescale_data()
 
         self.additional_data.update_structure()
-        self.additional_data.update_rescaling_data()
+       # self.additional_data.update_rescaling_data()
         self.additional_data.update_default_kriging()
 
     @_setdoc([Formations.map_series.__doc__])
@@ -147,6 +148,10 @@ class DataMutation(object):
         self.interfaces.add_series_categories_from_series(self.formations.series)
         self.orientations.add_series_categories_from_series(self.formations.series)
 
+        # Add categories from formations
+        self.interfaces.add_surface_categories_from_formations(self.formations)
+        self.orientations.add_surface_categories_from_formations(self.formations)
+
         self.interfaces.map_data_from_formations(self.formations, 'series')
         self.interfaces.map_data_from_formations(self.formations, 'id')
 
@@ -183,14 +188,27 @@ class DataMutation(object):
         self.update_structure()
         self.rescaling.set_rescaled_interfaces(idx=idx)
 
-    def set_orientations_object(self):
-        pass
+    def set_orientations_object(self, orientations: Orientations, update_model=True):
 
-    def update_to_orientations(self):
-        pass
+        self.orientations = orientations
+        self.rescaling.orientations = orientations
+        self.interpolator.orientations = orientations
 
-    def update_from_orientations(self):
-        pass
+        if update_model is True:
+            self.update_from_orientations()
+
+    def update_to_orientations(self, idx: list = None):
+        # TODO debug
+
+        self.interfaces.map_data_from_formations(self.formations, 'series', idx=idx)
+        self.interfaces.map_data_from_formations(self.formations, 'id', idx=idx)
+        self.interfaces.map_data_from_series(self.series, 'order_series', idx=idx)
+
+    def update_from_orientations(self, idx: list = None):
+        # TODO debug
+
+        self.update_structure()
+        self.rescaling.set_rescaled_orientations(idx=idx)
 
     def set_interpolator(self, interpolator: Interpolator):
         self.interpolator = interpolator
@@ -250,39 +268,43 @@ class DataMutation(object):
         self.update_from_interfaces(idx)
 
     def add_orientations(self, vtk_object: vtkPlot = None, **properties):
+        pass
+        #TODO!!!!!! Update
 
-        d = pn.DataFrame(properties)
-        d[['X_r', 'Y_r', 'Z_r']] = self.rescaling.rescale_data_point(d[['X', 'Y', 'Z']])
-        try:
-            self.map_data_df(d)
-        except KeyError:
-            pass
 
-        for index, frame in d.iterrows():
-            new_ind = self.orientations.df.last_valid_index() + 1
-            self.orientations.df.loc[new_ind, d.columns] = frame
-
-            if vtk_object is not None:
-                vtk_object.render_add_orientations(new_ind)
-
-        self.orientations.sort_table()
-        _checker = 0
-
-        if d.columns.isin(['G_x', "G_y", 'G_z']).sum() == 3:
-            self.orientations.calculate_orientations()
-            _checker += 1
-        elif d.columns.isin(['dip', 'azimuth', 'polarity']).sum() == 3:
-            self.orientations.calculate_gradient()
-            _checker += 1
-            if _checker == 2:
-                raise AttributeError(
-                    'add orientation only accept either orientation data [dip, azimuth, polarity] or'
-                    'gradient data [G_x, G_y, G_z]')
-        else:
-            raise AttributeError(
-                'Not enough angular data to calculate the gradients. Pass orientations or gradients')
-
-        self.update_structure()
+        #
+        # d = pn.DataFrame(properties)
+        # d[['X_r', 'Y_r', 'Z_r']] = self.rescaling.rescale_data_point(d[['X', 'Y', 'Z']])
+        # try:
+        #     self.map_data_df(d)
+        # except KeyError:
+        #     pass
+        #
+        # for index, frame in d.iterrows():
+        #     new_ind = self.orientations.df.last_valid_index() + 1
+        #     self.orientations.df.loc[new_ind, d.columns] = frame
+        #
+        #     if vtk_object is not None:
+        #         vtk_object.render_add_orientations(new_ind)
+        #
+        # self.orientations.sort_table()
+        # _checker = 0
+        #
+        # if d.columns.isin(['G_x', "G_y", 'G_z']).sum() == 3:
+        #     self.orientations.calculate_orientations()
+        #     _checker += 1
+        # elif d.columns.isin(['dip', 'azimuth', 'polarity']).sum() == 3:
+        #     self.orientations.calculate_gradient()
+        #     _checker += 1
+        #     if _checker == 2:
+        #         raise AttributeError(
+        #             'add orientation only accept either orientation data [dip, azimuth, polarity] or'
+        #             'gradient data [G_x, G_y, G_z]')
+        # else:
+        #     raise AttributeError(
+        #         'Not enough angular data to calculate the gradients. Pass orientations or gradients')
+        #
+        # self.update_structure()
 
     def add_series(self, vtk_object: vtkPlot = None, **properties):
         pass
