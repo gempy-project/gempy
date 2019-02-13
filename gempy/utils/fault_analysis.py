@@ -254,7 +254,7 @@ def get_full_LFcontact_projected(geo_data, lith_sol, fault_sol, \
 
     return contact
 
-def get_extrema_line_of_projected(projected_array, extrema_type='max'):
+def get_extrema_line_of_projected(projected_array, extrema_type='max', artifact_filter='off'):
     """
             Get either the top or bottom edge of a projected lithology-fault contact (3D boolean array).
 
@@ -270,16 +270,53 @@ def get_extrema_line_of_projected(projected_array, extrema_type='max'):
         roll[:, -1] = 0
         ext_line = np.bitwise_xor(projected_array, roll)
         ext_line[~projected_array] = 0
+        if artifact_filter == 'on':
+            pos = np.argwhere(ext_line == True)
+            lf0 = np.arange(np.min(pos[:,0]),np.max(pos[:,0]+1))
+            lf1 = np.zeros_like(lf0)
+            line_filtered = np.stack((lf0,lf1), axis=1)
+            for i in line_filtered[:, 0]:
+                posi = np.argwhere(pos[:, 0] == i)
+                if posi.size == 0:
+                    print('Filter position not in original extrema line (max).')
+                    continue
+                filt = np.min(pos[posi, 1])
+                posi_f = np.argwhere(line_filtered[:, 0] == i)
+                line_filtered[posi_f, 1] = filt
+                #line_filtered[i, 1] = filt
+            maxline = np.zeros_like(ext_line)
+            maxline[line_filtered[:,0], line_filtered[:,1]] = True
+            return maxline
+        else:
+            return ext_line
     elif extrema_type == 'min':
         roll = np.roll(projected_array, 1, axis=1)
         roll[:, 0] = 0
         ext_line = np.bitwise_xor(projected_array, roll)
         ext_line[~projected_array] = 0
+        if artifact_filter == 'on':
+            pos = np.argwhere(ext_line == True)
+            lf0 = np.arange(np.min(pos[:,0]),np.max(pos[:,0]+1))
+            lf1 = np.zeros_like(lf0)
+            line_filtered = np.stack((lf0,lf1), axis=1)
+            for i in line_filtered[:, 0]:
+                posi = np.argwhere(pos[:, 0] == i)
+                if posi.size == 0:
+                    print('Filter position not in original extrema line (min).')
+                    continue
+                filt = np.max(pos[posi, 1])
+                posi_f = np.argwhere(line_filtered[:, 0] == i)       
+                line_filtered[posi_f, 1] = filt                      
+                #line_filtered[i, 1] = filt
+            minline = np.zeros_like(ext_line)
+            minline[line_filtered[:,0], line_filtered[:,1]] = True
+            return minline
+        else:              
+            return ext_line
     else:
         raise AttributeError(str(extrema_type) + "must be either 'min' or 'max.")
-    return ext_line
 
-def get_extrema_line_voxels(voxel_array, extrema_type='max', projection='automatic', form='2D', output_form='projected'):
+def get_extrema_line_voxels(voxel_array, extrema_type='max', projection='automatic', form='2D', output_form='projected', artifact_filter='off'):
     """
         Get either the top or bottom edge of a lithology-fault contact (3D boolean array).
 
@@ -304,7 +341,7 @@ def get_extrema_line_voxels(voxel_array, extrema_type='max', projection='automat
                     2D or 3D boolean array with 'True' cells or voxels for the according edge.
                 """
     projected_array = project_voxels(voxel_array, projection, form)
-    extrema_line_p = get_extrema_line_of_projected(projected_array, extrema_type)
+    extrema_line_p = get_extrema_line_of_projected(projected_array, extrema_type, artifact_filter)
     if output_form == 'projected':
         return extrema_line_p
     elif output_formform == 'original':
@@ -494,7 +531,7 @@ def plot_fault_contact_projection(geo_data, lith_sol, fault_sol, \
 
 def arg_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
                             fault_n, projection='automatic', fault_side='fw',\
-                         order='automatic'):
+                         order='automatic', artifact_filter='off'):
     """
             Get peak and maxima plateau voxel position for a layer-fault contact line.
 
@@ -526,7 +563,8 @@ def arg_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
         order = np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
     w_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
                                  lith_n, fault_n, fault_side)
-    extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='2D')
+    extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='2D',
+                                           artifact_filter=artifact_filter)
     maxpos = np.argwhere(extrline_vox == True)
     relmaxpos = sg.argrelextrema(maxpos[:, 1], np.greater_equal, order=order)
     return relmaxpos[0]
@@ -534,7 +572,7 @@ def arg_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
 
 def get_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
                             fault_n, projection='automatic', fault_side='fw',\
-                         order='automatic'):
+                         order='automatic', artifact_filter='off'):
     """
             Get peak and maxima plateau voxels for a layer-fault contact line.
 
@@ -566,7 +604,8 @@ def get_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
         order = np.int(np.round(((geo_data.resolution[0] + geo_data.resolution[1]) / 2) / 2))
     w_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, \
                                  lith_n, fault_n, fault_side)
-    extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='2D')
+    extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='2D',
+                                           artifact_filter=artifact_filter)
     maxpos = np.argwhere(extrline_vox == True)
     relmaxpos = sg.argrelextrema(maxpos[:, 1], np.greater_equal, order=order)
     return maxpos[relmaxpos]
@@ -574,7 +613,7 @@ def get_contact_peaks_VOX(geo_data, lith_sol, fault_sol, lith_n, \
 
 def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
                       position='faultmax_argrelmax', projection='automatic', \
-                      order='automatic'):
+                      order='automatic', artifact_filter='off'):
     """
             Get the voxel-based fault throw at a certain position along the fault.
             The position is a choice of cell number parallel to the chosen projection plane.
@@ -609,9 +648,9 @@ def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
     fw_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side='fw')
     hw_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side='hw')
     maxline_fw = get_extrema_line_voxels(fw_array,extrema_type='max',
-                                         projection=projection, form='2D')
+                                         projection=projection, form='2D', artifact_filter=artifact_filter)
     maxline_hw = get_extrema_line_voxels(hw_array,extrema_type='max',
-                                         projection=projection, form='2D')
+                                         projection=projection, form='2D', artifact_filter=artifact_filter)
     maxpos_fw = np.argwhere(maxline_fw == True)
     maxpos_hw = np.argwhere(maxline_hw == True)  # getting a shape too big for maxpos1, as HW side is bugged
     if len(maxpos_fw) != len(maxpos_hw):
@@ -621,7 +660,7 @@ def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
             maxpos_corrected[:, 0] = maxpos_hw[:,0]
             for i in maxpos_corrected[:, 0]:
                 posi = np.argwhere(maxpos_fw[:, 0] == i)
-                filter_max = np.max(maxpos_fw[posi, 1])
+                filter_max = np.min(maxpos_fw[posi, 1])
                 maxpos_corrected[i, 1] = filter_max
             maxpos_fw = maxpos_corrected
         elif len(maxpos_hw) > len(maxpos_fw):
@@ -630,7 +669,7 @@ def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
             maxpos_corrected[:, 0] = maxpos_fw[:,0]
             for i in maxpos_corrected[:, 0]:
                 posi = np.argwhere(maxpos_hw[:, 0] == i)
-                filter_max = np.max(maxpos_hw[posi, 1])
+                filter_max = np.min(maxpos_hw[posi, 1])  ### filtering /getting min) for bug that places artifacts higher up
                 maxpos_corrected[i, 1] = filter_max
             maxpos_hw = maxpos_corrected
     if position == 'faultmax_cwt':
@@ -660,7 +699,7 @@ def get_faultthrow_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
 
 def get_lithcontact_thickness_at(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side='fw',
                       position='faultmax_argrelmax', projection='automatic', \
-                      order='automatic'):
+                      order='automatic', artifact_filter='off'):
     """
         Get the voxel-based thickness of a lithology at a certain position along the fault.
         The position is a choice of cell number parallel to the chosen projection plane.
@@ -699,9 +738,9 @@ def get_lithcontact_thickness_at(geo_data, lith_sol, fault_sol, lith_n, fault_n,
             """
     w_array = get_LF_contact_VOX(geo_data, lith_sol, fault_sol, lith_n, fault_n, fault_side)
     maxline_w = get_extrema_line_voxels(w_array,extrema_type='max',
-                                         projection=projection, form='2D')
+                                         projection=projection, form='2D', artifact_filter=artifact_filter)
     minline_w = get_extrema_line_voxels(w_array,extrema_type='min',
-                                         projection=projection, form='2D')
+                                         projection=projection, form='2D', artifact_filter=artifact_filter)
     maxpos_max = np.argwhere(maxline_w == True)
     maxpos_min = np.argwhere(minline_w == True)  # getting a shape too big for maxpos1, as HW side is bugged
     if position == 'faultmax_cwt':
@@ -1119,7 +1158,7 @@ def get_slip_surface_VERT(geo_data, fault_v, layer_v):
 
 
 def get_contact_VERT(geo_data, fault_vertices, layer_vertices, w_array, \
-                            projection='automatic'):
+                            projection='automatic', artifact_filter='off'):
     """
             Get vertices-based coordinates for the surface on which a layer interface slipped on the fault surface.
 
@@ -1158,7 +1197,7 @@ def get_contact_VERT(geo_data, fault_vertices, layer_vertices, w_array, \
         p = 0
 
     intersection_surface = get_slip_surface_VERT(geo_data, fault_vertices, layer_vertices)[0]
-    extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='3D')
+    extrline_vox = get_extrema_line_voxels(w_array, extrema_type='max', projection=projection, form='3D', artifact_filter=artifact_filter)
     maxpos_vox = np.argwhere(extrline_vox == True)
     # rescaling
     maxpos_vox[:, 0] = maxpos_vox[:, 0] * vox_size_x
