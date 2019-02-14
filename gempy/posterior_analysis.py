@@ -54,7 +54,7 @@ def change_input_data(db, interp_data, i):
     try:
         interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace("input_orient")[i]
     except ValueError:
-        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace("input_orient")[i]
+        interp_data.geo_data_res.orientations[["X", "Y", "Z", "G_x", "G_y", "G_z" , "dip", "azimuth", "polarity"]] = db.trace("input_orient")[i]
 
     recalc_gradients(interp_data.geo_data_res.orientations)
 
@@ -250,7 +250,7 @@ class Posterior:
         # replace interface data
         interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
         # replace foliation data
-        interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = self.input_data[i][1]
+        interp_data.geo_data_res.orientations[["X", "Y", "Z", "G_x", "G_y", "G_z", "dip", "azimuth", "polarity"]] = self.input_data[i][1]
 
         recalc_gradients(interp_data.geo_data_res.orientations)
 
