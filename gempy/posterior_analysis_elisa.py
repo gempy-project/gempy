@@ -60,13 +60,16 @@ class Posterior():
 
             print('Lithology probability for all post models are calculated. Based on the model complexity and the number of iterations, '
                   'this could take a while')
-            self.lith_prob, self.fault_prob = self.compute_lith_prob_sequentially('model')
-            self.lb_ie = self.calculate_ie_masked(self.lith_prob)
-            self.fb_ie = self.calculate_ie_masked(self.fault_prob)
-
             if topography:
-                self.map_prob = self.compute_lith_prob_sequentially('map')
+                self.map_prob, self.fm_prob = self.compute_lith_prob_sequentially('map')
                 self.map_ie = self.calculate_ie_masked(self.map_prob)
+                self.fm_ie = self.calculate_ie_masked(self.fm_prob)
+            else:
+                self.lith_prob, self.fault_prob = self.compute_lith_prob_sequentially('model')
+                self.lb_ie = self.calculate_ie_masked(self.lith_prob)
+                self.fb_ie = self.calculate_ie_masked(self.fault_prob)
+
+
 
         #if entropy:
             #if topography and model_type == 'map':  # better resolution
@@ -259,7 +262,7 @@ class Posterior():
         # geomap = self.topography.calculate_geomap(interpdata = self.interp_data, plot=True)
         geomap, faultmap = gp.compute_model_at(self.topography.surface_coordinates[0], self.interp_data)
         # gp.plotting.plot_map(geomap)
-        gp.plotting.plot_map(self.geo_data, geomap=geomap[0].reshape(self.topography.dem_zval.shape), **kwargs)
+        gp.plotting.plot_map(self.geo_data, geomap=np.flip(geomap[0].reshape(self.topography.dem_zval.shape),axis=0), **kwargs)
 
     def plot_map_ie(self, plot_data=False):
         if plot_data:

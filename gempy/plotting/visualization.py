@@ -346,7 +346,7 @@ class PlotData2D(object):
             assert geomap_plot.ndim == 2
             #print('hallo')
 
-        im = plt.imshow(geomap_plot, origin="lower", extent=self._data.extent[:4],cmap=gp.plotting.colors.cmap, norm=gp.plotting.colors.norm)
+        im = plt.imshow(geomap_plot, origin="lower", extent=self._data.extent[:4],cmap=self._cmap, norm=self._norm)
 
         import matplotlib.patches as mpatches
         colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
