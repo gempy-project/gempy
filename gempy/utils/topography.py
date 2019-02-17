@@ -70,6 +70,7 @@ class DEM():
 
         if output_path:  # create file only when extents match
             self.surface_coordinates = self.convertDEM2xyz(output_path)
+            #self.surface_coords_resized = self.convertDEM2xyz()
         else:
             print('for the full spectrum of plotting with topography, please define an output path')
         if interpdata:
@@ -154,7 +155,20 @@ class DEM():
         y = np.flip(y, axis=0)
         z = np.flip(z, axis=0)
         xyz_box = np.dstack([x,y,z])
+
+        x_resized = skimage.transform.resize(x, (self.geo_data.resolution[1], self.geo_data.resolution[2]),
+                                                    preserve_range=True)
+        y_resized = skimage.transform.resize(y, (self.geo_data.resolution[0], self.geo_data.resolution[2]),
+                                                    preserve_range=True)
+        z_resized = skimage.transform.resize(z, (self.geo_data.resolution[0], self.geo_data.resolution[1]),
+                                                    preserve_range=True)
+
+        self.xyz_box_resized = np.dstack([x_resized,y_resized,z_resized])
+
         return xyz, xyz_box
+
+    def convert_resizedDEM2xyz(self):
+        self.dem_resized
 
     def calculate_geomap(self, interpdata = None, plot=True):
         '''
@@ -182,11 +196,12 @@ class DEM():
             cell_number:
         Returns:
         '''
-        surface_dem = self.surface_coordinates[1]
+        print(self.xyz_box_resized.shape, self.surface_coordinates[1].shape)
+        surface_dem = self.xyz_box_resized
         x = surface_dem[:, :, 0]
         y = surface_dem[:, :, 1]
         z = surface_dem[:, :, 2]
-
+        print(x.shape)
         if direction == 'y':
             a = x[cell_number, :]
             b = y[cell_number, :]
