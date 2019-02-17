@@ -1643,7 +1643,10 @@ class TheanoGraph(object):
             scalar_field_at_form = theano.printing.Print('scalar_field_at_form_out')(scalar_field_at_form)
 
         # Theano shared
+        if 'n_form_per_serie_0' in self.verbose:
+            n_form_per_serie_0 = theano.printing.Print('n_form_per_serie_0')(n_form_per_serie_0)
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T[n_form_per_serie_0: n_form_per_serie_1]
+
         self.n_formation_op = self.n_formation[n_form_per_serie_0: n_form_per_serie_1]
         self.n_formation_op_float = self.formation_values[n_form_per_serie_0: (n_form_per_serie_1 + 1)]
         self.npf_op = self.npf[n_form_per_serie_0: n_form_per_serie_1]
@@ -1672,8 +1675,9 @@ class TheanoGraph(object):
         if 'fault_matrix_fix_loop' in self.verbose:
             self.fault_matrix_fixed = theano.printing.Print('self fault matrix fix')(self.fault_matrix_fixed)
 
+
         # Extracting a the subset of the fault matrix to the scalar field of the current iterations
-        faults_relation_op = self.fault_relation[:, T.cast(self.n_formation_op[0] - 1, 'int8')]
+        faults_relation_op = self.fault_relation[:, T.cast(n_form_per_serie_0 - 1, 'int8')] # self.n_formation_op[0] - 1, 'int8')]
         faults_relation_rep = T.repeat(faults_relation_op, 1)
 
         if 'faults_relation' in self.verbose:
