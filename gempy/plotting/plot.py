@@ -843,19 +843,22 @@ def extract_countours(geo_data,interp_data,cell_number,direction='y',fb=None,lb=
 
     if direction == 'y':
         _slice = np.s_[:, cell_number, :]
+        extent = geo_data.extent[[0, 1, 4, 5]]
     elif direction == 'x':
         _slice = np.s_[cell_number, :, :]
+        extent = geo_data.extent[[2, 3, 4, 5]]
     elif direction == 'z':
         _slice = np.s_[:, :, cell_number]
+        extent = geo_data.extent[[1,2, 3, 4]]
     else:
         print('not a direction')
 
     if fb is not None:
         for i in range(len(block_id)):
             plt.contour(fb[block_id[i]].reshape(geo_data.resolution)[_slice].T, 0,
-                        extent=geo_data.extent[[0, 1, 4, 5]], levels=all_levels[i], cmap=cm_fault)
+                        extent=extent, levels=all_levels[i], cmap=cm_fault)
     if lb is not None:
         plt.contour(lb[1].reshape(geo_data.resolution)[_slice].T, 0,
-                    extent=geo_data.extent[[0, 1, 4, 5]], levels=np.sort(all_levels[len(block_id):]),
+                    extent=extent, levels=np.sort(all_levels[len(block_id):]),
                     cmap=cm_lith)
 

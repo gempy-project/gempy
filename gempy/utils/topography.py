@@ -167,8 +167,6 @@ class DEM():
 
         return xyz, xyz_box
 
-    def convert_resizedDEM2xyz(self):
-        self.dem_resized
 
     def calculate_geomap(self, interpdata = None, plot=True):
         '''
