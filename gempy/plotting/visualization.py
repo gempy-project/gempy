@@ -412,7 +412,7 @@ class PlotData2D(object):
             plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
                           np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "black", linewidth=0.75)
 
-            for node in G.nodes_iter():
+            for node in G.nodes():
                 plt.plot(centroids[node][c1] * e1 / r1 + d1, centroids[node][c2] * e2 / r2 +d2,
                          marker="o", color="black", markersize=10, alpha=0.75)
                 plt.text(centroids[node][c1] * e1 / r1 + d1,
