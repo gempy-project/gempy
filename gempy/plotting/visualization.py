@@ -229,8 +229,8 @@ class PlotData2D(object):
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
         return _a, _b, _c, extent_val, x, y, Gx, Gy
 
-    def plot_block_section(self, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data=False, topography = None, ve=1, **kwargs):
+    def plot_block_section(self, cell_number=13, block=None, direction="y", scalar_field_at_interfaces=None,
+                           interpolation='none', plot_data=False, topography = None, ve=1, **kwargs):
         """
         Plot a section of the block model
 
@@ -248,28 +248,25 @@ class PlotData2D(object):
         Returns:
             Block plot
         """
-        if block is not None:
-            import theano
-            import numpy
-            assert (type(block) is theano.tensor.sharedvar.TensorSharedVariable or
-                    type(block) is numpy.ndarray), \
-                'Block has to be a theano shared object or numpy array.'
-            if type(block) is numpy.ndarray:
-                _block = block
-            else:
-                _block = block.get_value()
-        else:
-            try:
-                _block = self._data.interpolator.tg.final_block.get_value()
-            except AttributeError:
-                raise AttributeError('There is no block to plot')
 
-        plot_block = _block.reshape(self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])
-        _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
+        #if block is not None:
+        #     import theano
+        #     import numpy
+        #     assert (type(block) is theano.tensor.sharedvar.TensorSharedVariable or
+        #             type(block) is numpy.ndarray), \
+        #         'Block has to be a theano shared object or numpy array.'
+        #     if type(block) is numpy.ndarray:
+        #         _block = block
+        #     else:
+        #         _block = block.get_value()
+        # else:
+        #     try:
+        #         _block = self._data.interpolator.tg.final_block.get_value()
+        #     except AttributeError:
+        #         raise AttributeError('There is no block to plot')
 
-        if plot_data:
-            self.plot_data(direction, 'all')
-        # TODO: plot_topo option - need fault_block for that
+
+        _block = block
 
         # apply vertical exaggeration
         if direction == 'x' or direction == 'y':
@@ -278,22 +275,35 @@ class PlotData2D(object):
             aspect = 1
 
         if 'cmap' not in kwargs:
-            kwargs['cmap'] = self._cmap #
+            kwargs['cmap'] = self._cmap  #
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
 
+        if plot_data:
+            self.plot_data(direction, 'all')
 
-        im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
-                        extent=extent_val,
-                        interpolation=interpolation,
-                        aspect=aspect,
-                        **kwargs)
-        if direction == 'x' or direction=='y':
+        plot_block = _block.reshape(self._data.resolution[0], self._data.resolution[1], self._data.resolution[2])
+        _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
+        # TODO: plot_topo option - need fault_block for that
+        if scalar_field_at_interfaces is not None:
+            sfai = scalar_field_at_interfaces[self._data.n_faults:].sum(axis=0)
+            no_idx = np.nonzero(sfai)[0]
+            sfai.sort()
+            im = plt.contourf(plot_block[_a, _b, _c].T, levels=sfai[no_idx], extend='both',
+                         extent=extent_val, **kwargs)
+
+        else:
+            im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
+                            extent=extent_val,
+                            interpolation=interpolation,
+                            aspect=aspect,
+                            **kwargs)
+
+        if direction == 'x' or direction == 'y':
             if topography:
                  # TODO: apply vertical exaggeration to topography
                 topoline = topography._slice(direction = direction, extent = extent_val, cell_number = cell_number)
                 plt.fill(topoline[:, 0], topoline[:, 1], color='k')
-
 
         import matplotlib.patches as mpatches
         colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]

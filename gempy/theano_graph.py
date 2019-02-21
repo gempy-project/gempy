@@ -1298,9 +1298,9 @@ class TheanoGraph(object):
                 b = theano.printing.Print("b")(b)
                 # l = 200/ (a - b)
                 slice_init = theano.printing.Print("slice_init")(slice_init)
-                n_formation_0 = theano.printing.Print("n_formation_0")(n_formation[slice_init:slice_init + 1])
-                n_formation_1 = theano.printing.Print("n_formation_1")(n_formation[slice_init + 1:slice_init + 2])
-                drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift[slice_init:slice_init + 1][0])
+                n_formation_0 = theano.printing.Print("n_formation_0")(n_formation_0)
+                n_formation_1 = theano.printing.Print("n_formation_1")(n_formation_1)
+                drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift)
 
             # drift = T.switch(slice_init == 0, n_formation_1, n_formation_0)
             #    drift = T.set_subtensor(n_formation[0], n_formation[1])
@@ -1308,7 +1308,7 @@ class TheanoGraph(object):
             # The 5 rules the slope of the function
             sigm = (-n_formation_0[0] / (1 + T.exp(-l * (Z_x - a)))) - \
                    ((n_formation_1[0] / (1 + T.exp(l * (Z_x - b))))) + drift
-            if False:
+            if 'sigm' in self.verbose:
                 sigm = theano.printing.Print("middle point")(sigm)
             #      n_formation = theano.printing.Print("n_formation")(n_formation)
             return sigm
@@ -1383,6 +1383,8 @@ class TheanoGraph(object):
         n_formation_op_float_sigmoid = T.repeat(self.n_formation_op_float, 2)
 
         # TODO: instead -1 at the border look for the average distance of the input!
+
+        # This -1 makes that after the last interfaces the gradient goes on upwards
         n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[0], -1)
                                                     #- T.sqrt(T.square(n_formation_op_float_sigmoid[0] - n_formation_op_float_sigmoid[2])))
 
