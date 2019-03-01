@@ -1373,9 +1373,9 @@ class TheanoGraph(object):
                 b = theano.printing.Print("b")(b)
                 # l = 200/ (a - b)
                 slice_init = theano.printing.Print("slice_init")(slice_init)
-                n_formation_0 = theano.printing.Print("n_formation_0")(n_formation[slice_init:slice_init + 1])
-                n_formation_1 = theano.printing.Print("n_formation_1")(n_formation[slice_init + 1:slice_init + 2])
-                drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift[slice_init:slice_init + 1][0])
+                n_formation_0 = theano.printing.Print("n_formation_0")(n_formation_0)
+                n_formation_1 = theano.printing.Print("n_formation_1")(n_formation_1)
+                drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift)
 
             # drift = T.switch(slice_init == 0, n_formation_1, n_formation_0)
             #    drift = T.set_subtensor(n_formation[0], n_formation[1])
@@ -1474,7 +1474,8 @@ class TheanoGraph(object):
         partial_block, updates2 = theano.scan(
             fn=self.compare,
             outputs_info=None,
-            sequences=[dict(input=scalar_field_iter, taps=[0, 1]), T.arange(0, n_formation_op_float_sigmoid.shape[0], 2, dtype='int64')],
+            sequences=[dict(input=scalar_field_iter, taps=[0, 1]), T.arange(0, n_formation_op_float_sigmoid.shape[0],
+                                                                            2, dtype='int64')],
             non_sequences=[Z_x, l, n_formation_op_float_sigmoid, drift],
             name='Looping compare',
             profile=False,
@@ -1811,7 +1812,7 @@ class TheanoGraph(object):
         self.yet_simulated = T.nonzero(T.eq(self.fault_block_init[0, :], 0))[0]
 
         # Compute Faults
-        if self.n_faults.get_value()  != 0 or self.is_fault:
+        if self.n_faults.get_value() != 0 or self.is_fault:
 
             # Looping
             fault_loop, updates3 = theano.scan(

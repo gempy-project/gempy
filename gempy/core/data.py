@@ -168,6 +168,8 @@ class Series(object):
 
         self.df = pn.DataFrame(np.array([[1, np.nan]]), index=pn.CategoricalIndex(series_order, ordered=True),
                                columns=['order_series', 'BottomRelation'])
+
+        self.df['order_series'] = self.df['order_series'].astype(int)
         self.df['BottomRelation'] = pn.Categorical(['Erosion'], categories=['Erosion', 'Onlap'])
 
     def __repr__(self):
@@ -231,9 +233,7 @@ class Series(object):
 
         idx = self.df.index.add_categories(series_list)
         self.df.index = idx
-        self.faults.df.index = idx
-        self.faults.faults_relations_df.index = idx
-        self.faults.faults_relations_df.columns = idx
+        self.update_faults_index()
 
         for c in series_list:
             self.df.loc[c, 'BottomRelation'] = 'Erosion'
@@ -253,9 +253,7 @@ class Series(object):
 
         idx = self.df.index.remove_unused_categories()
         self.df.index = idx
-        self.faults.df.index = idx
-        self.faults.faults_relations_df.index = idx
-        self.faults.faults_relations_df.columns = idx
+        self.update_faults_index()
 
         if update_order_series is True:
             self.update_order_series()
@@ -264,17 +262,42 @@ class Series(object):
     def rename_series(self, new_categories:Union[dict, list]):
         idx = self.df.index.rename_categories(new_categories)
         self.df.index = idx
-        self.faults.df.index = idx
-        self.faults.faults_relations_df.index = idx
-        self.faults.faults_relations_df.columns = idx
+        self.update_faults_index()
 
     @_setdoc([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
     def reorder_series(self, new_categories:list):
         idx = self.df.index.reorder_categories(new_categories).sort_values()
         self.df.index = idx
+        self.update_faults_index()
+
+    def modify_order_series(self, new_value: int, idx: str):
+
+        group = self.df['order_series']
+        assert np.isin(new_value, group), 'new_value must exist already in the order_surfaces group.'
+        old_value = group[idx]
+        self.df['order_series'] = group.replace([new_value, old_value], [old_value, new_value])
+        self.sort_series()
+        self.update_faults_index()
+
+        self.faults.sort_faults()
+        #self.faults.df = self.faults.df.loc[self.df.index]
+        #self.faults.faults_relations_df = self.faults.faults_relations_df.loc[self.df.index, self.df.index]
+
+    def sort_series(self):
+        self.df.sort_values(by='order_series', inplace=True)
+        self.df.index = self.df.index.reorder_categories(self.df.index.get_values())
+
+    def update_faults_index(self):
+        idx = self.df.index
         self.faults.df.index = idx
         self.faults.faults_relations_df.index = idx
         self.faults.faults_relations_df.columns = idx
+
+        # TODO: This is a hack for qgrid
+        #
+        #  We need to add the qgrid special columns to categories
+        self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.add_categories(
+            ['index', 'qgrid_unfiltered_index'])
 
     def map_isFault_from_faults_DEP(self, faults):
         # TODO is this necessary?
@@ -326,6 +349,11 @@ class Faults(object):
     #         self.df.loc[c, 'isFault'] = np.nan
     #         self.faults_relations_df.loc[c, c] = np.nan
 
+    def sort_faults(self):
+        self.df.sort_index(inplace=True)
+        self.faults_relations_df.sort_index(inplace=True)
+        self.faults_relations_df.sort_index(axis=1, inplace=True)
+
     def set_is_fault(self, series_fault=None):
         """
         Set a flag to the series that are df.
@@ -335,12 +363,19 @@ class Faults(object):
             series_fault(list or Interfaces): Name of the series which are df
         """
         series_fault = np.atleast_1d(series_fault)
+        self.df['isFault'].fillna(False, inplace=True)
 
         if series_fault is None:
             series_fault = self.count_faults(self.df.index)
 
-        self.df['isFault'] = self.df.index.isin(series_fault)
+        if series_fault[0] is not None:
+            assert np.isin(series_fault, self.df.index).all(), 'series_faults must already ' \
+                                                                                      'exist in the the series df.'
+            self.df.loc[series_fault, 'isFault'] = self.df.loc[series_fault, 'isFault'] ^ True
+
+        # self.df['isFault'] = self.df.index.isin(series_fault)
         self.n_faults = self.df['isFault'].sum()
+
         return self.df
 
     def set_fault_relation(self, rel_matrix=None):
@@ -393,21 +428,28 @@ class Formations(object):
         formation_names (list[str]): List in order of the formations
     """
 
-    def __init__(self, series: Series, values_array=None, properties_names=np.empty(0), formation_names=np.empty(0),
+    def __init__(self, series: Series, values_array=None, properties_names=None, formation_names=None,
                  ):
 
         self.series = series
-        self.df = pn.DataFrame(columns=['formation', 'series', 'id', 'isBasement'])
-        self.df['isBasement'] = self.df['isBasement'].astype(bool)
-        self.df["series"] = self.df["series"].astype('category')
+        df_ = pn.DataFrame(columns=['formation', 'series', 'order_surfaces', 'isBasement', 'id'])
+        self.df = df_.astype({'formation': str, 'series': 'category',
+                              'order_surfaces': int, 'isBasement': bool,
+                              'id': int})
+
         self.df['series'].cat.add_categories(['Default series'], inplace=True)
 
-        self.df["formation"] = self.df["formation"].astype('category')
-        self.series_mapping = pn.DataFrame([pn.Categorical(['Default series'])], columns=['series'])
-        self.formations_names = formation_names
-        self._formation_values_set = False
+        #self.df['isBasement'] = self.df['isBasement'].astype(bool)
+
+        #self.df["series"] = self.df["series"].astype('category')
+
+
+        #self.df["formation"] = self.df["formation"].astype(str)
+       # DEP self.series_mapping = pn.DataFrame([pn.Categorical(['Default series'])], columns=['series'])
+      #  self.formations_names = formation_names
+      #  self._formation_values_set = False
         if formation_names is not None:
-            self.set_formation_names_pro(formation_names)
+            self.set_formation_names(formation_names)
         if values_array is not None:
             self.set_formation_values_pro(values_array=values_array, properties_names=properties_names)
         self.sequential_pile = StratigraphicPile(self.series, self.df)
@@ -479,7 +521,7 @@ class Formations(object):
         self.df.reset_index(inplace=True, drop=True)
         return True
 
-    def set_formation_names_pro(self, list_names: list, update_df=True):
+    def set_formation_names(self, list_names: list, update_df=True):
         """
          Method to set the names of the formations in order. This applies in the formation column of the df
          Args:
@@ -505,11 +547,17 @@ class Formations(object):
             self.map_series()
             self.set_id()
             self.set_basement()
+            self.set_order_surfaces()
             self.update_sequential_pile()
         return True
 
+    def set_default_formation_name(self):
+        if self.df.shape[0] == 0:
+            # TODO DEBUG: I am not sure that formations always has at least one entry. Check it
+            self.set_formation_names(['surface1', 'basement'])
+
     def set_formation_names_from_interfaces(self, interfaces):
-        self.set_formation_names_pro(interfaces.df['surface'].unique())
+        self.set_formation_names(interfaces.df['surface'].unique())
 
     def add_formation(self, formation_list: Union[pn.DataFrame, list], update_df=True):
         formation_list = np.atleast_1d(formation_list)
@@ -519,14 +567,15 @@ class Formations(object):
 
        # self.df['formation'].cat.add_categories(formation_list, inplace=True)
         for c in formation_list:
-            idx = self.df.last_valid_index()
-            if idx is None:
+            idx = self.df.index.max()
+            if idx is np.nan:
                 idx = -1
             self.df.loc[idx + 1, 'formation'] = c
         if update_df is True:
             self.map_series()
             self.set_id()
             self.set_basement()
+            self.set_order_surfaces()
             self.update_sequential_pile()
         return True
 
@@ -536,6 +585,7 @@ class Formations(object):
         if update_id is True:
             self.set_id()
             self.set_basement()
+            self.set_order_surfaces()
             self.update_sequential_pile()
         return True
 
@@ -556,14 +606,36 @@ class Formations(object):
 
     @_setdoc(pn.Series.replace.__doc__)
     def rename_formations(self, old_value=None, new_value=None, **kwargs):
-        self.df['formation'].replace(old_value, new_value, inplace=True, **kwargs)
+   #     old_value = np.array(old_value, ndmin=1, dtype=str)
+   #     new_value = np.array(new_value, ndmin=1, dtype=str)
+        if np.isin(new_value, self.df['formation']).any():
+            print('Two formations cannot have the same name.')
+        else:
+            self.df['formation'].replace(old_value, new_value, inplace=True, **kwargs)
         return True
         #self.df['formation'].cat.rename_categories(new_categories, inplace=True)
 
+    def set_order_surfaces(self):
+        self.df['order_surfaces'] = 1
+        self.df['order_surfaces'] = self.df.groupby('series')['order_surfaces'].cumsum()
+
+    def modify_order_surfaces(self, new_value: int, idx: int, series: str = None):
+
+        if series is None:
+            series = self.df.loc[idx, 'series']
+
+        group = self.df.groupby('series').get_group(series)['order_surfaces']
+        assert np.isin(new_value, group), 'new_value must exist already in the order_surfaces group.'
+        old_value = group[idx]
+        self.df.loc[group.index, 'order_surfaces'] = group.replace([new_value, old_value], [old_value, new_value])
+        self.sort_formations()
+        self.set_basement()
+
     def sort_formations(self):
 
-        self.df.sort_values(by=['series', 'formation'], inplace=True)
+        self.df.sort_values(by=['series', 'order_surfaces'], inplace=True)
         self.set_id()
+        return self.df
 
     def set_basement(self, basement_formation: str = None):
         """
@@ -595,7 +667,7 @@ class Formations(object):
         # self.df['isBasement'] = self.df['formation'] == basement_formation
         assert self.df['isBasement'].values.astype(bool).sum() <= 1, 'Only one formation can be basement'
 
-    def add_basement(self, name=None):
+    def add_basement_DEP(self, name=None):
         """
          Add a layer that behaves as the basement
          Args:
@@ -620,7 +692,7 @@ class Formations(object):
         #self.df['formation'].cat.add_categories(name, inplace=True)
 
         idx = self.df.last_valid_index()
-        if idx is None:
+        if idx is np.nan:
             idx = -1
         self.df.loc[idx + 1, ['formation', 'isBasement']] = [name, True]
         self.set_id()
@@ -705,6 +777,10 @@ class Formations(object):
         # Fill nans
         self.df['series'].fillna(self.series.df.index.values[-1], inplace=True)
 
+        # Reorganize the pile
+        self.set_order_surfaces()
+        self.sort_formations()
+        self.set_basement()
 
         # # Check that all formations have been assigned a series
         # if any(self.df['series'].isna()) and mapping_object is not None:
@@ -727,7 +803,7 @@ class Formations(object):
         pass
 
 # region set_id
-    def set_id(self, df: pn.DataFrame = None):
+    def set_id(self, id_list: list = None):
         """
         Set id of the layers (1 based)
         Args:
@@ -736,11 +812,11 @@ class Formations(object):
         Returns:
 
         """
-        if df is None:
-            df = self.df
+        if id_list is None:
+            id_list = self.df.index + 1
 
-        df['id'] = df.reset_index().index + 1
-        self.df = df
+        self.df['id'] = id_list
+
         return self.df
 # endregion
 
@@ -772,7 +848,8 @@ class Formations(object):
 
     def set_formation_values_pro(self, values_array, properties_names=np.empty(0)):
         # Check if there are values columns already
-        old_prop_names = self.df.columns[~self.df.columns.isin(['formation', 'series', 'id', 'isBasement'])]
+        old_prop_names = self.df.columns[~self.df.columns.isin(['formation', 'series', 'order_surfaces',
+                                                                'id', 'isBasement'])]
         # Delete old
         self.delete_formation_values(old_prop_names)
 
@@ -783,6 +860,34 @@ class Formations(object):
     def modify_formation_values(self):
         """Method to modify values using loc of pandas"""
         pass
+
+    # def modify_formations(self, idx, **kwargs):
+    #     TODO: think: there is any instance where this makes sense?
+    #     # Check idx exist in the df
+    #     assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the dataframe to be modified.'
+    #
+    #     # Check the properties are valid
+    #     assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'surface']).all(), 'Properties must be one or more of the' \
+    #                                                                              'following: \'X\', \'Y\', \'Z\', ' \
+    #                                                                              '\'surface\''
+    # self.rename_formations(event['old'], event['new'])
+    #     if event['column'] == 'series':
+    #         idx = event['index']
+    #         new_series = event['new']
+    #         formation_object.map_series({new_series: formation_object.df.loc[idx, ['formation']]})
+    #     if event['column'] == 'isBasement':
+    #         idx = event['index']
+    #
+    #     # stack properties values
+    #     values = np.array(list(kwargs.values()))
+    #
+    #     # If we pass multiple index we need to transpose the numpy array
+    #     if type(idx) is list:
+    #         values = values.T
+    #
+    #     # Selecting the properties passed to be modified
+    #     self.df.loc[idx, list(kwargs.keys())] = values
+
 
     def _set_formations_values_DEP(self, values_array, properties_names=np.empty(0), formation_names=None):
         """
@@ -896,7 +1001,7 @@ class GeometricData(object):
         """
 
         # We order the pandas table by formation (also by series in case something weird happened)
-        self.df.sort_values(by=['order_series', 'id'],
+        self.df.sort_values(by=['order_series', 'surfaces'],
                             ascending=True, kind='mergesort',
                             inplace=True)
 
@@ -1047,12 +1152,16 @@ class Interfaces(GeometricData):
         # TODO: Add the option to pass the surface number
 
         if idx is None:
-            idx = self.df.last_valid_index()
-            if idx is None:
+            idx = self.df.index.max()
+            if idx is np.nan:
                 idx = -1
-        try:
-            self.df.loc[idx + 1, ['X', 'Y', 'Z', 'surface']] = np.array([X, Y, Z, surface])
 
+        coord_array = np.array([X, Y, Z])
+        assert coord_array.ndim == 1, 'Adding an interface only works one by one.'
+        self.df.loc[idx + 1, ['X', 'Y', 'Z']] = coord_array
+
+        try:
+            self.df.loc[idx + 1, 'surface'] = surface
         # ToDO test this
         except ValueError as error:
             self.del_interface(idx +1)
@@ -1175,7 +1284,7 @@ class Interfaces(GeometricData):
         if not self.df.index.is_unique:
             self.df.reset_index(drop=True, inplace=True)
 
-    def set_default_interface_TO_BE_UPDATED(self, formation: Formations, grid: GridClass):
+    def set_default_interface(self):
         """
         Set a default point at the middle of the extent area to be able to start making the model
         Args:
@@ -1185,15 +1294,8 @@ class Interfaces(GeometricData):
         Returns:
 
         """
-        formation_name = formation.formations_names[0]
-        extent = grid.extent
-
-        self.set_interfaces_df(pn.DataFrame({'X': [(extent[1] - extent[0]) / 2],
-                                             'Y': [(extent[3] - extent[2]) / 2],
-                                             'Z': [(extent[4] - extent[5]) / 2],
-                                             'formation': [formation_name], 'order_series': [0],
-                                             'formation_number': [1], 'series': ['Default series'],
-                                             'isFault': False}))
+        if self.df.shape[0] == 0:
+            self.add_interface(0.00001, 0.00001, 0.00001, self.formations.df['formation'].iloc[0])
 
     def get_formations(self):
         """
@@ -1329,19 +1431,24 @@ class Orientations(GeometricData):
                                  'has preference')
 
         if idx is None:
-            idx = self.df.last_valid_index() + 1
-            if idx is None:
+            idx = self.df.index.max()
+            if idx is np.nan:
                 idx = 0
+
         if pole_vector is not None:
-            self.df.loc[idx, 'X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'surface'] = np.array([X, Y, Z, *pole_vector, surface])
+            self.df.loc[idx, ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']] = np.array([X, Y, Z, *pole_vector])
+            self.df.loc[idx, 'surface'] = surface
+
             self.calculate_orientations(idx)
 
             if orientation is not None:
                 warnings.warn('If pole_vector and orientation are passed pole_vector is used/')
         else:
             if orientation is not None:
-                self.df.loc[idx, 'X', 'Y', 'Z', 'azimuth', 'dip', 'polarity', 'surface'] = np.array(
-                    [X, Y, Z, *orientation, surface])
+                self.df.loc[idx, ['X', 'Y', 'Z', 'azimuth', 'dip', 'polarity']] = np.array(
+                    [X, Y, Z, *orientation])
+                self.df.loc[idx, 'surface'] = surface
+
                 self.calculate_gradient(idx)
             else:
                 raise AttributeError('At least pole_vector or orientation should have been passed to reach'
@@ -1351,7 +1458,7 @@ class Orientations(GeometricData):
 
         self.df.drop(idx, inplace=True)
 
-    def modify_orientation(self, idx, **kwargs):
+    def modify_orientations(self, idx, **kwargs):
         """
          Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
 
@@ -1364,15 +1471,20 @@ class Orientations(GeometricData):
          """
 
         # Check idx exist in the df
-        assert self.df.index.isin(np.atleast_1d(idx)).all(), 'Indices must exist in the dataframe to be modified.'
+        assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the dataframe to be modified.'
 
         # Check the properties are valid
         assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip',
                                              'azimuth', 'polarity', 'surface']).all(),\
             'Properties must be one or more of the following: \'X\', \'Y\', \'Z\', \'G_x\', \'G_y\', \'G_z\', \'dip,\''\
             '\'azimuth\', \'polarity\', \'surface\''
+
         # stack properties values
-        values = np.vstack(list(kwargs.values())).T
+        values = np.array(list(kwargs.values()))
+
+        # If we pass multiple index we need to transpose the numpy array
+        if type(idx) is list:
+            values = values.T
 
         # Selecting the properties passed to be modified
         self.df.loc[idx, list(kwargs.keys())] = values
@@ -1431,8 +1543,9 @@ class Orientations(GeometricData):
             self.df.loc[idx, "azimuth"] = np.rad2deg(np.nan_to_num(
                 np.arctan2(self.df.loc[idx, "G_x"] / self.df.loc[idx, "polarity"],
                            self.df.loc[idx, "G_y"] / self.df.loc[idx, "polarity"])))
-            self.df.loc[idx, "azimuth"][self.df.loc[idx, "azimuth"] < 0] += 360  # shift values from [-pi, 0] to [pi,2*pi]
-            self.df.loc[idx, "azimuth"][self.df.loc[idx, "dip"] < 0.001] = 0  # because if dip is zero azimuth is undefined
+
+            self.df["azimuth"][self.df["azimuth"] < 0] += 360  # shift values from [-pi, 0] to [pi,2*pi]
+            self.df["azimuth"][self.df["dip"] < 0.001] = 0  # because if dip is zero azimuth is undefined
 
     @staticmethod
     def create_orientation_from_interface(interfaces: Interfaces, indices):
@@ -1451,24 +1564,31 @@ class Orientations(GeometricData):
 
         return np.array([*center, *orientation, *normal])
 
-    def set_default_orientation(self, grid: GridClass):
+    def set_default_orientation(self):
         # TODO: TEST
         """
         Set a default point at the middle of the extent area to be able to start making the model
         """
-
-        extent = grid.extent
-
-        ori = pn.DataFrame([[(extent[1] - extent[0]) / 2,
-                             (extent[3] - extent[2]) / 2,
-                             (extent[4] - extent[5]) / 2,
-                             0, 0, 1,
-                             0, 0, 1,
-                             'basement',
-                             'Default series',
-                             1, 1, False]], columns=self._columns_o_1)
-
-        self.set_orientations_df(ori)
+        if self.df.shape[0] == 0:
+            # TODO DEBUG: I am not sure that formations always has at least one entry. Check it
+            self.add_orientation(.00001, .00001, .00001,
+                                 self.formations.df['formation'].iloc[0],
+                                 [0, 0, 1],
+                                 )
+        #
+        #
+        # extent = grid.extent
+        #
+        # ori = pn.DataFrame([[(extent[1] - extent[0]) / 2,
+        #                      (extent[3] - extent[2]) / 2,
+        #                      (extent[4] - extent[5]) / 2,
+        #                      0, 0, 1,
+        #                      0, 0, 1,
+        #                      'basement',
+        #                      'Default series',
+        #                      1, 1, False]], columns=self._columns_o_1)
+        #
+        # self.set_orientations_df(ori)
 
     def read_orientations(self, filepath, debug=False, inplace=True, append=False, kwargs_pandas = {}, **kwargs):
         """
@@ -1667,6 +1787,21 @@ class RescaledData(object):
 
     def _repr_html_(self):
         return self.df.T.to_html()
+
+    def modify_rescaling_parameters(self, property, value):
+        assert np.isin(property, self.df.columns).all(), 'Valid properties are: ' + np.array2string(self.df.columns)
+
+        if property == 'centers':
+            try:
+                assert value.shape[0] is 3
+
+                self.df.loc['values', property] = value
+
+            except AssertionError:
+                print('centers length must be 3: XYZ')
+
+        else:
+            self.df.loc['values', property] = value
 
     def rescale_data(self, rescaling_factor=None, centers=None):
         """
@@ -1929,7 +2064,7 @@ class Structure(object):
         self.formations = formations
         self.faults = faults
 
-        df_ = pn.DataFrame(np.array(['False', 'False', 0, 0, 0, 0, 0, 0, 0],).reshape(1,-1),
+        df_ = pn.DataFrame(np.array(['False', 'False', -1, -1, -1, -1, -1, -1, -1],).reshape(1,-1),
                            index=['values'],
                            columns=['isLith', 'isFault',
                                     'number faults', 'number formations', 'number series',
@@ -1947,6 +2082,10 @@ class Structure(object):
 
     def _repr_html_(self):
         return self.df.T.to_html()
+
+    def modify_rescaling_parameters(self, property, value):
+        assert self.df.columns.isin(property), 'Valid properties are: ' + np.array2string(self.df.columns)
+        self.df.loc['values', property] = value
 
     def update_structure_from_input(self):
         self.set_length_formations_i()
@@ -1974,7 +2113,7 @@ class Structure(object):
             len_series_i = np.insert(len_series_i, 0, 0)
 
         self.df.at['values','len series interfaces'] = len_series_i
-        self.df['number series'] = len(len_series_i) - 1
+        self.df['number series'] = len(len_series_i)
         return True
 
     def set_length_series_o(self):
@@ -2046,6 +2185,10 @@ class Options(object):
     def _repr_html_(self):
         return self.df.T.to_html()
 
+    def modify_options(self, property, value):
+        assert np.isin(property, self.df.columns).all(), 'Valid properties are: ' + np.array2string(self.df.columns)
+        self.df.loc['values', property] = value
+
     def default_options(self):
         """
         Set default options.
@@ -2079,6 +2222,23 @@ class KrigingParameters(object):
 
     def _repr_html_(self):
         return self.df.T.to_html()
+
+    def modify_kriging_parameters(self, property:str, value):
+        assert np.isin(property, self.df.columns).all(), 'Valid properties are: ' + np.array2string(self.df.columns)
+
+        if property == 'drift equations':
+            value = np.fromstring(value[1:-1], sep=',')
+            try:
+                assert value.shape[0] is self.structure.df.loc[
+                    'values', 'len series interfaces'].shape[0]
+
+                self.df.loc['values', property] = value
+
+            except AssertionError:
+                print('u_grade length must be the same as the number of series')
+
+        else:
+            self.df.loc['values', property] = value
 
     def set_default_range(self, extent=None):
         """
@@ -2180,218 +2340,6 @@ class AdditionalData(object):
 
     def update_structure(self):
         self.structure_data.update_structure_from_input()
-
-
-class AdditionalData_DEP(Structure, RescaledData):
-    # TODO IMP: split this class in each of the 3 types of extra data since not all of them are input
-    """
-    Class that encapsulate all auxiliary parameters and options: Structure, Options, Kriging
-    parameters and Rescaling factors
-
-    Attributes:
-
-
-    Args:
-        interfaces (Interfaces)
-        orientaions (Orientations)
-        grid (GridClass)
-        faults (Faults)
-        formations (Formations)
-        rescaling (rescaling)
-
-    """
-
-    def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: GridClass,
-                 faults: Faults, formations: Formations, rescaling: RescaledData):
-        # TODO: probably not all the attributes need to be present until I do a check before computing the thing.
-        # TODO IMP: Right now there are two copies for most of the paramenters. One in self and one in the categories_df
-        #           this may lead to important confusion and bugs
-
-        self.interfaces = interfaces
-        self.orientations = orientations
-        self.faults = faults
-        self.formations = formations
-        # TODO DEP grid
-        self.grid = grid
-        self.rescaled_data = rescaling
-
-        super().__init__(interfaces, orientations)
-
-        self.n_faults = faults.n_faults
-        self.n_formations = formations.df.shape[0]
-
-        self.range_var = self.default_range(grid.extent)
-        self.c_o = self.default_c_o()
-
-        self.n_universal_eq = self.set_u_grade(None)
-
-        self.nugget_effect_gradient = 0.01
-        self.nugget_effect_scalar = 1e-6
-
-        self.kriging_data = pn.DataFrame([self.range_var, self.c_o, self.n_universal_eq,
-                                          self.nugget_effect_gradient, self.nugget_effect_scalar],
-                                         columns=['values'],
-                                         index=['range', '$C_o$', 'drift equations',
-                                                'nugget grad', 'nugget scalar'])
-
-        self.options = pn.DataFrame(columns=['values'],
-                                    index=['dtype', 'output', 'theano_optimizer', 'device', 'verbosity'])
-        self.default_options()
-
-        self.structure_data = pn.DataFrame([self.is_lith(), self.is_fault(),
-                                            self.n_faults, self.n_formations, self.nfs,
-                                            self.len_formations_i, self.len_series_i,
-                                            self.len_series_o],
-                                           columns=['values'],
-                                           index=['isLith', 'isFault',
-                                                  'number faults', 'number formations', 'number formations per series',
-                                                  'len formations interfaces', 'len series interfaces',
-                                                  'len series orientations'])
-
-        self.rescaling_data = pn.DataFrame([rescaling.rescaling_factor, rescaling.centers],
-                                           columns=['values'],
-                                           index=['rescaling factor', 'centers'])
-
-    def __repr__(self):
-
-        concat_ = self.get_additional_data()
-        return concat_.to_string()
-
-    def _repr_html_(self):
-        concat_ = self.get_additional_data()
-        return concat_.to_html()
-
-    def update_rescaling_data(self):
-        self.rescaling_data.at['rescaling factor', 'values'] = self.rescaled_data.rescaling_factor
-        self.rescaling_data.at['centers', 'values'] = self.rescaled_data.centers
-
-    def update_default_kriging(self):
-
-        self.range_var = self.default_range(self.grid.extent)
-        self.c_o = self.default_c_o()
-
-        self.n_universal_eq = self.set_u_grade(None)
-
-        self.nugget_effect_gradient = 0.01
-        self.nugget_effect_scalar = 1e-6
-
-        self.kriging_data = pn.DataFrame([self.range_var, self.c_o, self.n_universal_eq,
-                                          self.nugget_effect_gradient, self.nugget_effect_scalar],
-                                         columns=['values'],
-                                         index=['range', '$C_o$', 'drift equations',
-                                                'nugget grad', 'nugget scalar'])
-
-    def update_structure(self):
-
-        super().__init__(self.interfaces, self.orientations)
-
-        self.structure_data = pn.DataFrame([self.is_lith(), self.is_fault(),
-                                            self.faults.n_faults, self.formations.df.shape[0], self.nfs,
-                                            self.len_formations_i, self.len_series_i,
-                                            self.len_series_o],
-                                           columns=['values'],
-                                           index=['isLith', 'isFault',
-                                                  'number faults', 'number formations', 'number formations per series',
-                                                  'len formations interfaces', 'len series interfaces',
-                                                  'len series orientations'])
-
-    def get_additional_data(self):
-        concat_ = pn.concat([self.structure_data, self.options, self.kriging_data, self.rescaling_data],
-                            keys=['Structure', 'Options', 'Kringing', 'Rescaling'])
-        return concat_
-
-    def is_lith(self):
-        """
-        Check if there is lithologies in the data and/or df
-        Returns:
-            list(bool)
-        """
-        is_lith = False
-        if self.formations.df.shape[0] - 1 > self.n_faults:
-            is_lith = True
-        return is_lith
-
-    def is_fault(self):
-        is_fault = False
-        if self.faults.n_faults != 0:
-            is_fault = True
-        return is_fault
-
-    def default_options(self):
-        """
-        Set default options.
-
-        Returns:
-
-        """
-        self.options.at['dtype'] = 'float64'
-        self.options.at['output'] = 'geology'
-        self.options.at['theano_optimizer'] = 'fast_compile'
-        self.options.at['device'] = 'cpu'
-
-    @staticmethod
-    def default_range(extent):
-        """
-        Set default kriging_data range
-        Args:
-            extent:
-
-        Returns:
-
-        """
-        try:
-            range_var = np.sqrt(
-                (extent[0] - extent[1]) ** 2 +
-                (extent[2] - extent[3]) ** 2 +
-                (extent[4] - extent[5]) ** 2)
-        except TypeError:
-            range_var = np.nan
-
-        return range_var
-
-    def default_c_o(self):
-        """
-        Set default covariance at 0
-        Returns:
-
-        """
-        c_o = self.range_var ** 2 / 14 / 3
-        return c_o
-
-    def set_u_grade(self, u_grade):
-        """
-        Set default universal grade. Transform polinomial grades to number of equations
-        Args:
-            **kwargs:
-
-        Returns:
-
-        """
-        # =========================
-        # Choosing Universal drifts
-        # =========================
-        if u_grade is None:
-            u_grade = np.zeros_like(self.len_series_i)
-            u_grade[(self.len_series_i > 1)] = 1
-
-        else:
-            u_grade = np.array(u_grade)
-
-        n_universal_eq = np.zeros_like(self.len_series_i)
-        n_universal_eq[u_grade == 0] = 0
-        n_universal_eq[u_grade == 1] = 3
-        n_universal_eq[u_grade == 2] = 9
-
-        self.n_universal_eq = n_universal_eq
-        return self.n_universal_eq
-
-    def get_kriging_parameters(self):
-        return self.kriging_data
-
-    def modify_kriging_parameters(self, **properties):
-        # TODO test
-        d = pn.DataFrame(properties)
-        self.kriging_data.df.loc[d.index, 'values'] = d
 
 
 class Solution(object):
@@ -2585,261 +2533,3 @@ class Solution(object):
 
     def set_edges(self, formation_name, edges):
         self.edges[formation_name] = edges
-
-
-class Interpolator(object):
-    """
-    Class that act as:
-     1) linker between the data objects and the theano graph
-     2) container of theano graphs + shared variables
-     3) container of theano function
-
-     Attributes:
-        interfaces (Interfaces)
-        orientaions (Orientations)
-        grid (GridClass)
-        formations (Formations)
-        faults (Faults)
-        additional_data (AdditionalData)
-        dtype (['float32', 'float64']): float precision
-        input_matrices (list[arrays])
-            - dip positions XYZ
-            - dip angles
-            - azimuth
-            - polarity
-            - interfaces coordinates XYZ
-
-        theano_graph: theano graph object with the properties from AdditionalData -> Options
-        theano function: python function to call the theano code
-
-    Args:
-        interfaces (Interfaces)
-        orientaions (Orientations)
-        grid (GridClass)
-        formations (Formations)
-        faults (Faults)
-        additional_data (AdditionalData)
-        kwargs:
-            - compile_theano: if true, the function is compile at the creation of the class
-    """
-    # TODO assert passed data is rescaled
-    def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: GridClass,
-                 formations: Formations, faults: Faults, additional_data: AdditionalData, **kwargs):
-
-        self.interfaces = interfaces
-        self.orientations = orientations
-        self.grid = grid
-        self.additional_data = additional_data
-        self.formations = formations
-        self.faults = faults
-
-        self.dtype = additional_data.options.df.loc['values', 'dtype']
-        self.input_matrices = self.get_input_matrix()
-
-        self.theano_graph = self.create_theano_graph(additional_data, inplace=False)
-
-        if 'compile_theano' in kwargs:
-            self.theano_function = self.compile_th_fn(additional_data.options.df.loc['values', 'output'])
-        else:
-            self.theano_function = None
-
-    def create_theano_graph(self, additional_data: AdditionalData = None, inplace=True):
-        """
-        create the graph accordingy to the options in the AdditionalData object
-        Args:
-            additional_data (AdditionalData):
-
-        Returns:
-            # TODO look for the right type in the theano library
-            theano graph
-        """
-        import gempy.core.theano_graph as tg
-        import importlib
-        importlib.reload(tg)
-
-        if additional_data is None:
-            additional_data = self.additional_data
-
-        #options = additional_data.options.df
-        graph = tg.TheanoGraph(output=additional_data.options.df.loc['values', 'output'],
-                               optimizer=additional_data.options.df.loc['values', 'theano_optimizer'],
-                               dtype=additional_data.options.df.loc['values', 'dtype'],
-                               verbose=additional_data.options.df.loc['values', 'verbosity'],
-                               is_lith=additional_data.structure_data.df.loc['values', 'isLith'],
-                               is_fault=additional_data.structure_data.df.loc['values', 'isFault'])
-
-        return graph
-
-    def set_theano_graph(self, th_graph):
-        self.theano_graph = th_graph
-
-    def set_theano_function(self, th_function):
-        self.theano_function = th_function
-
-    def set_theano_shared_structure(self):
-        # Size of every layer in rests. SHARED (for theano)
-        len_rest_form = (self.additional_data.structure_data.df.loc['values', 'len formations interfaces'] - 1)
-        self.theano_graph.number_of_points_per_formation_T.set_value(len_rest_form.astype('int32'))
-        self.theano_graph.npf.set_value(
-            np.cumsum(np.concatenate(([0], len_rest_form))).astype('int32'))  # Last value is useless
-        # and breaks the basement
-        # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
-        self.theano_graph.len_series_i.set_value(
-            np.insert(self.additional_data.structure_data.df.loc['values', 'len series interfaces'] -
-                      self.additional_data.structure_data.df.loc['values', 'number formations per series'], 0,
-                      0).cumsum().astype('int32'))
-        # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
-        self.theano_graph.len_series_f.set_value(
-            np.insert(self.additional_data.structure_data.df.loc['values', 'len series orientations'], 0,
-                      0).cumsum().astype('int32'))
-        # Number of formations per series. The function is not pretty but the result is quite clear
-        n_formations_per_serie = np.insert(
-            self.additional_data.structure_data.df.loc['values', 'number formations per series'], 0, 0). \
-            astype('int32')
-        self.theano_graph.n_formations_per_serie.set_value(n_formations_per_serie)
-
-        self.theano_graph.n_faults.set_value(self.additional_data.structure_data.df.loc['values', 'number faults'])
-        # Set fault relation matrix
-        self.theano_graph.fault_relation.set_value(self.faults.faults_relations_df.values.astype('int32'))
-
-    def set_theano_shared_kriging(self):
-        # Range
-        # TODO add rescaled range and co into the rescaling data df?
-        self.theano_graph.a_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data.df.loc['values', 'range'] /
-                                                            self.additional_data.rescaling_data.df.loc[
-                                                                'values', 'rescaling factor']))
-        # Covariance at 0
-        self.theano_graph.c_o_T.set_value(np.cast[self.dtype](self.additional_data.kriging_data.df.loc['values', '$C_o$'] /
-                                                              self.additional_data.rescaling_data.df.loc[
-                                                                  'values', 'rescaling factor']
-                                                              ))
-        # universal grades
-        self.theano_graph.n_universal_eq_T.set_value(
-            list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')))
-        # nugget effect
-        self.theano_graph.nugget_effect_grad_T.set_value(
-            np.cast[self.dtype](self.additional_data.kriging_data.df.loc['values', 'nugget grad']))
-        self.theano_graph.nugget_effect_scalar_T.set_value(
-            np.cast[self.dtype](self.additional_data.kriging_data.df.loc['values', 'nugget scalar']))
-
-    def set_theano_shared_output_init(self):
-        # Initialization of the block model
-        self.theano_graph.final_block.set_value(np.zeros((1, self.grid.values_r.shape[0] + self.interfaces.df.shape[0]),
-                                                         dtype=self.dtype))
-        # Init the list to store the values at the interfaces. Here we init the shape for the given dataset
-        self.theano_graph.final_scalar_field_at_formations.set_value(
-            np.zeros(self.theano_graph.n_formations_per_serie.get_value()[-1],
-                     dtype=self.dtype))
-        self.theano_graph.final_scalar_field_at_faults.set_value(
-            np.zeros(self.theano_graph.n_formations_per_serie.get_value()[-1],
-                     dtype=self.dtype))
-
-    def set_theano_share_input(self):
-        self.theano_graph.grid_val_T.set_value(np.cast[self.dtype](self.grid.values_r + 10e-9))
-
-        # Unique number assigned to each lithology
-        self.theano_graph.n_formation.set_value(self.formations.df['id'].values.astype('int32'))
-        # Final values the lith block takes
-        try:
-            self.theano_graph.formation_values.set_value(self.formations.df['value_0'].values)
-        except KeyError:
-            self.theano_graph.formation_values.set_value(self.formations.df['id'].values.astype(self.dtype))
-
-    def set_theano_shared_parameters(self):
-        """
-        Set theano shared variables from the other data objects.
-        """
-
-        # TODO: I have to split this one between structure_data and init data
-        self.set_theano_shared_structure()
-        self.set_theano_shared_kriging()
-        self.set_theano_shared_output_init()
-        self.set_theano_share_input()
-
-    def get_input_matrix(self) -> list:
-        """
-        Get values from the data objects used during the interpolation:
-            - dip positions XYZ
-            - dip angles
-            - azimuth
-            - polarity
-            - interfaces coordinates XYZ
-        Returns:
-            (list)
-        """
-        # orientations, this ones I tile them inside theano. PYTHON VAR
-        dips_position = self.orientations.df[['X_r', 'Y_r', 'Z_r']].values
-        dip_angles = self.orientations.df["dip"].values
-        azimuth = self.orientations.df["azimuth"].values
-        polarity = self.orientations.df["polarity"].values
-        interfaces_coord = self.interfaces.df[['X_r', 'Y_r', 'Z_r']].values
-
-        # Set all in a list casting them in the chosen dtype
-        idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, interfaces_coord)]
-        return idl
-
-    def compile_th_fn(self, output=None, inplace=True, **kwargs):
-        """
-        Compile the theano function given the input_data data.
-
-        Args:
-            output (list['geology', 'gradients']): if output is gradients, the gradient field is also computed (in
-            addition to the geology and properties)
-
-        Returns:
-            theano.function: Compiled function if C or CUDA which computes the interpolation given the input_data data
-            (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
-        """
-        import theano
-        self.set_theano_shared_parameters()
-        # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
-        input_data_T = self.theano_graph.input_parameters_list()
-        if output is None:
-            output = self.additional_data.options.df.loc['values', 'output']
-
-        print('Compiling theano function...')
-
-        if output is 'geology':
-            # then we compile we have to pass the number of formations that are df!!
-            th_fn = theano.function(input_data_T,
-                                    self.theano_graph.compute_geological_model(),
-                                    # mode=NanGuardMode(nan_is_error=True),
-                                    on_unused_input='ignore',
-                                    allow_input_downcast=False,
-                                    profile=False)
-
-        elif output is 'gravity':
-            # then we compile we have to pass the number of formations that are df!!
-            th_fn = theano.function(input_data_T,
-                                    self.theano_graph.compute_forward_gravity(),
-                                    #  mode=NanGuardMode(nan_is_error=True),
-                                    on_unused_input='ignore',
-                                    allow_input_downcast=False,
-                                    profile=False)
-
-        elif output is 'gradients':
-
-            gradients = kwargs.get('gradients', ['Gx', 'Gy', 'Gz'])
-            self.theano_graph.gradients = gradients
-
-            # then we compile we have to pass the number of formations that are df!!
-            th_fn = theano.function(input_data_T,
-                                    self.theano_graph.compute_geological_model_gradient(
-                                        self.additional_data.structure_data['number faults']),
-                                    #  mode=NanGuardMode(nan_is_error=True),
-                                    on_unused_input='ignore',
-                                    allow_input_downcast=False,
-                                    profile=False)
-
-        else:
-            raise SyntaxError('The output given does not exist. Please use geology, gradients or gravity ')
-
-        if inplace is True:
-            self.theano_function = th_fn
-
-        print('Compilation Done!')
-        print('Level of Optimization: ', theano.config.optimizer)
-        print('Device: ', theano.config.device)
-        print('Precision: ', self.dtype)
-        print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
-        return th_fn

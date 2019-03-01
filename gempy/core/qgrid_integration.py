@@ -15,41 +15,43 @@ class QgridModelIntegration(object):
         # TODO add on all to update from data_object and plots?
 
         self._geo_model = geo_model
-        self.qgrid_fo = None
-        self.qgrid_se = None
-        self.qgrid_fa = None
-        self.qgrid_fr = None
-        self.qgrid_in = None
-        self.qgrid_or = None
-        self.qgrid_ad = None
+        self.qgrid_fo = self.set_interactive_df('formations')
+        self.qgrid_se = self.set_interactive_df('series')
+        self.qgrid_fa = self.set_interactive_df('faults')
+        self.qgrid_fr = self.set_interactive_df('faults_relations')
+        self.qgrid_in = self.set_interactive_df('interfaces')
+        self.qgrid_or = self.set_interactive_df('orientations')
+        self.qgrid_op = self.set_interactive_df('options')
+        self.qgrid_kr = self.set_interactive_df('kriging')
+        self.qgrid_re = self.set_interactive_df('rescale')
 
     def set_interactive_df(self, data_type: str):
         if data_type is 'formations':
-            self.qgrid_fo = create_formations_qgrid(self._geo_model.formations)
+            self.qgrid_fo = self.create_formations_qgrid()
             return self.qgrid_fo
         elif data_type is 'series':
-            self.qgrid_se = create_series_qgrid(self._geo_model.series)
+            self.qgrid_se = self.create_series_qgrid()
             return self.qgrid_se
         elif data_type is 'faults':
-            self.qgrid_fa = create_faults_qgrid(self._geo_model.faults)
+            self.qgrid_fa = self.create_faults_qgrid()
             return self.qgrid_fa
         elif data_type is 'faults_relations':
-            self.qgrid_fr = create_faults_relations_qgrid(self._geo_model.faults)
+            self.qgrid_fr = self.create_faults_relations_qgrid()
             return self.qgrid_fr
         elif data_type is 'interfaces':
-            self.qgrid_in = create_interfaces_qgrid(self._geo_model)
+            self.qgrid_in = self.create_interfaces_qgrid()
             return self.qgrid_in
-        elif data_type is 'orientation':
-            self.qgrid_or = create_orientations_qgrid(self._geo_model)
+        elif data_type is 'orientations':
+            self.qgrid_or = self.create_orientations_qgrid()
             return self.qgrid_or
         elif data_type is 'options':
-            self.qgrid_op = create_series_qgrid(self._geo_model.additional_data.options)
+            self.qgrid_op = self.create_options_qgrid()
             return self.qgrid_op
         elif data_type is 'kriging':
-            self.qgrid_kr = create_series_qgrid(self._geo_model.additional_data.kriging_data)
+            self.qgrid_kr = self.create_kriging_parameters_qgrid()
             return self.qgrid_kr
         elif data_type is 'rescale':
-            self.qgrid_re = create_series_qgrid(self._geo_model.additional_data.rescaling_data)
+            self.qgrid_re = self.create_rescaling_data_qgrid()
             return self.qgrid_re
 
         else:
@@ -58,7 +60,36 @@ class QgridModelIntegration(object):
                                   'options, kriging or rescale. UPDATE message')
         # return self.qgrid_widget
 
-    def show(self, data_type: str):
+    def update_qgrd_objects(self):
+        qgrid_objects = [self.qgrid_fo, self.qgrid_se, self.qgrid_fa, self.qgrid_fr, self.qgrid_in,
+                         self.qgrid_or, self.qgrid_op, self.qgrid_kr, self.qgrid_re]
+
+        for e, qgrid_object in enumerate(qgrid_objects):
+           # print('qgrid_object' + str(e) )
+            if e == 1:
+                qgrid_object.df = self._geo_model.series.df.reset_index().rename(columns={'index': 'series_names'}).astype(
+                    {'series_names': str})
+
+            self.update_qgrid_object(qgrid_object)
+
+    @staticmethod
+    def update_qgrid_object(qgrid_object):
+        qgrid_object._ignore_df_changed = True
+        # make a copy of the user's dataframe
+        qgrid_object._df = qgrid_object.df.copy()
+
+        # insert a column which we'll use later to map edits from
+        # a filtered version of this df back to the unfiltered version
+        qgrid_object._df.insert(0, qgrid_object._index_col_name, range(0, len(qgrid_object._df)))
+
+        # keep an unfiltered version to serve as the starting point
+        # for filters, and the state we return to when filters are removed
+        qgrid_object._unfiltered_df = qgrid_object._df.copy()
+
+        qgrid_object._update_table(update_columns=True, fire_data_change_event=True)
+        qgrid_object._ignore_df_changed = False
+
+    def get(self, data_type: str):
 
         if data_type is 'formations':
             self.qgrid_fo._update_df()
@@ -75,7 +106,7 @@ class QgridModelIntegration(object):
         elif data_type is 'interfaces':
             self.qgrid_in._update_df()
             return self.qgrid_in
-        elif data_type is 'orientation':
+        elif data_type is 'orientations':
             self.qgrid_or._update_df()
             return self.qgrid_or
         elif data_type is 'options':
@@ -92,354 +123,376 @@ class QgridModelIntegration(object):
             raise AttributeError('data_type must be either formations, series, faults, interfaces, orientations,'
                                  'options, kriging or rescale. UPDATE message')
 
+    def create_faults_qgrid(self):
+        faults_object = self._geo_model.faults
 
-def create_faults_qgrid(faults_object):
-    qgrid_widget = qgrid.show_grid(faults_object.df,
-                                   show_toolbar=False,
-                                   column_options={'editable': True},
-                                   column_definitions={'isFinite': {'editable': False}})
+        qgrid_widget = qgrid.show_grid(faults_object.df,
+                                       show_toolbar=False,
+                                       column_options={'editable': True},
+                                       column_definitions={'isFinite': {'editable': False}})
 
-    def handle_set_is_fault(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
+        def handle_set_is_fault(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
 
-        if event['column'] == 'isFault':
-            idx = event['index']
-            #      cat_idx = qgrid_widget.df.loc[idx, 'series_names']
+            if event['column'] == 'isFault':
+                idx = event['index']
+                #      cat_idx = qgrid_widget.df.loc[idx, 'series_names']
 
-            faults_object.set_is_fault([idx])
-            qgrid_widget._update_df()
-
-    qgrid_widget.on('cell_edited', handle_set_is_fault)
-
-    return qgrid_widget
+                self._geo_model.set_is_fault([idx])
 
 
-def create_rescaling_data_qgrid(rescaling_object):
-    qgrid_widget = qgrid.show_grid(rescaling_object.df,
-                                   show_toolbar=False,
-                                   grid_options={'sortable': False, 'highlightSelectedCell': True})
+                self.update_qgrd_objects()
 
-    def handle_row_edit(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-            print(qgrid_widget._df)
+        qgrid_widget.on('cell_edited', handle_set_is_fault)
 
-        if event['column'] == 'centers':
-            try:
+        return qgrid_widget
+
+    def create_rescaling_data_qgrid(self):
+        rescaling_object = self._geo_model.rescaling
+
+        qgrid_widget = qgrid.show_grid(rescaling_object.df,
+                                       show_toolbar=False,
+                                       grid_options={'sortable': False, 'highlightSelectedCell': True})
+
+        def handle_row_edit(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
+                print(qgrid_widget._df)
+
+            value = event['new']
+            self._geo_model.modify_rescaling_parameters(event['column'], value)
+            self.update_qgrd_objects()
+
+        qgrid_widget.on('cell_edited', handle_row_edit)
+        return qgrid_widget
+
+    def create_options_qgrid(self):
+        options_object = self._geo_model.additional_data.options
+
+        qgrid_widget = qgrid.show_grid(options_object.df,
+                                       show_toolbar=False,
+                                       grid_options={'sortable': False, 'highlightSelectedCell': True})
+
+        def handle_row_edit(event, widget, debug=True):
+            if debug is True:
+                print(event)
+                print(widget)
+                print(self)
+                print(qgrid_widget._df)
+
+            if event['column'] == 'verbosity':
+                import numpy as np
+                value = np.fromstring(event['new'][1:-1], sep=',')
+            else:
                 value = event['new']
-                assert value.shape[0] is 3
+            self._geo_model.modify_options(event['column'], value)
+            self.update_qgrd_objects()
 
-                rescaling_object.df.loc['values', event['column']] = value
-                qgrid_widget._update_df()
+        qgrid_widget.on('cell_edited', handle_row_edit)
+        return qgrid_widget
 
-            except AssertionError:
-                print('centers length must be 3: XYZ')
-                qgrid_widget._update_df()
+    def create_kriging_parameters_qgrid(self):
+        kriging_parameters_object = self._geo_model.additional_data.kriging_data
 
-    qgrid_widget.on('cell_edited', handle_row_edit)
-    return qgrid_widget
+        qgrid_widget = qgrid.show_grid(kriging_parameters_object.df,
+                                       show_toolbar=False,
+                                       grid_options={'sortable': False, 'highlightSelectedCell': True},
+                                       )
 
+        def handle_row_edit(event, widget, debug=False):
 
-def create_options_qgrid(options_object):
-    qgrid_widget = qgrid.show_grid(options_object.df,
-                                   show_toolbar=False,
-                                   grid_options={'sortable': False, 'highlightSelectedCell': True})
+            if debug is True:
+                print(event)
+                print(widget)
+                print(qgrid_widget._df)
 
-    def handle_row_edit(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-            print(qgrid_widget._df)
+            self._geo_model.modify_kriging_parameters(event['column'], event['new'])
+            self.update_qgrd_objects()
 
-        if event['column'] == 'verbosity':
-            import numpy as np
-            value = np.fromstring(event['new'][1:-1], sep=',')
-        else:
+        qgrid_widget.on('cell_edited', handle_row_edit)
+        return qgrid_widget
+
+    def create_faults_relations_qgrid(self):
+        faults_object = self._geo_model.faults
+
+        # We need to add the qgrid special columns to categories if does not exist
+        try:
+            faults_object.faults_relations_df.columns = faults_object.faults_relations_df.columns.add_categories(
+                ['index', 'qgrid_unfiltered_index'])
+        except ValueError:
+            pass
+
+        qgrid_widget = qgrid.show_grid(faults_object.faults_relations_df,
+                                       show_toolbar=False)
+
+        def handle_set_fault_relation(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
+
+            # This data frame is quite independt to anything else:
+            faults_object.faults_relations_df.update(qgrid_widget.get_changed_df())
+
+            self.update_qgrd_objects()
+
+        qgrid_widget.on('cell_edited', handle_set_fault_relation)
+        return qgrid_widget
+
+    def create_interfaces_qgrid(self):
+        interfaces_object = self._geo_model.interfaces
+
+        self._geo_model.set_default_interface()
+
+        qgrid_widget = qgrid.show_grid(
+            interfaces_object.df,
+            show_toolbar=True,
+            grid_options={'sortable': False, 'highlightSelectedCell': True},
+            column_options={'editable': False},
+            column_definitions={'X': {'editable': True},
+                                'Y': {'editable': True},
+                                'Z': {'editable': True},
+                                'surface': {'editable': True}})
+
+        def handle_row_interfaces_add(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
+                print(qgrid_widget._df)
+            idx = event['index']
+
+            xyzs = qgrid_widget._df.loc[idx, ['X', 'Y', 'Z', 'surface']]
+            self._geo_model.add_interfaces(*xyzs)
+            self.update_qgrd_objects()
+
+        def handle_row_interfaces_delete(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
+            idx = event['indices']
+
+            self._geo_model.delete_interfaces(idx)
+            self.update_qgrd_objects()
+
+        def handle_cell_interfaces_edit(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
+
+            column = event['column']
+            idx = event['index']
             value = event['new']
 
-        options_object.df.loc['values', event['column']] = value
-        qgrid_widget._update_df()
+            self._geo_model.modify_interfaces(idx, **{column: value})
+            #interfaces_object.modify_interface(idx, **{column: value})
 
-    qgrid_widget.on('cell_edited', handle_row_edit)
-    return qgrid_widget
+            self.update_qgrd_objects()
 
+        qgrid_widget.on('row_removed', handle_row_interfaces_delete)
+        qgrid_widget.on('row_added', handle_row_interfaces_add)
+        qgrid_widget.on('cell_edited', handle_cell_interfaces_edit)
+        return qgrid_widget
 
-def create_kriging_parameters_qgrid(kriging_parameters_object):
-    qgrid_widget = qgrid.show_grid(kriging_parameters_object.df,
-                                   show_toolbar=False,
-                                   grid_options={'sortable': False, 'highlightSelectedCell': True},
-                                   )
+    def create_orientations_qgrid(self):
+        orientations_object = self._geo_model.orientations
+        self._geo_model.set_default_orientation()
 
-    def handle_row_edit(event, widget, debug=False):
-        import numpy as np
+        qgrid_widget = qgrid.show_grid(
+            orientations_object.df,
+            show_toolbar=True,
+            grid_options={'sortable': False, 'highlightSelectedCell': True},
+            column_options={'editable': False},
+            column_definitions={'X': {'editable': True},
+                                'Y': {'editable': True},
+                                'Z': {'editable': True},
+                                'G_x': {'editable': True},
+                                'G_y': {'editable': True},
+                                'G_z': {'editable': True},
+                                'azimuth': {'editable': True},
+                                'dip': {'editable': True},
+                                'pole': {'editable': True},
+                                'surface': {'editable': True}})
 
-        if debug is True:
-            print(event)
-            print(widget)
-            print(qgrid_widget._df)
-
-        if event['column'] == 'drift equations':
-            value = np.fromstring(event['new'][1:-1], sep=',')
-            try:
-                assert value.shape[0] is kriging_parameters_object.structure.df.loc[
-                    'values', 'len series interfaces'].shape[0]
-
-                kriging_parameters_object.df.loc['values', event['column']] = value
-                qgrid_widget._update_df()
-
-            except AssertionError:
-                print('u_grade length must be the same as the number of series')
-                qgrid_widget._update_df()
-
-        else:
-
-            kriging_parameters_object.df.loc['values', event['column']] = event['new']
-            qgrid_widget._update_df()
-
-    qgrid_widget.on('cell_edited', handle_row_edit)
-    return qgrid_widget
-
-
-def create_faults_relations_qgrid(faults_object):
-    # We need to add the qgrid special columns to categories
-    faults_object.faults_relations_df.columns = faults_object.faults_relations_df.columns.add_categories(
-        ['index', 'qgrid_unfiltered_index'])
-
-    qgrid_widget = qgrid.show_grid(faults_object.faults_relations_df,
-                                   show_toolbar=False)
-
-    def handle_set_fault_relation(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-
-        faults_object.faults_relations_df = qgrid_widget.get_changed_df()
-        qgrid_widget._update_df()
-
-    qgrid_widget.on('cell_edited', handle_set_fault_relation)
-    return qgrid_widget
-
-
-def create_interfaces_qgrid(interfaces_object):
-    if interfaces_object.df.shape[0] == 0:
-        # TODO DEBUG: I am not sure that formations always has at least one entry. Check it
-        interfaces_object.add_interface(0, 0, 0, interfaces_object.formations.df['formation'].iloc[0])
-
-    qgrid_widget = qgrid.show_grid(
-        interfaces_object.df,
-        show_toolbar=True,
-        grid_options={'sortable': False, 'highlightSelectedCell': True},
-        column_options={'editable': False},
-        column_definitions={'X': {'editable': True},
-                            'Y': {'editable': True},
-                            'Z': {'editable': True},
-                            'surface': {'editable': True}})
-
-    def handle_row_interfaces_add(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-            print(qgrid_widget._df)
-        idx = event['index']
-        xyzs = qgrid_widget._df.loc[idx, ['X', 'Y', 'Z', 'surface']]
-
-        interfaces_object.add_interface(*xyzs)
-        qgrid_widget._update_df()
-
-    def handle_row_interfaces_delete(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-        idx = event['indices']
-
-        interfaces_object.del_interface(idx)
-        qgrid_widget._update_df()
-
-    def handle_cell_interfaces_edit(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-
-        column = event['column']
-        idx = event['index']
-        value = event['new']
-
-        interfaces_object.modify_interface(idx, **{column: value})
-
-        qgrid_widget._update_df()
-
-    qgrid_widget.on('row_removed', handle_row_interfaces_delete)
-    qgrid_widget.on('row_added', handle_row_interfaces_add)
-    qgrid_widget.on('cell_edited', handle_cell_interfaces_edit)
-    return qgrid_widget
-
-
-def create_orientations_qgrid(orientations_object):
-    if orientations_object.df.shape[0] == 0:
-        # TODO DEBUG: I am not sure that formations always has at least one entry. Check it
-        orientations_object.add_orientations(0, 0, 0,
-                                             orientations_object.formations.df['formation'].iloc[0],
-                                             0, 0, 1,
-                                             )
-
-    qgrid_widget = qgrid.show_grid(
-        orientations_object.df,
-        show_toolbar=True,
-        grid_options={'sortable': False, 'highlightSelectedCell': True},
-        column_options={'editable': False},
-        column_definitions={'X': {'editable': True},
-                            'Y': {'editable': True},
-                            'Z': {'editable': True},
-                            'G_x': {'editable': True},
-                            'G_y': {'editable': True},
-                            'G_z': {'editable': True},
-                            'azimuth': {'editable': True},
-                            'dip': {'editable': True},
-                            'pole': {'editable': True},
-                            'surface': {'editable': True}})
-
-    def handle_row_orientations_add(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-            print(qgrid_widget._df)
-        idx = event['index']
-        xyzs = qgrid_widget._df.loc[idx, ['X', 'Y', 'Z','surface', 'G_x', 'G_y', 'G_z']]
-
-        orientations_object.add_orientation(*xyzs)
-        qgrid_widget._update_df()
-
-    def handle_row_orientations_delete(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-        idx = event['indices']
-
-        orientations_object.del_orientation(idx)
-        qgrid_widget._update_df()
-
-    def handle_cell_orientations_edit(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-
-        column = event['column']
-        idx = event['index']
-        value = event['new']
-
-        orientations_object.modify_orientation(idx, **{column: value})
-        qgrid_widget._update_df()
-
-    qgrid_widget.on('row_removed', handle_row_orientations_delete)
-    qgrid_widget.on('row_added', handle_row_orientations_add)
-    qgrid_widget.on('cell_edited', handle_cell_orientations_edit)
-    return qgrid_widget
-
-
-def create_formations_qgrid(formation_object):
-    if formation_object.df.shape[0] == 0:
-        # TODO DEBUG: I am not sure that formations always has at least one entry. Check it
-        formation_object.set_formation_names_pro(['surface1'])
-
-    qgrid_widget = qgrid.show_grid(formation_object.df, show_toolbar=True,
-                                   column_options={'editable': True},
-                                   column_definitions={'id': {'editable': False},
-                                                       'basement': {'editable': False}})
-
-    def handle_row_formation_add(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-        idx = event['index']
-        formation_object.add_formation(['surface' + str(idx)])
-        qgrid_widget._update_df()
-
-    def handle_row_formation_delete(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-        idx = event['indices']
-        formation_object.delete_formation(idx)
-        qgrid_widget._update_df()
-
-    def handle_cell_formation_edit(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-        if event['column'] == 'formation':
-            formation_object.rename_formations(event['old'], event['new'])
-        if event['column'] == 'series':
+        def handle_row_orientations_add(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
+                print(qgrid_widget._df)
             idx = event['index']
-            new_series = event['new']
-            formation_object.map_series({new_series:formation_object.df.loc[idx, ['formation']]})
-        if event['column'] == 'isBasement':
+            xyzs = qgrid_widget._df.loc[idx, ['X', 'Y', 'Z', 'surface']]
+            gxyz = qgrid_widget._df.loc[idx, ['G_x', 'G_y', 'G_z']]
+            self._geo_model.add_orientations(*xyzs, pole_vector=gxyz.values, idx=idx)
+            self.update_qgrd_objects()
+
+        def handle_row_orientations_delete(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
+            idx = event['indices']
+
+            self._geo_model.delete_orientations(idx)
+            self.update_qgrd_objects()
+
+        def handle_cell_orientations_edit(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
+
+            column = event['column']
             idx = event['index']
-            formation_object.set_basement(formation_object.df.loc[idx, ['formation']])
-        qgrid_widget._update_df()
+            value = event['new']
 
-    qgrid_widget.on('row_removed', handle_row_formation_delete)
-    qgrid_widget.on('row_added', handle_row_formation_add)
-    qgrid_widget.on('cell_edited', handle_cell_formation_edit)
+            self._geo_model.modify_orientations(idx, **{column: value})
+            self.update_qgrd_objects()
 
-    return qgrid_widget
+        qgrid_widget.on('row_removed', handle_row_orientations_delete)
+        qgrid_widget.on('row_added', handle_row_orientations_add)
+        qgrid_widget.on('cell_edited', handle_cell_orientations_edit)
+        return qgrid_widget
+
+    def create_formations_qgrid(self):
+        formation_object = self._geo_model.formations
+
+        formation_object.set_default_formation_name()
+        self._geo_model.update_from_formations()
+
+        qgrid_widget = qgrid.show_grid(formation_object.df, show_toolbar=True,
+                                       column_options={'editable': True},
+                                       column_definitions={'id': {'editable': False},
+                                                           'basement': {'editable': False}})
+
+        def handle_row_formation_add(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
+            idx = event['index']
+            self._geo_model.add_formations(['surface' + str(idx)])
+            #formation_object.add_formation(['surface' + str(idx)])
+            self.update_qgrd_objects()
+            self.qgrid_in._rebuild_widget()
+            self.qgrid_or._rebuild_widget()
+
+        def handle_row_formation_delete(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
+            idx = event['indices']
+            self._geo_model.delete_formations(idx)
+            #formation_object.delete_formation(idx)
+            self.update_qgrd_objects()
+            self.qgrid_in._rebuild_widget()
+            self.qgrid_or._rebuild_widget()
+
+        def handle_cell_formation_edit(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
+            if event['column'] == 'formation':
+                self._geo_model.rename_formations(event['old'], event['new'])
+            if event['column'] == 'series':
+                idx = event['index']
+                new_series = event['new']
+                self._geo_model.map_series_to_formations({new_series: formation_object.df.loc[idx, ['formation']]},
+                                                         set_series=False, sort_data=True)
+            if event['column'] == 'isBasement':
+                idx = event['index']
+                formation_object.set_basement(formation_object.df.loc[idx, ['formation']])
+
+            if event['column'] == 'order_surfaces':
+                idx = event['index']
+                try:
+                    self._geo_model.modify_order_surfaces(int(event['new']), idx)
+                except AssertionError:
+                    pass
+
+            self._geo_model.update_from_formations()
+
+            self.update_qgrd_objects()
+
+            if event['column'] == 'formation':
+                self.qgrid_in._rebuild_widget()
+                self.qgrid_or._rebuild_widget()
+
+        qgrid_widget.on('row_removed', handle_row_formation_delete)
+        qgrid_widget.on('row_added', handle_row_formation_add)
+        qgrid_widget.on('cell_edited', handle_cell_formation_edit)
+
+        return qgrid_widget
+
+    def create_series_qgrid(self):
+        series_object = self._geo_model.series
+
+        # I need to do a serious hack because qgrid does not accept categorical index yet
+        qgrid_widget = qgrid.show_grid(
+            series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype({'series_names': str}),
+            show_toolbar=True,
+            column_options={'editable': True},
+            column_definitions={'order_series': {'editable': False},
+                                })
+
+        def handle_row_series_add(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
+                print(series_object.df.reset_index())
+
+            idx = event['index']
+            self._geo_model.add_series(['series' + str(idx)])
+
+            # This is because qgrid does not accept editing indeces. We enable the modification of the series name
+            # by reindexing the df and change another column
+            #self._geo_model.faults.faults_relations_df.columns = self._geo_model.faults.faults_relations_df.columns.add_categories(
+            #    ['index', 'qgrid_unfiltered_index'])
+
+            qgrid_widget.df = series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype(
+                {'series_names': str})
+            self.update_qgrd_objects()
+            self.qgrid_fo._rebuild_widget()
+
+        def handle_row_series_delete(event, widget, debug=False):
+            if debug is True:
+                print(event)
+                print(widget)
+            idx = event['indices']
+            cat_idx = qgrid_widget.df.loc[idx, 'series_names']
+
+            series_object.delete_series(cat_idx)
+
+            qgrid_widget.df = series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype(
+                {'series_names': str})
+            self.update_qgrd_objects()
+
+        def handle_cell_series_edit(event, widget, debug=False):
+            idx = event['index']
+            cat_idx = qgrid_widget.df.loc[idx, 'series_names']
+            if debug is True:
+                print(event)
+                print(widget)
+                print(cat_idx)
+                print(series_object.df.index)
+            if event['column'] == 'series_names':
+                series_object.rename_series({event['old']: event['new']})
+            if event['column'] == 'BottomRelation':
+                series_object.df.loc[cat_idx, 'BottomRelation'] = event['new']
+
+            self._geo_model.update_from_series(rename_series={event['old']: event['new']})
+            # Hack for the faults relations
+            self._geo_model.faults.faults_relations_df.columns = self._geo_model.faults.faults_relations_df.columns.add_categories(
+                ['index', 'qgrid_unfiltered_index'])
 
 
-def create_series_qgrid(series_object):
-    # I need to do a serious hack because qgrid does not accept categorical index yet
-    qgrid_widget = qgrid.show_grid(
-        series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype({'series_names': str}),
-        show_toolbar=True,
-        column_options={'editable': True},
-        column_definitions={'order_series': {'editable': False},
-                            })
+            qgrid_widget.df = series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype(
+                {'series_names': str})
 
-    def handle_row_series_add(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-            print(series_object.df.reset_index())
+            self.update_qgrd_objects()
+            #qgrid_widget._update_df()
+            self.qgrid_fo._rebuild_widget()
 
-        idx = event['index']
-        series_object.add_series(['series' + str(idx)])
-        qgrid_widget.df = series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype(
-            {'series_names': str})
-        qgrid_widget._update_df()
+        qgrid_widget.on('row_removed', handle_row_series_delete)
+        qgrid_widget.on('row_added', handle_row_series_add)
+        qgrid_widget.on('cell_edited', handle_cell_series_edit)
 
-    def handle_row_series_delete(event, widget, debug=False):
-        if debug is True:
-            print(event)
-            print(widget)
-        idx = event['indices']
-        cat_idx = qgrid_widget.df.loc[idx, 'series_names']
+        return qgrid_widget
 
-        series_object.delete_series(cat_idx)
-
-        qgrid_widget.df = series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype(
-            {'series_names': str})
-        qgrid_widget._update_df()
-
-    def handle_cell_series_edit(event, widget, debug=False):
-        idx = event['index']
-        cat_idx = qgrid_widget.df.loc[idx, 'series_names']
-        if debug is True:
-            print(event)
-            print(widget)
-            print(cat_idx)
-            print(series_object.df.index)
-        if event['column'] == 'series_names':
-            series_object.rename_series({event['old']: event['new']})
-        if event['column'] == 'BottomRelation':
-            series_object.df.loc[cat_idx, 'BottomRelation'] = event['new']
-
-        qgrid_widget.df = series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype(
-            {'series_names': str})
-        qgrid_widget._update_df()
-
-    qgrid_widget.on('row_removed', handle_row_series_delete)
-    qgrid_widget.on('row_added', handle_row_series_add)
-    qgrid_widget.on('cell_edited', handle_cell_series_edit)
-
-    return qgrid_widget

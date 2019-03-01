@@ -30,6 +30,7 @@ import numpy as _np
 from numpy import ndarray
 from pandas import DataFrame
 from gempy.core.model import *
+from gempy.core.api_modules.data_mutation import *
 from typing import Union
 from gempy.utils.meta import _setdoc
 
@@ -232,9 +233,9 @@ def get_sequential_pile(model: Model):
 
 
 # region Formations functionality
-@_setdoc(Formations.set_formation_names_pro.__doc__)
+@_setdoc(Formations.set_formation_names.__doc__)
 def set_formation_names(geo_model: Model, list_names: list, update_df=True):
-    geo_model.formations.set_formation_names_pro(list_names, update_df)
+    geo_model.formations.set_formation_names(list_names, update_df)
     geo_model.update_from_formations()
     return geo_model.formations
 
@@ -272,10 +273,10 @@ def set_formations_DEP(model: Model, formation_names=None, formations_order=None
     return True
 
 
-@_setdoc([Formations.reorder_formations.__doc__])
-def reorder_formations(geo_model: Model, list_names):
-    geo_model.formations.reorder_formations(list_names)
-    return True
+# @_setdoc([Formations.reorder_formations.__doc__])
+# def reorder_formations_TOBEUPDATED(geo_model: Model, list_names):
+#     geo_model.formations.reorder_formations(list_names)
+#     return True
 
 
 def set_order_formations_DEP(geo_model, formation_order):
@@ -438,8 +439,8 @@ def rescale_data(geo_model: Model, rescaling_factor=None, centers=None):
 # region Interpolator functionality
 @_setdoc([Interpolator.__doc__,
          Interpolator.set_theano_shared_parameters.__doc__])
-def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=True, output='geology',
-                           theano_optimizer='fast_compile', verbose:list=np.nan):
+def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=True, output=None,
+                           theano_optimizer=None, verbose:list = None):
     """
 
     Args:
@@ -450,9 +451,13 @@ def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=
     Returns:
 
     """
-    geo_model.additional_data.options.df.at['values', 'output'] = output
-    geo_model.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
-    geo_model.additional_data.options.df.at['values', 'verbosity'] = verbose
+
+    if output is not None:
+        geo_model.additional_data.options.df.at['values', 'output'] = output
+    if theano_optimizer is not None:
+        geo_model.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
+    if verbose is not None:
+        geo_model.additional_data.options.df.at['values', 'verbosity'] = verbose
 
     # TODO add kwargs
     geo_model.rescaling.rescale_data()
