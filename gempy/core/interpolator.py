@@ -161,7 +161,6 @@ class Interpolator(object):
             self.theano_graph.formation_values.set_value(self.formations.df['value_0'].values)
         except KeyError:
             self.theano_graph.formation_values.set_value(self.formations.df['id'].values.astype(self.dtype))
-            #self.theano_graph.formation_values.set_value(np.arange(1, n_formations.sum() + 2, dtype='int32'))
 
     def set_theano_shared_parameters(self):
         """
