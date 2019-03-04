@@ -26,31 +26,31 @@ class QgridModelIntegration(object):
         self.qgrid_re = self.set_interactive_df('rescale')
 
     def set_interactive_df(self, data_type: str):
-        if data_type is 'formations':
+        if data_type == 'formations':
             self.qgrid_fo = self.create_formations_qgrid()
             return self.qgrid_fo
-        elif data_type is 'series':
+        elif data_type == 'series':
             self.qgrid_se = self.create_series_qgrid()
             return self.qgrid_se
-        elif data_type is 'faults':
+        elif data_type == 'faults':
             self.qgrid_fa = self.create_faults_qgrid()
             return self.qgrid_fa
-        elif data_type is 'faults_relations':
+        elif data_type == 'faults_relations':
             self.qgrid_fr = self.create_faults_relations_qgrid()
             return self.qgrid_fr
-        elif data_type is 'interfaces':
+        elif data_type == 'interfaces':
             self.qgrid_in = self.create_interfaces_qgrid()
             return self.qgrid_in
-        elif data_type is 'orientations':
+        elif data_type == 'orientations':
             self.qgrid_or = self.create_orientations_qgrid()
             return self.qgrid_or
-        elif data_type is 'options':
+        elif data_type == 'options':
             self.qgrid_op = self.create_options_qgrid()
             return self.qgrid_op
-        elif data_type is 'kriging':
+        elif data_type == 'kriging':
             self.qgrid_kr = self.create_kriging_parameters_qgrid()
             return self.qgrid_kr
-        elif data_type is 'rescale':
+        elif data_type == 'rescale':
             self.qgrid_re = self.create_rescaling_data_qgrid()
             return self.qgrid_re
 

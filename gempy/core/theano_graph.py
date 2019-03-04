@@ -170,6 +170,8 @@ class TheanoGraph(object):
 
         self.ref_layer_points_all = self.set_rest_ref_matrix()[0]
         self.rest_layer_points_all = self.set_rest_ref_matrix()[1]
+
+
         self.ref_layer_points = self.ref_layer_points_all
         self.rest_layer_points = self.rest_layer_points_all
 
@@ -215,7 +217,6 @@ class TheanoGraph(object):
             # Init gray voxels for gravity
             self.weigths_weigths = theano.shared(np.ones(0))
             self.weigths_index = theano.shared(np.ones(0, dtype='int32'))
-
 
         self.weights = theano.shared(None)
 
@@ -1742,6 +1743,13 @@ class TheanoGraph(object):
 
         self.ref_layer_points = self.ref_layer_points_all[len_i_0: len_i_1, :]
         self.rest_layer_points = self.rest_layer_points_all[len_i_0: len_i_1, :]
+
+        if 'rest_layer_points' in self.verbose:
+            self.rest_layer_points = theano.printing.Print('rest_layer_points')(self.rest_layer_points)
+
+        if 'ref_layer_points' in self.verbose:
+            self.ref_layer_points = theano.printing.Print('ref_layer_points')(self.ref_layer_points)
+
 
         # For the contribution of the df I did not find a better way
         self.len_i_0 = len_i_0

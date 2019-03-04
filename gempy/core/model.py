@@ -131,7 +131,7 @@ class DataMutation(object):
         """
         pass
 
-    def update_from_series(self, rename_series: dict = None, reorder_series=True):
+    def update_from_series(self, rename_series: dict = None, reorder_series=True, sort_geometric_data=True):
         """
         Note: update_from_series does not have the inverse, i.e. update_to_series, because Series is independent
         Returns:
@@ -157,6 +157,10 @@ class DataMutation(object):
 
         self.interfaces.map_data_from_series(self.series, 'order_series')
         self.orientations.map_data_from_series(self.series, 'order_series')
+
+        if sort_geometric_data is True:
+            self.interfaces.sort_table()
+            self.orientations.sort_table()
 
         self.additional_data.update_structure()
         # For the drift equations. TODO disentagle this property
@@ -228,6 +232,7 @@ class DataMutation(object):
         self.interfaces.map_data_from_formations(self.formations, 'id', idx=idx)
 
         self.interfaces.map_data_from_series(self.series, 'order_series', idx=idx)
+        self.interfaces.sort_table()
         return self.interfaces
 
     def update_to_orientations(self, idx: Union[list, np.ndarray] = None):
@@ -238,6 +243,7 @@ class DataMutation(object):
         self.orientations.map_data_from_formations(self.formations, 'series', idx=idx)
         self.orientations.map_data_from_formations(self.formations, 'id', idx=idx)
         self.orientations.map_data_from_series(self.series, 'order_series', idx=idx)
+        self.orientations.sort_table()
         return self.orientations
 
     def update_from_interfaces(self, idx: Union[list, np.ndarray] = None, recompute_rescale_factor=False):

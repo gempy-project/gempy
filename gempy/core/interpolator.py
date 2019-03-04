@@ -108,7 +108,7 @@ class Interpolator(object):
                       0).cumsum().astype('int32'))
         # Number of formations per series. The function is not pretty but the result is quite clear
         n_formations_per_serie = np.insert(
-            self.additional_data.structure_data.df.loc['values', 'number formations per series'], 0, 0). \
+            self.additional_data.structure_data.df.loc['values', 'number formations per series'].cumsum(), 0, 0). \
             astype('int32')
         self.theano_graph.n_formations_per_serie.set_value(n_formations_per_serie)
 
@@ -152,7 +152,10 @@ class Interpolator(object):
         self.theano_graph.grid_val_T.set_value(np.cast[self.dtype](self.grid.values_r + 10e-9))
 
         # Unique number assigned to each lithology
-        self.theano_graph.n_formation.set_value(self.formations.df['id'].values.astype('int32'))
+        n_formations = self.additional_data.structure_data.df.loc['values', 'number formations per series']
+        if n_formations.size != 0:
+            self.theano_graph.n_formation.set_value(np.arange(1, n_formations.sum() + 2, dtype='int32'))
+
         # Final values the lith block takes
         try:
             self.theano_graph.formation_values.set_value(self.formations.df['value_0'].values)
@@ -213,7 +216,7 @@ class Interpolator(object):
 
         print('Compiling theano function...')
 
-        if output is 'geology':
+        if output == 'geology':
             # then we compile we have to pass the number of formations that are df!!
             th_fn = theano.function(input_data_T,
                                     self.theano_graph.compute_geological_model(),
@@ -222,7 +225,7 @@ class Interpolator(object):
                                     allow_input_downcast=False,
                                     profile=False)
 
-        elif output is 'gravity':
+        elif output == 'gravity':
             # then we compile we have to pass the number of formations that are df!!
             th_fn = theano.function(input_data_T,
                                     self.theano_graph.compute_forward_gravity(),
@@ -231,7 +234,7 @@ class Interpolator(object):
                                     allow_input_downcast=False,
                                     profile=False)
 
-        elif output is 'gradients':
+        elif output == 'gradients':
 
             gradients = kwargs.get('gradients', ['Gx', 'Gy', 'Gz'])
             self.theano_graph.gradients = gradients

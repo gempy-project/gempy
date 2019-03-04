@@ -1001,9 +1001,10 @@ class GeometricData(object):
         """
 
         # We order the pandas table by formation (also by series in case something weird happened)
-        self.df.sort_values(by=['order_series', 'surfaces'],
+        self.df.sort_values(by=['order_series', 'surface'],
                             ascending=True, kind='mergesort',
                             inplace=True)
+        return self.df
 
     def map_data_from_series(self, series, property:str, idx=None):
         """
@@ -2127,15 +2128,19 @@ class Structure(object):
         return self.ref_position
 
     def set_number_of_formations_per_series(self):
-        self.df.at['values', 'number formations per series'] = self.interfaces.df.groupby('order_series').surface.nunique().values.cumsum()
+        self.df.at['values', 'number formations per series'] = self.interfaces.df.groupby('order_series').surface.nunique().values
         return True
 
     def set_number_of_faults(self):
-        self.df['number faults'] = self.faults.n_faults
+        # Number of faults existing in the interfaces df
+        self.df['number faults'] = self.faults.df.loc[self.interfaces.df['series'].unique(), 'isFault'].sum()
         return True
 
     def set_number_of_formations(self):
-        self.df['number formations'] = self.formations.df.shape[0]
+        # Number of formations existing in the interfaces df
+        self.df['number formations'] = self.interfaces.df['surface'].nunique()
+        #self.df['number surfaces in interpolation'] = self.interfaces.df['surface'].nunique()
+
         return True
 
     def set_is_lith_is_fault(self):
@@ -2507,7 +2512,7 @@ class Solution(object):
 
         See Also:
         """
-        n_surfaces = self.formations.df.iloc[:-1]['id'] - 1
+        n_surfaces = self.additional_data.structure_data.df.loc['values', 'number formations']
         n_faults = self.additional_data.structure_data.df.loc['values', 'number faults']
 
         if n_faults > 0:
