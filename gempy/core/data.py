@@ -870,7 +870,7 @@ class GeometricData(object):
         if 'sep' not in kwargs:
             kwargs['sep'] = ','
 
-        table = pn.read_table(file_path, **kwargs)
+        table = pn.read_csv(file_path, **kwargs)
 
         return table
 
@@ -1106,7 +1106,7 @@ class Interfaces(GeometricData):
         if 'sep' not in kwargs_pandas:
             kwargs_pandas['sep'] = ','
 
-        table = pn.read_table(file_path, **kwargs_pandas)
+        table = pn.read_csv(file_path, **kwargs_pandas)
 
         if 'update_formations' in kwargs:
             if kwargs['update_formations'] is True:
@@ -1498,7 +1498,7 @@ class Orientations(GeometricData):
         polarity_name = kwargs.get('polarity_name', 'polarity')
         surface_name = kwargs.get('surface_name', "formation")
 
-        table = pn.read_table(filepath, **kwargs_pandas)
+        table = pn.read_csv(filepath, **kwargs_pandas)
 
         if 'update_formations' in kwargs:
             if kwargs['update_formations'] is True:
