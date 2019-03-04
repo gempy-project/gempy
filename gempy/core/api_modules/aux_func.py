@@ -30,6 +30,6 @@ def create_formations(values_array=None, values_names=np.empty(0), formation_nam
 def create_faults(series: Series, series_fault=None, rel_matrix=None):
     return Faults(series=series, series_fault=series_fault, rel_matrix=rel_matrix)
 
-@_setdoc(GridClass.__doc__)
+@_setdoc(Grid.__doc__)
 def create_grid(grid_type: str, **kwargs):
-    return GridClass(grid_type=grid_type, **kwargs)
+    return Grid(grid_type=grid_type, **kwargs)

@@ -101,7 +101,7 @@ class TestOrientations:
 class TestGrid:
     def test_set_regular_grid(self):
         # Test creating an empty list
-        grid = gp.GridClass()
+        grid = gp.Grid()
         print(grid.create_regular_grid_3d([0,2000, 0, 2000, -2000, 0], [50, 50, 50]))
 
         # Test set regular grid by hand
@@ -110,8 +110,8 @@ class TestGrid:
     def test_grid_init(self):
         # Or we can init one of the default grids since the beginning by passing
         # the correspondant attributes
-        grid = gp.GridClass('regular_grid', extent=[0, 2000, 0, 2000, -2000, 0],
-                            resolution=[50, 50, 50])
+        grid = gp.Grid('regular_grid', extent=[0, 2000, 0, 2000, -2000, 0],
+                       resolution=[50, 50, 50])
 
     def test_grid_front(self):
         gp.create_grid('regular_grid', extent=[0, 2000, 0, 2000, -2000, 0],

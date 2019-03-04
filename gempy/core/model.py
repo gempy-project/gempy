@@ -16,7 +16,7 @@ class DataMutation(object):
     # TODO Add dummy input when a df is empty
     def __init__(self):
 
-        self.grid = GridClass()
+        self.grid = Grid()
         self.faults = Faults()
         self.series = Series(self.faults)
         self.formations = Formations(self.series)
@@ -83,7 +83,7 @@ class DataMutation(object):
     # --------------------------------------
     # ======================================
 
-    def set_grid_object(self, grid: GridClass, update_model=True):
+    def set_grid_object(self, grid: Grid, update_model=True):
         self.grid = grid
         self.additional_data.grid = grid
         self.rescaling.grid = grid
@@ -537,7 +537,7 @@ class DataMutation(object):
         self.interpolator.set_theano_shared_parameters()
 
 
-@_setdoc([MetaData.__doc__, GridClass.__doc__])
+@_setdoc([MetaData.__doc__, Grid.__doc__])
 class Model(DataMutation):
     """
     Container class of all objects that constitute a GemPy model. In addition the class provides the methods that

@@ -39,7 +39,7 @@ class MetaData(object):
         self.project_name = project_name
 
 
-class GridClass(object):
+class Grid(object):
     """
     Class to generate grids. This class is used to create points where to
     evaluate the geological model. So far only regular grids and custom_grids are implemented.
@@ -154,12 +154,6 @@ class Series(object):
     """
 
     def __init__(self, faults, series_order=None, ):
-
-        # TODO Dep now we only have a df with the series properties
-        # if series_distribution is None:
-        #     self.categories_df = pn.DataFrame({"Default series": [None]}, dtype=str)
-        # else:
-        #     self.set_series_categories(series_distribution, order=order)
 
         self.faults = faults
 
@@ -280,8 +274,6 @@ class Series(object):
         self.update_faults_index()
 
         self.faults.sort_faults()
-        #self.faults.df = self.faults.df.loc[self.df.index]
-        #self.faults.faults_relations_df = self.faults.faults_relations_df.loc[self.df.index, self.df.index]
 
     def sort_series(self):
         self.df.sort_values(by='order_series', inplace=True)
@@ -294,7 +286,7 @@ class Series(object):
         self.faults.faults_relations_df.columns = idx
 
         # TODO: This is a hack for qgrid
-        #
+
         #  We need to add the qgrid special columns to categories
         self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.add_categories(
             ['index', 'qgrid_unfiltered_index'])
@@ -324,7 +316,6 @@ class Faults(object):
 
     def __init__(self, series_fault=None, rel_matrix=None):
 
-     #   self.series = series
         self.df = pn.DataFrame(np.array([[False, False]]), index=pn.CategoricalIndex(['Default series']),
                                columns=['isFault', 'isFinite'], dtype=bool)
 
@@ -339,15 +330,6 @@ class Faults(object):
 
     def _repr_html_(self):
         return self.df.to_html()
-
-    # def update_faults_df(self, series):
-    #     series_idx = series.df.index
-    #     self.df.index = self.df.index.set_categories(series_idx, rename=True)
-    #     self.faults_relations_df.index = self.faults_relations_df.index.set_categories(series_idx, rename=True)
-    #     self.faults_relations_df.columns = self.faults_relations_df.columns.set_categories(series_idx, rename=True)
-    #     for c in self.df.index.categories:
-    #         self.df.loc[c, 'isFault'] = np.nan
-    #         self.faults_relations_df.loc[c, c] = np.nan
 
     def sort_faults(self):
         self.df.sort_index(inplace=True)
@@ -373,7 +355,6 @@ class Faults(object):
                                                                                       'exist in the the series df.'
             self.df.loc[series_fault, 'isFault'] = self.df.loc[series_fault, 'isFault'] ^ True
 
-        # self.df['isFault'] = self.df.index.isin(series_fault)
         self.n_faults = self.df['isFault'].sum()
 
         return self.df
@@ -439,15 +420,6 @@ class Formations(object):
 
         self.df['series'].cat.add_categories(['Default series'], inplace=True)
 
-        #self.df['isBasement'] = self.df['isBasement'].astype(bool)
-
-        #self.df["series"] = self.df["series"].astype('category')
-
-
-        #self.df["formation"] = self.df["formation"].astype(str)
-       # DEP self.series_mapping = pn.DataFrame([pn.Categorical(['Default series'])], columns=['series'])
-      #  self.formations_names = formation_names
-      #  self._formation_values_set = False
         if formation_names is not None:
             self.set_formation_names(formation_names)
         if values_array is not None:
@@ -469,58 +441,6 @@ class Formations(object):
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
 # region set formation names
-    def set_formation_names_DEP(self, list_names):
-        """
-        Method to set the names of the formations in order. This applies in the formation column of the df
-        Args:
-            list_names (list[str]):
-
-        Returns:
-            None
-        """
-        if type(list_names) is list or type(list_names) is np.ndarray:
-            self.formations_names = np.asarray(list_names)
-        elif isinstance(list_names, Interfaces):
-            self.formations_names = np.asarray(list_names.df['formation'].unique())
-        else:
-            raise AttributeError('list_names must be either array_like type or Interfaces')
-
-        self._map_formation_names_to_df()
-        self.df['series'].fillna('Default series', inplace=True)
-        self.update_sequential_pile()
-
-    def _map_formation_names_to_df_DEP(self):
-        """
-        Method to map data from lists to the categories_df
-        Returns:
-            True
-        """
-
-        if self.df['formation'].shape[0] == self.formations_names.shape[0]:
-            self.df['formation'] = self.formations_names
-
-        elif self.df['formation'].shape[0] > self.formations_names.shape[0]:
-            n_to_append = self.df['formation'].shape[0] - self.formations_names.shape[0]
-            for i in range(n_to_append):
-                self.formations_names = np.append(self.formations_names, 'default_formation_' + str(i))
-
-            if self.df['formation'].shape[0] is not 0:
-                print('Length of formation_names does not match number of formations. Too few.')
-            self.df['formation'] = self.formations_names
-
-        elif self.df['formation'].shape[0] < self.formations_names.shape[0]:
-            print('Length of formation_names does not match number of formations. Too many.')
-
-            # Set the names to the formations already there
-        #    self.df['formation'] = self.formations_names[:self.df.shape[0]]
-            # Append the names which are not in the categories_df and drop if there is duplicated
-            self.df = self.df.append(pn.DataFrame({'formation': self.formations_names}), sort=False)
-            self.df.drop_duplicates(subset='formation', keep='first', inplace=True)
-
-        self.df['formation'] = self.df['formation'].astype('category')
-        self.df.reset_index(inplace=True, drop=True)
-        return True
-
     def set_formation_names(self, list_names: list, update_df=True):
         """
          Method to set the names of the formations in order. This applies in the formation column of the df
@@ -601,13 +521,9 @@ class Formations(object):
         self.df['formation'] = list_names
         self.set_basement()
 
-        #self.df['formation'].cat.reorder_categories(list_names, inplace=True)
-        #self.df['formation'].cat.as_ordered(inplace=True)
 
     @_setdoc(pn.Series.replace.__doc__)
     def rename_formations(self, old_value=None, new_value=None, **kwargs):
-   #     old_value = np.array(old_value, ndmin=1, dtype=str)
-   #     new_value = np.array(new_value, ndmin=1, dtype=str)
         if np.isin(new_value, self.df['formation']).any():
             print('Two formations cannot have the same name.')
         else:
@@ -657,8 +573,6 @@ class Formations(object):
         # TODO add functionality of passing the basement and calling reorder to push basement formation to the bottom
         #  of the data frame
         #self.df['isBasement'].fillna(False, inplace=True)
-
-
         # if basement_formation is None:
         #     basement_formation = self.df['formation'][self.df['isBasement']].values
         #     if basement_formation.shape[0] is 0:
@@ -666,40 +580,6 @@ class Formations(object):
         #
         # self.df['isBasement'] = self.df['formation'] == basement_formation
         assert self.df['isBasement'].values.astype(bool).sum() <= 1, 'Only one formation can be basement'
-
-    def add_basement_DEP(self, name=None):
-        """
-         Add a layer that behaves as the basement
-         Args:
-             name (str): Name of the basement layer.
-
-         Returns:
-             True
-         """
-
-        self.df['isBasement'].fillna(False, inplace=True)
-        assert self.df['isBasement'].values.astype(bool).sum() < 1, 'Only one formation can be basement'
-        if name is None:
-            name = 'basement'
-        #
-        # new_df = pn.concat([self.df,
-        #                     pn.DataFrame(data=np.array([name, True, 9999]).reshape(1, -1),
-        #                                  columns=['formation', 'isBasement', 'id'])],
-        #                    sort=False, ignore_index=True
-        #                    )
-
-        # self.df = self.set_id(new_df)
-        #self.df['formation'].cat.add_categories(name, inplace=True)
-
-        idx = self.df.last_valid_index()
-        if idx is np.nan:
-            idx = -1
-        self.df.loc[idx + 1, ['formation', 'isBasement']] = [name, True]
-        self.set_id()
-
-        #self.set_dtypes()
-
-        return True
 # endregion
 
 # set_series
@@ -1756,19 +1636,19 @@ class RescaledData(object):
     Attributes:
         interfaces (Interfaces):
         orientaions (Orientations):
-        grid (GridClass):
+        grid (Grid):
         rescaling_factor (float): value which divide all coordinates
         centers (list[float]): New center of the coordinates after shifting
 
     Args:
         interfaces (Interfaces):
         orientations (Orientations):
-        grid (GridClass):
+        grid (Grid):
         rescaling_factor (float): value which divide all coordinates
         centers (list[float]): New center of the coordinates after shifting
     """
 
-    def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: GridClass,
+    def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: Grid,
                  rescaling_factor: float = None, centers: Union[list, pn.DataFrame] = None):
 
         self.interfaces = interfaces
@@ -2208,7 +2088,7 @@ class Options(object):
 
 
 class KrigingParameters(object):
-    def __init__(self, grid: GridClass, structure: Structure):
+    def __init__(self, grid: Grid, structure: Structure):
         self.structure = structure
         self.grid = grid
 
@@ -2309,7 +2189,7 @@ class KrigingParameters(object):
 
 
 class AdditionalData(object):
-    def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: GridClass,
+    def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: Grid,
                  faults: Faults, formations: Formations, rescaling: RescaledData):
 
         self.structure_data = Structure(interfaces, orientations, formations, faults)
@@ -2366,7 +2246,7 @@ class Solution(object):
     Attributes:
         additional_data (AdditionalData):
         formations (Formations)
-        grid (GridClass)
+        grid (Grid)
         scalar_field_at_interfaces (np.ndarray): Array containing the values of the scalar field at each interface. Axis
         0 is each series and axis 1 contain each formation in order
          lith_block (np.ndndarray): Array with the id of each layer evaluated in each point of
@@ -2385,11 +2265,11 @@ class Solution(object):
     Args:
         additional_data (AdditionalData):
         formations (Formations):
-        grid (GridClass):
+        grid (Grid):
         values (np.ndarray): values returned by `function: gempy.compute_model` function
     """
 
-    def __init__(self, additional_data: AdditionalData = None, formations: Formations = None, grid: GridClass = None,
+    def __init__(self, additional_data: AdditionalData = None, formations: Formations = None, grid: Grid = None,
                  values=None):
 
         self.additional_data = additional_data
