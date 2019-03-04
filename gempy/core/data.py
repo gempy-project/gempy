@@ -533,7 +533,7 @@ class Formations(object):
 
     def set_order_surfaces(self):
         #self.df['order_surfaces'] = 1
-        self.df['order_surfaces'] = self.df.groupby('series').cumcount()
+        self.df['order_surfaces'] = self.df.groupby('series').cumcount() + 1
 
     def modify_order_surfaces(self, new_value: int, idx: int, series: str = None):
 
@@ -1982,7 +1982,7 @@ class Structure(object):
         # Extracting lengths
         # ==================
         # Array containing the size of every formation. Interfaces
-        self.df.at['values', 'len formations interfaces'] = self.interfaces.df['id'].value_counts(sort=False).values
+        self.df.at['values', 'len formations interfaces'] = self.interfaces.df.groupby('surface')['order_series'].count().values#self.interfaces.df['id'].value_counts(sort=False).values
 
         return True
 
