@@ -2056,7 +2056,7 @@ class Options(object):
                            columns=['dtype', 'output', 'theano_optimizer', 'device', 'verbosity'])
         self.df = df_.astype({'dtype': 'category', 'output' : 'category',
                               'theano_optimizer' : 'category', 'device': 'category',
-                              'verbosity': list})
+                              'verbosity': object})
 
         self.df['dtype'].cat.set_categories(['float32', 'float64'], inplace=True)
         self.df['theano_optimizer'].cat.set_categories(['fast_run', 'fast_compile'], inplace=True)
