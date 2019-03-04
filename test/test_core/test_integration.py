@@ -4,6 +4,7 @@ import pandas as pn
 import numpy as np
 import os
 import pytest
+input_path = os.path.dirname(__file__)+'/../input_data'
 
 # ## Preparing the Python environment
 #
@@ -62,6 +63,15 @@ def test_compute_model(interpolator_islith_isfault, map_sequential_pile):
     geo_model.set_theano_graph(interpolator_islith_isfault)
 
     gp.compute_model(geo_model, compute_mesh=False)
+
+    if False:
+        np.save(input_path+'/test_integration_lith_block.npy', geo_model.solutions.lith_block)
+
+    # Load model
+    real_sol = np.load(input_path + '/test_integration_lith_block.npy')
+
+    # We only compare the block because the absolute pot field I changed it
+    np.testing.assert_array_almost_equal(np.round(geo_model.solutions.lith_block), real_sol, decimal=0)
 
     gp.plot.plot_section(geo_model, cell_number=25,
                          direction='y', plot_data=True)
