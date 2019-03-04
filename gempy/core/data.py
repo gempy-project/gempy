@@ -119,7 +119,7 @@ class Grid(object):
             np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2], dtype="float64"), indexing="ij"
         )
 
-        values = np.vstack(map(np.ravel, g)).T.astype("float64")
+        values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
         return values
 
     def set_regular_grid(self, extent, resolution):
