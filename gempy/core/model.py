@@ -146,7 +146,7 @@ class DataMutation(object):
 
         if reorder_series is True:
             self.formations.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
-                                                                ordered=True, inplace=True)
+                                                                ordered=False, inplace=True)
             self.formations.sort_formations()
 
         self.formations.set_basement()
