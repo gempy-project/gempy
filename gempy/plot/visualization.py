@@ -273,7 +273,7 @@ class PlotData2D(object):
                 _block = solution.lith_block
 
             elif block_type is 'fault1':
-                _block = solution.fault_block
+                _block = solution.fault_blocks
 
             else:
                 assert block_type in self.model.formations.df.columns, 'The value to be plotted has to be in formations: \\' + \
