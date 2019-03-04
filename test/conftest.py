@@ -1,6 +1,7 @@
 
 import pytest
 import gempy.core.gempy_api as gempy
+import gempy as gp
 
 import sys, os
 
@@ -10,27 +11,51 @@ input_path2 = os.path.dirname(__file__)+'/../../notebooks'
 
 @pytest.fixture(scope='session')
 def interpolator_islith_isfault():
-    # Importing the data from csv files and settign extent and resolution
-    geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
-                                 path_o=input_path+"/GeoModeller/test_d/test_d_Foliations.csv",
-                                 path_i=input_path+"/GeoModeller/test_d/test_d_Points.csv")
+    # # Importing the data from csv files and settign extent and resolution
+    # geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+    #                              path_o=input_path+"/GeoModeller/test_d/test_d_Foliations.csv",
+    #                              path_i=input_path+"/GeoModeller/test_d/test_d_Points.csv")
+    #
+    # gempy.set_series(geo_data, {'series': ('A', 'B'),
+    #                             'fault1': 'f1'}, order_series=['fault1', 'series'])
+    #
+    # interp_data = gempy.set_interpolation_data(geo_data, compile_theano=True, )
+    # return interp_data
 
-    gempy.set_series(geo_data, {'series': ('A', 'B'),
-                                'fault1': 'f1'}, order_series=['fault1', 'series'])
+    geo_model = gp.create_model('interpolator_islith_isfault')
 
-    interp_data = gempy.set_interpolation_data(geo_data, compile_theano=True, )
-    return interp_data
+    # Importing the data from CSV-files and setting extent and resolution
+    gp.init_data(geo_model, #[0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
+                 path_o=os.pardir + "/input_data/simple_fault_model_orientations.csv",
+                 path_i=os.pardir + "/input_data/simple_fault_model_points.csv", default_values=True)
+
+    gp.map_series_to_formations(geo_model, {"Fault_Series": 'Main_Fault',
+                                            "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                                             'Shale', 'Sandstone_1', 'basement')},
+                                remove_unused_series=True)
+
+    geo_model.set_is_fault(['Fault_Series'])
+
+    gp.set_interpolation_data(geo_model,
+                              output='geology', compile_theano=True,
+                              theano_optimizer='fast_compile',
+                              verbose=[])
+
+    return geo_model.interpolator
 
 
 @pytest.fixture(scope='session')
 def interpolator_islith_nofault():
+
+    geo_model = gp.create_model('interpolator_islith_isfault')
+
     # Importing the data from csv files and settign extent and resolution
-    geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+    gp.init_data(geo_model, #[0, 10, 0, 10, -10, 0], [50, 50, 50],
                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 
-    interp_data = gempy.set_interpolation_data(geo_data,  compile_theano=True)
-    return interp_data
+    geo_model = gempy.set_interpolation_data(geo_model,  compile_theano=True)
+    return geo_model.interpolator
 
 
 
