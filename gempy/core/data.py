@@ -160,7 +160,7 @@ class Series(object):
         if series_order is None:
             series_order = ['Default series']
 
-        self.df = pn.DataFrame(np.array([[1, np.nan]]), index=pn.CategoricalIndex(series_order, ordered=True),
+        self.df = pn.DataFrame(np.array([[1, np.nan]]), index=pn.CategoricalIndex(series_order, ordered=False),
                                columns=['order_series', 'BottomRelation'])
 
         self.df['order_series'] = self.df['order_series'].astype(int)
@@ -532,8 +532,8 @@ class Formations(object):
         #self.df['formation'].cat.rename_categories(new_categories, inplace=True)
 
     def set_order_surfaces(self):
-        self.df['order_surfaces'] = 1
-        self.df['order_surfaces'] = self.df.groupby('series')['order_surfaces'].cumsum()
+        #self.df['order_surfaces'] = 1
+        self.df['order_surfaces'] = self.df.groupby('series').cumcount()
 
     def modify_order_surfaces(self, new_value: int, idx: int, series: str = None):
 
