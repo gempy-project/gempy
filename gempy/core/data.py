@@ -846,7 +846,7 @@ class GeometricData(object):
 
     def set_dependent_properties(self):
         # series
-        self.df['series'] = np.nan
+        self.df['series'] = 'Default series'
         self.df['series'] = self.df['series'].astype('category', copy=True)
         self.df['series'].cat.set_categories(self.formations.df['series'].cat.categories, inplace=True)
 
@@ -854,7 +854,7 @@ class GeometricData(object):
         self.df['id'] = np.nan
 
         # order_series
-        self.df['order_series'] = np.nan
+        self.df['order_series'] = 1
 
     @staticmethod
     def read_data(file_path, **kwargs):
