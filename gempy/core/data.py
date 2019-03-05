@@ -219,7 +219,7 @@ class Series(object):
         if update_order_series is True:
             self.update_order_series()
 
-    def add_series(self, series_list: Union[pn.DataFrame, list], update_order_series=True):
+    def add_series(self, series_list: Union[str, list], update_order_series=True):
         series_list = np.atleast_1d(series_list)
 
         # Remove from the list categories that already exist
