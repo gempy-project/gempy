@@ -278,8 +278,10 @@ class DataMutation(object):
         else:
             self.rescaling.rescale_data()
 
-    def set_interpolator(self, interpolator: Interpolator):
-        self.interpolator = interpolator
+    def set_theano_graph(self, interpolator: Interpolator):
+        self.interpolator.theano_graph = interpolator.theano_graph
+        self.interpolator.theano_function = interpolator.theano_function
+        self.update_to_interpolator()
 
     def set_theano_function(self, interpolator: Interpolator):
         self.interpolator.theano_graph = interpolator.theano_graph

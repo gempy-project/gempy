@@ -693,7 +693,7 @@ class Formations(object):
 
         """
         if id_list is None:
-            id_list = self.df.index + 1
+            id_list = self.df.reset_index().index + 1
 
         self.df['id'] = id_list
 

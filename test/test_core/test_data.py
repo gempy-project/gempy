@@ -52,11 +52,11 @@ def test_load_model():
 
 
 class TestModel:
-    def test_modify_inteterfaces(self, test_load_model):
-        test_load_model.modify_interfaces([0, 10, 5], X=[90, 20, 30], Y=[30, 20, 40])
-        test_load_model.modify_interfaces(0, X=[60])
+    def test_modify_inteterfaces(self, load_model):
+        load_model.modify_interfaces([0, 10, 5], X=[90, 20, 30], Y=[30, 20, 40])
+        load_model.modify_interfaces(0, X=[60])
 
-        test_load_model.modify_interfaces([0,1,4], X=[60])
+        load_model.modify_interfaces([0, 1, 4], X=[60])
 
 
 class TestInterfaces:
@@ -223,18 +223,18 @@ class TestFormations:
 
 
 class TestSolution:
-    def test_representation(self, test_load_model):
-        sol = test_load_model.solutions
+    def test_representation(self, load_model):
+        sol = load_model.solutions
         sol.set_values(np.random.rand(4, 2, 3), compute_mesh=False)
         print(sol)
 
-    def test_get_surfaces(self, test_load_model):
-        model = test_load_model
+    def test_get_surfaces(self, load_model):
+        model = load_model
         print(model.solutions)
         print(model.solutions.compute_all_surfaces())
         print(gp.get_surfaces(model))
 
 
-def test_export_vtk(test_load_model):
-    model = test_load_model
+def test_export_vtk(load_model):
+    model = load_model
     gp.plot.export_to_vtk(model, os.path.dirname(__file__)+'/vtk/expert_test')
