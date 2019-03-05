@@ -1948,13 +1948,13 @@ class Structure(object):
         df_ = pn.DataFrame(np.array(['False', 'False', -1, -1, -1, -1, -1, -1, -1],).reshape(1,-1),
                            index=['values'],
                            columns=['isLith', 'isFault',
-                                    'number faults', 'number formations', 'number series',
+                                    'number faults', 'number surfaces', 'number series',
                                     'number formations per series',
                                     'len formations interfaces', 'len series interfaces',
                                     'len series orientations'])
 
         self.df = df_.astype({'isLith': bool, 'isFault': bool, 'number faults': int,
-                              'number formations': int, 'number series':int})
+                              'number surfaces': int, 'number series':int})
 
         self.update_structure_from_input()
 
@@ -1974,7 +1974,7 @@ class Structure(object):
         self.set_length_series_o()
         self.set_number_of_formations_per_series()
         self.set_number_of_faults()
-        self.set_number_of_formations()
+        self.set_number_of_surfaces()
         self.set_is_lith_is_fault()
 
     def set_length_formations_i(self):
@@ -2013,12 +2013,12 @@ class Structure(object):
 
     def set_number_of_faults(self):
         # Number of faults existing in the interfaces df
-        self.df['number faults'] = self.faults.df.loc[self.interfaces.df['series'].unique(), 'isFault'].sum()
+        self.df.at['values', 'number faults'] = self.faults.df.loc[self.interfaces.df['series'].unique(), 'isFault'].sum()
         return True
 
-    def set_number_of_formations(self):
+    def set_number_of_surfaces(self):
         # Number of formations existing in the interfaces df
-        self.df['number formations'] = self.interfaces.df['surface'].nunique()
+        self.df.at['values', 'number surfaces'] = self.interfaces.df['surface'].nunique()
         #self.df['number surfaces in interpolation'] = self.interfaces.df['surface'].nunique()
 
         return True
@@ -2269,12 +2269,12 @@ class Solution(object):
         values (np.ndarray): values returned by `function: gempy.compute_model` function
     """
 
-    def __init__(self, additional_data: AdditionalData = None, formations: Formations = None, grid: Grid = None,
-                 values=None):
+    def __init__(self, additional_data: AdditionalData = None,  grid: Grid = None,
+                 interfaces: Interfaces = None, values=None):
 
         self.additional_data = additional_data
-        self.formations = formations
         self.grid = grid
+        self.interfaces = interfaces
 
         if values is None:
 
@@ -2392,25 +2392,31 @@ class Solution(object):
 
         See Also:
         """
-        n_surfaces = self.additional_data.structure_data.df.loc['values', 'number formations']
+        n_surfaces = self.additional_data.structure_data.df.loc['values', 'number surfaces']
         n_faults = self.additional_data.structure_data.df.loc['values', 'number faults']
 
+        surfaces_names = self.interfaces.df['surface'].unique()
+
+        surfaces_cumsum = np.arange(0, n_surfaces)
+
         if n_faults > 0:
-            for n in n_surfaces[:n_faults]:
+            for n in surfaces_cumsum[:n_faults]:
                 v, s, norm, val = self.compute_surface_regular_grid(n, np.atleast_2d(self.scalar_field_faults)[n],
                                                                     **kwargs)
-                self.vertices[self.formations.df['formation'].iloc[n]] = v
-                self.edges[self.formations.df['formation'].iloc[n]] = s
+                self.vertices[surfaces_names[n]] = v
+                self.edges[surfaces_names[n]] = s
 
-        if n_faults < len(n_surfaces):
-            n_formations = np.arange(n_faults, len(n_surfaces))
+        if n_faults < n_surfaces:
+            #n_formations = np.arange(n_faults, len(n_surfaces))
 
-            for n in n_formations:
+            for n in surfaces_cumsum[n_faults:]:
                 # TODO ======== split each_scalar_field ===========
                 v, s, norms, val = self.compute_surface_regular_grid(n, self.scalar_field_lith, **kwargs)
+
                 # TODO Use setters for this
-                self.vertices[self.formations.df['formation'].iloc[n]] = v
-                self.edges[self.formations.df['formation'].iloc[n]] = s
+                self.vertices[surfaces_names[n]] = v
+                self.edges[surfaces_names[n]] = s
+
         return self.vertices, self.edges
 
     def set_vertices(self, formation_name, vertices):

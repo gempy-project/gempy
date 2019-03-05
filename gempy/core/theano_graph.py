@@ -118,6 +118,7 @@ class TheanoGraph(object):
                                                       [0, 0, 1, 1],
                                                       [0, 0, 0, 1],
                                                       [0, 0, 0, 0]]), 'fault relation matrix')
+
         self.inf_factor = theano.shared(np.ones(200, dtype='int32') * 10, 'Arbitrary scalar to make df infinite')
 
         # KRIGING
@@ -136,7 +137,7 @@ class TheanoGraph(object):
         self.is_fault = is_fault
         self.is_lith = is_lith
         self.n_faults = theano.shared(0, 'Number of df')
-        self.n_formations_per_serie = theano.shared(np.arange(2, dtype='int32'), 'List with the number of formations')
+        self.n_formations_per_series = theano.shared(np.arange(2, dtype='int32'), 'List with the number of formations')
 
         # This is not accumulative
         self.number_of_points_per_formation_T = theano.shared(np.zeros(3, dtype='int32')) #TODO is DEP?
@@ -171,7 +172,6 @@ class TheanoGraph(object):
         self.ref_layer_points_all = self.set_rest_ref_matrix()[0]
         self.rest_layer_points_all = self.set_rest_ref_matrix()[1]
 
-
         self.ref_layer_points = self.ref_layer_points_all
         self.rest_layer_points = self.rest_layer_points_all
 
@@ -180,9 +180,9 @@ class TheanoGraph(object):
         self.final_block = theano.shared(np.cast[dtype](np.zeros((1, 3))), "Final block computed")
 
         self.final_scalar_field_at_formations = theano.shared(
-            np.zeros(self.n_formations_per_serie.get_value().sum(), dtype=dtype))
+            np.zeros(self.n_formations_per_series.get_value().sum(), dtype=dtype))
         self.final_scalar_field_at_faults = theano.shared(
-            np.zeros(self.n_formations_per_serie.get_value().sum(), dtype=dtype))
+            np.zeros(self.n_formations_per_series.get_value().sum(), dtype=dtype))
 
         self.final_scalar_field_at_formations_op = self.final_scalar_field_at_formations
         self.final_potential_field_at_faults_op = self.final_scalar_field_at_faults
@@ -203,8 +203,8 @@ class TheanoGraph(object):
         self.gradients = []
 
         # Here we store the value of the potential field at interfaces
-        self.pfai_fault = T.zeros((0, self.n_formations_per_serie[-1]))
-        self.pfai_lith = T.zeros((0, self.n_formations_per_serie[-1]))
+        self.pfai_fault = T.zeros((0, self.n_formations_per_series[-1]))
+        self.pfai_lith = T.zeros((0, self.n_formations_per_series[-1]))
 
         self.fault_matrix = T.zeros((0, self.grid_val_T.shape[0] + 2 * self.len_points))
 
@@ -1830,7 +1830,7 @@ class TheanoGraph(object):
                               None],  # This line may be used for the df network
                 sequences=[dict(input=self.len_series_i[:self.n_faults + 1], taps=[0, 1]),
                            dict(input=self.len_series_f[:self.n_faults + 1], taps=[0, 1]),
-                           dict(input=self.n_formations_per_serie[:self.n_faults + 1], taps=[0, 1]),
+                           dict(input=self.n_formations_per_series[:self.n_faults + 1], taps=[0, 1]),
                            dict(input=self.n_universal_eq_T[:self.n_faults + 1], taps=[0])],
                 non_sequences=self.fault_block_init,
                 name='Looping df',
@@ -1854,7 +1854,7 @@ class TheanoGraph(object):
                  outputs_info=[self.lith_block_init, self.final_scalar_field_at_formations_op],
                  sequences=[dict(input=self.len_series_i[self.n_faults:], taps=[0, 1]),
                             dict(input=self.len_series_f[self.n_faults:], taps=[0, 1]),
-                            dict(input=self.n_formations_per_serie[self.n_faults:], taps=[0, 1]),
+                            dict(input=self.n_formations_per_series[self.n_faults:], taps=[0, 1]),
                             dict(input=self.n_universal_eq_T[self.n_faults:], taps=[0])],
                 # non_sequences=[self.fault_matrix],
                  name='Looping interfaces',
@@ -1893,7 +1893,7 @@ class TheanoGraph(object):
                               None],  # This line may be used for the df network
                 sequences=[dict(input=self.len_series_i[:self.n_faults + 1], taps=[0, 1]),
                            dict(input=self.len_series_f[:self.n_faults + 1], taps=[0, 1]),
-                           dict(input=self.n_formations_per_serie[:self.n_faults + 1], taps=[0, 1]),
+                           dict(input=self.n_formations_per_series[:self.n_faults + 1], taps=[0, 1]),
                            dict(input=self.n_universal_eq_T[:self.n_faults + 1], taps=[0])],
                 non_sequences=self.fault_block_init,
                 name='Looping df',
@@ -1917,7 +1917,7 @@ class TheanoGraph(object):
                  outputs_info=[self.lith_block_init, self.final_scalar_field_at_formations_op],
                  sequences=[dict(input=self.len_series_i[self.n_faults:], taps=[0, 1]),
                             dict(input=self.len_series_f[self.n_faults:], taps=[0, 1]),
-                            dict(input=self.n_formations_per_serie[self.n_faults:], taps=[0, 1]),
+                            dict(input=self.n_formations_per_series[self.n_faults:], taps=[0, 1]),
                             dict(input=self.n_universal_eq_T[self.n_faults:], taps=[0])],
                 # non_sequences=[self.fault_matrix],
                  name='Looping interfaces',
@@ -1972,7 +1972,7 @@ class TheanoGraph(object):
     #          outputs_info=[weights_init],
     #          sequences=[dict(input=self.len_series_i, taps=[0, 1]),
     #                     dict(input=self.len_series_f, taps=[0, 1]),
-    #                     dict(input=self.n_formations_per_serie, taps=[0, 1]),
+    #                     dict(input=self.n_formations_per_series, taps=[0, 1]),
     #                     dict(input=self.n_universal_eq_T, taps=[0])],
     #         # non_sequences=[self.fault_matrix],
     #          name='Looping interfaces',
@@ -2046,7 +2046,7 @@ class TheanoGraph(object):
     #     sol = self.compute_a_series(
     #         self.len_series_i[n_faults:][0], self.len_series_i[n_faults:][-1],
     #         self.len_series_f[n_faults:][0], self.len_series_f[n_faults:][-1],
-    #         self.n_formations_per_serie[n_faults:][0], self.n_formations_per_serie[n_faults:][-1],
+    #         self.n_formations_per_series[n_faults:][0], self.n_formations_per_series[n_faults:][-1],
     #         self.n_universal_eq_T[n_faults:],
     #         self.lith_block_init, self.final_scalar_field_at_formations,
     #         self.fault_matrix

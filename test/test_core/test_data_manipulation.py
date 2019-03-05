@@ -144,6 +144,7 @@ def create_formations(create_series):
 
     formations.sequential_pile.figure
     # We can use `set_is_fault` to choose which of our series are faults:
+    return formations
 
 
 @pytest.fixture(scope='module')
@@ -176,6 +177,7 @@ def create_interfaces(create_formations, create_series):
 
     interfaces.sort_table()
     print(interfaces)
+    return interfaces
 
 
 @pytest.fixture(scope='module')
@@ -213,8 +215,8 @@ def create_orientations(create_formations, create_series):
     orientations.map_data_from_series(create_series, 'order_series')
     print(orientations)
 
-
     orientations.set_annotations()
+    return orientations
 
 
 @pytest.fixture(scope='module')
