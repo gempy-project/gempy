@@ -16,7 +16,9 @@ import pytest
 
 # ## Series
 #
-# Series is the object that contains the properties associated with each independent scalar field. Right now it is simply the order of the series (which is infered by the index order). But in the future will be add the unconformity relation or perhaps the type of interpolator
+# Series is the object that contains the properties associated with each independent scalar field. Right now it is
+# simply the order of the series (which is infered by the index order). But in the future will be add the unconformity
+# relation or perhaps the type of interpolator
 #
 # Series and Faults classes are quite entagled since fauls are a type of series
 
@@ -160,20 +162,20 @@ def create_interfaces(create_formations, create_series):
     print(interfaces)
 
     interfaces.map_data_from_formations(formations, 'series')
-    interfaces
+    print(interfaces)
 
 
     interfaces.map_data_from_formations(formations, 'id')
-    interfaces
+    print(interfaces)
 
 
     interfaces.map_data_from_series(create_series, 'order_series')
-    interfaces
+    print(interfaces)
 
     # In[59]:
 
     interfaces.sort_table()
-    interfaces
+    print(interfaces)
 
 
 @pytest.fixture(scope='module')
