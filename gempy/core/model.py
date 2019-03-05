@@ -215,6 +215,14 @@ class DataMutation(object):
         self.update_from_series()
         return s
 
+    @_setdoc([Faults.set_is_fault.__doc__])
+    def set_is_finite_fault(self, series_fault=None):
+        s = self.faults.set_is_finite_fault(series_fault)  # change df in Fault obj
+        print(s)
+        # change shared theano variable for infinite factor
+        self.interpolator.set_theano_inf_factor()
+
+
     def set_interface_object(self, interfaces: Interfaces, update_model=True):
         self.interfaces = interfaces
         self.rescaling.interfaces = interfaces

@@ -359,6 +359,22 @@ class Faults(object):
 
         return self.df
 
+    def set_is_finite_fault(self, series_fault=None):
+        """
+        Toggles given series' finite fault property.
+
+        Args:
+            series_fault (list): Name of the series
+        """
+        if series_fault[0] is not None:
+            # check if given series is/are in dataframe
+            assert np.isin(series_fault, self.df.index).all(), "series_fault must already exist" \
+                                                                "in the series DataFrame."
+            # if so, toggle True/False for given series or list of series
+            self.df.loc[series_fault, "isFinite"] = self.df.loc[series_fault, 'isFinite'] ^ True
+
+        return self.df
+
     def set_fault_relation(self, rel_matrix=None):
         """
         Method to set the df that offset a given sequence and therefore also another fault
