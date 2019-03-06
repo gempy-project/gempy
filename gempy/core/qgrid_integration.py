@@ -141,9 +141,8 @@ class QgridModelIntegration(object):
                 #      cat_idx = qgrid_widget.df.loc[idx, 'series_names']
 
                 self._geo_model.set_is_fault([idx])
-
-
                 self.update_qgrd_objects()
+                self.qgrid_fr._rebuild_widget()
 
         qgrid_widget.on('cell_edited', handle_set_is_fault)
 
@@ -233,7 +232,7 @@ class QgridModelIntegration(object):
                 print(event)
                 print(widget)
 
-            # This data frame is quite independt to anything else:
+            # This data frame is quite independent to anything else:
             faults_object.faults_relations_df.update(qgrid_widget.get_changed_df())
 
             self.update_qgrd_objects()
@@ -450,6 +449,7 @@ class QgridModelIntegration(object):
                 {'series_names': str})
             self.update_qgrd_objects()
             self.qgrid_fo._rebuild_widget()
+            self.qgrid_fr._rebuild_widget()
 
         def handle_row_series_delete(event, widget, debug=False):
             if debug is True:
@@ -463,6 +463,8 @@ class QgridModelIntegration(object):
             qgrid_widget.df = series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype(
                 {'series_names': str})
             self.update_qgrd_objects()
+            self.qgrid_fo._rebuild_widget()
+            self.qgrid_fr._rebuild_widget()
 
         def handle_cell_series_edit(event, widget, debug=False):
             idx = event['index']
@@ -487,8 +489,8 @@ class QgridModelIntegration(object):
                 {'series_names': str})
 
             self.update_qgrd_objects()
-            #qgrid_widget._update_df()
             self.qgrid_fo._rebuild_widget()
+            self.qgrid_fr._rebuild_widget()
 
         qgrid_widget.on('row_removed', handle_row_series_delete)
         qgrid_widget.on('row_added', handle_row_series_add)
