@@ -2316,6 +2316,7 @@ class Solution(object):
 
         self.scalar_field_lith = lith[1]
         self.lith_block = lith[0]
+        self.values_block = lith[1:]
 
         try:
             if self.additional_data.options.df.loc['values', 'output'] is 'gradients':

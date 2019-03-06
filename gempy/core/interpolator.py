@@ -157,10 +157,14 @@ class Interpolator(object):
             self.theano_graph.n_formation.set_value(np.arange(1, n_formations.sum() + 2, dtype='int32'))
 
         # Final values the lith block takes
-        try:
-            self.theano_graph.formation_values.set_value(self.formations.df['value_0'].values)
-        except KeyError:
-            self.theano_graph.formation_values.set_value(self.formations.df['id'].values.astype(self.dtype))
+        self.theano_graph.formation_values.set_value(
+            self.formations.df.iloc[:, 4:].values.astype(self.dtype).T)
+            #np.atleast_2d(self.formations.df.iloc['id'].values.astype(self.dtype)))
+        #
+        # try:
+        #     self.theano_graph.formation_values.set_value(self.formations.df['value_0'].values)
+        # except KeyError:
+        #     self.theano_graph.formation_values.set_value(np.atleast_2d(self.formations.df['id'].values.astype(self.dtype)))
 
     def set_theano_shared_parameters(self):
         """

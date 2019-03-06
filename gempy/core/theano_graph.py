@@ -108,7 +108,7 @@ class TheanoGraph(object):
         # ----------
         self.n_formation = theano.shared(np.arange(2, 5, dtype='int32'), "ID of the formation")
         self.n_formation_op = self.n_formation
-        self.formation_values = theano.shared(np.arange(2, 5, dtype=dtype), "Value of the formation to compute")
+        self.formation_values = theano.shared((np.arange(2, 4, dtype=dtype).reshape(2, -1)), "Value of the formation to compute")
         self.n_formation_op_float = self.formation_values
 
         # FAULTS
@@ -1365,9 +1365,9 @@ class TheanoGraph(object):
         if True:
 
             slice_init = slice_init
-            n_formation_0 = n_formation[slice_init:slice_init + 1]
-            n_formation_1 = n_formation[slice_init + 1:slice_init + 2]
-            drift = drift[slice_init:slice_init + 1][0]
+            n_formation_0 = n_formation[:, slice_init:slice_init + 1]
+            n_formation_1 = n_formation[:, slice_init + 1:slice_init + 2]
+            drift = drift[:, slice_init:slice_init + 1]
 
             if 'compare' in self.verbose:
                 a = theano.printing.Print("a")(a)
@@ -1382,8 +1382,8 @@ class TheanoGraph(object):
             #    drift = T.set_subtensor(n_formation[0], n_formation[1])
 
             # The 5 rules the slope of the function
-            sigm = (-n_formation_0[0] / (1 + T.exp(-l * (Z_x - a)))) - \
-                   ((n_formation_1[0] / (1 + T.exp(l * (Z_x - b))))) + drift
+            sigm = (-n_formation_0.reshape((-1, 1)) / (1 + T.exp(-l * (Z_x - a)))) - \
+                   (n_formation_1.reshape((-1, 1)) / (1 + T.exp(l * (Z_x - b)))) + drift.reshape((-1, 1))
             if False:
                 sigm = theano.printing.Print("middle point")(sigm)
             #      n_formation = theano.printing.Print("n_formation")(n_formation)
@@ -1457,16 +1457,16 @@ class TheanoGraph(object):
 
         # Loop to segment the distinct lithologies
 
-        n_formation_op_float_sigmoid = T.repeat(self.n_formation_op_float, 2)
+        n_formation_op_float_sigmoid = T.repeat(self.n_formation_op_float, 2, axis=1)
 
         # TODO: instead -1 at the border look for the average distance of the input!
-        n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[0], -1)
+        n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[:, 0], -1)
                                                     #- T.sqrt(T.square(n_formation_op_float_sigmoid[0] - n_formation_op_float_sigmoid[2])))
 
-        n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[-1], -1)
+        n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[:, -1], -1)
                                                     #- T.sqrt(T.square(n_formation_op_float_sigmoid[3] - n_formation_op_float_sigmoid[-1])))
 
-        drift = T.set_subtensor(n_formation_op_float_sigmoid[0], n_formation_op_float_sigmoid[1])
+        drift = T.set_subtensor(n_formation_op_float_sigmoid[:, 0], n_formation_op_float_sigmoid[:, 1])
 
         if 'n_formation_op_float_sigmoid' in self.verbose:
             n_formation_op_float_sigmoid = theano.printing.Print("n_formation_op_float_sigmoid")\
@@ -1475,7 +1475,7 @@ class TheanoGraph(object):
         partial_block, updates2 = theano.scan(
             fn=self.compare,
             outputs_info=None,
-            sequences=[dict(input=scalar_field_iter, taps=[0, 1]), T.arange(0, n_formation_op_float_sigmoid.shape[0],
+            sequences=[dict(input=scalar_field_iter, taps=[0, 1]), T.arange(0, n_formation_op_float_sigmoid.shape[1],
                                                                             2, dtype='int64')],
             non_sequences=[Z_x, l, n_formation_op_float_sigmoid, drift],
             name='Looping compare',
@@ -1538,16 +1538,16 @@ class TheanoGraph(object):
         if "scalar_field_iter" in self.verbose:
             scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
 
-        n_formation_op_float_sigmoid = T.repeat(self.n_formation_op_float, 2)
+        n_formation_op_float_sigmoid = T.repeat(self.n_formation_op_float[[0], :], 2, axis=1)
 
         # TODO: instead -1 at the border look for the average distance of the input!
-        n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[0], -1)
+        n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[:, 0], -1)
         # - T.sqrt(T.square(n_formation_op_float_sigmoid[0] - n_formation_op_float_sigmoid[2])))
 
-        n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[-1], -1)
+        n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[:, -1], -1)
         # - T.sqrt(T.square(n_formation_op_float_sigmoid[3] - n_formation_op_float_sigmoid[-1])))
 
-        drift = T.set_subtensor(n_formation_op_float_sigmoid[0], n_formation_op_float_sigmoid[1])
+        drift = T.set_subtensor(n_formation_op_float_sigmoid[:, 0], n_formation_op_float_sigmoid[:, 1])
 
         if 'n_formation_op_float_sigmoid' in self.verbose:
             n_formation_op_float_sigmoid = theano.printing.Print("n_formation_op_float_sigmoid") \
@@ -1557,7 +1557,7 @@ class TheanoGraph(object):
             fn=self.compare,
             outputs_info=None,
             sequences=[dict(input=scalar_field_iter, taps=[0, 1]),
-                       T.arange(0, n_formation_op_float_sigmoid.shape[0], 2, dtype='int64')],
+                       T.arange(0, n_formation_op_float_sigmoid.shape[1], 2, dtype='int64')],
             non_sequences=[Z_x, l, n_formation_op_float_sigmoid, drift],
             name='Looping compare',
             profile=False,
@@ -1606,7 +1606,7 @@ class TheanoGraph(object):
         # Theano shared
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T[n_form_per_serie_0: n_form_per_serie_1]
         self.n_formation_op = self.n_formation[n_form_per_serie_0: n_form_per_serie_1]
-        self.n_formation_op_float = self.formation_values[n_form_per_serie_0: n_form_per_serie_1 + 1]
+        self.n_formation_op_float = self.formation_values[:, n_form_per_serie_0: n_form_per_serie_1 + 1]
         self.npf_op = self.npf[n_form_per_serie_0: n_form_per_serie_1]
         if 'n_formation' in self.verbose:
             self.n_formation_op = theano.printing.Print('n_formation_fault')(self.n_formation_op)
@@ -1656,7 +1656,7 @@ class TheanoGraph(object):
         # Update the block matrix
         final_block = T.set_subtensor(
                     final_block[0, :],
-                    faults_matrix)#T.cast(T.cast(faults_matrix, 'bool'), 'int8'))
+                    faults_matrix[0])#T.cast(T.cast(faults_matrix, 'bool'), 'int8'))
 
         # Update the potential field matrix
        # potential_field_values = self.scalar_field_at_all()
@@ -1728,7 +1728,7 @@ class TheanoGraph(object):
         # Theano shared
         self.number_of_points_per_formation_T_op = self.number_of_points_per_formation_T[n_form_per_serie_0: n_form_per_serie_1]
         self.n_formation_op = self.n_formation[n_form_per_serie_0: n_form_per_serie_1]
-        self.n_formation_op_float = self.formation_values[n_form_per_serie_0: (n_form_per_serie_1 + 1)]
+        self.n_formation_op_float = self.formation_values[:, n_form_per_serie_0: (n_form_per_serie_1 + 1)]
         self.npf_op = self.npf[n_form_per_serie_0: n_form_per_serie_1]
 
         self.n_universal_eq_T_op = u_grade_iter
@@ -1772,15 +1772,19 @@ class TheanoGraph(object):
         scalar_field_values, scalar_field_contribution = self.block_series()
 
         # Updating the block model with the lithology block
+
+        # Set model id
         final_block = T.set_subtensor(
             final_block[0, self.yet_simulated],
-            scalar_field_contribution)
+            scalar_field_contribution[0])
 
         final_block = T.set_subtensor(
             final_block[0, -2*self.len_points:],
             0)
 
         #scalar_field_values = self.scalar_field_at_all()
+
+        # Set scalar field
         final_block = T.set_subtensor(
             final_block[1, self.yet_simulated],
             scalar_field_values)
@@ -1788,6 +1792,16 @@ class TheanoGraph(object):
         final_block = T.set_subtensor(
             final_block[1, -2 * self.len_points:],
             0)
+
+        # Set additional values
+        final_block = T.set_subtensor(
+            final_block[2:, self.yet_simulated],
+            scalar_field_contribution[1:])
+
+        # Reset scalar field at the interfaces to 0
+        # final_block = T.set_subtensor(
+        #     final_block[:, -2 * self.len_points:],
+        #     0)
 
         # Store the potential field at the interfaces
         self.final_scalar_field_at_formations_op = T.set_subtensor(
@@ -1848,6 +1862,10 @@ class TheanoGraph(object):
         # Check if there are lithologies to compute
         if len(self.len_series_f.get_value()) - 1 > self.n_faults.get_value() or self.is_lith:
 
+            # The +1 is due to the scalar field
+            self.lith_block_init = T.zeros((self.formation_values.shape[0] + 1,
+                                            self.grid_val_T.shape[0] + 2 * self.len_points))
+
             # Compute Lithologies
             lith_loop, updates2 = theano.scan(
                  fn=self.compute_a_series,
@@ -1869,6 +1887,7 @@ class TheanoGraph(object):
         return [lith_matrix[:, :-2 * self.len_points], self.fault_matrix_f[:, :-2 * self.len_points], pfai]
 
     def compute_geological_model_gradient(self, gradients = [], weights=None):
+        # TODO update it to several properties!!
 
         self.gradients = ['Gx', 'Gy', 'Gz']#theano.shared(['Gx', 'Gy', 'Gz'])
 
@@ -1879,11 +1898,12 @@ class TheanoGraph(object):
         self.fault_matrix = T.zeros((self.n_faults*5, self.grid_val_T.shape[0]))
         self.fault_matrix_f = T.zeros((self.n_faults*5, self.grid_val_T.shape[0]))
 
+        # TODO I think I just have to change the size of the lith_block
         self.lith_block_init = T.zeros((5, self.grid_val_T.shape[0]))
         self.fault_block_init = T.zeros((5, self.grid_val_T.shape[0]))
         self.fault_block_init.name = 'final block of df init'
         # Compute Faults
-        if self.n_faults.get_value()  != 0 or self.is_fault:
+        if self.n_faults.get_value() != 0 or self.is_fault:
 
             # Looping
             fault_loop, updates3 = theano.scan(
