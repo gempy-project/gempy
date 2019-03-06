@@ -44,7 +44,7 @@ class TestPerfomance:
         #                        interp_data.interpolator.tg.compute_a_series(
         #                            *interp_data.interpolator.tg.len_series_i.get_value()[n_faults:].astype(int),
         #                            *interp_data.interpolator.tg.len_series_f.get_value()[n_faults:].astype(int),
-        #                            *interp_data.interpolator.tg.n_formations_per_serie.get_value()[n_faults:],
+        #                            *interp_data.interpolator.tg.n_formations_per_series.get_value()[n_faults:],
         #                            *interp_data.interpolator.tg.n_universal_eq_T.get_value()[n_faults:],
         #                            interp_data.interpolator.tg.lith_block_init,
         #                            interp_data.interpolator.tg.final_scalar_field_at_formations_op,

@@ -211,7 +211,6 @@ class DataMutation(object):
                 self.series.modify_order_series(self.faults.n_faults + 1, series_as_faults)
 
             s = self.faults.set_is_fault(series_fault)
-            print(s)
         self.update_from_series()
         return s
 
@@ -560,10 +559,10 @@ class Model(DataMutation):
 
         self.interpolator = Interpolator(self.interfaces, self.orientations, self.grid, self.formations,
                                          self.faults, self.additional_data)
-        self.solutions = Solution(self.additional_data, self.formations, self.grid)
+        self.solutions = Solution(self.additional_data, self.grid, self.interfaces)
 
-    def __str__(self):
-        return self.meta.project_name
+    def __repr__(self):
+        return self.meta.project_name + ' ' + self.meta.date
 
     def new_model(self, name_project='default_project'):
         self.__init__(name_project)

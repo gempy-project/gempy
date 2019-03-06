@@ -19,11 +19,7 @@ class TestFabianModel:
         gp.set_series(model, {"Fault_Series": 'Main_Fault',
                               "Strat_Series": ('Sandstone_2', 'Siltstone',
                                                'Shale', 'Sandstone_1')},
-                      order_series=["Fault_Series", 'Strat_Series'],
-                      order_formations=['Main_Fault',
-                                        'Sandstone_2', 'Siltstone',
-                                        'Shale', 'Sandstone_1', 'basement'
-                                        ], verbose=0)
+                    )
         return model
 
     def test_init_model(self, geo_model):
