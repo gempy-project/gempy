@@ -392,7 +392,9 @@ class Faults(object):
                 pass
         return faults_series
 
-
+def background_color(value):
+    if type(value) == str:
+        return "background-color: %s" % value
 class Formations(object):
     """
     Class that contains the formations of the model and the values of each of them.
@@ -413,9 +415,9 @@ class Formations(object):
                  ):
 
         self.series = series
-        df_ = pn.DataFrame(columns=['formation', 'series', 'order_surfaces', 'isBasement', 'id'])
+        df_ = pn.DataFrame(columns=['formation', 'series', 'order_surfaces', 'isBasement','color', 'id'])
         self.df = df_.astype({'formation': str, 'series': 'category',
-                              'order_surfaces': int, 'isBasement': bool,
+                              'order_surfaces': int, 'isBasement': bool, 'color': str,
                               'id': int})
 
         self.df['series'].cat.add_categories(['Default series'], inplace=True)
@@ -426,11 +428,14 @@ class Formations(object):
             self.set_formation_values_pro(values_array=values_array, properties_names=properties_names)
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
+
     def __repr__(self):
         return self.df.to_string()
 
     def _repr_html_(self):
         return self.df.to_html()
+        #return self.df.style.applymap(background_color, subset=['color'])
+
 
     def update_sequential_pile(self):
         """
@@ -439,6 +444,29 @@ class Formations(object):
 
         """
         self.sequential_pile = StratigraphicPile(self.series, self.df)
+
+
+
+    def set_default_colors(self):
+        #print('hey')
+        gp_defcols = [['#227dac', '#443988', '#9f0052', '#ff3f20', '#ffbe00'],
+             ['#325916', '#5DA629', '#F2D43D', '#BD5D0F', '#52263B'],
+             ['#26BEFF', '#39423D', '#1C2242', '#677D2A', '#8C4B3E'],
+             ['#A44701', '#560901', '#370606', '#062736', '#487878']]
+        #print('ey')
+        #print(self.series)
+        if len(self.series.df) == 1:
+            #print(len(self.df))
+            #print(gp_defcols[0][:len(self.df)])
+            self.df['color'] = gp_defcols[0][:len(self.df)]
+        else:
+            for i, series in enumerate(self.df['series'].unique()):
+                #print(i,series)
+                form_in_series = self.df.loc[self.df['series'] == series]
+                #print(form_in_series)
+                self.df.loc[form_in_series.index, 'color'] = gp_defcols[i][:len(form_in_series)]
+
+
 
 # region set formation names
     def set_formation_names(self, list_names: list, update_df=True):
@@ -468,6 +496,7 @@ class Formations(object):
             self.set_id()
             self.set_basement()
             self.set_order_surfaces()
+            self.set_default_colors()
             self.update_sequential_pile()
         return True
 
@@ -496,6 +525,7 @@ class Formations(object):
             self.set_id()
             self.set_basement()
             self.set_order_surfaces()
+            self.set_default_colors()
             self.update_sequential_pile()
         return True
 
