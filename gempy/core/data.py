@@ -370,6 +370,8 @@ class Faults(object):
             # check if given series is/are in dataframe
             assert np.isin(series_fault, self.df.index).all(), "series_fault must already exist" \
                                                                 "in the series DataFrame."
+            assert self.df.loc[series_fault].isFault.all(), "series_fault contains non-fault series" \
+                                                            ", which can't be set as finite faults."
             # if so, toggle True/False for given series or list of series
             self.df.loc[series_fault, "isFinite"] = self.df.loc[series_fault, 'isFinite'] ^ True
 

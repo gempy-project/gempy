@@ -172,6 +172,7 @@ class Interpolator(object):
         self.set_theano_shared_kriging()
         self.set_theano_shared_output_init()
         self.set_theano_share_input()
+        self.set_theano_inf_factor()
 
     def set_theano_inf_factor(self):
         """
