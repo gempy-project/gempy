@@ -12,7 +12,7 @@ class Interpolator(object):
         interfaces (Interfaces)
         orientaions (Orientations)
         grid (GridClass)
-        formations (Formations)
+        formations (Surfaces)
         faults (Faults)
         additional_data (AdditionalData)
         dtype (['float32', 'float64']): float precision
@@ -30,7 +30,7 @@ class Interpolator(object):
         interfaces (Interfaces)
         orientaions (Orientations)
         grid (GridClass)
-        formations (Formations)
+        formations (Surfaces)
         faults (Faults)
         additional_data (AdditionalData)
         kwargs:
@@ -38,7 +38,7 @@ class Interpolator(object):
     """
     # TODO assert passed data is rescaled
     def __init__(self, interfaces: "Interfaces", orientations: "Orientations", grid: "GridClass",
-                 formations: "Formations", faults: "Faults", additional_data: "AdditionalData", **kwargs):
+                 formations: "Surfaces", faults: "Faults", additional_data: "AdditionalData", **kwargs):
 
         self.interfaces = interfaces
         self.orientations = orientations

@@ -38,8 +38,8 @@ def test_create_faults(test_create_series):
 
 @pytest.fixture()
 def test_create_formations():
-    formations = gp.Formations(values_array=np.arange(1, 8).reshape(-1, 1),
-                               properties_names=np.array(['density']))
+    formations = gp.Surfaces(values_array=np.arange(1, 8).reshape(-1, 1),
+                             properties_names=np.array(['density']))
    # formations.set_formation_names(['MainFault', 'SecondaryReservoir','Seal',
    #                                 'Reservoir', 'Overlying'])
 
@@ -184,7 +184,7 @@ class TestFormations:
         print(test_create_formations)
 
     def test_map_formations_from_series2(self, test_create_series):
-        formations = gp.Formations()
+        formations = gp.Surfaces()
         formations.map_formations_from_series(test_create_series)
         print(formations)
 
@@ -193,15 +193,15 @@ class TestFormations:
                                 'Reservoir', 'Overlying'])
 
         print(test_create_formations)
-        formations = gp.Formations(values_array=np.arange(1, 8).reshape(-1, 1),
+        formations = gp.Surfaces(values_array=np.arange(1, 8).reshape(-1, 1),
                                  properties_names=np.array(['density']))
 
         formations.set_formation_names(['MainFault', 'SecondaryReservoir','Seal',
                                 'Reservoir', 'Overlying'])
         print(formations)
 
-        formations = gp.Formations(values_array=np.arange(1, 2).reshape(-1, 1),
-                                   properties_names=np.array(['density']))
+        formations = gp.Surfaces(values_array=np.arange(1, 2).reshape(-1, 1),
+                                 properties_names=np.array(['density']))
 
         formations.set_formation_names(['MainFault', 'SecondaryReservoir', 'Seal',
                                         'Reservoir', 'Overlying'])

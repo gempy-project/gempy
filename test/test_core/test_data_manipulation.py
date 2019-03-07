@@ -54,7 +54,7 @@ def create_series(create_faults):
 @pytest.fixture(scope='module')
 def create_formations(create_series):
     series = create_series
-    formations = gp.Formations(series)
+    formations = gp.Surfaces(series)
     formations.set_formation_names(['foo', 'foo2', 'foo5'])
 
     print(series)

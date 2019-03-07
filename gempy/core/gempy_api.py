@@ -96,7 +96,7 @@ def load_model(path):
 #             dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
 #         values_to_default (bool): If true set values to default
 #             - Interfaces and orientations: From csv files and prepare structure_data to GemPy's
-#             - Formations :class:`gempy.core.data.Formations`: Using formations read in the csv file
+#             - Surfaces :class:`gempy.core.data.Surfaces`: Using formations read in the csv file
 #             - Series :class:`gempy.core.data.Series`: Using formations read in the csv file
 #             - Faults :class:`gempy.core.data.Faults`: Using formations read in the csv file. If fault string is contained in
 #               the name
@@ -232,8 +232,8 @@ def get_sequential_pile(model: Model):
 # endregion
 
 
-# region Formations functionality
-@_setdoc(Formations.set_formation_names.__doc__)
+# region Surfaces functionality
+@_setdoc(Surfaces.set_formation_names.__doc__)
 def set_formation_names(geo_model: Model, list_names: list, update_df=True):
     geo_model.formations.set_formation_names(list_names, update_df)
     geo_model.update_from_formations()
@@ -273,7 +273,7 @@ def set_formations_DEP(model: Model, formation_names=None, formations_order=None
     return True
 
 
-# @_setdoc([Formations.reorder_formations.__doc__])
+# @_setdoc([Surfaces.reorder_formations.__doc__])
 # def reorder_formations_TOBEUPDATED(geo_model: Model, list_names):
 #     geo_model.formations.reorder_formations(list_names)
 #     return True
@@ -605,7 +605,7 @@ def set_values_to_default_DEP(model: Model, series_distribution=None, order_seri
     Set the attributes of most of the objects to its default value to be able to compute a geological model.
 
     - Interfaces and orientations: From csv files and prepare structure_data to GemPy's
-    - Formations :class:`gempy.core.data.Formations`: Using formations read in the csv file
+    - Surfaces :class:`gempy.core.data.Surfaces`: Using formations read in the csv file
     - Series :class:`gempy.core.data.Series`: Using formations read in the csv file
     - Faults :class:`gempy.core.data.Faults`: Using formations read in the csv file. If fault string is contained in
       the name
@@ -659,7 +659,7 @@ def set_values_to_default_DEP(model: Model, series_distribution=None, order_seri
         return True
 
 
-def map_to_data_DEP(model: Model, series: Series = None, formations: Formations = None, faults: Faults = None):
+def map_to_data_DEP(model: Model, series: Series = None, formations: Surfaces = None, faults: Faults = None):
     # TODO this function makes sense as Model method
 
     if formations is not None:

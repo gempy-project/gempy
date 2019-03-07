@@ -272,7 +272,7 @@ class ReadGeoModellerXML:
         formations to them as a list value. Faults series get a list of their own string assigned as formation.
 
         Returns:
-            (dict): maps Series (str) -> Formations (list of str)
+            (dict): maps Series (str) -> Surfaces (list of str)
         """
         series_distribution = {}
         for key in self.series_info.keys():
@@ -535,7 +535,7 @@ class GeomodellerClass:
 
     def get_formations(self):
         """get formation elements out of rootelement and safe as local list"""
-        formations_parent = self.rootelement.findall("{"+self.xmlns+"}Formations")[0]
+        formations_parent = self.rootelement.findall("{"+self.xmlns+"}Surfaces")[0]
         self.formations = formations_parent.findall("{"+self.xmlns+"}Formation")
 
     def get_stratigraphy_list(self, **kwds):
@@ -705,7 +705,7 @@ class GeomodellerClass:
         try:
             self.faults
         except AttributeError:
-            print ("Create Formations list")
+            print ("Create Surfaces list")
             self.get_faults()
         self.fault_dict = {}
         for fault in self.faults:

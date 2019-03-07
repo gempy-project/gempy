@@ -45,7 +45,7 @@ def set_anchor_points(series_object, formation_object):
         - list, floats:
 
     """
-    # Formations per serie
+    # Surfaces per serie
     series_names = series_object.df.index
     # Get number of series
     n_series = len(series_object.df.index)
@@ -160,7 +160,7 @@ class StratigraphicPile(object):
         plt.ion()
         ax.text(1, self.anch_series.max().values.max() + self.thick_series/2 + 2, r'Series', fontsize=15,
                 fontweight='bold', bbox={'facecolor':'gray', 'alpha':0.5, 'pad':10}, horizontalalignment='center')
-        ax.text(4, self.anch_series.max().values.max() + self.thick_series/2 + 2, r'Faults/Formations', fontsize=15,
+        ax.text(4, self.anch_series.max().values.max() + self.thick_series/2 + 2, r'Faults/Surfaces', fontsize=15,
                 fontweight='bold', bbox={'facecolor':'gray', 'alpha':0.5, 'pad':10}, horizontalalignment='center')
 
         self.figure = plt.gcf()

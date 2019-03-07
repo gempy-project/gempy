@@ -19,7 +19,7 @@ class DataMutation(object):
         self.grid = Grid()
         self.faults = Faults()
         self.series = Series(self.faults)
-        self.formations = Formations(self.series)
+        self.formations = Surfaces(self.series)
         self.interfaces = Interfaces(self.formations)
         self.orientations = Orientations(self.formations)
 
@@ -54,7 +54,7 @@ class DataMutation(object):
        # self.additional_data.update_rescaling_data()
         self.additional_data.update_default_kriging()
 
-    @_setdoc([Formations.map_series.__doc__])
+    @_setdoc([Surfaces.map_series.__doc__])
     def map_series_to_formations(self, mapping_object: Union[dict, pn.Categorical] = None,
                                  set_series=True, sort_data: bool = True):
         # TODO: decide if this method should just go to the api

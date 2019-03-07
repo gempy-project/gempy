@@ -393,7 +393,7 @@ class Faults(object):
         return faults_series
 
 
-class Formations(object):
+class Surfaces(object):
     """
     Class that contains the formations of the model and the values of each of them.
 
@@ -667,7 +667,7 @@ class Formations(object):
         #     nans = self.df['series'].isna()
         #     missfit = self.df['formation'][nans]
         #     warnings.warn('Some of the formations are not in the dictionary or some of the keys are not in the'
-        #                   'series object. \n Formations:' + missfit.to_string() +
+        #                   'series object. \n Surfaces:' + missfit.to_string() +
         #                   '\n Series: '+str(np.array(s)[nans]))
 # endregion
 
@@ -814,7 +814,7 @@ class GeometricData(object):
     the common methods for both types of data sets.
     """
 
-    def __init__(self, formation: Formations):
+    def __init__(self, formation: Surfaces):
 
         self.formations = formation
         self.df = pn.DataFrame()
@@ -899,10 +899,10 @@ class GeometricData(object):
         self.df['series'].cat.set_categories(series.df.index, inplace=True)
         return True
 
-    def add_surface_categories_from_formations(self, formations: Formations):
+    def add_surface_categories_from_formations(self, formations: Surfaces):
         self.df['surface'].cat.set_categories(formations.df['formation'], inplace=True)
         return True
-    # def _find_columns_to_merge(self, formations: Formations):
+    # def _find_columns_to_merge(self, formations: Surfaces):
     #     # Drop formation column in the formation object
     #     df_without_form = formations.df.columns.drop('formation')
     #     # Check what parameters are in the data.categories_df
@@ -919,8 +919,8 @@ class GeometricData(object):
 
         if property is 'series':
             if formations.df.loc[~formations.df['isBasement']]['series'].isna().sum() != 0:
-                raise AttributeError('Formations does not have the correspondent series assigned. See'
-                                     'Formations.map_series_from_series.')
+                raise AttributeError('Surfaces does not have the correspondent series assigned. See'
+                                     'Surfaces.map_series_from_series.')
 
         self.df.loc[idx, property] = self.df.loc[idx, 'surface'].map(formations.df.set_index('formation')[property])
 
@@ -973,7 +973,7 @@ class Interfaces(GeometricData):
             the interface points of the model
     """
 
-    def __init__(self, formations: Formations, coord=None, surface=None):
+    def __init__(self, formations: Surfaces, coord=None, surface=None):
 
         super().__init__(formations)
         self._columns_i_all = ['X', 'Y', 'Z', 'surface', 'series', 'X_std', 'Y_std', 'Z_std',
@@ -1210,7 +1210,7 @@ class Orientations(GeometricData):
          the orientations of the model
     """
 
-    def __init__(self, formation: Formations, coord=None, pole_vector=None, orientation=None, surface=None):
+    def __init__(self, formation: Surfaces, coord=None, pole_vector=None, orientation=None, surface=None):
         super().__init__(formation)
         self._columns_o_all = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
                                'surface', 'series', 'id', 'order_series', 'formation_number']
@@ -1938,7 +1938,7 @@ class Structure(object):
         orientations (Orientations)
     """
 
-    def __init__(self, interfaces: Interfaces, orientations: Orientations, formations: Formations, faults: Faults):
+    def __init__(self, interfaces: Interfaces, orientations: Orientations, formations: Surfaces, faults: Faults):
 
         self.interfaces = interfaces
         self.orientations = orientations
@@ -2190,7 +2190,7 @@ class KrigingParameters(object):
 
 class AdditionalData(object):
     def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: Grid,
-                 faults: Faults, formations: Formations, rescaling: RescaledData):
+                 faults: Faults, formations: Surfaces, rescaling: RescaledData):
 
         self.structure_data = Structure(interfaces, orientations, formations, faults)
         self.options = Options()
@@ -2245,7 +2245,7 @@ class Solution(object):
 
     Attributes:
         additional_data (AdditionalData):
-        formations (Formations)
+        formations (Surfaces)
         grid (Grid)
         scalar_field_at_interfaces (np.ndarray): Array containing the values of the scalar field at each interface. Axis
         0 is each series and axis 1 contain each formation in order
@@ -2264,7 +2264,7 @@ class Solution(object):
 
     Args:
         additional_data (AdditionalData):
-        formations (Formations):
+        formations (Surfaces):
         grid (Grid):
         values (np.ndarray): values returned by `function: gempy.compute_model` function
     """
