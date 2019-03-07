@@ -158,7 +158,7 @@ class Interpolator(object):
 
         # Final values the lith block takes
         self.theano_graph.formation_values.set_value(
-            self.formations.df.iloc[:, 4:].values.astype(self.dtype).T)
+            self.formations.df.iloc[:, 5:].values.astype(self.dtype).T)
             #np.atleast_2d(self.formations.df.iloc['id'].values.astype(self.dtype)))
         #
         # try:

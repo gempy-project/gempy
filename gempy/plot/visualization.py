@@ -39,6 +39,7 @@ except ImportError:
     STENO_IMPORT = False
 
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import seaborn as sns
 import numpy as np
 import pandas as pn
@@ -69,12 +70,18 @@ class PlotData2D(object):
         verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0
     """
 
-    def __init__(self, model, cmap=cmap, norm=norm, **kwargs):
+    def __init__(self, model, cmap=None, norm=None, **kwargs):
 
         self.model = model
-        self._color_lot = color_lot
-        self._cmap = cmap
-        self._norm = norm
+
+        self._color_lot = dict(zip(self.model.formations.df['id'], list(self.model.formations.df['color'])))
+        self._cmap = mcolors.ListedColormap(list(self.model.formations.df['color']))
+        self._norm = mcolors.Normalize(vmin=1, vmax=len(self._cmap.colors))
+
+        #self._color_lot = color_lot
+        #self._cmap = cmap
+        #self._norm = norm
+
         self.formation_names = model.formations.df['formation']#self._data.interfaces['formation'].unique()
         self.formation_numbers = model.formations.df['id']
 

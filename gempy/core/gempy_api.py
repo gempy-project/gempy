@@ -172,6 +172,8 @@ def map_series_to_formations(geo_model: Model, mapping_object: Union[dict, pn.Ca
     geo_model.update_from_series()
     geo_model.update_from_formations()
 
+    geo_model.formations.set_colors()
+
     if quiet is True:
         return True
     else:
