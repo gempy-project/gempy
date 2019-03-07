@@ -484,7 +484,6 @@ class QgridModelIntegration(object):
             self._geo_model.faults.faults_relations_df.columns = self._geo_model.faults.faults_relations_df.columns.add_categories(
                 ['index', 'qgrid_unfiltered_index'])
 
-
             qgrid_widget.df = series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype(
                 {'series_names': str})
 

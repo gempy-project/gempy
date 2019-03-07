@@ -207,8 +207,10 @@ class DataMutation(object):
         for series_as_faults in np.atleast_1d(series_fault):
             if self.faults.df.loc[series_fault[0], 'isFault'] == True:
                 self.series.modify_order_series(self.faults.n_faults, series_as_faults)
+                print('Fault series: ' + str(series_fault) + ' moved to the top of the formations.')
             else:
                 self.series.modify_order_series(self.faults.n_faults + 1, series_as_faults)
+                print('Fault series: ' + str(series_fault) + ' moved to the top of the pile.')
 
             s = self.faults.set_is_fault(series_fault)
         self.update_from_series()
