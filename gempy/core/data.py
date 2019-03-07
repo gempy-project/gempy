@@ -421,9 +421,9 @@ class Surfaces(object):
         self.df['series'].cat.add_categories(['Default series'], inplace=True)
 
         if formation_names is not None:
-            self.set_formation_names(formation_names)
+            self.set_surfaces_names(formation_names)
         if values_array is not None:
-            self.set_formation_values_pro(values_array=values_array, properties_names=properties_names)
+            self.set_surfaces_values(values_array=values_array, properties_names=properties_names)
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
     def __repr__(self):
@@ -441,7 +441,7 @@ class Surfaces(object):
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
 # region set formation names
-    def set_formation_names(self, list_names: list, update_df=True):
+    def set_surfaces_names(self, list_names: list, update_df=True):
         """
          Method to set the names of the formations in order. This applies in the formation column of the df
          Args:
@@ -471,15 +471,15 @@ class Surfaces(object):
             self.update_sequential_pile()
         return True
 
-    def set_default_formation_name(self):
+    def set_default_surface_name(self):
         if self.df.shape[0] == 0:
             # TODO DEBUG: I am not sure that formations always has at least one entry. Check it
-            self.set_formation_names(['surface1', 'basement'])
+            self.set_surfaces_names(['surface1', 'basement'])
 
-    def set_formation_names_from_interfaces(self, interfaces):
-        self.set_formation_names(interfaces.df['surface'].unique())
+    def set_surfaces_names_from_surface_points(self, interfaces):
+        self.set_surfaces_names(interfaces.df['surface'].unique())
 
-    def add_formation(self, formation_list: Union[pn.DataFrame, list], update_df=True):
+    def add_surface(self, formation_list: Union[pn.DataFrame, list], update_df=True):
         formation_list = np.atleast_1d(formation_list)
 
         # Remove from the list categories that already exist
@@ -499,7 +499,7 @@ class Surfaces(object):
             self.update_sequential_pile()
         return True
 
-    def delete_formation(self, indices, update_id=True):
+    def delete_surface(self, indices, update_id=True):
         # TODO passing names of the formation instead the index
         self.df.drop(indices, inplace=True)
         if update_id is True:
@@ -544,16 +544,16 @@ class Surfaces(object):
         assert np.isin(new_value, group), 'new_value must exist already in the order_surfaces group.'
         old_value = group[idx]
         self.df.loc[group.index, 'order_surfaces'] = group.replace([new_value, old_value], [old_value, new_value])
-        self.sort_formations()
+        self.sort_surfaces()
         self.set_basement()
 
-    def sort_formations(self):
+    def sort_surfaces(self):
 
         self.df.sort_values(by=['series', 'order_surfaces'], inplace=True)
         self.set_id()
         return self.df
 
-    def set_basement(self, basement_formation: str = None):
+    def set_basement(self):
         """
 
         Args:
@@ -572,13 +572,7 @@ class Surfaces(object):
 
         # TODO add functionality of passing the basement and calling reorder to push basement formation to the bottom
         #  of the data frame
-        #self.df['isBasement'].fillna(False, inplace=True)
-        # if basement_formation is None:
-        #     basement_formation = self.df['formation'][self.df['isBasement']].values
-        #     if basement_formation.shape[0] is 0:
-        #         basement_formation = None
-        #
-        # self.df['isBasement'] = self.df['formation'] == basement_formation
+
         assert self.df['isBasement'].values.astype(bool).sum() <= 1, 'Only one formation can be basement'
 # endregion
 
@@ -599,8 +593,6 @@ class Surfaces(object):
         # TODO Fixing this. It is overriding the formtions already mapped
         if mapping_object is not None:
             # If none is passed and series exist we will take the name of the first series as a default
-          #  mapping_object = {self.series.df.index.values[0]: self.df['formation']}
-          #  pass
 
             if type(mapping_object) is dict:
 
@@ -628,24 +620,6 @@ class Surfaces(object):
             else:
                 raise AttributeError(str(type(mapping_object))+' is not the right attribute type.')
 
-            # This code was to preserve the previous map but it added to much complexity
-            # -----------------------------------------------------------------------------------------------------
-            # if hasattr(self, '_series_mapping'):
-            #     old_cat = self._series_mapping['series'].cat.categories
-            #     new_cat = new_series_mapping['series'].cat.categories
-            #
-            #     self._series_mapping['series'].cat.add_categories(new_cat[~new_cat.isin(old_cat)], inplace=True)
-            #     new_series_mapping['series'].cat.add_categories(old_cat[~old_cat.isin(new_cat)], inplace=True)
-            #
-            #     new_series_mapping = new_series_mapping.append(self._series_mapping, verify_integrity=False)
-            #
-            # # Check for duplicat es given priority to the new series
-            # sm = new_series_mapping.loc[~new_series_mapping.index.duplicated(keep='first')]
-            # self._series_mapping = sm
-            # -------------------------------------------------------------------------------------------------------
-
-
-
             # Checking which formations are on the list to be mapped
             b = self.df['formation'].isin(new_series_mapping.index)
             idx = self.df.index[b]
@@ -659,28 +633,10 @@ class Surfaces(object):
 
         # Reorganize the pile
         self.set_order_surfaces()
-        self.sort_formations()
+        self.sort_surfaces()
         self.set_basement()
 
-        # # Check that all formations have been assigned a series
-        # if any(self.df['series'].isna()) and mapping_object is not None:
-        #     nans = self.df['series'].isna()
-        #     missfit = self.df['formation'][nans]
-        #     warnings.warn('Some of the formations are not in the dictionary or some of the keys are not in the'
-        #                   'series object. \n Surfaces:' + missfit.to_string() +
-        #                   '\n Series: '+str(np.array(s)[nans]))
 # endregion
-
-    def sort_formations_DEP(self, series):
-        """
-        Sort formations categories_df regarding series order
-        Args:
-            series:
-
-        Returns:
-
-        """
-        pass
 
 # region set_id
     def set_id(self, id_list: list = None):
@@ -700,14 +656,7 @@ class Surfaces(object):
         return self.df
 # endregion
 
-    # def set_dtypes(self):
-    #     self.df['isBasement'] = self.df['isBasement'].astype(bool)
-    #     self.df["series"] = self.df["series"].astype('category')
-    #
-    # def _default_values(self):
-    #     values = np.arange(1, len(self.formations_names))
-    #     return values
-    def add_formation_values_pro(self, values_array, properties_names=np.empty(0)):
+    def add_surfaces_values(self, values_array, properties_names=np.empty(0)):
         values_array = np.atleast_2d(values_array)
         properties_names = np.asarray(properties_names)
         if properties_names.shape[0] != values_array.shape[0]:
@@ -721,91 +670,25 @@ class Surfaces(object):
                 raise ValueError('value_array must have the same length in axis 0 as the number of formations')
         return True
 
-    def delete_formation_values(self, properties_names):
+    def delete_surface_values(self, properties_names):
         properties_names = np.asarray(properties_names)
         self.df.drop(properties_names, axis=1, inplace=True)
         return True
 
-    def set_formation_values_pro(self, values_array, properties_names=np.empty(0)):
+    def set_surfaces_values(self, values_array, properties_names=np.empty(0)):
         # Check if there are values columns already
         old_prop_names = self.df.columns[~self.df.columns.isin(['formation', 'series', 'order_surfaces',
                                                                 'id', 'isBasement'])]
         # Delete old
-        self.delete_formation_values(old_prop_names)
+        self.delete_surface_values(old_prop_names)
 
         # Create new
-        self.add_formation_values_pro(values_array, properties_names)
+        self.add_surfaces_values(values_array, properties_names)
         return True
 
-    def modify_formation_values(self):
+    def modify_surface_values(self):
         """Method to modify values using loc of pandas"""
-        pass
-
-    # def modify_formations(self, idx, **kwargs):
-    #     TODO: think: there is any instance where this makes sense?
-    #     # Check idx exist in the df
-    #     assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the dataframe to be modified.'
-    #
-    #     # Check the properties are valid
-    #     assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'surface']).all(), 'Properties must be one or more of the' \
-    #                                                                              'following: \'X\', \'Y\', \'Z\', ' \
-    #                                                                              '\'surface\''
-    # self.rename_formations(event['old'], event['new'])
-    #     if event['column'] == 'series':
-    #         idx = event['index']
-    #         new_series = event['new']
-    #         formation_object.map_series({new_series: formation_object.df.loc[idx, ['formation']]})
-    #     if event['column'] == 'isBasement':
-    #         idx = event['index']
-    #
-    #     # stack properties values
-    #     values = np.array(list(kwargs.values()))
-    #
-    #     # If we pass multiple index we need to transpose the numpy array
-    #     if type(idx) is list:
-    #         values = values.T
-    #
-    #     # Selecting the properties passed to be modified
-    #     self.df.loc[idx, list(kwargs.keys())] = values
-
-
-    def _set_formations_values_DEP(self, values_array, properties_names=np.empty(0), formation_names=None):
-        """
-        Set the categories_df containing the values of each formation for the posterior evaluation (e.g. densities, susceptibility)
-        Args:
-            values_array (np.ndarray): 2D array with the values of each formation
-            properties_names (list or np.ndarray): list containing the names of each properties
-            formation_names (list or np.ndarray): list contatinig the names of the formations
-
-        Returns:
-
-            Dataframe
-        """
-        # self.df = pn.DataFrame(columns=['formation', 'isBasement', 'id'])
-        # self.df['isBasement'] = self.df['isBasement'].astype(bool)
-        # self.df["formation"] = self.df["formation"].astype('category')
-
-        properties_names = np.asarray(properties_names)
-        if type(values_array) is np.ndarray:
-            if properties_names.size is 0:
-                for i in range(values_array.shape[1]):
-                    properties_names = np.append(properties_names, 'value_' + str(i))
-            vals_df = pn.DataFrame(values_array, columns=properties_names)
-        elif isinstance(values_array, pn.core.frame.DataFrame):
-            vals_df = values_array
-
-        else:
-            raise AttributeError('values_array must be either numpy array or pandas categories_df')
-
-        if formation_names:
-            self.set_formation_order(formation_names)
-
-        f_df = pn.concat([self.df, vals_df], sort=False, axis=1, verify_integrity=True, ignore_index=False)
-
-        self.df = self.set_id(f_df)
-        self._map_formation_names_to_df()
-        self.df['isBasement'].fillna(False, inplace=True)
-        return self.df
+        raise NotImplementedError
 
 
 class GeometricData(object):
@@ -1110,7 +993,7 @@ class Interfaces(GeometricData):
 
         if 'update_formations' in kwargs:
             if kwargs['update_formations'] is True:
-                self.formations.add_formation(table[surface_name].unique())
+                self.formations.add_surface(table[surface_name].unique())
 
         if debug is True:
             print('Debugging activated. Changes won\'t be saved.')
@@ -1502,7 +1385,7 @@ class Orientations(GeometricData):
 
         if 'update_formations' in kwargs:
             if kwargs['update_formations'] is True:
-                self.formations.add_formation(table[surface_name].unique())
+                self.formations.add_surface(table[surface_name].unique())
 
         if debug is True:
             print('Debugging activated. Changes won\'t be saved.')

@@ -167,7 +167,7 @@ def map_series_to_formations(geo_model: Model, mapping_object: Union[dict, pn.Ca
 
     # TODO: Give the same name to sort formations and seires
     geo_model.series.update_order_series()
-    geo_model.formations.sort_formations()
+    geo_model.formations.sort_surfaces()
 
     geo_model.update_from_series()
     geo_model.update_from_formations()
@@ -233,9 +233,9 @@ def get_sequential_pile(model: Model):
 
 
 # region Surfaces functionality
-@_setdoc(Surfaces.set_formation_names.__doc__)
+@_setdoc(Surfaces.set_surfaces_names.__doc__)
 def set_formation_names(geo_model: Model, list_names: list, update_df=True):
-    geo_model.formations.set_formation_names(list_names, update_df)
+    geo_model.formations.set_surfaces_names(list_names, update_df)
     geo_model.update_from_formations()
     return geo_model.formations
 

@@ -354,7 +354,7 @@ class QgridModelIntegration(object):
     def create_formations_qgrid(self):
         formation_object = self._geo_model.formations
 
-        formation_object.set_default_formation_name()
+        formation_object.set_default_surface_name()
         self._geo_model.update_from_formations()
 
         qgrid_widget = qgrid.show_grid(formation_object.df, show_toolbar=True,
@@ -368,7 +368,7 @@ class QgridModelIntegration(object):
                 print(widget)
             idx = event['index']
             self._geo_model.add_formations(['surface' + str(idx)])
-            #formation_object.add_formation(['surface' + str(idx)])
+            #formation_object.add_surface(['surface' + str(idx)])
             self.update_qgrd_objects()
             self.qgrid_in._rebuild_widget()
             self.qgrid_or._rebuild_widget()
@@ -379,7 +379,7 @@ class QgridModelIntegration(object):
                 print(widget)
             idx = event['indices']
             self._geo_model.delete_formations(idx)
-            #formation_object.delete_formation(idx)
+            #formation_object.delete_surface(idx)
             self.update_qgrd_objects()
             self.qgrid_in._rebuild_widget()
             self.qgrid_or._rebuild_widget()

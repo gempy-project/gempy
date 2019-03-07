@@ -259,7 +259,7 @@ def create_orientations_qgrid(orientations_object):
 def create_formations_qgrid(formation_object):
     if formation_object.df.shape[0] == 0:
         # TODO DEBUG: I am not sure that formations always has at least one entry. Check it
-        formation_object.set_formation_names(['surface1'])
+        formation_object.set_surfaces_names(['surface1'])
 
     qgrid_widget = qgrid.show_grid(formation_object.df, show_toolbar=True,
                                    column_options={'editable': True},
@@ -271,7 +271,7 @@ def create_formations_qgrid(formation_object):
             print(event)
             print(widget)
         idx = event['index']
-        formation_object.add_formation(['surface' + str(idx)])
+        formation_object.add_surface(['surface' + str(idx)])
         qgrid_widget._update_df()
 
     def handle_row_formation_delete(event, widget, debug=False):
@@ -279,7 +279,7 @@ def create_formations_qgrid(formation_object):
             print(event)
             print(widget)
         idx = event['indices']
-        formation_object.delete_formation(idx)
+        formation_object.delete_surface(idx)
         qgrid_widget._update_df()
 
     def handle_cell_formation_edit(event, widget, debug=False):

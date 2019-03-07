@@ -55,12 +55,12 @@ def create_series(create_faults):
 def create_formations(create_series):
     series = create_series
     formations = gp.Surfaces(series)
-    formations.set_formation_names(['foo', 'foo2', 'foo5'])
+    formations.set_surfaces_names(['foo', 'foo2', 'foo5'])
 
     print(series)
 
     # We can add new formations:
-    formations.add_formation(['feeeee'])
+    formations.add_surface(['feeeee'])
     print(formations)
 
     # The column formation is also a pandas.Categories.
@@ -71,20 +71,20 @@ def create_formations(create_series):
     ### Set values
 
     # To set the values we do it with the following method
-    formations.set_formation_values_pro([2, 2, 2, 5])
+    formations.set_surfaces_values([2, 2, 2, 5])
 
     print(formations)
 
     # #### Set values with a given name:
 
     # We can give specific names to the properties (i.e. density)
-    formations.add_formation_values_pro([[2, 2, 2, 6], [2, 2, 1, 8]], ['val_foo', 'val2_foo'])
+    formations.add_surfaces_values([[2, 2, 2, 6], [2, 2, 1, 8]], ['val_foo', 'val2_foo'])
     print(formations)
 
     ### Delete formations values
     #
     # To delete a full propery:
-    formations.delete_formation_values(['val_foo', 'value_0'])
+    formations.delete_surface_values(['val_foo', 'value_0'])
 
     # #### One of the formations must be set be the basement:
 
@@ -95,7 +95,7 @@ def create_formations(create_series):
     #
     # We can also use set values instead adding. This will delete the previous properties and add the new one
 
-    formations.set_formation_values_pro([[2, 2, 2, 6], [2, 2, 1, 8]], ['val_foo', 'val2_foo'])
+    formations.set_surfaces_values([[2, 2, 2, 6], [2, 2, 1, 8]], ['val_foo', 'val2_foo'])
     print(formations)
 
     # The last property is the correspondant series that each formation belong to. `series` and `formation`

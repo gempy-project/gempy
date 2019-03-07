@@ -108,7 +108,7 @@ class DataMutation(object):
         self.update_from_orientations()
 
     def set_default_formations(self):
-        self.formations.set_default_formation_name()
+        self.formations.set_default_surface_name()
         self.update_from_formations()
 
     def update_from_grid(self):
@@ -147,7 +147,7 @@ class DataMutation(object):
         if reorder_series is True:
             self.formations.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
                                                                 ordered=False, inplace=True)
-            self.formations.sort_formations()
+            self.formations.sort_surfaces()
 
         self.formations.set_basement()
 
@@ -388,11 +388,11 @@ class DataMutation(object):
         self.update_from_series()
 
     def add_formations(self, formation_list: Union[pn.DataFrame, list], update_df=True):
-        self.formations.add_formation(formation_list, update_df)
+        self.formations.add_surface(formation_list, update_df)
         self.update_from_formations()
 
     def delete_formations(self, indices, update_id=True):
-        self.formations.delete_formation(indices, update_id)
+        self.formations.delete_surface(indices, update_id)
         self.update_from_formations()
 
     def delete_series(self, indices, update_order_series=True):
