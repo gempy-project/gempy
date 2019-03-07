@@ -74,7 +74,7 @@ class PlotData2D(object):
 
         self.model = model
 
-        self._color_lot = dict(zip(self.model.formations.df['id'], list(self.model.formations.df['color'])))
+        self._color_lot = dict(zip(self.model.formations.df['formation'], self.model.formations.df['color']))
         self._cmap = mcolors.ListedColormap(list(self.model.formations.df['color']))
         self._norm = mcolors.Normalize(vmin=1, vmax=len(self._cmap.colors))
 
@@ -144,14 +144,14 @@ class PlotData2D(object):
             series_to_plot_f = self.model.orientations[self.model.orientations.df["series"] == series]
 
         # Change dictionary keys numbers for formation names
-        for i in zip(self.formation_names, self.formation_numbers):
-            self._color_lot[i[0]] = self._color_lot[i[1]]
+        #for i in zip(self.formation_names, self.formation_numbers):
+            #self._color_lot[i[0]] = self._color_lot[i[1]]
 
         #fig, ax = plt.subplots()
 
     #    series_to_plot_i['surface'] = series_to_plot_i['surface'].cat.remove_unused_categories()
     #    series_to_plot_f['surface'] = series_to_plot_f['surface'].cat.remove_unused_categories()
-
+        print(self._color_lot)
         if data_type == 'all':
             p = sns.lmplot(x, y,
                            data=series_to_plot_i,
@@ -311,8 +311,9 @@ class PlotData2D(object):
                         **kwargs)
 
         import matplotlib.patches as mpatches
-        colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
-        patches = [mpatches.Patch(color=colors[i], label=self.formation_names[i]) for i in range(len(self.formation_names))]
+        #colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
+        #patches = [mpatches.Patch(color=colors[i], label=self.formation_names[i]) for i in range(len(self.formation_names))]
+        patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
         if not plot_data:
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.xlabel(x)
