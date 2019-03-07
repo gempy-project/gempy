@@ -15,7 +15,7 @@ class QgridModelIntegration(object):
         # TODO add on all to update from data_object and plots?
 
         self._geo_model = geo_model
-        self.qgrid_fo = self.set_interactive_df('formations')
+        self.qgrid_fo = self.set_interactive_df('surfaces')
         self.qgrid_se = self.set_interactive_df('series')
         self.qgrid_fa = self.set_interactive_df('faults')
         self.qgrid_fr = self.set_interactive_df('faults_relations')
@@ -26,8 +26,8 @@ class QgridModelIntegration(object):
         self.qgrid_re = self.set_interactive_df('rescale')
 
     def set_interactive_df(self, data_type: str):
-        if data_type == 'formations':
-            self.qgrid_fo = self.create_formations_qgrid()
+        if data_type == 'surfaces':
+            self.qgrid_fo = self.create_surfaces_qgrid()
             return self.qgrid_fo
         elif data_type == 'series':
             self.qgrid_se = self.create_series_qgrid()
@@ -55,7 +55,7 @@ class QgridModelIntegration(object):
             return self.qgrid_re
 
         else:
-            raise AttributeError('data_type must be either formations, series, faults, faults_relations,'
+            raise AttributeError('data_type must be either surfaces, series, faults, faults_relations,'
                                  ' interfaces, orientations,'
                                   'options, kriging or rescale. UPDATE message')
         # return self.qgrid_widget
@@ -91,7 +91,7 @@ class QgridModelIntegration(object):
 
     def get(self, data_type: str):
 
-        if data_type is 'formations':
+        if data_type is 'surfaces':
             self.qgrid_fo._update_df()
             return self.qgrid_fo
         elif data_type is 'series':
@@ -120,7 +120,7 @@ class QgridModelIntegration(object):
             return self.qgrid_re
 
         else:
-            raise AttributeError('data_type must be either formations, series, faults, interfaces, orientations,'
+            raise AttributeError('data_type must be either surfaces, series, faults, interfaces, orientations,'
                                  'options, kriging or rescale. UPDATE message')
 
     def create_faults_qgrid(self):
@@ -351,53 +351,53 @@ class QgridModelIntegration(object):
         qgrid_widget.on('cell_edited', handle_cell_orientations_edit)
         return qgrid_widget
 
-    def create_formations_qgrid(self):
-        formation_object = self._geo_model.formations
+    def create_surfaces_qgrid(self):
+        surface_object = self._geo_model.surfaces
 
-        formation_object.set_default_surface_name()
-        self._geo_model.update_from_formations()
+        surface_object.set_default_surface_name()
+        self._geo_model.update_from_surfaces()
 
-        qgrid_widget = qgrid.show_grid(formation_object.df, show_toolbar=True,
+        qgrid_widget = qgrid.show_grid(surface_object.df, show_toolbar=True,
                                        column_options={'editable': True},
                                        column_definitions={'id': {'editable': False},
                                                            'basement': {'editable': False}})
 
-        def handle_row_formation_add(event, widget, debug=False):
+        def handle_row_surface_add(event, widget, debug=False):
             if debug is True:
                 print(event)
                 print(widget)
             idx = event['index']
-            self._geo_model.add_formations(['surface' + str(idx)])
-            #formation_object.add_surface(['surface' + str(idx)])
+            self._geo_model.add_surfaces(['surface' + str(idx)])
+            #surface_object.add_surface(['surface' + str(idx)])
             self.update_qgrd_objects()
             self.qgrid_in._rebuild_widget()
             self.qgrid_or._rebuild_widget()
 
-        def handle_row_formation_delete(event, widget, debug=False):
+        def handle_row_surface_delete(event, widget, debug=False):
             if debug is True:
                 print(event)
                 print(widget)
             idx = event['indices']
-            self._geo_model.delete_formations(idx)
-            #formation_object.delete_surface(idx)
+            self._geo_model.delete_surfaces(idx)
+            #surface_object.delete_surface(idx)
             self.update_qgrd_objects()
             self.qgrid_in._rebuild_widget()
             self.qgrid_or._rebuild_widget()
 
-        def handle_cell_formation_edit(event, widget, debug=False):
+        def handle_cell_surface_edit(event, widget, debug=False):
             if debug is True:
                 print(event)
                 print(widget)
-            if event['column'] == 'formation':
-                self._geo_model.rename_formations(event['old'], event['new'])
+            if event['column'] == 'surface':
+                self._geo_model.rename_surfaces(event['old'], event['new'])
             if event['column'] == 'series':
                 idx = event['index']
                 new_series = event['new']
-                self._geo_model.map_series_to_formations({new_series: formation_object.df.loc[idx, ['formation']]},
+                self._geo_model.map_series_to_surfaces({new_series: surface_object.df.loc[idx, ['surface']]},
                                                          set_series=False, sort_data=True)
             if event['column'] == 'isBasement':
                 idx = event['index']
-                formation_object.set_basement(formation_object.df.loc[idx, ['formation']])
+                surface_object.set_basement(surface_object.df.loc[idx, ['surface']])
 
             if event['column'] == 'order_surfaces':
                 idx = event['index']
@@ -406,17 +406,17 @@ class QgridModelIntegration(object):
                 except AssertionError:
                     pass
 
-            self._geo_model.update_from_formations()
+            self._geo_model.update_from_surfaces()
 
             self.update_qgrd_objects()
 
-            if event['column'] == 'formation':
+            if event['column'] == 'surface':
                 self.qgrid_in._rebuild_widget()
                 self.qgrid_or._rebuild_widget()
 
-        qgrid_widget.on('row_removed', handle_row_formation_delete)
-        qgrid_widget.on('row_added', handle_row_formation_add)
-        qgrid_widget.on('cell_edited', handle_cell_formation_edit)
+        qgrid_widget.on('row_removed', handle_row_surface_delete)
+        qgrid_widget.on('row_added', handle_row_surface_add)
+        qgrid_widget.on('cell_edited', handle_cell_surface_edit)
 
         return qgrid_widget
 

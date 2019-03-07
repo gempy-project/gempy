@@ -19,7 +19,7 @@ def interpolator_islith_isfault():
                  path_o=os.pardir + "/input_data/simple_fault_model_orientations.csv",
                  path_i=os.pardir + "/input_data/simple_fault_model_points.csv", default_values=True)
 
-    gp.map_series_to_formations(geo_model, {"Fault_Series": 'Main_Fault',
+    gp.map_series_to_surfaces(geo_model, {"Fault_Series": 'Main_Fault',
                                             "Strat_Series": ('Sandstone_2', 'Siltstone',
                                                              'Shale', 'Sandstone_1', 'basement')},
                                 remove_unused_series=True)

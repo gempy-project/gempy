@@ -75,8 +75,8 @@ class PlotData2D(object):
         self._color_lot = color_lot
         self._cmap = cmap
         self._norm = norm
-        self.formation_names = model.formations.df['formation']#self._data.interfaces['formation'].unique()
-        self.formation_numbers = model.formations.df['id']
+        self.surface_names = model.surfaces.df['surface']
+        self.surface_numbers = model.surfaces.df['id']
 
         self._set_style()
 
@@ -136,8 +136,8 @@ class PlotData2D(object):
             series_to_plot_i = self.model.interfaces[self.model.interfaces.df["series"] == series]
             series_to_plot_f = self.model.orientations[self.model.orientations.df["series"] == series]
 
-        # Change dictionary keys numbers for formation names
-        for i in zip(self.formation_names, self.formation_numbers):
+        # Change dictionary keys numbers for surface names
+        for i in zip(self.surface_names, self.surface_numbers):
             self._color_lot[i[0]] = self._color_lot[i[1]]
 
         #fig, ax = plt.subplots()
@@ -170,7 +170,7 @@ class PlotData2D(object):
                            data=series_to_plot_i,
                            fit_reg=False,
                            aspect=aspect,
-                           hue="formation",
+                           hue="surface",
                            #scatter_kws=scatter_kws,
                            legend=False,
                            legend_out=False,
@@ -276,8 +276,8 @@ class PlotData2D(object):
                 _block = solution.fault_blocks
 
             else:
-                assert block_type in self.model.formations.df.columns, 'The value to be plotted has to be in formations: \\' + \
-                                                                   str(self.model.formations.df)
+                assert block_type in self.model.surfaces.df.columns, 'The value to be plotted has to be in surfaces: \\' + \
+                                                                   str(self.model.surfaces.df)
 
         plot_block = _block.reshape(self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
@@ -304,8 +304,8 @@ class PlotData2D(object):
                         **kwargs)
 
         import matplotlib.patches as mpatches
-        colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
-        patches = [mpatches.Patch(color=colors[i], label=self.formation_names[i]) for i in range(len(self.formation_names))]
+        colors = [im.cmap(im.norm(value)) for value in self.surface_numbers]
+        patches = [mpatches.Patch(color=colors[i], label=self.surface_names[i]) for i in range(len(self.surface_names))]
         if not plot_data:
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.xlabel(x)
@@ -508,7 +508,7 @@ class steno3D():
         description = kwargs.get('description', 'Nothing')
 
         self._data = geo_data
-        self.formations = pn.DataFrame.from_dict(geo_data.get_formation_number(), orient='index')
+        self.surfaces = pn.DataFrame.from_dict(geo_data.get_surface_number(), orient='index')
 
 
         steno3d.login()
@@ -542,7 +542,7 @@ class steno3D():
 
     def plot3D_steno_surface(self, ver, sim):
 
-        for surface in self.formations.iterrows():
+        for surface in self.surfaces.iterrows():
             if surface[1].values[0] is 0:
                 pass
 
@@ -587,15 +587,14 @@ class vtkVisualization:
         self.geo_model = geo_data#copy.deepcopy(geo_model)
         self.interp_data = None
         self.layer_visualization = True
-      #  for e, i in enumerate( np.squeeze(geo_model.formations['value'].values)):
-      #      color_lot[e] = color_lot[i]
+
         self.C_LOT = color_lot
 
         self.ren_name = ren_name
         # Number of renders
         self.n_ren = 4
         self.id = geo_data.interfaces.df['id'].unique().squeeze()
-        self.formation_name = geo_data.interfaces.df['surface'].unique()
+        self.surface_name = geo_data.interfaces.df['surface'].unique()
 
         # Extents
         self.extent = self.geo_model.grid.extent
@@ -906,8 +905,8 @@ class vtkVisualization:
         Args:
             vertices (list): list of 3D numpy arrays containing the points that form each plane
             simplices (list): list of 3D numpy arrays containing the verticies that form every triangle
-            formations (list): ordered list of strings containing the name of the formations to represent
-            fns (list): ordered list of formation_numbers (int)
+            surfaces (list): ordered list of strings containing the name of the surfaces to represent
+            fns (list): ordered list of surface_numbers (int)
             alpha: Opacity of the plane
 
         Returns:
@@ -915,12 +914,12 @@ class vtkVisualization:
         """
         self.surf_rend_1 = []
 
-        formations = self.formation_name
+        surfaces = self.surface_name
 
         fns = self.geo_model.interfaces.df['id'].unique().squeeze()
         assert type(vertices) is list, 'vertices and simpleces have to be a list of arrays even when only one' \
-                                       ' formation is passed'
-        assert 'DefaultBasement' not in formations, 'Remove DefaultBasement from the list of formations'
+                                       ' surface is passed'
+        assert 'DefaultBasement' not in surfaces, 'Remove DefaultBasement from the list of surfaces'
         for v, s, fn in zip(vertices, simplices, np.atleast_1d(fns)):
             act, map, pol = self.create_surface(v, s, fn, alpha)
             self.surf_rend_1.append(act)
