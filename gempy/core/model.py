@@ -530,6 +530,7 @@ class DataMutation(object):
 
     def modify_kriging_parameters(self, property, value):
         self.additional_data.kriging_data.modify_kriging_parameters(property, value)
+        self.update_to_interpolator()
 
     def modify_order_surfaces(self,  new_value: int, idx: int, series: str = None):
         self.formations.modify_order_surfaces(new_value, idx, series)
