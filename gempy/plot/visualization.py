@@ -47,7 +47,7 @@ from os import path
 import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-from gempy.plot.colors import color_lot, cmap, norm
+from gempy.plot.colors import color_lot#, cmap, norm
 import gempy as gp
 import copy
 from gempy.core.data import Solution
@@ -70,20 +70,13 @@ class PlotData2D(object):
         verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0
     """
 
-    def __init__(self, model, cmap=None, norm=None, **kwargs):
+    def __init__(self, model, **kwargs):
 
         self.model = model
 
         self._color_lot = dict(zip(self.model.formations.df['formation'], self.model.formations.df['color']))
         self._cmap = mcolors.ListedColormap(list(self.model.formations.df['color']))
         self._norm = mcolors.Normalize(vmin=1, vmax=len(self._cmap.colors))
-
-        #self._color_lot = color_lot
-        #self._cmap = cmap
-        #self._norm = norm
-
-        self.formation_names = model.formations.df['formation']#self._data.interfaces['formation'].unique()
-        self.formation_numbers = model.formations.df['id']
 
         self._set_style()
 
@@ -142,10 +135,6 @@ class PlotData2D(object):
 
             series_to_plot_i = self.model.interfaces[self.model.interfaces.df["series"] == series]
             series_to_plot_f = self.model.orientations[self.model.orientations.df["series"] == series]
-
-        # Change dictionary keys numbers for formation names
-        #for i in zip(self.formation_names, self.formation_numbers):
-            #self._color_lot[i[0]] = self._color_lot[i[1]]
 
         #fig, ax = plt.subplots()
 
@@ -311,8 +300,6 @@ class PlotData2D(object):
                         **kwargs)
 
         import matplotlib.patches as mpatches
-        #colors = [im.cmap(im.norm(value)) for value in self.formation_numbers]
-        #patches = [mpatches.Patch(color=colors[i], label=self.formation_names[i]) for i in range(len(self.formation_names))]
         patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
         if not plot_data:
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
@@ -597,7 +584,15 @@ class vtkVisualization:
         self.layer_visualization = True
       #  for e, i in enumerate( np.squeeze(geo_model.formations['value'].values)):
       #      color_lot[e] = color_lot[i]
-        self.C_LOT = color_lot
+        #self.C_LOT = color_lot
+        #print(self.C_LOT)
+        self.C_LOT = dict(zip(self.geo_model.formations.df['id'], self.geo_model.formations.df['color']))
+        #print(self.C_LOT)
+
+        for form, color in self.C_LOT.items(): #convert hex to rgb
+            #print(form, color)
+            self.C_LOT[form] = mcolors.hex2color(color)
+
 
         self.ren_name = ren_name
         # Number of renders
