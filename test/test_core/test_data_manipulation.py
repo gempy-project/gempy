@@ -64,7 +64,7 @@ def create_surfaces(create_series):
     print(surfaces)
 
     # The column surface is also a pandas.Categories.
-    # This will be important for the Data clases (Interfaces and Orientations)
+    # This will be important for the Data clases (SurfacePoints and Orientations)
 
     print(surfaces.df['surface'])
 
@@ -148,36 +148,36 @@ def create_surfaces(create_series):
 
 
 @pytest.fixture(scope='module')
-def create_interfaces(create_surfaces, create_series):
+def create_surface_points(create_surfaces, create_series):
     # # Data
-    # #### Interfaces
+    # #### SurfacePoints
     # These two DataFrames (df from now on) will contain the individual information of each point at an interface or
     # orientation. Some properties of this table are mapped from the *df* below.
     surfaces = create_surfaces
-    interfaces = gp.Interfaces(surfaces)
+    surface_points = gp.SurfacePoints(surfaces)
 
-    print(interfaces)
+    print(surface_points)
 
-    interfaces.set_interfaces(pn.DataFrame(np.random.rand(6, 3)), ['foo', 'foo5', 'lala', 'foo5', 'lala', 'feeeee'])
+    surface_points.set_surface_points(pn.DataFrame(np.random.rand(6, 3)), ['foo', 'foo5', 'lala', 'foo5', 'lala', 'feeeee'])
 
-    print(interfaces)
+    print(surface_points)
 
-    interfaces.map_data_from_surfaces(surfaces, 'series')
-    print(interfaces)
-
-
-    interfaces.map_data_from_surfaces(surfaces, 'id')
-    print(interfaces)
+    surface_points.map_data_from_surfaces(surfaces, 'series')
+    print(surface_points)
 
 
-    interfaces.map_data_from_series(create_series, 'order_series')
-    print(interfaces)
+    surface_points.map_data_from_surfaces(surfaces, 'id')
+    print(surface_points)
+
+
+    surface_points.map_data_from_series(create_series, 'order_series')
+    print(surface_points)
 
     # In[59]:
 
-    interfaces.sort_table()
-    print(interfaces)
-    return interfaces
+    surface_points.sort_table()
+    print(surface_points)
+    return surface_points
 
 
 @pytest.fixture(scope='module')
@@ -229,16 +229,16 @@ def create_grid():
 
 
 @pytest.fixture('module')
-def create_rescaling(create_interfaces, create_orientations, create_grid):
-    rescaling = gp.RescaledData(create_interfaces, create_orientations, create_grid)
+def create_rescaling(create_surface_points, create_orientations, create_grid):
+    rescaling = gp.RescaledData(create_surface_points, create_orientations, create_grid)
     return rescaling
 
 
 @pytest.fixture('module')
-def create_additional_data(create_interfaces, create_orientations, create_grid, create_faults,
+def create_additional_data(create_surface_points, create_orientations, create_grid, create_faults,
                            create_surfaces, create_rescaling):
 
-    ad = gp.AdditionalData(create_interfaces, create_orientations, create_grid, create_faults,
+    ad = gp.AdditionalData(create_surface_points, create_orientations, create_grid, create_faults,
                            create_surfaces, create_rescaling)
     return ad
 
@@ -251,8 +251,8 @@ class TestDataManipulation:
     def test_surfaces(self, create_surfaces):
         return create_surfaces
 
-    def test_interfaces(self, create_interfaces):
-        return create_interfaces
+    def test_surface_points(self, create_surface_points):
+        return create_surface_points
 
     def test_orientations(self, create_orientations):
         return create_orientations

@@ -20,14 +20,14 @@ class DataMutation(object):
         self.faults = Faults()
         self.series = Series(self.faults)
         self.surfaces = Surfaces(self.series)
-        self.interfaces = Interfaces(self.surfaces)
+        self.surface_points = SurfacePoints(self.surfaces)
         self.orientations = Orientations(self.surfaces)
 
-        self.rescaling = RescaledData(self.interfaces, self.orientations, self.grid)
-        self.additional_data = AdditionalData(self.interfaces, self.orientations, self.grid, self.faults,
+        self.rescaling = RescaledData(self.surface_points, self.orientations, self.grid)
+        self.additional_data = AdditionalData(self.surface_points, self.orientations, self.grid, self.faults,
                                               self.surfaces, self.rescaling)
 
-    @_setdoc([Interfaces.read_interfaces.__doc__, Orientations.read_orientations.__doc__])
+    @_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
     def read_data(self, path_i=None, path_o=None, **kwargs):
         """
 
@@ -44,7 +44,7 @@ class DataMutation(object):
             kwargs['update_surfaces'] = True
 
         if path_i:
-            self.interfaces.read_interfaces(path_i, inplace=True, **kwargs)
+            self.surface_points.read_surface_points(path_i, inplace=True, **kwargs)
         if path_o:
             self.orientations.read_orientations(path_o, inplace=True, **kwargs)
 
@@ -74,7 +74,7 @@ class DataMutation(object):
         self.update_from_series()
 
         if sort_data is True:
-            self.interfaces.sort_table()
+            self.surface_points.sort_table()
             self.orientations.sort_table()
 
         return self.surfaces.sequential_pile.figure
@@ -98,9 +98,9 @@ class DataMutation(object):
         self.update_from_grid()
 
     def set_default_interface(self):
-        self.interfaces.set_default_interface()
-        self.update_to_interfaces()
-        self.update_from_interfaces()
+        self.surface_points.set_default_surface_points()
+        self.update_to_surface_points()
+        self.update_from_surface_points()
 
     def set_default_orientation(self):
         self.orientations.set_default_orientation()
@@ -152,14 +152,14 @@ class DataMutation(object):
         self.surfaces.set_basement()
 
         # Add categories from series
-        self.interfaces.add_series_categories_from_series(self.series)
+        self.surface_points.add_series_categories_from_series(self.series)
         self.orientations.add_series_categories_from_series(self.series)
 
-        self.interfaces.map_data_from_series(self.series, 'order_series')
+        self.surface_points.map_data_from_series(self.series, 'order_series')
         self.orientations.map_data_from_series(self.series, 'order_series')
 
         if sort_geometric_data is True:
-            self.interfaces.sort_table()
+            self.surface_points.sort_table()
             self.orientations.sort_table()
 
         self.additional_data.update_structure()
@@ -175,20 +175,20 @@ class DataMutation(object):
         """
 
     def update_from_surfaces(self, add_categories_from_series=True, add_categories_from_surfaces=True,
-                               map_interfaces=True, map_orientations=True, update_structural_data=True):
+                               map_surface_points=True, map_orientations=True, update_structural_data=True):
         # Add categories from series
         if add_categories_from_series is True:
-            self.interfaces.add_series_categories_from_series(self.surfaces.series)
+            self.surface_points.add_series_categories_from_series(self.surfaces.series)
             self.orientations.add_series_categories_from_series(self.surfaces.series)
 
         # Add categories from surfaces
         if add_categories_from_surfaces is True:
-            self.interfaces.add_surface_categories_from_surfaces(self.surfaces)
+            self.surface_points.add_surface_categories_from_surfaces(self.surfaces)
             self.orientations.add_surface_categories_from_surfaces(self.surfaces)
 
-        if map_interfaces is True:
-            self.interfaces.map_data_from_surfaces(self.surfaces, 'series')
-            self.interfaces.map_data_from_surfaces(self.surfaces, 'id')
+        if map_surface_points is True:
+            self.surface_points.map_data_from_surfaces(self.surfaces, 'series')
+            self.surface_points.map_data_from_surfaces(self.surfaces, 'id')
 
         if map_orientations is True:
             self.orientations.map_data_from_surfaces(self.surfaces, 'series')
@@ -216,25 +216,25 @@ class DataMutation(object):
         self.update_from_series()
         return s
 
-    def set_interface_object(self, interfaces: Interfaces, update_model=True):
-        self.interfaces = interfaces
-        self.rescaling.interfaces = interfaces
-        self.interpolator.interfaces = interfaces
+    def set_interface_object(self, surface_points: SurfacePoints, update_model=True):
+        self.surface_points = surface_points
+        self.rescaling.surface_points = surface_points
+        self.interpolator.surface_points = surface_points
 
         if update_model is True:
-            self.update_from_interfaces()
+            self.update_from_surface_points()
 
-    def update_to_interfaces(self, idx: Union[list, np.ndarray] = None):
+    def update_to_surface_points(self, idx: Union[list, np.ndarray] = None):
 
         if idx is None:
-            idx = self.interfaces.df.index
+            idx = self.surface_points.df.index
         idx = np.atleast_1d(idx)
-        self.interfaces.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
-        self.interfaces.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
+        self.surface_points.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
+        self.surface_points.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
 
-        self.interfaces.map_data_from_series(self.series, 'order_series', idx=idx)
-        self.interfaces.sort_table()
-        return self.interfaces
+        self.surface_points.map_data_from_series(self.series, 'order_series', idx=idx)
+        self.surface_points.sort_table()
+        return self.surface_points
 
     def update_to_orientations(self, idx: Union[list, np.ndarray] = None):
         # TODO debug
@@ -247,17 +247,17 @@ class DataMutation(object):
         self.orientations.sort_table()
         return self.orientations
 
-    def update_from_interfaces(self, idx: Union[list, np.ndarray] = None, recompute_rescale_factor=False):
+    def update_from_surface_points(self, idx: Union[list, np.ndarray] = None, recompute_rescale_factor=False):
         self.update_structure()
         if idx is None:
-            idx = self.interfaces.df.index
+            idx = self.surface_points.df.index
         idx = np.atleast_1d(idx)
 
-        if self.interfaces.df.loc[idx][['X_r', 'Y_r', 'Z_r']].isna().any().any():
+        if self.surface_points.df.loc[idx][['X_r', 'Y_r', 'Z_r']].isna().any().any():
             recompute_rescale_factor = True
 
         if recompute_rescale_factor is False:
-            self.rescaling.set_rescaled_interfaces(idx=idx)
+            self.rescaling.set_rescaled_surface_points(idx=idx)
         else:
             self.rescaling.rescale_data()
 
@@ -312,7 +312,7 @@ class DataMutation(object):
     #     self.additional_data.kriging_data.loc[d.index, 'values'] = d
     #     self.update_plot(vtk_object)
 
-    def add_interfaces_DEP(self, vtk_object: vtkPlot = None, **properties):
+    def add_surface_points_DEP(self, vtk_object: vtkPlot = None, **properties):
 
         d = pn.DataFrame(properties)
         d[['X_r', 'Y_r', 'Z_r']] = self.rescaling.rescale_data_point(d[['X', 'Y', 'Z']])
@@ -322,21 +322,21 @@ class DataMutation(object):
             pass
 
         for index, frame in d.iterrows():
-            new_ind = self.interfaces.df.last_valid_index() + 1
-            self.interfaces.df.loc[new_ind, d.columns] = frame
+            new_ind = self.surface_points.df.last_valid_index() + 1
+            self.surface_points.df.loc[new_ind, d.columns] = frame
 
             if vtk_object is not None:
-                vtk_object.render_add_interfaces(new_ind)
+                vtk_object.render_add_surface_points(new_ind)
 
-        self.interfaces.sort_table()
+        self.surface_points.sort_table()
         self.update_structure()
 
-    def add_interfaces(self, X, Y, Z, surface, idx=None):
-        self.interfaces.add_interface(X, Y, Z, surface, idx)
+    def add_surface_points(self, X, Y, Z, surface, idx=None):
+        self.surface_points.add_surface_points(X, Y, Z, surface, idx)
 
-        self.update_to_interfaces(idx)
-        self.interfaces.sort_table()
-        self.update_from_interfaces(idx, recompute_rescale_factor=True)
+        self.update_to_surface_points(idx)
+        self.surface_points.sort_table()
+        self.update_from_surface_points(idx, recompute_rescale_factor=True)
 
     def add_orientations(self,  X, Y, Z, surface, pole_vector: np.ndarray = None,
                          orientation: np.ndarray = None, idx=None,
@@ -399,12 +399,12 @@ class DataMutation(object):
         self.series.delete_series(indices, update_order_series)
         self.update_from_series()
 
-    def delete_interfaces(self, indices: Union[list, int], vtk_object: vtkPlot = None):
-        self.interfaces.del_interface(indices)
+    def delete_surface_points(self, indices: Union[list, int], vtk_object: vtkPlot = None):
+        self.surface_points.del_surface_points(indices)
         if vtk_object is not None:
             vtk_object.render_delete_interfaes(indices)
 
-        self.update_from_interfaces(indices)
+        self.update_from_surface_points(indices)
 
     def delete_orientations(self, indices: Union[list, int], vtk_object: vtkPlot = None, ):
         self.orientations.del_orientation(indices)
@@ -414,15 +414,15 @@ class DataMutation(object):
 
         self.update_structure(indices)
 
-    def modify_interfaces(self, indices: list, vtk_object: vtkPlot = None, **properties):
+    def modify_surface_points(self, indices: list, vtk_object: vtkPlot = None, **properties):
         indices = np.array(indices, ndmin=1)
         keys = list(properties.keys())
         is_surface = np.isin('surface', keys).all()
-        self.interfaces.modify_interface(indices, **properties)
+        self.surface_points.modify_surface_points(indices, **properties)
 
         if is_surface:
-            self.update_to_interfaces(indices)
-        self.update_from_interfaces(indices)
+            self.update_to_surface_points(indices)
+        self.update_from_surface_points(indices)
 
     def modify_orientations(self, indices: list, vtk_object: vtkPlot = None, **properties: list):
 
@@ -445,7 +445,7 @@ class DataMutation(object):
 
         #
         # if vtk_object is not None:
-        #     vtk_object.render_move_interfaces(indices)
+        #     vtk_object.render_move_surface_points(indices)
         #
 
 
@@ -490,9 +490,9 @@ class Model(DataMutation):
         self.meta = MetaData(project_name=project_name)
         super().__init__()
 
-        self.interpolator = Interpolator(self.interfaces, self.orientations, self.grid, self.surfaces,
+        self.interpolator = Interpolator(self.surface_points, self.orientations, self.grid, self.surfaces,
                                          self.faults, self.additional_data)
-        self.solutions = Solution(self.additional_data, self.grid, self.interfaces)
+        self.solutions = Solution(self.additional_data, self.grid, self.surface_points)
 
     def __repr__(self):
         return self.meta.project_name + ' ' + self.meta.date
@@ -546,17 +546,17 @@ class Model(DataMutation):
             return model
 
     def save_model_long_term(self):
-        # TODO saving the main attributes in a seriealize way independent on the package i.e. interfaces and
+        # TODO saving the main attributes in a seriealize way independent on the package i.e. surface_points and
         # TODO orientations categories_df, grid values etc.
         pass
 
     def get_data(self, itype='data', numeric=False):
         """
-        Method that returns the interfaces and orientations pandas Dataframes. Can return both at the same time or only
+        Method that returns the surface_points and orientations pandas Dataframes. Can return both at the same time or only
         one of the two
 
         Args:
-            itype: input_data data type, either 'orientations', 'interfaces' or 'all' for both.
+            itype: input_data data type, either 'orientations', 'surface_points' or 'all' for both.
             numeric(bool): Return only the numerical values of the dataframe. This is much lighter database for storing
                 traces
             verbosity (int): Number of properties shown
@@ -569,11 +569,11 @@ class Model(DataMutation):
         # TODO adapt this
 
         show_par_f = self.orientations.df.columns
-        show_par_i = self.interfaces.df.columns
+        show_par_i = self.surface_points.df.columns
 
         if numeric:
             show_par_f = self.orientations._columns_o_num
-            show_par_i = self.interfaces._columns_i_num
+            show_par_i = self.surface_points._columns_i_num
             dtype = 'float'
 
         if itype == 'orientations':
@@ -581,15 +581,15 @@ class Model(DataMutation):
             # Be sure that the columns are in order when used for operations
             if numeric:
                 raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
-        elif itype == 'interfaces':
-            raw_data = self.interfaces.df[show_par_i]  # .astype(dtype)
+        elif itype == 'surface_points':
+            raw_data = self.surface_points.df[show_par_i]  # .astype(dtype)
             # Be sure that the columns are in order when used for operations
             if numeric:
                 raw_data = raw_data[['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']]
         elif itype == 'data':
-            raw_data = pn.concat([self.interfaces.df[show_par_i],  # .astype(dtype),
+            raw_data = pn.concat([self.surface_points.df[show_par_i],  # .astype(dtype),
                                   self.orientations.df[show_par_f]],  # .astype(dtype)],
-                                 keys=['interfaces', 'orientations'],
+                                 keys=['surface_points', 'orientations'],
                                  sort=False)
             # Be sure that the columns are in order when used for operations
             if numeric:
@@ -606,7 +606,7 @@ class Model(DataMutation):
         elif itype == 'additional data' or itype == 'additional_data':
             raw_data = self.additional_data
         else:
-            raise AttributeError('itype has to be \'data\', \'additional data\', \'interfaces\', \'orientations\','
+            raise AttributeError('itype has to be \'data\', \'additional data\', \'surface_points\', \'orientations\','
                                  ' \'surfaces\',\'series\', \'faults\' or \'faults_relations_df\'')
 
         return raw_data

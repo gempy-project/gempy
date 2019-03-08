@@ -92,12 +92,12 @@ class PlotData2D(object):
 
     def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1, **kwargs):
         """
-        Plot the projecton of the raw data (interfaces and orientations) in 2D following a
+        Plot the projecton of the raw data (surface_points and orientations) in 2D following a
         specific directions
 
         Args:
             direction(str): xyz. Caartesian direction to be plotted
-            data_type (str): type of data to plot. 'all', 'interfaces' or 'orientations'
+            data_type (str): type of data to plot. 'all', 'surface_points' or 'orientations'
             series(str): series to plot
             ve(float): Vertical exageration
             **kwargs: seaborn lmplot key arguments. (TODO: adding the link to them)
@@ -126,14 +126,14 @@ class PlotData2D(object):
             min_axis = 'height'
 
         if series == "all":
-            series_to_plot_i = self.model.interfaces.df[self.model.interfaces.df["series"].
+            series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"].
                 isin(self.model.series.df.index.values)]
             series_to_plot_f = self.model.orientations.df[self.model.orientations.df["series"].
                 isin(self.model.series.df.index.values)]
 
         else:
 
-            series_to_plot_i = self.model.interfaces[self.model.interfaces.df["series"] == series]
+            series_to_plot_i = self.model.surface_points[self.model.surface_points.df["series"] == series]
             series_to_plot_f = self.model.orientations[self.model.orientations.df["series"] == series]
 
         # Change dictionary keys numbers for surface names
@@ -165,7 +165,7 @@ class PlotData2D(object):
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
                        pivot="tail", scale_units=min_axis, scale=10)
 
-        if data_type == 'interfaces':
+        if data_type == 'surface_points':
             p = sns.lmplot(x, y,
                            data=series_to_plot_i,
                            fit_reg=False,
@@ -563,7 +563,7 @@ class steno3D():
 class vtkVisualization:
     """
     Class to visualize data and results in 3D. Init will create all the render properties while the method render
-    model will lunch the window. Using set_interfaces, set_orientations and set_surfaces in between can be chosen what
+    model will lunch the window. Using set_surface_points, set_orientations and set_surfaces in between can be chosen what
     will be displayed.
 
     Args:
@@ -593,8 +593,8 @@ class vtkVisualization:
         self.ren_name = ren_name
         # Number of renders
         self.n_ren = 4
-        self.id = geo_data.interfaces.df['id'].unique().squeeze()
-        self.surface_name = geo_data.interfaces.df['surface'].unique()
+        self.id = geo_data.surface_points.df['id'].unique().squeeze()
+        self.surface_name = geo_data.surface_points.df['surface'].unique()
 
         # Extents
         self.extent = self.geo_model.grid.extent
@@ -802,7 +802,7 @@ class vtkVisualization:
 
     def create_sphere(self, X, Y, Z, fn, n_sphere=0, n_render=0, n_index=0, r=0.03):
         """
-        Method to create the sphere that represent the interfaces points
+        Method to create the sphere that represent the surface_points points
         Args:
             X: X coord
             Y: Y coord
@@ -810,7 +810,7 @@ class vtkVisualization:
             fn (int): id
             n_sphere (int): Number of the sphere
             n_render (int): Number of the render where the sphere belongs
-            n_index (int): index value in the PandasDataframe of InupData.interfaces
+            n_index (int): index value in the PandasDataframe of InupData.surface_points
             r (float): radio of the sphere
 
         Returns:
@@ -852,7 +852,7 @@ class vtkVisualization:
             Gz (str): Component of the gradient z
             n_plane (int): Number of the plane
             n_render (int): Number of the render where the plane belongs
-            n_index (int): index value in the PandasDataframe of InupData.interfaces
+            n_index (int): index value in the PandasDataframe of InupData.surface_points
             alpha: Opacity of the plane
 
         Returns:
@@ -916,7 +916,7 @@ class vtkVisualization:
 
         surfaces = self.surface_name
 
-        fns = self.geo_model.interfaces.df['id'].unique().squeeze()
+        fns = self.geo_model.surface_points.df['id'].unique().squeeze()
         assert type(vertices) is list, 'vertices and simpleces have to be a list of arrays even when only one' \
                                        ' surface is passed'
         assert 'DefaultBasement' not in surfaces, 'Remove DefaultBasement from the list of surfaces'
@@ -929,9 +929,9 @@ class vtkVisualization:
             self.ren_list[2].AddActor(act)
             self.ren_list[3].AddActor(act)
 
-    def set_interfaces(self, indices=None):
+    def set_surface_points(self, indices=None):
         """
-        Create all the interfaces points and set them to the corresponding renders for their posterior visualization
+        Create all the surface_points points and set them to the corresponding renders for their posterior visualization
          with render_model
 
         Returns:
@@ -940,7 +940,7 @@ class vtkVisualization:
 
         if not indices:
 
-            for e, val in enumerate(self.geo_model.interfaces.df.iterrows()):
+            for e, val in enumerate(self.geo_model.surface_points.df.iterrows()):
                 index = val[0]
                 row = val[1]
                 self.s_rend_1.at[index] = (self.create_sphere(row['X'], row['Y'], row['Z'], row['id'],
@@ -952,7 +952,7 @@ class vtkVisualization:
                 self.s_rend_4.at[index] = (self.create_sphere(row['X'], row['Y'], row['Z'], row['id'],
                                            n_sphere=e, n_render=3, n_index=index))
         else:
-            for e, val in enumerate(self.geo_model.interfaces.df.loc[np.atleast_1d(indices)].iterrows()):
+            for e, val in enumerate(self.geo_model.surface_points.df.loc[np.atleast_1d(indices)].iterrows()):
                 index = val[0]
                 row = val[1]
                 self.s_rend_1.at[index] = (self.create_sphere(row['X'], row['Y'], row['Z'], row['id'],
@@ -1066,7 +1066,7 @@ class vtkVisualization:
             pass
         try:
             for sph in zip(self.s_rend_1['val'], self.s_rend_2['val'], self.s_rend_3['val'],
-                           self.s_rend_4['val'], self.geo_model.interfaces.df.iterrows()):
+                           self.s_rend_4['val'], self.geo_model.surface_points.df.iterrows()):
 
                 row_i = sph[4][1]
                 sph[0].PlaceWidget(row_i['X'] - sph[0].r_f, row_i['X'] + sph[0].r_f,
@@ -1156,11 +1156,11 @@ class vtkVisualization:
     def SphereCallback_change_df(self, index, new_center):
         index = np.atleast_1d(index)
         # Modify Pandas DataFrame
-        self.geo_model.modify_interfaces(index, X=[new_center[0]], Y=[new_center[1]], Z=[new_center[2]])
+        self.geo_model.modify_surface_points(index, X=[new_center[0]], Y=[new_center[1]], Z=[new_center[2]])
 
     def SphereCallbak_move_changes(self, indices):
 
-        df_changes = self.geo_model.interfaces.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
+        df_changes = self.geo_model.surface_points.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
         for index, df_row in df_changes.iterrows():
             new_center = df_row[['X', 'Y', 'Z']].values
 

@@ -188,7 +188,7 @@ class Series(object):
         Returns:
 
         """
-        if isinstance(series_order, Interfaces):
+        if isinstance(series_order, SurfacePoints):
             try:
                 list_of_series = series_order.df['series'].unique()
             except KeyError:
@@ -197,7 +197,7 @@ class Series(object):
             list_of_series = np.atleast_1d(series_order)
 
         else:
-            raise AttributeError('series_order is not neither list or Interfaces object.')
+            raise AttributeError('series_order is not neither list or SurfacePoints object.')
 
         series_idx = list_of_series
         # Categoriacal index does not have inplace
@@ -342,7 +342,7 @@ class Faults(object):
 
         Args:
             series (Series): Series object
-            series_fault(list or Interfaces): Name of the series which are df
+            series_fault(list or SurfacePoints): Name of the series which are df
         """
         series_fault = np.atleast_1d(series_fault)
         self.df['isFault'].fillna(False, inplace=True)
@@ -476,8 +476,8 @@ class Surfaces(object):
             # TODO DEBUG: I am not sure that surfaces always has at least one entry. Check it
             self.set_surfaces_names(['surface1', 'basement'])
 
-    def set_surfaces_names_from_surface_points(self, interfaces):
-        self.set_surfaces_names(interfaces.df['surface'].unique())
+    def set_surfaces_names_from_surface_points(self, surface_points):
+        self.set_surfaces_names(surface_points.df['surface'].unique())
 
     def add_surface(self, surface_list: Union[pn.DataFrame, list], update_df=True):
         surface_list = np.atleast_1d(surface_list)
@@ -682,7 +682,7 @@ class Surfaces(object):
 
 class GeometricData(object):
     """
-    Parent class of the objects which contatin the input parameters: interfaces and orientations. This class contain
+    Parent class of the objects which contatin the input parameters: surface_points and orientations. This class contain
     the common methods for both types of data sets.
     """
 
@@ -808,7 +808,7 @@ class GeometricData(object):
             warnings.warn('You may have non-finite values (NA or inf) on the dataframe')
 
 
-class Interfaces(GeometricData):
+class SurfacePoints(GeometricData):
     """
     Data child with specific methods to manipulate interface data. It is initialize without arguments to give
     flexibility to the origin of the data
@@ -830,9 +830,9 @@ class Interfaces(GeometricData):
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
             self.df: pn.DataFrame
 
-        self.set_interfaces(coord, surface)
+        self.set_surface_points(coord, surface)
 
-    def set_interfaces(self, coord: np.ndarray = None, surface: list = None):
+    def set_surface_points(self, coord: np.ndarray = None, surface: list = None):
         self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'surface'], dtype=float)
 
         if coord is not None and surface is not None:
@@ -848,8 +848,7 @@ class Interfaces(GeometricData):
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
 
-
-    def add_interface(self, X, Y, Z, surface, idx=None):
+    def add_surface_points(self, X, Y, Z, surface, idx=None):
         # TODO: Add the option to pass the surface number
 
         if idx is None:
@@ -865,16 +864,16 @@ class Interfaces(GeometricData):
             self.df.loc[idx + 1, 'surface'] = surface
         # ToDO test this
         except ValueError as error:
-            self.del_interface(idx +1)
+            self.del_surface_points(idx + 1)
             print('The surface passed does not exist in the pandas categories. This may imply that'
                   'does not exist in the surface object either.')
             raise ValueError(error)
 
-    def del_interface(self, idx):
+    def del_surface_points(self, idx):
 
         self.df.drop(idx, inplace=True)
 
-    def modify_interface(self, idx, **kwargs):
+    def modify_surface_points(self, idx, **kwargs):
         """
          Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
 
@@ -903,7 +902,7 @@ class Interfaces(GeometricData):
         # Selecting the properties passed to be modified
         self.df.loc[idx, list(kwargs.keys())] = values
 
-    def read_interfaces(self, file_path, debug=False, inplace=False, append=False, kwargs_pandas:dict = {}, **kwargs,):
+    def read_surface_points(self, file_path, debug=False, inplace=False, append=False, kwargs_pandas:dict = {}, **kwargs, ):
         """
         Read tabular using pandas tools and if inplace set it properly to the Interace object
         Args:
@@ -941,51 +940,13 @@ class Interfaces(GeometricData):
 
             if inplace:
                 c = np.array(self._columns_i_1)
-                interfaces_read = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
-                self.set_interfaces(interfaces_read[[coord_x_name, coord_y_name, coord_z_name]],
-                                    surface=interfaces_read[surface_name])
+                surface_points_read = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
+                self.set_surface_points(surface_points_read[[coord_x_name, coord_y_name, coord_z_name]],
+                                        surface=surface_points_read[surface_name])
             else:
                 return table
 
-    def set_interfaces_df_DEP(self, interf_dataframe, append=False):
-        """
-        Method to change or append a Dataframe to interfaces in place. A equivalent Pandas Dataframe with
-        ['X', 'Y', 'Z', 'surface'] has to be passed.
-
-        Args:
-            interf_dataframe: pandas.core.frame.DataFrame with the data
-            append: Bool: if you want to append the new data frame or substitute it
-        """
-        assert set(self._columns_i_num).issubset(interf_dataframe.columns), \
-            "One or more columns do not match with the expected values " + str(self._columns_i_1)
-
-        interf_dataframe[self._columns_i_num] = interf_dataframe[self._columns_i_num].astype(float, copy=True)
-        try:
-            interf_dataframe[['id', 'order_series']] = interf_dataframe[
-                ['id', 'order_series']].astype(int, copy=True)
-
-            interf_dataframe['surface'] = interf_dataframe['surface'].astype('category', copy=True)
-            interf_dataframe['series'] = interf_dataframe['series'].astype('category', copy=True)
-
-        except ValueError:
-            print('No id or order_series in the input')
-            pass
-
-        except KeyError:
-            pass
-
-        if append:
-            self.df = self.df.append(interf_dataframe)
-
-        else:
-            self.df[interf_dataframe.columns] = interf_dataframe
-
-        self.df = self.df[~self.df[['X', 'Y', 'Z']].isna().any(1)]
-
-        if not self.df.index.is_unique:
-            self.df.reset_index(drop=True, inplace=True)
-
-    def set_default_interface(self):
+    def set_default_surface_points(self):
         """
         Set a default point at the middle of the extent area to be able to start making the model
         Args:
@@ -996,7 +957,7 @@ class Interfaces(GeometricData):
 
         """
         if self.df.shape[0] == 0:
-            self.add_interface(0.00001, 0.00001, 0.00001, self.surfaces.df['surface'].iloc[0])
+            self.add_surface_points(0.00001, 0.00001, 0.00001, self.surfaces.df['surface'].iloc[0])
 
     def get_surfaces(self):
         """
@@ -1249,16 +1210,14 @@ class Orientations(GeometricData):
             self.df["azimuth"][self.df["dip"] < 0.001] = 0  # because if dip is zero azimuth is undefined
 
     @staticmethod
-    def create_orientation_from_interface(interfaces: Interfaces, indices):
+    def create_orientation_from_interface_UPDATE(surface_points: SurfacePoints, indices):
         # TODO test!!!!
         """
         Create and set orientations from at least 3 points categories_df
         Args:
-            indices_array (array-like): 1D or 2D array with the pandas indices of the
-              :attr:`gempy.data_management.InputData.interfaces`. If 2D every row of the 2D matrix will be used to create an
-              orientation
+            indices
         """
-        selected_points = interfaces.df[['X', 'Y', 'Z']].loc[indices].values.T
+        selected_points = surface_points.df[['X', 'Y', 'Z']].loc[indices].values.T
 
         center, normal = plane_fit(selected_points)
         orientation = get_orientation(normal)
@@ -1441,24 +1400,24 @@ class RescaledData(object):
     Auxiliary class to rescale the coordinates between 0 and 1 to increase stability
 
     Attributes:
-        interfaces (Interfaces):
+        surface_points (SurfacePoints):
         orientaions (Orientations):
         grid (Grid):
         rescaling_factor (float): value which divide all coordinates
         centers (list[float]): New center of the coordinates after shifting
 
     Args:
-        interfaces (Interfaces):
+        surface_points (SurfacePoints):
         orientations (Orientations):
         grid (Grid):
         rescaling_factor (float): value which divide all coordinates
         centers (list[float]): New center of the coordinates after shifting
     """
 
-    def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: Grid,
+    def __init__(self, surface_points: SurfacePoints, orientations: Orientations, grid: Grid,
                  rescaling_factor: float = None, centers: Union[list, pn.DataFrame] = None):
 
-        self.interfaces = interfaces
+        self.surface_points = surface_points
         self.orientations = orientations
         self.grid = grid
        # self.centers = centers
@@ -1493,7 +1452,7 @@ class RescaledData(object):
 
     def rescale_data(self, rescaling_factor=None, centers=None):
         """
-        Rescale interfaces, orientations---adding columns in the categories_df---and grid---adding values_r attribute
+        Rescale surface_points, orientations---adding columns in the categories_df---and grid---adding values_r attribute
         Args:
             rescaling_factor:
             centers:
@@ -1501,24 +1460,24 @@ class RescaledData(object):
         Returns:
 
         """
-        max_coord, min_coord = self.max_min_coord(self.interfaces, self.orientations)
+        max_coord, min_coord = self.max_min_coord(self.surface_points, self.orientations)
         if rescaling_factor is None:
-            self.df['rescaling factor'] = self.compute_rescaling_factor(self.interfaces, self.orientations,
+            self.df['rescaling factor'] = self.compute_rescaling_factor(self.surface_points, self.orientations,
                                                                   max_coord, min_coord)
         else:
             self.df['rescaling factor'] = rescaling_factor
         if centers is None:
-            self.df.at['values', 'centers'] = self.compute_data_center(self.interfaces, self.orientations,
+            self.df.at['values', 'centers'] = self.compute_data_center(self.surface_points, self.orientations,
                                                     max_coord, min_coord)
         else:
             self.df.at['values', 'centers'] = centers
 
-        self.set_rescaled_interfaces()
+        self.set_rescaled_surface_points()
         self.set_rescaled_orientations()
         self.set_rescaled_grid()
         return True
 
-    def get_rescaled_interfaces(self):
+    def get_rescaled_surface_points(self):
         """
         Get the rescaled coordinates. return an image of the interface and orientations categories_df with the X_r..
          columns
@@ -1527,7 +1486,7 @@ class RescaledData(object):
         """
         # TODO return an image of the interface and orientations categories_df with the X_r.. columns
         warnings.warn('This method is not developed yet')
-        return self.interfaces.df[['X_r', 'Y_r', 'Z_r']],
+        return self.surface_points.df[['X_r', 'Y_r', 'Z_r']],
 
     def get_rescaled_orientations(self):
         """
@@ -1541,37 +1500,37 @@ class RescaledData(object):
         return self.orientations.df[['X_r', 'Y_r', 'Z_r']]
 
     @staticmethod
-    def max_min_coord(interfaces=None, orientations=None):
+    def max_min_coord(surface_points=None, orientations=None):
         """
         Find the maximum and minimum location of any input data in each cartesian coordinate
         Args:
-            interfaces (Interfaces):
+            surface_points (SurfacePoints):
             orientations (Orientations):
 
         Returns:
             tuple: max[XYZ], min[XYZ]
         """
-        if interfaces is None:
+        if surface_points is None:
             if orientations is None:
                 raise AttributeError('You must pass at least one Data object')
             else:
                 df = orientations.df
         else:
             if orientations is None:
-                df = interfaces.df
+                df = surface_points.df
             else:
-                df = pn.concat([orientations.df, interfaces.df], sort=False)
+                df = pn.concat([orientations.df, surface_points.df], sort=False)
 
         max_coord = df.max()[['X', 'Y', 'Z']]
         min_coord = df.min()[['X', 'Y', 'Z']]
         return max_coord, min_coord
 
-    def compute_data_center(self, interfaces=None, orientations=None,
+    def compute_data_center(self, surface_points=None, orientations=None,
                             max_coord=None, min_coord=None, inplace=True):
         """
         Calculate the center of the data once it is shifted between 0 and 1
         Args:
-            interfaces:
+            surface_points:
             orientations:
             max_coord:
             min_coord:
@@ -1581,7 +1540,7 @@ class RescaledData(object):
         """
 
         if max_coord is None or min_coord is None:
-            max_coord, min_coord = self.max_min_coord(interfaces, orientations)
+            max_coord, min_coord = self.max_min_coord(surface_points, orientations)
 
         # Get the centers of every axis
         centers = ((max_coord + min_coord) / 2).astype(float).values
@@ -1589,16 +1548,16 @@ class RescaledData(object):
             self.df.at['values', 'centers'] = centers
         return centers
 
-    def update_centers(self, interfaces=None, orientations=None, max_coord=None, min_coord=None):
+    def update_centers(self, surface_points=None, orientations=None, max_coord=None, min_coord=None):
         # TODO this should update the additional data
-        self.compute_data_center(interfaces, orientations, max_coord, min_coord, inplace=True)
+        self.compute_data_center(surface_points, orientations, max_coord, min_coord, inplace=True)
 
-    def compute_rescaling_factor(self, interfaces=None, orientations=None,
+    def compute_rescaling_factor(self, surface_points=None, orientations=None,
                                  max_coord=None, min_coord=None, inplace=True):
         """
         Calculate the rescaling factor of the data to keep all coordinates between 0 and 1
         Args:
-            interfaces:
+            surface_points:
             orientations:
             max_coord:
             min_coord:
@@ -1608,23 +1567,23 @@ class RescaledData(object):
         """
 
         if max_coord is None or min_coord is None:
-            max_coord, min_coord = self.max_min_coord(interfaces, orientations)
+            max_coord, min_coord = self.max_min_coord(surface_points, orientations)
         rescaling_factor_val = (2 * np.max(max_coord - min_coord))
         if inplace is True:
             self.df['rescaling factor'] = rescaling_factor_val
         return rescaling_factor_val
 
-    def update_rescaling_factor(self, interfaces=None, orientations=None,
+    def update_rescaling_factor(self, surface_points=None, orientations=None,
                                 max_coord=None, min_coord=None):
-        self.compute_rescaling_factor(interfaces, orientations, max_coord, min_coord, inplace=True)
+        self.compute_rescaling_factor(surface_points, orientations, max_coord, min_coord, inplace=True)
 
     @staticmethod
     @_setdoc([compute_data_center.__doc__, compute_rescaling_factor.__doc__])
-    def rescale_interfaces(interfaces, rescaling_factor, centers, idx: list = None):
+    def rescale_surface_points(surface_points, rescaling_factor, centers, idx: list = None):
         """
-        Rescale interfaces
+        Rescale surface_points
         Args:
-            interfaces:
+            surface_points:
             rescaling_factor:
             centers:
 
@@ -1633,27 +1592,27 @@ class RescaledData(object):
         """
 
         if idx is None:
-            idx = interfaces.df.index
+            idx = surface_points.df.index
 
-        # Change the coordinates of interfaces
-        new_coord_interfaces = (interfaces.df.loc[idx, ['X', 'Y', 'Z']] -
+        # Change the coordinates of surface_points
+        new_coord_surface_points = (surface_points.df.loc[idx, ['X', 'Y', 'Z']] -
                                 centers) / rescaling_factor + 0.5001
 
-        new_coord_interfaces.rename(columns={"X": "X_r", "Y": "Y_r", "Z": 'Z_r'}, inplace=True)
-        return new_coord_interfaces
+        new_coord_surface_points.rename(columns={"X": "X_r", "Y": "Y_r", "Z": 'Z_r'}, inplace=True)
+        return new_coord_surface_points
 
-    def set_rescaled_interfaces(self, idx: list = None):
+    def set_rescaled_surface_points(self, idx: list = None):
         """
-        Set the rescaled coordinates into the interfaces categories_df
+        Set the rescaled coordinates into the surface_points categories_df
         Returns:
 
         """
         if idx is None:
-            idx = self.interfaces.df.index
+            idx = self.surface_points.df.index
             # if idx.empty:
             #     idx = 0
 
-        self.interfaces.df.loc[idx, ['X_r', 'Y_r', 'Z_r']] = self.rescale_interfaces(self.interfaces,
+        self.surface_points.df.loc[idx, ['X_r', 'Y_r', 'Z_r']] = self.rescale_surface_points(self.surface_points,
                                                                                      self.df.loc['values', 'rescaling factor'],
                                                                                      self.df.loc['values', 'centers'],
                                                                                      idx=idx)
@@ -1734,20 +1693,20 @@ class Structure(object):
 
     Attributes:
 
-        len_surfaces_i (list): length of each surface/fault in interfaces
-        len_series_i (list) : length of each series in interfaces
+        len_surfaces_i (list): length of each surface/fault in surface_points
+        len_series_i (list) : length of each series in surface_points
         len_series_o (list) : length of each series in orientations
         nfs (list): number of surfaces per series
         ref_position (list): location of the first point of each surface/fault in interface
 
     Args:
-        interfaces (Interfaces)
+        surface_points (SurfacePoints)
         orientations (Orientations)
     """
 
-    def __init__(self, interfaces: Interfaces, orientations: Orientations, surfaces: Surfaces, faults: Faults):
+    def __init__(self, surface_points: SurfacePoints, orientations: Orientations, surfaces: Surfaces, faults: Faults):
 
-        self.interfaces = interfaces
+        self.surface_points = surface_points
         self.orientations = orientations
         self.surfaces = surfaces
         self.faults = faults
@@ -1757,7 +1716,7 @@ class Structure(object):
                            columns=['isLith', 'isFault',
                                     'number faults', 'number surfaces', 'number series',
                                     'number surfaces per series',
-                                    'len surfaces interfaces', 'len series interfaces',
+                                    'len surfaces surface_points', 'len series surface_points',
                                     'len series orientations'])
 
         self.df = df_.astype({'isLith': bool, 'isFault': bool, 'number faults': int,
@@ -1788,19 +1747,19 @@ class Structure(object):
         # ==================
         # Extracting lengths
         # ==================
-        # Array containing the size of every surface. Interfaces
-        self.df.at['values', 'len surfaces interfaces'] = self.interfaces.df.groupby('surface')['order_series'].count().values#self.interfaces.df['id'].value_counts(sort=False).values
+        # Array containing the size of every surface. SurfacePoints
+        self.df.at['values', 'len surfaces surface_points'] = self.surface_points.df.groupby('surface')['order_series'].count().values#self.surface_points.df['id'].value_counts(sort=False).values
 
         return True
 
     def set_series_and_length_series_i(self):
-        # Array containing the size of every series. Interfaces.
-        len_series_i = self.interfaces.df['order_series'].value_counts(sort=False).values
+        # Array containing the size of every series. SurfacePoints.
+        len_series_i = self.surface_points.df['order_series'].value_counts(sort=False).values
 
         if len_series_i.shape[0] is 0:
             len_series_i = np.insert(len_series_i, 0, 0)
 
-        self.df.at['values','len series interfaces'] = len_series_i
+        self.df.at['values','len series surface_points'] = len_series_i
         self.df['number series'] = len(len_series_i)
         return True
 
@@ -1815,17 +1774,17 @@ class Structure(object):
         return self.ref_position
 
     def set_number_of_surfaces_per_series(self):
-        self.df.at['values', 'number surfaces per series'] = self.interfaces.df.groupby('order_series').surface.nunique().values
+        self.df.at['values', 'number surfaces per series'] = self.surface_points.df.groupby('order_series').surface.nunique().values
         return True
 
     def set_number_of_faults(self):
-        # Number of faults existing in the interfaces df
-        self.df.at['values', 'number faults'] = self.faults.df.loc[self.interfaces.df['series'].unique(), 'isFault'].sum()
+        # Number of faults existing in the surface_points df
+        self.df.at['values', 'number faults'] = self.faults.df.loc[self.surface_points.df['series'].unique(), 'isFault'].sum()
         return True
 
     def set_number_of_surfaces(self):
-        # Number of surfaces existing in the interfaces df
-        self.df.at['values', 'number surfaces'] = self.interfaces.df['surface'].nunique()
+        # Number of surfaces existing in the surface_points df
+        self.df.at['values', 'number surfaces'] = self.surface_points.df['surface'].nunique()
 
         return True
 
@@ -1908,7 +1867,7 @@ class KrigingParameters(object):
             value = np.fromstring(value[1:-1], sep=',')
             try:
                 assert value.shape[0] is self.structure.df.loc[
-                    'values', 'len series interfaces'].shape[0]
+                    'values', 'len series surface_points'].shape[0]
 
                 self.df.loc['values', property] = value
 
@@ -1964,7 +1923,7 @@ class KrigingParameters(object):
         # =========================
         if u_grade is None:
 
-            len_series_i = self.structure.df.loc['values', 'len series interfaces']
+            len_series_i = self.structure.df.loc['values', 'len series surface_points']
             u_grade = np.zeros_like(len_series_i)
             u_grade[(len_series_i > 1)] = 1
 
@@ -1982,10 +1941,10 @@ class KrigingParameters(object):
 
 
 class AdditionalData(object):
-    def __init__(self, interfaces: Interfaces, orientations: Orientations, grid: Grid,
+    def __init__(self, surface_points: SurfacePoints, orientations: Orientations, grid: Grid,
                  faults: Faults, surfaces: Surfaces, rescaling: RescaledData):
 
-        self.structure_data = Structure(interfaces, orientations, surfaces, faults)
+        self.structure_data = Structure(surface_points, orientations, surfaces, faults)
         self.options = Options()
         self.kriging_data = KrigingParameters(grid, self.structure_data)
         self.rescaling_data = rescaling
@@ -2040,7 +1999,7 @@ class Solution(object):
         additional_data (AdditionalData):
         surfaces (Surfaces)
         grid (Grid)
-        scalar_field_at_interfaces (np.ndarray): Array containing the values of the scalar field at each interface. Axis
+        scalar_field_at_surface_points (np.ndarray): Array containing the values of the scalar field at each interface. Axis
         0 is each series and axis 1 contain each surface in order
          lith_block (np.ndndarray): Array with the id of each layer evaluated in each point of
          `attribute:GridClass.values`
@@ -2062,16 +2021,16 @@ class Solution(object):
         values (np.ndarray): values returned by `function: gempy.compute_model` function
     """
 
-    def __init__(self, additional_data: AdditionalData = None,  grid: Grid = None,
-                 interfaces: Interfaces = None, values=None):
+    def __init__(self, additional_data: AdditionalData = None, grid: Grid = None,
+                 surface_points: SurfacePoints = None, values=None):
 
         self.additional_data = additional_data
         self.grid = grid
-        self.interfaces = interfaces
+        self.surface_points = surface_points
 
         if values is None:
 
-            self.scalar_field_at_interfaces = np.array([])
+            self.scalar_field_at_surface_points = np.array([])
             self.scalar_field_lith = np.array([])
             self.scalar_field_faults = np.array([])
 
@@ -2105,7 +2064,7 @@ class Solution(object):
         """
         lith = values[0]
         faults = values[1]
-        self.scalar_field_at_interfaces = values[2]
+        self.scalar_field_at_surface_points = values[2]
 
         self.scalar_field_lith = lith[1]
         self.lith_block = lith[0]
@@ -2148,7 +2107,7 @@ class Solution(object):
         from skimage import measure
         assert surface_id >= 0, 'Number of the surface has to be positive'
         # In case the values are separated by series I put all in a vector
-        pot_int = self.scalar_field_at_interfaces.sum(axis=0)
+        pot_int = self.scalar_field_at_surface_points.sum(axis=0)
 
         # Check that the scalar field of the surface is whithin the boundaries
         if not scalar_field.max() > pot_int[surface_id]:
@@ -2189,7 +2148,7 @@ class Solution(object):
         n_surfaces = self.additional_data.structure_data.df.loc['values', 'number surfaces']
         n_faults = self.additional_data.structure_data.df.loc['values', 'number faults']
 
-        surfaces_names = self.interfaces.df['surface'].unique()
+        surfaces_names = self.surface_points.df['surface'].unique()
 
         surfaces_cumsum = np.arange(0, n_surfaces)
 

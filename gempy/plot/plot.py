@@ -99,7 +99,7 @@ class vtkPlot():
         self.vv.set_surfaces(vertices_l, simplices_l, self.alpha)
 
         if plot_data:
-            self.vv.set_interfaces()
+            self.vv.set_surface_points()
             self.vv.set_orientations()
 
         self.vv.render_model(**kwargs)
@@ -114,7 +114,7 @@ class vtkPlot():
             None
         """
         self.restart()
-        self.vv.set_interfaces()
+        self.vv.set_surface_points()
         self.vv.set_orientations()
         self.vv.render_model(**kwargs)
 
@@ -169,19 +169,19 @@ class vtkPlot():
             self.vv.create_slider_rep(samp_i, samp_f, samp_f)
 
         if plot_data:
-            self.vv.set_interfaces()
+            self.vv.set_surface_points()
             self.vv.set_orientations()
 
         self.vv.render_model(**kwargs)
 
-    def render_move_interfaces(self, indices):
+    def render_move_surface_points(self, indices):
         self.vv.SphereCallbak_move_changes(indices)
         if self.vv.real_time is True:
             self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
 
-    def render_add_interfaces(self, indices):
-        self.vv.set_interfaces(indices)
+    def render_add_surface_points(self, indices):
+        self.vv.set_surface_points(indices)
         if self.vv.real_time is True:
             self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
@@ -216,7 +216,7 @@ class vtkPlot():
 
         # Check rows tht have changed
         b_i = (new_df[self.geo_model._columns_i_1].sort_index() != _gempy.get_data(
-            self.geo_model, itype='interfaces')[self.geo_model._columns_i_1].sort_index()).any(1)
+            self.geo_model, itype='surface_points')[self.geo_model._columns_i_1].sort_index()).any(1)
 
         # Get indices of changed rows
         ind_i = new_df.index[b_i].tolist()
@@ -247,11 +247,11 @@ class vtkPlot():
     def _move_interface_orientation(self, new_df):
 
         # Check rows tht have changed
-        b_i = (new_df.xs('interfaces')[self.geo_model._columns_i_1].sort_index() != _gempy.get_data(
-            self.geo_model, itype='interfaces')[self.geo_model._columns_i_1].sort_index()).any(1)
+        b_i = (new_df.xs('surface_points')[self.geo_model._columns_i_1].sort_index() != _gempy.get_data(
+            self.geo_model, itype='surface_points')[self.geo_model._columns_i_1].sort_index()).any(1)
 
         # Get indices of changed rows
-        ind_i = new_df.xs('interfaces').index[b_i].tolist()
+        ind_i = new_df.xs('surface_points').index[b_i].tolist()
 
         # Check rows tht have changed
         b_o = (new_df.xs('orientations')[self.geo_model._columns_o_1].sort_index() != _gempy.get_data(
@@ -270,7 +270,7 @@ class vtkPlot():
     def _delete_interface(self, new_df):
 
         # Finding deleted indeces
-        ind_i = self.geo_model.interfaces.index.values[~_np.in1d(self.geo_model.interfaces.index.values,
+        ind_i = self.geo_model.surface_points.index.values[~_np.in1d(self.geo_model.surface_points.index.values,
                                                                  new_df.index.values,
                                                                  assume_unique=True)]
 
@@ -315,7 +315,7 @@ class vtkPlot():
 
         # Finding deleted indeces to restore
         ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
-                                              self.geo_model.interfaces.index.values,
+                                              self.geo_model.surface_points.index.values,
                                               assume_unique=True)]
         # Reactivating widget
         for i in ind_i:
@@ -349,7 +349,7 @@ class vtkPlot():
 
         # Finding the new indices added
         ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
-                                              self.geo_model.interfaces.index.values,
+                                              self.geo_model.surface_points.index.values,
                                               assume_unique=True)]
 
         # Modifing categories_df
@@ -357,7 +357,7 @@ class vtkPlot():
 
         # Creating new widget
         for i in ind_i:
-            self.vv.set_interfaces(indices=i)
+            self.vv.set_surface_points(indices=i)
         if self.verbose > 0:
             print('I am in adding', ind_i)
 
@@ -383,7 +383,7 @@ class vtkPlot():
         #  First we remove a column that is added by qgrid with the unfiltered indeces
         new_df = change['new'][change['new'].columns[1:]]
 
-        # Check if we are modifing interfaces and orientations at the same time
+        # Check if we are modifing surface_points and orientations at the same time
         try:
             # Modify mode
             self._move_interface_orientation(new_df)
@@ -419,7 +419,7 @@ class vtkPlot():
                     print('something went wrong')
 
                     # ----------
-            # Interfaces
+            # SurfacePoints
             elif set(self.geo_model._columns_i_1).issubset(new_df.columns):
                 if self.verbose > 0:
                     print(new_df.index.shape[0])
@@ -427,12 +427,12 @@ class vtkPlot():
                 # Checking the mode
                 # ++++++++++
                 # Delete mode
-                if new_df.index.shape[0] < self.geo_model.interfaces.index.shape[0]:
+                if new_df.index.shape[0] < self.geo_model.surface_points.index.shape[0]:
                     self._delete_interface(new_df)
 
                 # +++++++++++
                 # Adding mode
-                elif new_df.index.shape[0] > self.geo_model.interfaces.index.shape[0]:  # Add mode
+                elif new_df.index.shape[0] > self.geo_model.surface_points.index.shape[0]:  # Add mode
 
                     # print(set(new_df.index).issubset(self._original_df.index))
 
@@ -449,7 +449,7 @@ class vtkPlot():
 
                 # +++++++++++
                 # Modify mode
-                elif new_df.index.shape[0] == self.geo_model.interfaces.index.shape[0]:  # Modify
+                elif new_df.index.shape[0] == self.geo_model.surface_points.index.shape[0]:  # Modify
                     self._move_interface(new_df)
 
                 else:
@@ -613,7 +613,7 @@ def export_to_vtk(geo_data, path=None, name=None, voxels=True, surfaces=True):
 
 def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
     """
-    Plot the projection of the raw data (interfaces and orientations) in 2D following a
+    Plot the projection of the raw data (surface_points and orientations) in 2D following a
     specific directions
 
     Args:

@@ -127,19 +127,19 @@ def select_series_TOUPDATE(geo_data, series):
     new_geo_data = copy.deepcopy(geo_data)
 
     if type(series) == int or type(series[0]) == int:
-        new_geo_data.interfaces = geo_data.interfaces[geo_data.interfaces['order_series'].isin(series)]
+        new_geo_data.surface_points = geo_data.surface_points[geo_data.surface_points['order_series'].isin(series)]
         new_geo_data.orientations = geo_data.orientations[geo_data.orientations['order_series'].isin(series)]
     elif type(series[0]) == str:
-        new_geo_data.interfaces = geo_data.interfaces[geo_data.interfaces['series'].isin(series)]
+        new_geo_data.surface_points = geo_data.surface_points[geo_data.surface_points['series'].isin(series)]
         new_geo_data.orientations = geo_data.orientations[geo_data.orientations['series'].isin(series)]
 
     # Count df
     new_geo_data.set_faults(new_geo_data.count_faults())
 
     # Change the dataframe with the series
-    new_geo_data.series = new_geo_data.series[new_geo_data.interfaces['series'].unique().
+    new_geo_data.series = new_geo_data.series[new_geo_data.surface_points['series'].unique().
         remove_unused_categories().categories].dropna(how='all')
-    new_geo_data.surfaces = new_geo_data.surfaces.loc[new_geo_data.interfaces['surface'].unique().
+    new_geo_data.surfaces = new_geo_data.surfaces.loc[new_geo_data.surface_points['surface'].unique().
         remove_unused_categories().categories]
     new_geo_data.update_df()
     return new_geo_data
@@ -223,25 +223,25 @@ def get_extent(model: Model):
 
 
 # region Point-Orientation functionality
-@_setdoc([Interfaces.read_interfaces.__doc__, Orientations.read_orientations.__doc__])
+@_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
 def read_data(geo_model: Model, path_i=None, path_o=None, **kwargs):
     geo_model.read_data(path_i, path_o, **kwargs)
     return True
 
 
-def set_interfaces_object(geo_data: Model, interfaces: Interfaces, update_model=True):
+def set_surface_points_object(geo_data: Model, surface_points: SurfacePoints, update_model=True):
     """
-     Method to change the Interfaces object of a Model object
+     Method to change the SurfacePoints object of a Model object
 
      Args:
 
      """
-    geo_data.set_interface_object(interfaces, update_model)
+    geo_data.set_interface_object(surface_points, update_model)
     return True
 
 
-def get_interfaces(model: Model):
-    return model.interfaces
+def get_surface_points(model: Model):
+    return model.surface_points
 
 
 def set_orientations_object(geo_data, orient_dataframe, append=False):
@@ -260,14 +260,14 @@ def set_orientations_object(geo_data, orient_dataframe, append=False):
     #geo_data.set_orientations(orient_dataframe, append=append)
 
 
-def set_orientation_from_interfaces_TOUPDATE(geo_data, indices_array):
+def set_orientation_from_surface_points_TOUPDATE(geo_data, indices_array):
     """
-    Create and set orientations from at least 3 points of the :attr:`gempy.data_management.InputData.interfaces`
+    Create and set orientations from at least 3 points of the :attr:`gempy.data_management.InputData.surface_points`
      Dataframe
     Args:
         geo_data (:class:`gempy.data_management.InputData`)
         indices_array (array-like): 1D or 2D array with the pandas indices of the
-          :attr:`gempy.data_management.InputData.interfaces`. If 2D every row of the 2D matrix will be used to create an
+          :attr:`gempy.data_management.InputData.surface_points`. If 2D every row of the 2D matrix will be used to create an
           orientation
 
 
@@ -277,21 +277,21 @@ def set_orientation_from_interfaces_TOUPDATE(geo_data, indices_array):
 
     if _np.ndim(indices_array) is 1:
         indices = indices_array
-        form = geo_data.interfaces['surface'].loc[indices].unique()
+        form = geo_data.surface_points['surface'].loc[indices].unique()
         assert form.shape[0] is 1, 'The interface points must belong to the same surface'
         form = form[0]
         print()
-        ori_parameters = geo_data.create_orientation_from_interfaces(indices)
+        ori_parameters = geo_data.create_orientation_from_surface_points(indices)
         geo_data.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                  dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                  G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
                                  surface=form)
     elif _np.ndim(indices_array) is 2:
         for indices in indices_array:
-            form = geo_data.interfaces['surface'].loc[indices].unique()
+            form = geo_data.surface_points['surface'].loc[indices].unique()
             assert form.shape[0] is 1, 'The interface points must belong to the same surface'
             form = form[0]
-            ori_parameters = geo_data.create_orientation_from_interfaces(indices)
+            ori_parameters = geo_data.create_orientation_from_surface_points(indices)
             geo_data.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                      dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                      G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
@@ -349,7 +349,7 @@ def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=
     # TODO add kwargs
     geo_model.rescaling.rescale_data()
     update_additional_data(geo_model)
-    geo_model.interfaces.sort_table()
+    geo_model.surface_points.sort_table()
     geo_model.orientations.sort_table()
 
     geo_model.interpolator.set_theano_graph(geo_model.interpolator.create_theano_graph())
@@ -374,7 +374,7 @@ def get_th_fn(model: Model):
 
     Returns:
         :class:`theano.compile.function_module.Function`: Compiled function if C or CUDA which computes the interpolation given the input data
-            (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
+            (XYZ of dips, dip, azimuth, polarity, XYZ ref surface_points, XYZ rest surface_points)
     """
     assert getattr(model.interpolator, 'theano_function', False) is not None, 'Theano has not been compiled yet'
 
@@ -434,7 +434,7 @@ def compute_model(model: Model, compute_mesh=True)-> Solution:
     # return clear messages
     i = model.interpolator.get_input_matrix()
 
-    assert model.additional_data.structure_data.df.loc['values', 'len surfaces interfaces'].min() > 1,  \
+    assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1,  \
         'To compute the model is necessary at least 2 interface points per layer'
 
     sol = model.interpolator.theano_function(*i)
@@ -470,7 +470,7 @@ def compute_model_at(new_grid: Union[Grid, ndarray], model: Model, compute_mesh=
 # TODO compute, set? Right now is computed always
 def get_surfaces(model: Model):
     """
-    gey vertices and simplices of the interfaces for its vtk visualization and further
+    gey vertices and simplices of the surface_points for its vtk visualization and further
     analysis
 
     Args:
@@ -491,7 +491,7 @@ def set_values_to_default_DEP(model: Model, series_distribution=None, order_seri
     """
     Set the attributes of most of the objects to its default value to be able to compute a geological model.
 
-    - Interfaces and orientations: From csv files and prepare structure_data to GemPy's
+    - SurfacePoints and orientations: From csv files and prepare structure_data to GemPy's
     - Surfaces :class:`gempy.core.data.Surfaces`: Using surfaces read in the csv file
     - Series :class:`gempy.core.data.Series`: Using surfaces read in the csv file
     - Faults :class:`gempy.core.data.Faults`: Using surfaces read in the csv file. If fault string is contained in
@@ -549,18 +549,18 @@ def map_to_data_DEP(model: Model, series: Series = None, surfaces: Surfaces = No
     # TODO this function makes sense as Model method
 
     if surfaces is not None:
-        model.interfaces.map_data_from_surfaces(surfaces, 'id')
+        model.surface_points.map_data_from_surfaces(surfaces, 'id')
         model.orientations.map_data_from_surfaces(surfaces, 'id')
 
-        model.interfaces.map_data_from_surfaces(surfaces, 'series')
+        model.surface_points.map_data_from_surfaces(surfaces, 'series')
         model.orientations.map_data_from_surfaces(surfaces, 'series')
 
     if series is not None:
-        model.interfaces.map_data_from_series(series, 'order_series')
+        model.surface_points.map_data_from_series(series, 'order_series')
         model.orientations.map_data_from_series(series, 'order_series')
 
     if faults is not None:
-        model.interfaces.map_data_from_faults(faults)
+        model.surface_points.map_data_from_faults(faults)
         model.orientations.map_data_from_faults(faults)
 
 
@@ -571,7 +571,7 @@ def get_data(model: Model, itype='data', numeric=False):
 
     Args:
         model (:class:`gempy.core.model.Model`)
-        itype(str {'all', 'interfaces', 'orientations', 'surfaces', 'series', 'faults', 'faults_relations',
+        itype(str {'all', 'surface_points', 'orientations', 'surfaces', 'series', 'faults', 'faults_relations',
         additional data}): input
             data type to be retrieved.
         numeric (bool): if True it only returns numberical properties. This may be useful due to memory issues
@@ -591,7 +591,7 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
     Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
 
     - Grid :class:`gempy.core.data.GridClass`: To regular grid.
-    - read_data: Interfaces and orientations: From csv files
+    - read_data: SurfacePoints and orientations: From csv files
     - set_values to default
 
 
@@ -603,7 +603,7 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
         project_name (str)
 
     Keyword Args:
-        path_i: Path to the data bases of interfaces. Default os.getcwd(),
+        path_i: Path to the data bases of surface_points. Default os.getcwd(),
         path_o: Path to the data bases of orientations. Default os.getcwd()
 
     Returns:
@@ -625,7 +625,7 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
     Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
 
     - Grid :class:`gempy.core.data.GridClass`: To regular grid.
-    - read_data: Interfaces and orientations: From csv files
+    - read_data: SurfacePoints and orientations: From csv files
     - set_values to default
 
 
@@ -638,7 +638,7 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
     Keyword Args:
 
-        path_i: Path to the data bases of interfaces. Default os.getcwd(),
+        path_i: Path to the data bases of surface_points. Default os.getcwd(),
         path_o: Path to the data bases of orientations. Default os.getcwd()
 
     Returns:

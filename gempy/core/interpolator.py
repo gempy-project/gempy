@@ -9,7 +9,7 @@ class Interpolator(object):
      3) container of theano function
 
      Attributes:
-        interfaces (Interfaces)
+        surface_points (SurfacePoints)
         orientaions (Orientations)
         grid (GridClass)
         surfaces (Surfaces)
@@ -21,13 +21,13 @@ class Interpolator(object):
             - dip angles
             - azimuth
             - polarity
-            - interfaces coordinates XYZ
+            - surface_points coordinates XYZ
 
         theano_graph: theano graph object with the properties from AdditionalData -> Options
         theano function: python function to call the theano code
 
     Args:
-        interfaces (Interfaces)
+        surface_points (SurfacePoints)
         orientaions (Orientations)
         grid (GridClass)
         surfaces (Surfaces)
@@ -37,10 +37,10 @@ class Interpolator(object):
             - compile_theano: if true, the function is compile at the creation of the class
     """
     # TODO assert passed data is rescaled
-    def __init__(self, interfaces: "Interfaces", orientations: "Orientations", grid: "GridClass",
+    def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "GridClass",
                  surfaces: "Surfaces", faults: "Faults", additional_data: "AdditionalData", **kwargs):
 
-        self.interfaces = interfaces
+        self.surface_points = surface_points
         self.orientations = orientations
         self.grid = grid
         self.additional_data = additional_data
@@ -92,14 +92,14 @@ class Interpolator(object):
 
     def set_theano_shared_structure(self):
         # Size of every layer in rests. SHARED (for theano)
-        len_rest_form = (self.additional_data.structure_data.df.loc['values', 'len surfaces interfaces'] - 1)
+        len_rest_form = (self.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'] - 1)
         self.theano_graph.number_of_points_per_surface_T.set_value(len_rest_form.astype('int32'))
         self.theano_graph.npf.set_value(
             np.cumsum(np.concatenate(([0], len_rest_form))).astype('int32'))  # Last value is useless
         # and breaks the basement
         # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
         self.theano_graph.len_series_i.set_value(
-            np.insert(self.additional_data.structure_data.df.loc['values', 'len series interfaces'] -
+            np.insert(self.additional_data.structure_data.df.loc['values', 'len series surface_points'] -
                       self.additional_data.structure_data.df.loc['values', 'number surfaces per series'], 0,
                       0).cumsum().astype('int32'))
         # Cumulative length of the series. We add the 0 at the beginning and set the shared value. SHARED
@@ -138,9 +138,9 @@ class Interpolator(object):
 
     def set_theano_shared_output_init(self):
         # Initialization of the block model
-        self.theano_graph.final_block.set_value(np.zeros((1, self.grid.values_r.shape[0] + self.interfaces.df.shape[0]),
+        self.theano_graph.final_block.set_value(np.zeros((1, self.grid.values_r.shape[0] + self.surface_points.df.shape[0]),
                                                          dtype=self.dtype))
-        # Init the list to store the values at the interfaces. Here we init the shape for the given dataset
+        # Init the list to store the values at the surface_points. Here we init the shape for the given dataset
         self.theano_graph.final_scalar_field_at_surfaces.set_value(
             np.zeros(self.theano_graph.n_surfaces_per_series.get_value()[-1],
                      dtype=self.dtype))
@@ -178,7 +178,7 @@ class Interpolator(object):
             - dip angles
             - azimuth
             - polarity
-            - interfaces coordinates XYZ
+            - surface_points coordinates XYZ
         Returns:
             (list)
         """
@@ -187,10 +187,10 @@ class Interpolator(object):
         dip_angles = self.orientations.df["dip"].values
         azimuth = self.orientations.df["azimuth"].values
         polarity = self.orientations.df["polarity"].values
-        interfaces_coord = self.interfaces.df[['X_r', 'Y_r', 'Z_r']].values
+        surface_points_coord = self.surface_points.df[['X_r', 'Y_r', 'Z_r']].values
 
         # Set all in a list casting them in the chosen dtype
-        idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, interfaces_coord)]
+        idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord)]
         return idl
 
     def compile_th_fn(self, output=None, inplace=True, debug=False, **kwargs):
@@ -203,7 +203,7 @@ class Interpolator(object):
 
         Returns:
             theano.function: Compiled function if C or CUDA which computes the interpolation given the input_data data
-            (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
+            (XYZ of dips, dip, azimuth, polarity, XYZ ref surface_points, XYZ rest surface_points)
         """
         import theano
         self.set_theano_shared_parameters()

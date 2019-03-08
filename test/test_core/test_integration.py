@@ -25,7 +25,7 @@ def load_model():
           path_o = os.pardir+"/input_data/simple_fault_model_orientations.csv",
           path_i = os.pardir+"/input_data/simple_fault_model_points.csv", default_values=True)
 
-    gp.get_data(geo_model, 'interfaces').head()
+    gp.get_data(geo_model, 'surface_points').head()
     return geo_model
 
 
