@@ -1,4 +1,3 @@
-
 import pytest
 import gempy.core.gempy_api as gempy
 import gempy as gp
