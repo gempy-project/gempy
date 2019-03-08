@@ -175,14 +175,13 @@ def compute_areas(G, labels_block):
         G.adj[n2][n1]["area"] = area
 
 
-def classify_edges(G, centroids, lith_block, fault_block):
+def classify_edges(G, centroids, fault_block):
     """
     Classifies edges by type into stratigraphic or fault in "G.adj". Accessible via G.adj[node1][node2]["edge_type"]
 
     Args:
         G (skimage.future.graph.rag.RAG): Topology graph object.
         centroids (dict): Centroid dictionary {node id (int): tuple(x,y,z)}
-        lith_block (np.ndarray): Shaped lithology block model.
         fault_block (np.ndarray): Shaped fault block model.
 
     Returns:
