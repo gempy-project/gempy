@@ -38,9 +38,7 @@ def topology_compute(geo_model,
     Computes model topology and returns graph, centroids and look-up-tables.
 
     Args:
-        geo_data (gempy.data_management.InputData): GemPy's data object for the model.
-        lith_block (ndarray): Lithology block model.
-        fault_block (ndarray): Fault block model.
+        geo_model (gempy.model.Model): Container class of all objects that constitute a GemPy model.
         cell_number (int): Cell number for 2-D slice topology analysis. Default None.
         direction (str): "x", "y" or "z" specifying the slice direction for 2-D topology analysis.
             Default None.
@@ -59,6 +57,8 @@ def topology_compute(geo_model,
             lith_to_labels_lot (dict): Dictionary look-up-table to go from lithology id to node id.
             labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithology id.
     """
+    assert hasattr(geo_model, "solutions"), "geo_model object must contain .solutions attribute."
+
     fault_block = np.atleast_2d(geo_model.solutions.fault_blocks).sum(axis=0)
 
     if cell_number is None or direction is None:  # topology of entire block
