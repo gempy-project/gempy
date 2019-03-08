@@ -25,12 +25,15 @@ try:
     from skimage.measure import label
     from skimage.measure import regionprops
 except ImportError:
-    warnings.warn("skimage package is not installed, which is required for geomodel topology analysis.")
+    warnings.warn("skimage package is not installed, which is required for geomodel topology \ "
+                  "analysis.")
 
 
-def topology_compute(geo_data, lith_block, fault_block,
-                     cell_number=None, direction=None,
-                     compute_areas=False, return_label_block=False):
+def topology_compute(geo_model,
+                     cell_number=None,
+                     direction=None,
+                     compute_areas=False,
+                     return_label_block=False):
     """
     Computes model topology and returns graph, centroids and look-up-tables.
 
@@ -39,37 +42,41 @@ def topology_compute(geo_data, lith_block, fault_block,
         lith_block (ndarray): Lithology block model.
         fault_block (ndarray): Fault block model.
         cell_number (int): Cell number for 2-D slice topology analysis. Default None.
-        direction (str): "x", "y" or "z" specifying the slice direction for 2-D topology analysis. Default None.
-        compute_areas (bool): If True computes adjacency areas for connected nodes in voxel number. Default False.
-        return_label_block (bool): If True additionally returns the uniquely labeled block model as np.ndarray. Default False.
+        direction (str): "x", "y" or "z" specifying the slice direction for 2-D topology analysis.
+            Default None.
+        compute_areas (bool): If True computes adjacency areas for connected nodes in voxel number.
+            Default False.
+        return_label_block (bool): If True additionally returns the uniquely labeled block model as
+            np.ndarray. Default False.
 
     Returns:
         tuple:
-            G: Region adjacency graph object (skimage.future.graph.rag.RAG) containing the adjacency topology graph
-                (G.adj).
-            centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys and (x,y,z) coordinates
-                as values. {node id (int): tuple(x,y,z)}
+            G: Region adjacency graph object (skimage.future.graph.rag.RAG) containing the adjacency
+                topology graph (G.adj).
+            centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys
+                and (x,y,z) coordinates as values. {node id (int): tuple(x,y,z)}
             labels_unique (np.array): List of all labels used.
             lith_to_labels_lot (dict): Dictionary look-up-table to go from lithology id to node id.
             labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithology id.
-
     """
-    fault_block = _np.atleast_2d(fault_block)[::2].sum(axis=0)
+    fault_block = np.atleast_2d(geo_model.solutions.fault_blocks).sum(axis=0)
 
     if cell_number is None or direction is None:  # topology of entire block
-        lb = lith_block.reshape(geo_data.resolution)
-        fb = fault_block.reshape(geo_data.resolution)
+        lb = geo_model.solutions.lith_block.reshape(geo_model.grid.resolution)
+        fb = fault_block.reshape(geo_model.grid.resolution)
     elif direction == "x":
-        lb = lith_block.reshape(geo_data.resolution)[cell_number, :, :]
-        fb = fault_block.reshape(geo_data.resolution)[cell_number, :, :]
+        lb = geo_model.solutions.lith_block.reshape(geo_model.grid.resolution)[cell_number, :, :]
+        fb = fault_block.reshape(geo_model.grid.resolution)[cell_number, :, :]
     elif direction == "y":
-        lb = lith_block.reshape(geo_data.resolution)[:, cell_number, :]
-        fb = fault_block.reshape(geo_data.resolution)[:, cell_number, :]
+        lb = geo_model.solutions.lith_block.reshape(geo_model.grid.resolution)[:, cell_number, :]
+        fb = fault_block.reshape(geo_model.grid.resolution)[:, cell_number, :]
     elif direction == "z":
-        lb = lith_block.reshape(geo_data.resolution)[:, :, cell_number]
-        fb = fault_block.reshape(geo_data.resolution)[:, :, cell_number]
+        lb = geo_model.solutions.lith_block.reshape(geo_model.grid.resolution)[:, :, cell_number]
+        fb = fault_block.reshape(geo_model.grid.resolution)[:, :, cell_number]
 
-    return topology_analyze(lb, fb, geo_data.n_faults, areas_bool=compute_areas, return_block=return_label_block)
+    return topology_analyze(lb, fb, geo_model.faults.n_faults,
+                            areas_bool=compute_areas,
+                            return_block=return_label_block)
 
 def topology_analyze(lith_block, fault_block, n_faults,
                      areas_bool=False,
