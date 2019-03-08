@@ -146,8 +146,12 @@ its dependencies.
 Installing Theano (specially in windows) and vtk sometimes is problematic. Here we give a few advices that
 usually works for us:
 * Theano: install the following packages before installing theano: `conda install mingw libpython m2w64-toolchain`. Then install Theano via `conda install theano`. 
-if the installation fails at some point try to re-install anaconda for a single user (no administrator priveleges) and with the Path Environment set.
+If the installation fails at some point try to re-install anaconda for a single user (no administrator priveleges) and with the Path Environment set.
+To use Theano with `numpy version 1.16.0` or following, it has to be updated to `Theano 1.0.4` using `pip install theano --upgrade`.
+Note that this is not yet available in the conda package manager.
 
+* scikit_image (Spring 2019): To use scikit_image with `numpy version 1.16.0` or following, it has to be updated to `scikit_image 1.14.2` using `pip install scikit_image --upgrade`.
+Note that this is not yet available in the conda package manager.
 
 * vtk: Right now (Fall 2018), does not have compatibility with python 3.7. The simplest solution to install it is to
 use `conda install python=3.6` to downgrade the python version and then using `pip install vtk`.
