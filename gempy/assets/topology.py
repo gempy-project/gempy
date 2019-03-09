@@ -165,7 +165,7 @@ def _topology_analyze(lith_block,
 
     # filter rogue pixel nodes from graph if wanted
     if filter_rogue:
-        filter_region_areas(G, centroids, rprops, area_threshold=filter_threshold_area)
+        G, centroids = filter_region_areas(G, centroids, rprops, area_threshold=filter_threshold_area)
         G = convert_node_labels_to_integers(G, first_label=1)
         centroids = {i+1: coords for i, coords in enumerate(centroids.values())}
 
@@ -231,13 +231,13 @@ def enhanced_labeling(G, rprops, lith_block, fault_block):
     return labels
 
 
-def filter_region_areas(g, c, rprops, area_threshold=10):
+def filter_region_areas(graph, centroids, rprops, area_threshold=10):
     """
     Filters nodes with region areas with an area below the given threshold (default: 10) from given graph.
     Useful for filtering rogue pixels that throw off topology graph comparisons.
 
     Args:
-        g (skimage.future.graph.rag.RAG): Topology graph object to be filtered.
+        graph (skimage.future.graph.rag.RAG): Topology graph object to be filtered.
         rprops (list): Region property objects (skimage.measure._regionprops._RegionProperties) for all nodes within given topology graph.
     Keyword Args:
         area_threshold (int): Region areas with number of pixels below or equal of this value will be removed. Default 10
@@ -245,14 +245,19 @@ def filter_region_areas(g, c, rprops, area_threshold=10):
     Returns:
         None (in-place removal)
     """
-    if len(g.nodes()) != len(rprops):   # failsafe if the function is run with mismatching rprops
-        return None
+    from copy import deepcopy
 
-    for n, rp in zip(g.nodes(), rprops):
-        if rp.area <= area_threshold:  # if region area is below given threshold area
-            g.remove_node(n)  # then pop the node and all its edges
-            c.pop(n)  # pop centroid
-    return None
+    if len(graph.nodes()) != len(rprops):   # failsafe if the function is run with mismatching rprops
+        return graph, centroids
+
+    ngraph = deepcopy(graph)
+    ncentroids = deepcopy(centroids)
+
+    for node, rprop in zip(graph.nodes(), rprops):
+        if rprop.area <= area_threshold:  # if region area is below given threshold area
+            ngraph.remove_node(node)  # then pop the node and all its edges
+            ncentroids.pop(node)  # pop centroid
+    return ngraph, ncentroids
 
 
 def compute_areas(G, labels_block):
