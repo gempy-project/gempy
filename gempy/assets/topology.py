@@ -207,10 +207,11 @@ def enhanced_labeling(G, rprops, lith_block, fault_block):
         (dict): Mapping of old to new labels to be used with networkx.relabel_nodes(G, Labels_dict)
     """
     labels = []
+
     for n, rp in zip(G.nodes(), rprops):
-        _c = np.array(rp.centroid).astype(int)  # centroid location
-        lid = lith_block[_c[0], _c[1], _c[2]].astype(int)  # inquire lb
-        fid = fault_block[_c[0], _c[1], _c[2]].astype(int)  # and fb id at centroid loc
+        _c = tuple(np.array(rp.centroid).astype(int))  # centroid location
+        lid = lith_block[_c].astype(int)  # inquire lb
+        fid = fault_block[_c].astype(int)  # and fb id at centroid loc
         label = str(fid) + "_" + str(lid)  # fuse label
         labels.append(label)
 
