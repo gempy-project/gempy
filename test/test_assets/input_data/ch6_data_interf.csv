@@ -1,0 +1,12 @@
+X,X_std,Y,Y_std,Z,Z_std,annotations,formation,formation_number,group_id,isFault,order_series,series
+1700,0.0,0,0.0,640,0.0,"${\bf{x}}_{\alpha \,{\bf{1}},0}$",Fault,1,fault,True,1,fault
+1500,0.0,10,0.0,990,0.0,"${\bf{x}}_{\alpha \,{\bf{1}},1}$",Fault,1,fault,True,1,fault
+1300,0.0,10,0.0,1340,0.0,"${\bf{x}}_{\alpha \,{\bf{1}},2}$",Fault,1,fault,True,1,fault
+2500,0.0,10,0.0,911,0.0,"${\bf{x}}_{\alpha \,{\bf{2}},0}$",Layer 2,2,l2_b,False,2,Rest
+500,0.0,10,0.0,1681,0.0,"${\bf{x}}_{\alpha \,{\bf{2}},1}$",Layer 2,2,l2_a,False,2,Rest
+2500,0.0,10,0.0,704,0.0,"${\bf{x}}_{\alpha \,{\bf{3}},0}$",Layer 3,3,l3_b,False,2,Rest
+500,0.0,10,0.0,1474,0.0,"${\bf{x}}_{\alpha \,{\bf{3}},1}$",Layer 3,3,l3_a,False,2,Rest
+2500,0.0,10,0.0,497,0.0,"${\bf{x}}_{\alpha \,{\bf{4}},0}$",Layer 4,4,l4_b,False,2,Rest
+500,0.0,10,0.0,1267,0.0,"${\bf{x}}_{\alpha \,{\bf{4}},1}$",Layer 4,4,l4_a,False,2,Rest
+2500,0.0,10,0.0,290,0.0,"${\bf{x}}_{\alpha \,{\bf{5}},0}$",Layer 5,5,l5_b,False,2,Rest
+500,0.0,10,0.0,1060,0.0,"${\bf{x}}_{\alpha \,{\bf{5}},1}$",Layer 5,5,l5_a,False,2,Rest
