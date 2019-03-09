@@ -182,6 +182,7 @@ def _topology_analyze(lith_block,
     # prep returned objects
     topo = [G, centroids]
 
+    # keep option for old labeling for legacy support
     if not enhanced_labels:  # create look-up-tables in both directions
         topo.append(lithology_labels_lot(labels_block, block_original))
         topo.append(labels_lithology_lot(labels_block, block_original))

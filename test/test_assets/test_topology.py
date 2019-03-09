@@ -36,59 +36,21 @@ def topo_compute(topo_geodata):
 
 def test_topo_centroids(topo_compute):
     centroids = topo_compute[1]
-    centroids_test = {1: (7.980988593155893, 1.0, 6.612167300380228),
-                      2: (7.469387755102041, 1.0, 15.73469387755102),
-                      3: (6.533333333333333, 1.0, 19.244444444444444),
-                      4: (5.9743589743589745, 1.0, 22.564102564102566),
-                      5: (5.634615384615385, 1.0, 26.634615384615383),
-                      6: (20.934065934065934, 1.0, 22.186813186813186),
-                      7: (21.659574468085108, 1.0, 12.76595744680851),
-                      8: (22.466666666666665, 1.0, 9.333333333333334),
-                      9: (23.157894736842106, 1.0, 5.973684210526316),
-                      10: (23.285714285714285, 1.0, 2.142857142857143)}
+    centroids_test = {'2_6': (7.980988593155893, 1.0, 6.612167300380228),
+                     '2_5': (7.469387755102041, 1.0, 15.73469387755102),
+                     '2_4': (6.533333333333333, 1.0, 19.244444444444444),
+                     '2_3': (5.9743589743589745, 1.0, 22.564102564102566),
+                     '2_2': (5.634615384615385, 1.0, 26.634615384615383),
+                     '1_2': (20.934065934065934, 1.0, 22.186813186813186),
+                     '1_3': (21.659574468085108, 1.0, 12.76595744680851),
+                     '1_4': (22.466666666666665, 1.0, 9.333333333333334),
+                     '1_5': (23.157894736842106, 1.0, 5.973684210526316),
+                     '1_6': (23.285714285714285, 1.0, 2.142857142857143)}
     assert centroids == centroids_test, "Topology centroids mismatch."
-
-
-def test_topo_labels_unique(topo_compute):
-    labels_unique_test = np.array([ 1,  2,  3,  4,  5,  6,  7,  8,  9, 10], dtype="int64")
-    assert (topo_compute[2] == labels_unique_test).all(), "Mismatch in node labels from topology calculation."
-
-
-def test_topo_lot1(topo_compute):
-    lot1_test = {'2': {'5': {}, '6': {}},
-                  '3': {'4': {}, '7': {}},
-                  '4': {'3': {}, '8': {}},
-                  '5': {'2': {}, '9': {}},
-                  '6': {'1': {}, '10': {}}}
-
-    assert topo_compute[3] == lot1_test
-
-
-def test_topo_lot2(topo_compute):
-    lot2_test = {1: '6',
-                  2: '5',
-                  3: '4',
-                  4: '3',
-                  5: '2',
-                  6: '2',
-                  7: '3',
-                  8: '4',
-                  9: '5',
-                  10: '6'}
-    assert topo_compute[4] == lot2_test
 
 
 def test_topo_Gadj(topo_compute):
     Gadj = topo_compute[0].adj
-    Gadj_test = AdjacencyView({1: {2: {'edge_type': 'fault'}, 8: {'edge_type': 'fault'}, 9: {'edge_type': 'fault'}, 10: {'edge_type': 'stratigraphic'}},
-                               2: {1: {'edge_type': 'fault'}, 3: {'edge_type': 'fault'}, 7: {'edge_type': 'fault'}, 8: {'edge_type': 'fault'}},
-                               3: {2: {'edge_type': 'fault'}, 4: {'edge_type': 'fault'}, 7: {'edge_type': 'fault'}, 6: {'edge_type': 'fault'}},
-                               4: {3: {'edge_type': 'fault'}, 5: {'edge_type': 'fault'}, 6: {'edge_type': 'fault'}},
-                               5: {4: {'edge_type': 'fault'}, 6: {'edge_type': 'stratigraphic'}},
-                               6: {5: {'edge_type': 'stratigraphic'}, 4: {'edge_type': 'fault'}, 3: {'edge_type': 'fault'}, 7: {'edge_type': 'fault'}},
-                               7: {3: {'edge_type': 'fault'}, 2: {'edge_type': 'fault'}, 6: {'edge_type': 'fault'}, 8: {'edge_type': 'fault'}},
-                               8: {1: {'edge_type': 'fault'}, 2: {'edge_type': 'fault'}, 7: {'edge_type': 'fault'}, 9: {'edge_type': 'fault'}},
-                               9: {1: {'edge_type': 'fault'}, 8: {'edge_type': 'fault'}, 10: {'edge_type': 'fault'}},
-                               10: {1: {'edge_type': 'stratigraphic'}, 9: {'edge_type': 'fault'}}})
+    Gadj_test = AdjacencyView({'2_6': {'2_5': {'edge_type': 'stratigraphic'}, '1_4': {'edge_type': 'fault'}, '1_5': {'edge_type': 'fault'}, '1_6': {'edge_type': 'fault'}}, '2_5': {'2_6': {'edge_type': 'stratigraphic'}, '2_4': {'edge_type': 'stratigraphic'}, '1_3': {'edge_type': 'fault'}, '1_4': {'edge_type': 'fault'}}, '2_4': {'2_5': {'edge_type': 'stratigraphic'}, '2_3': {'edge_type': 'stratigraphic'}, '1_3': {'edge_type': 'fault'}, '1_2': {'edge_type': 'fault'}}, '2_3': {'2_4': {'edge_type': 'stratigraphic'}, '2_2': {'edge_type': 'stratigraphic'}, '1_2': {'edge_type': 'fault'}}, '2_2': {'2_3': {'edge_type': 'stratigraphic'}, '1_2': {'edge_type': 'fault'}}, '1_2': {'2_4': {'edge_type': 'fault'}, '2_3': {'edge_type': 'fault'}, '2_2': {'edge_type': 'fault'}, '1_3': {'edge_type': 'stratigraphic'}}, '1_3': {'2_5': {'edge_type': 'fault'}, '2_4': {'edge_type': 'fault'}, '1_2': {'edge_type': 'stratigraphic'}, '1_4': {'edge_type': 'stratigraphic'}}, '1_4': {'2_6': {'edge_type': 'fault'}, '2_5': {'edge_type': 'fault'}, '1_3': {'edge_type': 'stratigraphic'}, '1_5': {'edge_type': 'stratigraphic'}}, '1_5': {'2_6': {'edge_type': 'fault'}, '1_4': {'edge_type': 'stratigraphic'}, '1_6': {'edge_type': 'stratigraphic'}}, '1_6': {'2_6': {'edge_type': 'fault'}, '1_5': {'edge_type': 'stratigraphic'}}})
 
     assert Gadj == Gadj_test, "Mismatch in G.adj from topology analysis. Could be (a) general topology misclassification; or (b) wrong edge_type classification."
