@@ -3,7 +3,7 @@ import sys
 import pytest
 import numpy as np
 from test.context import gempy as gp
-from gempy.assets.topology import topology_compute
+from gempy.assets.topology import compute_topology
 from networkx.classes.coreviews import AdjacencyView
 
 TEST_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -31,7 +31,7 @@ def topo_geodata():
 
 @pytest.fixture
 def topo_compute(topo_geodata):
-    return topology_compute(topo_geodata)
+    return compute_topology(topo_geodata)
 
 
 def test_topo_centroids(topo_compute):

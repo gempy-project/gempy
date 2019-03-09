@@ -29,7 +29,7 @@ except ImportError:
                   "analysis.")
 
 
-def topology_compute(geo_model,
+def compute_topology(geo_model,
                      cell_number=None,
                      direction=None,
                      compute_areas=False,
