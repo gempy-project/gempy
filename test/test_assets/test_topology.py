@@ -19,7 +19,7 @@ def topo_geodata():
                  path_i=TEST_DIR+"/input_data/ch6_data_interf.csv",
                  path_o=TEST_DIR+"/input_data/ch6_data_fol.csv")
 
-    gp.map_series_to_formations(geo_model,
+    gp.map_series_to_surfaces(geo_model,
                                 {"fault": "Fault",
                                  "Rest": ('Layer 2', 'Layer 3', 'Layer 4', 'Layer 5')}
                                 )

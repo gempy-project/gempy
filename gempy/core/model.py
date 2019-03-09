@@ -229,7 +229,7 @@ class DataMutation(object):
         self.interpolator.set_theano_inf_factor()
 
 
-    def set_interface_object(self, interfaces: Interfaces, update_model=True):
+    def set_interface_object(self, interfaces: Surfaces, update_model=True):
         self.interfaces = interfaces
         self.rescaling.interfaces = interfaces
         self.interpolator.interfaces = interfaces
