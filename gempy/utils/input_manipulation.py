@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pn
 
 
-def find_interfaces_from_block(block, value):
+def find_surface_points_from_block(block, value):
     """
     Find the voxel at an interface. We shift left since gempy is based on bottoms
 
@@ -52,7 +52,7 @@ def find_interfaces_from_block(block, value):
     return final_bool
 
 
-def interfaces_from_interfaces_block(block_bool, block_grid, formation='default_formation', series='Default_series',
+def surface_points_from_surface_points_block(block_bool, block_grid, formation='default_formation', series='Default_series',
                                      formation_number=1, order_series=1, n_points=20):
 
     assert np.ravel(block_bool).shape[0] == block_grid.shape[0], 'Grid and block block must have the same size. If you' \
@@ -75,7 +75,7 @@ def interfaces_from_interfaces_block(block_bool, block_grid, formation='default_
     return p
 
 
-def set_interfaces_from_block(geo_data, block, block_grid=None, n_points=20, reset_index=False):
+def set_surface_points_from_block(geo_data, block, block_grid=None, n_points=20, reset_index=False):
     values = np.unique(np.round(block))
     values.sort()
     values = values[:-1]
@@ -84,13 +84,13 @@ def set_interfaces_from_block(geo_data, block, block_grid=None, n_points=20, res
         block_grid = geo_data.grid.values
 
     for e, value in enumerate(values):
-        block_bool = find_interfaces_from_block(block, value)
+        block_bool = find_surface_points_from_block(block, value)
 
-        geo_data.set_interface_object(interfaces_from_interfaces_block(block_bool, block_grid,
+        geo_data.set_interface_object(surface_points_from_surface_points_block(block_bool, block_grid,
                                                                        formation='formation_'+str(e), series='Default_series',
                                                                        formation_number=e, order_series=1,
                                                                        n_points=n_points), append=True)
         if reset_index:
-            geo_data.interfaces.reset_index(drop=True, inplace=True)
+            geo_data.surface_points.reset_index(drop=True, inplace=True)
 
     return geo_data

@@ -6,16 +6,16 @@ import pytest
 
 
 @pytest.fixture(scope="module")
-def test_read_interfaces():
-    interfaces = gp.Interfaces()
-    interfaces.read_interfaces(os.pardir + "/input_data/FabLessPoints_Points.csv", inplace=True)
+def test_read_surface_points():
+    surface_points = gp.SurfacePoints()
+    surface_points.read_surface_points(os.pardir + "/input_data/FabLessPoints_Points.csv", inplace=True)
 
     # Test setting series
     series = gp.Series(series_distribution={"fault": 'MainFault',
                                             "Rest": ('SecondaryReservoir', 'Seal3', 'Reservoir', 'Overlying'),
                                             })
-    interfaces.map_data_from_series(series, 'id')
-    return interfaces
+    surface_points.map_data_from_series(series, 'id')
+    return surface_points
 
 
 @pytest.fixture
@@ -38,9 +38,9 @@ def test_create_faults(test_create_series):
 
 @pytest.fixture()
 def test_create_formations():
-    formations = gp.Formations(values_array=np.arange(1, 8).reshape(-1, 1),
-                               properties_names=np.array(['density']))
-   # formations.set_formation_names(['MainFault', 'SecondaryReservoir','Seal',
+    formations = gp.Surfaces(values_array=np.arange(1, 8).reshape(-1, 1),
+                             properties_names=np.array(['density']))
+   # formations.set_surfaces_names(['MainFault', 'SecondaryReservoir','Seal',
    #                                 'Reservoir', 'Overlying'])
 
     return formations
@@ -53,28 +53,28 @@ def test_load_model():
 
 class TestModel:
     def test_modify_inteterfaces(self, load_model):
-        load_model.modify_interfaces([0, 10, 5], X=[90, 20, 30], Y=[30, 20, 40])
-        load_model.modify_interfaces(0, X=[60])
+        load_model.modify_surface_points([0, 10, 5], X=[90, 20, 30], Y=[30, 20, 40])
+        load_model.modify_surface_points(0, X=[60])
 
-        load_model.modify_interfaces([0, 1, 4], X=[60])
+        load_model.modify_surface_points([0, 1, 4], X=[60])
 
 
-class TestInterfaces:
-    def test_map_all_to_data(self, test_create_series, test_read_interfaces, test_create_formations,
+class Testsurface_points:
+    def test_map_all_to_data(self, test_create_series, test_read_surface_points, test_create_formations,
                              test_create_faults):
-        test_read_interfaces.map_data_from_series(test_create_series)
-        test_create_formations.set_formation_names(['MainFault', 'SecondaryReservoir','Seal',
+        test_read_surface_points.map_data_from_series(test_create_series)
+        test_create_formations.set_surfaces_names(['MainFault', 'SecondaryReservoir', 'Seal',
                                                     'Reservoir', 'Overlying'])
 
-        test_read_interfaces.map_formations_to_data(test_create_formations)
-        test_read_interfaces.map_formations_to_data(test_create_formations)
+        test_read_surface_points.map_formations_to_data(test_create_formations)
+        test_read_surface_points.map_formations_to_data(test_create_formations)
 
-        test_read_interfaces.map_data_from_faults(test_create_faults)
-        test_read_interfaces.set_annotations()
-        print(test_read_interfaces)
+        test_read_surface_points.map_data_from_faults(test_create_faults)
+        test_read_surface_points.set_annotations()
+        print(test_read_surface_points)
 
-    def test_map_formations_to_data(self, test_read_interfaces, test_create_formations):
-        test_read_interfaces.map_formations_to_data(test_create_formations)
+    def test_map_formations_to_data(self, test_read_surface_points, test_create_formations):
+        test_read_surface_points.map_formations_to_data(test_create_formations)
 
 
 class TestOrientations:
@@ -87,7 +87,7 @@ class TestOrientations:
     def test_map_all_to_data(self, test_create_series, test_read_orientations, test_create_formations,
                              test_create_faults):
         test_read_orientations.map_data_from_series(test_create_series)
-        test_create_formations.set_formation_names(['MainFault', 'SecondaryReservoir','Seal',
+        test_create_formations.set_surfaces_names(['MainFault', 'SecondaryReservoir', 'Seal',
                                                     'Reservoir', 'Overlying'])
 
         test_read_orientations.map_formations_to_data(test_create_formations)
@@ -120,7 +120,7 @@ class TestGrid:
 
 class TestSeries:
 
-    def test_set_series(self, test_read_interfaces):
+    def test_set_series(self, test_read_surface_points):
         series = gp.Series()
         # We can pass a pandas categories_df
         series.set_series_categories(pn.DataFrame({"fault": ['test2'],
@@ -128,7 +128,7 @@ class TestSeries:
 
         # We can even pass an interface object since sometimes (GeoModeller) we
         # can import the surface in the same table
-        series.set_series_categories(test_read_interfaces)
+        series.set_series_categories(test_read_surface_points)
         print(series)
 
         # Test init series
@@ -184,26 +184,26 @@ class TestFormations:
         print(test_create_formations)
 
     def test_map_formations_from_series2(self, test_create_series):
-        formations = gp.Formations()
+        formations = gp.Surfaces()
         formations.map_formations_from_series(test_create_series)
         print(formations)
 
     def test_set_formation_names(self, test_create_formations):
-        test_create_formations.set_formation_names(['MainFault', 'SecondaryReservoir','Seal',
+        test_create_formations.set_surfaces_names(['MainFault', 'SecondaryReservoir', 'Seal',
                                 'Reservoir', 'Overlying'])
 
         print(test_create_formations)
-        formations = gp.Formations(values_array=np.arange(1, 8).reshape(-1, 1),
+        formations = gp.Surfaces(values_array=np.arange(1, 8).reshape(-1, 1),
                                  properties_names=np.array(['density']))
 
-        formations.set_formation_names(['MainFault', 'SecondaryReservoir','Seal',
+        formations.set_surfaces_names(['MainFault', 'SecondaryReservoir', 'Seal',
                                 'Reservoir', 'Overlying'])
         print(formations)
 
-        formations = gp.Formations(values_array=np.arange(1, 2).reshape(-1, 1),
-                                   properties_names=np.array(['density']))
+        formations = gp.Surfaces(values_array=np.arange(1, 2).reshape(-1, 1),
+                                 properties_names=np.array(['density']))
 
-        formations.set_formation_names(['MainFault', 'SecondaryReservoir', 'Seal',
+        formations.set_surfaces_names(['MainFault', 'SecondaryReservoir', 'Seal',
                                         'Reservoir', 'Overlying'])
 
         print(formations)

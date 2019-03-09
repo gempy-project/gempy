@@ -25,7 +25,7 @@ def load_model():
           path_o = os.pardir+"/input_data/simple_fault_model_orientations.csv",
           path_i = os.pardir+"/input_data/simple_fault_model_points.csv", default_values=True)
 
-    gp.get_data(geo_model, 'interfaces').head()
+    gp.get_data(geo_model, 'surface_points').head()
     return geo_model
 
 
@@ -35,7 +35,7 @@ def map_sequential_pile(load_model):
 
     # TODO decide what I do with the layer order
 
-    gp.map_series_to_formations(geo_model, {"Fault_Series": 'Main_Fault',
+    gp.map_series_to_surfaces(geo_model, {"Fault_Series": 'Main_Fault',
                                             "Strat_Series": ('Sandstone_2', 'Siltstone',
                                                              'Shale', 'Sandstone_1', 'basement')},
                                 remove_unused_series=True)
@@ -50,7 +50,7 @@ def test_get_data(load_model):
 
 
 def test_define_sequential_pile(map_sequential_pile):
-    print(map_sequential_pile.formations)
+    print(map_sequential_pile.surfaces)
 
 
 def test_kriging_parameters(map_sequential_pile):

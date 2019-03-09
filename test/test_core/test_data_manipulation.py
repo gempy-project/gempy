@@ -52,140 +52,140 @@ def create_series(create_faults):
 
 
 @pytest.fixture(scope='module')
-def create_formations(create_series):
+def create_surfaces(create_series):
     series = create_series
-    formations = gp.Formations(series)
-    formations.set_formation_names(['foo', 'foo2', 'foo5'])
+    surfaces = gp.Surfaces(series)
+    surfaces.set_surfaces_names(['foo', 'foo2', 'foo5'])
 
     print(series)
 
-    # We can add new formations:
-    formations.add_formation(['feeeee'])
-    print(formations)
+    # We can add new surfaces:
+    surfaces.add_surface(['feeeee'])
+    print(surfaces)
 
-    # The column formation is also a pandas.Categories.
-    # This will be important for the Data clases (Interfaces and Orientations)
+    # The column surface is also a pandas.Categories.
+    # This will be important for the Data clases (SurfacePoints and Orientations)
 
-    print(formations.df['formation'])
+    print(surfaces.df['surface'])
 
     ### Set values
 
     # To set the values we do it with the following method
-    formations.set_formation_values_pro([2, 2, 2, 5])
+    surfaces.set_surfaces_values([2, 2, 2, 5])
 
-    print(formations)
+    print(surfaces)
 
     # #### Set values with a given name:
 
     # We can give specific names to the properties (i.e. density)
-    formations.add_formation_values_pro([[2, 2, 2, 6], [2, 2, 1, 8]], ['val_foo', 'val2_foo'])
-    print(formations)
+    surfaces.add_surfaces_values([[2, 2, 2, 6], [2, 2, 1, 8]], ['val_foo', 'val2_foo'])
+    print(surfaces)
 
-    ### Delete formations values
+    ### Delete surfaces values
     #
     # To delete a full propery:
-    formations.delete_formation_values(['val_foo', 'value_0'])
+    surfaces.delete_surface_values(['val_foo', 'value_0'])
 
-    # #### One of the formations must be set be the basement:
+    # #### One of the surfaces must be set be the basement:
 
-    formations.set_basement()
-    print(formations)
+    surfaces.set_basement()
+    print(surfaces)
 
-    # #### Set formation values
+    # #### Set surface values
     #
     # We can also use set values instead adding. This will delete the previous properties and add the new one
 
-    formations.set_formation_values_pro([[2, 2, 2, 6], [2, 2, 1, 8]], ['val_foo', 'val2_foo'])
-    print(formations)
+    surfaces.set_surfaces_values([[2, 2, 2, 6], [2, 2, 1, 8]], ['val_foo', 'val2_foo'])
+    print(surfaces)
 
-    # The last property is the correspondant series that each formation belong to. `series` and `formation`
+    # The last property is the correspondant series that each surface belong to. `series` and `surface`
     # are pandas categories. To get a overview of what this mean
     # check https://pandas.pydata.org/pandas-docs/stable/categorical.html.
 
-    print(formations.df['series'])
+    print(surfaces.df['series'])
 
-    print(formations.df['formation'])
+    print(surfaces.df['surface'])
 
-    # ### Map series to formation
+    # ### Map series to surface
 
-    # To map a series to a formation we can do it by passing a dict:
-    # If a series does not exist in the `Series` object, we rise a warning and we set those formations to nans
+    # To map a series to a surface we can do it by passing a dict:
+    # If a series does not exist in the `Series` object, we rise a warning and we set those surfaces to nans
 
     d = {"foo7": 'foo', "booX": ('foo2', 'foo5', 'fee')}
 
-    formations.map_series(d)
-    formations.map_series({"foo7": 'foo', "boo": ('foo2', 'foo5', 'fee')})
+    surfaces.map_series(d)
+    surfaces.map_series({"foo7": 'foo', "boo": ('foo2', 'foo5', 'fee')})
 
-    print(formations)
+    print(surfaces)
 
-    # An advantage of categories is that they are order so no we can tidy the df by series and formation
+    # An advantage of categories is that they are order so no we can tidy the df by series and surface
 
-    formations.df.sort_values(by='series', inplace=True)
+    surfaces.df.sort_values(by='series', inplace=True)
 
     # If we change the basement:
 
-    formations.set_basement('foo5')
+    surfaces.set_basement()
 
-    # Only one formation can be the basement:
+    # Only one surface can be the basement:
 
-    print(formations)
+    print(surfaces)
 
-    # ### Modify formation name
+    # ### Modify surface name
 
-    formations.rename_formations({'foo2': 'lala'})
+    surfaces.rename_surfaces({'foo2': 'lala'})
 
-    print(formations)
+    print(surfaces)
 
-    formations.df.loc[2, 'val_foo'] = 22
+    surfaces.df.loc[2, 'val_foo'] = 22
 
-    print(formations)
+    print(surfaces)
 
-    formations.update_sequential_pile()
+    surfaces.update_sequential_pile()
 
-    formations.sequential_pile.figure
+    surfaces.sequential_pile.figure
     # We can use `set_is_fault` to choose which of our series are faults:
-    return formations
+    return surfaces
 
 
 @pytest.fixture(scope='module')
-def create_interfaces(create_formations, create_series):
+def create_surface_points(create_surfaces, create_series):
     # # Data
-    # #### Interfaces
+    # #### SurfacePoints
     # These two DataFrames (df from now on) will contain the individual information of each point at an interface or
     # orientation. Some properties of this table are mapped from the *df* below.
-    formations = create_formations
-    interfaces = gp.Interfaces(formations)
+    surfaces = create_surfaces
+    surface_points = gp.SurfacePoints(surfaces)
 
-    print(interfaces)
+    print(surface_points)
 
-    interfaces.set_interfaces(pn.DataFrame(np.random.rand(6, 3)), ['foo', 'foo5', 'lala', 'foo5', 'lala', 'feeeee'])
+    surface_points.set_surface_points(pn.DataFrame(np.random.rand(6, 3)), ['foo', 'foo5', 'lala', 'foo5', 'lala', 'feeeee'])
 
-    print(interfaces)
+    print(surface_points)
 
-    interfaces.map_data_from_formations(formations, 'series')
-    print(interfaces)
-
-
-    interfaces.map_data_from_formations(formations, 'id')
-    print(interfaces)
+    surface_points.map_data_from_surfaces(surfaces, 'series')
+    print(surface_points)
 
 
-    interfaces.map_data_from_series(create_series, 'order_series')
-    print(interfaces)
+    surface_points.map_data_from_surfaces(surfaces, 'id')
+    print(surface_points)
+
+
+    surface_points.map_data_from_series(create_series, 'order_series')
+    print(surface_points)
 
     # In[59]:
 
-    interfaces.sort_table()
-    print(interfaces)
-    return interfaces
+    surface_points.sort_table()
+    print(surface_points)
+    return surface_points
 
 
 @pytest.fixture(scope='module')
-def create_orientations(create_formations, create_series):
-    formations = create_formations
+def create_orientations(create_surfaces, create_series):
+    surfaces = create_surfaces
 
     # ### Orientations
-    orientations = gp.Orientations(formations)
+    orientations = gp.Orientations(surfaces)
 
     print(orientations)
 
@@ -206,10 +206,10 @@ def create_orientations(create_formations, create_series):
     print(orientations)
 
     # ### Mapping data from the other df
-    orientations.map_data_from_formations(formations, 'series')
+    orientations.map_data_from_surfaces(surfaces, 'series')
     print(orientations)
 
-    orientations.map_data_from_formations(formations, 'id')
+    orientations.map_data_from_surfaces(surfaces, 'id')
     print(orientations)
 
     orientations.map_data_from_series(create_series, 'order_series')
@@ -229,17 +229,17 @@ def create_grid():
 
 
 @pytest.fixture('module')
-def create_rescaling(create_interfaces, create_orientations, create_grid):
-    rescaling = gp.RescaledData(create_interfaces, create_orientations, create_grid)
+def create_rescaling(create_surface_points, create_orientations, create_grid):
+    rescaling = gp.RescaledData(create_surface_points, create_orientations, create_grid)
     return rescaling
 
 
 @pytest.fixture('module')
-def create_additional_data(create_interfaces, create_orientations, create_grid, create_faults,
-                           create_formations, create_rescaling):
+def create_additional_data(create_surface_points, create_orientations, create_grid, create_faults,
+                           create_surfaces, create_rescaling):
 
-    ad = gp.AdditionalData(create_interfaces, create_orientations, create_grid, create_faults,
-                           create_formations, create_rescaling)
+    ad = gp.AdditionalData(create_surface_points, create_orientations, create_grid, create_faults,
+                           create_surfaces, create_rescaling)
     return ad
 
 
@@ -248,11 +248,11 @@ class TestDataManipulation:
     def test_series(self, create_series):
         return create_series
 
-    def test_formations(self, create_formations):
-        return create_formations
+    def test_surfaces(self, create_surfaces):
+        return create_surfaces
 
-    def test_interfaces(self, create_interfaces):
-        return create_interfaces
+    def test_surface_points(self, create_surface_points):
+        return create_surface_points
 
     def test_orientations(self, create_orientations):
         return create_orientations

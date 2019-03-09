@@ -99,7 +99,7 @@ class vtkPlot():
         self.vv.set_surfaces(vertices_l, simplices_l, self.alpha)
 
         if plot_data:
-            self.vv.set_interfaces()
+            self.vv.set_surface_points()
             self.vv.set_orientations()
 
         self.vv.render_model(**kwargs)
@@ -114,7 +114,7 @@ class vtkPlot():
             None
         """
         self.restart()
-        self.vv.set_interfaces()
+        self.vv.set_surface_points()
         self.vv.set_orientations()
         self.vv.render_model(**kwargs)
 
@@ -169,19 +169,19 @@ class vtkPlot():
             self.vv.create_slider_rep(samp_i, samp_f, samp_f)
 
         if plot_data:
-            self.vv.set_interfaces()
+            self.vv.set_surface_points()
             self.vv.set_orientations()
 
         self.vv.render_model(**kwargs)
 
-    def render_move_interfaces(self, indices):
+    def render_move_surface_points(self, indices):
         self.vv.SphereCallbak_move_changes(indices)
         if self.vv.real_time is True:
             self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
 
-    def render_add_interfaces(self, indices):
-        self.vv.set_interfaces(indices)
+    def render_add_surface_points(self, indices):
+        self.vv.set_surface_points(indices)
         if self.vv.real_time is True:
             self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
@@ -216,7 +216,7 @@ class vtkPlot():
 
         # Check rows tht have changed
         b_i = (new_df[self.geo_model._columns_i_1].sort_index() != _gempy.get_data(
-            self.geo_model, itype='interfaces')[self.geo_model._columns_i_1].sort_index()).any(1)
+            self.geo_model, itype='surface_points')[self.geo_model._columns_i_1].sort_index()).any(1)
 
         # Get indices of changed rows
         ind_i = new_df.index[b_i].tolist()
@@ -247,11 +247,11 @@ class vtkPlot():
     def _move_interface_orientation(self, new_df):
 
         # Check rows tht have changed
-        b_i = (new_df.xs('interfaces')[self.geo_model._columns_i_1].sort_index() != _gempy.get_data(
-            self.geo_model, itype='interfaces')[self.geo_model._columns_i_1].sort_index()).any(1)
+        b_i = (new_df.xs('surface_points')[self.geo_model._columns_i_1].sort_index() != _gempy.get_data(
+            self.geo_model, itype='surface_points')[self.geo_model._columns_i_1].sort_index()).any(1)
 
         # Get indices of changed rows
-        ind_i = new_df.xs('interfaces').index[b_i].tolist()
+        ind_i = new_df.xs('surface_points').index[b_i].tolist()
 
         # Check rows tht have changed
         b_o = (new_df.xs('orientations')[self.geo_model._columns_o_1].sort_index() != _gempy.get_data(
@@ -270,7 +270,7 @@ class vtkPlot():
     def _delete_interface(self, new_df):
 
         # Finding deleted indeces
-        ind_i = self.geo_model.interfaces.index.values[~_np.in1d(self.geo_model.interfaces.index.values,
+        ind_i = self.geo_model.surface_points.index.values[~_np.in1d(self.geo_model.surface_points.index.values,
                                                                  new_df.index.values,
                                                                  assume_unique=True)]
 
@@ -315,7 +315,7 @@ class vtkPlot():
 
         # Finding deleted indeces to restore
         ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
-                                              self.geo_model.interfaces.index.values,
+                                              self.geo_model.surface_points.index.values,
                                               assume_unique=True)]
         # Reactivating widget
         for i in ind_i:
@@ -349,7 +349,7 @@ class vtkPlot():
 
         # Finding the new indices added
         ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
-                                              self.geo_model.interfaces.index.values,
+                                              self.geo_model.surface_points.index.values,
                                               assume_unique=True)]
 
         # Modifing categories_df
@@ -357,7 +357,7 @@ class vtkPlot():
 
         # Creating new widget
         for i in ind_i:
-            self.vv.set_interfaces(indices=i)
+            self.vv.set_surface_points(indices=i)
         if self.verbose > 0:
             print('I am in adding', ind_i)
 
@@ -383,7 +383,7 @@ class vtkPlot():
         #  First we remove a column that is added by qgrid with the unfiltered indeces
         new_df = change['new'][change['new'].columns[1:]]
 
-        # Check if we are modifing interfaces and orientations at the same time
+        # Check if we are modifing surface_points and orientations at the same time
         try:
             # Modify mode
             self._move_interface_orientation(new_df)
@@ -419,7 +419,7 @@ class vtkPlot():
                     print('something went wrong')
 
                     # ----------
-            # Interfaces
+            # SurfacePoints
             elif set(self.geo_model._columns_i_1).issubset(new_df.columns):
                 if self.verbose > 0:
                     print(new_df.index.shape[0])
@@ -427,12 +427,12 @@ class vtkPlot():
                 # Checking the mode
                 # ++++++++++
                 # Delete mode
-                if new_df.index.shape[0] < self.geo_model.interfaces.index.shape[0]:
+                if new_df.index.shape[0] < self.geo_model.surface_points.index.shape[0]:
                     self._delete_interface(new_df)
 
                 # +++++++++++
                 # Adding mode
-                elif new_df.index.shape[0] > self.geo_model.interfaces.index.shape[0]:  # Add mode
+                elif new_df.index.shape[0] > self.geo_model.surface_points.index.shape[0]:  # Add mode
 
                     # print(set(new_df.index).issubset(self._original_df.index))
 
@@ -449,7 +449,7 @@ class vtkPlot():
 
                 # +++++++++++
                 # Modify mode
-                elif new_df.index.shape[0] == self.geo_model.interfaces.index.shape[0]:  # Modify
+                elif new_df.index.shape[0] == self.geo_model.surface_points.index.shape[0]:  # Modify
                     self._move_interface(new_df)
 
                 else:
@@ -613,7 +613,7 @@ def export_to_vtk(geo_data, path=None, name=None, voxels=True, surfaces=True):
 
 def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
     """
-    Plot the projection of the raw data (interfaces and orientations) in 2D following a
+    Plot the projection of the raw data (surface_points and orientations) in 2D following a
     specific directions
 
     Args:
@@ -719,4 +719,80 @@ def plot_topology(geo_data, G, centroids, direction="y"):
         Nothing, it just plots.
     """
     PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)
+
+
+def plot_stereonet(geo_data, series_only=False, litho=None, planes=True, poles=True, single_plots=False, show_density=False):
+    '''
+    Plot an equal-area projection of the orientations dataframe using mplstereonet.
+
+    Args:
+        geo_data (gempy.DataManagement.InputData): Input data of the model
+        series_only: To select whether a stereonet is plotted per series or per formation
+        litho: selection of formation or series names, as list. If None, all are plotted
+        planes: If True, azimuth and dip are plotted as great circles
+        poles: If True, pole points (plane normal vectors) of azimuth and dip are plotted
+        single_plots: If True, each formation is plotted in a single stereonet
+        show_density: If True, density contour plot around the pole points is shown
+
+    Returns:
+        None
+    '''
+
+    import warnings
+    try:
+        import mplstereonet
+    except ImportError:
+        warnings.warn('mplstereonet package is not installed. No stereographic projection available.')
+
+    import matplotlib.pyplot as plt
+    from gempy.plotting.colors import cmap
+    from collections import OrderedDict
+    import pandas as pn
+
+    if litho is None:
+        if series_only:
+            litho=geo_data.orientations['series'].unique()
+        else:
+            litho = geo_data.orientations['formation'].unique()
+
+    if single_plots is False:
+        fig, ax = mplstereonet.subplots(figsize=(5, 5))
+        df_sub2 = pn.DataFrame()
+        for i in litho:
+            if series_only:
+                df_sub2 = df_sub2.append(geo_data.orientations[geo_data.orientations['series'] == i])
+            else:
+                df_sub2 = df_sub2.append(geo_data.orientations[geo_data.orientations['formation'] == i])
+
+    for formation in litho:
+        if single_plots:
+            fig = plt.figure(figsize=(5, 5))
+            ax = fig.add_subplot(111, projection='stereonet')
+            ax.set_title(formation, y=1.1)
+
+        if series_only:
+            df_sub = geo_data.orientations[geo_data.orientations['series'] == formation]
+        else:
+            df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
+
+        if poles:
+            ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=7,
+                    markerfacecolor=cmap(df_sub['formation_number'].values[0]),
+                    markeredgewidth=1.1, markeredgecolor='gray', label=formation+': '+'pole point')
+        if planes:
+            ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=cmap(df_sub['formation_number'].values[0]),
+                     linewidth=1.5, label=formation+': '+'azimuth/dip')
+        if show_density:
+            if single_plots:
+                ax.density_contourf(df_sub['azimuth'] - 90, df_sub['dip'],
+                                    measurement='poles', cmap='viridis', alpha=.5)
+            else:
+                ax.density_contourf(df_sub2['azimuth'] - 90, df_sub2['dip'], measurement='poles', cmap='viridis',
+                                    alpha=.5)
+
+        fig.subplots_adjust(top=0.8)
+        handles, labels = ax.get_legend_handles_labels()
+        by_label = OrderedDict(zip(labels, handles))
+        ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
+        ax.grid(True, color='black', alpha=0.25)
 

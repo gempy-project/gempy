@@ -12,7 +12,7 @@ from typing import Union
 from gempy.utils.meta import _setdoc
 
 
-def add_interfaces(data: Union[Model, Interfaces]):
+def add_surface_points(data: Union[Model, SurfacePoints]):
     pass
 
 
@@ -24,10 +24,10 @@ def add_series(data: Union[Model, Series]):
     pass
 
 
-def add_formations(data: Union[Model, Formations]):
+def add_formations(data: Union[Model, Surfaces]):
     pass
 
-def del_interfaces(data: Union[Model, Interfaces]):
+def del_surface_points(data: Union[Model, SurfacePoints]):
     pass
 
 
@@ -39,11 +39,11 @@ def del_series(data: Union[Model, Series]):
     pass
 
 
-def del_formations(data: Union[Model, Formations]):
+def del_formations(data: Union[Model, Surfaces]):
     pass
 
 
-def modify_interfaces(data: Union[Model, Interfaces]):
+def modify_surface_points(data: Union[Model, SurfacePoints]):
     pass
 
 def modify_orientations(data: Union[Model, Orientations]):
@@ -53,7 +53,7 @@ def modify_orientations(data: Union[Model, Orientations]):
 def modify_series(data: Union[Model, Series]):
     pass
 
-def modify_formations(data: Union[Model, Formations]):
+def modify_formations(data: Union[Model, Surfaces]):
     pass
 
 def modify_faults(data: Union[Model, Faults]):

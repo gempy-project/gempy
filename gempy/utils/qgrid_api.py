@@ -102,7 +102,7 @@ def create_kriging_parameters_qgrid(kriging_parameters_object):
             value = np.fromstring(event['new'][1:-1], sep=',')
             try:
                 assert value.shape[0] is kriging_parameters_object.structure.df.loc[
-                    'values', 'len series interfaces'].shape[0]
+                    'values', 'len series surface_points'].shape[0]
 
                 kriging_parameters_object.df.loc['values', event['column']] = value
                 qgrid_widget._update_df()
@@ -140,13 +140,13 @@ def create_faults_relations_qgrid(faults_object):
     return qgrid_widget
 
 
-def create_interfaces_qgrid(interfaces_object):
-    if interfaces_object.df.shape[0] == 0:
+def create_surface_points_qgrid(surface_points_object):
+    if surface_points_object.df.shape[0] == 0:
         # TODO DEBUG: I am not sure that formations always has at least one entry. Check it
-        interfaces_object.add_interface(0, 0, 0, interfaces_object.formations.df['formation'].iloc[0])
+        surface_points_object.add_surface_points(0, 0, 0, surface_points_object.formations.df['formation'].iloc[0])
 
     qgrid_widget = qgrid.show_grid(
-        interfaces_object.df,
+        surface_points_object.df,
         show_toolbar=True,
         grid_options={'sortable': False, 'highlightSelectedCell': True},
         column_options={'editable': False},
@@ -155,7 +155,7 @@ def create_interfaces_qgrid(interfaces_object):
                             'Z': {'editable': True},
                             'surface': {'editable': True}})
 
-    def handle_row_interfaces_add(event, widget, debug=False):
+    def handle_row_surface_points_add(event, widget, debug=False):
         if debug is True:
             print(event)
             print(widget)
@@ -163,19 +163,19 @@ def create_interfaces_qgrid(interfaces_object):
         idx = event['index']
         xyzs = qgrid_widget._df.loc[idx, ['X', 'Y', 'Z', 'surface']]
 
-        interfaces_object.add_interface(*xyzs)
+        surface_points_object.add_surface_points(*xyzs)
         qgrid_widget._update_df()
 
-    def handle_row_interfaces_delete(event, widget, debug=False):
+    def handle_row_surface_points_delete(event, widget, debug=False):
         if debug is True:
             print(event)
             print(widget)
         idx = event['indices']
 
-        interfaces_object.del_interface(idx)
+        surface_points_object.del_surface_points(idx)
         qgrid_widget._update_df()
 
-    def handle_cell_interfaces_edit(event, widget, debug=False):
+    def handle_cell_surface_points_edit(event, widget, debug=False):
         if debug is True:
             print(event)
             print(widget)
@@ -184,13 +184,13 @@ def create_interfaces_qgrid(interfaces_object):
         idx = event['index']
         value = event['new']
 
-        interfaces_object.modify_interface(idx, **{column: value})
+        surface_points_object.modify_surface_points(idx, **{column: value})
 
         qgrid_widget._update_df()
 
-    qgrid_widget.on('row_removed', handle_row_interfaces_delete)
-    qgrid_widget.on('row_added', handle_row_interfaces_add)
-    qgrid_widget.on('cell_edited', handle_cell_interfaces_edit)
+    qgrid_widget.on('row_removed', handle_row_surface_points_delete)
+    qgrid_widget.on('row_added', handle_row_surface_points_add)
+    qgrid_widget.on('cell_edited', handle_cell_surface_points_edit)
     return qgrid_widget
 
 
@@ -259,7 +259,7 @@ def create_orientations_qgrid(orientations_object):
 def create_formations_qgrid(formation_object):
     if formation_object.df.shape[0] == 0:
         # TODO DEBUG: I am not sure that formations always has at least one entry. Check it
-        formation_object.set_formation_names(['surface1'])
+        formation_object.set_surfaces_names(['surface1'])
 
     qgrid_widget = qgrid.show_grid(formation_object.df, show_toolbar=True,
                                    column_options={'editable': True},
@@ -271,7 +271,7 @@ def create_formations_qgrid(formation_object):
             print(event)
             print(widget)
         idx = event['index']
-        formation_object.add_formation(['surface' + str(idx)])
+        formation_object.add_surface(['surface' + str(idx)])
         qgrid_widget._update_df()
 
     def handle_row_formation_delete(event, widget, debug=False):
@@ -279,7 +279,7 @@ def create_formations_qgrid(formation_object):
             print(event)
             print(widget)
         idx = event['indices']
-        formation_object.delete_formation(idx)
+        formation_object.delete_surface(idx)
         qgrid_widget._update_df()
 
     def handle_cell_formation_edit(event, widget, debug=False):
