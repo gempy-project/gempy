@@ -34,7 +34,13 @@ def compute_topology(geo_model,
                      cell_number=None,
                      direction=None,
                      compute_areas=False,
-                     return_label_block=False):
+                     return_label_block=False,
+                     return_rprops=False,
+                     filter_rogue=False,
+                     noddy=False,
+                     filter_threshold_area=10,
+                     neighbors=8,
+                     enhanced_labels=True):
     """
     Computes model topology and returns graph, centroids and look-up-tables.
 
@@ -47,6 +53,16 @@ def compute_topology(geo_model,
             Default False.
         return_label_block (bool): If True additionally returns the uniquely labeled block model as
             np.ndarray. Default False.
+        return_rprops (bool, optional): If True additionally returns region properties of the unique regions
+            (see skimage.measure.regionprops).
+        filter_rogue (bool, optional): If True filters nodes with region areas below threshold (default: 1) from
+            topology graph.
+        filter_threshold_area (int, optional): Specifies the threshold area value (number of pixels) for filtering
+            small regions that may thow off topology analysis.
+        neighbors (int, optional): Specifies the neighbor voxel connectivity taken into account for the topology
+            analysis. Must be either 4 or 8 (default: 8).
+        enhanced_labels (bool, optional): If True enhances the topology graph node labeling with fb_id, lb_id and instance
+            id (e.g. 1_6_b), if False reverses to just numeric labeling (default: True).
 
     Returns:
         tuple:
@@ -75,19 +91,27 @@ def compute_topology(geo_model,
         lb = geo_model.solutions.lith_block.reshape(geo_model.grid.resolution)[:, :, cell_number]
         fb = fault_block.reshape(geo_model.grid.resolution)[:, :, cell_number]
 
-    return topology_analyze(lb, fb, geo_model.faults.n_faults,
-                            areas_bool=compute_areas,
-                            return_block=return_label_block)
+    return _topology_analyze(lb, fb, geo_model.faults.n_faults,
+                             areas_bool=compute_areas,
+                             return_block=return_label_block,
+                             return_rprops=return_rprops,
+                             filter_rogue=filter_rogue,
+                             noddy=noddy,
+                             filter_threshold_area=filter_threshold_area,
+                             neighbors=neighbors,
+                             enhanced_labels=enhanced_labels)
 
-def topology_analyze(lith_block, fault_block, n_faults,
-                     areas_bool=False,
-                     return_block=False,
-                     return_rprops=False,
-                     filter_rogue=False,
-                     noddy=False,
-                     filter_threshold_area=10,
-                     neighbors=8,
-                     enhanced_labels=True):
+def _topology_analyze(lith_block,
+                      fault_block,
+                      n_faults,
+                      areas_bool=False,
+                      return_block=False,
+                      return_rprops=False,
+                      filter_rogue=False,
+                      noddy=False,
+                      filter_threshold_area=10,
+                      neighbors=8,
+                      enhanced_labels=True):
     """
     Analyses the block models adjacency topology. Every lithological entity is described by a uniquely labeled node
     (centroid) and its connections to other entities by edges.
@@ -135,6 +159,9 @@ def topology_analyze(lith_block, fault_block, n_faults,
     G = graph.RAG(labels_block)
     rprops = regionprops(labels_block)  # get properties of uniquely labeles regions
     centroids = get_centroids(rprops)  # unique region centroids coordinates
+
+    # classify edges (stratigraphic, fault)
+    classify_edges(G, centroids, fault_block)
 
     # filter rogue pixel nodes from graph if wanted
     if filter_rogue:
