@@ -79,111 +79,44 @@ def load_model(path):
 
 # region Series functionality
 
-#
-#
-# def set_series(model: Model, series_distribution, order_series=None, order_formations=None,
-#                values_to_default=True, verbose=0):
-#     """
-#     Function to set in place the different series of the project with their correspondent formations
-#
-#     Args:
-#         model (:class:`gempy.core.model.Model`)
-#         series_distribution (dict or :class:`DataFrame`): with the name of the series as key and the name of the
-#           formations as values.
-#         order_series(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
-#              dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
-#         order_formations(Optional[list]): only necessary if passed a dict (python < 3.6)order of the series by default takes the
-#             dictionary keys which until python 3.6 are random. This is important to set the erosion relations between the different series
-#         values_to_default (bool): If true set values to default
-#             - Interfaces and orientations: From csv files and prepare structure_data to GemPy's
-#             - Formations :class:`gempy.core.data.Formations`: Using formations read in the csv file
-#             - Series :class:`gempy.core.data.Series`: Using formations read in the csv file
-#             - Faults :class:`gempy.core.data.Faults`: Using formations read in the csv file. If fault string is contained in
-#               the name
-#         verbose(int): if verbose is True plot the sequential pile
-#     """
-#
-#     model.series.set_series_categories(series_distribution, order=order_series)
-#     if values_to_default is True:
-#         warnings.warn("values_to_default option will get deprecated in the next version of gempy. It still exist only "
-#                       "to keep the behaviour equal to older version. See set_values_to_default.", FutureWarning)
-#
-#         set_values_to_default(model, order_formations=None, set_faults=True,
-#                               map_formations_from_series=True, call_map_to_data=True)
-#
-#     update_additional_data(model)
-#
-#     if verbose > 0:
-#         return get_sequential_pile(model)
-#     else:
-#         return True
-
-
-def set_series_DEP(geo_model, d, order_series=None, order_formations=None):
-    geo_model.formations.map_series(d)
-    series_idx = geo_model.series.df.index.set_categories(d.keys(), rename=True)
-    # If order, it has to go here
-    order_series = order_series
-    # ----------------------------
-    geo_model.series.df.index = series_idx
-    geo_model.faults.df.index = series_idx
-    geo_model.faults.faults_relations_df.index = series_idx
-    geo_model.faults.faults_relations_df.columns = series_idx
-    # Add series
-    for c in d.keys():
-        geo_model.series.df.loc[c] = np.nan
-        geo_model.faults.df.loc[c, 'isFault'] = np.nan
-        geo_model.faults.faults_relations_df.loc[c, c] = np.nan
-    geo_model.series.update_order_series()
-    geo_model.faults.set_is_fault()
-   # order_formations = ['Main_Fault', 'Sandstone_2', 'Siltstone', 'Shale', 'Sandstone_1', 'basement']
-    geo_model.formations.df['formation'].cat.reorder_categories(order_formations, inplace=True)
-    geo_model.formations.df.sort_values(['formation'], inplace=True)
-    geo_model.formations.df.reset_index(drop=True, inplace=True)
-    geo_model.formations.set_id()
-    map_to_data(geo_model, geo_model.series, geo_model.formations, geo_model.faults)
-    geo_model.interfaces.sort_table()
-    geo_model.orientations.sort_table()
-
-
 def set_series(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = None,
                set_series=True, sort_data: bool = True):
     warnings.warn("set_series will get deprecated in the next version of gempy. It still exist only to keep"
-                  "the behaviour equal to older version. Use map_series_to_formations isnead.", FutureWarning)
+                  "the behaviour equal to older version. Use map_series_to_surfaces isnead.", FutureWarning)
 
-    map_series_to_formations(geo_model, mapping_object, set_series, sort_data)
+    map_series_to_surfaces(geo_model, mapping_object, set_series, sort_data)
 
 
-def map_series_to_formations(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = None,
+def map_series_to_surfaces(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = None,
                              set_series=True, sort_data: bool = True, remove_unused_series=True, quiet=False):
 
-    geo_model.map_series_to_formations(mapping_object, set_series, sort_data)
+    geo_model.map_series_to_surfaces(mapping_object, set_series, sort_data)
 
     if remove_unused_series is True:
-        geo_model.formations.df['series'].cat.remove_unused_categories(inplace=True)
+        geo_model.surfaces.df['series'].cat.remove_unused_categories(inplace=True)
         unused_cat = geo_model.series.df.index[~geo_model.series.df.index.isin(
-            geo_model.formations.df['series'].cat.categories)]
+            geo_model.surfaces.df['series'].cat.categories)]
         geo_model.series.delete_series(unused_cat)
 
-    # TODO: Give the same name to sort formations and seires
+    # TODO: Give the same name to sort surfaces and seires
     geo_model.series.update_order_series()
-    geo_model.formations.sort_formations()
+    geo_model.surfaces.sort_surfaces()
 
     geo_model.update_from_series()
-    geo_model.update_from_formations()
+    geo_model.update_from_surfaces()
 
     geo_model.formations.set_colors()
 
     if quiet is True:
         return True
     else:
-        geo_model.formations.update_sequential_pile()
-        return geo_model.formations.sequential_pile.figure
+        geo_model.surfaces.update_sequential_pile()
+        return geo_model.surfaces.sequential_pile.figure
 
 
 def select_series_TOUPDATE(geo_data, series):
     """
-    Return the formations of a given serie in string
+    Return the surfaces of a given serie in string
 
     Args:
         geo_data (:class:`gempy.data_management.InputData`)
@@ -196,19 +129,19 @@ def select_series_TOUPDATE(geo_data, series):
     new_geo_data = copy.deepcopy(geo_data)
 
     if type(series) == int or type(series[0]) == int:
-        new_geo_data.interfaces = geo_data.interfaces[geo_data.interfaces['order_series'].isin(series)]
+        new_geo_data.surface_points = geo_data.surface_points[geo_data.surface_points['order_series'].isin(series)]
         new_geo_data.orientations = geo_data.orientations[geo_data.orientations['order_series'].isin(series)]
     elif type(series[0]) == str:
-        new_geo_data.interfaces = geo_data.interfaces[geo_data.interfaces['series'].isin(series)]
+        new_geo_data.surface_points = geo_data.surface_points[geo_data.surface_points['series'].isin(series)]
         new_geo_data.orientations = geo_data.orientations[geo_data.orientations['series'].isin(series)]
 
     # Count df
     new_geo_data.set_faults(new_geo_data.count_faults())
 
     # Change the dataframe with the series
-    new_geo_data.series = new_geo_data.series[new_geo_data.interfaces['series'].unique().
+    new_geo_data.series = new_geo_data.series[new_geo_data.surface_points['series'].unique().
         remove_unused_categories().categories].dropna(how='all')
-    new_geo_data.formations = new_geo_data.formations.loc[new_geo_data.interfaces['formation'].unique().
+    new_geo_data.surfaces = new_geo_data.surfaces.loc[new_geo_data.surface_points['surface'].unique().
         remove_unused_categories().categories]
     new_geo_data.update_df()
     return new_geo_data
@@ -220,7 +153,7 @@ def get_series(model: Model):
 
 def get_sequential_pile(model: Model):
     """
-    Visualize an interactive stratigraphic pile to move around the formations and the series. IMPORTANT NOTE:
+    Visualize an interactive stratigraphic pile to move around the surfaces and the series. IMPORTANT NOTE:
     To have the interactive properties it is necessary the use of an interactive backend. (In notebook use:
     %matplotlib qt5 or notebook)
 
@@ -230,65 +163,19 @@ def get_sequential_pile(model: Model):
     Returns:
         :class:`matplotlib.pyplot.Figure`
     """
-    return model.formations.sequential_pile.figure
+    return model.surfaces.sequential_pile.figure
 # endregion
 
 
-# region Formations functionality
-@_setdoc(Formations.set_formation_names.__doc__)
-def set_formation_names(geo_model: Model, list_names: list, update_df=True):
-    geo_model.formations.set_formation_names(list_names, update_df)
-    geo_model.update_from_formations()
-    return geo_model.formations
+# region Surfaces functionality
+@_setdoc(Surfaces.set_surfaces_names.__doc__)
+def set_surface_names(geo_model: Model, list_names: list, update_df=True):
+    geo_model.surfaces.set_surfaces_names(list_names, update_df)
+    geo_model.update_from_surfaces()
+    return geo_model.surfaces
 
-
-def set_formations_DEP(model: Model, formation_names=None, formations_order=None, values_array=None,
-                   properties_names=None):
-    """
-    Function to order and change the value of the model formation_names. The values of the formation_names will be the final
-    numerical value that each formation will take in the interpolated geological model (lithology block)
-
-    Args:
-        model (:class:`gempy.core.model.Model`)
-        values_array (np.ndarray): values of the formation_names will be the final
-            numerical value that each formation will take in the interpolated geological model (lithology block)
-        properties_names (list or np.ndarray): list containing the names of each properties
-        formations_order (list of str): List with a given order of the formation_names. Due to the interpolation algorithm
-            this order is only relevant to keep consistent the colors of layers and input data. The order ultimately is
-            determined by the geometric sedimentary order
-        formation_names (list of str): same as formation_names order. you can use any
-        values_array (list of floats or int):
-
-    Returns:
-        :class:`DataFrame`: formation_names dataframe already updated in place
-
-    """
-    if formation_names and not formations_order:
-        formations_order = formation_names
-    if formations_order is not None and values_array is not None:
-        model.formations.set_formations_values(values_array, formation_order=formations_order,
-                                               properties_names=properties_names)
-    elif formations_order is not None:
-        model.formations.set_formation_order(formations_order)
-        model.formations.set_id()
-
-    return True
-
-
-# @_setdoc([Formations.reorder_formations.__doc__])
-# def reorder_formations_TOBEUPDATED(geo_model: Model, list_names):
-#     geo_model.formations.reorder_formations(list_names)
-#     return True
-
-
-def set_order_formations_DEP(geo_model, formation_order):
-    warnings.warn("set_order_formations will be removed in version 1.2, "
-                  "use gempy.set_formations function instead", FutureWarning)
-    set_formations(geo_model, formations_order=formation_order)
-
-
-def get_formations(model: Model):
-    return model.formations
+def get_surfaces(model: Model):
+    return model.surfaces
 # endregion
 
 
@@ -338,31 +225,31 @@ def get_extent(model: Model):
 
 
 # region Point-Orientation functionality
-@_setdoc([Interfaces.read_interfaces.__doc__, Orientations.read_orientations.__doc__])
+@_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
 def read_data(geo_model: Model, path_i=None, path_o=None, **kwargs):
     geo_model.read_data(path_i, path_o, **kwargs)
     return True
 
 
-def set_interfaces_object(geo_data: Model, interfaces: Interfaces, update_model=True):
+def set_surface_points_object(geo_data: Model, surface_points: SurfacePoints, update_model=True):
     """
-     Method to change the Interfaces object of a Model object
+     Method to change the SurfacePoints object of a Model object
 
      Args:
 
      """
-    geo_data.set_interface_object(interfaces, update_model)
+    geo_data.set_interface_object(surface_points, update_model)
     return True
 
 
-def get_interfaces(model: Model):
-    return model.interfaces
+def get_surface_points(model: Model):
+    return model.surface_points
 
 
 def set_orientations_object(geo_data, orient_dataframe, append=False):
     """
     Method to change or append a dataframe to orientations in place.  A equivalent Pandas Dataframe with
-    ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation'] has to be passed.
+    ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'surface'] has to be passed.
 
     Args:
          geo_data(:class:`gempy.data_management.InputData`)
@@ -375,14 +262,14 @@ def set_orientations_object(geo_data, orient_dataframe, append=False):
     #geo_data.set_orientations(orient_dataframe, append=append)
 
 
-def set_orientation_from_interfaces_TOUPDATE(geo_data, indices_array):
+def set_orientation_from_surface_points_TOUPDATE(geo_data, indices_array):
     """
-    Create and set orientations from at least 3 points of the :attr:`gempy.data_management.InputData.interfaces`
+    Create and set orientations from at least 3 points of the :attr:`gempy.data_management.InputData.surface_points`
      Dataframe
     Args:
         geo_data (:class:`gempy.data_management.InputData`)
         indices_array (array-like): 1D or 2D array with the pandas indices of the
-          :attr:`gempy.data_management.InputData.interfaces`. If 2D every row of the 2D matrix will be used to create an
+          :attr:`gempy.data_management.InputData.surface_points`. If 2D every row of the 2D matrix will be used to create an
           orientation
 
 
@@ -392,25 +279,25 @@ def set_orientation_from_interfaces_TOUPDATE(geo_data, indices_array):
 
     if _np.ndim(indices_array) is 1:
         indices = indices_array
-        form = geo_data.interfaces['formation'].loc[indices].unique()
-        assert form.shape[0] is 1, 'The interface points must belong to the same formation'
+        form = geo_data.surface_points['surface'].loc[indices].unique()
+        assert form.shape[0] is 1, 'The interface points must belong to the same surface'
         form = form[0]
         print()
-        ori_parameters = geo_data.create_orientation_from_interfaces(indices)
+        ori_parameters = geo_data.create_orientation_from_surface_points(indices)
         geo_data.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                  dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                  G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
-                                 formation=form)
+                                 surface=form)
     elif _np.ndim(indices_array) is 2:
         for indices in indices_array:
-            form = geo_data.interfaces['formation'].loc[indices].unique()
-            assert form.shape[0] is 1, 'The interface points must belong to the same formation'
+            form = geo_data.surface_points['surface'].loc[indices].unique()
+            assert form.shape[0] is 1, 'The interface points must belong to the same surface'
             form = form[0]
-            ori_parameters = geo_data.create_orientation_from_interfaces(indices)
+            ori_parameters = geo_data.create_orientation_from_surface_points(indices)
             geo_data.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                      dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                      G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
-                                     formation=form)
+                                     surface=form)
 
     geo_data.update_df()
     return geo_data.orientations
@@ -464,7 +351,7 @@ def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=
     # TODO add kwargs
     geo_model.rescaling.rescale_data()
     update_additional_data(geo_model)
-    geo_model.interfaces.sort_table()
+    geo_model.surface_points.sort_table()
     geo_model.orientations.sort_table()
 
     geo_model.interpolator.set_theano_graph(geo_model.interpolator.create_theano_graph())
@@ -489,7 +376,7 @@ def get_th_fn(model: Model):
 
     Returns:
         :class:`theano.compile.function_module.Function`: Compiled function if C or CUDA which computes the interpolation given the input data
-            (XYZ of dips, dip, azimuth, polarity, XYZ ref interfaces, XYZ rest interfaces)
+            (XYZ of dips, dip, azimuth, polarity, XYZ ref surface_points, XYZ rest surface_points)
     """
     assert getattr(model.interpolator, 'theano_function', False) is not None, 'Theano has not been compiled yet'
 
@@ -549,7 +436,7 @@ def compute_model(model: Model, compute_mesh=True)-> Solution:
     # return clear messages
     i = model.interpolator.get_input_matrix()
 
-    assert model.additional_data.structure_data.df.loc['values', 'len formations interfaces'].min() > 1,  \
+    assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1,  \
         'To compute the model is necessary at least 2 interface points per layer'
 
     sol = model.interpolator.theano_function(*i)
@@ -585,7 +472,7 @@ def compute_model_at(new_grid: Union[Grid, ndarray], model: Model, compute_mesh=
 # TODO compute, set? Right now is computed always
 def get_surfaces(model: Model):
     """
-    gey vertices and simplices of the interfaces for its vtk visualization and further
+    gey vertices and simplices of the surface_points for its vtk visualization and further
     analysis
 
     Args:
@@ -601,24 +488,24 @@ def get_surfaces(model: Model):
 
 # region Model level functions
 @_setdoc([Series.set_series_index.__doc__, Faults.set_is_fault.__doc__])
-def set_values_to_default_DEP(model: Model, series_distribution=None, order_series=None, order_formations=None,
-                          set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0) -> bool:
+def set_values_to_default_DEP(model: Model, series_distribution=None, order_series=None, order_surfaces=None,
+                          set_faults=True, map_surfaces_from_series=True, call_map_to_data=True, verbose=0) -> bool:
     """
     Set the attributes of most of the objects to its default value to be able to compute a geological model.
 
-    - Interfaces and orientations: From csv files and prepare structure_data to GemPy's
-    - Formations :class:`gempy.core.data.Formations`: Using formations read in the csv file
-    - Series :class:`gempy.core.data.Series`: Using formations read in the csv file
-    - Faults :class:`gempy.core.data.Faults`: Using formations read in the csv file. If fault string is contained in
+    - SurfacePoints and orientations: From csv files and prepare structure_data to GemPy's
+    - Surfaces :class:`gempy.core.data.Surfaces`: Using surfaces read in the csv file
+    - Series :class:`gempy.core.data.Series`: Using surfaces read in the csv file
+    - Faults :class:`gempy.core.data.Faults`: Using surfaces read in the csv file. If fault string is contained in
       the name
 
     Args:
         model:
         series_distribution:
         order_series:
-        order_formations:
+        order_surfaces:
         set_faults:
-        map_formations_from_series:
+        map_surfaces_from_series:
         call_map_to_data:
         verbose:
 
@@ -631,29 +518,28 @@ def set_values_to_default_DEP(model: Model, series_distribution=None, order_seri
 
     """
     if series_distribution:
-        model.formations.map_series(series_distribution)
+        model.surfaces.map_series(series_distribution)
         print('line 574')
 
     if set_faults is True:
         model.faults.set_is_fault()
 
-    if map_formations_from_series is True:
-       # model.formations.map_formations_from_series(model.series)
-        model.formations.df = model.formations.set_id(model.formations.df)
+    if map_surfaces_from_series is True:
+        model.surfaces.df = model.surfaces.set_id(model.surfaces.df)
         try:
-            model.formations.add_basement()
+            model.surfaces.add_basement()
         except AssertionError:
             print('already basement')
             pass
         except ValueError:
             print('already basement')
             pass
-    if order_formations is not None:
+    if order_surfaces is not None:
         warnings.warn(" ", FutureWarning)
-        model.formations.set_formation_order(order_formations)
+        model.surfaces.set_surface_order(order_surfaces)
 
     if call_map_to_data is True:
-        map_to_data(model, model.series, model.formations, model.faults)
+        map_to_data(model, model.series, model.surfaces, model.faults)
 
     if verbose > 0:
         return get_sequential_pile(model)
@@ -661,22 +547,22 @@ def set_values_to_default_DEP(model: Model, series_distribution=None, order_seri
         return True
 
 
-def map_to_data_DEP(model: Model, series: Series = None, formations: Formations = None, faults: Faults = None):
+def map_to_data_DEP(model: Model, series: Series = None, surfaces: Surfaces = None, faults: Faults = None):
     # TODO this function makes sense as Model method
 
-    if formations is not None:
-        model.interfaces.map_data_from_formations(formations, 'id')
-        model.orientations.map_data_from_formations(formations, 'id')
+    if surfaces is not None:
+        model.surface_points.map_data_from_surfaces(surfaces, 'id')
+        model.orientations.map_data_from_surfaces(surfaces, 'id')
 
-        model.interfaces.map_data_from_formations(formations, 'series')
-        model.orientations.map_data_from_formations(formations, 'series')
+        model.surface_points.map_data_from_surfaces(surfaces, 'series')
+        model.orientations.map_data_from_surfaces(surfaces, 'series')
 
     if series is not None:
-        model.interfaces.map_data_from_series(series, 'order_series')
+        model.surface_points.map_data_from_series(series, 'order_series')
         model.orientations.map_data_from_series(series, 'order_series')
 
     if faults is not None:
-        model.interfaces.map_data_from_faults(faults)
+        model.surface_points.map_data_from_faults(faults)
         model.orientations.map_data_from_faults(faults)
 
 
@@ -687,7 +573,7 @@ def get_data(model: Model, itype='data', numeric=False):
 
     Args:
         model (:class:`gempy.core.model.Model`)
-        itype(str {'all', 'interfaces', 'orientations', 'formations', 'series', 'faults', 'faults_relations',
+        itype(str {'all', 'surface_points', 'orientations', 'surfaces', 'series', 'faults', 'faults_relations',
         additional data}): input
             data type to be retrieved.
         numeric (bool): if True it only returns numberical properties. This may be useful due to memory issues
@@ -707,7 +593,7 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
     Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
 
     - Grid :class:`gempy.core.data.GridClass`: To regular grid.
-    - read_data: Interfaces and orientations: From csv files
+    - read_data: SurfacePoints and orientations: From csv files
     - set_values to default
 
 
@@ -719,7 +605,7 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
         project_name (str)
 
     Keyword Args:
-        path_i: Path to the data bases of interfaces. Default os.getcwd(),
+        path_i: Path to the data bases of surface_points. Default os.getcwd(),
         path_o: Path to the data bases of orientations. Default os.getcwd()
 
     Returns:
@@ -741,7 +627,7 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
     Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
 
     - Grid :class:`gempy.core.data.GridClass`: To regular grid.
-    - read_data: Interfaces and orientations: From csv files
+    - read_data: SurfacePoints and orientations: From csv files
     - set_values to default
 
 
@@ -754,7 +640,7 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
     Keyword Args:
 
-        path_i: Path to the data bases of interfaces. Default os.getcwd(),
+        path_i: Path to the data bases of surface_points. Default os.getcwd(),
         path_o: Path to the data bases of orientations. Default os.getcwd()
 
     Returns:
@@ -770,11 +656,9 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
     read_data(geo_model, **kwargs)
 
     if default_values is True:
-        # set_values_to_default_DEP(geo_model, series_distribution=None, order_series=None, order_formations=None,
-        #                       set_faults=True, map_formations_from_series=True, call_map_to_data=True, verbose=0)
-        geo_model.update_from_formations()
+
+        geo_model.update_from_surfaces()
         geo_model.update_from_series()
-    #update_additional_data(model)
 
     return geo_model
 

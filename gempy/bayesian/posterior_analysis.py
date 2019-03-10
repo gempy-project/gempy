@@ -49,7 +49,7 @@ def change_input_data(db, interp_data, i):
     """
     i = int(i)
     # replace interface data
-    interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = db.trace("input_interf")[i]
+    interp_data.geo_data_res.surface_points[["X", "Y", "Z"]] = db.trace("input_interf")[i]
     # replace foliation data
     try:
         interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace("input_orient")[i]
@@ -73,7 +73,7 @@ def change_input_data_avrg(db, interp_data):
     # get input data
     trace = db.geo_model.gettrace()
     # set average in categories_df
-    interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = trace[:, 0][:].mean(axis=0)
+    interp_data.geo_data_res.surface_points[["X", "Y", "Z"]] = trace[:, 0][:].mean(axis=0)
     interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = trace[:, 1][:].mean(axis=0)
     recalc_gradients(interp_data.geo_data_res.orientations)  # recalc gradients
     interp_data.update_interpolator()  # update interpolator
@@ -94,7 +94,7 @@ def _change_input_data_old(db, interp_data, i, tracename="input_data"):
     """
     i = int(i)
     # replace interface data
-    interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = db.trace(tracename)[i][0]
+    interp_data.geo_data_res.surface_points[["X", "Y", "Z"]] = db.trace(tracename)[i][0]
     # replace foliation data
     try:
         interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = db.trace(tracename)[i][1]
@@ -111,7 +111,7 @@ def _change_input_data_old(db, interp_data, i, tracename="input_data"):
     return interp_data
 
 
-def compute_posterior_models_all(db, interp_data, indices, u_grade=None, get_potential_at_interfaces=False):
+def compute_posterior_models_all(db, interp_data, indices, u_grade=None, get_potential_at_surface_points=False):
     """Computes block models from stored input parameters for all iterations.
 
     Args:
@@ -119,7 +119,7 @@ def compute_posterior_models_all(db, interp_data, indices, u_grade=None, get_pot
         interp_data  (gp.data_management.InterpolatorData): GemPy interpolator object
         indices (list or np.array): Trace indices specifying which models from the database will be calculated.
         u_grade (list, optional):
-        get_potential_at_interfaces:
+        get_potential_at_surface_points:
 
     Returns:
 
@@ -127,7 +127,7 @@ def compute_posterior_models_all(db, interp_data, indices, u_grade=None, get_pot
 
     for i in tqdm.tqdm(indices):
         interp_data_loop = change_input_data(db, interp_data, i)
-        lb, fb = gp.compute_model(interp_data_loop, output="geology", u_grade=u_grade, get_potential_at_interfaces=get_potential_at_interfaces)
+        lb, fb = gp.compute_model(interp_data_loop, output="geology", u_grade=u_grade, get_potential_at_surface_points=get_potential_at_surface_points)
         if i == 0 or i == indices[0]:
             lbs = np.expand_dims(lb, 0)
             fbs = np.expand_dims(fb, 0)
@@ -248,7 +248,7 @@ class Posterior:
         """
         i = int(i)
         # replace interface data
-        interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = self.input_data[i][0]
+        interp_data.geo_data_res.surface_points[["X", "Y", "Z"]] = self.input_data[i][0]
         # replace foliation data
         interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = self.input_data[i][1]
 
@@ -267,7 +267,7 @@ class Posterior:
         interf_avrg = self.input_data[:, 0][:].mean(axis=0)
         orient_avrg = self.input_data[:, 1][:].mean(axis=0)
         # set average in categories_df
-        interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = interf_avrg
+        interp_data.geo_data_res.surface_points[["X", "Y", "Z"]] = interf_avrg
         interp_data.geo_data_res.orientations[["G_x", "G_y", "G_z", "X", "Y", "Z", "dip", "azimuth", "polarity"]] = orient_avrg
         recalc_gradients(interp_data.geo_data_res.orientations)  # recalc gradients
         interp_data.update_interpolator()  # update interpolator
@@ -456,10 +456,10 @@ def modify_plane_dip(dip, group_id, data_obj):
     """
     # get foliation and interface data points ids
     fol_f = data_obj.orientations["group_id"] == group_id
-    interf_f = data_obj.interfaces["group_id"] == group_id
+    interf_f = data_obj.surface_points["group_id"] == group_id
 
     # get indices
-    interf_i = data_obj.interfaces[interf_f].index
+    interf_i = data_obj.surface_points[interf_f].index
     fol_i = data_obj.orientations[fol_f].index[0]
 
     # update dip value for orientations
@@ -486,10 +486,10 @@ def move_plane_points(normal, centroid, data_obj, interf_f):
     """Moves interface points to fit plane of given normal and centroid in data object."""
     a, b, c = normal
     d = -a * centroid[0] - b * centroid[1] - c * centroid[2]
-    for i, row in data_obj.interfaces[interf_f].iterrows():
+    for i, row in data_obj.surface_points[interf_f].iterrows():
         # iterate over each point and recalculate Z, set Z
         Z = (a * row["X"] + b * row["Y"] + d) / -c
-        data_obj.interfaces.set_value(i, "Z", Z)
+        data_obj.surface_points.set_value(i, "Z", Z)
 
 
 def calculate_gradient(dip, az, pol):
