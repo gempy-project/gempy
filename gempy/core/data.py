@@ -449,10 +449,10 @@ class Surfaces(object):
 
     def set_colors(self, colordict = None):
         if colordict:
-            for form, color in colordict.items():
-                assert form in list(self.df['formation']), str(form)+' is not a model surface'
+            for surf, color in colordict.items():
+                assert surf in list(self.df['surface']), str(surf)+' is not a model surface'
                 assert re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color), str(color)+'is not a HEX color code'
-                self.df.loc[self.df['formation'] == form, 'color'] = color
+                self.df.loc[self.df['surface'] == surf, 'color'] = color
             return self
         else:
             gp_defcols = [['#227dac', '#443988', '#9f0052', '#ff3f20', '#ffbe00'],
