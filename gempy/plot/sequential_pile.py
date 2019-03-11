@@ -18,14 +18,13 @@
 import numpy as np
 import pandas as pn
 import matplotlib.pyplot as plt
-from gempy.plot.colors import *
-import matplotlib.cm as cm
-from gempy.plot.colors import color_lot, cmap, norm
+#from gempy.plot.colors import *
+#import matplotlib.cm as cm
+#from gempy.plot.colors import color_lot, cmap, norm
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from gempy.core.data import Series
-#
-
+#import matplotlib.colors as mcolors
 
 def set_anchor_points(series_object, surface_object):
     """
@@ -117,11 +116,12 @@ class StratigraphicPile(object):
         pos_anch = np.squeeze(self.anch_series.values)
         rects = ax.barh(pos_anch, np.ones_like(pos_anch)*2, self.thick_series, )
 
+        stratcols = ['#400505', '#7D050E', '#646363', '#878786', '#AFAEAE', '#D9D9D8', '#EAEA3B', '#DDAF19']
         # We connect each rectangle
         for e, series in enumerate(series_class.df.index):
             # TODO Alex set the colors of the series accordingly
 
-            rects[e].set_color(cm.Dark2(e))
+            rects[e].set_color(stratcols[e])
             rects[e].set_label(series)
             dr = DraggableRectangle(rects[e], series_class, surface_class)
             dr.connect()
@@ -137,18 +137,15 @@ class StratigraphicPile(object):
         pos_anch = np.squeeze(self.anch_surfaces.values)
         rects = ax.barh(pos_anch, np.ones_like(pos_anch)*2, .5, left=3.)
 
-        color = 1
+        color_lot = dict(zip(surface_class['surface'], surface_class['color']))
         # We connect each rectangle
         for e, surface in enumerate(self.anch_surfaces.columns):
-
             if 'aux' in surface:
                 rects[e].set_alpha(.1)
                 rects[e].set_color('gray')
             else:
-
-                rects[e].set_color(cmap(color))
+                rects[e].set_color(color_lot[surface])
                 rects[e].set_label(surface)
-                color += 1
 
             dr = DraggableRectangle(rects[e], series_class, surface_class)
             dr.connect()

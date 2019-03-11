@@ -47,7 +47,7 @@ from os import path
 import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-from gempy.plot.colors import color_lot#, cmap, norm
+#from gempy.plot.colors import color_lot#, cmap, norm
 import gempy as gp
 import copy
 from gempy.core.data import Solution
@@ -140,7 +140,7 @@ class PlotData2D(object):
 
     #    series_to_plot_i['surface'] = series_to_plot_i['surface'].cat.remove_unused_categories()
     #    series_to_plot_f['surface'] = series_to_plot_f['surface'].cat.remove_unused_categories()
-        print(self._color_lot)
+        #print(self._color_lot)
         if data_type == 'all':
             p = sns.lmplot(x, y,
                            data=series_to_plot_i,
