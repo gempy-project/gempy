@@ -446,7 +446,7 @@ class Surfaces(object):
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
 
-
+    """
     def set_colors(self, colordict = None):
         if colordict:
             for surf, color in colordict.items():
@@ -463,6 +463,34 @@ class Surfaces(object):
             for i, series in enumerate(self.df['series'].unique()):
                 form_in_series = self.df.loc[self.df['series'] == series]
                 self.df.loc[form_in_series.index, 'color'] = gp_defcols[i][:len(form_in_series)]
+            return self
+    """
+    def set_colors(self, colordict=None):
+
+        if colordict:
+            for surf, color in colordict.items():
+                assert surf in list(self.df['surface']), str(surf) + ' is not a model surface'
+                assert re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color), str(color) + 'is not a HEX color code'
+                self.df.loc[self.df['surface'] == surf, 'color'] = color
+            return self
+
+        else:
+            gp_defcols = [['#227dac', '#443988', '#9f0052', '#ff3f20', '#ffbe00'],
+                          ['#325916', '#5DA629', '#F2D43D', '#BD5D0F', '#52263B'],
+                          ['#26BEFF', '#39423D', '#1C2242', '#677D2A', '#8C4B3E'],
+                          ['#A44701', '#560901', '#370606', '#062736', '#487878']]
+
+            new_colors = []
+            for i, series in enumerate(
+                    self.df['series'].unique()):  # do not overwrite colors that were manually changed
+                form_in_series = self.df.loc[self.df['series'] == series]
+                newcols = gp_defcols[i][:len(form_in_series)]
+                for item in newcols:
+                    new_colors.append(item)
+
+            indexes = self.df[self.df['color'].isnull()].index
+            for index in indexes:
+                self.df.loc[index, 'color'] = new_colors[index]
 
 
 # region set formation names
