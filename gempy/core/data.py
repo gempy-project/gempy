@@ -119,7 +119,7 @@ class Grid(object):
             np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2], dtype="float64"), indexing="ij"
         )
 
-        values = np.vstack(map(np.ravel, g)).T.astype("float64")
+        values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
         return values
 
     def set_regular_grid(self, extent, resolution):
@@ -356,6 +356,24 @@ class Faults(object):
             self.df.loc[series_fault, 'isFault'] = self.df.loc[series_fault, 'isFault'] ^ True
 
         self.n_faults = self.df['isFault'].sum()
+
+        return self.df
+
+    def set_is_finite_fault(self, series_fault=None):
+        """
+        Toggles given series' finite fault property.
+
+        Args:
+            series_fault (list): Name of the series
+        """
+        if series_fault[0] is not None:
+            # check if given series is/are in dataframe
+            assert np.isin(series_fault, self.df.index).all(), "series_fault must already exist" \
+                                                                "in the series DataFrame."
+            assert self.df.loc[series_fault].isFault.all(), "series_fault contains non-fault series" \
+                                                            ", which can't be set as finite faults."
+            # if so, toggle True/False for given series or list of series
+            self.df.loc[series_fault, "isFinite"] = self.df.loc[series_fault, 'isFinite'] ^ True
 
         return self.df
 
@@ -727,7 +745,7 @@ class GeometricData(object):
         if 'sep' not in kwargs:
             kwargs['sep'] = ','
 
-        table = pn.read_table(file_path, **kwargs)
+        table = pn.read_csv(file_path, **kwargs)
 
         return table
 
@@ -925,7 +943,7 @@ class SurfacePoints(GeometricData):
         if 'sep' not in kwargs_pandas:
             kwargs_pandas['sep'] = ','
 
-        table = pn.read_table(file_path, **kwargs_pandas)
+        table = pn.read_csv(file_path, **kwargs_pandas)
 
         if 'update_surfaces' in kwargs:
             if kwargs['update_surfaces'] is True:
@@ -1263,7 +1281,7 @@ class Orientations(GeometricData):
         polarity_name = kwargs.get('polarity_name', 'polarity')
         surface_name = kwargs.get('surface_name', "formation")
 
-        table = pn.read_table(filepath, **kwargs_pandas)
+        table = pn.read_csv(filepath, **kwargs_pandas)
 
         if 'update_surfaces' in kwargs:
             if kwargs['update_surfaces'] is True:

@@ -170,6 +170,14 @@ class Interpolator(object):
         self.set_theano_shared_kriging()
         self.set_theano_shared_output_init()
         self.set_theano_share_input()
+        self.set_theano_inf_factor()
+
+    def set_theano_inf_factor(self):
+        """
+        Set theano infinite factor so it knows!
+        """
+        inf_factor = self.faults.df[self.faults.df.isFault == True]["isFinite"].values
+        self.theano_graph.inf_factor.set_value(np.invert(inf_factor).astype("int32"))
 
     def get_input_matrix(self) -> list:
         """

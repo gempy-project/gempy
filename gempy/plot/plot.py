@@ -36,7 +36,6 @@ from .visualization import PlotData2D, steno3D, vtkVisualization
 from .colors import cmap, norm, color_lot
 import gempy as _gempy
 
-
 class vtkPlot():
     def __init__(self, geo_model, alpha=1,
                  size=(1920, 1080), fullscreen=False, bg_color=None, verbose=0):
@@ -703,7 +702,7 @@ def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,
                            **kwargs)
 
 
-def plot_topology(geo_data, G, centroids, direction="y"):
+def plot_topology(geo_data, G, centroids, direction="y", label_kwargs=None, node_kwargs=None, edge_kwargs=None):
     """
     Plot the topology adjacency graph in 2-D.
 
@@ -714,11 +713,15 @@ def plot_topology(geo_data, G, centroids, direction="y"):
                 as values.
     Keyword Args
         direction (str): "x", "y" or "z" specifying the slice direction for 2-D topology analysis. Default None.
+        label_kwargs (dict, optional): Dictionary of keyword arguments for graph node labels (plt.text)
+        node_kwargs (dict, optional): Dictionary of keyword arguments for graph nodes (plt.plot markers)
+        edge_kwargs (dict, optional): Dictionary of keyword arguments for graph edges (plt.plot lines)
 
     Returns:
         Nothing, it just plots.
     """
-    PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction)
+    PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction,
+                           label_kwargs=label_kwargs, node_kwargs=node_kwargs, edge_kwargs=edge_kwargs)
 
 
 def plot_stereonet(geo_data, series_only=False, litho=None, planes=True, poles=True, single_plots=False, show_density=False):
