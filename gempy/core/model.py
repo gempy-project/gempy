@@ -28,7 +28,7 @@ class DataMutation(object):
                                               self.surfaces, self.rescaling)
 
     @_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
-    def read_data(self, path_i=None, path_o=None, **kwargs):
+    def read_data(self, path_i=None, path_o=None, add_basement=True, **kwargs):
         """
 
         Args:
@@ -47,11 +47,12 @@ class DataMutation(object):
             self.surface_points.read_surface_points(path_i, inplace=True, **kwargs)
         if path_o:
             self.orientations.read_orientations(path_o, inplace=True, **kwargs)
+        if add_basement is True:
+            self.surfaces.add_surface(['basement'])
 
         self.rescaling.rescale_data()
 
         self.additional_data.update_structure()
-       # self.additional_data.update_rescaling_data()
         self.additional_data.update_default_kriging()
 
     @_setdoc([Surfaces.map_series.__doc__])
@@ -220,6 +221,19 @@ class DataMutation(object):
         self.surface_points = surface_points
         self.rescaling.surface_points = surface_points
         self.interpolator.surface_points = surface_points
+
+    @_setdoc([Faults.set_is_fault.__doc__])
+    def set_is_finite_fault(self, series_fault=None):
+        s = self.faults.set_is_finite_fault(series_fault)  # change df in Fault obj
+        print(s)
+        # change shared theano variable for infinite factor
+        self.interpolator.set_theano_inf_factor()
+
+
+    def set_interface_object(self, interfaces: Surfaces, update_model=True):
+        self.interfaces = interfaces
+        self.rescaling.interfaces = interfaces
+        self.interpolator.interfaces = interfaces
 
         if update_model is True:
             self.update_from_surface_points()

@@ -330,7 +330,7 @@ class PlotData2D(object):
             warnings.warn('Passing the block directly will get deprecated in the next version. Please use Solution'
                           'and block_type instead', FutureWarning)
             scalar_field = solution
-        
+
         if 'cmap' not in kwargs:
             kwargs['cmap'] = 'magma'
 
@@ -356,9 +356,9 @@ class PlotData2D(object):
 
         plt.xlabel(x)
         plt.ylabel(y)
-    
+
     @staticmethod
-    def plot_topo_g(geo_data, G, centroids, direction="y"):
+    def plot_topo_g(geo_data, G, centroids, direction="y", label_kwargs=None, node_kwargs=None, edge_kwargs=None):
         if direction == "y":
             c1, c2 = (0, 2)
             e1 = geo_data.grid.extent[1] - geo_data.grid.extent[0]
@@ -390,18 +390,44 @@ class PlotData2D(object):
             r1 = geo_data.grid.resolution[0]
             r2 = geo_data.grid.resolution[1]
 
+        nkw = {
+            "marker": "o",
+            "color": "black",
+            "markersize": 20,
+            "alpha": 0.75
+        }
+        if node_kwargs is not None:
+            nkw.update(node_kwargs)
+
+        tkw = {
+            "color": "white",
+            "size": 10,
+            "ha": "center",
+            "va": "center",
+            "weight": "ultralight",
+            "family": "monospace"
+        }
+        if label_kwargs is not None:
+            tkw.update(label_kwargs)
+
+        lkw = {
+            "linewidth": 0.75,
+            "color": "black"
+        }
+        if edge_kwargs is not None:
+            lkw.update(edge_kwargs)
+
         for edge in G.edges():
             a, b = edge
-
+            # plot edges
             plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
-                          np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, "black", linewidth=0.75)
+                          np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, **lkw)
 
-            for node in G.nodes_iter():
+            for node in G.nodes():
                 plt.plot(centroids[node][c1] * e1 / r1 + d1, centroids[node][c2] * e2 / r2 +d2,
                          marker="o", color="black", markersize=10, alpha=0.75)
                 plt.text(centroids[node][c1] * e1 / r1 + d1,
-                         centroids[node][c2] * e2 / r2 + d2, str(node), color="white", size=6, ha="center", va="center",
-                         weight="ultralight", family="monospace")
+                         centroids[node][c2] * e2 / r2 + d2, str(node), **tkw)
 
     def plot_gradient(self, scalar_field, gx, gy, gz, cell_number, quiver_stepsize=5, #maybe call r sth. like "stepsize"?
                       direction="y", plot_scalar = True, *args, **kwargs): #include plot data?
