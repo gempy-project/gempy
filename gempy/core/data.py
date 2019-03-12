@@ -482,15 +482,24 @@ class Surfaces(object):
 
             new_colors = []
             for i, series in enumerate(
-                    self.df['series'].unique()):  # do not overwrite colors that were manually changed
+                    self.df['series'].unique()):  # do not overwrite colors that were changed manually
                 form_in_series = self.df.loc[self.df['series'] == series]
                 newcols = gp_defcols[i][:len(form_in_series)]
                 for item in newcols:
                     new_colors.append(item)
 
-            indexes = self.df[self.df['color'].isnull()].index
+            ids = self.df[self.df['color'].isnull()]
+            print(ids)
+            #self.df.index.get_loc('')
+
+
+            indexes = self.df[self.df['color'].isnull()].index #.get_loc('color')
+            print('idx', indexes)
             for index in indexes:
                 self.df.loc[index, 'color'] = new_colors[index]
+
+            ids = self.df[self.df['color'].isnull()]['id']
+            print(ids)
 
 
 # region set formation names
