@@ -1766,7 +1766,7 @@ class Structure(object):
         # Extracting lengths
         # ==================
         # Array containing the size of every surface. SurfacePoints
-        self.df.at['values', 'len surfaces surface_points'] = self.surface_points.df.groupby('surface')['order_series'].count().values#self.surface_points.df['id'].value_counts(sort=False).values
+        self.df.at['values', 'len surfaces surface_points'] = self.surface_points.df.groupby('surface')['order_series'].count().values[:-1]#self.surface_points.df['id'].value_counts(sort=False).values
 
         return True
 

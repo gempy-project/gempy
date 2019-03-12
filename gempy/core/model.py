@@ -28,7 +28,7 @@ class DataMutation(object):
                                               self.surfaces, self.rescaling)
 
     @_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
-    def read_data(self, path_i=None, path_o=None, **kwargs):
+    def read_data(self, path_i=None, path_o=None, add_basement=True, **kwargs):
         """
 
         Args:
@@ -47,11 +47,12 @@ class DataMutation(object):
             self.surface_points.read_surface_points(path_i, inplace=True, **kwargs)
         if path_o:
             self.orientations.read_orientations(path_o, inplace=True, **kwargs)
+        if add_basement is True:
+            self.surfaces.add_surface(['basement'])
 
         self.rescaling.rescale_data()
 
         self.additional_data.update_structure()
-       # self.additional_data.update_rescaling_data()
         self.additional_data.update_default_kriging()
 
     @_setdoc([Surfaces.map_series.__doc__])
