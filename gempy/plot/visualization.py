@@ -38,6 +38,12 @@ try:
 except ImportError:
     STENO_IMPORT = False
 
+try:
+    import ipyvolume as ipv
+    IPV_IMPORT = True
+except ImportError:
+    IPV_IMPORT = False
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -529,7 +535,7 @@ class PlotData2D(object):
 
 class steno3D():
     def __init__(self, geo_data, project, **kwargs ):
-        if VTK_IMPORT is False:
+        if STENO_IMPORT is False:
             raise ImportError( 'Steno 3D package is not installed. No 3D online visualization available.')
         description = kwargs.get('description', 'Nothing')
 
@@ -1635,3 +1641,44 @@ class vtkVisualization:
                 writer.SetInputData(polydata)
             writer.Write()
 
+
+class ipyvolumeVisualization:
+    def __init__(self, geo_model, ver, sim):
+        if VTK_IMPORT is False:
+            raise ImportError('ipyvolume package is not installed.')
+
+        self.geo_model = geo_model
+        self.ver = ver
+        self.sim = sim
+
+    def get_color_id(self, surface):
+        """Get id of given surface (str)."""
+        filter_ = self.geo_model.surfaces.df.surface == surface
+        color_id = self.geo_model.surfaces.df.id[filter_].values[0]
+        return color_id
+
+    def get_color(self, surface):
+        """Get color code of given gempy surface."""
+        return gp.plot.color_lot[self.get_color_id(surface)]
+
+    def plot_ipyvolume(self):
+        """Plot gempy surface model."""
+        ipv.figure()
+        meshes = []
+        for surf in self.ver.keys():
+            points = self.ver[surf]
+            triangles = self.sim[surf]
+            # color
+
+            mesh = ipv.plot_trisurf(points[:, 0] + self.geo_model.grid.extent[0],
+                                    points[:, 1] + self.geo_model.grid.extent[2],
+                                    points[:, 2] + self.geo_model.grid.extent[4],
+                                    triangles=triangles,
+                                    color=self.get_color(surf))
+            meshes.append(mesh)
+
+        ipv.xlim(self.geo_model.grid.extent[0], self.geo_model.grid.extent[1])
+        ipv.ylim(self.geo_model.grid.extent[2], self.geo_model.grid.extent[3])
+        ipv.zlim(self.geo_model.grid.extent[4], self.geo_model.grid.extent[5])
+        ipv.show()
+        return None

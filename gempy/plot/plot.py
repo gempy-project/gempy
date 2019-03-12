@@ -32,7 +32,7 @@ sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import numpy as _np
 import pandas as _pn
 import copy
-from .visualization import PlotData2D, steno3D, vtkVisualization
+from .visualization import PlotData2D, steno3D, vtkVisualization, ipyvolumeVisualization
 from .colors import cmap, norm, color_lot
 import gempy as _gempy
 
@@ -585,6 +585,11 @@ def plot_surfaces_3D(geo_data, vertices_l=None, simplices_l=None,
     vv.plot_surfaces_3D(vertices_l, simplices_l,
                         plot_data=plot_data)
     return vv
+
+
+def plot_surfaces_3d_ipv(geo_model, ver, sim):
+    vv = ipyvolumeVisualization(geo_model, ver, sim)
+    vv.plot_ipyvolume()
 
 
 def export_to_vtk(geo_data, path=None, name=None, voxels=True, surfaces=True):
