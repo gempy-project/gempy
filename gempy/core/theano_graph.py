@@ -1717,7 +1717,6 @@ class TheanoGraph(object):
         if 'ref_layer_points' in self.verbose:
             self.ref_layer_points = theano.printing.Print('ref_layer_points')(self.ref_layer_points)
 
-
         # For the contribution of the df I did not find a better way
         self.len_i_0 = len_i_0
         self.len_i_1 = len_i_1
