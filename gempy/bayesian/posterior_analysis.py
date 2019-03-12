@@ -35,6 +35,39 @@ except ImportError:
     warnings.warn("tqdm package not installed. No support for dynamic progress bars.")
 
 
+def change_input_data_general(data_array, interp_data):
+    """
+    Changes input data in interp_data to posterior input data at iteration i.
+
+    Args:
+        data_array (np.ndarray):
+        interp_data (gempy.data_management.InterpolationData): An interp_data object with the structure we want to
+        compute.
+
+    Returns:
+         None, in-place operation
+    """
+    # get mask for interfaces and orientations by finding nan values
+    interf_mask = np.isnan(data_array[:, -1])
+    orient_mask = np.invert(interf_mask)
+
+    # replace interface data
+    interp_data.geo_data_res.interfaces[["X", "Y", "Z"]] = data_array[interf_mask, :3]
+    # replace foliation data
+    if data_array[orient_mask, :].shape[1] == 6:
+        interp_data.geo_data_res.orientations[["X", "Y", "Z", "dip", "azimuth", "polarity"]] = data_array[orient_mask, :]
+    elif data_array[orient_mask, :].shape[1] == 9:
+        interp_data.geo_data_res.orientations[["X", "Y", "Z", "G_x", "G_y", "G_z", "dip", "azimuth", "polarity"]] = data_array[orient_mask, :]
+    else:
+        raise ValueError("Value mismatch.")
+    # recalc gradients
+    recalc_gradients(interp_data.geo_data_res.orientations)
+    # update interpolator
+    interp_data.update_interpolator()
+
+    return None
+
+
 def change_input_data(db, interp_data, i):
     """
     Changes input data in interp_data to posterior input data at iteration i.

@@ -25,55 +25,93 @@ try:
     from skimage.measure import label
     from skimage.measure import regionprops
 except ImportError:
-    warnings.warn("skimage package is not installed, which is required for geomodel topology analysis.")
+    warnings.warn("skimage package is not installed, which is required for geomodel topology \ "
+                  "analysis.")
+from gempy.utils.analysis import get_centroids, get_unique_regions
+from networkx import convert_node_labels_to_integers, relabel_nodes
 
-
-def topology_compute(geo_data, lith_block, fault_block,
-                     cell_number=None, direction=None,
-                     compute_areas=False, return_label_block=False):
+def compute_topology(geo_model,
+                     cell_number=None,
+                     direction=None,
+                     compute_areas=False,
+                     return_label_block=False,
+                     return_rprops=False,
+                     filter_rogue=False,
+                     noddy=False,
+                     filter_threshold_area=10,
+                     neighbors=8,
+                     enhanced_labels=True):
     """
     Computes model topology and returns graph, centroids and look-up-tables.
 
     Args:
-        geo_data (gempy.data_management.InputData): GemPy's data object for the model.
-        lith_block (ndarray): Lithology block model.
-        fault_block (ndarray): Fault block model.
+        geo_model (gempy.model.Model): Container class of all objects that constitute a GemPy model.
         cell_number (int): Cell number for 2-D slice topology analysis. Default None.
-        direction (str): "x", "y" or "z" specifying the slice direction for 2-D topology analysis. Default None.
-        compute_areas (bool): If True computes adjacency areas for connected nodes in voxel number. Default False.
-        return_label_block (bool): If True additionally returns the uniquely labeled block model as np.ndarray. Default False.
+        direction (str): "x", "y" or "z" specifying the slice direction for 2-D topology analysis.
+            Default None.
+        compute_areas (bool): If True computes adjacency areas for connected nodes in voxel number.
+            Default False.
+        return_label_block (bool): If True additionally returns the uniquely labeled block model as
+            np.ndarray. Default False.
+        return_rprops (bool, optional): If True additionally returns region properties of the unique regions
+            (see skimage.measure.regionprops).
+        filter_rogue (bool, optional): If True filters nodes with region areas below threshold (default: 1) from
+            topology graph.
+        filter_threshold_area (int, optional): Specifies the threshold area value (number of pixels) for filtering
+            small regions that may thow off topology analysis.
+        neighbors (int, optional): Specifies the neighbor voxel connectivity taken into account for the topology
+            analysis. Must be either 4 or 8 (default: 8).
+        enhanced_labels (bool, optional): If True enhances the topology graph node labeling with fb_id, lb_id and instance
+            id (e.g. 1_6_b), if False reverses to just numeric labeling (default: True).
 
     Returns:
         tuple:
-            G: Region adjacency graph object (skimage.future.graph.rag.RAG) containing the adjacency topology graph
-                (G.adj).
-            centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys and (x,y,z) coordinates
-                as values. {node id (int): tuple(x,y,z)}
+            G: Region adjacency graph object (skimage.future.graph.rag.RAG) containing the adjacency
+                topology graph (G.adj).
+            centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys
+                and (x,y,z) coordinates as values. {node id (int): tuple(x,y,z)}
             labels_unique (np.array): List of all labels used.
             lith_to_labels_lot (dict): Dictionary look-up-table to go from lithology id to node id.
             labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithology id.
-
     """
-    fault_block = _np.atleast_2d(fault_block)[::2].sum(axis=0)
+    assert hasattr(geo_model, "solutions"), "geo_model object must contain .solutions attribute."
+
+    fault_block = np.atleast_2d(geo_model.solutions.fault_blocks).sum(axis=0)
 
     if cell_number is None or direction is None:  # topology of entire block
-        lb = lith_block.reshape(geo_data.resolution)
-        fb = fault_block.reshape(geo_data.resolution)
+        lb = geo_model.solutions.lith_block.reshape(geo_model.grid.resolution)
+        fb = fault_block.reshape(geo_model.grid.resolution)
     elif direction == "x":
-        lb = lith_block.reshape(geo_data.resolution)[cell_number, :, :]
-        fb = fault_block.reshape(geo_data.resolution)[cell_number, :, :]
+        lb = geo_model.solutions.lith_block.reshape(geo_model.grid.resolution)[cell_number, :, :]
+        fb = fault_block.reshape(geo_model.grid.resolution)[cell_number, :, :]
     elif direction == "y":
-        lb = lith_block.reshape(geo_data.resolution)[:, cell_number, :]
-        fb = fault_block.reshape(geo_data.resolution)[:, cell_number, :]
+        lb = geo_model.solutions.lith_block.reshape(geo_model.grid.resolution)[:, cell_number, :]
+        fb = fault_block.reshape(geo_model.grid.resolution)[:, cell_number, :]
     elif direction == "z":
-        lb = lith_block.reshape(geo_data.resolution)[:, :, cell_number]
-        fb = fault_block.reshape(geo_data.resolution)[:, :, cell_number]
+        lb = geo_model.solutions.lith_block.reshape(geo_model.grid.resolution)[:, :, cell_number]
+        fb = fault_block.reshape(geo_model.grid.resolution)[:, :, cell_number]
 
-    return topology_analyze(lb, fb, geo_data.n_faults, areas_bool=compute_areas, return_block=return_label_block)
+    return _topology_analyze(lb, fb, geo_model.faults.n_faults,
+                             areas_bool=compute_areas,
+                             return_block=return_label_block,
+                             return_rprops=return_rprops,
+                             filter_rogue=filter_rogue,
+                             noddy=noddy,
+                             filter_threshold_area=filter_threshold_area,
+                             neighbors=neighbors,
+                             enhanced_labels=enhanced_labels)
 
-def topology_analyze(lith_block, fault_block, n_faults,
-                     areas_bool=False,
-                     return_block=False):
+def _topology_analyze(lith_block,
+                      fault_block,
+                      n_faults,
+                      areas_bool=False,
+                      return_block=False,
+                      return_rprops=False,
+                      filter_rogue=False,
+                      noddy=False,
+                      filter_threshold_area=10,
+                      neighbors=8,
+                      enhanced_labels=True):
     """
     Analyses the block models adjacency topology. Every lithological entity is described by a uniquely labeled node
     (centroid) and its connections to other entities by edges.
@@ -87,59 +125,140 @@ def topology_analyze(lith_block, fault_block, n_faults,
     Keyword Args:
         areas_bool (bool): If True computes adjacency areas for connected nodes in voxel number. Default False.
         return_block (bool): If True additionally returns the uniquely labeled block model as np.ndarray.
+        n_faults (int): Number of faults.
+        areas_bool (bool, optional): If True computes adjacency areas for connected nodes in voxel number.
+            Default False.
+        return_block (bool, optional): If True additionally returns the uniquely labeled block model as np.ndarray.
+        return_rprops (bool, optional): If True additionally returns region properties of the unique regions
+            (see skimage.measure.regionprops).
+        filter_rogue (bool, optional): If True filters nodes with region areas below threshold (default: 1) from
+            topology graph.
+        filter_threshold_area (int, optional): Specifies the threshold area value (number of pixels) for filtering
+            small regions that may thow off topology analysis.
+        neighbors (int, optional): Specifies the neighbor voxel connectivity taken into account for the topology
+            analysis. Must be either 4 or 8 (default: 8).
+        enhanced_labels (bool, optional): If True enhances the topology graph node labeling with fb_id, lb_id and instance
+            id (e.g. 1_6_b), if False reverses to just numeric labeling (default: True).
 
     Return:
         tuple:
             G: Region adjacency graph object (skimage.future.graph.rag.RAG) containing the adjacency topology graph
                 (G.adj).
-            centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys and (x,y,z) coordinates
-                as values.
+            centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys and (x,y,z)
+                coordinates as values.
             labels_unique (np.array): List of all labels used.
             lith_to_labels_lot (dict): Dictionary look-up-table to go from lithology id to node id.
             labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithology id.
     """
+    block_original = lith_block.astype(int)  # do we really still need this?
 
-    lith_block = np.round(lith_block).astype(int)
-    lithologies = np.unique(lith_block.astype(int))
-    # store a safe copy of the lith block for reference
-    block_original = lith_block.astype(int)
-    fault_block = np.round(fault_block).astype(int)
-    # label the fault block for normalization (comparability of e.g. pynoddy and gempy models)
-    fault_block = label(fault_block, neighbors=8, background=9999)
+    # generate unique labels block by combining lith and fault blocks
+    labels_block = get_unique_regions(lith_block, fault_block, n_faults, neighbors=neighbors, noddy=noddy)
 
-    if 0 in lith_block:
-        # then this is a gempy model, numpy starts with 1
-        lith_block[lith_block == 0] = int(np.max(lith_block) + 1)  # set the 0 to highest value + 1
-        lith_block -= n_faults  # lower by n_faults to equal with pynoddy models
-        # so the block starts at 1 and goes continuously to max
-
-    # make sure that df seperate lithologies in labeling, YUGE clever algorithm of the narcisist
-    ublock = (lith_block.max() + 1) * fault_block + lith_block
-
-    # label the block for unique regions
-    labels_block, labels_n = label(ublock, neighbors=8, return_num=True, background=9999)
-    if 0 in np.unique(labels_block):
-        labels_block += 1
-
-    labels_unique = np.unique(labels_block)
     # create adjacency graph from labeled block
     G = graph.RAG(labels_block)
-    # get the centroids from the labeled block
-    centroids = get_centroids(labels_block)
-    # create look-up-tables in both directions
-    lith_to_labels_lot = lithology_labels_lot(lithologies, labels_block, block_original, labels_unique)
-    labels_to_lith_lot = labels_lithology_lot(labels_unique, labels_block, block_original)
-    # classify the edges (stratigraphic, across-fault)
-    classify_edges(G, centroids, block_original, fault_block)
+    rprops = regionprops(labels_block)  # get properties of uniquely labeles regions
+    centroids = get_centroids(rprops)  # unique region centroids coordinates
+
+    # classify edges (stratigraphic, fault)
+    classify_edges(G, centroids, fault_block)
+
+    # filter rogue pixel nodes from graph if wanted
+    if filter_rogue:
+        G, centroids = filter_region_areas(G, centroids, rprops, area_threshold=filter_threshold_area)
+        G = convert_node_labels_to_integers(G, first_label=1)
+        centroids = {i+1: coords for i, coords in enumerate(centroids.values())}
+
+    # enhanced node labeling containing fault block and lith id
+    if enhanced_labels:
+        labels = enhanced_labeling(G, rprops, lith_block, fault_block)
+        G = relabel_nodes(G, labels)  # relabel graph
+        centroids = get_centroids(rprops)  # redo centroids for updated labeling
+
     # compute the adjacency areas for each edge
     if areas_bool:
-        # TODO: 2d option (if slice only), right now it only works for 3d
-        compute_areas(G, labels_block)
+       compute_areas(G, labels_block)   # TODO: 2d option (if slice only), right now it only works for 3d
 
-    if not return_block:
-        return G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot
-    else:
-        return G, centroids, labels_unique, lith_to_labels_lot, labels_to_lith_lot, labels_block
+    # prep returned objects
+    topo = [G, centroids]
+
+    # keep option for old labeling for legacy support
+    if not enhanced_labels:  # create look-up-tables in both directions
+        topo.append(lithology_labels_lot(labels_block, block_original))
+        topo.append(labels_lithology_lot(labels_block, block_original))
+    if return_block:  # append the labeled block to return
+        topo.append(labels_block)
+    if return_rprops:  # append rprops to return
+        topo.append(rprops)
+
+    return tuple(topo)
+
+
+def enhanced_labeling(G, rprops, lith_block, fault_block):
+    """Relabel the given graph's nodes with scheme "{fault_id}_{lith_id}_{instance}"
+
+    Args:
+        G (skimage.future.graph.rag.RAG): Region adjacency graph object containing the adjacency topology graph.
+        rprops (list): List of regionprops object for each unique region of the model.
+        lith_block (np.ndarray): Lithology block model (3d shape).
+        fault_block (np.ndarray): Fault block model (3d shape).
+
+    Returns:
+        (dict): Mapping of old to new labels to be used with networkx.relabel_nodes(G, Labels_dict)
+    """
+    labels = []
+
+    for n, rp in zip(G.nodes(), rprops):
+        _c = tuple(np.array(rp.centroid).astype(int))  # centroid location
+        lid = lith_block[_c].astype(int)  # inquire lb
+        fid = fault_block[_c].astype(int)  # and fb id at centroid loc
+        label = str(fid) + "_" + str(lid)  # fuse label
+        labels.append(label)
+
+    # post-process for multiple lith region instances in single fault block
+    for label in labels:
+        ids = np.where(np.array(labels) == label)[0]
+        if len(ids) > 1:
+            for i, id_ in enumerate(ids):
+                if i > 0:
+                    labels[id_] += ("_" + chr(ord("a") + i))
+    # fuse into dict mapping new labels to old
+    labels = {n: l for n, l in zip(G.nodes(), labels)}
+
+    # fix rprop labels
+    for rprop, l in zip(rprops, labels.values()):
+        rprop.label = l
+
+    return labels
+
+
+def filter_region_areas(graph, centroids, rprops, area_threshold=10):
+    """
+    Filters nodes with region areas with an area below the given threshold (default: 10) from given graph.
+    Useful for filtering rogue pixels that throw off topology graph comparisons.
+
+    Args:
+        graph (skimage.future.graph.rag.RAG): Topology graph object to be filtered.
+        rprops (list): Region property objects (skimage.measure._regionprops._RegionProperties) for all nodes within given topology graph.
+    Keyword Args:
+        area_threshold (int): Region areas with number of pixels below or equal of this value will be removed. Default 10
+
+    Returns:
+        None (in-place removal)
+    """
+    from copy import deepcopy
+
+    if len(graph.nodes()) != len(rprops):   # failsafe if the function is run with mismatching rprops
+        return graph, centroids
+
+    ngraph = deepcopy(graph)
+    ncentroids = deepcopy(centroids)
+
+    for node, rprop in zip(graph.nodes(), rprops):
+        if rprop.area <= area_threshold:  # if region area is below given threshold area
+            ngraph.remove_node(node)  # then pop the node and all its edges
+            ncentroids.pop(node)  # pop centroid
+    return ngraph, ncentroids
 
 
 def compute_areas(G, labels_block):
@@ -168,14 +287,13 @@ def compute_areas(G, labels_block):
         G.adj[n2][n1]["area"] = area
 
 
-def classify_edges(G, centroids, lith_block, fault_block):
+def classify_edges(G, centroids, fault_block):
     """
     Classifies edges by type into stratigraphic or fault in "G.adj". Accessible via G.adj[node1][node2]["edge_type"]
 
     Args:
         G (skimage.future.graph.rag.RAG): Topology graph object.
         centroids (dict): Centroid dictionary {node id (int): tuple(x,y,z)}
-        lith_block (np.ndarray): Shaped lithology block model.
         fault_block (np.ndarray): Shaped fault block model.
 
     Returns:
@@ -210,21 +328,12 @@ def classify_edges(G, centroids, lith_block, fault_block):
             G.adj[n1][n2]["edge_type"] = "fault"
 
 
-def get_centroids(label_block):
-    """Get node centroids in 2d and 3d as {node id (int): tuple(x,y,z)}."""
-    _rprops = regionprops(label_block)
-    centroids = {}
-    for rp in _rprops:
-            centroids[rp.label] = rp.centroid
-    return centroids
-
-
-def lithology_labels_lot(lithologies, labels, block_original, labels_unique, verbose=0):
+def lithology_labels_lot(labels, block_original, verbose=0):
     """Create LOT from lithology id to label."""
     lot = {}
-    for lith in lithologies:
+    for lith in np.unique(block_original):
         lot[str(lith)] = {}
-    for l in labels_unique:
+    for l in np.unique(labels):
         if len(np.where(labels == l)) == 3:
             _x, _y, _z = np.where(labels == l)
             lith_id = np.unique(block_original[_x, _y, _z])[0]
@@ -239,16 +348,16 @@ def lithology_labels_lot(lithologies, labels, block_original, labels_unique, ver
     return lot
 
 
-def labels_lithology_lot(labels_unique, labels, block_original, verbose=0):
+def labels_lithology_lot(labels, lb, verbose=0):
     """Create LOT from label to lithology id."""
     lot = {}
-    for l in labels_unique:
+    for l in np.unique(labels):
         if len(np.where(labels == l)) == 3:
             _x, _y, _z = np.where(labels == l)
-            lith_id = np.unique(block_original[_x, _y, _z])[0]
+            lith_id = np.unique(lb[_x, _y, _z])[0]
         else:
             _x, _z = np.where(labels == l)
-            lith_id = np.unique(block_original[_x, _z])[0]
+            lith_id = np.unique(lb[_x, _z])[0]
         if verbose:
             print(l)
         lot[l] = str(lith_id)
@@ -287,23 +396,39 @@ def compute_adj_shape(n1, n2, labels_block):
 
 
 def compare_graphs(G1, G2):
-    """
-    Compares two graph objects using the Jaccard-Index.
+    """Jaccard index for numeric topology graph comparisons.
 
     Args:
         G1 (skimage.future.graph.rag.RAG): Topology graph object.
         G2 (skimage.future.graph.rag.RAG): Another topology graph object.
 
     Returns:
-        (float): Jaccard-Index
+        (float): Jaccard-Index (1 if identical graph, 0 if entirely dissimilar)
+
+    Source:
+        http://dataconomy.com/2015/04/implementing-the-five-most-popular-similarity-measures-in-python/
     """
-    intersection = 0
-    union = G1.number_of_edges()
+    intersection_cardinality = len(set.intersection(*[set(G1.edges()), set(G2.edges())]))
+    union_cardinality = len(set.union(*[set(G1.edges()), set(G2.edges())]))
+    return intersection_cardinality / float(union_cardinality)
 
-    for n1, n2 in G1.edges():
-        if G2.has_edge(n1, n2):
-            intersection += 1
-        else:
-            union += 1
 
-    return intersection / union
+def convert_centroids_2d(centroids, direction="y"):
+    """
+    Args:
+        centroids (dict): Dictionary containing graph node numbers as keys and centroid coordinates (x,z,y) as values
+        (as given by skimage.measure.regionprops function).
+        direction (str, optional): Specifies for which direction to flatten the coordinates from 3D to 2D (default: "y").
+
+    Returns:
+        (dict): Dictionary containing graph node numbers as keys an centroid coordinates in 2D depending on direction
+    """
+    centroids_2d = {}
+    for key, val in centroids.items():
+        if direction == "y":
+            centroids_2d[key] = (val[0], val[2])
+        elif direction == "x":
+            centroids_2d[key] = (val[1], val[2])
+        elif direction == "z":
+            centroids_2d[key] = (val[0], val[1])
+    return centroids_2d

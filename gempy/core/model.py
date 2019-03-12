@@ -221,6 +221,19 @@ class DataMutation(object):
         self.rescaling.surface_points = surface_points
         self.interpolator.surface_points = surface_points
 
+    @_setdoc([Faults.set_is_fault.__doc__])
+    def set_is_finite_fault(self, series_fault=None):
+        s = self.faults.set_is_finite_fault(series_fault)  # change df in Fault obj
+        print(s)
+        # change shared theano variable for infinite factor
+        self.interpolator.set_theano_inf_factor()
+
+
+    def set_interface_object(self, interfaces: Surfaces, update_model=True):
+        self.interfaces = interfaces
+        self.rescaling.interfaces = interfaces
+        self.interpolator.interfaces = interfaces
+
         if update_model is True:
             self.update_from_surface_points()
 
