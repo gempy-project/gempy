@@ -462,63 +462,44 @@ class Surfaces(object):
 
         """
         self.sequential_pile = StratigraphicPile(self.series, self.df)
+#colors
+    def generate_colordict(self):
+        gp_defcols = [
+            ['#325916', '#5DA629', '#78CB68', '#84C47A', '#129450', '#185B3B', '#122414', '#56ae57', '#a8ff04',
+             '#69d84f', '#b2fba5', '#63b365',
+             '#8ee53f', '#b7e1a1', '#728f02', '#23c48b', '#8fae22'],
+            ['#F2930C', '#F24C0C', '#E00000', '#7f1613', '#da2d1d', '#f68b17', '#fee936', '#571212',
+             '#CF522A', '#990902', '#E03809', '#E85400'],
+            ['#26BEFF', '#227dac', '#443988', '#2A186C', '#0F5B90', '#3C9387', '#443988', '#9f0052',
+             '#ff3f20', '#ffbe00']]
+        for i, series in enumerate(self.df['series'].unique()):
+            form_in_series = list(self.df.loc[self.df['series'] == series, 'surface'])
+            newcols = gp_defcols[i][:len(form_in_series)]
+            if i == 0:
+                colordict = dict(zip(form_in_series, newcols))
+            else:
+                colordict.update(zip(form_in_series, newcols))
+        #print(colordict)
+        return colordict
 
-
-    """
-    def set_colors(self, colordict = None):
-        if colordict:
-            for surf, color in colordict.items():
-                assert surf in list(self.df['surface']), str(surf)+' is not a model surface'
-                assert re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color), str(color)+'is not a HEX color code'
-                self.df.loc[self.df['surface'] == surf, 'color'] = color
-            return self
-        else:
-            gp_defcols = [['#227dac', '#443988', '#9f0052', '#ff3f20', '#ffbe00'],
-                 ['#325916', '#5DA629', '#F2D43D', '#BD5D0F', '#52263B'],
-                 ['#26BEFF', '#39423D', '#1C2242', '#677D2A', '#8C4B3E'],
-                 ['#A44701', '#560901', '#370606', '#062736', '#487878']]
-
-            for i, series in enumerate(self.df['series'].unique()):
-                form_in_series = self.df.loc[self.df['series'] == series]
-                self.df.loc[form_in_series.index, 'color'] = gp_defcols[i][:len(form_in_series)]
-            return self
-    """
     def set_colors(self, colordict=None):
+        if colordict == None:
+            colordict = self.generate_colordict()
+        for surf, color in colordict.items():
+            assert surf in list(self.df['surface']), str(surf) + ' is not a model surface'
+            assert re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color), str(color) + 'is not a HEX color code'
+            self.df.loc[self.df['surface'] == surf, 'color'] = color
 
-        if colordict:
-            for surf, color in colordict.items():
-                assert surf in list(self.df['surface']), str(surf) + ' is not a model surface'
-                assert re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color), str(color) + 'is not a HEX color code'
-                self.df.loc[self.df['surface'] == surf, 'color'] = color
-            return self
+    #def update_colors(self):
+        #self.df.loc[-1, 'color'] = self.generate_colorlist()[-1]
 
-        else:
-            gp_defcols = [['#227dac', '#443988', '#9f0052', '#ff3f20', '#ffbe00'],
-                          ['#325916', '#5DA629', '#F2D43D', '#BD5D0F', '#52263B'],
-                          ['#26BEFF', '#39423D', '#1C2242', '#677D2A', '#8C4B3E'],
-                          ['#A44701', '#560901', '#370606', '#062736', '#487878']]
-
-            new_colors = []
-            for i, series in enumerate(
-                    self.df['series'].unique()):  # do not overwrite colors that were changed manually
-                form_in_series = self.df.loc[self.df['series'] == series]
-                newcols = gp_defcols[i][:len(form_in_series)]
-                for item in newcols:
-                    new_colors.append(item)
-
-            ids = self.df[self.df['color'].isnull()]
-            print(ids)
-            #self.df.index.get_loc('')
-
-
-            indexes = self.df[self.df['color'].isnull()].index #.get_loc('color')
-            print('idx', indexes)
-            for index in indexes:
-                self.df.loc[index, 'color'] = new_colors[index]
-
-            ids = self.df[self.df['color'].isnull()]['id']
-            print(ids)
-
+    def update_colors(self):
+        new_colors = self.generate_colordict()
+        #print(new_colors)
+        form2col = list(self.df.loc[self.df['color'].isnull(), 'surface'])
+        #print(form2col)
+        colordict = dict(zip(form2col, [new_colors[x] for x in form2col]))
+        self.set_colors(colordict)
 
 # region set formation names
     def set_surfaces_names(self, list_names: list, update_df=True):
@@ -548,7 +529,7 @@ class Surfaces(object):
             self.set_id()
             self.set_basement()
             self.set_order_surfaces()
-            self.set_colors()
+            self.update_colors()
             self.update_sequential_pile()
         return True
 
@@ -577,7 +558,7 @@ class Surfaces(object):
             self.set_id()
             self.set_basement()
             self.set_order_surfaces()
-            self.set_colors()
+            self.update_colors()
             self.update_sequential_pile()
         return True
 
