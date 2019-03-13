@@ -227,7 +227,8 @@ def get_extent(model: Model):
 # region Point-Orientation functionality
 @_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
 def read_data(geo_model: Model, path_i=None, path_o=None, **kwargs):
-    geo_model.read_data(path_i, path_o, **kwargs)
+    if path_i is not None or path_o is not None:
+        geo_model.read_data(path_i, path_o, **kwargs)
     return True
 
 

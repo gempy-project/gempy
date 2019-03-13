@@ -556,6 +556,7 @@ class Surfaces(object):
         if self.df.shape[0] == 0:
             # TODO DEBUG: I am not sure that surfaces always has at least one entry. Check it
             self.set_surfaces_names(['surface1', 'basement'])
+        return self
 
     def set_surfaces_names_from_surface_points(self, surface_points):
         self.set_surfaces_names(surface_points.df['surface'].unique())

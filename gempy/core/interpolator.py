@@ -48,7 +48,7 @@ class Interpolator(object):
         self.faults = faults
 
         self.dtype = additional_data.options.df.loc['values', 'dtype']
-        self.input_matrices = self.get_input_matrix()
+       # DEP self.input_matrices = self.get_input_matrix()
 
         self.theano_graph = self.create_theano_graph(additional_data, inplace=False)
 
@@ -67,7 +67,7 @@ class Interpolator(object):
             # TODO look for the right type in the theano library
             theano graph
         """
-        import gempy.core.theano_graph as tg
+        import gempy.core.theano.theano_graph as tg
         import importlib
         importlib.reload(tg)
 
