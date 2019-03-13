@@ -243,7 +243,7 @@ class QgridModelIntegration(object):
     def create_surface_points_qgrid(self):
         surface_points_object = self._geo_model.surface_points
 
-        self._geo_model.set_default_interface()
+        self._geo_model.set_default_surface_point()
 
         qgrid_widget = qgrid.show_grid(
             surface_points_object.df,
