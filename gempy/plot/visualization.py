@@ -1682,3 +1682,81 @@ class ipyvolumeVisualization:
         ipv.zlim(self.geo_model.grid.extent[4], self.geo_model.grid.extent[5])
         ipv.show()
         return None
+
+
+def get_fault_ellipse_params(fault_points:np.ndarray):
+    """Get the fault ellipse parameters a and b from griven fault points (should
+    be the rotated ones.
+
+    Args:
+        fault_points (np.ndarray): Fault points
+
+    Returns:
+        (tuple) main axis scalars of fault ellipse a,b
+    """
+    a = (fault_points[:, 0].max() - fault_points[:, 0].min()) / 2
+    b = (fault_points[:, 1].max() - fault_points[:, 1].min()) / 2
+    return a, b
+
+
+def get_fault_rotation_objects(geo_model, fault:str):
+    """Gets fault rotation objects: rotation matrix U, the rotated fault points,
+    rotated centroid, and the ellipse parameters a and b.
+
+    Args:
+        geo_model (gempy.core.model.Model): gempy geo_model object
+        fault (str): Name of the fault surface.
+
+    Returns:
+        U (np.ndarray): Rotation matrix.
+        rfpts (np.ndarray): Rotated fault points.
+        rctr (np.array): Centroid of the rotated fault points.
+        a (float): Horizontal ellipse parameter.
+        b (float): Vertical ellipse parameter.
+    """
+    filter_ = geo_model.surface_points.df.surface == fault
+    fpts = geo_model.surface_points.df[filter_][["X", "Y", "Z"]].values.T
+    ctr = np.mean(fpts, axis=1)
+    x = fpts - ctr.reshape((-1, 1))
+    M = np.dot(x, x.T)
+    U = np.linalg.svd(M)[2]
+    rfpts = np.dot(fpts.T, U)
+    rctr = np.mean(rfpts, axis=0)
+
+    a, b = get_fault_ellipse_params(rfpts)
+    return U, rfpts, rctr, a, b
+
+
+def cut_finite_fault_surfaces(geo_model, ver:dict, sim:dict):
+    """Cut vertices and simplices for finite fault surfaces to finite fault ellipse
+
+    Args:
+        geo_model (gempy.core.model.Model): gempy geo_model object
+        ver (dict): Dictionary with surfaces as keys and vertices ndarray as values.
+        sim (dict): Dictionary with surfaces as keys and simplices ndarray as values.
+
+    Returns:
+        ver, sim (dict, dict): Updated vertices and simplices with finite fault
+            surfaces cut to ellipses.
+    """
+    from scipy.spatial import Delaunay
+    from copy import copy
+
+    finite_ver = copy(ver)
+    finite_sim = copy(sim)
+
+    finite_fault_series = list(geo_model.faults.df[geo_model.faults.df["isFinite"] == True].index)
+    finite_fault_surfaces = list(
+        geo_model.surfaces.df[geo_model.surfaces.df.series == finite_fault_series].surface.unique())
+
+    for fault in finite_fault_surfaces:
+        U, fpoints_rot, fctr_rot, a, b = get_fault_rotation_objects(geo_model, "Fault 1")
+        rpoints = np.dot(ver[fault], U)
+        r = (rpoints[:, 0] - fctr_rot[0]) ** 2 / a ** 2 + (rpoints[:, 1] - fctr_rot[1]) ** 2 / b ** 2
+
+        finite_ver[fault] = finite_ver[fault][r < 1]
+        delaunay = Delaunay(finite_ver[fault])
+        finite_sim[fault] = delaunay.simplices
+        # finite_sim[fault] = finite_sim[fault][np.isin(sim[fault], np.argwhere(r<0.33))]
+
+    return finite_ver, finite_sim
