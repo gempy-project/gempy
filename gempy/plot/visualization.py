@@ -1719,8 +1719,9 @@ def get_fault_rotation_objects(geo_model, fault:str):
     ctr = np.mean(fpts, axis=1)
     x = fpts - ctr.reshape((-1, 1))
     M = np.dot(x, x.T)
-    U = np.linalg.svd(M)[2]
-    rfpts = np.dot(fpts.T, U)
+    U = np.linalg.svd(M)
+    rfpts = np.dot(fpts.T, U[0])
+    rfpts = np.dot(rfpts, U[-1])
     rctr = np.mean(rfpts, axis=0)
 
     a, b = get_fault_ellipse_params(rfpts)
@@ -1751,7 +1752,8 @@ def cut_finite_fault_surfaces(geo_model, ver:dict, sim:dict):
 
     for fault in finite_fault_surfaces:
         U, fpoints_rot, fctr_rot, a, b = get_fault_rotation_objects(geo_model, "Fault 1")
-        rpoints = np.dot(ver[fault], U)
+        rpoints = np.dot(ver[fault], U[0])
+        rpoints = np.dot(rpoints, U[-1])
         r = (rpoints[:, 0] - fctr_rot[0]) ** 2 / a ** 2 + (rpoints[:, 1] - fctr_rot[1]) ** 2 / b ** 2
 
         finite_ver[fault] = finite_ver[fault][r < 1]
