@@ -1360,23 +1360,51 @@ class TheanoGraph(object):
             return T.le(Zx, a) * T.ge(Zx, b) * n_surface_0
 
     def select_finite_faults(self):
+        # get data points of fault
         fault_points = T.vertical_stack(T.stack(self.ref_layer_points[0]), self.rest_layer_points).T
-        ctr = T.mean(fault_points, axis=1)
-        x = fault_points - ctr.reshape((-1, 1))
-        M = T.dot(x, x.T)
-        U = T.nlinalg.svd(M)[2]
-        rotated_x = T.dot(self.x_to_interpolate(), U)
-        rotated_fault_points = T.dot(fault_points.T, U)
-        rotated_ctr = T.mean(rotated_fault_points, axis=0)
-        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min())/2 + self.inf_factor[self.n_surface_op[0]-1]
-        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min())/2 + self.inf_factor[self.n_surface_op[0]-1]
-        sel = T.lt((rotated_x[:, 0] - rotated_ctr[0])**2/a_radio**2 + (rotated_x[:, 1] - rotated_ctr[1])**2/b_radio**2,
-                   1)
+        # compute centroid of fault points
+        centroid = T.mean(fault_points, axis=1)
+        # compute difference of fault points from centroid
+        x = fault_points - centroid.reshape((-1, 1))
+        M = T.dot(x, x.T)  # same as np.cov(x) * 2
+        U = T.nlinalg.svd(M)  # is this the normal of the plane?
+        # overall this looks like some sort of plane fit to me
+        rotated_x = T.dot(self.x_to_interpolate(), U[0])  # this rotates ALL grid points that need to be interpolated
+        # rotated_x = T.dot(rotated_x, U[-1])  # rotate them with both rotation matrices
+        rotated_fault_points = T.dot(fault_points.T, U[0])  # same with fault points
+        # rotated_fault_points = T.dot(rotated_fault_points, U[-1])  # same
+        rotated_ctr = T.mean(rotated_fault_points, axis=0)  # and compute centroid of rotated points
+        # a factor: horizontal vector of ellipse of normal fault
+        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()) / 2 \
+                  + self.inf_factor[self.n_surface_op[0] - 1]
+        # b_factor: vertical vector of ellipse
+        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()) / 2 \
+                  + self.inf_factor[self.n_surface_op[0] - 1]
+
+        # sel = T.lt((rotated_x[:, 0] - rotated_ctr[0])**2 / a_radio**2 +
+        #            (rotated_x[:, 1] - rotated_ctr[1])**2 / b_radio**2,
+        #            1)
+
+        # ellipse equation: (x, c_x)^2 / a^2 +  (y - c_y)^2 / b^2 <= 1 if in ellipse
+        ellipse_factor = (rotated_x[:,0] - rotated_ctr[0])**2 / a_radio**2 + \
+            (rotated_x[:, 1] - rotated_ctr[1])**2 / b_radio**2
 
         if "select_finite_faults" in self.verbose:
-            sel = theano.printing.Print("scalar_field_iter")(sel)
+            ellipse_factor = theano.printing.Print("h")(ellipse_factor)
 
-        return sel
+        # h_factor = 1 - h
+        # if "select_finite_faults" in self.verbose:
+        #     h_factor = theano.printing.Print("h_factor")(h_factor)
+
+        # because we select all grid points as rotated_x, the selection here is
+        # a boolean for all grid points: True if in ellipse, False if outside ellipse
+
+        # if "select_finite_faults" in self.verbose:
+        #     sel = theano.printing.Print("scalar_field_iter")(sel)
+            # sum of boolean array sel is in my example: 38301
+            # so I guess this selects all grid points affected by this finite fault
+
+        return ellipse_factor  # sel
 
     def block_series(self, slope=5000, weights=None):
         """
@@ -1459,7 +1487,7 @@ class TheanoGraph(object):
 
         return Z_x, partial_block
 
-    def block_fault(self, slope=50):
+    def block_fault(self, slope=50):  # TODO: slope is not used anywhere
         """
         Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
 
@@ -1479,27 +1507,45 @@ class TheanoGraph(object):
         # Value of the potential field at the surface_points of the computed series
         self.scalar_field_at_surface_points_values = Z_x[-2 *(self.len_points): -self.len_points][self.npf_op]
 
+        # TODO: what are these values? the maximum and minimum of the scalar field? why? what for?
         max_pot = T.max(Z_x)
         # max_pot = theano.printing.Print("max_pot")(max_pot)
 
         min_pot = T.min(Z_x)
-        #     min_pot = theano.printing.Print("min_pot")(min_pot)
+        # min_pot = theano.printing.Print("min_pot")(min_pot)
 
         # max_pot_sigm = 2 * max_pot - self.scalar_field_at_surface_points_values[0]
         # min_pot_sigm = 2 * min_pot - self.scalar_field_at_surface_points_values[-1]
 
-        boundaty_pad = (max_pot - min_pot) * 0.01
+        # TODO: some sort of boundary padding based on the max/min scalar field values?
+        boundary_pad = (max_pot - min_pot) * 0.01
         #l = slope / (max_pot - min_pot)  # (max_pot - min_pot)
 
-        # This is the different line with respect layers
-        l = T.switch(self.select_finite_faults(), 5000 / (max_pot - min_pot), 50 / (max_pot - min_pot))
-        #  l = theano.printing.Print("l")(l)
+        ellipse_factor = self.select_finite_faults()
+        ellipse_factor_rectified = T.switch(ellipse_factor < 1., ellipse_factor, 1.)
+
+        if "select_finite_faults" in self.verbose:
+            ellipse_factor_rectified = theano.printing.Print("h_factor_rectified")(ellipse_factor_rectified)
+
+        if "select_finite_faults" in self.verbose:
+            min_pot = theano.printing.Print("min_pot")(min_pot)
+            max_pot = theano.printing.Print("max_pot")(max_pot)
+
+        self.not_l = theano.shared(50.)
+        self.ellipse_factor_exponent = theano.shared(2)
+        # sigmoid_slope = (self.not_l * (1 / ellipse_factor_rectified)**3) / (max_pot - min_pot)
+        sigmoid_slope = 950 - 950 * ellipse_factor_rectified ** self.ellipse_factor_exponent + self.not_l
+        # l = T.switch(self.select_finite_faults(), 5000 / (max_pot - min_pot), 50 / (max_pot - min_pot))
+
+        if "select_finite_faults" in self.verbose:
+            sigmoid_slope = theano.printing.Print("l")(sigmoid_slope)
 
         # A tensor with the values to segment
+        # TODO: what values to segment what, what is being stacked here exactly
         scalar_field_iter = T.concatenate((
-            T.stack([max_pot + boundaty_pad]),
+            T.stack([max_pot + boundary_pad]),
             self.scalar_field_at_surface_points_values,
-            T.stack([min_pot - boundaty_pad])
+            T.stack([min_pot - boundary_pad])
         ))
 
         if "scalar_field_iter" in self.verbose:
@@ -1508,7 +1554,7 @@ class TheanoGraph(object):
         n_surface_op_float_sigmoid = T.repeat(self.n_surface_op_float[[0], :], 2, axis=1)
 
         # TODO: instead -1 at the border look for the average distance of the input!
-        n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], -1)
+        n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, 1], -1)
         # - T.sqrt(T.square(n_surface_op_float_sigmoid[0] - n_surface_op_float_sigmoid[2])))
 
         n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, -1], -1)
@@ -1525,7 +1571,7 @@ class TheanoGraph(object):
             outputs_info=None,
             sequences=[dict(input=scalar_field_iter, taps=[0, 1]),
                        T.arange(0, n_surface_op_float_sigmoid.shape[1], 2, dtype='int64')],
-            non_sequences=[Z_x, l, n_surface_op_float_sigmoid, drift],
+            non_sequences=[Z_x, sigmoid_slope, n_surface_op_float_sigmoid, drift],
             name='Looping compare',
             profile=False,
             return_list=False)
