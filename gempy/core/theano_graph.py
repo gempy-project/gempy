@@ -1487,7 +1487,7 @@ class TheanoGraph(object):
 
         return Z_x, partial_block
 
-    def block_fault(self, slope=50):  # TODO: slope is not used anywhere
+    def block_fault(self, slope=50):  #
         """
         Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
 
@@ -1507,7 +1507,6 @@ class TheanoGraph(object):
         # Value of the potential field at the surface_points of the computed series
         self.scalar_field_at_surface_points_values = Z_x[-2 *(self.len_points): -self.len_points][self.npf_op]
 
-        # TODO: what are these values? the maximum and minimum of the scalar field? why? what for?
         max_pot = T.max(Z_x)
         # max_pot = theano.printing.Print("max_pot")(max_pot)
 
@@ -1517,7 +1516,6 @@ class TheanoGraph(object):
         # max_pot_sigm = 2 * max_pot - self.scalar_field_at_surface_points_values[0]
         # min_pot_sigm = 2 * min_pot - self.scalar_field_at_surface_points_values[-1]
 
-        # TODO: some sort of boundary padding based on the max/min scalar field values?
         boundary_pad = (max_pot - min_pot) * 0.01
         #l = slope / (max_pot - min_pot)  # (max_pot - min_pot)
 
@@ -1541,7 +1539,6 @@ class TheanoGraph(object):
             sigmoid_slope = theano.printing.Print("l")(sigmoid_slope)
 
         # A tensor with the values to segment
-        # TODO: what values to segment what, what is being stacked here exactly
         scalar_field_iter = T.concatenate((
             T.stack([max_pot + boundary_pad]),
             self.scalar_field_at_surface_points_values,
@@ -1552,8 +1549,8 @@ class TheanoGraph(object):
             scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
 
         n_surface_op_float_sigmoid = T.repeat(self.n_surface_op_float[[0], :], 2, axis=1)
-
         # TODO: instead -1 at the border look for the average distance of the input!
+
         n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, 1], -1)
         # - T.sqrt(T.square(n_surface_op_float_sigmoid[0] - n_surface_op_float_sigmoid[2])))
 
