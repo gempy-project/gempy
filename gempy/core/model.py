@@ -98,7 +98,7 @@ class DataMutation(object):
         self.grid.set_regular_grid(extent, resolution)
         self.update_from_grid()
 
-    def set_default_interface(self):
+    def set_default_surface_point(self):
         self.surface_points.set_default_surface_points()
         self.update_to_surface_points()
         self.update_from_surface_points()
@@ -111,6 +111,7 @@ class DataMutation(object):
     def set_default_surfaces(self):
         self.surfaces.set_default_surface_name()
         self.update_from_surfaces()
+        return self.surfaces
 
     def update_from_grid(self):
         """
