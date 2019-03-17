@@ -992,22 +992,21 @@ class InputData(object):
         try:
             # Check if there is already a df
             self.faults
-
-            try:
-                if any(self.faults.columns != self.series.columns):
+            if series_name:
+                self.faults['isFault'] = self.faults.index.isin(series_name)
+            else:
+                try:
+                    if any(self.faults.columns != self.series.columns):
+                        series_name = self.count_faults()
+                        self.faults = pn.DataFrame(index=self.series.columns, columns=['isFault'])
+                        self.faults['isFault'] = self.faults.index.isin(series_name)
+                except ValueError:
                     series_name = self.count_faults()
                     self.faults = pn.DataFrame(index=self.series.columns, columns=['isFault'])
                     self.faults['isFault'] = self.faults.index.isin(series_name)
-            except ValueError:
-                series_name = self.count_faults()
-                self.faults = pn.DataFrame(index=self.series.columns, columns=['isFault'])
-                self.faults['isFault'] = self.faults.index.isin(series_name)
-
-            if series_name:
-                self.faults['isFault'] = self.faults.index.isin(series_name)
 
         except AttributeError:
-
+            print("creating fautls")
             if not series_name:
                 series_name = self.count_faults()
                 self.faults = pn.DataFrame(index=self.series.columns, columns=['isFault'])
