@@ -1008,9 +1008,12 @@ class InputData(object):
         except AttributeError:
             print("creating fautls")
             if not series_name:
-                series_name = self.count_faults()
+                series_name_d = self.count_faults()
                 self.faults = pn.DataFrame(index=self.series.columns, columns=['isFault'])
-                self.faults['isFault'] = self.faults.index.isin(series_name)
+                self.faults['isFault'] = self.faults.index.isin(series_name_d)
+
+        if series_name:
+            self.faults['isFault'] = self.faults.index.isin(series_name)
 
         self.interfaces.loc[:, 'isFault'] = self.interfaces['series'].isin(self.faults.index[self.faults['isFault']])
         self.orientations.loc[:, 'isFault'] = self.orientations['series'].isin(self.faults.index[self.faults['isFault']])
