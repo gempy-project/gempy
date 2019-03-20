@@ -60,6 +60,11 @@ def save_model(model: Model, path=None):
     model.save_model(path)
     return True
 
+@_setdoc(Model.save_model.__doc__)
+def save_model_csv(model: Model, name, path=None):
+
+    model.save_model_csv(name, path)
+    return True
 
 @_setdoc(Model.load_model.__doc__)
 def load_model(path):

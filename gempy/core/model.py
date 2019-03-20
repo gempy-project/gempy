@@ -560,6 +560,21 @@ class Model(DataMutation):
             model = pickle.load(f)
             return model
 
+    def save_model_csv(self, name, path=None):
+        if not path:
+            path = './'
+        path = f'{path}/{name}'
+        if os.path.isdir(path):
+            print("Directory already exists, files will be overwritten")
+        else:
+            os.mkdir(f'{path}')
+        self.surface_points.df.to_csv(f'{path}/{name}_surface_points')
+        self.surfaces.df.to_csv(f'{path}/{name}_surfaces')
+        self.orientations.df.to_csv(f'{path}/{name}_orientations')
+        self.series.df.to_csv(f'{path}/{name}_series')
+        self.faults.df.to_csv(f'{path}/{name}_faults')
+        print('Model saved')
+
     def save_model_long_term(self):
         # TODO saving the main attributes in a seriealize way independent on the package i.e. surface_points and
         # TODO orientations categories_df, grid values etc.
