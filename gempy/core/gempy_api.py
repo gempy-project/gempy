@@ -414,7 +414,7 @@ def get_kriging_parameters(model: Model):
 
 
 # region Computing the model
-def compute_model(model: Model, compute_mesh=True)-> Solution:
+def compute_model(model: Model, compute_mesh=True, debug=False)-> Solution:
     """
     Computes the geological model and any extra output given in the additional data option.
 
@@ -439,9 +439,13 @@ def compute_model(model: Model, compute_mesh=True)-> Solution:
         'To compute the model is necessary at least 2 interface points per layer'
 
     sol = model.interpolator.theano_function(*i)
-    model.solutions.set_values(sol, compute_mesh=compute_mesh)
 
-    return model.solutions
+    if debug is True:
+        return sol
+    else:
+        model.solutions.set_values(sol, compute_mesh=compute_mesh)
+
+        return model.solutions
 
 
 def compute_model_at(new_grid: Union[Grid, ndarray], model: Model, compute_mesh=False):
