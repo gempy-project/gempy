@@ -568,11 +568,18 @@ class Model(DataMutation):
             print("Directory already exists, files will be overwritten")
         else:
             os.mkdir(f'{path}')
-        self.surface_points.df.to_csv(f'{path}/{name}_surface_points')
-        self.surfaces.df.to_csv(f'{path}/{name}_surfaces')
-        self.orientations.df.to_csv(f'{path}/{name}_orientations')
-        self.series.df.to_csv(f'{path}/{name}_series')
-        self.faults.df.to_csv(f'{path}/{name}_faults')
+        self.surface_points.df.to_csv(f'{path}/{name}_surface_points.csv')
+        self.surfaces.df.to_csv(f'{path}/{name}_surfaces.csv')
+        self.orientations.df.to_csv(f'{path}/{name}_orientations.csv')
+        self.series.df.to_csv(f'{path}/{name}_series.csv')
+        self.faults.df.to_csv(f'{path}/{name}_faults.csv')
+        self.additional_data.kriging_data.df.to_csv(f'{path}/{name}_kriging_data.csv')
+        self.additional_data.rescaling_data.df.to_csv(f'{path}/{name}_rescaling_data.csv')
+        self.additional_data.options.df.to_csv(f'{path}/{name}_options.csv')
+        np.save(f'{path}/{name}_extent.npy', self.grid.extent)
+        np.save(f'{path}/{name}_resolution.npy', self.grid.resolution)
+        #pn.DataFrame(np.array([self.grid.extent, self.grid.resolution]).reshape(1, -1),
+        #             columns=['extent', 'resolution']).to_csv(f'{path}/{name}_ext_res')
         print('Model saved')
 
     def save_model_long_term(self):

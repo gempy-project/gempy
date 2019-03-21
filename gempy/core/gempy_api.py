@@ -60,7 +60,7 @@ def save_model(model: Model, path=None):
     model.save_model(path)
     return True
 
-@_setdoc(Model.save_model.__doc__)
+@_setdoc(Model.save_model_csv.__doc__)
 def save_model_csv(model: Model, name, path=None):
 
     model.save_model_csv(name, path)
@@ -79,6 +79,61 @@ def load_model(path):
 
     """
     return Model.load_model(path)
+
+def load_model_csv(name, path=None):
+    """
+    Read InputData object from python pickle.
+
+    Args:
+       path (str): path where save the pickle
+
+    Returns:
+        :class:`gempy.data_management.InputData`
+
+    """
+    if not path:
+        path = './'
+    path = f'{path}/{name}'
+
+    # create model with extent and resolution from csv
+    geo_model = create_model()
+    init_data(geo_model, np.load(f'{path}/{name}_extent.npy'), np.load(f'{path}/{name}_resolution.npy'))
+
+    # set additonal data
+    geo_model.additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0)
+    geo_model.additional_data.rescaling_data.df = pn.read_csv(f'{path}/{name}_rescaling_data.csv', index_col=0)
+    geo_model.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0)
+
+    # do faults properly
+    geo_model.faults.df = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0)
+
+    # do series properly
+    geo_model.series.df = pn.read_csv(f'{path}/{name}_series.csv', index_col=0)
+    geo_model.series.df['order_series'] = geo_model.series.df['order_series'].astype(int)
+    geo_model.series.df['BottomRelation'] = geo_model.series.df['BottomRelation'].astype('category')
+    geo_model.series.df['BottomRelation'].cat.set_categories(['Erosion', 'Onlap'], inplace=True)
+
+    # do surfaces properly
+    geo_model.surfaces.df = pn.read_csv(f'{path}/{name}_surfaces.csv', index_col=0)
+    geo_model.surfaces.df['surface'].astype(str)
+    geo_model.surfaces.df['series'] = geo_model.surfaces.df['series'].astype('category')
+    geo_model.surfaces.df['series'].cat.set_categories(geo_model.series.df.index.values, inplace=True)
+
+    # do orientatoions properly
+    geo_model.orientations.df = pn.read_csv(f'{path}/{name}_orientations.csv', index_col=0)
+    geo_model.orientations.df['surface'] = geo_model.orientations.df['surface'].astype('category', copy=True)
+    geo_model.orientations.df['surface'].cat.set_categories(geo_model.surfaces.df['surface'].values, inplace=True)
+    geo_model.orientations.df['series'] = geo_model.orientations.df['series'].astype('category')
+    geo_model.orientations.df['series'].cat.set_categories(geo_model.series.df.index.values, inplace=True)
+
+    # do surface_points properly
+    geo_model.surface_points.df = pn.read_csv(f'{path}/{name}_surface_points.csv', index_col=0)
+    geo_model.surface_points.df['surface'] = geo_model.surface_points.df['surface'].astype('category', copy=True)
+    geo_model.surface_points.df['surface'].cat.set_categories(geo_model.surfaces.df['surface'].values, inplace=True)
+    geo_model.surface_points.df['series'] = geo_model.surface_points.df['series'].astype('category')
+    geo_model.surface_points.df['series'].cat.set_categories(geo_model.series.df.index.values, inplace=True)
+
+    return geo_model
 # endregion
 
 
