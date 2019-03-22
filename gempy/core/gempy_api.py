@@ -133,6 +133,15 @@ def load_model_csv(name, path=None):
     geo_model.surface_points.df['series'] = geo_model.surface_points.df['series'].astype('category')
     geo_model.surface_points.df['series'].cat.set_categories(geo_model.series.df.index.values, inplace=True)
 
+    geo_model.solutions.lith_block = np.load(f'{path}/{name}_lith_block.npy')
+    geo_model.solutions.scalar_field_lith = np.load(f"{path}/{name}_scalar_field_lith.npy")
+    geo_model.solutions.fault_blocks = np.load(f'{path}/{name}_fault_blocks.npy')
+    geo_model.solutions.scalar_field_faults = np.load(f'{path}/{name}_scalar_field_faults.npy')
+
+    geo_model.solutions.additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0)
+    geo_model.solutions.additional_data.rescaling_data.df = pn.read_csv(f'{path}/{name}_rescaling_data.csv', index_col=0)
+    geo_model.solutions.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0)
+
     return geo_model
 # endregion
 

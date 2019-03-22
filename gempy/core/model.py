@@ -568,6 +568,8 @@ class Model(DataMutation):
             print("Directory already exists, files will be overwritten")
         else:
             os.mkdir(f'{path}')
+
+        # save dataframes as csv
         self.surface_points.df.to_csv(f'{path}/{name}_surface_points.csv')
         self.surfaces.df.to_csv(f'{path}/{name}_surfaces.csv')
         self.orientations.df.to_csv(f'{path}/{name}_orientations.csv')
@@ -576,10 +578,17 @@ class Model(DataMutation):
         self.additional_data.kriging_data.df.to_csv(f'{path}/{name}_kriging_data.csv')
         self.additional_data.rescaling_data.df.to_csv(f'{path}/{name}_rescaling_data.csv')
         self.additional_data.options.df.to_csv(f'{path}/{name}_options.csv')
+
+        # save resolution and extent as npy
         np.save(f'{path}/{name}_extent.npy', self.grid.extent)
         np.save(f'{path}/{name}_resolution.npy', self.grid.resolution)
-        #pn.DataFrame(np.array([self.grid.extent, self.grid.resolution]).reshape(1, -1),
-        #             columns=['extent', 'resolution']).to_csv(f'{path}/{name}_ext_res')
+
+        # save solutions as npy
+        np.save(f'{path}/{name}_lith_block.npy' ,self.solutions.lith_block)
+        np.save(f'{path}/{name}_scalar_field_lith.npy', self.solutions.scalar_field_lith)
+        np.save(f'{path}/{name}_fault_blocks.npy', self.solutions.fault_blocks)
+        np.save(f'{path}/{name}_scalar_field_faults.npy', self.solutions.scalar_field_faults)
+
         print('Model saved')
 
     def save_model_long_term(self):
