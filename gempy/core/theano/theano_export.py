@@ -65,11 +65,11 @@ class TheanoExport(TheanoGeometry):
        #     self.weights = theano.shared(np.ones(10000), 'Weights to compute')
        # else:
        #     self.weights = weights_op(self.input_parameters_weights())
-        if weights_op is None:
-            self.weights = T.vector('kriging weights')
-        else:
-            self.weights_op = weights_op
-            self.weights = weights_op(*self.input_parameters_kriging())
+       #  if weights_op is None:
+       #      self.weights = T.vector('kriging weights')
+       #  else:
+       #      self.weights_op = weights_op
+       #      self.weights = weights_op(*self.input_parameters_kriging())
 
         #self.fault_matrix = T.zeros((0, self.grid_val_T.shape[0] + 2 * self.len_points))
 
@@ -81,6 +81,14 @@ class TheanoExport(TheanoGeometry):
         #self.npf = theano.shared(np.zeros(3, dtype='int32'), 'Number of points per surface accumulative')
 
         self.dot_version = False
+
+    def set_weights(self, weights_op = None):
+        if weights_op is None:
+            self.weights = T.vector('kriging weights')
+        else:
+            self.weights_op = weights_op
+            self.weights = weights_op(*self.input_parameters_kriging())
+
 
     def input_parameters_kriging(self):
         """
