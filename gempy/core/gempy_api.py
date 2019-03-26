@@ -54,20 +54,20 @@ def create_model(project_name='default_project'):
     return Model(project_name)
 
 
-@_setdoc(Model.save_model.__doc__)
+@_setdoc(Model.save_model_pickle.__doc__)
 def save_model(model: Model, path=None):
 
-    model.save_model(path)
+    model.save_model_pickle(path)
     return True
 
-@_setdoc(Model.save_model_csv.__doc__)
-def save_model_csv(model: Model, name, path=None):
+@_setdoc(Model.save_model.__doc__)
+def save_model(model: Model, name, path=None):
 
-    model.save_model_csv(name, path)
+    model.save_model(name, path)
     return True
 
-@_setdoc(Model.load_model.__doc__)
-def load_model(path):
+@_setdoc(Model.load_model_pickle.__doc__)
+def load_model_pickle(path):
     """
     Read InputData object from python pickle.
 
@@ -78,17 +78,19 @@ def load_model(path):
         :class:`gempy.data_management.InputData`
 
     """
-    return Model.load_model(path)
+    return Model.load_model_pickle(path)
 
-def load_model_csv(name, path=None):
+def load_model(name, path=None, recompile=True):
     """
-    Read InputData object from python pickle.
+    Loading model saved with model.save_model function.
 
     Args:
-       path (str): path where save the pickle
+        name: name of folder with saved files
+        path (str): path to folder directory
+        recompile (bool): if true, theano functions will be recompiled
 
     Returns:
-        :class:`gempy.data_management.InputData`
+        :class:`gempy.core.model
 
     """
     if not path:
@@ -98,6 +100,7 @@ def load_model_csv(name, path=None):
     # create model with extent and resolution from csv
     geo_model = create_model()
     init_data(geo_model, np.load(f'{path}/{name}_extent.npy'), np.load(f'{path}/{name}_resolution.npy'))
+    # rel_matrix = np.load()
 
     # set additonal data
     geo_model.additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0)
@@ -109,9 +112,32 @@ def load_model_csv(name, path=None):
 
     # do series properly
     geo_model.series.df = pn.read_csv(f'{path}/{name}_series.csv', index_col=0)
+    series_index = pn.CategoricalIndex(geo_model.series.df.index.values)
+    geo_model.series.df.index = pn.CategoricalIndex(series_index)
     geo_model.series.df['order_series'] = geo_model.series.df['order_series'].astype(int)
     geo_model.series.df['BottomRelation'] = geo_model.series.df['BottomRelation'].astype('category')
     geo_model.series.df['BottomRelation'].cat.set_categories(['Erosion', 'Onlap'], inplace=True)
+
+    geo_model.faults.df.index = pn.CategoricalIndex(series_index)
+
+    rel_matrix = np.zeros((geo_model.faults.df.index.shape[0],
+                           geo_model.faults.df.index.shape[0]))
+
+    geo_model.faults_relations_df = pn.DataFrame(rel_matrix, index=series_index,
+                                            columns=series_index, dtype='bool')
+
+    geo_model.faults.faults_relations_df.index = geo_model.faults.faults_relations_df.index.set_categories(series_index,
+                                                                                                 rename=True)
+    geo_model.faults.faults_relations_df.columns = geo_model.faults.faults_relations_df.columns.set_categories(series_index,
+                                                                                                     rename=True)
+
+    series_order = geo_model.series.df.index.values
+    for c in series_order:
+        geo_model.series.df.loc[c, 'BottomRelation'] = 'Erosion'
+        geo_model.faults.df.loc[c, 'isFault'] = False
+        geo_model.faults.faults_relations_df.loc[c, c] = False
+
+    geo_model.faults.faults_relations_df.fillna(False, inplace=True)
 
     # do surfaces properly
     geo_model.surfaces.df = pn.read_csv(f'{path}/{name}_surfaces.csv', index_col=0)
@@ -137,10 +163,15 @@ def load_model_csv(name, path=None):
     geo_model.solutions.scalar_field_lith = np.load(f"{path}/{name}_scalar_field_lith.npy")
     geo_model.solutions.fault_blocks = np.load(f'{path}/{name}_fault_blocks.npy')
     geo_model.solutions.scalar_field_faults = np.load(f'{path}/{name}_scalar_field_faults.npy')
+    geo_model.solutions.gradient = np.load(f'{path}/{name}_gradient.npy')
+    geo_model.solutions.values_block = np.load(f'{path}/{name}_values_block.npy')
 
     geo_model.solutions.additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0)
     geo_model.solutions.additional_data.rescaling_data.df = pn.read_csv(f'{path}/{name}_rescaling_data.csv', index_col=0)
     geo_model.solutions.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0)
+
+    if recompile is True:
+        set_interpolation_data(geo_model, verbose=[0])
 
     return geo_model
 # endregion

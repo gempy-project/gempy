@@ -515,7 +515,7 @@ class Model(DataMutation):
     def new_model(self, name_project='default_project'):
         self.__init__(name_project)
 
-    def save_model(self, path=False):
+    def save_model_pickle(self, path=False):
         """
         Short term model storage. Object to a python pickle (serialization of python). Be aware that if the dependencies
         versions used to export and import the pickle differ it may give problems
@@ -542,7 +542,7 @@ class Model(DataMutation):
         return True
 
     @staticmethod
-    def load_model(path):
+    def load_model_pickle(path):
         """
         Read InputData object from python pickle.
 
@@ -560,7 +560,17 @@ class Model(DataMutation):
             model = pickle.load(f)
             return model
 
-    def save_model_csv(self, name, path=None):
+    def save_model(self, name, path=None):
+        """
+        Save model in new folder. Input data is saved as csv files. Solutions, extent and resolutions are saved as npy.
+
+        Args:
+            name (str): name of the newly created folder and the part of the files name
+            path (str): path where save the model folder.
+
+        Returns:
+            True
+        """
         if not path:
             path = './'
         path = f'{path}/{name}'
@@ -588,13 +598,10 @@ class Model(DataMutation):
         np.save(f'{path}/{name}_scalar_field_lith.npy', self.solutions.scalar_field_lith)
         np.save(f'{path}/{name}_fault_blocks.npy', self.solutions.fault_blocks)
         np.save(f'{path}/{name}_scalar_field_faults.npy', self.solutions.scalar_field_faults)
+        np.save(f'{path}/{name}_gradient.npy', self.solutions.gradient)
+        np.save(f'{path}/{name}_values_block.npy', self.solutions.values_block)
 
-        print('Model saved')
-
-    def save_model_long_term(self):
-        # TODO saving the main attributes in a seriealize way independent on the package i.e. surface_points and
-        # TODO orientations categories_df, grid values etc.
-        pass
+        return True
 
     def get_data(self, itype='data', numeric=False):
         """
