@@ -121,26 +121,18 @@ def load_model(name, path=None, recompile=True):
     geo_model.faults.df = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0,
                                       dtype={'isFault': 'bool', 'isFinite': 'bool'})
     geo_model.faults.df.index = series_index
-
-
     # do faults relations properly - this is where I struggle
     rel_matrix = np.zeros((geo_model.faults.df.index.shape[0],
                            geo_model.faults.df.index.shape[0]))
 
-    geo_model.faults_relations_df = pn.DataFrame(rel_matrix, index=series_index,
-                                            columns=series_index, dtype='bool')
+    geo_model.faults.faults_relations_df = pn.read_csv(f'{path}/{name}_faults_relations.csv', index_col=0)
 
-    geo_model.faults.faults_relations_df.index = geo_model.faults.faults_relations_df.index.set_categories(series_index,
-                                                                                                 rename=True)
-    geo_model.faults.faults_relations_df.columns = geo_model.faults.faults_relations_df.columns.set_categories(series_index,
-                                                                                                     rename=True)
+    geo_model.faults.faults_relations_df.index = series_index #geo_model.faults.faults_relations_df.index.set_categories(series_index,
+                                                                                                 #rename=True)
+    geo_model.faults.faults_relations_df.columns = series_index #geo_model.faults.faults_relations_df.columns.set_categories(series_index,
+                                                                                                     #rename=True)
 
-    series_order = geo_model.series.df.index.values
-    for c in series_order:
-        #geo_model.faults.df.loc[c, 'isFault'] = False
-        geo_model.faults.faults_relations_df.loc[c, c] = False
-
-    geo_model.faults.faults_relations_df.fillna(False, inplace=True)
+    #geo_model.faults.faults_relations_df.fillna(False, inplace=True)
 
     # do surfaces properly
     geo_model.surfaces.df = pn.read_csv(f'{path}/{name}_surfaces.csv', index_col=0,

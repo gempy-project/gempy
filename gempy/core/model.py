@@ -585,6 +585,7 @@ class Model(DataMutation):
         self.orientations.df.to_csv(f'{path}/{name}_orientations.csv')
         self.series.df.to_csv(f'{path}/{name}_series.csv')
         self.faults.df.to_csv(f'{path}/{name}_faults.csv')
+        self.faults.faults_relations_df.to_csv(f'{path}/{name}_faults_relations.csv')
         self.additional_data.kriging_data.df.to_csv(f'{path}/{name}_kriging_data.csv')
         self.additional_data.rescaling_data.df.to_csv(f'{path}/{name}_rescaling_data.csv')
         self.additional_data.options.df.to_csv(f'{path}/{name}_options.csv')
