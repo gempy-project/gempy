@@ -97,29 +97,33 @@ def load_model(name, path=None, recompile=True):
         path = './'
     path = f'{path}/{name}'
 
-    # create model with extent and resolution from csv
+    # create model with extent and resolution from csv - check
     geo_model = create_model()
     init_data(geo_model, np.load(f'{path}/{name}_extent.npy'), np.load(f'{path}/{name}_resolution.npy'))
     # rel_matrix = np.load()
 
-    # set additonal data
+    # set additonal data - needs proper dtypes, how does it work with arrays ???
     geo_model.additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0)
     geo_model.additional_data.rescaling_data.df = pn.read_csv(f'{path}/{name}_rescaling_data.csv', index_col=0)
     geo_model.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0)
 
-    # do faults properly
-    geo_model.faults.df = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0)
-
-    # do series properly
-    geo_model.series.df = pn.read_csv(f'{path}/{name}_series.csv', index_col=0)
+    # do series properly - this needs proper check
+    geo_model.series.df = pn.read_csv(f'{path}/{name}_series.csv', index_col=0,
+                                                dtype={'order_series': 'int32', 'BottomRelation': 'category'})
     series_index = pn.CategoricalIndex(geo_model.series.df.index.values)
-    geo_model.series.df.index = pn.CategoricalIndex(series_index)
-    geo_model.series.df['order_series'] = geo_model.series.df['order_series'].astype(int)
-    geo_model.series.df['BottomRelation'] = geo_model.series.df['BottomRelation'].astype('category')
+    # geo_model.series.df.index = pn.CategoricalIndex(series_index)
+    geo_model.series.df.index = series_index
     geo_model.series.df['BottomRelation'].cat.set_categories(['Erosion', 'Onlap'], inplace=True)
 
-    geo_model.faults.df.index = pn.CategoricalIndex(series_index)
+    cat_series = geo_model.series.df.index.values
 
+    # do faults properly - check
+    geo_model.faults.df = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0,
+                                      dtype={'isFault': 'bool', 'isFinite': 'bool'})
+    geo_model.faults.df.index = series_index
+
+
+    # do faults relations properly - this is where I struggle
     rel_matrix = np.zeros((geo_model.faults.df.index.shape[0],
                            geo_model.faults.df.index.shape[0]))
 
@@ -133,32 +137,39 @@ def load_model(name, path=None, recompile=True):
 
     series_order = geo_model.series.df.index.values
     for c in series_order:
-        geo_model.series.df.loc[c, 'BottomRelation'] = 'Erosion'
-        geo_model.faults.df.loc[c, 'isFault'] = False
+        #geo_model.faults.df.loc[c, 'isFault'] = False
         geo_model.faults.faults_relations_df.loc[c, c] = False
 
     geo_model.faults.faults_relations_df.fillna(False, inplace=True)
 
     # do surfaces properly
-    geo_model.surfaces.df = pn.read_csv(f'{path}/{name}_surfaces.csv', index_col=0)
-    geo_model.surfaces.df['surface'].astype(str)
-    geo_model.surfaces.df['series'] = geo_model.surfaces.df['series'].astype('category')
-    geo_model.surfaces.df['series'].cat.set_categories(geo_model.series.df.index.values, inplace=True)
+    geo_model.surfaces.df = pn.read_csv(f'{path}/{name}_surfaces.csv', index_col=0,
+                                            dtype={'surface': 'str', 'series': 'category',
+                                                   'order_surfaces': 'int64', 'isBasement': 'bool', 'id': 'int64'})
+    geo_model.surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
 
-    # do orientatoions properly
-    geo_model.orientations.df = pn.read_csv(f'{path}/{name}_orientations.csv', index_col=0)
-    geo_model.orientations.df['surface'] = geo_model.orientations.df['surface'].astype('category', copy=True)
-    geo_model.orientations.df['surface'].cat.set_categories(geo_model.surfaces.df['surface'].values, inplace=True)
-    geo_model.orientations.df['series'] = geo_model.orientations.df['series'].astype('category')
-    geo_model.orientations.df['series'].cat.set_categories(geo_model.series.df.index.values, inplace=True)
+    cat_surfaces = geo_model.surfaces.df['surface'].values
 
-    # do surface_points properly
-    geo_model.surface_points.df = pn.read_csv(f'{path}/{name}_surface_points.csv', index_col=0)
-    geo_model.surface_points.df['surface'] = geo_model.surface_points.df['surface'].astype('category', copy=True)
-    geo_model.surface_points.df['surface'].cat.set_categories(geo_model.surfaces.df['surface'].values, inplace=True)
-    geo_model.surface_points.df['series'] = geo_model.surface_points.df['series'].astype('category')
-    geo_model.surface_points.df['series'].cat.set_categories(geo_model.series.df.index.values, inplace=True)
+    # do orientations properly, reset all dtypes
+    geo_model.orientations.df = pn.read_csv(f'{path}/{name}_orientations.csv', index_col=0,
+                                            dtype={'X': 'float64', 'Y': 'float64', 'Z': 'float64',
+                                                   'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
+                                                   'dip': 'float64', 'azimuth': 'float64', 'polarity': 'float64',
+                                                   'surface': 'category', 'series': 'category',
+                                                   'id': 'int64', 'order_series': 'int64'})
+    geo_model.orientations.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
+    geo_model.orientations.df['series'].cat.set_categories(cat_series, inplace=True)
 
+    # do surface_points properly, reset all dtypes
+    geo_model.surface_points.df = pn.read_csv(f'{path}/{name}_surface_points.csv', index_col=0,
+                                              dtype={'X': 'float64', 'Y': 'float64', 'Z': 'float64',
+                                                     'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
+                                                     'surface': 'category', 'series': 'category',
+                                                     'id': 'int64', 'order_series': 'int64'})
+    geo_model.surface_points.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
+    geo_model.surface_points.df['series'].cat.set_categories(cat_series, inplace=True)
+
+    # load solutions in npy files
     geo_model.solutions.lith_block = np.load(f'{path}/{name}_lith_block.npy')
     geo_model.solutions.scalar_field_lith = np.load(f"{path}/{name}_scalar_field_lith.npy")
     geo_model.solutions.fault_blocks = np.load(f'{path}/{name}_fault_blocks.npy')
