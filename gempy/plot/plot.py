@@ -587,6 +587,11 @@ def plot_surfaces_3D(geo_data, vertices_l=None, simplices_l=None,
     return vv
 
 
+def plot_surfaces_3d_ipv(geo_model, ver, sim):
+    vv = ipyvolumeVisualization(geo_model, ver, sim)
+    vv.plot_ipyvolume()
+
+
 def export_to_vtk(geo_data, path=None, name=None, voxels=True, surfaces=True):
     """
       Export data to a vtk file for posterior visualizations
