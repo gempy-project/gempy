@@ -117,7 +117,8 @@ class TheanoGraphPro(object):
         # self.rest_layer_points = self.set_rest_ref_matrix()[1]
 
        # self.fault_drift = T.matrix('Drift matrix due to faults')
-        self.fault_matrix = T.matrix('Full block matrix for x_to_interpolate')
+        self.fault_matrix = T.matrix('Full block matrix for faults or drift. We take 2 times len points for the fault'
+                                     'drift.')
 
         interface_loc = self.fault_matrix.shape[1] - 2 * self.len_points
         self.fault_drift_at_surface_points_rest = self.fault_matrix[
@@ -161,13 +162,10 @@ class TheanoGraphPro(object):
         self.n_surface = T.arange(1, 5000, dtype='int32')#T.vector('ID of the surface')
         self.n_surface.name = 'ID of surfaces'
 
-        self.input_parameters_block_fault = [self.values_properties_op,
-
-                                             self.surface_points_all, self.grid_val_T]
-        self.input_parameters_block_formations = [self.values_properties_op,
-
-                                                  self.surface_points_all]
-
+        self.input_parameters_block = [self.dips_position_all, self.dip_angles_all, self.azimuth_all,
+                                       self.polarity_all, self.surface_points_all,
+                                       self.fault_matrix, self.grid_val_T,
+                                       self.values_properties_op]
         # ------
         # Shared
         # ------
@@ -180,10 +178,8 @@ class TheanoGraphPro(object):
         # Shared
         # ------
         # Init fault relation matrix
-        self.fault_relation = theano.shared(np.array([[0, 1, 0, 1],
-                                                      [0, 0, 1, 1],
-                                                      [0, 0, 0, 1],
-                                                      [0, 0, 0, 0]]), 'fault relation matrix')
+        self.fault_relation = theano.shared(np.array([[0, 0],
+                                                      [0, 0]]), 'fault relation matrix')
 
         # Results matrix
         self.weights_vector = theano.shared(np.zeros(10000), 'Weights vector')
@@ -194,7 +190,7 @@ class TheanoGraphPro(object):
         # Structure
         self.n_surfaces_per_series = theano.shared(np.arange(2, dtype='int32'), 'List with the number of surfaces')
         self.len_series_i = theano.shared(np.arange(2, dtype='int32'), 'Length of surface_points in every series')
-        self.len_series_f = theano.shared(np.arange(2, dtype='int32'), 'Length of foliations in every series')
+        self.len_series_o = theano.shared(np.arange(2, dtype='int32'), 'Length of foliations in every series')
         self.len_series_w = theano.shared(np.arange(2, dtype='int32'), 'Length of weights in every series')
 
         # Control flow
@@ -203,6 +199,12 @@ class TheanoGraphPro(object):
         self.compute_block_ctrl = T.vector('Vector controlling if block matrix must be recomputed', dtype='bool')
         self.is_fault_ctrl = theano.shared(np.zeros(3, dtype='int32'), 'The series (fault) is finite')
         self.onlap_erode_ctrl = theano.shared(np.zeros(3, dtype='int32'), 'Onlap erode')
+
+        self.input_parameters_loop = [self.dips_position_all, self.dip_angles_all, self.azimuth_all,
+                                      self.polarity_all, self.surface_points_all,
+                                      self.fault_matrix, self.grid_val_T,
+                                      self.values_properties_op,
+                                      self.compute_weights_ctrl, self.compute_scalar_ctrl, self.compute_block_ctrl]
 
         self.is_erosion = theano.shared(np.array([1, 0]))
         self.is_onlap = theano.shared(np.array([0, 1]))
@@ -241,7 +243,7 @@ class TheanoGraphPro(object):
 
             ],  # This line may be used for the df network
             sequences=[dict(input=self.len_series_i, taps=[0, 1]),
-                       dict(input=self.len_series_f, taps=[0, 1]),
+                       dict(input=self.len_series_o, taps=[0, 1]),
                        dict(input=self.len_series_w, taps=[0, 1]),
                        dict(input=self.n_surfaces_per_series, taps=[0, 1]),
                        dict(input=self.n_universal_eq_T, taps=[0]),
