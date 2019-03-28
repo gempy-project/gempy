@@ -940,7 +940,7 @@ class SurfacePoints(GeometricData):
         coord_x_name = kwargs.get('coord_x_name', "X")
         coord_y_name = kwargs.get('coord_y_name', "Y")
         coord_z_name = kwargs.get('coord_z_name', "Z")
-        surface_name = kwargs.get('surface_name', "formation")
+        surface_name = kwargs.get('surface_name', "surface")
         if 'sep' not in kwargs_pandas:
             kwargs_pandas['sep'] = ','
 
@@ -1280,7 +1280,7 @@ class Orientations(GeometricData):
         azimuth_name = kwargs.get('azimuth_name', 'azimuth')
         dip_name = kwargs.get('dip_name', 'dip')
         polarity_name = kwargs.get('polarity_name', 'polarity')
-        surface_name = kwargs.get('surface_name', "formation")
+        surface_name = kwargs.get('surface_name', "surface")
 
         table = pn.read_csv(filepath, **kwargs_pandas)
 
