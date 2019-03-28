@@ -105,8 +105,6 @@ def map_series_to_surfaces(geo_model: Model, mapping_object: Union[dict, pn.Cate
     geo_model.update_from_series()
     geo_model.update_from_surfaces()
 
-    #geo_model.surfaces.set_colors()
-
     if quiet is True:
         return True
     else:
@@ -163,6 +161,7 @@ def get_sequential_pile(model: Model):
     Returns:
         :class:`matplotlib.pyplot.Figure`
     """
+    model.surfaces.update_sequential_pile()
     return model.surfaces.sequential_pile.figure
 # endregion
 
@@ -437,8 +436,8 @@ def compute_model(model: Model, compute_mesh=True)-> Solution:
     # return clear messages
     i = model.interpolator.get_input_matrix()
 
-    assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1,  \
-        'To compute the model is necessary at least 2 interface points per layer'
+    # assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1,  \
+    #     'To compute the model is necessary at least 2 interface points per layer'
 
     sol = model.interpolator.theano_function(*i)
     model.solutions.set_values(sol, compute_mesh=compute_mesh)

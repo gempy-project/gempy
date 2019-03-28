@@ -415,9 +415,6 @@ class Faults(object):
 class Colors:
     def __init__(self, surfaces_df):
         self.df = surfaces_df
-        if self.df.empty == False:
-            self.colordict = self.generate_colordict()
-            self.set_colors()
 
     def generate_colordict(self, out = False):
         '''generate colordict that assigns black to faults and random colors to surfaces'''
@@ -436,9 +433,9 @@ class Colors:
         if out:
             return colordict
         else:
-            self.colordict=colordict
+            self.colordict = colordict
 
-    def change_colors(self):
+    def select_colors(self):
         '''opens widget to change colors'''
 
         items = [widgets.ColorPicker(description=surface, value=color)
@@ -455,44 +452,38 @@ class Colors:
             cols.observe(on_change, 'value')
 
     def update_colors(self, cdict=None):
-        '''updates the colordict'''
+        ''' Updates the surface colors.
+        Args:
+            cdict: dict with surface names mapped to hex color codes, e.g. {'layer1':'#6b0318'}
+
+        Returns: None
+
+        '''
         if cdict == None:
             # assert if one surface does not have color
             try:
-                self.add_color()
+                self.add_colors()
             except AttributeError:
                 self.generate_colordict()
-
-                #print('i try')
-            #except TypeError:
-                #print('error')
-                #self.generate_colordict()
-            # if true: add color
         else:
-            # map new colors to surfaces
-            for surf, color in cdict.items():
+            for surf, color in cdict.items(): # map new colors to surfaces
+                # assert this because user can set it manually
+                assert surf in list(self.df['surface']), str(surf) + ' is not a model surface'
+                assert re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color), str(color) + ' is not a HEX color code'
                 self.colordict[surf] = color
 
         self.set_colors()
 
-    def add_color(self):
+    def add_colors(self):
         '''assign color to last entry of surfaces df or check isnull and assign color there'''
         # can be done easier
         new_colors = self.generate_colordict(out=True)
         form2col = list(self.df.loc[self.df['color'].isnull(), 'surface'])
-        print(form2col)
         # this is the dict in-build function to update colors
         self.colordict.update(dict(zip(form2col, [new_colors[x] for x in form2col])))
 
-    def set_colors(self, cdict=None):
-        '''sets colors in surfaces dataframe based on self.cdict or new cdict'''
-        if cdict:
-            for surf, color in cdict.items():  # assert this because user can set it manually
-                assert surf in list(self.df['surface']), str(surf) + ' is not a model surface'
-                assert re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color), str(color) + 'is not a HEX color code'
-            self.update_colors(cdict)
-        #if not hasattr(self, colordict):
-            #self.generate_colordict()
+    def set_colors(self):
+        '''sets colordict in surfaces dataframe'''
         for surf, color in self.colordict.items():
             self.df.loc[self.df['surface'] == surf, 'color'] = color
 
