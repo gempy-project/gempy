@@ -101,12 +101,12 @@ class DataMutation(object):
     def set_default_surface_point(self):
         self.surface_points.set_default_surface_points()
         self.update_to_surface_points()
-        self.update_from_surface_points()
+        self.update_from_surface_points(recompute_rescale_factor=True)
 
     def set_default_orientation(self):
         self.orientations.set_default_orientation()
         self.update_to_orientations()
-        self.update_from_orientations()
+        self.update_from_orientations(recompute_rescale_factor=True)
 
     def set_default_surfaces(self):
         self.surfaces.set_default_surface_name()

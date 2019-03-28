@@ -267,3 +267,8 @@ class Interpolator(object):
 
         print('Compilation Done!')
         return th_fn
+
+
+class Interpolator_pro(Interpolator):
+    pass
+

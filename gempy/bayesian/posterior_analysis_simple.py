@@ -14,7 +14,7 @@ except ImportError:
 import matplotlib.pyplot as plt
 
 
-class Posterior:
+class proPosterior:
     def __init__(self, dbname, verbose=False, entropy=False, interp_data = None):
         """
         Posterior database analysis for GemPy-pymc2 hdf5 databases.
