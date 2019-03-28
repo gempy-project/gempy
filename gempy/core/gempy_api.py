@@ -105,7 +105,7 @@ def map_series_to_surfaces(geo_model: Model, mapping_object: Union[dict, pn.Cate
     geo_model.update_from_series()
     geo_model.update_from_surfaces()
 
-    geo_model.surfaces.set_colors()
+    #geo_model.surfaces.set_colors()
 
     if quiet is True:
         return True

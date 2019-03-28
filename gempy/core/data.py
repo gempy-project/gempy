@@ -13,6 +13,7 @@ from gempy.core.checkers import check_for_nans
 from gempy.utils.meta import _setdoc
 from gempy.plot.sequential_pile import StratigraphicPile
 import re
+import ipywidgets as widgets
 pn.options.mode.chained_assignment = None
 
 
@@ -410,9 +411,90 @@ class Faults(object):
                 pass
         return faults_series
 
-def background_color(value):
-    if type(value) == str:
-        return "background-color: %s" % value
+
+class Colors:
+    def __init__(self, surfaces_df):
+        self.df = surfaces_df
+        if self.df.empty == False:
+            self.colordict = self.generate_colordict()
+            self.set_colors()
+
+    def generate_colordict(self, out = False):
+        '''generate colordict that assigns black to faults and random colors to surfaces'''
+        gp_defcols = [
+            ['#325916', '#5DA629', '#78CB68', '#84C47A', '#129450'],
+            ['#F2930C', '#F24C0C', '#E00000', '#CF522A', '#990902'],
+            ['#26BEFF', '#227dac', '#443988', '#2A186C', '#0F5B90']]
+
+        for i, series in enumerate(self.df['series'].unique()):
+            form_in_series = list(self.df.loc[self.df['series'] == series, 'surface'])
+            newcols = gp_defcols[i][:len(form_in_series)]
+            if i == 0:
+                colordict = dict(zip(form_in_series, newcols))
+            else:
+                colordict.update(zip(form_in_series, newcols))
+        if out:
+            return colordict
+        else:
+            self.colordict=colordict
+
+    def change_colors(self):
+        '''opens widget to change colors'''
+
+        items = [widgets.ColorPicker(description=surface, value=color)
+                 for surface, color in self.colordict.items()]
+
+        colbox = widgets.VBox(items)
+        display(colbox)
+
+        def on_change(v):
+            self.colordict[v['owner'].description] = v['new']  # updates colordict
+            self.set_colors()
+
+        for cols in colbox.children:
+            cols.observe(on_change, 'value')
+
+    def update_colors(self, cdict=None):
+        '''updates the colordict'''
+        if cdict == None:
+            # assert if one surface does not have color
+            try:
+                self.add_color()
+            except AttributeError:
+                self.generate_colordict()
+
+                #print('i try')
+            #except TypeError:
+                #print('error')
+                #self.generate_colordict()
+            # if true: add color
+        else:
+            # map new colors to surfaces
+            for surf, color in cdict.items():
+                self.colordict[surf] = color
+
+        self.set_colors()
+
+    def add_color(self):
+        '''assign color to last entry of surfaces df or check isnull and assign color there'''
+        # can be done easier
+        new_colors = self.generate_colordict(out=True)
+        form2col = list(self.df.loc[self.df['color'].isnull(), 'surface'])
+        print(form2col)
+        # this is the dict in-build function to update colors
+        self.colordict.update(dict(zip(form2col, [new_colors[x] for x in form2col])))
+
+    def set_colors(self, cdict=None):
+        '''sets colors in surfaces dataframe based on self.cdict or new cdict'''
+        if cdict:
+            for surf, color in cdict.items():  # assert this because user can set it manually
+                assert surf in list(self.df['surface']), str(surf) + ' is not a model surface'
+                assert re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color), str(color) + 'is not a HEX color code'
+            self.update_colors(cdict)
+        #if not hasattr(self, colordict):
+            #self.generate_colordict()
+        for surf, color in self.colordict.items():
+            self.df.loc[self.df['surface'] == surf, 'color'] = color
 
 class Surfaces(object):
     """
@@ -445,6 +527,9 @@ class Surfaces(object):
             self.set_surfaces_names(surface_names)
         if values_array is not None:
             self.set_surfaces_values(values_array=values_array, properties_names=properties_names)
+
+        self.colors = Colors(self.df)
+
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
     def __repr__(self):
@@ -452,8 +537,11 @@ class Surfaces(object):
 
     def _repr_html_(self):
         #return self.df.to_html()
-        return self.df.style.applymap(background_color, subset=['color']).render()
+        return self.df.style.applymap(self.background_color, subset=['color']).render()
 
+    def background_color(self, value):
+        if type(value) == str:
+            return "background-color: %s" % value
 
     def update_sequential_pile(self):
         """
@@ -463,6 +551,7 @@ class Surfaces(object):
         """
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 #colors
+    '''
     def generate_colordict(self):
         gp_defcols = [
             ['#325916', '#5DA629', '#78CB68', '#84C47A', '#129450', '#185B3B', '#122414', '#56ae57', '#a8ff04',
@@ -500,7 +589,7 @@ class Surfaces(object):
         #print(form2col)
         colordict = dict(zip(form2col, [new_colors[x] for x in form2col]))
         self.set_colors(colordict)
-
+'''
 # region set formation names
     def set_surfaces_names(self, list_names: list, update_df=True):
         """
@@ -529,7 +618,7 @@ class Surfaces(object):
             self.set_id()
             self.set_basement()
             self.set_order_surfaces()
-            self.update_colors()
+            self.colors.update_colors()
             self.update_sequential_pile()
         return True
 
@@ -558,7 +647,7 @@ class Surfaces(object):
             self.set_id()
             self.set_basement()
             self.set_order_surfaces()
-            self.update_colors()
+            self.colors.update_colors()
             self.update_sequential_pile()
         return True
 
@@ -985,7 +1074,7 @@ class SurfacePoints(GeometricData):
         coord_x_name = kwargs.get('coord_x_name', "X")
         coord_y_name = kwargs.get('coord_y_name', "Y")
         coord_z_name = kwargs.get('coord_z_name', "Z")
-        surface_name = kwargs.get('surface_name', "surface")
+        surface_name = kwargs.get('surface_name', "formation")
         if 'sep' not in kwargs_pandas:
             kwargs_pandas['sep'] = ','
 
@@ -1325,7 +1414,7 @@ class Orientations(GeometricData):
         azimuth_name = kwargs.get('azimuth_name', 'azimuth')
         dip_name = kwargs.get('dip_name', 'dip')
         polarity_name = kwargs.get('polarity_name', 'polarity')
-        surface_name = kwargs.get('surface_name', "surface")
+        surface_name = kwargs.get('surface_name', "formation")
 
         table = pn.read_csv(filepath, **kwargs_pandas)
 
