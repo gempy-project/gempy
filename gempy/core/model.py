@@ -205,7 +205,7 @@ class DataMutation(object):
         pass
 
     @_setdoc([Faults.set_is_fault.__doc__])
-    def set_is_fault(self, series_fault=None):
+    def set_is_fault(self, series_fault=None, change_color = True):
         for series_as_faults in np.atleast_1d(series_fault):
             if self.faults.df.loc[series_fault[0], 'isFault'] == True:
                 self.series.modify_order_series(self.faults.n_faults, series_as_faults)
@@ -216,6 +216,9 @@ class DataMutation(object):
 
             s = self.faults.set_is_fault(series_fault)
         self.update_from_series()
+        if change_color:
+            print('Fault color changed to black. If you do not like this behavior, set change_color to False')
+            self.surfaces.colors.make_faults_black(series_fault)
         return s
 
     def set_interface_object(self, surface_points: SurfacePoints, update_model=True):

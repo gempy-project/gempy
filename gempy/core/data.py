@@ -416,7 +416,7 @@ class Colors:
     def __init__(self, surfaces_df):
         self.df = surfaces_df
 
-    def generate_colordict(self, out = False):
+    def generate_colordict_DEP(self, out = False):
         '''generate colordict that assigns black to faults and random colors to surfaces'''
         gp_defcols = [
             ['#325916', '#5DA629', '#78CB68', '#84C47A', '#129450'],
@@ -430,6 +430,26 @@ class Colors:
                 colordict = dict(zip(form_in_series, newcols))
             else:
                 colordict.update(zip(form_in_series, newcols))
+        if out:
+            return colordict
+        else:
+            self.colordict = colordict
+
+    def generate_colordict(self, out = False):
+        '''generate colordict that assigns black to faults and random colors to surfaces'''
+        gp_defcols = ['#F2930C','#00d500',
+            '#325916', '#F24C0C']
+        # '#F2930C', '#F24C0C']#, '#E00000', '#CF522A', '#990902',
+        # '#26BEFF', '#227dac', '#443988', '#2A186C', '#0F5B90']
+
+        test = len(gp_defcols) >= len(self.df)
+
+        if test == False:
+            from matplotlib._color_data import XKCD_COLORS as morecolors
+            gp_defcols += list(morecolors.values())
+
+        colordict = dict(zip(list(self.df['surface']), gp_defcols[:len(self.df)]))
+
         if out:
             return colordict
         else:
@@ -450,7 +470,6 @@ class Colors:
 
         for cols in colbox.children:
             cols.observe(on_change, 'value')
-
 
     def update_colors(self, cdict=None):
         ''' Updates the surface colors.
@@ -479,6 +498,7 @@ class Colors:
         '''assign color to last entry of surfaces df or check isnull and assign color there'''
         # can be done easier
         new_colors = self.generate_colordict(out=True)
+        print(new_colors)
         form2col = list(self.df.loc[self.df['color'].isnull(), 'surface'])
         # this is the dict in-build function to update colors
         self.colordict.update(dict(zip(form2col, [new_colors[x] for x in form2col])))
@@ -487,6 +507,21 @@ class Colors:
         '''sets colordict in surfaces dataframe'''
         for surf, color in self.colordict.items():
             self.df.loc[self.df['surface'] == surf, 'color'] = color
+
+    def set_default_colors(self, surfaces):
+        new_colors = self.generate_colordict(out=True)
+        self.colordict[surfaces] = new_colors[surfaces]
+
+    def make_faults_black(self, series_fault):
+        faults_list = list(self.df[self.df.series.isin(series_fault)]['surface'])
+        for fault in faults_list:
+            #if '#000000' in self.colordict:
+                #
+            if self.colordict[fault] == '#000000':
+                self.set_default_colors(fault)
+            else:
+                self.colordict[fault] = '#000000'
+        self.set_colors()
 
 class Surfaces(object):
     """
