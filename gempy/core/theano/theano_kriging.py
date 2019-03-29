@@ -2,8 +2,10 @@ import theano
 import theano.tensor as T
 import numpy as np
 import sys
+from .theano_graph import TheanoGeometry 
 
-class TheanoKriging(object):
+
+class TheanoKriging(TheanoGeometry):
     """
     This class is used to help to divide the construction of the graph into sensical parts. All its methods buildDEP2 a part
     of the graph. Every method can be seen as a branch and collection of branches until the last method that will be the
@@ -25,87 +27,27 @@ class TheanoKriging(object):
             verbose (list): name of the nodes you want to print
             dtype (str): type of float either 32 or 64
         """
-
+        
+        super(TheanoKriging, self).__init__(output='geology', optimizer='fast_compile', verbose=[0], dtype='float32',
+                 is_fault=None, is_lith=None)
         # Pass the verbose list as property
-
-        # OPTIONS
-        # -------
-        if verbose is np.nan:
-            self.verbose = [None]
-        else:
-            self.verbose = verbose
-        self.dot_version = False
-
-        theano.config.floatX = dtype
-        theano.config.optimizer = optimizer
 
         # Creation of symbolic parameters
         # =============
         # Constants
         # =============
 
-        # They weight the contribution of the surface_points against the orientations.
-        self.i_reescale = theano.shared(np.cast[dtype](4.))
-        self.gi_reescale = theano.shared(np.cast[dtype](2.))
-
-        # Number of dimensions. Now it is not too variable anymore
-        self.n_dimensions = 3
 
 
 
-        # KRIGING
-        # -------
-        self.a_T = theano.shared(np.cast[dtype](-1.), "Range")
-        self.c_o_T = theano.shared(np.cast[dtype](-1.), 'Covariance at 0')
-        self.nugget_effect_grad_T = theano.shared(np.cast[dtype](-1), 'Nugget effect of gradients')
-        self.nugget_effect_scalar_T = theano.shared(np.cast[dtype](-1), 'Nugget effect of scalar')
-        self.n_universal_eq_T = theano.shared(np.zeros(5, dtype='int32'), "Grade of the universal drift")
-        self.n_universal_eq_T_op = theano.shared(3)
-
-        # This is not accumulative
-        self.number_of_points_per_surface_T = theano.shared(np.zeros(3, dtype='int32')) #TODO is DEP?
-        self.number_of_points_per_surface_T_op = self.number_of_points_per_surface_T
+        # # This is not accumulative
+        # self.number_of_points_per_surface_T = theano.shared(np.zeros(3, dtype='int32')) #TODO is DEP?
+        # self.number_of_points_per_surface_T_op = self.number_of_points_per_surface_T
         # This is accumulative
-        self.npf = theano.shared(np.zeros(3, dtype='int32'), 'Number of points per surface accumulative')
-        self.npf_op = self.npf[[0, -2]]
+        #self.npf = theano.shared(np.zeros(3, dtype='int32'), 'Number of points per surface accumulative')
+        #self.npf_op = self.npf[[0, -2]]
 
-        # VARIABLES
-        # ---------
-        self.dips_position_all = T.matrix("Position of the dips")
-        self.dip_angles_all = T.vector("Angle of every dip")
-        self.azimuth_all = T.vector("Azimuth")
-        self.polarity_all = T.vector("Polarity")
-
-        self.surface_points = T.matrix("All the surface_points points at once")
-        self.len_points = self.surface_points.shape[0] - self.number_of_points_per_surface_T.shape[0]
-        # Tiling dips to the 3 spatial coordinations
-        self.dips_position = self.dips_position_all
-        self.dips_position_tiled = T.tile(self.dips_position, (self.n_dimensions, 1))
-
-        # These are subsets of the data for each series. I initialized them as the whole arrays but then they will take
-        # the data of every potential field
-        self.dip_angles = self.dip_angles_all
-        self.azimuth = self.azimuth_all
-        self.polarity = self.polarity_all
-
-        self.ref_layer_points_all = self.set_rest_ref_matrix()[0]
-        self.rest_layer_points_all = self.set_rest_ref_matrix()[1]
-
-        self.ref_layer_points = self.ref_layer_points_all
-        self.rest_layer_points = self.rest_layer_points_all
-
-        self.fault_drift = T.matrix('Drift matrix due to faults', dtype=dtype)
-
-    def set_rest_ref_matrix(self):
-        ref_positions = T.cumsum(T.concatenate((T.stack(0), self.number_of_points_per_surface_T[:-1] + 1)))
-        ref_points = T.repeat(self.surface_points[ref_positions], self.number_of_points_per_surface_T, axis=0)
-
-        rest_mask = T.ones(T.stack(self.surface_points.shape[0]), dtype='int16')
-        rest_mask = T.set_subtensor(rest_mask[ref_positions], 0)
-        rest_points = self.surface_points[T.nonzero(rest_mask)[0]]
-        return [ref_points, rest_points, rest_mask, T.nonzero(rest_mask)[0]]
-
-    def input_parameters_list(self):
+    def input_parameters_kriging(self):
         """
         Create a list with the symbolic variables to use when we compile the theano function
 
@@ -113,62 +55,10 @@ class TheanoKriging(object):
             list: [self.dips_position_all, self.dip_angles_all, self.azimuth_all, self.polarity_all,
                    self.ref_layer_points_all, self.rest_layer_points_all]
         """
-        ipl = [self.dips_position_all, self.dip_angles_all, self.azimuth_all, self.polarity_all, self.surface_points,
-               self.fault_drift]
+        ipl = [self.dips_position_all, self.dip_angles_all, self.azimuth_all, self.polarity_all, self.surface_points_all,
+               self.fault_drift, self.number_of_points_per_surface_T_op]
         # self.ref_layer_points_all, self.rest_layer_points_all]
         return ipl
-
-    @staticmethod
-    def squared_euclidean_distances(x_1, x_2):
-        """
-        Compute the euclidian distances in 3D between all the points in x_1 and x_2
-
-        Args:
-            x_1 (theano.tensor.matrix): shape n_points x number dimension
-            x_2 (theano.tensor.matrix): shape n_points x number dimension
-
-        Returns:
-            theano.tensor.matrix: Distancse matrix. shape n_points x n_points
-        """
-
-        # T.maximum avoid negative numbers increasing stability
-        sqd = T.sqrt(T.maximum(
-            (x_1 ** 2).sum(1).reshape((x_1.shape[0], 1)) +
-            (x_2 ** 2).sum(1).reshape((1, x_2.shape[0])) -
-            2 * x_1.dot(x_2.T), 1e-12
-        ))
-
-        if False:
-            sqd = theano.printing.Print('sed')(sqd)
-
-        return sqd
-
-    def matrices_shapes(self):
-        """
-        Get all the lengths of the matrices that form the covariance matrix
-
-        Returns:
-             length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C
-        """
-
-        # Calculating the dimensions of the
-        length_of_CG = self.dips_position_tiled.shape[0]
-        length_of_CGI = self.rest_layer_points.shape[0]
-        length_of_U_I = self.n_universal_eq_T_op
-
-        # Self fault matrix contains the block and the potential field (I am not able to split them). Therefore we need
-        # to divide it by 2
-        length_of_faults = T.cast(self.fault_drift.shape[0], 'int32')
-        length_of_C = length_of_CG + length_of_CGI + length_of_U_I + length_of_faults
-
-        if 'matrices_shapes' in self.verbose:
-            length_of_CG = theano.printing.Print("length_of_CG")(length_of_CG)
-            length_of_CGI = theano.printing.Print("length_of_CGI")(length_of_CGI)
-            length_of_U_I = theano.printing.Print("length_of_U_I")(length_of_U_I)
-            length_of_faults = theano.printing.Print("length_of_faults")(length_of_faults)
-            length_of_C = theano.printing.Print("length_of_C")(length_of_C)
-
-        return length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C
 
     def cov_surface_points(self):
         """
