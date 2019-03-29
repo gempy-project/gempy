@@ -451,6 +451,7 @@ class Colors:
         for cols in colbox.children:
             cols.observe(on_change, 'value')
 
+
     def update_colors(self, cdict=None):
         ''' Updates the surface colors.
         Args:
