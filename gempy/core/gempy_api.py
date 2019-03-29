@@ -102,14 +102,23 @@ def load_model(name, path=None, recompile=True):
     init_data(geo_model, np.load(f'{path}/{name}_extent.npy'), np.load(f'{path}/{name}_resolution.npy'))
     # rel_matrix = np.load()
 
-    # set additonal data - needs proper dtypes, how does it work with arrays ???
-    geo_model.additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0)
-    geo_model.additional_data.rescaling_data.df = pn.read_csv(f'{path}/{name}_rescaling_data.csv', index_col=0)
-    geo_model.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0)
+    # set additonal data
+    geo_model.additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0,
+                                            dtype={'range': 'float64', '$C_o$': 'float64', 'drift equations': object,
+                                            'nugget grad': 'float64', 'nugget scalar': 'float64'})
+
+    geo_model.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0,
+                                            dtype={'dtype': 'category', 'output': 'category',
+                                            'theano_optimizer': 'category', 'device': 'category',
+                                            'verbosity': object})
+    geo_model.additional_data.options.df['dtype'].cat.set_categories(['float32', 'float64'], inplace=True)
+    geo_model.additional_data.options.df['theano_optimizer'].cat.set_categories(['fast_run', 'fast_compile'], inplace=True)
+    geo_model.additional_data.options.df['device'].cat.set_categories(['cpu', 'cuda'], inplace=True)
+    geo_model.additional_data.options.df['output'].cat.set_categories(['geology', 'gradients'], inplace=True)
 
     # do series properly - this needs proper check
     geo_model.series.df = pn.read_csv(f'{path}/{name}_series.csv', index_col=0,
-                                                dtype={'order_series': 'int32', 'BottomRelation': 'category'})
+                                            dtype={'order_series': 'int32', 'BottomRelation': 'category'})
     series_index = pn.CategoricalIndex(geo_model.series.df.index.values)
     # geo_model.series.df.index = pn.CategoricalIndex(series_index)
     geo_model.series.df.index = series_index
@@ -119,7 +128,7 @@ def load_model(name, path=None, recompile=True):
 
     # do faults properly - check
     geo_model.faults.df = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0,
-                                      dtype={'isFault': 'bool', 'isFinite': 'bool'})
+                                            dtype={'isFault': 'bool', 'isFinite': 'bool'})
     geo_model.faults.df.index = series_index
 
     # do faults relations properly - this is where I struggle
@@ -156,6 +165,9 @@ def load_model(name, path=None, recompile=True):
     geo_model.surface_points.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
     geo_model.surface_points.df['series'].cat.set_categories(cat_series, inplace=True)
 
+    # update structure from loaded input
+    geo_model.additional_data.structure_data.update_structure_from_input()
+
     # load solutions in npy files
     geo_model.solutions.lith_block = np.load(f'{path}/{name}_lith_block.npy')
     geo_model.solutions.scalar_field_lith = np.load(f"{path}/{name}_scalar_field_lith.npy")
@@ -164,9 +176,10 @@ def load_model(name, path=None, recompile=True):
     geo_model.solutions.gradient = np.load(f'{path}/{name}_gradient.npy')
     geo_model.solutions.values_block = np.load(f'{path}/{name}_values_block.npy')
 
-    geo_model.solutions.additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0)
-    geo_model.solutions.additional_data.rescaling_data.df = pn.read_csv(f'{path}/{name}_rescaling_data.csv', index_col=0)
-    geo_model.solutions.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0)
+    geo_model.solutions.additional_data.kriging_data.df = geo_model.additional_data.kriging_data.df
+    geo_model.solutions.additional_data.options.df = geo_model.additional_data.options.df
+    geo_model.solutions.additional_data.rescaling_data.df = geo_model.additional_data.rescaling_data.df
+
 
     if recompile is True:
         set_interpolation_data(geo_model, verbose=[0])
