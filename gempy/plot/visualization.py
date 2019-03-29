@@ -38,6 +38,12 @@ try:
 except ImportError:
     STENO_IMPORT = False
 
+try:
+    import ipyvolume as ipv
+    IPV_IMPORT = True
+except ImportError:
+    IPV_IMPORT = False
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
@@ -529,7 +535,7 @@ class PlotData2D(object):
 
 class steno3D():
     def __init__(self, geo_data, project, **kwargs ):
-        if VTK_IMPORT is False:
+        if STENO_IMPORT is False:
             raise ImportError( 'Steno 3D package is not installed. No 3D online visualization available.')
         description = kwargs.get('description', 'Nothing')
 
@@ -1635,3 +1641,124 @@ class vtkVisualization:
                 writer.SetInputData(polydata)
             writer.Write()
 
+
+class ipyvolumeVisualization:
+    def __init__(self, geo_model, ver, sim):
+        if VTK_IMPORT is False:
+            raise ImportError('ipyvolume package is not installed.')
+
+        self.geo_model = geo_model
+        self.ver = ver
+        self.sim = sim
+
+    def get_color_id(self, surface):
+        """Get id of given surface (str)."""
+        filter_ = self.geo_model.surfaces.df.surface == surface
+        color_id = self.geo_model.surfaces.df.id[filter_].values[0]
+        return color_id
+
+    def get_color(self, surface):
+        """Get color code of given gempy surface."""
+        return gp.plot.color_lot[self.get_color_id(surface)]
+
+    def plot_ipyvolume(self):
+        """Plot gempy surface model."""
+        ipv.figure()
+        meshes = []
+        for surf in self.ver.keys():
+            points = self.ver[surf]
+            triangles = self.sim[surf]
+            # color
+
+            mesh = ipv.plot_trisurf(points[:, 0] + self.geo_model.grid.extent[0],
+                                    points[:, 1] + self.geo_model.grid.extent[2],
+                                    points[:, 2] + self.geo_model.grid.extent[4],
+                                    triangles=triangles,
+                                    color=self.get_color(surf))
+            meshes.append(mesh)
+
+        ipv.xlim(self.geo_model.grid.extent[0], self.geo_model.grid.extent[1])
+        ipv.ylim(self.geo_model.grid.extent[2], self.geo_model.grid.extent[3])
+        ipv.zlim(self.geo_model.grid.extent[4], self.geo_model.grid.extent[5])
+        ipv.show()
+        return None
+
+
+def get_fault_ellipse_params(fault_points:np.ndarray):
+    """Get the fault ellipse parameters a and b from griven fault points (should
+    be the rotated ones.
+
+    Args:
+        fault_points (np.ndarray): Fault points
+
+    Returns:
+        (tuple) main axis scalars of fault ellipse a,b
+    """
+    a = (fault_points[:, 0].max() - fault_points[:, 0].min()) / 2
+    b = (fault_points[:, 1].max() - fault_points[:, 1].min()) / 2
+    return a, b
+
+
+def get_fault_rotation_objects(geo_model, fault:str):
+    """Gets fault rotation objects: rotation matrix U, the rotated fault points,
+    rotated centroid, and the ellipse parameters a and b.
+
+    Args:
+        geo_model (gempy.core.model.Model): gempy geo_model object
+        fault (str): Name of the fault surface.
+
+    Returns:
+        U (np.ndarray): Rotation matrix.
+        rfpts (np.ndarray): Rotated fault points.
+        rctr (np.array): Centroid of the rotated fault points.
+        a (float): Horizontal ellipse parameter.
+        b (float): Vertical ellipse parameter.
+    """
+    filter_ = geo_model.surface_points.df.surface == fault
+    fpts = geo_model.surface_points.df[filter_][["X", "Y", "Z"]].values.T
+    ctr = np.mean(fpts, axis=1)
+    x = fpts - ctr.reshape((-1, 1))
+    M = np.dot(x, x.T)
+    U = np.linalg.svd(M)
+    rfpts = np.dot(fpts.T, U[0])
+    # rfpts = np.dot(rfpts, U[-1])
+    rctr = np.mean(rfpts, axis=0)
+
+    a, b = get_fault_ellipse_params(rfpts)
+    return U, rfpts, rctr, a, b
+
+
+def cut_finite_fault_surfaces(geo_model, ver:dict, sim:dict):
+    """Cut vertices and simplices for finite fault surfaces to finite fault ellipse
+
+    Args:
+        geo_model (gempy.core.model.Model): gempy geo_model object
+        ver (dict): Dictionary with surfaces as keys and vertices ndarray as values.
+        sim (dict): Dictionary with surfaces as keys and simplices ndarray as values.
+
+    Returns:
+        ver, sim (dict, dict): Updated vertices and simplices with finite fault
+            surfaces cut to ellipses.
+    """
+    from scipy.spatial import Delaunay
+    from copy import copy
+
+    finite_ver = copy(ver)
+    finite_sim = copy(sim)
+
+    finite_fault_series = list(geo_model.faults.df[geo_model.faults.df["isFinite"] == True].index)
+    finite_fault_surfaces = list(
+        geo_model.surfaces.df[geo_model.surfaces.df.series == finite_fault_series].surface.unique())
+
+    for fault in finite_fault_surfaces:
+        U, fpoints_rot, fctr_rot, a, b = get_fault_rotation_objects(geo_model, "Fault 1")
+        rpoints = np.dot(ver[fault], U[0])
+        # rpoints = np.dot(rpoints, U[-1])
+        r = (rpoints[:, 0] - fctr_rot[0]) ** 2 / a ** 2 + (rpoints[:, 1] - fctr_rot[1]) ** 2 / b ** 2
+
+        finite_ver[fault] = finite_ver[fault][r < 1]
+        delaunay = Delaunay(finite_ver[fault])
+        finite_sim[fault] = delaunay.simplices
+        # finite_sim[fault] = finite_sim[fault][np.isin(sim[fault], np.argwhere(r<0.33))]
+
+    return finite_ver, finite_sim
