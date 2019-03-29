@@ -138,6 +138,7 @@ class StratigraphicPile(object):
         rects = ax.barh(pos_anch, np.ones_like(pos_anch)*2, .5, left=3.)
 
         color_lot = dict(zip(surface_class['surface'], surface_class['color']))
+        #color_lot = surface_class.colors.colordict
         # We connect each rectangle
         for e, surface in enumerate(self.anch_surfaces.columns):
             if 'aux' in surface:

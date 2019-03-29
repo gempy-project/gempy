@@ -654,7 +654,7 @@ class Surfaces(object):
         return True
 
     @_setdoc([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
-    def reorder_surfaces(self, list_names):
+    def reorder_surfaces_DEP(self, list_names):
         """"""
 
         # check if list_names are all already in the columns
@@ -664,6 +664,7 @@ class Surfaces(object):
 
         self.df['surface'] = list_names
         self.set_basement()
+        #self.colors.update_colors()
 
 
     @_setdoc(pn.Series.replace.__doc__)
@@ -812,7 +813,7 @@ class Surfaces(object):
     def set_surfaces_values(self, values_array, properties_names=np.empty(0)):
         # Check if there are values columns already
         old_prop_names = self.df.columns[~self.df.columns.isin(['surface', 'series', 'order_surfaces',
-                                                                'id', 'isBasement'])]
+                                                                'id', 'isBasement', 'color'])]
         # Delete old
         self.delete_surface_values(old_prop_names)
 

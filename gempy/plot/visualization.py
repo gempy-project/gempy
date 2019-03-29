@@ -80,9 +80,9 @@ class PlotData2D(object):
 
         self.model = model
 
-        self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
+        self._color_lot = model.surfaces.colors.colordict
         self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
-        self._norm = mcolors.Normalize(vmin=1, vmax=len(self._cmap.colors))
+        self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors)+0.5)
 
         self._set_style()
 
@@ -614,17 +614,10 @@ class vtkVisualization:
         self.geo_model = geo_data#copy.deepcopy(geo_model)
         self.interp_data = None
         self.layer_visualization = True
-      #  for e, i in enumerate( np.squeeze(geo_model.surfaces['value'].values)):
-      #      color_lot[e] = color_lot[i]
-        #self.C_LOT = color_lot
-        #print(self.C_LOT)
         self.C_LOT = dict(zip(self.geo_model.surfaces.df['id'], self.geo_model.surfaces.df['color']))
-        #print(self.C_LOT)
 
         for surf, color in self.C_LOT.items(): #convert hex to rgb
-            #print(form, color)
             self.C_LOT[surf] = mcolors.hex2color(color)
-
 
         self.ren_name = ren_name
         # Number of renders
