@@ -57,7 +57,7 @@ class DataMutation(object):
 
     @_setdoc([Surfaces.map_series.__doc__])
     def map_series_to_surfaces(self, mapping_object: Union[dict, pn.Categorical] = None,
-                                 set_series=True, sort_data: bool = True):
+                               set_series=True, sort_geometric_data: bool = True):
         # TODO: decide if this method should just go to the api
         if set_series is True:
             if type(mapping_object) is dict:
@@ -74,7 +74,7 @@ class DataMutation(object):
         self.update_from_surfaces()
         self.update_from_series()
 
-        if sort_data is True:
+        if sort_geometric_data is True:
             self.surface_points.sort_table()
             self.orientations.sort_table()
 

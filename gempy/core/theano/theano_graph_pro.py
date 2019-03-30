@@ -25,6 +25,7 @@ Returns:
 """
 import theano
 import theano.tensor as T
+import theano.ifelse as tif
 import numpy as np
 import sys
 from .theano_graph import TheanoGeometry, TheanoOptions
@@ -169,7 +170,7 @@ class TheanoGraphPro(object):
         # ------
         # Shared
         # ------
-        self.is_fault_ctrl = theano.shared(np.zeros(3, dtype='int32'), 'The series (fault) is finite')
+        self.is_finite_ctrl = theano.shared(np.zeros(3, dtype='int32'), 'The series (fault) is finite')
         self.is_finite = theano.shared(np.zeros(3, dtype='int32'), 'The series (fault) is finite')
         self.inf_factor = self.is_finite * 10
 
@@ -182,9 +183,9 @@ class TheanoGraphPro(object):
                                                       [0, 0]]), 'fault relation matrix')
 
         # Results matrix
-        self.weights_vector = theano.shared(np.zeros(10000), 'Weights vector')
-        self.scalar_fields_matrix = theano.shared(np.zeros((3, 10000),dtype='float32'), 'Scalar matrix')
-        self.block_matrix = theano.shared(np.zeros((3, 3, 10000)), "block matrix")
+        self.weights_vector = theano.shared(np.cast[dtype](np.zeros(10000)), 'Weights vector')
+        self.scalar_fields_matrix = theano.shared(np.cast[dtype](np.zeros((3, 10000))), 'Scalar matrix')
+        self.block_matrix = theano.shared(np.cast[dtype](np.zeros((3, 3, 10000))), "block matrix")
         self.mask_matrix = theano.shared(np.zeros((3, 10000), dtype='bool'), "mask matrix")
 
         # Structure
@@ -197,7 +198,7 @@ class TheanoGraphPro(object):
         self.compute_weights_ctrl = T.vector('Vector controlling if weights must be recomputed', dtype='bool')
         self.compute_scalar_ctrl = T.vector('Vector controlling if scalar matrix must be recomputed', dtype='bool')
         self.compute_block_ctrl = T.vector('Vector controlling if block matrix must be recomputed', dtype='bool')
-        self.is_fault_ctrl = theano.shared(np.zeros(3, dtype='int32'), 'The series (fault) is finite')
+        self.is_finite_ctrl = theano.shared(np.zeros(3, dtype='int32'), 'The series (fault) is finite')
         self.onlap_erode_ctrl = theano.shared(np.zeros(3, dtype='int32'), 'Onlap erode')
 
         self.input_parameters_loop = [self.dips_position_all, self.dip_angles_all, self.azimuth_all,
@@ -229,6 +230,12 @@ class TheanoGraphPro(object):
         finite_faults_sel = self.select_finite_faults(n_series, grid_val)
         return self.export_fault_block(Z_x, scalar_field_at_surface_points, values, finite_faults_sel)
 
+    def compute_final_block(self, mask, block):
+
+        # We add the axis 1 to the mask. Axis 1 is the properties values axis
+        # Then we sum over the 0 axis. Axis 0 is the series
+        final_model = T.sum(T.stack([mask], axis=1) * block, axis=0)
+        return final_model
     def compute_series(self):
 
         # Looping
@@ -250,7 +257,7 @@ class TheanoGraphPro(object):
                        dict(input=self.compute_weights_ctrl, taps=[0]),
                        dict(input=self.compute_scalar_ctrl, taps=[0]),
                        dict(input=self.compute_block_ctrl, taps=[0]),
-                       dict(input=self.is_fault_ctrl, taps=[0]),
+                       dict(input=self.is_finite_ctrl, taps=[0]),
                        dict(input=self.is_erosion, taps=[0]),
                        dict(input=self.is_onlap, taps=[0]),
                        dict(input=T.arange(0, 5000, dtype='int32'), taps=[0])
@@ -271,10 +278,13 @@ class TheanoGraphPro(object):
         mask = series[4][-1]
         mask_rev_cumprod = T.vertical_stack(mask[[-1]], T.cumprod(T.invert(mask[:-1]), axis=0))
         self.new_mask = mask * mask_rev_cumprod
+
+        final_model = self.compute_final_block(self.new_mask, self.new_block)
+
+
         #self.new_mask = series[4][-1]
 
-        return [self.new_block, self.new_weights, self.new_scalar, self.new_sfai, self.new_mask]
-
+        return [final_model, self.new_block, self.new_weights, self.new_scalar, self.new_sfai, self.new_mask]
 
     # region Geometry
     def set_rest_ref_matrix(self, number_of_points_per_surface):
@@ -1020,7 +1030,7 @@ class TheanoGraphPro(object):
         tiled_weights = self.extend_dual_kriging(weights, grid_val.shape[0])
 
         grid_shape = T.stack([grid_val.shape[0]], axis=0)
-        Z_x_init = T.zeros(grid_shape, dtype='float32')
+        Z_x_init = T.zeros(grid_shape)
         if 'grid_shape' in self.verbose:
             grid_shape = theano.printing.Print('grid_shape')(grid_shape)
 
@@ -1337,24 +1347,27 @@ class TheanoGraphPro(object):
                                        self.compute_weights(),
                                        weights_vector[len_w_0:len_w_1])
 
-        Z_x = theano.ifelse.ifelse(compute_scalar_ctr,
+        if 'weights' in self.verbose:
+            weights = theano.printing.Print('weights foo')(weights)
+
+        Z_x = tif.ifelse(compute_scalar_ctr,
                                    self.compute_scalar_field(weights, self.grid_val_T),
                                    scalar_field_matrix[n_series])
 
         scalar_field_at_surface_points = self.get_scalar_field_at_surface_points(Z_x, self.npf_op)
 
         # TODO: add control flow for this side
-        mask_e = theano.ifelse.ifelse(is_erosion,
+        mask_e = tif.ifelse(is_erosion,
                                       T.gt(Z_x, T.min(scalar_field_at_surface_points)),
                                       T.ones_like(Z_x, dtype='bool'))
 
-        mask_o = theano.ifelse.ifelse(is_onlap,
+        mask_o = tif.ifelse(is_onlap,
                                       T.gt(Z_x, T.max(scalar_field_at_surface_points)),
                                       mask_matrix[n_series - 1, :])
 
-        block = theano.ifelse.ifelse(
+        block = tif.ifelse(
             compute_block_ctr,
-            theano.ifelse.ifelse(is_fault,
+            tif.ifelse(is_fault,
                                  self.compute_fault_block(
                                      Z_x, scalar_field_at_surface_points,
                                      self.values_properties_op[:, n_form_per_serie_0: n_form_per_serie_1 + 1],

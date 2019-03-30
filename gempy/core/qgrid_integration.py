@@ -394,7 +394,7 @@ class QgridModelIntegration(object):
                 idx = event['index']
                 new_series = event['new']
                 self._geo_model.map_series_to_surfaces({new_series: surface_object.df.loc[idx, ['surface']]},
-                                                         set_series=False, sort_data=True)
+                                                       set_series=False, sort_geometric_data=True)
             if event['column'] == 'isBasement':
                 idx = event['index']
                 surface_object.set_basement(surface_object.df.loc[idx, ['surface']])
