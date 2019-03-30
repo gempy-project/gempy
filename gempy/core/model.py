@@ -515,7 +515,7 @@ class Model(DataMutation):
     def new_model(self, name_project='default_project'):
         self.__init__(name_project)
 
-    def save_model(self, path=False):
+    def save_model_pickle(self, path=False):
         """
         Short term model storage. Object to a python pickle (serialization of python). Be aware that if the dependencies
         versions used to export and import the pickle differ it may give problems
@@ -542,7 +542,7 @@ class Model(DataMutation):
         return True
 
     @staticmethod
-    def load_model(path):
+    def load_model_pickle(path):
         """
         Read InputData object from python pickle.
 
@@ -560,10 +560,49 @@ class Model(DataMutation):
             model = pickle.load(f)
             return model
 
-    def save_model_long_term(self):
-        # TODO saving the main attributes in a seriealize way independent on the package i.e. surface_points and
-        # TODO orientations categories_df, grid values etc.
-        pass
+    def save_model(self, name, path=None):
+        """
+        Save model in new folder. Input data is saved as csv files. Solutions, extent and resolutions are saved as npy.
+
+        Args:
+            name (str): name of the newly created folder and the part of the files name
+            path (str): path where save the model folder.
+
+        Returns:
+            True
+        """
+        if not path:
+            path = './'
+        path = f'{path}/{name}'
+        if os.path.isdir(path):
+            print("Directory already exists, files will be overwritten")
+        else:
+            os.mkdir(f'{path}')
+
+        # save dataframes as csv
+        self.surface_points.df.to_csv(f'{path}/{name}_surface_points.csv')
+        self.surfaces.df.to_csv(f'{path}/{name}_surfaces.csv')
+        self.orientations.df.to_csv(f'{path}/{name}_orientations.csv')
+        self.series.df.to_csv(f'{path}/{name}_series.csv')
+        self.faults.df.to_csv(f'{path}/{name}_faults.csv')
+        self.faults.faults_relations_df.to_csv(f'{path}/{name}_faults_relations.csv')
+        self.additional_data.kriging_data.df.to_csv(f'{path}/{name}_kriging_data.csv')
+        self.additional_data.rescaling_data.df.to_csv(f'{path}/{name}_rescaling_data.csv')
+        self.additional_data.options.df.to_csv(f'{path}/{name}_options.csv')
+
+        # save resolution and extent as npy
+        np.save(f'{path}/{name}_extent.npy', self.grid.extent)
+        np.save(f'{path}/{name}_resolution.npy', self.grid.resolution)
+
+        # save solutions as npy
+        np.save(f'{path}/{name}_lith_block.npy' ,self.solutions.lith_block)
+        np.save(f'{path}/{name}_scalar_field_lith.npy', self.solutions.scalar_field_lith)
+        np.save(f'{path}/{name}_fault_blocks.npy', self.solutions.fault_blocks)
+        np.save(f'{path}/{name}_scalar_field_faults.npy', self.solutions.scalar_field_faults)
+        np.save(f'{path}/{name}_gradient.npy', self.solutions.gradient)
+        np.save(f'{path}/{name}_values_block.npy', self.solutions.values_block)
+
+        return True
 
     def get_data(self, itype='data', numeric=False):
         """

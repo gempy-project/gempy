@@ -236,6 +236,7 @@ class TheanoGraphPro(object):
         # Then we sum over the 0 axis. Axis 0 is the series
         final_model = T.sum(T.stack([mask], axis=1) * block, axis=0)
         return final_model
+
     def compute_series(self):
 
         # Looping

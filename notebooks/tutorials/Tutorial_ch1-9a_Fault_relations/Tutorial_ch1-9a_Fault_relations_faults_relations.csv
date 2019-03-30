@@ -1,0 +1,5 @@
+,fault_series1,series2,series1,basement_series
+fault_series1,False,False,True,True
+series2,False,False,False,False
+series1,False,False,False,False
+basement_series,False,False,False,False

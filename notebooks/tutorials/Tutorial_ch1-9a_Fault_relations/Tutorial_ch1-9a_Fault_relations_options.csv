@@ -1,0 +1,2 @@
+,dtype,output,theano_optimizer,device,verbosity
+values,float64,geology,fast_compile,cpu,[0]
