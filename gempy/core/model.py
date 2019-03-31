@@ -149,6 +149,13 @@ class DataMutation(object):
         if reorder_series is True:
             self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
                                                                 ordered=False, inplace=True)
+            # self.surface_points.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+            #                                                   ordered=False, inplace=True)
+            # self.orientations.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+            #                                                   ordered=False, inplace=True)
+
+            self.series.df.index = self.series.df.index.reorder_categories(self.series.df.index.get_values(),
+                                                              ordered=False)
             self.surfaces.sort_surfaces()
 
         self.surfaces.set_basement()
@@ -560,7 +567,7 @@ class Model(DataMutation):
             model = pickle.load(f)
             return model
 
-    def save_model(self, name, path=None):
+    def save_model(self, name=None, path=None):
         """
         Save model in new folder. Input data is saved as csv files. Solutions, extent and resolutions are saved as npy.
 
@@ -574,6 +581,10 @@ class Model(DataMutation):
         if not path:
             path = './'
         path = f'{path}/{name}'
+
+        if name is None:
+            name = self.meta.project_name
+
         if os.path.isdir(path):
             print("Directory already exists, files will be overwritten")
         else:

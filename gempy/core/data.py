@@ -274,6 +274,7 @@ class Series(object):
         self.update_faults_index()
 
         self.faults.sort_faults()
+        return self
 
     def sort_series(self):
         self.df.sort_values(by='order_series', inplace=True)
@@ -1767,7 +1768,10 @@ class Structure(object):
         # Extracting lengths
         # ==================
         # Array containing the size of every surface. SurfacePoints
-        self.df.at['values', 'len surfaces surface_points'] = self.surface_points.df.groupby('surface')['order_series'].count().values[:-1]#self.surface_points.df['id'].value_counts(sort=False).values
+        lssp = self.surface_points.df.groupby('surface')['order_series'].count().values
+        lssp_nonzero = lssp[np.nonzero(lssp)]
+
+        self.df.at['values', 'len surfaces surface_points'] = lssp_nonzero#self.surface_points.df['id'].value_counts(sort=False).values
 
         return True
 
@@ -1879,16 +1883,19 @@ class KrigingParameters(object):
     def _repr_html_(self):
         return self.df.T.to_html()
 
-    def modify_kriging_parameters(self, property:str, value):
+    def modify_kriging_parameters(self, property:str, value, **kwargs):
+        u_grade_sep = kwargs.get('u_grade_sep', ',')
+
         assert np.isin(property, self.df.columns).all(), 'Valid properties are: ' + np.array2string(self.df.columns)
 
         if property == 'drift equations':
-            value = np.fromstring(value[1:-1], sep=',')
+            if type(value) is str:
+                value = np.fromstring(value[1:-1], sep=u_grade_sep)
             try:
                 assert value.shape[0] is self.structure.df.loc[
                     'values', 'len series surface_points'].shape[0]
 
-                self.df.loc['values', property] = value
+                self.df.at['values', property] = value
 
             except AssertionError:
                 print('u_grade length must be the same as the number of series')

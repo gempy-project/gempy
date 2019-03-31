@@ -1331,7 +1331,7 @@ class TheanoGraphPro(object):
         self.n_universal_eq_T_op = u_grade_iter
 
         # Extracting faults matrices
-        faults_relation_op = self.fault_relation[:, T.cast(n_surface_op[0]-1, 'int8')]
+        faults_relation_op = self.fault_relation[:, T.cast(n_series, 'int8')]
         self.fault_matrix = block_matrix[T.nonzero(T.cast(faults_relation_op, "int8"))[0], 0, :]
         if 'fault_matrix_loop' in self.verbose:
             self.fault_matrix = theano.printing.Print('self fault matrix')(self.fault_matrix)

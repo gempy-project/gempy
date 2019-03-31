@@ -66,6 +66,7 @@ def save_model(model: Model, name, path=None):
     model.save_model(name, path)
     return True
 
+
 @_setdoc(Model.load_model_pickle.__doc__)
 def load_model_pickle(path):
     """
@@ -80,7 +81,8 @@ def load_model_pickle(path):
     """
     return Model.load_model_pickle(path)
 
-def load_model(name, path=None, recompile=True):
+
+def load_model(name, path=None, recompile=False):
     """
     Loading model saved with model.save_model function.
 
@@ -93,6 +95,10 @@ def load_model(name, path=None, recompile=True):
         :class:`gempy.core.model
 
     """
+    # TODO: Divide each dataframe in its own function
+    # TODO: Include try except in case some of the datafiles is missing
+    #
+
     if not path:
         path = './'
     path = f'{path}/{name}'
@@ -101,7 +107,6 @@ def load_model(name, path=None, recompile=True):
     geo_model = create_model()
     init_data(geo_model, np.load(f'{path}/{name}_extent.npy'), np.load(f'{path}/{name}_resolution.npy'))
     # rel_matrix = np.load()
-
     # set additonal data
     geo_model.additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0,
                                             dtype={'range': 'float64', '$C_o$': 'float64', 'drift equations': object,
@@ -131,7 +136,7 @@ def load_model(name, path=None, recompile=True):
                                             dtype={'isFault': 'bool', 'isFinite': 'bool'})
     geo_model.faults.df.index = series_index
 
-    # do faults relations properly - this is where I struggle
+    # # do faults relations properly - this is where I struggle
     geo_model.faults.faults_relations_df = pn.read_csv(f'{path}/{name}_faults_relations.csv', index_col=0)
     geo_model.faults.faults_relations_df.index = series_index
     geo_model.faults.faults_relations_df.columns = series_index
