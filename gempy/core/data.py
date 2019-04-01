@@ -677,7 +677,7 @@ class Surfaces(object):
                 self.df.loc[:, p_name] = values_array[e]
             except ValueError:
                 raise ValueError('value_array must have the same length in axis 0 as the number of surfaces')
-        return True
+        return self
 
     def delete_surface_values(self, properties_names):
         properties_names = np.asarray(properties_names)
@@ -693,7 +693,7 @@ class Surfaces(object):
 
         # Create new
         self.add_surfaces_values(values_array, properties_names)
-        return True
+        return self
 
     def modify_surface_values(self):
         """Method to modify values using loc of pandas"""
@@ -1978,16 +1978,16 @@ class AdditionalData(object):
     def __repr__(self):
 
         concat_ = self.get_additional_data()
-        return concat_.T.to_string()
+        return concat_.to_string()
 
     def _repr_html_(self):
         concat_ = self.get_additional_data()
-        return concat_.T.to_html()
+        return concat_.to_html()
 
     def get_additional_data(self):
         concat_ = pn.concat([self.structure_data.df, self.options.df, self.kriging_data.df, self.rescaling_data.df],
                             axis=1, keys=['Structure', 'Options', 'Kringing', 'Rescaling'])
-        return concat_
+        return concat_.T
 
     # def update_rescaling_data(self):
     #     #TODO check uses and if they are still relevant

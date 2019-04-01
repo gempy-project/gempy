@@ -173,6 +173,7 @@ class TheanoGraphPro(object):
         self.is_finite_ctrl = theano.shared(np.zeros(3, dtype='int32'), 'The series (fault) is finite')
         self.is_finite = theano.shared(np.zeros(3, dtype='int32'), 'The series (fault) is finite')
         self.inf_factor = self.is_finite * 10
+        self.is_fault = theano.shared(np.zeros(5000, dtype=bool))
 
         # COMPUTE LOOP
         # ------
@@ -238,6 +239,8 @@ class TheanoGraphPro(object):
         return final_model
 
     def compute_series(self):
+        # TODO make a function to create the grid with special conditions. e.g for the sandbox
+
 
         # Looping
         series, updates1 = theano.scan(
@@ -1291,7 +1294,7 @@ class TheanoGraphPro(object):
                          len_w_0, len_w_1,
                          n_form_per_serie_0, n_form_per_serie_1,
                          u_grade_iter,
-                         compute_weight_ctr, compute_scalar_ctr, compute_block_ctr, is_fault, is_erosion, is_onlap,
+                         compute_weight_ctr, compute_scalar_ctr, compute_block_ctr, is_finite, is_erosion, is_onlap,
                          n_series,
                          block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix
                          ):
@@ -1359,22 +1362,22 @@ class TheanoGraphPro(object):
 
         # TODO: add control flow for this side
         mask_e = tif.ifelse(is_erosion,
-                                      T.gt(Z_x, T.min(scalar_field_at_surface_points)),
-                                      T.ones_like(Z_x, dtype='bool'))
+                            T.gt(Z_x, T.min(scalar_field_at_surface_points)),
+                            ~ self.is_fault[n_series] * T.ones_like(Z_x, dtype='bool'))
 
         mask_o = tif.ifelse(is_onlap,
-                                      T.gt(Z_x, T.max(scalar_field_at_surface_points)),
-                                      mask_matrix[n_series - 1, :])
+                            T.gt(Z_x, T.max(scalar_field_at_surface_points)),
+                            mask_matrix[n_series - 1, :])
 
         block = tif.ifelse(
             compute_block_ctr,
-            tif.ifelse(is_fault,
-                                 self.compute_fault_block(
+            tif.ifelse(is_finite,
+                       self.compute_fault_block(
                                      Z_x, scalar_field_at_surface_points,
                                      self.values_properties_op[:, n_form_per_serie_0: n_form_per_serie_1 + 1],
                                      n_series, self.grid_val_T
                                  ),
-                                 self.compute_formation_block(
+                       self.compute_formation_block(
                                      Z_x, scalar_field_at_surface_points,
                                      self.values_properties_op[:, n_form_per_serie_0: n_form_per_serie_1 + 1])),
             block_matrix[n_series, :]

@@ -1,13 +1,20 @@
 import os
 import sys
 from os import path
+import numpy as np
+import pandas as pn
+from typing import Union
+import warnings
 
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import pandas as pn
 pn.options.mode.chained_assignment = None
-from .data import *
+from .data import AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints, Surfaces, \
+                  Options, Structure, KrigingParameters
+from .solution import Solution
 from .interpolator import Interpolator
+from .interpolator_pro import InterpolatorModel
 from gempy.utils.meta import _setdoc
 from gempy.plot.plot import vtkPlot
 
@@ -26,6 +33,13 @@ class DataMutation(object):
         self.rescaling = RescaledData(self.surface_points, self.orientations, self.grid)
         self.additional_data = AdditionalData(self.surface_points, self.orientations, self.grid, self.faults,
                                               self.surfaces, self.rescaling)
+
+        self.interpolator = InterpolatorModel(self.surface_points, self.orientations, self.grid, self.surfaces,
+                                              self.series, self.faults, self.additional_data)
+        # self.interpolator = Interpolator(self.surface_points, self.orientations, self.grid, self.surfaces,
+        #                                       self.faults, self.additional_data)
+
+        self.solutions = Solution(self.additional_data, self.grid, self.surface_points)
 
     @_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
     def read_data(self, path_i=None, path_o=None, add_basement=True, **kwargs):
@@ -57,8 +71,8 @@ class DataMutation(object):
 
     @_setdoc([Surfaces.map_series.__doc__])
     def map_series_to_surfaces(self, mapping_object: Union[dict, pn.Categorical] = None,
-                               set_series=True, sort_geometric_data: bool = True):
-        # TODO: decide if this method should just go to the api
+                               set_series=True, sort_geometric_data: bool = True, remove_unused_series=True):
+        # Add New series to the series df
         if set_series is True:
             if type(mapping_object) is dict:
                 series_list = list(mapping_object.keys())
@@ -70,7 +84,20 @@ class DataMutation(object):
                 raise AttributeError(str(type(mapping_object)) + ' is not the right attribute type.')
 
         self.surfaces.map_series(mapping_object)
+
+        # Here we remove the series that were not assigned to a surface
+        if remove_unused_series is True:
+            self.surfaces.df['series'].cat.remove_unused_categories(inplace=True)
+            unused_cat = self.series.df.index[~self.series.df.index.isin(
+                self.surfaces.df['series'].cat.categories)]
+            self.series.delete_series(unused_cat)
+
+
         self.surfaces.update_sequential_pile()
+
+        self.series.update_order_series()
+       # self.surfaces.sort_surfaces()
+
         self.update_from_surfaces()
         self.update_from_series()
 
@@ -123,7 +150,7 @@ class DataMutation(object):
         self.additional_data.update_default_kriging()  # TODO decide if this makes sense here. Probably is better to do
         #  it with a checker
         self.rescaling.set_rescaled_grid()
-        self.interpolator.set_theano_share_input()
+        # self.interpolator.set_theano_share_input()
 
     def set_series_object(self):
         """
@@ -133,7 +160,8 @@ class DataMutation(object):
         """
         pass
 
-    def update_from_series(self, rename_series: dict = None, reorder_series=True, sort_geometric_data=True):
+    def update_from_series(self, rename_series: dict = None, reorder_series=True, sort_geometric_data=True,
+                           update_interpolator=True):
         """
         Note: update_from_series does not have the inverse, i.e. update_to_series, because Series is independent
         Returns:
@@ -175,6 +203,8 @@ class DataMutation(object):
         # For the drift equations. TODO disentagle this property
         self.additional_data.update_default_kriging()
 
+        if update_interpolator is True:
+            self.interpolator.set_theano_shared_structure(reset=True)
 
     def set_surfaces_object(self):
         """
@@ -214,37 +244,56 @@ class DataMutation(object):
     @_setdoc([Faults.set_is_fault.__doc__])
     def set_is_fault(self, series_fault=None):
         for series_as_faults in np.atleast_1d(series_fault):
-            if self.faults.df.loc[series_fault[0], 'isFault'] == True:
+
+            # TODO: Decide if this makes sense anymore
+            # This code is to push faults up the pile
+            if self.faults.df.loc[series_fault[0], 'isFault'] is True:
                 self.series.modify_order_series(self.faults.n_faults, series_as_faults)
                 print('Fault series: ' + str(series_fault) + ' moved to the top of the surfaces.')
             else:
                 self.series.modify_order_series(self.faults.n_faults + 1, series_as_faults)
                 print('Fault series: ' + str(series_fault) + ' moved to the top of the pile.')
 
-            s = self.faults.set_is_fault(series_fault)
+            self.faults.set_is_fault(series_fault)
+            self.interpolator.set_theano_shared_is_fault()
+        # TODO this update from series is alsod related to the move in the pile
         self.update_from_series()
-        return s
+        return self.faults
 
-    def set_interface_object(self, surface_points: SurfacePoints, update_model=True):
+    def update_from_faults(self):
+        self.interpolator.set_theano_shared_faults()
+
+    def set_surface_poinins_object(self, surface_points: SurfacePoints, update_model=True):
         self.surface_points = surface_points
         self.rescaling.surface_points = surface_points
         self.interpolator.surface_points = surface_points
+
+        if update_model is True:
+            self.update_from_surface_points()
 
     @_setdoc([Faults.set_is_fault.__doc__])
     def set_is_finite_fault(self, series_fault=None):
         s = self.faults.set_is_finite_fault(series_fault)  # change df in Fault obj
         print(s)
         # change shared theano variable for infinite factor
-        self.interpolator.set_theano_inf_factor()
+        # self.interpolator.set_theano_inf_factor()
+        self.interpolator.set_theano_shared_is_finite()
 
+    def set_fault_relation(self, rel_matrix):
+        self.faults.set_fault_relation(rel_matrix)
 
-    def set_interface_object(self, interfaces: Surfaces, update_model=True):
-        self.interfaces = interfaces
-        self.rescaling.interfaces = interfaces
-        self.interpolator.interfaces = interfaces
+        # Updating
+        self.interpolator.set_theano_shared_fault_relation()
+        self.interpolator.set_theano_shared_weights()
 
-        if update_model is True:
-            self.update_from_surface_points()
+    # TODO: DEP
+    # def set_interface_object(self, interfaces: Surfaces, update_model=True):
+    #     self.interfaces = interfaces
+    #     self.rescaling.interfaces = interfaces
+    #     self.interpolator.interfaces = interfaces
+    #
+    #     if update_model is True:
+    #         self.update_from_surface_points()
 
     def update_to_surface_points(self, idx: Union[list, np.ndarray] = None):
 
@@ -309,7 +358,7 @@ class DataMutation(object):
     def set_theano_function(self, interpolator: Interpolator):
         self.interpolator.theano_graph = interpolator.theano_graph
         self.interpolator.theano_function = interpolator.theano_function
-        self.interpolator.set_theano_shared_parameters()
+        self.interpolator.set_all_shared_parameters()
 
     def map_data_df(self, d):
         d['series'] = d['surface'].map(self.surfaces.df.set_index('surface')['series'])
@@ -498,7 +547,7 @@ class DataMutation(object):
         pass
 
     def update_to_interpolator(self):
-        self.interpolator.set_theano_shared_parameters()
+        self.interpolator.set_all_shared_parameters()
 
 
 @_setdoc([MetaData.__doc__, Grid.__doc__])
@@ -511,10 +560,6 @@ class Model(DataMutation):
 
         self.meta = MetaData(project_name=project_name)
         super().__init__()
-
-        self.interpolator = Interpolator(self.surface_points, self.orientations, self.grid, self.surfaces,
-                                         self.faults, self.additional_data)
-        self.solutions = Solution(self.additional_data, self.grid, self.surface_points)
 
     def __repr__(self):
         return self.meta.project_name + ' ' + self.meta.date
@@ -675,6 +720,9 @@ class Model(DataMutation):
                                  ' \'surfaces\',\'series\', \'faults\' or \'faults_relations_df\'')
 
         return raw_data
+
+    def get_additional_data(self):
+        return self.additional_data.get_additional_data()
 
     # def get_theano_input(self):
     #     pass

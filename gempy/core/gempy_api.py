@@ -30,7 +30,7 @@ import numpy as _np
 from numpy import ndarray
 from pandas import DataFrame
 from gempy.core.model import *
-from gempy.core.api_modules.data_mutation import *
+#from gempy.core.api_modules.data_mutation import *
 from typing import Union
 from gempy.utils.meta import _setdoc
 
@@ -204,22 +204,34 @@ def set_series(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = N
 
 
 def map_series_to_surfaces(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = None,
-                             set_series=True, sort_data: bool = True, remove_unused_series=True, quiet=False):
+                             set_series=True, sort_geometric_data: bool = True, remove_unused_series=True, quiet=False):
+    """
+    Map the series (column) of the Surface object accordingly to the mapping_object
+    Args:
+        geo_model:
+        mapping_object:
+        set_series:
+        sort_data:
+        remove_unused_series:
+        quiet:
 
-    geo_model.map_series_to_surfaces(mapping_object, set_series, sort_data)
+    Returns:
 
-    if remove_unused_series is True:
-        geo_model.surfaces.df['series'].cat.remove_unused_categories(inplace=True)
-        unused_cat = geo_model.series.df.index[~geo_model.series.df.index.isin(
-            geo_model.surfaces.df['series'].cat.categories)]
-        geo_model.series.delete_series(unused_cat)
+    """
+    geo_model.map_series_to_surfaces(mapping_object, set_series, sort_geometric_data, remove_unused_series)
+
+    # if remove_unused_series is True:
+    #     geo_model.surfaces.df['series'].cat.remove_unused_categories(inplace=True)
+    #     unused_cat = geo_model.series.df.index[~geo_model.series.df.index.isin(
+    #         geo_model.surfaces.df['series'].cat.categories)]
+    #     geo_model.series.delete_series(unused_cat)
 
     # TODO: Give the same name to sort surfaces and seires
-    geo_model.series.update_order_series()
-    geo_model.surfaces.sort_surfaces()
-
-    geo_model.update_from_series()
-    geo_model.update_from_surfaces()
+    # geo_model.series.update_order_series()
+    # geo_model.surfaces.sort_surfaces()
+    #
+    # geo_model.update_from_series()
+    # geo_model.update_from_surfaces()
 
     if quiet is True:
         return True
@@ -261,7 +273,7 @@ def select_series_TOUPDATE(geo_data, series):
     return new_geo_data
 
 
-def get_series(model: Model):
+def get_series_DEP(model: Model):
     return model.series
 
 
@@ -288,17 +300,17 @@ def set_surface_names(geo_model: Model, list_names: list, update_df=True):
     geo_model.update_from_surfaces()
     return geo_model.surfaces
 
-def get_surfaces(model: Model):
+def get_surfaces_DEP(model: Model):
     return model.surfaces
 # endregion
 
 
 # region Fault functionality
-def set_faults(model: Model, faults: Faults):
+def set_faults_DEP(model: Model, faults: Faults):
     model.faults = faults
 
 
-def get_faults(model: Model):
+def get_faults_DEP(model: Model):
     return model.faults
 # endregion
 
@@ -312,7 +324,7 @@ def set_grid(model: Model, grid: Grid, update_model=True):
     model.set_grid_object(grid=grid, update_model=update_model)
 
 
-def get_grid(model: Model):
+def get_grid_DEP(model: Model):
     """
     Coordinates can be found in :class:`gempy.core.data.GridClass.values`
 
@@ -357,7 +369,7 @@ def set_surface_points_object(geo_data: Model, surface_points: SurfacePoints, up
     return True
 
 
-def get_surface_points(model: Model):
+def get_surface_points_DEP(model: Model):
     return model.surface_points
 
 
@@ -418,7 +430,7 @@ def set_orientation_from_surface_points_TOUPDATE(geo_data, indices_array):
     return geo_data.orientations
 
 
-def get_orientations(model: Model):
+def get_orientations_DEP(model: Model):
     return model.orientations
 
 
@@ -436,7 +448,7 @@ def rescale_data(geo_model: Model, rescaling_factor=None, centers=None):
     """
 
     geo_model.rescaling.rescale_data(rescaling_factor, centers)
-    return True
+    return geo_model.additional_data.rescaling_data
 # endregion
 
 
@@ -469,8 +481,10 @@ def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=
     geo_model.surface_points.sort_table()
     geo_model.orientations.sort_table()
 
-    geo_model.interpolator.set_theano_graph(geo_model.interpolator.create_theano_graph())
-    geo_model.interpolator.set_theano_shared_parameters()
+   # geo_model.interpolator.set_theano_graph(geo_model.interpolator.create_theano_graph())
+    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True)
+#    geo_model.interpolator.reset_flow_control()
+    geo_model.interpolator.set_all_shared_parameters(reset=True)
 
     if compile_theano is True:
         geo_model.interpolator.compile_th_fn(inplace=inplace)
@@ -512,10 +526,10 @@ def update_additional_data(model: Model, update_structure=True, update_rescaling
 
 
 def get_additional_data(model: Model):
-    return model.additional_data
+    return model.get_additional_data()
 
 
-def get_kriging_parameters(model: Model):
+def get_kriging_parameters_DEP(model: Model):
     """
     Print the kringing parameters
 
@@ -530,7 +544,8 @@ def get_kriging_parameters(model: Model):
 
 
 # region Computing the model
-def compute_model(model: Model, compute_mesh=True, debug=False)-> Solution:
+def compute_model(model: Model, compute_mesh=True, reset_weights=False, reset_scalar=False, reset_block=False,
+                  debug=False) -> Solution:
     """
     Computes the geological model and any extra output given in the additional data option.
 
@@ -549,7 +564,9 @@ def compute_model(model: Model, compute_mesh=True, debug=False)-> Solution:
 
     # TODO: Assert frame by frame that all data is like is supposed. Otherwise,
     # return clear messages
-    i = model.interpolator.get_input_matrix()
+    model.interpolator.reset_flow_control(reset_weights, reset_scalar, reset_block)
+
+    i = model.interpolator.get_python_input_block(append_control=True, fault_drift=None)
 
     assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1,  \
         'To compute the model is necessary at least 2 interface points per layer'
