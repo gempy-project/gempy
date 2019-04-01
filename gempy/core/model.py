@@ -255,7 +255,8 @@ class DataMutation(object):
                 print('Fault series: ' + str(series_fault) + ' moved to the top of the pile.')
 
             self.faults.set_is_fault(series_fault)
-            self.interpolator.set_theano_shared_is_fault()
+            self.series.set_bottom_relation(series_fault, 'Fault')
+            self.interpolator.set_theano_shared_relations()
         # TODO this update from series is alsod related to the move in the pile
         self.update_from_series()
         return self.faults

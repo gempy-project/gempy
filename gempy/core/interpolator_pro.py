@@ -318,7 +318,7 @@ class InterpolatorModel(Interpolator_pro):
 
         self.len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype('int32')
         self.len_series_u = self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')
-        self.len_series_f = self.faults.faults_relations_df.sum(axis=0).values.astype('int32')
+        self.len_series_f = self.faults.faults_relations_df.sum(axis=0).values.astype('int32')[:self.additional_data.get_additional_data()['values']['Structure', 'number series']]
         self.len_series_w = self.len_series_i + self.len_series_o * 3 + self.len_series_u + self.len_series_f
 
         self.theano_graph.len_series_i.set_value(np.insert(self.len_series_i.cumsum(), 0, 0).astype('int32'))

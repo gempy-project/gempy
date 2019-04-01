@@ -55,7 +55,7 @@ sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from gempy.plot.colors import color_lot, cmap, norm
 import gempy as gp
 import copy
-from gempy.core.data import Solution
+from gempy.core.solution import Solution
 
 sns.set_context('talk')
 plt.style.use(['seaborn-white', 'seaborn-talk'])
@@ -311,7 +311,7 @@ class PlotData2D(object):
 
         import matplotlib.patches as mpatches
         colors = [im.cmap(im.norm(value)) for value in self.surface_numbers]
-        patches = [mpatches.Patch(color=colors[i], label=self.surface_names[i]) for i in range(len(self.surface_names))]
+        patches = [mpatches.Patch(color=colors[e], label=i[1]) for e, i in enumerate(self.surface_names.iteritems())]
         if not plot_data:
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
         plt.xlabel(x)

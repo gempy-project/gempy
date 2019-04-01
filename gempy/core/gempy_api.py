@@ -127,7 +127,7 @@ def load_model(name, path=None, recompile=False):
     series_index = pn.CategoricalIndex(geo_model.series.df.index.values)
     # geo_model.series.df.index = pn.CategoricalIndex(series_index)
     geo_model.series.df.index = series_index
-    geo_model.series.df['BottomRelation'].cat.set_categories(['Erosion', 'Onlap'], inplace=True)
+    geo_model.series.df['BottomRelation'].cat.set_categories(['Erosion', 'Onlap', 'Fault'], inplace=True)
 
     cat_series = geo_model.series.df.index.values
 
