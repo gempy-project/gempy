@@ -437,11 +437,7 @@ class Colors:
 
     def generate_colordict(self, out = False):
         '''generate colordict that assigns black to faults and random colors to surfaces'''
-        gp_defcols = ['#F2930C','#00d500',
-            '#325916', '#F24C0C']
-        # '#F2930C', '#F24C0C']#, '#E00000', '#CF522A', '#990902',
-        # '#26BEFF', '#227dac', '#443988', '#2A186C', '#0F5B90']
-
+        gp_defcols = ['#015482','#9f0052','#ffbe00','#728f02','#443988','#ff3f20','#325916','#5DA629']
         test = len(gp_defcols) >= len(self.df)
 
         if test == False:
@@ -455,13 +451,14 @@ class Colors:
         else:
             self.colordict = colordict
 
-    def select_colors(self):
+    def change_colors(self):
         '''opens widget to change colors'''
 
         items = [widgets.ColorPicker(description=surface, value=color)
                  for surface, color in self.colordict.items()]
 
         colbox = widgets.VBox(items)
+        print('Click to select new colors.')
         display(colbox)
 
         def on_change(v):
@@ -472,7 +469,7 @@ class Colors:
             cols.observe(on_change, 'value')
 
     def update_colors(self, cdict=None):
-        ''' Updates the surface colors.
+        ''' Updates the colors in self.colordict and in surfaces_df.
         Args:
             cdict: dict with surface names mapped to hex color codes, e.g. {'layer1':'#6b0318'}
 
