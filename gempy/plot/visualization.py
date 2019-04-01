@@ -231,8 +231,42 @@ class PlotData2D(object):
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
         return _a, _b, _c, extent_val, x, y, Gx, Gy
 
+    def _slice2D(self, cell_number, direction):
+        if direction == 'y':
+            _slice = np.s_[:, cell_number, :]
+            extent = self.model.grid.extent[[0, 1, 4, 5]]
+        elif direction == 'x':
+            _slice = np.s_[cell_number, :, :]
+            extent = self.model.grid.extent[[2, 3, 4, 5]]
+        elif direction == 'z':
+            _slice = np.s_[:, :, cell_number]
+            extent = self.model.grid.extent[[1, 2, 3, 4]]
+        else:
+            print('not a direction')
+        return _slice, extent
+
+    def extract_fault_lines(self, cell_number=25, direction='y'):  # , lb=True):
+        fb = self.model.solutions.scalar_field_faults
+
+        all_levels = self.model.solutions.scalar_field_at_surface_points[
+            np.where(self.model.solutions.scalar_field_at_surface_points != 0)]
+
+        block_id = []
+        for i in range(fb.shape[0]):
+            block_id.append(i)
+
+        _slice, extent = self._slice2D(cell_number, direction)
+
+        for i in range(len(block_id)):
+            plt.contour(fb[block_id[i]].reshape(self.model.grid.resolution)[_slice].T, 0,
+                        extent=extent, levels=all_levels[i], colors=self._cmap.colors[i])
+        # if lb is True:
+        #   plt.contour(geo_model.solutions.scalar_field_lith.reshape(geo_model.grid.resolution)[_slice].T, 0,
+        #   extent=extent, levels=np.sort(all_levels[len(block_id):]),
+        #   colors=self._cmap.colors[len(block_id):])
+
     def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data=False, block_type='lithology', ve=1, **kwargs):
+                           plot_data=False, block_type='lithology', ve=1, show_faults=True, **kwargs):
         """
         Plot a section of the block model
 
@@ -304,11 +338,13 @@ class PlotData2D(object):
                         interpolation=interpolation,
                         aspect=aspect,
                         **kwargs)
-
-        import matplotlib.patches as mpatches
-        patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
+        if show_faults:
+            self.extract_fault_lines(cell_number, direction)
         if not plot_data:
+            import matplotlib.patches as mpatches
+            patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
         plt.xlabel(x)
         plt.ylabel(y)
         return plt.gcf()
