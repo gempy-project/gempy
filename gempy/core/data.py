@@ -449,7 +449,7 @@ class Colors:
             gp_defcols += list(morecolors.values())
 
         colordict = dict(zip(list(self.df['surface']), gp_defcols[:len(self.df)]))
-
+        self.colordict_default = colordict
         if out:
             return colordict
         else:
@@ -508,20 +508,19 @@ class Colors:
         for surf, color in self.colordict.items():
             self.df.loc[self.df['surface'] == surf, 'color'] = color
 
-    def set_default_colors(self, surfaces):
-        new_colors = self.generate_colordict(out=True)
-        self.colordict[surfaces] = new_colors[surfaces]
+    def set_default_colors(self, surfaces = None):
+        if surfaces is not None:
+            self.colordict[surfaces] = self.colordict_default[surfaces]
+        self.set_colors()
 
     def make_faults_black(self, series_fault):
         faults_list = list(self.df[self.df.series.isin(series_fault)]['surface'])
         for fault in faults_list:
-            #if '#000000' in self.colordict:
-                #
             if self.colordict[fault] == '#000000':
                 self.set_default_colors(fault)
             else:
                 self.colordict[fault] = '#000000'
-        self.set_colors()
+                self.set_colors()
 
 class Surfaces(object):
     """

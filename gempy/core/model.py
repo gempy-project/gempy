@@ -217,7 +217,7 @@ class DataMutation(object):
             s = self.faults.set_is_fault(series_fault)
         self.update_from_series()
         if change_color:
-            print('Fault color changed to black. If you do not like this behavior, set change_color to False')
+            print('Fault colors changed. If you do not like this behavior, set change_color to False.')
             self.surfaces.colors.make_faults_black(series_fault)
         return s
 
