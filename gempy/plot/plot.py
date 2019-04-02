@@ -32,8 +32,8 @@ sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import numpy as _np
 import pandas as _pn
 import copy
-from .visualization import PlotData2D, steno3D, vtkVisualization, ipyvolumeVisualization, cut_finite_fault_surfaces
-from .colors import cmap, norm, color_lot
+from .visualization import PlotData2D, steno3D, vtkVisualization, ipyvolumeVisualization
+#from .colors import cmap, norm, color_lot
 import gempy as _gempy
 
 class vtkPlot():

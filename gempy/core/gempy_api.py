@@ -146,7 +146,9 @@ def load_model(name, path=None, recompile=False):
     # do surfaces properly
     geo_model.surfaces.df = pn.read_csv(f'{path}/{name}_surfaces.csv', index_col=0,
                                             dtype={'surface': 'str', 'series': 'category',
-                                                   'order_surfaces': 'int64', 'isBasement': 'bool', 'id': 'int64'})
+                                                   'order_surfaces': 'int64', 'isBasement': 'bool', 'id': 'int64',
+                                                   'color': 'str'}).reindex(geo_model.surfaces._columns, axis=1)
+
     geo_model.surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
 
     cat_surfaces = geo_model.surfaces.df['surface'].values
@@ -289,6 +291,7 @@ def get_sequential_pile(model: Model):
     Returns:
         :class:`matplotlib.pyplot.Figure`
     """
+    model.surfaces.update_sequential_pile()
     return model.surfaces.sequential_pile.figure
 # endregion
 
@@ -568,8 +571,8 @@ def compute_model(model: Model, compute_mesh=True, reset_weights=False, reset_sc
 
     i = model.interpolator.get_python_input_block(append_control=True, fault_drift=None)
 
-    assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1,  \
-        'To compute the model is necessary at least 2 interface points per layer'
+    # assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1,  \
+    #     'To compute the model is necessary at least 2 interface points per layer'
 
     sol = model.interpolator.theano_function(*i)
 

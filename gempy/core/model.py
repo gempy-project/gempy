@@ -125,6 +125,11 @@ class DataMutation(object):
         self.grid.set_regular_grid(extent, resolution)
         self.update_from_grid()
 
+    def set_bottom_relation(self, series: Union[str, list], bottom_relation: Union[str, list]):
+        self.series.set_bottom_relation(series, bottom_relation)
+        self.interpolator.set_theano_shared_relations()
+        return self.series
+
     def set_default_surface_point(self):
         self.surface_points.set_default_surface_points()
         self.update_to_surface_points()
@@ -242,23 +247,26 @@ class DataMutation(object):
         pass
 
     @_setdoc([Faults.set_is_fault.__doc__])
-    def set_is_fault(self, series_fault=None):
-        for series_as_faults in np.atleast_1d(series_fault):
+    def set_is_fault(self, series_fault=None, change_color = True):
+        #for series_as_faults in np.atleast_1d(series_fault):
 
             # TODO: Decide if this makes sense anymore
             # This code is to push faults up the pile
-            if self.faults.df.loc[series_fault[0], 'isFault'] is True:
-                self.series.modify_order_series(self.faults.n_faults, series_as_faults)
-                print('Fault series: ' + str(series_fault) + ' moved to the top of the surfaces.')
-            else:
-                self.series.modify_order_series(self.faults.n_faults + 1, series_as_faults)
-                print('Fault series: ' + str(series_fault) + ' moved to the top of the pile.')
+            # if self.faults.df.loc[series_fault[0], 'isFault'] is True:
+            #     self.series.modify_order_series(self.faults.n_faults, series_as_faults)
+            #     print('Fault series: ' + str(series_fault) + ' moved to the top of the surfaces.')
+            # else:
+            #     self.series.modify_order_series(self.faults.n_faults + 1, series_as_faults)
+            #     print('Fault series: ' + str(series_fault) + ' moved to the top of the pile.')
 
-            self.faults.set_is_fault(series_fault)
-            self.series.set_bottom_relation(series_fault, 'Fault')
-            self.interpolator.set_theano_shared_relations()
+        self.faults.set_is_fault(series_fault)
+        self.series.set_bottom_relation(series_fault, 'Fault')
+        self.interpolator.set_theano_shared_relations()
         # TODO this update from series is alsod related to the move in the pile
         self.update_from_series()
+        if change_color:
+            print('Fault colors changed. If you do not like this behavior, set change_color to False.')
+            self.surfaces.colors.make_faults_black(series_fault)
         return self.faults
 
     def update_from_faults(self):
@@ -533,8 +541,8 @@ class DataMutation(object):
         self.additional_data.options.modify_options(property, value)
         warnings.warn('You need to recompile the Theano code to make it the changes in options.')
 
-    def modify_kriging_parameters(self, property, value):
-        self.additional_data.kriging_data.modify_kriging_parameters(property, value)
+    def modify_kriging_parameters(self, property, value, **kwargs):
+        self.additional_data.kriging_data.modify_kriging_parameters(property, value, **kwargs)
 
     def modify_order_surfaces(self,  new_value: int, idx: int, series: str = None):
         self.surfaces.modify_order_surfaces(new_value, idx, series)
@@ -614,6 +622,7 @@ class Model(DataMutation):
             return model
 
     def save_model(self, name=None, path=None):
+        # TODO: UPDATE!!!!!!! TO new solution
         """
         Save model in new folder. Input data is saved as csv files. Solutions, extent and resolutions are saved as npy.
 

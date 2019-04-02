@@ -53,31 +53,30 @@ class Solution(object):
         self.grid = grid
         self.surface_points = surface_points
 
-        if values is None:
+        # Lithology final block
+        self.lith_block = np.empty(0)
+        self.weights_vector = np.empty(0)
 
-            self.scalar_field_at_surface_points = np.array([])
+        self.scalar_field_matrix = np.array([])
+        self.scalar_field_at_surface_points = np.array([])
 
-            self.weights_vector = np.empty(0)
-            self.scalar_field_matrix = np.array([])
-            self.block_matrix = np.array([])
-            self.mask_matrix = np.array([])
+        self.block_matrix = np.array([])
+        self.block_at_surface_points = np.array([])
 
-            # Lithology final block
-            self.lith_block = np.empty(0)
-            self.values_matrix = np.array([])
+        self.mask_matrix = np.array([])
+        self.mask_at_surface_points = np.array([])
 
-            #self.mask_matrix = np.empty(0)
-            self.gradient = np.empty(0)
-        else:
-            self.set_values(values)
+        self.values_matrix = np.array([])
+        self.values_at_surface_points = np.array([])
+
+        self.gradient = np.empty(0)
 
         self.vertices = {}
         self.edges = {}
 
     def __repr__(self):
         return '\nLithology ids \n  %s \n' \
-               'Lithology scalar field \n  %s \n' \
-               % (np.array2string(self.lith_block), np.array2string(self.scalar_field_matrix))
+               % (np.array2string(self.lith_block))
 
     def set_values(self, values: Union[list, np.ndarray], compute_mesh: bool=True):
         # TODO ============ Set asserts of give flexibility 20.09.18 =============
@@ -90,20 +89,24 @@ class Solution(object):
         Returns:
 
         """
+        self.scalar_field_matrix = values[3][:, :self.grid.length]
         self.scalar_field_at_surface_points = values[4]
 
         self.weights_vector = values[2]
-        self.scalar_field_matrix = values[3]
 
         # Axis 0 is the series. Axis 1 is the value
-        self.block_matrix = values[1]
-        self.mask_matrix = values[5]
+        self.block_matrix = values[1][:, :self.grid.length]
+        self.block_at_surface_points = values[1][:, self.grid.length:]
+
+        self.mask_matrix = values[5][:, :self.grid.length]
+        self.mask_at_surface_points = values[5][:, self.grid.length:]
 
         # Lithology final block
         self.lith_block = values[0][0]
 
         # Properties
-        self.values_matrix = values[0][1:]
+        self.values_matrix = values[0][1:, :self.grid.length]
+        self.values_at_surface_points = values[0][1:, self.grid.length:]
 
         # TODO Adapt it to the gradients
         # try:
@@ -125,7 +128,7 @@ class Solution(object):
             except RuntimeError:
                 warnings.warn('It is not possible to compute the mesh.')
 
-    def compute_surface_regular_grid(self, surface_id: int, scalar_field, **kwargs):
+    def compute_surface_regular_grid(self, level: float, scalar_field, **kwargs):
         """
         Compute the surface (vertices and edges) of a given surface by computing marching cubes (by skimage)
         Args:
@@ -138,29 +141,23 @@ class Solution(object):
         """
 
         from skimage import measure
-        assert surface_id >= 0, 'Number of the surface has to be positive'
-        # In case the values are separated by series I put all in a vector
-        pot_int = self.scalar_field_at_surface_points.sum(axis=0)
-
-        # Check that the scalar field of the surface is whithin the boundaries
-        if not scalar_field.max() > pot_int[surface_id]:
-            pot_int[surface_id] = scalar_field.max()
-            print('Scalar field value at the surface %i is outside the grid boundaries. Probably is due to an error'
-                  'in the implementation.' % surface_id)
-
-        if not scalar_field.min() < pot_int[surface_id]:
-            pot_int[surface_id] = scalar_field.min()
-            print('Scalar field value at the surface %i is outside the grid boundaries. Probably is due to an error'
-                  'in the implementation.' % surface_id)
+        # # Check that the scalar field of the surface is whithin the boundaries
+        # if not scalar_field.max() > level:
+        #     level = scalar_field.max()
+        #     print('Scalar field value at the surface %i is outside the grid boundaries. Probably is due to an error'
+        #           'in the implementation.' % surface_id)
+        #
+        # if not scalar_field.min() < pot_int[surface_id]:
+        #     pot_int[surface_id] = scalar_field.min()
+        #     print('Scalar field value at the surface %i is outside the grid boundaries. Probably is due to an error'
+        #           'in the implementation.' % surface_id)
 
         vertices, simplices, normals, values = measure.marching_cubes_lewiner(
             scalar_field.reshape(self.grid.resolution[0],
                                  self.grid.resolution[1],
                                  self.grid.resolution[2]),
-            pot_int[surface_id],
-            spacing=((self.grid.extent[1] - self.grid.extent[0]) / self.grid.resolution[0],
-                     (self.grid.extent[3] - self.grid.extent[2]) / self.grid.resolution[1],
-                     (self.grid.extent[5] - self.grid.extent[4]) / self.grid.resolution[2]),
+            level,
+            spacing=self.grid.get_dx_dy_dz(),
             **kwargs
         )
 
@@ -168,44 +165,20 @@ class Solution(object):
 
     @_setdoc(compute_surface_regular_grid.__doc__)
     def compute_all_surfaces(self, **kwargs):
-        """
-        Compute all surfaces.
 
-        Args:
-            **kwargs: Marching_cube args
-
-        Returns:
-
-        See Also:
-        """
-        n_surfaces = self.additional_data.structure_data.df.loc['values', 'number surfaces']
-        n_faults = self.additional_data.structure_data.df.loc['values', 'number faults']
-
-        surfaces_names = self.surface_points.df['surface'].unique()
-
-        surfaces_cumsum = np.arange(0, n_surfaces)
-
-        if n_faults > 0:
-            for n in surfaces_cumsum[:n_faults]:
-                v, s, norm, val = self.compute_surface_regular_grid(n, np.atleast_2d(self.scalar_field_faults)[n],
-                                                                    **kwargs)
-                self.vertices[surfaces_names[n]] = v
-                self.edges[surfaces_names[n]] = s
-
-        if n_faults < n_surfaces:
-
-            for n in surfaces_cumsum[n_faults:]:
-                # TODO ======== split each_scalar_field ===========
-                v, s, norms, val = self.compute_surface_regular_grid(n, self.scalar_field_lith, **kwargs)
-
-                # TODO Use setters for this
-                self.vertices[surfaces_names[n]] = v
-                self.edges[surfaces_names[n]] = s
-
-        return self.vertices, self.edges
-
-    def set_vertices(self, surface_name, vertices):
-        self.vertices[surface_name] = vertices
-
-    def set_edges(self, surface_name, edges):
-        self.edges[surface_name] = edges
+        # We loop the scalar fields
+        for e, scalar_field in enumerate(self.scalar_field_matrix):
+            sfas = self.scalar_field_at_surface_points[e]
+            # Drop
+            sfas = sfas[np.nonzero(sfas)]
+            for level in sfas:
+                v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, **kwargs)
+                self.vertices = v
+                self.edges = s
+        return self.vertices, self.simpleces
+    #
+    # def set_vertices(self, surface_name, vertices):
+    #     self.vertices[surface_name] = vertices
+    #
+    # def set_edges(self, surface_name, edges):
+    #     self.edges[surface_name] = edges

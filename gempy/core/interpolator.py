@@ -158,7 +158,7 @@ class Interpolator(object):
 
         # Final values the lith block takes
         self.theano_graph.surface_values.set_value(
-            self.surfaces.df.iloc[:, 4:].values.astype(self.dtype).T)
+            self.surfaces.df.iloc[:, 5:].values.astype(self.dtype).T)
 
     def set_theano_shared_parameters(self):
         """

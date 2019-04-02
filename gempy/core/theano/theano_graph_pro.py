@@ -171,7 +171,7 @@ class TheanoGraphPro(object):
         # Shared
         # ------
         self.is_finite_ctrl = theano.shared(np.zeros(3, dtype='int32'), 'The series (fault) is finite')
-        self.is_finite = theano.shared(np.zeros(3, dtype='int32'), 'The series (fault) is finite')
+        self.is_finite = theano.shared(np.ones(3, dtype='int32'), 'The series (fault) is finite')
         self.inf_factor = self.is_finite * 10
         self.is_fault = theano.shared(np.zeros(5000, dtype=bool))
 
@@ -210,6 +210,8 @@ class TheanoGraphPro(object):
 
         self.is_erosion = theano.shared(np.array([1, 0]))
         self.is_onlap = theano.shared(np.array([0, 1]))
+
+        self.offset = theano.shared(10.)
 
     def compute_weights(self):
      #   self.fault_drift_at_surface_points_ref = T.repeat(fault_drift[:, [0]], self.number_of_points_per_surface_T[0], axis=0)
@@ -1335,7 +1337,7 @@ class TheanoGraphPro(object):
 
         # Extracting faults matrices
         faults_relation_op = self.fault_relation[:, T.cast(n_series, 'int8')]
-        self.fault_matrix = block_matrix[T.nonzero(T.cast(faults_relation_op, "int8"))[0], 0, :]
+        self.fault_matrix = block_matrix[T.nonzero(T.cast(faults_relation_op, "int8"))[0], 0, :] * self.offset
         if 'fault_matrix_loop' in self.verbose:
             self.fault_matrix = theano.printing.Print('self fault matrix')(self.fault_matrix)
         # TODO this is wrong

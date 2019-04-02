@@ -45,6 +45,7 @@ except ImportError:
     IPV_IMPORT = False
 
 import matplotlib.pyplot as plt
+import matplotlib.colors as mcolors
 import seaborn as sns
 import numpy as np
 import pandas as pn
@@ -52,7 +53,7 @@ from os import path
 import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-from gempy.plot.colors import color_lot, cmap, norm
+#from gempy.plot.colors import color_lot#, cmap, norm
 import gempy as gp
 import copy
 from gempy.core.solution import Solution
@@ -75,14 +76,13 @@ class PlotData2D(object):
         verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0
     """
 
-    def __init__(self, model, cmap=cmap, norm=norm, **kwargs):
+    def __init__(self, model, **kwargs):
 
         self.model = model
-        self._color_lot = color_lot
-        self._cmap = cmap
-        self._norm = norm
-        self.surface_names = model.surfaces.df['surface']
-        self.surface_numbers = model.surfaces.df['id']
+
+        self._color_lot = model.surfaces.colors.colordict
+        self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
+        self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors)+0.5)
 
         self._set_style()
 
@@ -142,15 +142,11 @@ class PlotData2D(object):
             series_to_plot_i = self.model.surface_points[self.model.surface_points.df["series"] == series]
             series_to_plot_f = self.model.orientations[self.model.orientations.df["series"] == series]
 
-        # Change dictionary keys numbers for surface names
-        for i in zip(self.surface_names, self.surface_numbers):
-            self._color_lot[i[0]] = self._color_lot[i[1]]
-
         #fig, ax = plt.subplots()
 
     #    series_to_plot_i['surface'] = series_to_plot_i['surface'].cat.remove_unused_categories()
     #    series_to_plot_f['surface'] = series_to_plot_f['surface'].cat.remove_unused_categories()
-
+        #print(self._color_lot)
         if data_type == 'all':
             p = sns.lmplot(x, y,
                            data=series_to_plot_i,
@@ -235,8 +231,42 @@ class PlotData2D(object):
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
         return _a, _b, _c, extent_val, x, y, Gx, Gy
 
+    def _slice2D(self, cell_number, direction):
+        if direction == 'y':
+            _slice = np.s_[:, cell_number, :]
+            extent = self.model.grid.extent[[0, 1, 4, 5]]
+        elif direction == 'x':
+            _slice = np.s_[cell_number, :, :]
+            extent = self.model.grid.extent[[2, 3, 4, 5]]
+        elif direction == 'z':
+            _slice = np.s_[:, :, cell_number]
+            extent = self.model.grid.extent[[1, 2, 3, 4]]
+        else:
+            print('not a direction')
+        return _slice, extent
+
+    def extract_fault_lines(self, cell_number=25, direction='y'):  # , lb=True):
+        fb = self.model.solutions.scalar_field_faults
+
+        all_levels = self.model.solutions.scalar_field_at_surface_points[
+            np.where(self.model.solutions.scalar_field_at_surface_points != 0)]
+
+        block_id = []
+        for i in range(fb.shape[0]):
+            block_id.append(i)
+
+        _slice, extent = self._slice2D(cell_number, direction)
+
+        for i in range(len(block_id)):
+            plt.contour(fb[block_id[i]].reshape(self.model.grid.resolution)[_slice].T, 0,
+                        extent=extent, levels=all_levels[i], colors=self._cmap.colors[i])
+        # if lb is True:
+        #   plt.contour(geo_model.solutions.scalar_field_lith.reshape(geo_model.grid.resolution)[_slice].T, 0,
+        #   extent=extent, levels=np.sort(all_levels[len(block_id):]),
+        #   colors=self._cmap.colors[len(block_id):])
+
     def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data=False, block_type='lithology', ve=1, **kwargs):
+                           plot_data=False, block_type='lithology', ve=1, show_faults=True, **kwargs):
         """
         Plot a section of the block model
 
@@ -308,12 +338,13 @@ class PlotData2D(object):
                         interpolation=interpolation,
                         aspect=aspect,
                         **kwargs)
-
-        import matplotlib.patches as mpatches
-        colors = [im.cmap(im.norm(value)) for value in self.surface_numbers]
-        patches = [mpatches.Patch(color=colors[e], label=i[1]) for e, i in enumerate(self.surface_names.iteritems())]
+        if show_faults:
+            self.extract_fault_lines(cell_number, direction)
         if not plot_data:
+            import matplotlib.patches as mpatches
+            patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
         plt.xlabel(x)
         plt.ylabel(y)
         return plt.gcf()
@@ -619,8 +650,10 @@ class vtkVisualization:
         self.geo_model = geo_data#copy.deepcopy(geo_model)
         self.interp_data = None
         self.layer_visualization = True
+        self.C_LOT = dict(zip(self.geo_model.surfaces.df['id'], self.geo_model.surfaces.df['color']))
 
-        self.C_LOT = color_lot
+        for surf, color in self.C_LOT.items(): #convert hex to rgb
+            self.C_LOT[surf] = mcolors.hex2color(color)
 
         self.ren_name = ren_name
         # Number of renders

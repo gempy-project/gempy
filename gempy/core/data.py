@@ -12,7 +12,8 @@ import warnings
 from gempy.core.checkers import check_for_nans
 from gempy.utils.meta import _setdoc
 from gempy.plot.sequential_pile import StratigraphicPile
-
+import re
+import ipywidgets as widgets
 pn.options.mode.chained_assignment = None
 
 
@@ -64,6 +65,8 @@ class Grid(object):
         self.extent = np.empty(6, dtype='float64')
         self.values = np.empty((1, 3))
         self.values_r = np.empty((1, 3))
+        self.length = self.values.shape[0]
+
         if grid_type is 'regular_grid':
             self.set_regular_grid(**kwargs)
         elif grid_type is 'custom_grid':
@@ -96,6 +99,8 @@ class Grid(object):
                                                                               'the grid'
 
         self.values = custom_grid
+        self.length = self.values.shape[0]
+        return self.values
 
     @staticmethod
     def create_regular_grid_3d(extent, resolution):
@@ -122,6 +127,12 @@ class Grid(object):
         values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
         return values
 
+    def get_dx_dy_dz(self):
+        dx = (self.extent[1] - self.extent[0]) / self.resolution[0]
+        dy = (self.extent[3] - self.extent[2]) / self.resolution[1]
+        dz = (self.extent[5] - self.extent[4]) / self.resolution[2]
+        return dx, dy, dz
+
     def set_regular_grid(self, extent, resolution):
         """
         Set a regular grid into the values parameters for further computations
@@ -133,6 +144,8 @@ class Grid(object):
         self.extent = np.asarray(extent, dtype='float64')
         self.resolution = np.asarray(resolution)
         self.values = self.create_regular_grid_3d(extent, resolution)
+        self.length = self.values.shape[0]
+        return self.values
 
 
 class Series(object):
@@ -219,7 +232,7 @@ class Series(object):
         if update_order_series is True:
             self.update_order_series()
 
-    def set_bottom_relation(self, series: Union[str, list], bottom_relation:Union[str, list]):
+    def set_bottom_relation(self, series: Union[str, list], bottom_relation: Union[str, list]):
         self.df.loc[series, 'BottomRelation'] = bottom_relation
         if bottom_relation == 'Fault':
             self.faults.df.loc[series, 'isFault'] = True
@@ -417,6 +430,114 @@ class Faults(object):
         return faults_series
 
 
+class Colors:
+    def __init__(self, surfaces):
+        self.surfaces = surfaces
+
+    def generate_colordict_DEP(self, out = False):
+        '''generate colordict that assigns black to faults and random colors to surfaces'''
+        gp_defcols = [
+            ['#325916', '#5DA629', '#78CB68', '#84C47A', '#129450'],
+            ['#F2930C', '#F24C0C', '#E00000', '#CF522A', '#990902'],
+            ['#26BEFF', '#227dac', '#443988', '#2A186C', '#0F5B90']]
+
+        for i, series in enumerate(self.surfaces.df['series'].unique()):
+            form_in_series = list(self.surfaces.df.loc[self.surfaces.df['series'] == series, 'surface'])
+            newcols = gp_defcols[i][:len(form_in_series)]
+            if i == 0:
+                colordict = dict(zip(form_in_series, newcols))
+            else:
+                colordict.update(zip(form_in_series, newcols))
+        if out:
+            return colordict
+        else:
+            self.colordict = colordict
+
+    def generate_colordict(self, out = False):
+        '''generate colordict that assigns black to faults and random colors to surfaces'''
+        gp_defcols = ['#015482','#9f0052','#ffbe00','#728f02','#443988','#ff3f20','#325916','#5DA629']
+        test = len(gp_defcols) >= len(self.surfaces.df)
+
+        if test == False:
+            from matplotlib._color_data import XKCD_COLORS as morecolors
+            gp_defcols += list(morecolors.values())
+
+        colordict = dict(zip(list(self.surfaces.df['surface']), gp_defcols[:len(self.surfaces.df)]))
+        self.colordict_default = colordict
+        if out:
+            return colordict
+        else:
+            self.colordict = colordict
+
+    def change_colors(self):
+        '''opens widget to change colors'''
+
+        items = [widgets.ColorPicker(description=surface, value=color)
+                 for surface, color in self.colordict.items()]
+
+        colbox = widgets.VBox(items)
+        print('Click to select new colors.')
+        display(colbox)
+
+        def on_change(v):
+            self.colordict[v['owner'].description] = v['new']  # updates colordict
+            self.set_colors()
+
+        for cols in colbox.children:
+            cols.observe(on_change, 'value')
+
+    def update_colors(self, cdict=None):
+        ''' Updates the colors in self.colordict and in surfaces_df.
+        Args:
+            cdict: dict with surface names mapped to hex color codes, e.g. {'layer1':'#6b0318'}
+
+        Returns: None
+
+        '''
+        if cdict == None:
+            # assert if one surface does not have color
+            try:
+                self.add_colors()
+            except AttributeError:
+                self.generate_colordict()
+        else:
+            for surf, color in cdict.items(): # map new colors to surfaces
+                # assert this because user can set it manually
+                assert surf in list(self.surfaces.df['surface']), str(surf) + ' is not a model surface'
+                assert re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color), str(color) + ' is not a HEX color code'
+                self.colordict[surf] = color
+
+        self.set_colors()
+
+    def add_colors(self):
+        '''assign color to last entry of surfaces df or check isnull and assign color there'''
+        # can be done easier
+        new_colors = self.generate_colordict(out=True)
+       # print(new_colors)
+        form2col = list(self.surfaces.df.loc[self.surfaces.df['color'].isnull(), 'surface'])
+        # this is the dict in-build function to update colors
+        self.colordict.update(dict(zip(form2col, [new_colors[x] for x in form2col])))
+
+    def set_colors(self):
+        '''sets colordict in surfaces dataframe'''
+        for surf, color in self.colordict.items():
+            self.surfaces.df.loc[self.surfaces.df['surface'] == surf, 'color'] = color
+
+    def set_default_colors(self, surfaces = None):
+        if surfaces is not None:
+            self.colordict[surfaces] = self.colordict_default[surfaces]
+        self.set_colors()
+
+    def make_faults_black(self, series_fault):
+        faults_list = list(self.surfaces.df[self.surfaces.df.series.isin(series_fault)]['surface'])
+        for fault in faults_list:
+            if self.colordict[fault] == '#000000':
+                self.set_default_colors(fault)
+            else:
+                self.colordict[fault] = '#000000'
+                self.set_colors()
+
+
 class Surfaces(object):
     """
     Class that contains the surfaces of the model and the values of each of them.
@@ -436,11 +557,12 @@ class Surfaces(object):
     def __init__(self, series: Series, values_array=None, properties_names=None, surface_names=None,
                  ):
 
+        self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'color', 'id']
         self.series = series
-        df_ = pn.DataFrame(columns=['surface', 'series', 'order_surfaces', 'isBasement', 'id'])
+        df_ = pn.DataFrame(columns=self._columns)
         self.df = df_.astype({'surface': str, 'series': 'category',
                               'order_surfaces': int, 'isBasement': bool,
-                              'id': int})
+                              'color': bool, 'id': int})
 
         self.df['series'].cat.add_categories(['Default series'], inplace=True)
 
@@ -448,13 +570,21 @@ class Surfaces(object):
             self.set_surfaces_names(surface_names)
         if values_array is not None:
             self.set_surfaces_values(values_array=values_array, properties_names=properties_names)
+
+        self.colors = Colors(self)
+
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
     def __repr__(self):
         return self.df.to_string()
 
     def _repr_html_(self):
-        return self.df.to_html()
+        #return self.df.to_html()
+        return self.df.style.applymap(self.background_color, subset=['color']).render()
+
+    def background_color(self, value):
+        if type(value) == str:
+            return "background-color: %s" % value
 
     def update_sequential_pile(self):
         """
@@ -464,7 +594,7 @@ class Surfaces(object):
         """
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
-# region set surface names
+# region set formation names
     def set_surfaces_names(self, list_names: list, update_df=True):
         """
          Method to set the names of the surfaces in order. This applies in the surface column of the df
@@ -492,6 +622,7 @@ class Surfaces(object):
             self.set_id()
             self.set_basement()
             self.set_order_surfaces()
+            self.colors.update_colors()
             self.update_sequential_pile()
         return True
 
@@ -520,6 +651,7 @@ class Surfaces(object):
             self.set_id()
             self.set_basement()
             self.set_order_surfaces()
+            self.colors.update_colors()
             self.update_sequential_pile()
         return True
 
@@ -534,7 +666,7 @@ class Surfaces(object):
         return True
 
     @_setdoc([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
-    def reorder_surfaces(self, list_names):
+    def reorder_surfaces_DEP(self, list_names):
         """"""
 
         # check if list_names are all already in the columns
@@ -544,6 +676,7 @@ class Surfaces(object):
 
         self.df['surface'] = list_names
         self.set_basement()
+        #self.colors.update_colors()
 
 
     @_setdoc(pn.Series.replace.__doc__)
@@ -692,7 +825,7 @@ class Surfaces(object):
     def set_surfaces_values(self, values_array, properties_names=np.empty(0)):
         # Check if there are values columns already
         old_prop_names = self.df.columns[~self.df.columns.isin(['surface', 'series', 'order_surfaces',
-                                                                'id', 'isBasement'])]
+                                                                'id', 'isBasement', 'color'])]
         # Delete old
         self.delete_surface_values(old_prop_names)
 
@@ -1895,11 +2028,9 @@ class KrigingParameters(object):
 
         if property == 'drift equations':
             if type(value) is str:
-                value = np.fromstring(value[1:-1], sep=u_grade_sep)
+                value = np.fromstring(value[1:-1], sep=u_grade_sep, dtype=int)
             try:
-                assert value.shape[0] is self.structure.df.loc[
-                    'values', 'len series surface_points'].shape[0]
-
+                assert value.shape[0] is self.structure.df.loc['values', 'len series surface_points'].shape[0]
                 self.df.at['values', property] = value
 
             except AssertionError:
@@ -1991,7 +2122,7 @@ class AdditionalData(object):
 
     def get_additional_data(self):
         concat_ = pn.concat([self.structure_data.df, self.options.df, self.kriging_data.df, self.rescaling_data.df],
-                            axis=1, keys=['Structure', 'Options', 'Kringing', 'Rescaling'])
+                            axis=1, keys=['Structure', 'Options', 'Kriging', 'Rescaling'])
         return concat_.T
 
     # def update_rescaling_data(self):
