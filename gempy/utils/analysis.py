@@ -38,14 +38,14 @@ def get_nearestneighbor_block(lb):
     shp = lb.shape
     nn = np.zeros((shp[0] - 1, shp[0] - 1, shp[0] - 1))
     # x
-    nn += np.abs(lb[1:, :-1, :-1] - lb[:-1, :-1, :-1])
-    nn += np.abs(lb[:-1, :-1, :-1] - lb[1:, :-1, :-1])
+    nn += np.abs(lb[1:, :-1, :-1] ^ lb[:-1, :-1, :-1])
+    nn += np.abs(lb[:-1, :-1, :-1] ^ lb[1:, :-1, :-1])
     # y
-    nn += np.abs(lb[:-1, 1:, :-1] - lb[:-1, :-1, :-1])
-    nn += np.abs(lb[:-1, :-1, :-1] - lb[:-1, 1:, :-1])
+    nn += np.abs(lb[:-1, 1:, :-1] ^ lb[:-1, :-1, :-1])
+    nn += np.abs(lb[:-1, :-1, :-1] ^ lb[:-1, 1:, :-1])
     # z
-    nn += np.abs(lb[:-1, :-1, 1:] - lb[:-1, :-1, :-1])
-    nn += np.abs(lb[:-1, :-1, :-1] - lb[:-1, :-1, 1:])
+    nn += np.abs(lb[:-1, :-1, 1:] ^ lb[:-1, :-1, :-1])
+    nn += np.abs(lb[:-1, :-1, :-1] ^ lb[:-1, :-1, 1:])
 
     return nn
 

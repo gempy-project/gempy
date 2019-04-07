@@ -39,7 +39,7 @@ class DataMutation(object):
         # self.interpolator = Interpolator(self.surface_points, self.orientations, self.grid, self.surfaces,
         #                                       self.faults, self.additional_data)
 
-        self.solutions = Solution(self.additional_data, self.grid, self.surface_points)
+        self.solutions = Solution(self.additional_data, self.grid, self.surface_points, self.series)
 
     @_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
     def read_data(self, path_i=None, path_o=None, add_basement=True, **kwargs):
@@ -190,12 +190,14 @@ class DataMutation(object):
             self.series.df.index = self.series.df.index.reorder_categories(self.series.df.index.get_values(),
                                                               ordered=False)
             self.surfaces.sort_surfaces()
+            self.update_from_surfaces(set_categories_from_series=False, set_categories_from_surfaces=True,
+                                      map_surface_points=False, map_orientations=False, update_structural_data=False)
 
         self.surfaces.set_basement()
 
         # Add categories from series
-        self.surface_points.add_series_categories_from_series(self.series)
-        self.orientations.add_series_categories_from_series(self.series)
+        self.surface_points.set_series_categories_from_series(self.series)
+        self.orientations.set_series_categories_from_series(self.series)
 
         self.surface_points.map_data_from_series(self.series, 'order_series')
         self.orientations.map_data_from_series(self.series, 'order_series')
@@ -218,17 +220,17 @@ class DataMutation(object):
 
         """
 
-    def update_from_surfaces(self, add_categories_from_series=True, add_categories_from_surfaces=True,
-                               map_surface_points=True, map_orientations=True, update_structural_data=True):
+    def update_from_surfaces(self, set_categories_from_series=True, set_categories_from_surfaces=True,
+                             map_surface_points=True, map_orientations=True, update_structural_data=True):
         # Add categories from series
-        if add_categories_from_series is True:
-            self.surface_points.add_series_categories_from_series(self.surfaces.series)
-            self.orientations.add_series_categories_from_series(self.surfaces.series)
+        if set_categories_from_series is True:
+            self.surface_points.set_series_categories_from_series(self.surfaces.series)
+            self.orientations.set_series_categories_from_series(self.surfaces.series)
 
         # Add categories from surfaces
-        if add_categories_from_surfaces is True:
-            self.surface_points.add_surface_categories_from_surfaces(self.surfaces)
-            self.orientations.add_surface_categories_from_surfaces(self.surfaces)
+        if set_categories_from_surfaces is True:
+            self.surface_points.set_surface_categories_from_surfaces(self.surfaces)
+            self.orientations.set_surface_categories_from_surfaces(self.surfaces)
 
         if map_surface_points is True:
             self.surface_points.map_data_from_surfaces(self.surfaces, 'series')
@@ -555,9 +557,9 @@ class DataMutation(object):
     def update_from_additional_data(self):
         pass
 
-    def update_to_interpolator(self):
+    def update_to_interpolator(self, reset=True):
         self.interpolator.set_all_shared_parameters()
-
+        self.interpolator.reset_flow_control()
 
 @_setdoc([MetaData.__doc__, Grid.__doc__])
 class Model(DataMutation):

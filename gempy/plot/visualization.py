@@ -80,7 +80,7 @@ class PlotData2D(object):
 
         self.model = model
 
-        self._color_lot = model.surfaces.colors.colordict
+        self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color'])) # model.surfaces.colors.colordict
         self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors)+0.5)
 

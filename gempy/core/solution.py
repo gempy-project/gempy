@@ -47,11 +47,12 @@ class Solution(object):
     """
 
     def __init__(self, additional_data = None, grid = None,
-                 surface_points = None, values=None):
+                 surface_points = None, series=None):
 
         self.additional_data = additional_data
         self.grid = grid
         self.surface_points = surface_points
+        self.series = series
 
         # Lithology final block
         self.lith_block = np.empty(0)
@@ -64,6 +65,7 @@ class Solution(object):
         self.block_at_surface_points = np.array([])
 
         self.mask_matrix = np.array([])
+        self.mask_matrix_pad = []
         self.mask_at_surface_points = np.array([])
 
         self.values_matrix = np.array([])
@@ -71,8 +73,8 @@ class Solution(object):
 
         self.gradient = np.empty(0)
 
-        self.vertices = {}
-        self.edges = {}
+        self.vertices = []
+        self.edges = []
 
     def __repr__(self):
         return '\nLithology ids \n  %s \n' \
@@ -91,18 +93,19 @@ class Solution(object):
         """
         self.scalar_field_matrix = values[3][:, :self.grid.length]
         self.scalar_field_at_surface_points = values[4]
+        self._scalar_field_at_surface = values[3][:, self.grid.length:]
 
         self.weights_vector = values[2]
 
         # Axis 0 is the series. Axis 1 is the value
-        self.block_matrix = values[1][:, :self.grid.length]
-        self.block_at_surface_points = values[1][:, self.grid.length:]
+        self.block_matrix = values[1][:, :, :self.grid.length]
+        self.block_at_surface_points = values[1][:, :, self.grid.length:]
 
         self.mask_matrix = values[5][:, :self.grid.length]
         self.mask_at_surface_points = values[5][:, self.grid.length:]
 
         # Lithology final block
-        self.lith_block = values[0][0]
+        self.lith_block = values[0][0, :self.grid.length]
 
         # Properties
         self.values_matrix = values[0][1:, :self.grid.length]
@@ -128,7 +131,7 @@ class Solution(object):
             except RuntimeError:
                 warnings.warn('It is not possible to compute the mesh.')
 
-    def compute_surface_regular_grid(self, level: float, scalar_field, **kwargs):
+    def compute_surface_regular_grid(self, level: float, scalar_field, mask_array=None, **kwargs):
         """
         Compute the surface (vertices and edges) of a given surface by computing marching cubes (by skimage)
         Args:
@@ -158,24 +161,71 @@ class Solution(object):
                                  self.grid.resolution[2]),
             level,
             spacing=self.grid.get_dx_dy_dz(),
+            mask=mask_array,
             **kwargs
         )
 
+        vertices += np.array([self.grid.extent[0],
+                              self.grid.extent[2],
+                              self.grid.extent[4]]).reshape(1, 3)
+
         return [vertices, simplices, normals, values]
+
+    def padding_mask_matrix(self):
+        for mask_series in self.mask_matrix:
+            mask_series_reshape = mask_series.reshape((self.grid.resolution[0],
+                                                       self.grid.resolution[1],
+                                                       self.grid.resolution[2]))
+            self.mask_matrix_pad.append((mask_series_reshape + self.find_interfaces_from_block_bottoms(
+                mask_series_reshape, True)).T)
+
+    @staticmethod
+    def find_interfaces_from_block_bottoms(block, value, shift=3):
+        """
+        Find the voxel at an interface. We shift left since gempy is based on bottoms
+
+        Args:
+            block (ndarray):
+            value:
+
+        Returns:
+
+        """
+        A = block == value
+        final_bool = np.zeros_like(block, dtype=bool)
+        x_shift = A[:-shift, :, :] ^ A[shift:, :, :]
+
+        # Matrix shifting along axis
+        y_shift = A[:, :-shift, :] ^ A[:, shift:, :]
+
+        # Matrix shifting along axis
+        z_shift = A[:, :, :-shift] ^ A[:, :, shift:]
+        final_bool[shift:, shift:, shift:] = (x_shift[:, shift:, shift:] +
+                                              y_shift[shift:, :, shift:] +
+                                              z_shift[shift:, shift:, :])
+        return final_bool
 
     @_setdoc(compute_surface_regular_grid.__doc__)
     def compute_all_surfaces(self, **kwargs):
-
+        self.vertices = []
+        self.edges = []
+        self.padding_mask_matrix()
+        series_type = np.append('init', self.series.df['BottomRelation'])
         # We loop the scalar fields
         for e, scalar_field in enumerate(self.scalar_field_matrix):
             sfas = self.scalar_field_at_surface_points[e]
             # Drop
             sfas = sfas[np.nonzero(sfas)]
+            if series_type[e] == 'Onlap':
+                mask_array = self.mask_matrix_pad[e+1]
+            else:
+                mask_array = self.mask_matrix_pad[e]
+
             for level in sfas:
-                v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, **kwargs)
-                self.vertices = v
-                self.edges = s
-        return self.vertices, self.simpleces
+                v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
+                self.vertices.append(v)
+                self.edges.append(s)
+        return self.vertices, self.edges
     #
     # def set_vertices(self, surface_name, vertices):
     #     self.vertices[surface_name] = vertices

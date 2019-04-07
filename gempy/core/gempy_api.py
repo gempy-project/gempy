@@ -148,7 +148,7 @@ def load_model(name, path=None, recompile=False):
                                             dtype={'surface': 'str', 'series': 'category',
                                                    'order_surfaces': 'int64', 'isBasement': 'bool', 'id': 'int64',
                                                    'color': 'str'}).reindex(geo_model.surfaces._columns, axis=1)
-
+    geo_model.surfaces.colors.generate_colordict()
     geo_model.surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
 
     cat_surfaces = geo_model.surfaces.df['surface'].values

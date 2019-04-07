@@ -996,7 +996,7 @@ class TheanoGraphPro(object):
             weights = self.extend_dual_kriging()
         length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C = self.matrices_shapes()
 
-        fault_matrix_selection_non_zero = self.fault_matrix[a:b]  # * self.fault_mask[a:b] + 1
+        fault_matrix_selection_non_zero = self.fault_matrix[:, a:b]  # * self.fault_mask[a:b] + 1
 
         f_1 = T.sum(
             weights[length_of_CG + length_of_CGI + length_of_U_I:, :] * fault_matrix_selection_non_zero, axis=0)

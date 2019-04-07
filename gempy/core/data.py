@@ -910,11 +910,11 @@ class GeometricData(object):
 
         self.df.loc[idx, property] = self.df['series'].map(series.df[property])
 
-    def add_series_categories_from_series(self, series: Series):
+    def set_series_categories_from_series(self, series: Series):
         self.df['series'].cat.set_categories(series.df.index, inplace=True)
         return True
 
-    def add_surface_categories_from_surfaces(self, surfaces: Surfaces):
+    def set_surface_categories_from_surfaces(self, surfaces: Surfaces):
         self.df['surface'].cat.set_categories(surfaces.df['surface'], inplace=True)
         return True
 
