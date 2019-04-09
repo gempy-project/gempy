@@ -47,12 +47,13 @@ class Solution(object):
     """
 
     def __init__(self, additional_data = None, grid = None,
-                 surface_points = None, series=None):
+                 surface_points = None, series=None, surfaces=None):
 
         self.additional_data = additional_data
         self.grid = grid
         self.surface_points = surface_points
         self.series = series
+        self.surfaces = surfaces
 
         # Lithology final block
         self.lith_block = np.empty(0)
@@ -79,6 +80,36 @@ class Solution(object):
     def __repr__(self):
         return '\nLithology ids \n  %s \n' \
                % (np.array2string(self.lith_block))
+
+    def set_solution(self, values: Union[list, np.ndarray], compute_mesh: bool=True, sort_surfaces=True):
+        self.set_values(values)
+        # TODO I do not like this here
+        if compute_mesh is True:
+            try:
+                self.compute_all_surfaces()
+            except RuntimeError:
+                warnings.warn('It is not possible to compute the mesh.')
+
+        if sort_surfaces is True:
+            self.set_model_order()
+
+        return self
+
+    def set_model_order(self):
+        for e, name_series in enumerate(self.series.df.index):
+            try:
+                sfai_series = self.scalar_field_at_surface_points[e]
+                sfai_order = np.argsort(sfai_series[np.nonzero(sfai_series)]) + 1
+                idx = self.surfaces.df.groupby('series').get_group(name_series).index
+
+                self.surfaces.df.loc[idx, 'order_surfaces'] = sfai_order[::-1]
+
+            except IndexError:
+                pass
+
+        self.surfaces.sort_surfaces()
+        self.surfaces.set_basement()
+        return self.surfaces
 
     def set_values(self, values: Union[list, np.ndarray], compute_mesh: bool=True):
         # TODO ============ Set asserts of give flexibility 20.09.18 =============
@@ -124,12 +155,7 @@ class Solution(object):
         # self.scalar_field_faults = faults[1::2]
         # self.fault_blocks = faults[::2]
 
-        # TODO I do not like this here
-        if compute_mesh is True:
-            try:
-                self.compute_all_surfaces()
-            except RuntimeError:
-                warnings.warn('It is not possible to compute the mesh.')
+
 
     def compute_surface_regular_grid(self, level: float, scalar_field, mask_array=None, **kwargs):
         """
@@ -172,6 +198,7 @@ class Solution(object):
         return [vertices, simplices, normals, values]
 
     def padding_mask_matrix(self):
+        self.mask_matrix_pad = []
         for mask_series in self.mask_matrix:
             mask_series_reshape = mask_series.reshape((self.grid.resolution[0],
                                                        self.grid.resolution[1],

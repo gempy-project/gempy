@@ -70,7 +70,7 @@ class Testsurface_points:
         test_read_surface_points.map_formations_to_data(test_create_formations)
 
         test_read_surface_points.map_data_from_faults(test_create_faults)
-        test_read_surface_points.set_annotations()
+        test_read_surface_points.update_annotations()
         print(test_read_surface_points)
 
     def test_map_formations_to_data(self, test_read_surface_points, test_create_formations):
@@ -94,7 +94,7 @@ class TestOrientations:
         test_read_orientations.map_formations_to_data(test_create_formations)
 
         test_read_orientations.map_data_from_faults(test_create_faults)
-        test_read_orientations.set_annotations()
+        test_read_orientations.update_annotations()
         print(test_read_orientations)
 
 

@@ -664,7 +664,7 @@ def set_values_to_default_DEP(model: Model, series_distribution=None, order_seri
         model.faults.set_is_fault()
 
     if map_surfaces_from_series is True:
-        model.surfaces.df = model.surfaces.set_id(model.surfaces.df)
+        model.surfaces.df = model.surfaces.update_id(model.surfaces.df)
         try:
             model.surfaces.add_basement()
         except AssertionError:

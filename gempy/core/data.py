@@ -310,10 +310,6 @@ class Series(object):
         self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.add_categories(
             ['index', 'qgrid_unfiltered_index'])
 
-    def map_isFault_from_faults_DEP(self, faults):
-        # TODO is this necessary?
-        self.df['isFault'] = self.df.index.map(faults.faults['isFault'])
-
 
 class Faults(object):
     """
@@ -454,11 +450,11 @@ class Colors:
             self.colordict = colordict
 
     def generate_colordict(self, out = False):
-        '''generate colordict that assigns black to faults and random colors to surfaces'''
+        """generate colordict that assigns black to faults and random colors to surfaces"""
         gp_defcols = ['#015482','#9f0052','#ffbe00','#728f02','#443988','#ff3f20','#325916','#5DA629']
         test = len(gp_defcols) >= len(self.surfaces.df)
 
-        if test == False:
+        if test is False:
             from matplotlib._color_data import XKCD_COLORS as morecolors
             gp_defcols += list(morecolors.values())
 
@@ -470,7 +466,7 @@ class Colors:
             self.colordict = colordict
 
     def change_colors(self):
-        '''opens widget to change colors'''
+        """opens widget to change colors"""
 
         items = [widgets.ColorPicker(description=surface, value=color)
                  for surface, color in self.colordict.items()]
@@ -619,9 +615,9 @@ class Surfaces(object):
         # Changing the name of the series is the only way to mutate the series object from surfaces
         if update_df is True:
             self.map_series()
-            self.set_id()
+            self.update_id()
             self.set_basement()
-            self.set_order_surfaces()
+            self.update_order_surfaces()
             self.colors.update_colors()
             self.update_sequential_pile()
         return True
@@ -648,9 +644,9 @@ class Surfaces(object):
             self.df.loc[idx + 1, 'surface'] = c
         if update_df is True:
             self.map_series()
-            self.set_id()
+            self.update_id()
             self.set_basement()
-            self.set_order_surfaces()
+            self.update_order_surfaces()
             self.colors.update_colors()
             self.update_sequential_pile()
         return True
@@ -659,9 +655,9 @@ class Surfaces(object):
         # TODO passing names of the surface instead the index
         self.df.drop(indices, inplace=True)
         if update_id is True:
-            self.set_id()
+            self.update_id()
             self.set_basement()
-            self.set_order_surfaces()
+            self.update_order_surfaces()
             self.update_sequential_pile()
         return True
 
@@ -678,7 +674,6 @@ class Surfaces(object):
         self.set_basement()
         #self.colors.update_colors()
 
-
     @_setdoc(pn.Series.replace.__doc__)
     def rename_surfaces(self, old_value=None, new_value=None, **kwargs):
         if np.isin(new_value, self.df['surface']).any():
@@ -687,7 +682,7 @@ class Surfaces(object):
             self.df['surface'].replace(old_value, new_value, inplace=True, **kwargs)
         return True
 
-    def set_order_surfaces(self):
+    def update_order_surfaces(self):
         #self.df['order_surfaces'] = 1
         self.df['order_surfaces'] = self.df.groupby('series').cumcount() + 1
 
@@ -706,7 +701,7 @@ class Surfaces(object):
     def sort_surfaces(self):
 
         self.df.sort_values(by=['series', 'order_surfaces'], inplace=True)
-        self.set_id()
+        self.update_id()
         return self.df
 
     def set_basement(self):
@@ -716,9 +711,6 @@ class Surfaces(object):
         Returns:
             True
         """
-        # TODO - FIXED-Waiting for testing: it has to be always on the bottom. I am not sure what the hell I am doing
-        #  here
-
         self.df['isBasement'] = False
         idx = self.df.last_valid_index()
         if idx is not None:
@@ -757,7 +749,6 @@ class Surfaces(object):
                         s.append(k)
                         f.append(form)
 
-                # TODO does series_mapping have to be in self?
                 new_series_mapping = pn.DataFrame([pn.Categorical(s, self.series.df.index)],
                                                    f, columns=['series'])
 
@@ -779,14 +770,14 @@ class Surfaces(object):
         self.df['series'].fillna(self.series.df.index.values[-1], inplace=True)
 
         # Reorganize the pile
-        self.set_order_surfaces()
+        self.update_order_surfaces()
         self.sort_surfaces()
         self.set_basement()
 
 # endregion
 
-# region set_id
-    def set_id(self, id_list: list = None):
+# region update_id
+    def update_id(self, id_list: list = None):
         """
         Set id of the layers (1 based)
         Args:
@@ -848,7 +839,6 @@ class GeometricData(object):
 
         self.surfaces = surfaces
         self.df = pn.DataFrame()
-       # self.agg_index = self.df.index
 
     def __repr__(self):
         return self.df.to_string()
@@ -984,7 +974,7 @@ class SurfacePoints(GeometricData):
         self._columns_i_1 = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'surface', 'series', 'id',
                              'order_series', 'isFault']
         self._columns_i_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r']
-        #self.df = pn.DataFrame(columns=self._columns_i_1)
+
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
             self.df: pn.DataFrame
 
@@ -1125,7 +1115,7 @@ class SurfacePoints(GeometricData):
         """
         return self.df["surface"].unique()
 
-    def set_annotations(self):
+    def update_annotations(self):
         """
         Add a column in the Dataframes with latex names for each input_data paramenter.
 
@@ -1160,10 +1150,6 @@ class Orientations(GeometricData):
             self.df: pn.DataFrame
 
         self.set_orientations(coord, pole_vector, orientation, surface)
-     #   self.df = pn.DataFrame(columns=self._columns_o_1)
-     #   self.df[self._columns_o_num] = self.df[self._columns_o_num].astype(float)
-     #   self.df.itype = 'orientations'
-     #   self.calculate_gradient()
 
     def set_orientations(self, coord: np.ndarray = None, pole_vector: np.ndarray = None,
                          orientation: np.ndarray = None, surface: list = None):
@@ -1188,7 +1174,6 @@ class Orientations(GeometricData):
         orientation = check_for_nans(orientation)
 
         if coord is not None and ((pole_vector is not None) or (orientation is not None)) and surface is not None:
-            #self.df = pn.DataFrame(coord, columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r'], dtype=float)
 
             self.df[['X', 'Y', 'Z']] = pn.DataFrame(coord)
             self.df['surface'] = surface
@@ -1212,33 +1197,6 @@ class Orientations(GeometricData):
 
         self.df['surface'] = self.df['surface'].astype('category', copy=True)
         self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
-
-        # Check that the minimum parameters are passed. Otherwise create an empty df
-        # if coord is None or ((pole_vector is None) and (orientation is None)) or surface is None:
-        #     self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'G_x', 'G_y', 'G_z', 'dip',
-        #                                     'azimuth', 'polarity', 'surface'])
-        # else:
-        #     self.df = pn.DataFrame(coord, columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r'], dtype=float)
-        #     self.df['surface'] = surface
-        #     if pole_vector is not None:
-        #         self.df['G_x'] = pole_vector[:, 0]
-        #         self.df['G_y'] = pole_vector[:, 1]
-        #         self.df['G_z'] = pole_vector[:, 2]
-        #         self.calculate_orientations()
-        #
-        #         if orientation is not None:
-        #             warnings.warn('If pole_vector and orientation are passed pole_vector is used/')
-        #     else:
-        #         if orientation is not None:
-        #             self.df['azimuth'] = orientation[:, 0]
-        #             self.df['dip'] = orientation[:, 1]
-        #             self.df['polarity'] = orientation[:, 2]
-        #             self.calculate_gradient()
-        #         else:
-        #             raise AttributeError('At least pole_vector or orientation should have been passed to reach'
-        #                                  'this point. Check previous condition')
-        # Choose types
-        #  self.df[self._columns_i_num] = self.df[self._columns_i_num].astype(float)
 
         self.set_dependent_properties()
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
@@ -1367,8 +1325,7 @@ class Orientations(GeometricData):
             self.df["azimuth"][self.df["azimuth"] < 0] += 360  # shift values from [-pi, 0] to [pi,2*pi]
             self.df["azimuth"][self.df["dip"] < 0.001] = 0  # because if dip is zero azimuth is undefined
 
-    @staticmethod
-    def create_orientation_from_interface_UPDATE(surface_points: SurfacePoints, indices):
+    def create_orientation_from_interface_UPDATE(self, surface_points: SurfacePoints, indices):
         # TODO test!!!!
         """
         Create and set orientations from at least 3 points categories_df
@@ -1447,29 +1404,7 @@ class Orientations(GeometricData):
             else:
                 return table
 
-    def set_orientations_df_DEP(self, foliat_dataframe, append=False, order_table=True):
-        """
-          Method to change or append a Dataframe to orientations in place.  A equivalent Pandas Dataframe with
-        ['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'surface'] has to be passed.
-
-          Args:
-              interf_Dataframe: pandas.core.frame.DataFrame with the data
-              append: Bool: if you want to append the new data frame or substitute it
-          """
-        assert set(self._columns_o_1).issubset(
-            foliat_dataframe.columns), "One or more columns do not match with the expected values " + \
-                                       str(self._columns_o_1)
-
-        foliat_dataframe[self._columns_o_num] = foliat_dataframe[self._columns_o_num].astype(float, copy=True)
-
-        if append:
-            self.df = self.orientations.df.append(foliat_dataframe)
-        else:
-            self.df = foliat_dataframe[self._columns_o_1]
-
-        self.calculate_gradient()
-
-    def set_annotations(self):
+    def update_annotations(self):
         """
         Add a column in the Dataframes with latex names for each input_data paramenter.
 
@@ -1483,74 +1418,74 @@ class Orientations(GeometricData):
 
         self.df['annotations'] = foli_l
 
+    @staticmethod
+    def get_orientation(normal):
+        """Get orientation (dip, azimuth, polarity ) for points in all point set"""
 
-def get_orientation(normal):
-    """Get orientation (dip, azimuth, polarity ) for points in all point set"""
+        # calculate dip
+        dip = np.arccos(normal[2]) / np.pi * 180.
 
-    # calculate dip
-    dip = np.arccos(normal[2]) / np.pi * 180.
+        # calculate dip direction
+        # +/+
+        if normal[0] >= 0 and normal[1] > 0:
+            dip_direction = np.arctan(normal[0] / normal[1]) / np.pi * 180.
+        # border cases where arctan not defined:
+        elif normal[0] > 0 and normal[1] == 0:
+            dip_direction = 90
+        elif normal[0] < 0 and normal[1] == 0:
+            dip_direction = 270
+        # +-/-
+        elif normal[1] < 0:
+            dip_direction = 180 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
+        # -/-
+        elif normal[0] < 0 and normal[1] >= 0:
+            dip_direction = 360 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
+        # if dip is just straight up vertical
+        elif normal[0] == 0 and normal[1] == 0:
+            dip_direction = 0
 
-    # calculate dip direction
-    # +/+
-    if normal[0] >= 0 and normal[1] > 0:
-        dip_direction = np.arctan(normal[0] / normal[1]) / np.pi * 180.
-    # border cases where arctan not defined:
-    elif normal[0] > 0 and normal[1] == 0:
-        dip_direction = 90
-    elif normal[0] < 0 and normal[1] == 0:
-        dip_direction = 270
-    # +-/-
-    elif normal[1] < 0:
-        dip_direction = 180 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
-    # -/-
-    elif normal[0] < 0 and normal[1] >= 0:
-        dip_direction = 360 + np.arctan(normal[0] / normal[1]) / np.pi * 180.
-    # if dip is just straight up vertical
-    elif normal[0] == 0 and normal[1] == 0:
-        dip_direction = 0
+        else:
+            raise ValueError('The values of normal are not valid.')
 
-    else:
-        raise ValueError('The values of normal are not valid.')
+        if -90 < dip < 90:
+            polarity = 1
+        else:
+            polarity = -1
 
-    if -90 < dip < 90:
-        polarity = 1
-    else:
-        polarity = -1
+        return dip, dip_direction, polarity
 
-    return dip, dip_direction, polarity
+    @staticmethod
+    def plane_fit(point_list):
+        """
+        Fit plane to points in PointSet
+        Fit an d-dimensional plane to the points in a point set.
+        adjusted from: http://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points
 
+        Args:
+            point_list (array_like): array of points XYZ
 
-def plane_fit(point_list):
-    """
-    Fit plane to points in PointSet
-    Fit an d-dimensional plane to the points in a point set.
-    adjusted from: http://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points
+        Returns:
+            Return a point, p, on the plane (the point-cloud centroid),
+            and the normal, n.
+        """
 
-    Args:
-        point_list (array_like): array of points XYZ
+        points = point_list
 
-    Returns:
-        Return a point, p, on the plane (the point-cloud centroid),
-        and the normal, n.
-    """
+        from numpy.linalg import svd
+        points = np.reshape(points, (np.shape(points)[0], -1))  # Collapse trialing dimensions
+        assert points.shape[0] <= points.shape[1], "There are only {} points in {} dimensions.".format(points.shape[1],
+                                                                                                       points.shape[0])
+        ctr = points.mean(axis=1)
+        x = points - ctr[:, np.newaxis]
+        M = np.dot(x, x.T)  # Could also use np.cov(x) here.
 
-    points = point_list
+        # ctr = Point(x=ctr[0], y=ctr[1], z=ctr[2], type='utm', zone=self.points[0].zone)
+        normal = svd(M)[0][:, -1]
+        # return ctr, svd(M)[0][:, -1]
+        if normal[2] < 0:
+            normal = - normal
 
-    from numpy.linalg import svd
-    points = np.reshape(points, (np.shape(points)[0], -1))  # Collapse trialing dimensions
-    assert points.shape[0] <= points.shape[1], "There are only {} points in {} dimensions.".format(points.shape[1],
-                                                                                                   points.shape[0])
-    ctr = points.mean(axis=1)
-    x = points - ctr[:, np.newaxis]
-    M = np.dot(x, x.T)  # Could also use np.cov(x) here.
-
-    # ctr = Point(x=ctr[0], y=ctr[1], z=ctr[2], type='utm', zone=self.points[0].zone)
-    normal = svd(M)[0][:, -1]
-    # return ctr, svd(M)[0][:, -1]
-    if normal[2] < 0:
-        normal = - normal
-
-    return ctr, normal
+        return ctr, normal
 
 
 class RescaledData(object):
@@ -1778,6 +1713,7 @@ class RescaledData(object):
         return True
 
     def rescale_data_point(self, data_points: np.ndarray, rescaling_factor=None, centers=None):
+        """This method now is very similar to set_rescaled_surface_points passing an index"""
         if rescaling_factor is None:
             rescaling_factor = self.df.loc['values', 'rescaling factor']
         if centers is None:
@@ -1887,10 +1823,6 @@ class Structure(object):
 
     def _repr_html_(self):
         return self.df.T.to_html()
-
-    def modify_rescaling_parameters(self, property, value):
-        assert self.df.columns.isin(property), 'Valid properties are: ' + np.array2string(self.df.columns)
-        self.df.loc['values', property] = value
 
     def update_structure_from_input(self):
         self.set_length_surfaces_i()
@@ -2139,202 +2071,3 @@ class AdditionalData(object):
 
     def update_structure(self):
         self.structure_data.update_structure_from_input()
-
-
-# class Solution(object):
-#     """
-#     TODO: update this
-#     This class store the output of the interpolation and the necessary objects to visualize and manipulate this data.
-#     Depending on the chosen output in Additional Data -> Options a different number of solutions is returned:
-#         if output is geology:
-#             1) Lithologies: block and scalar field
-#             2) Faults: block and scalar field for each faulting plane
-#
-#         if output is gradients:
-#             1) Lithologies: block and scalar field
-#             2) Faults: block and scalar field for each faulting plane
-#             3) Gradients of scalar field x
-#             4) Gradients of scalar field y
-#             5) Gradients of scalar field z
-#
-#     Attributes:
-#         additional_data (AdditionalData):
-#         surfaces (Surfaces)
-#         grid (Grid)
-#         scalar_field_at_surface_points (np.ndarray): Array containing the values of the scalar field at each interface. Axis
-#         0 is each series and axis 1 contain each surface in order
-#          lith_block (np.ndndarray): Array with the id of each layer evaluated in each point of
-#          `attribute:GridClass.values`
-#         fault_block (np.ndarray): Array with the id of each fault block evaluated in each point of
-#          `attribute:GridClass.values`
-#         scalar_field_lith(np.ndarray): Array with the scalar field of each layer evaluated in each point of
-#          `attribute:GridClass.values`
-#         scalar_field_lith(np.ndarray): Array with the scalar field of each fault segmentation evaluated in each point of
-#         `attribute:GridClass.values`
-#         values_block (np.ndarray):   Array with the properties of each layer evaluated in each point of
-#          `attribute:GridClass.values`. Axis 0 represent different properties while axis 1 contain each evaluated point
-#         gradient (np.ndarray):  Array with the gradient of the layars evaluated in each point of
-#         `attribute:GridClass.values`. Axis 0 contain Gx, Gy, Gz while axis 1 contain each evaluated point
-#
-#     Args:
-#         additional_data (AdditionalData):
-#         surfaces (Surfaces):
-#         grid (Grid):
-#         values (np.ndarray): values returned by `function: gempy.compute_model` function
-#     """
-#
-#     def __init__(self, additional_data: AdditionalData = None, grid: Grid = None,
-#                  surface_points: SurfacePoints = None, values=None):
-#
-#         self.additional_data = additional_data
-#         self.grid = grid
-#         self.surface_points = surface_points
-#
-#         if values is None:
-#
-#             self.scalar_field_at_surface_points = np.array([])
-#             self.scalar_field_lith = np.array([])
-#             self.scalar_field_faults = np.array([])
-#
-#             self.lith_block = np.empty(0)
-#             self.fault_blocks = np.empty(0)
-#             self.values_block = np.empty(0)
-#             self.gradient = np.empty(0)
-#         else:
-#             self.set_values(values)
-#
-#         self.vertices = {}
-#         self.edges = {}
-#
-#     def __repr__(self):
-#         return '\nLithology ids \n  %s \n' \
-#                'Lithology scalar field \n  %s \n' \
-#                'Fault block \n  %s' \
-#                % (np.array2string(self.lith_block), np.array2string(self.scalar_field_lith),
-#                   np.array2string(self.fault_blocks))
-#
-#     def set_values(self, values: Union[list, np.ndarray], compute_mesh: bool=True):
-#         # TODO ============ Set asserts of give flexibility 20.09.18 =============
-#         """
-#         Set all solution values to the correspondant attribute
-#         Args:
-#             values (np.ndarray): values returned by `function: gempy.compute_model` function
-#             compute_mesh (bool): if true compute automatically the grid
-#
-#         Returns:
-#
-#         """
-#         lith = values[0]
-#         faults = values[1]
-#         self.scalar_field_at_surface_points = values[2]
-#
-#         self.scalar_field_lith = lith[1]
-#         self.lith_block = lith[0]
-#         self.values_block = lith[1:]
-#
-#         try:
-#             if self.additional_data.options.df.loc['values', 'output'] is 'gradients':
-#                 self.values_block = lith[2:-3]
-#                 self.gradient = lith[-3:]
-#             else:
-#                 self.values_block = lith[2:]
-#         except AttributeError:
-#             self.values_block = lith[2:]
-#
-#         self.scalar_field_faults = faults[1::2]
-#         self.fault_blocks = faults[::2]
-#         assert len(np.atleast_2d(
-#             self.scalar_field_faults)) == self.additional_data.structure_data.df.loc['values', 'number faults'], \
-#             'The number of df computed does not match to the number of df in the input data.'
-#
-#         # TODO I do not like this here
-#         if compute_mesh is True:
-#             try:
-#                 self.compute_all_surfaces()
-#             except RuntimeError:
-#                 warnings.warn('It is not possible to compute the mesh.')
-#
-#     def compute_surface_regular_grid(self, surface_id: int, scalar_field, **kwargs):
-#         """
-#         Compute the surface (vertices and edges) of a given surface by computing marching cubes (by skimage)
-#         Args:
-#             surface_id (int): id of the surface to be computed
-#             scalar_field: scalar field grid
-#             **kwargs: skimage.measure.marching_cubes_lewiner args
-#
-#         Returns:
-#             list: vertices, simplices, normals, values
-#         """
-#
-#         from skimage import measure
-#         assert surface_id >= 0, 'Number of the surface has to be positive'
-#         # In case the values are separated by series I put all in a vector
-#         pot_int = self.scalar_field_at_surface_points.sum(axis=0)
-#
-#         # Check that the scalar field of the surface is whithin the boundaries
-#         if not scalar_field.max() > pot_int[surface_id]:
-#             pot_int[surface_id] = scalar_field.max()
-#             print('Scalar field value at the surface %i is outside the grid boundaries. Probably is due to an error'
-#                   'in the implementation.' % surface_id)
-#
-#         if not scalar_field.min() < pot_int[surface_id]:
-#             pot_int[surface_id] = scalar_field.min()
-#             print('Scalar field value at the surface %i is outside the grid boundaries. Probably is due to an error'
-#                   'in the implementation.' % surface_id)
-#
-#         vertices, simplices, normals, values = measure.marching_cubes_lewiner(
-#             scalar_field.reshape(self.grid.resolution[0],
-#                                  self.grid.resolution[1],
-#                                  self.grid.resolution[2]),
-#             pot_int[surface_id],
-#             spacing=((self.grid.extent[1] - self.grid.extent[0]) / self.grid.resolution[0],
-#                      (self.grid.extent[3] - self.grid.extent[2]) / self.grid.resolution[1],
-#                      (self.grid.extent[5] - self.grid.extent[4]) / self.grid.resolution[2]),
-#             **kwargs
-#         )
-#
-#         return [vertices, simplices, normals, values]
-#
-#     @_setdoc(compute_surface_regular_grid.__doc__)
-#     def compute_all_surfaces(self, **kwargs):
-#         """
-#         Compute all surfaces.
-#
-#         Args:
-#             **kwargs: Marching_cube args
-#
-#         Returns:
-#
-#         See Also:
-#         """
-#         n_surfaces = self.additional_data.structure_data.df.loc['values', 'number surfaces']
-#         n_faults = self.additional_data.structure_data.df.loc['values', 'number faults']
-#
-#         surfaces_names = self.surface_points.df['surface'].unique()
-#
-#         surfaces_cumsum = np.arange(0, n_surfaces)
-#
-#         if n_faults > 0:
-#             for n in surfaces_cumsum[:n_faults]:
-#                 v, s, norm, val = self.compute_surface_regular_grid(n, np.atleast_2d(self.scalar_field_faults)[n],
-#                                                                     **kwargs)
-#                 self.vertices[surfaces_names[n]] = v
-#                 self.edges[surfaces_names[n]] = s
-#
-#         if n_faults < n_surfaces:
-#
-#             for n in surfaces_cumsum[n_faults:]:
-#                 # TODO ======== split each_scalar_field ===========
-#                 v, s, norms, val = self.compute_surface_regular_grid(n, self.scalar_field_lith, **kwargs)
-#
-#                 # TODO Use setters for this
-#                 self.vertices[surfaces_names[n]] = v
-#                 self.edges[surfaces_names[n]] = s
-#
-#         return self.vertices, self.edges
-#
-#     def set_vertices(self, surface_name, vertices):
-#         self.vertices[surface_name] = vertices
-#
-#     def set_edges(self, surface_name, edges):
-#         self.edges[surface_name] = edges

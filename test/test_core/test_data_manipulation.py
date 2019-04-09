@@ -215,7 +215,7 @@ def create_orientations(create_surfaces, create_series):
     orientations.map_data_from_series(create_series, 'order_series')
     print(orientations)
 
-    orientations.set_annotations()
+    orientations.update_annotations()
     return orientations
 
 

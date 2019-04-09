@@ -349,8 +349,8 @@ class PlotData2D(object):
         plt.ylabel(y)
         return plt.gcf()
 
-    def plot_scalar_field(self, solution, cell_number, N=20,
-                          direction="y", plot_data=True, series="all", *args, **kwargs):
+    def plot_scalar_field(self, solution, cell_number, series=0, N=20,
+                          direction="y", plot_data=True, *args, **kwargs):
         """
         Plot a scalar field in a given direction.
 
@@ -367,7 +367,7 @@ class PlotData2D(object):
         """
 
         if isinstance(solution, Solution):
-            scalar_field = solution.scalar_field_lith
+            scalar_field = solution.scalar_field_matrix[series]
         else:
             warnings.warn('Passing the block directly will get deprecated in the next version. Please use Solution'
                           'and block_type instead', FutureWarning)
@@ -1698,7 +1698,7 @@ class ipyvolumeVisualization:
         """Plot gempy surface model."""
         ipv.figure()
         meshes = []
-        for surf in self.ver.keys():
+        for surf in range(len(self.ver)):
             points = self.ver[surf]
             triangles = self.sim[surf]
             # color
@@ -1707,7 +1707,7 @@ class ipyvolumeVisualization:
                                     points[:, 1] + self.geo_model.grid.extent[2],
                                     points[:, 2] + self.geo_model.grid.extent[4],
                                     triangles=triangles,
-                                    color=self.get_color(surf))
+                                    color=list(self.geo_model.surfaces.df['color'])[surf])
             meshes.append(mesh)
 
         ipv.xlim(self.geo_model.grid.extent[0], self.geo_model.grid.extent[1])
