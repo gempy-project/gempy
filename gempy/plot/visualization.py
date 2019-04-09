@@ -1714,7 +1714,7 @@ class ipyvolumeVisualization:
         ipv.ylim(self.geo_model.grid.extent[2], self.geo_model.grid.extent[3])
         ipv.zlim(self.geo_model.grid.extent[4], self.geo_model.grid.extent[5])
         ipv.show()
-        return None
+        return ipv
 
 
 def get_fault_ellipse_params(fault_points:np.ndarray):
