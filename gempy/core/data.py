@@ -351,7 +351,7 @@ class Faults(object):
         self.faults_relations_df.sort_index(inplace=True)
         self.faults_relations_df.sort_index(axis=1, inplace=True)
 
-    def set_is_fault(self, series_fault=None):
+    def set_is_fault(self, series_fault:Union[str, list]=None, toggle=False):
         """
         Set a flag to the series that are df.
 
@@ -368,8 +368,10 @@ class Faults(object):
         if series_fault[0] is not None:
             assert np.isin(series_fault, self.df.index).all(), 'series_faults must already ' \
                                                                                       'exist in the the series df.'
-            self.df.loc[series_fault, 'isFault'] = self.df.loc[series_fault, 'isFault'] ^ True
-
+            if toggle is True:
+                self.df.loc[series_fault, 'isFault'] = self.df.loc[series_fault, 'isFault'] ^ True
+            else:
+                self.df.loc[series_fault, 'isFault'] = self.df.loc[series_fault, 'isFault']
         self.n_faults = self.df['isFault'].sum()
 
         return self.df
@@ -555,13 +557,17 @@ class Surfaces(object):
 
         self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'color', 'id']
         self.series = series
+
+
         df_ = pn.DataFrame(columns=self._columns)
         self.df = df_.astype({'surface': str, 'series': 'category',
                               'order_surfaces': int, 'isBasement': bool,
                               'color': bool, 'id': int})
 
-        self.df['series'].cat.add_categories(['Default series'], inplace=True)
+        if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
+            self.df: pn.DataFrame
 
+        self.df['series'].cat.add_categories(['Default series'], inplace=True)
         if surface_names is not None:
             self.set_surfaces_names(surface_names)
         if values_array is not None:
@@ -631,7 +637,7 @@ class Surfaces(object):
     def set_surfaces_names_from_surface_points(self, surface_points):
         self.set_surfaces_names(surface_points.df['surface'].unique())
 
-    def add_surface(self, surface_list: Union[pn.DataFrame, list], update_df=True):
+    def add_surface(self, surface_list: Union[str, list], update_df=True):
         surface_list = np.atleast_1d(surface_list)
 
         # Remove from the list categories that already exist
@@ -642,6 +648,7 @@ class Surfaces(object):
             if idx is np.nan:
                 idx = -1
             self.df.loc[idx + 1, 'surface'] = c
+
         if update_df is True:
             self.map_series()
             self.update_id()
@@ -651,9 +658,13 @@ class Surfaces(object):
             self.update_sequential_pile()
         return True
 
-    def delete_surface(self, indices, update_id=True):
-        # TODO passing names of the surface instead the index
-        self.df.drop(indices, inplace=True)
+    def delete_surface(self, indices: Union[int, str, list], update_id=True):
+
+        indices = np.atleast_1d(indices)
+        if indices.dtype == int:
+            self.df.drop(indices, inplace=True)
+        else:
+            self.df.drop(self.df.index[self.df['surface'].isin(indices)])
         if update_id is True:
             self.update_id()
             self.set_basement()
@@ -675,11 +686,11 @@ class Surfaces(object):
         #self.colors.update_colors()
 
     @_setdoc(pn.Series.replace.__doc__)
-    def rename_surfaces(self, old_value=None, new_value=None, **kwargs):
-        if np.isin(new_value, self.df['surface']).any():
+    def rename_surfaces(self, to_replace:Union[str, list, dict], value: Union[str, list] = None, **kwargs):
+        if np.isin(to_replace, self.df['surface']).any():
             print('Two surfaces cannot have the same name.')
         else:
-            self.df['surface'].replace(old_value, new_value, inplace=True, **kwargs)
+            self.df['surface'].replace(to_replace, value, inplace=True, **kwargs)
         return True
 
     def update_order_surfaces(self):
@@ -794,7 +805,7 @@ class Surfaces(object):
         return self.df
 # endregion
 
-    def add_surfaces_values(self, values_array, properties_names=np.empty(0)):
+    def add_surfaces_values(self, values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
         values_array = np.atleast_2d(values_array)
         properties_names = np.asarray(properties_names)
         if properties_names.shape[0] != values_array.shape[0]:
@@ -813,7 +824,7 @@ class Surfaces(object):
         self.df.drop(properties_names, axis=1, inplace=True)
         return True
 
-    def set_surfaces_values(self, values_array, properties_names=np.empty(0)):
+    def set_surfaces_values(self, values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
         # Check if there are values columns already
         old_prop_names = self.df.columns[~self.df.columns.isin(['surface', 'series', 'order_surfaces',
                                                                 'id', 'isBasement', 'color'])]
@@ -824,9 +835,13 @@ class Surfaces(object):
         self.add_surfaces_values(values_array, properties_names)
         return self
 
-    def modify_surface_values(self):
+    def modify_surface_values(self, idx, properties_names, values):
         """Method to modify values using loc of pandas"""
-        raise NotImplementedError
+        properties_names = np.atleast_1d(properties_names)
+        assert ~properties_names.isin(['surface', 'series', 'order_surfaces', 'id', 'isBasement', 'color']),\
+            'only property names can be modified with this method'
+
+        self.df.loc[idx, properties_names] = values
 
 
 class GeometricData(object):
@@ -898,6 +913,7 @@ class GeometricData(object):
         if idx is None:
             idx = self.df.index
 
+        idx = np.atleast_1d(idx)
         self.df.loc[idx, property] = self.df['series'].map(series.df[property])
 
     def set_series_categories_from_series(self, series: Series):
@@ -913,7 +929,7 @@ class GeometricData(object):
 
         if idx is None:
             idx = self.df.index
-
+        idx = np.atleast_1d(idx)
         if property is 'series':
             if surfaces.df.loc[~surfaces.df['isBasement']]['series'].isna().sum() != 0:
                 raise AttributeError('Surfaces does not have the correspondent series assigned. See'
@@ -933,11 +949,11 @@ class GeometricData(object):
         """
         if idx is None:
             idx = self.df.index
-
+        idx = np.atleast_1d(idx)
         if any(self.df['series'].isna()):
             warnings.warn('Some points do not have series/fault')
 
-        self.df.loc[idx, 'isFault'] = self.df.loc[idx, 'series'].map(faults.df['isFault'])
+        self.df.loc[idx, 'isFault'] = self.df.loc[[idx], 'series'].map(faults.df['isFault'])
 
     def set_dypes_DEP(self):
         """
@@ -996,26 +1012,34 @@ class SurfacePoints(GeometricData):
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
 
-    def add_surface_points(self, X, Y, Z, surface, idx=None):
+    def add_surface_points(self, X, Y, Z, surface, idx:Union[int, list, np.ndarray] = None):
         # TODO: Add the option to pass the surface number
 
         if idx is None:
             idx = self.df.index.max()
             if idx is np.nan:
-                idx = -1
+                idx = 0
+            else:
+                idx += 1
 
         coord_array = np.array([X, Y, Z])
         assert coord_array.ndim == 1, 'Adding an interface only works one by one.'
-        self.df.loc[idx + 1, ['X', 'Y', 'Z']] = coord_array
+        self.df.loc[idx, ['X', 'Y', 'Z']] = coord_array
 
         try:
-            self.df.loc[idx + 1, 'surface'] = surface
+            self.df.loc[idx, 'surface'] = surface
         # ToDO test this
         except ValueError as error:
-            self.del_surface_points(idx + 1)
+            self.del_surface_points(idx)
             print('The surface passed does not exist in the pandas categories. This may imply that'
                   'does not exist in the surface object either.')
             raise ValueError(error)
+
+        self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
+        self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
+        self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
+
+        self.sort_table()
 
     def del_surface_points(self, idx):
 
@@ -1032,6 +1056,9 @@ class SurfacePoints(GeometricData):
          Returns:
              None
          """
+        idx = np.array(idx, ndmin=1)
+        keys = list(kwargs.keys())
+        is_surface = np.isin('surface', keys).all()
 
         # Check idx exist in the df
         assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the dataframe to be modified.'
@@ -1049,6 +1076,12 @@ class SurfacePoints(GeometricData):
 
         # Selecting the properties passed to be modified
         self.df.loc[idx, list(kwargs.keys())] = values
+
+        if is_surface:
+            self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
+            self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
+            self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
+            self.sort_table()
 
     def read_surface_points(self, file_path, debug=False, inplace=False, append=False, kwargs_pandas:dict = {}, **kwargs, ):
         """
@@ -1212,6 +1245,8 @@ class Orientations(GeometricData):
             idx = self.df.index.max()
             if idx is np.nan:
                 idx = 0
+            else:
+                idx += 1
 
         if pole_vector is not None:
             self.df.loc[idx, ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']] = np.array([X, Y, Z, *pole_vector])
@@ -1232,6 +1267,12 @@ class Orientations(GeometricData):
                 raise AttributeError('At least pole_vector or orientation should have been passed to reach'
                                      'this point. Check previous condition')
 
+        self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
+        self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
+        self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
+
+        self.sort_table()
+
     def del_orientation(self, idx):
 
         self.df.drop(idx, inplace=True)
@@ -1247,6 +1288,10 @@ class Orientations(GeometricData):
          Returns:
              None
          """
+
+        idx = np.array(idx, ndmin=1)
+        keys = list(kwargs.keys())
+        is_surface = np.isin('surface', keys).all()
 
         # Check idx exist in the df
         assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the dataframe to be modified.'
@@ -1272,6 +1317,12 @@ class Orientations(GeometricData):
         else:
             if np.isin(list(kwargs.keys()), ['azimuth', 'dip', 'polarity']).any():
                 self.calculate_gradient(idx)
+
+        if is_surface:
+            self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
+            self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
+            self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
+            self.sort_table()
 
     def calculate_gradient(self, idx=None):
         """
@@ -1694,7 +1745,7 @@ class RescaledData(object):
         new_coord_surface_points.rename(columns={"X": "X_r", "Y": "Y_r", "Z": 'Z_r'}, inplace=True)
         return new_coord_surface_points
 
-    def set_rescaled_surface_points(self, idx: list = None):
+    def set_rescaled_surface_points(self, idx: Union[list, np.ndarray] = None):
         """
         Set the rescaled coordinates into the surface_points categories_df
         Returns:

@@ -246,7 +246,9 @@ class PlotData2D(object):
         return _slice, extent
 
     def extract_fault_lines(self, cell_number=25, direction='y'):  # , lb=True):
-        fb = self.model.solutions.scalar_field_faults
+        # TODO @elisa Update
+
+        fb = self.model.solutions.scalalar_field_matrix
 
         all_levels = self.model.solutions.scalar_field_at_surface_points[
             np.where(self.model.solutions.scalar_field_at_surface_points != 0)]
@@ -266,7 +268,7 @@ class PlotData2D(object):
         #   colors=self._cmap.colors[len(block_id):])
 
     def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data=False, block_type='lithology', ve=1, show_faults=True, **kwargs):
+                           plot_data=False, block_type='lithology', ve=1, show_faults=False, **kwargs):
         """
         Plot a section of the block model
 
@@ -339,6 +341,7 @@ class PlotData2D(object):
                         aspect=aspect,
                         **kwargs)
         if show_faults:
+            raise NotImplementedError
             self.extract_fault_lines(cell_number, direction)
         if not plot_data:
             import matplotlib.patches as mpatches
@@ -647,7 +650,7 @@ class vtkVisualization:
         self.ve = ve
 
         self.real_time = real_time
-        self.geo_model = geo_data#copy.deepcopy(geo_model)
+        self.geo_model = geo_data
         self.interp_data = None
         self.layer_visualization = True
         self.C_LOT = dict(zip(self.geo_model.surfaces.df['id'], self.geo_model.surfaces.df['color']))

@@ -36,6 +36,7 @@ from .visualization import PlotData2D, steno3D, vtkVisualization, ipyvolumeVisua
 #from .colors import cmap, norm, color_lot
 import gempy as _gempy
 
+
 class vtkPlot():
     def __init__(self, geo_model, alpha=1,
                  size=(1920, 1080), fullscreen=False, bg_color=None, verbose=0):
@@ -50,8 +51,8 @@ class vtkPlot():
 
         self.vv = vtkVisualization(self.geo_model, bg_color=self.bg_color)
 
-    def get_original_geo_data(self):
-        return self._original_df
+    # def get_original_geo_data(self):
+    #     return self._original_df
 
     def resume(self):
         # TODO make an assert that interactor exist. Otherwise a window gets open
@@ -185,14 +186,14 @@ class vtkPlot():
             self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
 
-    def render_delete_interfaes(self, indices):
+    def render_delete_surface_points(self, indices):
         self.vv.SphereCallback_delete_point(indices)
         if self.vv.real_time is True:
             self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
 
     def render_move_orientations(self, indices):
-        self.vv.planesCallback_move_changes()(indices)
+        self.vv.planesCallback_move_changes(indices)
         if self.vv.real_time is True:
             self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
@@ -208,313 +209,313 @@ class vtkPlot():
         if self.vv.real_time is True:
             self.vv.update_surfaces_real_time()
         self.vv.interactor.Render()
-
-    def _move_interface(self, new_df):
-        if self.verbose > 0:
-            print(self.geo_model._columns_i_1, new_df.columns)
-
-        # Check rows tht have changed
-        b_i = (new_df[self.geo_model._columns_i_1].sort_index() != _gempy.get_data(
-            self.geo_model, itype='surface_points')[self.geo_model._columns_i_1].sort_index()).any(1)
-
-        # Get indices of changed rows
-        ind_i = new_df.index[b_i].tolist()
-        if self.verbose > 0:
-            print('I am in modifing', ind_i)
-
-        # Modify categories_df
-        self.geo_model.set_new_df(new_df)
-
-        # Move sphere widget to new position
-        self.vv.SphereCallbak_move_changes(ind_i)
-
-    def _move_orientation(self, new_df):
-
-        # Check rows tht have changed
-        b_o = (new_df[self.geo_model._columns_o_1].sort_index() != _gempy.get_data(
-                self.geo_model, itype='orientations')[self.geo_model._columns_o_1].sort_index()).any(1)
-
-        # Get indices of changed rows
-        ind_o = new_df.index[b_o].tolist()
-
-        # Modify categories_df
-        self.geo_model.set_new_df(new_df)
-
-        # Move widgets
-        self.vv.planesCallback_move_changes(ind_o)
-
-    def _move_interface_orientation(self, new_df):
-
-        # Check rows tht have changed
-        b_i = (new_df.xs('surface_points')[self.geo_model._columns_i_1].sort_index() != _gempy.get_data(
-            self.geo_model, itype='surface_points')[self.geo_model._columns_i_1].sort_index()).any(1)
-
-        # Get indices of changed rows
-        ind_i = new_df.xs('surface_points').index[b_i].tolist()
-
-        # Check rows tht have changed
-        b_o = (new_df.xs('orientations')[self.geo_model._columns_o_1].sort_index() != _gempy.get_data(
-            self.geo_model, itype='orientations')[self.geo_model._columns_o_1].sort_index()).any(1)
-
-        # Get indices of changed rows
-        ind_o = new_df.xs('orientations').index[b_o].tolist()
-
-        # Modify categories_df
-        self.geo_model.set_new_df(new_df)
-
-        # Move widgets
-        self.vv.SphereCallbak_move_changes(ind_i)
-        self.vv.planesCallback_move_changes(ind_o)
-
-    def _delete_interface(self, new_df):
-
-        # Finding deleted indeces
-        ind_i = self.geo_model.surface_points.index.values[~_np.in1d(self.geo_model.surface_points.index.values,
-                                                                 new_df.index.values,
-                                                                 assume_unique=True)]
-
-        # Deactivating widget
-        for i in ind_i:
-            self.vv.s_rend_1.loc[i, 'val'].Off()
-            self.vv.s_rend_2.loc[i, 'val'].Off()
-            self.vv.s_rend_3.loc[i, 'val'].Off()
-            self.vv.s_rend_4.loc[i, 'val'].Off()
-            self.vv.s_rend_1.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[0])
-            self.vv.s_rend_2.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[1])
-            self.vv.s_rend_3.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[2])
-            self.vv.s_rend_4.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[3])
-        # Modify fg
-        self.geo_model.set_new_df(new_df)
-        if self.verbose > 0:
-            print('I am in deleting', ind_i)
-
-    def _delete_orientation(self, new_df):
-
-        # Finding deleted indeces
-        ind_o = self.geo_model.orientations.index.values[~_np.in1d(self.geo_model.orientations.index.values,
-                                                                   new_df.index.values,
-                                                                   assume_unique=True)]
-
-        # Deactivating widget
-        for i in ind_o:
-            self.vv.o_rend_1.loc[i, 'val'].Off()
-            self.vv.o_rend_2.loc[i, 'val'].Off()
-            self.vv.o_rend_3.loc[i, 'val'].Off()
-            self.vv.o_rend_4.loc[i, 'val'].Off()
-            self.vv.o_rend_1.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[0])
-            self.vv.o_rend_2.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[1])
-            self.vv.o_rend_3.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[2])
-            self.vv.o_rend_4.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[3])
-        # Modify fg
-        self.geo_model.set_new_df(new_df)
-        if self.verbose > 0:
-            print('I am in deleting o', ind_o)
-
-    def _add_interface_restore(self, new_df):
-
-        # Finding deleted indeces to restore
-        ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
-                                              self.geo_model.surface_points.index.values,
-                                              assume_unique=True)]
-        # Reactivating widget
-        for i in ind_i:
-            self.vv.s_rend_1.loc[i, 'val'].On()
-            self.vv.s_rend_2.loc[i, 'val'].On()
-            self.vv.s_rend_3.loc[i, 'val'].On()
-            self.vv.s_rend_4.loc[i, 'val'].On()
-
-        self.geo_model.set_new_df(new_df.loc[ind_i], append=True)
-        if self.verbose > 0:
-            print('I am getting back', ind_i)
-
-    def _add_orientation_restore(self, new_df):
-
-        # Finding deleted indeces to restore
-        ind_o = new_df.index.values[~_np.in1d(new_df.index.values,
-                                              self.geo_model.orientations.index.values,
-                                              assume_unique=True)]
-        # Reactivating widget
-        for i in ind_o:
-            self.vv.o_rend_1.loc[i, 'val'].On()
-            self.vv.o_rend_2.loc[i, 'val'].On()
-            self.vv.o_rend_3.loc[i, 'val'].On()
-            self.vv.o_rend_4.loc[i, 'val'].On()
-
-        self.geo_model.set_new_df(new_df.loc[ind_o], append=True)
-        if self.verbose > 0:
-            print('I am getting back', ind_o)
-
-    def _add_interface_new(self, new_df):
-
-        # Finding the new indices added
-        ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
-                                              self.geo_model.surface_points.index.values,
-                                              assume_unique=True)]
-
-        # Modifing categories_df
-        self.geo_model.set_new_df(new_df.loc[ind_i], append=True)
-
-        # Creating new widget
-        for i in ind_i:
-            self.vv.set_surface_points(indices=i)
-        if self.verbose > 0:
-            print('I am in adding', ind_i)
-
-    def _add_orientation_new(self, new_df):
-
-        # Finding the new indices added
-        ind_o = new_df.index.values[~_np.in1d(new_df.index.values,
-                                              self.geo_model.orientations.index.values,
-                                              assume_unique=True)]
-
-        # Modifing categories_df
-        self.geo_model.set_new_df(new_df.loc[ind_o], append=True)
-        if self.verbose > 0:
-            print(ind_o)
-
-        # Creating new widget
-        for i in ind_o:
-            self.vv.set_orientations(indices=i)
-        if self.verbose > 0:
-            print('I am in adding', ind_o)
-
-    def qgrid_callBack(self, change):
-        #  First we remove a column that is added by qgrid with the unfiltered indeces
-        new_df = change['new'][change['new'].columns[1:]]
-
-        # Check if we are modifing surface_points and orientations at the same time
-        try:
-            # Modify mode
-            self._move_interface_orientation(new_df)
-        except KeyError:
-            # Check the itype data
-            # ------------
-            # Orientations
-            if set(self.geo_model._columns_o_1).issubset(new_df.columns):
-                # Checking the mode
-                # ++++++++++
-                # Delete mode
-                if new_df.index.shape[0] < self.geo_model.orientations.index.shape[0]:
-                    self._delete_orientation(new_df)
-                # +++++++++++
-                # Adding mode
-                elif new_df.index.shape[0] > self.geo_model.orientations.index.shape[0]:
-                    # Checking if is new point or a filter
-                    # ===========
-                    # Filter mode
-                    if set(new_df.index).issubset(self._original_df.index):
-
-                        self._add_orientation_restore(new_df)
-
-                    # Adding new data mode
-                    else:
-                        self._add_orientation_new(new_df)
-                # +++++++++++
-                # Modify mode
-                elif new_df.index.shape[0] == self.geo_model.orientations.index.shape[0]:  # Modify
-                    self._move_orientation(new_df)
-
-                else:
-                    print('something went wrong')
-
-                    # ----------
-            # SurfacePoints
-            elif set(self.geo_model._columns_i_1).issubset(new_df.columns):
-                if self.verbose > 0:
-                    print(new_df.index.shape[0])
-
-                # Checking the mode
-                # ++++++++++
-                # Delete mode
-                if new_df.index.shape[0] < self.geo_model.surface_points.index.shape[0]:
-                    self._delete_interface(new_df)
-
-                # +++++++++++
-                # Adding mode
-                elif new_df.index.shape[0] > self.geo_model.surface_points.index.shape[0]:  # Add mode
-
-                    # print(set(new_df.index).issubset(self._original_df.index))
-
-                    # Checking if is new point or a filter
-                    # ===========
-                    # Filter mode
-                    if set(new_df.index).issubset(self._original_df.index):
-
-                        self._add_interface_restore(new_df)
-
-                    # Adding new data mode
-                    else:
-                        self._add_interface_new(new_df)
-
-                # +++++++++++
-                # Modify mode
-                elif new_df.index.shape[0] == self.geo_model.surface_points.index.shape[0]:  # Modify
-                    self._move_interface(new_df)
-
-                else:
-                    print('something went wrong')
-
-        if self.vv.real_time:
-            try:
-                for surf in self.vv.surf_rend_1:
-                    self.vv.ren_list[0].RemoveActor(surf)
-                    self.vv.ren_list[1].RemoveActor(surf)
-                    self.vv.ren_list[2].RemoveActor(surf)
-                    self.vv.ren_list[3].RemoveActor(surf)
-            except AttributeError:
-                pass
-
-            try:
-                self.vv.geo_model.order_table()
-                vertices, simpleces = self.vv.update_surfaces_real_time(self.vv.geo_model)
-                self.vv.set_surfaces(vertices, simpleces)
-            except AssertionError:
-                print('Not enough data to compute the model')
-            except NotImplementedError:
-                print('If the theano graph expects df and/or lithologies you need to pass at least one'
-                      ' interface for each of them')
-        #self.vv.interp_data.update_interpolator(self.geo_model)
-
-        self.vv.interactor.Render()
-
-    def qgrid_callBack_fr(self, change):
-        new_df = change['new'][change['new'].columns[1:]]
-        self.geo_model.faults_relations = new_df
-
-        if self.vv.real_time:
-            try:
-                for surf in self.vv.surf_rend_1:
-                    self.vv.ren_list[0].RemoveActor(surf)
-                    self.vv.ren_list[1].RemoveActor(surf)
-                    self.vv.ren_list[2].RemoveActor(surf)
-                    self.vv.ren_list[3].RemoveActor(surf)
-            except AttributeError:
-                pass
-
-            try:
-                vertices, simpleces = self.vv.update_surfaces_real_time(self.vv.geo_model)
-                self.vv.set_surfaces(vertices, simpleces)
-            except AssertionError:
-                print('Not enough data to compute the model')
-            except NotImplementedError:
-                print('If the theano graph expects df and/or lithologies you need to pass at least one'
-                      ' interface for each of them')
-
-        self.vv.interactor.Render()
-
-    def observe_df(self, geo_data = None, itype='all'):
-        if not geo_data:
-            geo_data = self.geo_model
-
-        self._original_df = copy.deepcopy(_gempy.get_data(geo_data, itype=itype))
-        qgrid_widget = geo_data.interactive_df_open(itype=itype)
-        if itype is 'faults_relations_df':
-            qgrid_widget.observe(self.qgrid_callBack_fr, names=['_df'])
-
-        else:
-            qgrid_widget.observe(self.qgrid_callBack, names=['_df'])
-
-        return qgrid_widget
+    #
+    # def _move_interface(self, new_df):
+    #     if self.verbose > 0:
+    #         print(self.geo_model._columns_i_1, new_df.columns)
+    #
+    #     # Check rows tht have changed
+    #     b_i = (new_df[self.geo_model._columns_i_1].sort_index() != _gempy.get_data(
+    #         self.geo_model, itype='surface_points')[self.geo_model._columns_i_1].sort_index()).any(1)
+    #
+    #     # Get indices of changed rows
+    #     ind_i = new_df.index[b_i].tolist()
+    #     if self.verbose > 0:
+    #         print('I am in modifing', ind_i)
+    #
+    #     # Modify categories_df
+    #     self.geo_model.set_new_df(new_df)
+    #
+    #     # Move sphere widget to new position
+    #     self.vv.SphereCallbak_move_changes(ind_i)
+    #
+    # def _move_orientation(self, new_df):
+    #
+    #     # Check rows tht have changed
+    #     b_o = (new_df[self.geo_model._columns_o_1].sort_index() != _gempy.get_data(
+    #             self.geo_model, itype='orientations')[self.geo_model._columns_o_1].sort_index()).any(1)
+    #
+    #     # Get indices of changed rows
+    #     ind_o = new_df.index[b_o].tolist()
+    #
+    #     # Modify categories_df
+    #     self.geo_model.set_new_df(new_df)
+    #
+    #     # Move widgets
+    #     self.vv.planesCallback_move_changes(ind_o)
+    #
+    # def _move_interface_orientation(self, new_df):
+    #
+    #     # Check rows tht have changed
+    #     b_i = (new_df.xs('surface_points')[self.geo_model._columns_i_1].sort_index() != _gempy.get_data(
+    #         self.geo_model, itype='surface_points')[self.geo_model._columns_i_1].sort_index()).any(1)
+    #
+    #     # Get indices of changed rows
+    #     ind_i = new_df.xs('surface_points').index[b_i].tolist()
+    #
+    #     # Check rows tht have changed
+    #     b_o = (new_df.xs('orientations')[self.geo_model._columns_o_1].sort_index() != _gempy.get_data(
+    #         self.geo_model, itype='orientations')[self.geo_model._columns_o_1].sort_index()).any(1)
+    #
+    #     # Get indices of changed rows
+    #     ind_o = new_df.xs('orientations').index[b_o].tolist()
+    #
+    #     # Modify categories_df
+    #     self.geo_model.set_new_df(new_df)
+    #
+    #     # Move widgets
+    #     self.vv.SphereCallbak_move_changes(ind_i)
+    #     self.vv.planesCallback_move_changes(ind_o)
+    #
+    # def _delete_interface(self, new_df):
+    #
+    #     # Finding deleted indeces
+    #     ind_i = self.geo_model.surface_points.index.values[~_np.in1d(self.geo_model.surface_points.index.values,
+    #                                                              new_df.index.values,
+    #                                                              assume_unique=True)]
+    #
+    #     # Deactivating widget
+    #     for i in ind_i:
+    #         self.vv.s_rend_1.loc[i, 'val'].Off()
+    #         self.vv.s_rend_2.loc[i, 'val'].Off()
+    #         self.vv.s_rend_3.loc[i, 'val'].Off()
+    #         self.vv.s_rend_4.loc[i, 'val'].Off()
+    #         self.vv.s_rend_1.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[0])
+    #         self.vv.s_rend_2.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[1])
+    #         self.vv.s_rend_3.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[2])
+    #         self.vv.s_rend_4.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[3])
+    #     # Modify fg
+    #     self.geo_model.set_new_df(new_df)
+    #     if self.verbose > 0:
+    #         print('I am in deleting', ind_i)
+    #
+    # def _delete_orientation(self, new_df):
+    #
+    #     # Finding deleted indeces
+    #     ind_o = self.geo_model.orientations.index.values[~_np.in1d(self.geo_model.orientations.index.values,
+    #                                                                new_df.index.values,
+    #                                                                assume_unique=True)]
+    #
+    #     # Deactivating widget
+    #     for i in ind_o:
+    #         self.vv.o_rend_1.loc[i, 'val'].Off()
+    #         self.vv.o_rend_2.loc[i, 'val'].Off()
+    #         self.vv.o_rend_3.loc[i, 'val'].Off()
+    #         self.vv.o_rend_4.loc[i, 'val'].Off()
+    #         self.vv.o_rend_1.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[0])
+    #         self.vv.o_rend_2.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[1])
+    #         self.vv.o_rend_3.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[2])
+    #         self.vv.o_rend_4.loc[i, 'val'].SetCurrentRenderer(self.vv.ren_list[3])
+    #     # Modify fg
+    #     self.geo_model.set_new_df(new_df)
+    #     if self.verbose > 0:
+    #         print('I am in deleting o', ind_o)
+    #
+    # def _add_interface_restore(self, new_df):
+    #
+    #     # Finding deleted indeces to restore
+    #     ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
+    #                                           self.geo_model.surface_points.index.values,
+    #                                           assume_unique=True)]
+    #     # Reactivating widget
+    #     for i in ind_i:
+    #         self.vv.s_rend_1.loc[i, 'val'].On()
+    #         self.vv.s_rend_2.loc[i, 'val'].On()
+    #         self.vv.s_rend_3.loc[i, 'val'].On()
+    #         self.vv.s_rend_4.loc[i, 'val'].On()
+    #
+    #     self.geo_model.set_new_df(new_df.loc[ind_i], append=True)
+    #     if self.verbose > 0:
+    #         print('I am getting back', ind_i)
+    #
+    # def _add_orientation_restore(self, new_df):
+    #
+    #     # Finding deleted indeces to restore
+    #     ind_o = new_df.index.values[~_np.in1d(new_df.index.values,
+    #                                           self.geo_model.orientations.index.values,
+    #                                           assume_unique=True)]
+    #     # Reactivating widget
+    #     for i in ind_o:
+    #         self.vv.o_rend_1.loc[i, 'val'].On()
+    #         self.vv.o_rend_2.loc[i, 'val'].On()
+    #         self.vv.o_rend_3.loc[i, 'val'].On()
+    #         self.vv.o_rend_4.loc[i, 'val'].On()
+    #
+    #     self.geo_model.set_new_df(new_df.loc[ind_o], append=True)
+    #     if self.verbose > 0:
+    #         print('I am getting back', ind_o)
+    #
+    # def _add_interface_new(self, new_df):
+    #
+    #     # Finding the new indices added
+    #     ind_i = new_df.index.values[~_np.in1d(new_df.index.values,
+    #                                           self.geo_model.surface_points.index.values,
+    #                                           assume_unique=True)]
+    #
+    #     # Modifing categories_df
+    #     self.geo_model.set_new_df(new_df.loc[ind_i], append=True)
+    #
+    #     # Creating new widget
+    #     for i in ind_i:
+    #         self.vv.set_surface_points(indices=i)
+    #     if self.verbose > 0:
+    #         print('I am in adding', ind_i)
+    #
+    # def _add_orientation_new(self, new_df):
+    #
+    #     # Finding the new indices added
+    #     ind_o = new_df.index.values[~_np.in1d(new_df.index.values,
+    #                                           self.geo_model.orientations.index.values,
+    #                                           assume_unique=True)]
+    #
+    #     # Modifing categories_df
+    #     self.geo_model.set_new_df(new_df.loc[ind_o], append=True)
+    #     if self.verbose > 0:
+    #         print(ind_o)
+    #
+    #     # Creating new widget
+    #     for i in ind_o:
+    #         self.vv.set_orientations(indices=i)
+    #     if self.verbose > 0:
+    #         print('I am in adding', ind_o)
+    #
+    # def qgrid_callBack(self, change):
+    #     #  First we remove a column that is added by qgrid with the unfiltered indeces
+    #     new_df = change['new'][change['new'].columns[1:]]
+    #
+    #     # Check if we are modifing surface_points and orientations at the same time
+    #     try:
+    #         # Modify mode
+    #         self._move_interface_orientation(new_df)
+    #     except KeyError:
+    #         # Check the itype data
+    #         # ------------
+    #         # Orientations
+    #         if set(self.geo_model._columns_o_1).issubset(new_df.columns):
+    #             # Checking the mode
+    #             # ++++++++++
+    #             # Delete mode
+    #             if new_df.index.shape[0] < self.geo_model.orientations.index.shape[0]:
+    #                 self._delete_orientation(new_df)
+    #             # +++++++++++
+    #             # Adding mode
+    #             elif new_df.index.shape[0] > self.geo_model.orientations.index.shape[0]:
+    #                 # Checking if is new point or a filter
+    #                 # ===========
+    #                 # Filter mode
+    #                 if set(new_df.index).issubset(self._original_df.index):
+    #
+    #                     self._add_orientation_restore(new_df)
+    #
+    #                 # Adding new data mode
+    #                 else:
+    #                     self._add_orientation_new(new_df)
+    #             # +++++++++++
+    #             # Modify mode
+    #             elif new_df.index.shape[0] == self.geo_model.orientations.index.shape[0]:  # Modify
+    #                 self._move_orientation(new_df)
+    #
+    #             else:
+    #                 print('something went wrong')
+    #
+    #                 # ----------
+    #         # SurfacePoints
+    #         elif set(self.geo_model._columns_i_1).issubset(new_df.columns):
+    #             if self.verbose > 0:
+    #                 print(new_df.index.shape[0])
+    #
+    #             # Checking the mode
+    #             # ++++++++++
+    #             # Delete mode
+    #             if new_df.index.shape[0] < self.geo_model.surface_points.index.shape[0]:
+    #                 self._delete_interface(new_df)
+    #
+    #             # +++++++++++
+    #             # Adding mode
+    #             elif new_df.index.shape[0] > self.geo_model.surface_points.index.shape[0]:  # Add mode
+    #
+    #                 # print(set(new_df.index).issubset(self._original_df.index))
+    #
+    #                 # Checking if is new point or a filter
+    #                 # ===========
+    #                 # Filter mode
+    #                 if set(new_df.index).issubset(self._original_df.index):
+    #
+    #                     self._add_interface_restore(new_df)
+    #
+    #                 # Adding new data mode
+    #                 else:
+    #                     self._add_interface_new(new_df)
+    #
+    #             # +++++++++++
+    #             # Modify mode
+    #             elif new_df.index.shape[0] == self.geo_model.surface_points.index.shape[0]:  # Modify
+    #                 self._move_interface(new_df)
+    #
+    #             else:
+    #                 print('something went wrong')
+    #
+    #     if self.vv.real_time:
+    #         try:
+    #             for surf in self.vv.surf_rend_1:
+    #                 self.vv.ren_list[0].RemoveActor(surf)
+    #                 self.vv.ren_list[1].RemoveActor(surf)
+    #                 self.vv.ren_list[2].RemoveActor(surf)
+    #                 self.vv.ren_list[3].RemoveActor(surf)
+    #         except AttributeError:
+    #             pass
+    #
+    #         try:
+    #             self.vv.geo_model.order_table()
+    #             vertices, simpleces = self.vv.update_surfaces_real_time(self.vv.geo_model)
+    #             self.vv.set_surfaces(vertices, simpleces)
+    #         except AssertionError:
+    #             print('Not enough data to compute the model')
+    #         except NotImplementedError:
+    #             print('If the theano graph expects df and/or lithologies you need to pass at least one'
+    #                   ' interface for each of them')
+    #     #self.vv.interp_data.update_interpolator(self.geo_model)
+    #
+    #     self.vv.interactor.Render()
+    #
+    # def qgrid_callBack_fr(self, change):
+    #     new_df = change['new'][change['new'].columns[1:]]
+    #     self.geo_model.faults_relations = new_df
+    #
+    #     if self.vv.real_time:
+    #         try:
+    #             for surf in self.vv.surf_rend_1:
+    #                 self.vv.ren_list[0].RemoveActor(surf)
+    #                 self.vv.ren_list[1].RemoveActor(surf)
+    #                 self.vv.ren_list[2].RemoveActor(surf)
+    #                 self.vv.ren_list[3].RemoveActor(surf)
+    #         except AttributeError:
+    #             pass
+    #
+    #         try:
+    #             vertices, simpleces = self.vv.update_surfaces_real_time(self.vv.geo_model)
+    #             self.vv.set_surfaces(vertices, simpleces)
+    #         except AssertionError:
+    #             print('Not enough data to compute the model')
+    #         except NotImplementedError:
+    #             print('If the theano graph expects df and/or lithologies you need to pass at least one'
+    #                   ' interface for each of them')
+    #
+    #     self.vv.interactor.Render()
+    #
+    # def observe_df(self, geo_data = None, itype='all'):
+    #     if not geo_data:
+    #         geo_data = self.geo_model
+    #
+    #     self._original_df = copy.deepcopy(_gempy.get_data(geo_data, itype=itype))
+    #     qgrid_widget = geo_data.interactive_df_open(itype=itype)
+    #     if itype is 'faults_relations_df':
+    #         qgrid_widget.observe(self.qgrid_callBack_fr, names=['_df'])
+    #
+    #     else:
+    #         qgrid_widget.observe(self.qgrid_callBack, names=['_df'])
+    #
+    #     return qgrid_widget
 
 
 def plot_data_3D(geo_data, **kwargs):

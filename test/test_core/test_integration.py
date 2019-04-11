@@ -36,9 +36,9 @@ def map_sequential_pile(load_model):
     # TODO decide what I do with the layer order
 
     gp.map_series_to_surfaces(geo_model, {"Fault_Series": 'Main_Fault',
-                                            "Strat_Series": ('Sandstone_2', 'Siltstone',
-                                                             'Shale', 'Sandstone_1', 'basement')},
-                                remove_unused_series=True)
+                                          "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                                           'Shale', 'Sandstone_1', 'basement')},
+                                            remove_unused_series=True)
 
     geo_model.set_is_fault(['Fault_Series'])
     return geo_model
@@ -78,7 +78,7 @@ def test_compute_model(interpolator_islith_isfault, map_sequential_pile):
                          direction='y', plot_data=True)
     plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_lith_block')
 
-    gp.plot.plot_scalar_field(geo_model, cell_number=25, N=15,
+    gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
                               direction='y', plot_data=True)
 
     plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_scalar')

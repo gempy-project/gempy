@@ -128,6 +128,7 @@ class QgridModelIntegration(object):
 
         qgrid_widget = qgrid.show_grid(faults_object.df,
                                        show_toolbar=False,
+                                       grid_options={'sortable': False, 'highlightSelectedCell': True},
                                        column_options={'editable': True},
                                        column_definitions={'isFinite': {'editable': False}})
 
@@ -225,6 +226,7 @@ class QgridModelIntegration(object):
             pass
 
         qgrid_widget = qgrid.show_grid(faults_object.faults_relations_df,
+                                       grid_options={'sortable': False, 'highlightSelectedCell': True},
                                        show_toolbar=False)
 
         def handle_set_fault_relation(event, widget, debug=False):
@@ -358,9 +360,10 @@ class QgridModelIntegration(object):
         self._geo_model.update_from_surfaces()
 
         qgrid_widget = qgrid.show_grid(surface_object.df, show_toolbar=True,
+                                       grid_options={'sortable': False, 'highlightSelectedCell': True},
                                        column_options={'editable': True},
                                        column_definitions={'id': {'editable': False},
-                                                           'basement': {'editable': False}})
+                                                           'isBasement': {'editable': False}})
 
         def handle_row_surface_add(event, widget, debug=False):
             if debug is True:
@@ -395,9 +398,9 @@ class QgridModelIntegration(object):
                 new_series = event['new']
                 self._geo_model.map_series_to_surfaces({new_series: surface_object.df.loc[idx, ['surface']]},
                                                        set_series=False, sort_geometric_data=True)
-            if event['column'] == 'isBasement':
-                idx = event['index']
-                surface_object.set_basement(surface_object.df.loc[idx, ['surface']])
+            # if event['column'] == 'isBasement':
+            #     idx = event['index']
+            #     surface_object.set_basement(surface_object.df.loc[idx, ['surface']])
 
             if event['column'] == 'order_surfaces':
                 idx = event['index']
@@ -427,6 +430,7 @@ class QgridModelIntegration(object):
         qgrid_widget = qgrid.show_grid(
             series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype({'series_names': str}),
             show_toolbar=True,
+            grid_options={'sortable': False, 'highlightSelectedCell': True},
             column_options={'editable': True},
             column_definitions={'order_series': {'editable': False},
                                 })

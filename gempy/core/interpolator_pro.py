@@ -313,6 +313,7 @@ class InterpolatorModel(Interpolator_pro):
             self.reset_flow_control()
 
     def set_theano_shared_loop(self):
+        # TODO
         self.len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
                             self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
 
@@ -332,16 +333,19 @@ class InterpolatorModel(Interpolator_pro):
         self.theano_graph.n_surfaces_per_series.set_value(n_surfaces_per_serie)
 
     def set_theano_shared_weights(self):
+        # TODO Used set_fault_relation
         self.set_theano_shared_loop()
         self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum())))
 
     def set_theano_shared_fault_relation(self):
+        # TODO Used set_fault_relation
         self.theano_graph.fault_relation.set_value(self.faults.faults_relations_df.values)
 
     def set_theano_shared_is_fault(self):
         self.theano_graph.is_fault.set_value(self.faults.df['isFault'].values)
 
     def set_theano_shared_is_finite(self):
+        # TODO used
         self.theano_graph.is_finite_ctrl.set_value(self.faults.df['isFinite'].values)
 
     def set_theano_shared_onlap_erode(self):
@@ -360,6 +364,7 @@ class InterpolatorModel(Interpolator_pro):
         self.set_theano_shared_is_finite()
 
     def set_theano_shared_relations(self):
+        # TODO Used
         self.set_theano_shared_fault_relation()
         # This comes from the faults df
         self.set_theano_shared_is_fault()
