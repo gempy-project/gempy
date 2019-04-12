@@ -19,6 +19,17 @@ from gempy.utils.meta import _setdoc
 from gempy.plot.plot import vtkPlot
 
 
+def plot_add_surface_points(func):
+    def pasp(*args, **kwargs):
+        if 'plot_object' in kwargs:
+            if isinstance(kwargs['plot_object'], vtkPlot):
+                kwargs['plot_object'].render_add_surface_points(args[5])
+            else:
+                raise AttributeError('plot_object must be one GemPy compatible plot')
+        return pasp(*args)
+    return pasp
+
+
 class DataMutation_pro(object):
     def __init__(self):
 
@@ -288,6 +299,7 @@ class DataMutation_pro(object):
         # if update_model is True:
         #     self.update_from_surface_points()
 
+    @plot_add_surface_points
     def add_surface_points(self, X, Y, Z, surface, idx: Union[int, list, np.ndarray] = None,
                            recompute_rescale_factor=False):
         #idx = np.atleast_1d(idx)
