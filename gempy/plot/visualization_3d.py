@@ -29,6 +29,7 @@ import matplotlib.colors as mcolors
 import copy
 import pandas as pn
 import numpy as np
+import sys
 
 try:
     import vtk
@@ -136,56 +137,6 @@ class vtkVisualization(object):
             r.AddActor(axe)
             r.ResetCamera()
         self.set_text()
-
-    def close_window(self):
-        # close_window(interactor)
-        del self.renwin, self.interactor
-
-    def resume(self):
-        self.interactor.Start()
-
-    def set_real_time_on(self):
-
-        self.real_time = True
-
-    def set_real_time_off(self):
-        self.real_time = False
-
-    def render_move_surface_points(self, indices):
-        self.SphereCallbak_move_changes(indices)
-        if self.real_time is True:
-            self.update_surfaces_real_time()
-        self.interactor.Render()
-
-    def render_add_surface_points(self, indices):
-        self.set_surface_points(indices)
-        if self.real_time is True:
-            self.update_surfaces_real_time()
-        self.interactor.Render()
-
-    def render_delete_surface_points(self, indices):
-        self.SphereCallback_delete_point(indices)
-        if self.real_time is True:
-            self.update_surfaces_real_time()
-        self.interactor.Render()
-
-    def render_move_orientations(self, indices):
-        self.planesCallback_move_changes(indices)
-        if self.real_time is True:
-            self.update_surfaces_real_time()
-        self.interactor.Render()
-
-    def render_add_orientations(self, indices):
-        self.set_orientations(indices)
-        if self.real_time is True:
-            self.update_surfaces_real_time()
-        self.interactor.Render()
-
-    def render_delete_orientations(self, indices):
-        self.planesCallback_delete_point(indices)
-        if self.real_time is True:
-            self.update_surfaces_real_time()
-        self.interactor.Render()
 
     #
 
@@ -1156,6 +1107,60 @@ class vtkVisualization(object):
             else:
                 writer.SetInputData(polydata)
             writer.Write()
+
+
+class GemPyvtkInteract(vtkVisualization):
+    def close_window(self):
+        # close_window(interactor)
+        del self.renwin, self.interactor
+
+    def resume(self):
+        self.interactor.Start()
+
+    def set_real_time_on(self):
+
+        self.real_time = True
+
+    def set_real_time_off(self):
+        self.real_time = False
+
+    def render_move_surface_points(self, indices):
+        self.SphereCallbak_move_changes(indices)
+        if self.real_time is True:
+            self.update_surfaces_real_time()
+        self.interactor.Render()
+
+    def render_add_surface_points(self, indices):
+        self.set_surface_points(indices)
+        if self.real_time is True:
+            self.update_surfaces_real_time()
+        self.interactor.Render()
+
+    def render_delete_surface_points(self, indices):
+        self.SphereCallback_delete_point(indices)
+        if self.real_time is True:
+            self.update_surfaces_real_time()
+        self.interactor.Render()
+
+    def render_move_orientations(self, indices):
+        self.planesCallback_move_changes(indices)
+        if self.real_time is True:
+            self.update_surfaces_real_time()
+        self.interactor.Render()
+
+    def render_add_orientations(self, indices):
+        self.set_orientations(indices)
+        if self.real_time is True:
+            self.update_surfaces_real_time()
+        self.interactor.Render()
+
+    def render_delete_orientations(self, indices):
+        self.planesCallback_delete_point(indices)
+        if self.real_time is True:
+            self.update_surfaces_real_time()
+        self.interactor.Render()
+
+
 
 
 class steno3D():

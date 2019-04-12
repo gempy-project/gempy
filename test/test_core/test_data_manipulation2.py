@@ -52,7 +52,12 @@ def test_delete_surface_values():
 
 
 def test_modify_surface_values():
-    pass
+    mm = gp.DataMutation_pro()
+    mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
+    mm.add_surface_points(400, 300, -500, 'foo2')
+    print(mm.surface_points)
+    mm.modify_surface_points(0, Y=800)
+    print(mm.surface_points)
 
 
 def test_set_surface_values():

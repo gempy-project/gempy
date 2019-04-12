@@ -1040,6 +1040,7 @@ class SurfacePoints(GeometricData):
         self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
 
         self.sort_table()
+        return self, idx
 
     def del_surface_points(self, idx):
 
@@ -1064,9 +1065,8 @@ class SurfacePoints(GeometricData):
         assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the dataframe to be modified.'
 
         # Check the properties are valid
-        assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'surface']).all(), 'Properties must be one or more of the' \
-                                                                                 'following: \'X\', \'Y\', \'Z\', ' \
-                                                                                 '\'surface\''
+        assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'surface']).all(),\
+            'Properties must be one or more of the following: \'X\', \'Y\', \'Z\', ' '\'surface\''
         # stack properties values
         values = np.array(list(kwargs.values()))
 

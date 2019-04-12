@@ -29,13 +29,11 @@ import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
-import numpy as _np
-import pandas as _pn
-import copy
 from .visualization_2d import PlotData2D
-from .visualization_3d import  steno3D, vtkVisualization, ipyvolumeVisualization
-#from .colors import cmap, norm, color_lot
+from .visualization_3d import steno3D, GemPyvtkInteract, ipyvolumeVisualization
 import gempy as _gempy
+
+
 
 
 def plot_data_3D(geo_data, **kwargs):
@@ -47,8 +45,11 @@ def plot_data_3D(geo_data, **kwargs):
     Returns:
         None
     """
-    vv = vtkPlot(geo_data, **kwargs)
-    vv.plot_data_3D(**kwargs)
+    vv = GemPyvtkInteract(geo_data, **kwargs)
+   # vv.restart()
+    vv.set_surface_points()
+    vv.set_orientations()
+    vv.render_model(**kwargs)
 
     return vv
 

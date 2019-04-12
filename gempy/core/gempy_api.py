@@ -804,7 +804,7 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
 # endregion
 
-def activate_interactive_df(geo_model: Model, vtk_object=None):
+def activate_interactive_df(geo_model: Model, plot_object=None):
     """
     TODO evaluate the use of this functionality
 
@@ -827,6 +827,6 @@ def activate_interactive_df(geo_model: Model, vtk_object=None):
     try:
         isinstance(geo_model.qi, QgridModelIntegration)
     except AttributeError:
-        geo_model.qi = QgridModelIntegration(geo_model, vtk_object)
+        geo_model.qi = QgridModelIntegration(geo_model, plot_object)
 
     return geo_model.qi

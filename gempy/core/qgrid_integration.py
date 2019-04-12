@@ -1,5 +1,4 @@
 from gempy.core.model import Model
-from gempy.plot.plot import vtkPlot
 import qgrid
 
 
@@ -11,10 +10,11 @@ class QgridModelIntegration(object):
      methods to functions.
 
     """
-    def __init__(self, geo_model: Model, vtk_object: vtkPlot = None):
+    def __init__(self, geo_model: Model, plot_object = None):
         # TODO add on all to update from data_object and plots?
 
         self._geo_model = geo_model
+        self._plot_object = plot_object
         self.qgrid_fo = self.set_interactive_df('surfaces')
         self.qgrid_se = self.set_interactive_df('series')
         self.qgrid_fa = self.set_interactive_df('faults')
@@ -265,7 +265,7 @@ class QgridModelIntegration(object):
             idx = event['index']
 
             xyzs = qgrid_widget._df.loc[idx, ['X', 'Y', 'Z', 'surface']]
-            self._geo_model.add_surface_points(*xyzs)
+            self._geo_model.add_surface_points(*xyzs,  plot_object=self._plot_object)
             self.update_qgrd_objects()
 
         def handle_row_surface_points_delete(event, widget, debug=False):
@@ -274,7 +274,7 @@ class QgridModelIntegration(object):
                 print(widget)
             idx = event['indices']
 
-            self._geo_model.delete_surface_points(idx)
+            self._geo_model.delete_surface_points(idx, plot_object=self._plot_object)
             self.update_qgrd_objects()
 
         def handle_cell_surface_points_edit(event, widget, debug=False):
@@ -286,9 +286,7 @@ class QgridModelIntegration(object):
             idx = event['index']
             value = event['new']
 
-            self._geo_model.modify_surface_points(idx, **{column: value})
-            #surface_points_object.modify_surface_points(idx, **{column: value})
-
+            self._geo_model.modify_surface_points(idx, **{column: value, 'plot_object': self._plot_object})
             self.update_qgrd_objects()
 
         qgrid_widget.on('row_removed', handle_row_surface_points_delete)
@@ -324,7 +322,7 @@ class QgridModelIntegration(object):
             idx = event['index']
             xyzs = qgrid_widget._df.loc[idx, ['X', 'Y', 'Z', 'surface']]
             gxyz = qgrid_widget._df.loc[idx, ['G_x', 'G_y', 'G_z']]
-            self._geo_model.add_orientations(*xyzs, pole_vector=gxyz.values, idx=idx)
+            self._geo_model.add_orientations(*xyzs, pole_vector=gxyz.values, idx=idx, plot_object=self._plot_object)
             self.update_qgrd_objects()
 
         def handle_row_orientations_delete(event, widget, debug=False):
@@ -333,7 +331,7 @@ class QgridModelIntegration(object):
                 print(widget)
             idx = event['indices']
 
-            self._geo_model.delete_orientations(idx)
+            self._geo_model.delete_orientations(idx, plot_object=self._plot_object)
             self.update_qgrd_objects()
 
         def handle_cell_orientations_edit(event, widget, debug=False):
@@ -345,7 +343,7 @@ class QgridModelIntegration(object):
             idx = event['index']
             value = event['new']
 
-            self._geo_model.modify_orientations(idx, **{column: value})
+            self._geo_model.modify_orientations(idx, **{column: value, 'plot_object': self._plot_object})
             self.update_qgrd_objects()
 
         qgrid_widget.on('row_removed', handle_row_orientations_delete)

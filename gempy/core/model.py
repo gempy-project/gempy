@@ -10,25 +10,14 @@ import warnings
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import pandas as pn
 pn.options.mode.chained_assignment = None
-from .data import AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints, Surfaces, \
-                  Options, Structure, KrigingParameters
+from .data import AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
+    Surfaces, Options, Structure, KrigingParameters
 from .solution import Solution
 from .interpolator import Interpolator
 from .interpolator_pro import InterpolatorModel
 from gempy.utils.meta import _setdoc
-from gempy.plot.plot import vtkPlot
-
-
-def plot_add_surface_points(func):
-    def pasp(*args, **kwargs):
-        if 'plot_object' in kwargs:
-            if isinstance(kwargs['plot_object'], vtkPlot):
-                kwargs['plot_object'].render_add_surface_points(args[5])
-            else:
-                raise AttributeError('plot_object must be one GemPy compatible plot')
-        return pasp(*args)
-    return pasp
-
+from gempy.plot.visualization_3d import vtkVisualization
+from gempy.plot.decorators import *
 
 class DataMutation_pro(object):
     def __init__(self):
@@ -48,6 +37,18 @@ class DataMutation_pro(object):
                                               self.series, self.faults, self.additional_data)
 
         self.solutions = Solution(self.additional_data, self.grid, self.surface_points, self.series, self.surfaces)
+
+    def _add_valid_idx(self, idx):
+        if idx is None:
+            idx = self.surface_points.df.index.max()
+            if idx is np.nan:
+                idx = 0
+            else:
+                idx += 1
+        else:
+            assert isinstance(idx, (int, list, np.ndarray)), 'idx must be an int or a list of ints'
+
+        return idx
 
     def update_structure(self):
         """Update python and theano structure paramteres"""
@@ -90,7 +91,7 @@ class DataMutation_pro(object):
         self.interpolator.set_theano_shared_relations()
         return self.series
 
-    def add_series(self, series_list: Union[str, list], update_order_series=True, vtk_object: vtkPlot = None):
+    def add_series(self, series_list: Union[str, list], update_order_series=True, **kwargs):
         self.series.add_series(series_list, update_order_series)
         self.surfaces.df['series'].cat.add_categories(series_list, inplace=True)
         self.surface_points.df['series'].add_categories(series_list, inplace=True)
@@ -301,9 +302,9 @@ class DataMutation_pro(object):
 
     @plot_add_surface_points
     def add_surface_points(self, X, Y, Z, surface, idx: Union[int, list, np.ndarray] = None,
-                           recompute_rescale_factor=False):
-        #idx = np.atleast_1d(idx)
+                           recompute_rescale_factor=False, **kwargs):
 
+        idx = self._add_valid_idx(idx)
         self.surface_points.add_surface_points(X, Y, Z, surface, idx)
 
         if recompute_rescale_factor is True:
@@ -314,23 +315,23 @@ class DataMutation_pro(object):
             self.rescaling.set_rescaled_surface_points(idx)
 
         self.update_structure()
+        return self.surface_points, idx
 
-    def delete_surface_points(self, indices: Union[list, int], vtk_object: vtkPlot = None):
+    @plot_delete_surface_points
+    def delete_surface_points(self, indices: Union[list, int], **kwargs):
         self.surface_points.del_surface_points(indices)
         self.update_structure()
+        return self.surface_points
 
-        if vtk_object is not None:
-            vtk_object.render_delete_interfaes(indices)
+    @plot_move_surface_points
+    def modify_surface_points(self, indices: Union[int, list], **kwargs):
 
-        # self.update_from_surface_points(indices)
-
-    def modify_surface_points(self, indices: list, vtk_object: vtkPlot = None, **properties):
-
-        self.surface_points.modify_surface_points(indices, **properties)
-        keys = list(properties.keys())
+        self.surface_points.modify_surface_points(indices, **kwargs)
+        keys = list(kwargs.keys())
         is_surface = np.isin('surface', keys).all()
         if is_surface is True:
             self.update_structure()
+        return self.surface_points
 
     # endregion
 
@@ -344,10 +345,12 @@ class DataMutation_pro(object):
         # if update_model is True:
         #     self.update_from_orientations()
 
+    @plot_add_orientation
     def add_orientations(self,  X, Y, Z, surface, pole_vector: np.ndarray = None,
                          orientation: np.ndarray = None, idx=None, recompute_rescale_factor=False,
-                         vtk_object: vtkPlot = None):
+                         **kwargs):
 
+        idx = self._add_valid_idx(idx)
         self.orientations.add_orientation(X, Y, Z, surface, pole_vector=pole_vector,
                                           orientation=orientation, idx=idx)
         if recompute_rescale_factor is True:
@@ -358,30 +361,26 @@ class DataMutation_pro(object):
             self.rescaling.set_rescaled_surface_points(idx)
 
         self.update_structure()
+        return self.orientations, idx
 
-        # self.update_to_orientations(idx)
-        # self.orientations.sort_table()
-        # self.update_from_orientations(idx, recompute_rescale_factor=True)
-
-    def delete_orientations(self, indices: Union[list, int], vtk_object: vtkPlot = None, ):
+    @plot_delete_orientations
+    def delete_orientations(self, indices: Union[list, int], **kwargs ):
         self.orientations.del_orientation(indices)
         self.update_structure()
+        return self.orientations
 
-        if vtk_object is not None:
-            vtk_object.render_delete_orientations(indices)
-
-        #self.update_structure(indices)
-
-    def modify_orientations(self, indices: list, vtk_object: vtkPlot = None, **properties: list):
+    @plot_move_orientations
+    def modify_orientations(self, indices: list, **kwargs):
 
         indices = np.array(indices, ndmin=1)
-        keys = list(properties.keys())
+        keys = list(kwargs.keys())
         is_surface = np.isin('surface', keys).all()
-        self.orientations.modify_orientations(indices, **properties)
+        self.orientations.modify_orientations(indices, **kwargs)
 
         if is_surface:
             self.update_structure()
 
+        return self.orientations
     # endregion
 
     # region Options
@@ -409,155 +408,161 @@ class DataMutation_pro(object):
     # ======================================
 
     def set_default_surface_point(self):
-        self.surface_points.set_default_surface_points()
-        self.update_to_surface_points()
-        self.update_from_surface_points(recompute_rescale_factor=True)
+        if self.surface_points.df.shape[0] == 0:
+            self.add_surface_points(0.00001, 0.00001, 0.00001, self.surfaces.df['surface'].iloc[0])
 
     def set_default_orientation(self):
-        self.orientations.set_default_orientation()
-        self.update_to_orientations()
-        self.update_from_orientations(recompute_rescale_factor=True)
+        if self.orientations.df.shape[0] == 0:
+            # TODO DEBUG: I am not sure that surfaces always has at least one entry. Check it
+            self.orientations.add_orientation(.00001, .00001, .00001,
+                                              self.surfaces.df['surface'].iloc[0],
+                                              [0, 0, 1])
 
     def set_default_surfaces(self):
-        self.surfaces.set_default_surface_name()
-        self.update_from_surfaces()
+        self.add_surfaces(['surface1', 'surface2'])
+        # self.surfaces.set_default_surface_name()
+        # self.update_from_surfaces()
         return self.surfaces
 
 
+    # def update_from_grid(self):
+    #     """
+    #
+    #     Note: update_from_grid does not have the inverse, i.e. update_to_grid, because GridClass is independent
+    #     Returns:
+    #
+    #     """
+    #     self.additional_data.update_default_kriging()  # TODO decide if this makes sense here. Probably is better to do
+    #     #  it with a checker
+    #     self.rescaling.set_rescaled_grid()
+    #     # self.interpolator.set_theano_share_input()
+    #
+    #
+    #
+    # def update_from_series(self, rename_series: dict = None, reorder_series=True, sort_geometric_data=True,
+    #                        update_interpolator=True):
+    #     """
+    #     Note: update_from_series does not have the inverse, i.e. update_to_series, because Series is independent
+    #     Returns:
+    #
+    #     """
+    #     # Add categories from series to surface
+    #     # Updating surfaces['series'] categories
+    #
+    #
+    #     if rename_series is None:
+    #         self.surfaces.df['series'].cat.set_categories(self.series.df.index, inplace=True)
+    #     else:
+    #         self.surfaces.df['series'].cat.rename_categories(rename_series, inplace=True)
+    #
+    #     if reorder_series is True:
+    #         self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+    #                                                           ordered=False, inplace=True)
+    #         # self.surface_points.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+    #         #                                                   ordered=False, inplace=True)
+    #         # self.orientations.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+    #         #                                                   ordered=False, inplace=True)
+    #
+    #         self.series.df.index = self.series.df.index.reorder_categories(self.series.df.index.get_values(),
+    #                                                           ordered=False)
+    #         self.surfaces.sort_surfaces()
+    #         self.update_from_surfaces(set_categories_from_series=False, set_categories_from_surfaces=True,
+    #                                   map_surface_points=False, map_orientations=False, update_structural_data=False)
+    #
+    #     self.surfaces.set_basement()
+    #
+    #     # Add categories from series
+    #     self.surface_points.set_series_categories_from_series(self.series)
+    #     self.orientations.set_series_categories_from_series(self.series)
+    #
+    #     self.surface_points.map_data_from_series(self.series, 'order_series')
+    #     self.orientations.map_data_from_series(self.series, 'order_series')
+    #
+    #     if sort_geometric_data is True:
+    #         self.surface_points.sort_table()
+    #         self.orientations.sort_table()
+    #
+    #     self.additional_data.update_structure()
+    #     # For the drift equations. TODO disentagle this property
+    #     self.additional_data.update_default_kriging()
+    #
+    #     if update_interpolator is True:
+    #         self.interpolator.set_theano_shared_structure(reset=True)
+    #
+    #
+    #
+    # def update_from_surfaces(self, set_categories_from_series=True, set_categories_from_surfaces=True,
+    #                          map_surface_points=True, map_orientations=True, update_structural_data=True):
+    #     # Add categories from series
+    #     if set_categories_from_series is True:
+    #         self.surface_points.set_series_categories_from_series(self.surfaces.series)
+    #         self.orientations.set_series_categories_from_series(self.surfaces.series)
+    #
+    #     # Add categories from surfaces
+    #     if set_categories_from_surfaces is True:
+    #         self.surface_points.set_surface_categories_from_surfaces(self.surfaces)
+    #         self.orientations.set_surface_categories_from_surfaces(self.surfaces)
+    #
+    #     if map_surface_points is True:
+    #         self.surface_points.map_data_from_surfaces(self.surfaces, 'series')
+    #         self.surface_points.map_data_from_surfaces(self.surfaces, 'id')
+    #
+    #     if map_orientations is True:
+    #         self.orientations.map_data_from_surfaces(self.surfaces, 'series')
+    #         self.orientations.map_data_from_surfaces(self.surfaces, 'id')
+    #
+    #     if update_structural_data is True:
+    #         self.additional_data.update_structure()
+    #
+    # def update_to_surfaces(self):
+    #     # TODO decide if makes sense. I think it is quite independent as well. The only thing would be the categories of
+    #     #   series?
+    #     pass
+    #
+    # def update_from_faults(self):
+    #     self.interpolator.set_theano_shared_faults()
+    #
+    #
+    #
+    # def update_to_orientations(self, idx: Union[list, np.ndarray] = None):
+    #     # TODO debug
+    #     if idx is None:
+    #         idx = self.orientations.df.index
+    #     idx = np.atleast_1d(idx)
+    #     self.orientations.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
+    #     self.orientations.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
+    #     self.orientations.map_data_from_series(self.series, 'order_series', idx=idx)
+    #     self.orientations.sort_table()
+    #     return self.orientations
+    #
+    #
+    # def update_from_orientations(self, idx: Union[list, np.ndarray] = None,  recompute_rescale_factor=False):
+    #     # TODO debug
+    #
+    #     self.update_structure()
+    #     if recompute_rescale_factor is False:
+    #         self.rescaling.set_rescaled_orientations(idx=idx)
+    #     else:
+    #         self.rescaling.rescale_data()
 
 
-    def update_from_grid(self):
-        """
-
-        Note: update_from_grid does not have the inverse, i.e. update_to_grid, because GridClass is independent
-        Returns:
-
-        """
-        self.additional_data.update_default_kriging()  # TODO decide if this makes sense here. Probably is better to do
-        #  it with a checker
-        self.rescaling.set_rescaled_grid()
-        # self.interpolator.set_theano_share_input()
-
-
-
-    def update_from_series(self, rename_series: dict = None, reorder_series=True, sort_geometric_data=True,
-                           update_interpolator=True):
-        """
-        Note: update_from_series does not have the inverse, i.e. update_to_series, because Series is independent
-        Returns:
-
-        """
-        # Add categories from series to surface
-        # Updating surfaces['series'] categories
-
-
-        if rename_series is None:
-            self.surfaces.df['series'].cat.set_categories(self.series.df.index, inplace=True)
-        else:
-            self.surfaces.df['series'].cat.rename_categories(rename_series, inplace=True)
-
-        if reorder_series is True:
-            self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
-                                                              ordered=False, inplace=True)
-            # self.surface_points.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
-            #                                                   ordered=False, inplace=True)
-            # self.orientations.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
-            #                                                   ordered=False, inplace=True)
-
-            self.series.df.index = self.series.df.index.reorder_categories(self.series.df.index.get_values(),
-                                                              ordered=False)
-            self.surfaces.sort_surfaces()
-            self.update_from_surfaces(set_categories_from_series=False, set_categories_from_surfaces=True,
-                                      map_surface_points=False, map_orientations=False, update_structural_data=False)
-
-        self.surfaces.set_basement()
-
-        # Add categories from series
-        self.surface_points.set_series_categories_from_series(self.series)
-        self.orientations.set_series_categories_from_series(self.series)
-
-        self.surface_points.map_data_from_series(self.series, 'order_series')
-        self.orientations.map_data_from_series(self.series, 'order_series')
-
-        if sort_geometric_data is True:
-            self.surface_points.sort_table()
-            self.orientations.sort_table()
-
-        self.additional_data.update_structure()
-        # For the drift equations. TODO disentagle this property
-        self.additional_data.update_default_kriging()
-
-        if update_interpolator is True:
-            self.interpolator.set_theano_shared_structure(reset=True)
-
-
-
-    def update_from_surfaces(self, set_categories_from_series=True, set_categories_from_surfaces=True,
-                             map_surface_points=True, map_orientations=True, update_structural_data=True):
-        # Add categories from series
-        if set_categories_from_series is True:
-            self.surface_points.set_series_categories_from_series(self.surfaces.series)
-            self.orientations.set_series_categories_from_series(self.surfaces.series)
-
-        # Add categories from surfaces
-        if set_categories_from_surfaces is True:
-            self.surface_points.set_surface_categories_from_surfaces(self.surfaces)
-            self.orientations.set_surface_categories_from_surfaces(self.surfaces)
-
-        if map_surface_points is True:
-            self.surface_points.map_data_from_surfaces(self.surfaces, 'series')
-            self.surface_points.map_data_from_surfaces(self.surfaces, 'id')
-
-        if map_orientations is True:
-            self.orientations.map_data_from_surfaces(self.surfaces, 'series')
-            self.orientations.map_data_from_surfaces(self.surfaces, 'id')
-
-        if update_structural_data is True:
-            self.additional_data.update_structure()
-
-    def update_to_surfaces(self):
-        # TODO decide if makes sense. I think it is quite independent as well. The only thing would be the categories of
-        #   series?
-        pass
-
-    def update_from_faults(self):
-        self.interpolator.set_theano_shared_faults()
-
-
-
-    def update_to_orientations(self, idx: Union[list, np.ndarray] = None):
-        # TODO debug
-        if idx is None:
-            idx = self.orientations.df.index
-        idx = np.atleast_1d(idx)
-        self.orientations.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
-        self.orientations.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
-        self.orientations.map_data_from_series(self.series, 'order_series', idx=idx)
-        self.orientations.sort_table()
-        return self.orientations
-
-
-
-
-
-    def update_from_orientations(self, idx: Union[list, np.ndarray] = None,  recompute_rescale_factor=False):
-        # TODO debug
-
-        self.update_structure()
-        if recompute_rescale_factor is False:
-            self.rescaling.set_rescaled_orientations(idx=idx)
-        else:
-            self.rescaling.rescale_data()
-
+    # region Theano interface
     def set_theano_graph(self, interpolator: Interpolator):
         self.interpolator.theano_graph = interpolator.theano_graph
         self.interpolator.theano_function = interpolator.theano_function
         self.update_to_interpolator()
 
+
     def set_theano_function(self, interpolator: Interpolator):
         self.interpolator.theano_graph = interpolator.theano_graph
         self.interpolator.theano_function = interpolator.theano_function
         self.interpolator.set_all_shared_parameters()
+
+    def update_to_interpolator(self, reset=True):
+        self.interpolator.set_all_shared_parameters()
+        self.interpolator.reset_flow_control()
+
+    # endregion
 
     def map_data_df(self, d:pn.DataFrame):
         d['series'] = d['surface'].map(self.surfaces.df.set_index('surface')['series'])
@@ -565,537 +570,12 @@ class DataMutation_pro(object):
         d['order_series'] = d['series'].map(self.series.df['order_series'])
         d['isFault'] = d['series'].map(self.faults.df['isFault'])
 
-
-
-    def update_plot(self, plot_object: Union[vtkPlot]):
-        if plot_object is not None:
-            if isinstance(plot_object, vtkPlot):
-                if plot_object.vv.real_time is True:
-                    plot_object.vv.update_surfaces_real_time()
-                plot_object.vv.interactor.Render()
-
-
-
-
-
-
-
-
-
-
     def update_from_additional_data(self):
         pass
-
-    def update_to_interpolator(self, reset=True):
-        self.interpolator.set_all_shared_parameters()
-        self.interpolator.reset_flow_control()
-
-class DataMutation(object):
-    def __init__(self):
-
-        self.grid = Grid()
-        self.faults = Faults()
-        self.series = Series(self.faults)
-        self.surfaces = Surfaces(self.series)
-        self.surface_points = SurfacePoints(self.surfaces)
-        self.orientations = Orientations(self.surfaces)
-
-        self.rescaling = RescaledData(self.surface_points, self.orientations, self.grid)
-        self.additional_data = AdditionalData(self.surface_points, self.orientations, self.grid, self.faults,
-                                              self.surfaces, self.rescaling)
-
-        self.interpolator = InterpolatorModel(self.surface_points, self.orientations, self.grid, self.surfaces,
-                                              self.series, self.faults, self.additional_data)
-
-        self.solutions = Solution(self.additional_data, self.grid, self.surface_points, self.series, self.surfaces)
-
-    # region Grid
-
-    def set_grid_object(self, grid: Grid, update_model=True):
-        self.grid = grid
-        self.additional_data.grid = grid
-        self.rescaling.grid = grid
-        self.interpolator.grid = grid
-        self.solutions.grid = grid
-
-        if update_model is True:
-            self.update_from_grid()
-
-    def set_regular_grid(self, extent, resolution):
-        self.grid.set_regular_grid(extent, resolution)
-        self.update_from_grid()
-
-    # endregion
-
-    # region Series
-
-    def set_series_object(self):
-        """
-        Not implemented yet. Exchange the series object of the Model object
-        Returns:
-
-        """
-        pass
-
-    def set_series_index_DEP(self):
-        pass
-
-    def set_bottom_relation(self, series: Union[str, list], bottom_relation: Union[str, list]):
-        self.series.set_bottom_relation(series, bottom_relation)
-        self.interpolator.set_theano_shared_relations()
-        return self.series
-
-    def add_series(self, series_list: Union[pn.DataFrame, list], update_order_series=True, vtk_object: vtkPlot = None):
-        self.series.add_series(series_list, update_order_series)
-        self.update_from_series()
-
-    def delete_series(self, indices, update_order_series=True):
-        self.series.delete_series(indices, update_order_series)
-        self.update_from_series()
-
-    def rename_series(self, new_categories:Union[dict, list]):
-        self.series.rename_series(new_categories)
-
-
-    def reorder_series_DEP(self):
-        pass
-
-    def modify_order_series(self, new_value: int, idx: str):
-        self.series.modify_order_series(new_value, idx)
-        self.update_from_series()
-
-    # endregion
-
-    # region Faults
-    def set_fault_object(self):
-        pass
-
-    @_setdoc([Faults.set_is_fault.__doc__])
-    def set_is_fault(self, series_fault=None, change_color=True):
-        # for series_as_faults in np.atleast_1d(series_fault):
-
-        # TODO: Decide if this makes sense anymore
-        # This code is to push faults up the pile
-        # if self.faults.df.loc[series_fault[0], 'isFault'] is True:
-        #     self.series.modify_order_series(self.faults.n_faults, series_as_faults)
-        #     print('Fault series: ' + str(series_fault) + ' moved to the top of the surfaces.')
-        # else:
-        #     self.series.modify_order_series(self.faults.n_faults + 1, series_as_faults)
-        #     print('Fault series: ' + str(series_fault) + ' moved to the top of the pile.')
-
-        self.faults.set_is_fault(series_fault)
-        self.series.set_bottom_relation(series_fault, 'Fault')
-        self.interpolator.set_theano_shared_relations()
-        # TODO this update from series is alsod related to the move in the pile
-        self.update_from_series()
-        if change_color:
-            print('Fault colors changed. If you do not like this behavior, set change_color to False.')
-            self.surfaces.colors.make_faults_black(series_fault)
-        return self.faults
-
-    @_setdoc([Faults.set_is_fault.__doc__])
-    def set_is_finite_fault(self, series_fault=None):
-        s = self.faults.set_is_finite_fault(series_fault)  # change df in Fault obj
-        print(s)
-        # change shared theano variable for infinite factor
-        # self.interpolator.set_theano_inf_factor()
-        self.interpolator.set_theano_shared_is_finite()
-
-    def set_fault_relation(self, rel_matrix):
-        self.faults.set_fault_relation(rel_matrix)
-
-        # Updating
-        self.interpolator.set_theano_shared_fault_relation()
-        self.interpolator.set_theano_shared_weights()
-
-    # endregion
-
-    # region Surfaces
-    def set_surfaces_object(self):
-        """
-        Not implemented yet. Exchange the surface object of the Model object
-        Returns:
-
-        """
-
-    def add_surfaces(self, surface_list: Union[pn.DataFrame, list], update_df=True):
-        self.surfaces.add_surface(surface_list, update_df)
-        self.update_from_surfaces()
-
-    def delete_surfaces(self, indices, update_id=True):
-        self.surfaces.delete_surface(indices, update_id)
-        self.update_from_surfaces()
-
-    def rename_surfaces(self, old, new):
-        self.surfaces.rename_surfaces(old, new)
-        self.update_from_surfaces()
-
-    def modify_order_surfaces(self, new_value: int, idx: int, series: str = None):
-        self.surfaces.modify_order_surfaces(new_value, idx, series)
-        self.update_from_surfaces(False, False, False, False, True)
-
-    def add_surface_values(self):
-        pass
-
-    def delete_surface_values(self):
-        pass
-
-    def modify_surface_values(self):
-        pass
-
-    def set_surface_values(self):
-        pass
-
-    @_setdoc([Surfaces.map_series.__doc__])
-    def map_series_to_surfaces(self, mapping_object: Union[dict, pn.Categorical] = None,
-                               set_series=True, sort_geometric_data: bool = True, remove_unused_series=True):
-        # Add New series to the series df
-        if set_series is True:
-            if type(mapping_object) is dict:
-                series_list = list(mapping_object.keys())
-                self.series.add_series(series_list)
-            elif isinstance(mapping_object, pn.Categorical):
-                series_list = mapping_object['series'].values
-                self.series.add_series(series_list)
-            else:
-                raise AttributeError(str(type(mapping_object)) + ' is not the right attribute type.')
-
-        self.surfaces.map_series(mapping_object)
-
-        # Here we remove the series that were not assigned to a surface
-        if remove_unused_series is True:
-            self.surfaces.df['series'].cat.remove_unused_categories(inplace=True)
-            unused_cat = self.series.df.index[~self.series.df.index.isin(
-                self.surfaces.df['series'].cat.categories)]
-            self.series.delete_series(unused_cat)
-
-        self.surfaces.update_sequential_pile()
-
-        self.series.update_order_series()
-        # self.surfaces.sort_surfaces()
-
-        self.update_from_surfaces()
-        self.update_from_series()
-
-        if sort_geometric_data is True:
-            self.surface_points.sort_table()
-            self.orientations.sort_table()
-
-        return self.surfaces.sequential_pile.figure
-
-    # endregion
-
-    # region Surface points
-    def set_surface_points_object(self, surface_points: SurfacePoints, update_model=True):
-        self.surface_points = surface_points
-        self.rescaling.surface_points = surface_points
-        self.interpolator.surface_points = surface_points
-
-        if update_model is True:
-            self.update_from_surface_points()
-
-    def add_surface_points(self, X, Y, Z, surface, idx=None):
-        self.surface_points.add_surface_points(X, Y, Z, surface, idx)
-
-        self.update_to_surface_points(idx)
-        self.surface_points.sort_table()
-        self.update_from_surface_points(idx, recompute_rescale_factor=True)
-
-    def delete_surface_points(self, indices: Union[list, int], vtk_object: vtkPlot = None):
-        self.surface_points.del_surface_points(indices)
-        if vtk_object is not None:
-            vtk_object.render_delete_interfaes(indices)
-
-        self.update_from_surface_points(indices)
-
-    def modify_surface_points(self, indices: list, vtk_object: vtkPlot = None, **properties):
-        indices = np.array(indices, ndmin=1)
-        keys = list(properties.keys())
-        is_surface = np.isin('surface', keys).all()
-        self.surface_points.modify_surface_points(indices, **properties)
-
-        if is_surface:
-            self.update_to_surface_points(indices)
-        self.update_from_surface_points(indices)
-    # endregion
-
-    # region Orientation
-    def set_orientations_object(self, orientations: Orientations, update_model=True):
-
-        self.orientations = orientations
-        self.rescaling.orientations = orientations
-        self.interpolator.orientations = orientations
-
-        if update_model is True:
-            self.update_from_orientations()
-
-    def add_orientations(self,  X, Y, Z, surface, pole_vector: np.ndarray = None,
-                         orientation: np.ndarray = None, idx=None,
-                         vtk_object: vtkPlot = None):
-        self.orientations.add_orientation(X, Y, Z, surface, pole_vector=pole_vector,
-                                          orientation=orientation, idx=idx)
-
-        self.update_to_orientations(idx)
-        self.orientations.sort_table()
-        self.update_from_orientations(idx, recompute_rescale_factor=True)
-
-    def delete_orientations(self, indices: Union[list, int], vtk_object: vtkPlot = None, ):
-        self.orientations.del_orientation(indices)
-
-        if vtk_object is not None:
-            vtk_object.render_delete_orientations(indices)
-
-        self.update_structure(indices)
-
-    def modify_orientations(self, indices: list, vtk_object: vtkPlot = None, **properties: list):
-
-        indices = np.array(indices, ndmin=1)
-        keys = list(properties.keys())
-        is_surface = np.isin('surface', keys).all()
-        self.orientations.modify_orientations(indices, **properties)
-
-        if is_surface:
-            self.update_to_orientations(indices)
-        self.update_from_orientations(indices)
-
-    # endregion
-
-    # region Options
-    def modify_options(self, property, value):
-        self.additional_data.options.modify_options(property, value)
-        warnings.warn('You need to recompile the Theano code to make it the changes in options.')
-
-    # endregion
-
-    # region Kriging
-    def modify_kriging_parameters(self, property, value, **kwargs):
-        self.additional_data.kriging_data.modify_kriging_parameters(property, value, **kwargs)
-
-    # endregion
-
-    # region rescaling
-    def modify_rescaling_parameters(self, property, value):
-        self.additional_data.rescaling_data.modify_rescaling_parameters(property, value)
-        self.additional_data.rescaling_data.rescale_data()
-        self.additional_data.update_default_kriging()
-    # endregion
-
-    # ======================================
-    # --------------------------------------
-    # ======================================
-
-
-
-
-    def set_default_surface_point(self):
-        self.surface_points.set_default_surface_points()
-        self.update_to_surface_points()
-        self.update_from_surface_points(recompute_rescale_factor=True)
-
-    def set_default_orientation(self):
-        self.orientations.set_default_orientation()
-        self.update_to_orientations()
-        self.update_from_orientations(recompute_rescale_factor=True)
-
-    def set_default_surfaces(self):
-        self.surfaces.set_default_surface_name()
-        self.update_from_surfaces()
-        return self.surfaces
-
-
-
-
-    def update_from_grid(self):
-        """
-
-        Note: update_from_grid does not have the inverse, i.e. update_to_grid, because GridClass is independent
-        Returns:
-
-        """
-        self.additional_data.update_default_kriging()  # TODO decide if this makes sense here. Probably is better to do
-        #  it with a checker
-        self.rescaling.set_rescaled_grid()
-        # self.interpolator.set_theano_share_input()
-
-
-
-    def update_from_series(self, rename_series: dict = None, reorder_series=True, sort_geometric_data=True,
-                           update_interpolator=True):
-        """
-        Note: update_from_series does not have the inverse, i.e. update_to_series, because Series is independent
-        Returns:
-
-        """
-        # Add categories from series to surface
-        # Updating surfaces['series'] categories
-
-
-        if rename_series is None:
-            self.surfaces.df['series'].cat.set_categories(self.series.df.index, inplace=True)
-        else:
-            self.surfaces.df['series'].cat.rename_categories(rename_series, inplace=True)
-
-        if reorder_series is True:
-            self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
-                                                              ordered=False, inplace=True)
-            # self.surface_points.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
-            #                                                   ordered=False, inplace=True)
-            # self.orientations.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
-            #                                                   ordered=False, inplace=True)
-
-            self.series.df.index = self.series.df.index.reorder_categories(self.series.df.index.get_values(),
-                                                              ordered=False)
-            self.surfaces.sort_surfaces()
-            self.update_from_surfaces(set_categories_from_series=False, set_categories_from_surfaces=True,
-                                      map_surface_points=False, map_orientations=False, update_structural_data=False)
-
-        self.surfaces.set_basement()
-
-        # Add categories from series
-        self.surface_points.set_series_categories_from_series(self.series)
-        self.orientations.set_series_categories_from_series(self.series)
-
-        self.surface_points.map_data_from_series(self.series, 'order_series')
-        self.orientations.map_data_from_series(self.series, 'order_series')
-
-        if sort_geometric_data is True:
-            self.surface_points.sort_table()
-            self.orientations.sort_table()
-
-        self.additional_data.update_structure()
-        # For the drift equations. TODO disentagle this property
-        self.additional_data.update_default_kriging()
-
-        if update_interpolator is True:
-            self.interpolator.set_theano_shared_structure(reset=True)
-
-
-
-    def update_from_surfaces(self, set_categories_from_series=True, set_categories_from_surfaces=True,
-                             map_surface_points=True, map_orientations=True, update_structural_data=True):
-        # Add categories from series
-        if set_categories_from_series is True:
-            self.surface_points.set_series_categories_from_series(self.surfaces.series)
-            self.orientations.set_series_categories_from_series(self.surfaces.series)
-
-        # Add categories from surfaces
-        if set_categories_from_surfaces is True:
-            self.surface_points.set_surface_categories_from_surfaces(self.surfaces)
-            self.orientations.set_surface_categories_from_surfaces(self.surfaces)
-
-        if map_surface_points is True:
-            self.surface_points.map_data_from_surfaces(self.surfaces, 'series')
-            self.surface_points.map_data_from_surfaces(self.surfaces, 'id')
-
-        if map_orientations is True:
-            self.orientations.map_data_from_surfaces(self.surfaces, 'series')
-            self.orientations.map_data_from_surfaces(self.surfaces, 'id')
-
-        if update_structural_data is True:
-            self.additional_data.update_structure()
-
-    def update_to_surfaces(self):
-        # TODO decide if makes sense. I think it is quite independent as well. The only thing would be the categories of
-        #   series?
-        pass
-
-    def update_from_faults(self):
-        self.interpolator.set_theano_shared_faults()
-
-    def update_to_surface_points(self, idx: Union[list, np.ndarray] = None):
-
-        if idx is None:
-            idx = self.surface_points.df.index
-        idx = np.atleast_1d(idx)
-        self.surface_points.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
-        self.surface_points.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
-
-        self.surface_points.map_data_from_series(self.series, 'order_series', idx=idx)
-        self.surface_points.sort_table()
-        return self.surface_points
-
-    def update_to_orientations(self, idx: Union[list, np.ndarray] = None):
-        # TODO debug
-        if idx is None:
-            idx = self.orientations.df.index
-        idx = np.atleast_1d(idx)
-        self.orientations.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
-        self.orientations.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
-        self.orientations.map_data_from_series(self.series, 'order_series', idx=idx)
-        self.orientations.sort_table()
-        return self.orientations
-
-    def update_from_surface_points(self, idx: Union[list, np.ndarray] = None, recompute_rescale_factor=False):
-        self.update_structure()
-        if idx is None:
-            idx = self.surface_points.df.index
-        idx = np.atleast_1d(idx)
-
-        if self.surface_points.df.loc[idx][['X_r', 'Y_r', 'Z_r']].isna().any().any():
-            recompute_rescale_factor = True
-
-        if recompute_rescale_factor is False:
-            self.rescaling.set_rescaled_surface_points(idx=idx)
-        else:
-            self.rescaling.rescale_data()
-
-
-
-    def update_from_orientations(self, idx: Union[list, np.ndarray] = None,  recompute_rescale_factor=False):
-        # TODO debug
-
-        self.update_structure()
-        if recompute_rescale_factor is False:
-            self.rescaling.set_rescaled_orientations(idx=idx)
-        else:
-            self.rescaling.rescale_data()
-
-    def set_theano_graph(self, interpolator: Interpolator):
-        self.interpolator.theano_graph = interpolator.theano_graph
-        self.interpolator.theano_function = interpolator.theano_function
-        self.update_to_interpolator()
-
-    def set_theano_function(self, interpolator: Interpolator):
-        self.interpolator.theano_graph = interpolator.theano_graph
-        self.interpolator.theano_function = interpolator.theano_function
-        self.interpolator.set_all_shared_parameters()
-
-    def map_data_df(self, d):
-        d['series'] = d['surface'].map(self.surfaces.df.set_index('surface')['series'])
-        d['id'] = d['surface'].map(self.surfaces.df.set_index('surface')['id'])
-        d['order_series'] = d['series'].map(self.series.df['order_series'])
-        d['isFault'] = d['series'].map(self.faults.df['isFault'])
-
-    def update_structure(self):
-        self.additional_data.update_structure()
-        self.interpolator.set_theano_shared_structure()
-
-    def update_plot(self, plot_object: Union[vtkPlot]):
-        if plot_object is not None:
-            if isinstance(plot_object, vtkPlot):
-                if plot_object.vv.real_time is True:
-                    plot_object.vv.update_surfaces_real_time()
-                plot_object.vv.interactor.Render()
-
-
-
-
-
-
-
-
-
-
-    def update_from_additional_data(self):
-        pass
-
-    def update_to_interpolator(self, reset=True):
-        self.interpolator.set_all_shared_parameters()
-        self.interpolator.reset_flow_control()
 
 
 @_setdoc([MetaData.__doc__, Grid.__doc__])
-class Model(DataMutation):
+class Model(DataMutation_pro):
     """
     Container class of all objects that constitute a GemPy model. In addition the class provides the methods that
     act in more than one of this class.
