@@ -312,15 +312,20 @@ class InterpolatorModel(Interpolator_pro):
             # self.set_initial_results()
             self.reset_flow_control()
 
-    def set_theano_shared_loop(self):
-        # TODO
+    def _compute_len_series(self):
         self.len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
                             self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
 
-        self.len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype('int32')
+        self.len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
+            'int32')
         self.len_series_u = self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')
-        self.len_series_f = self.faults.faults_relations_df.sum(axis=0).values.astype('int32')[:self.additional_data.get_additional_data()['values']['Structure', 'number series']]
+        self.len_series_f = self.faults.faults_relations_df.sum(axis=0).values.astype('int32')[
+                            :self.additional_data.get_additional_data()['values']['Structure', 'number series']]
         self.len_series_w = self.len_series_i + self.len_series_o * 3 + self.len_series_u + self.len_series_f
+
+    def set_theano_shared_loop(self):
+        # TODO
+        self._compute_len_series()
 
         self.theano_graph.len_series_i.set_value(np.insert(self.len_series_i.cumsum(), 0, 0).astype('int32'))
         self.theano_graph.len_series_o.set_value(np.insert(self.len_series_o.cumsum(), 0, 0).astype('int32'))
@@ -349,8 +354,10 @@ class InterpolatorModel(Interpolator_pro):
         self.theano_graph.is_finite_ctrl.set_value(self.faults.df['isFinite'].values)
 
     def set_theano_shared_onlap_erode(self):
-        is_erosion = self.series.df['BottomRelation'].values == 'Erosion'
-        is_onlap = np.roll(self.series.df['BottomRelation'].values == 'Onlap', 1)
+        n_series = self.additional_data.structure_data.df.loc['values', 'number series']
+
+        is_erosion = self.series.df['BottomRelation'].values[:n_series] == 'Erosion'
+        is_onlap = np.roll(self.series.df['BottomRelation'].values[:n_series] == 'Onlap', 1)
 
         is_erosion[-1] = False
         # this comes from the series df
@@ -377,6 +384,20 @@ class InterpolatorModel(Interpolator_pro):
         Returns:
 
         """
+        self._compute_len_series()
+
+        x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
+        n_series = self.additional_data.structure_data.df.loc['values', 'number series']
+
+        self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum())))
+        self.theano_graph.scalar_fields_matrix.set_value(
+            np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
+
+        self.theano_graph.mask_matrix.set_value(np.zeros((n_series, x_to_interp_shape), dtype='bool'))
+        self.theano_graph.block_matrix.set_value(np.zeros((n_series, self.surfaces.df.iloc[:, 5:].values.shape[1],
+                                                           x_to_interp_shape), dtype=self.dtype))
+
+    def reset_initial_results(self, pos=None):
         x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
         n_series = self.additional_data.structure_data.df.loc['values', 'number series']
 
@@ -422,14 +443,14 @@ class InterpolatorModel(Interpolator_pro):
         return idl
 
     def print_theano_shared(self):
-        print(self.theano_graph.len_series_i.get_value())
-        print(self.theano_graph.len_series_o.get_value())
-        print(self.theano_graph.len_series_w.get_value())
-        print(self.theano_graph.n_surfaces_per_series.get_value())
-        print(self.theano_graph.n_universal_eq_T.get_value())
-        print(self.theano_graph.is_finite_ctrl.get_value())
-        print(self.theano_graph.is_erosion.get_value())
-        print(self.theano_graph.is_onlap.get_value())
+        print('len sereies i', self.theano_graph.len_series_i.get_value())
+        print('len sereies o', self.theano_graph.len_series_o.get_value())
+        print('len sereies w', self.theano_graph.len_series_w.get_value())
+        print('n surfaces per series', self.theano_graph.n_surfaces_per_series.get_value())
+        print('n universal eq',self.theano_graph.n_universal_eq_T.get_value())
+        print('is finite', self.theano_graph.is_finite_ctrl.get_value())
+        print('is erosion', self.theano_graph.is_erosion.get_value())
+        print('is onlap', self.theano_graph.is_onlap.get_value())
 
     def compile_th_fn(self, inplace=False,
                       debug=False):

@@ -376,7 +376,7 @@ class Faults(object):
 
         return self.df
 
-    def set_is_finite_fault(self, series_fault=None):
+    def set_is_finite_fault(self, series_fault=None, toggle=False):
         """
         Toggles given series' finite fault property.
 
@@ -390,7 +390,10 @@ class Faults(object):
             assert self.df.loc[series_fault].isFault.all(), "series_fault contains non-fault series" \
                                                             ", which can't be set as finite faults."
             # if so, toggle True/False for given series or list of series
-            self.df.loc[series_fault, "isFinite"] = self.df.loc[series_fault, 'isFinite'] ^ True
+            if toggle is True:
+                self.df.loc[series_fault, 'isFinite'] = self.df.loc[series_fault, 'isFinite'] ^ True
+            else:
+                self.df.loc[series_fault, 'isFinite'] = self.df.loc[series_fault, 'isFinite']
 
         return self.df
 
@@ -529,12 +532,16 @@ class Colors:
     def make_faults_black(self, series_fault):
         faults_list = list(self.surfaces.df[self.surfaces.df.series.isin(series_fault)]['surface'])
         for fault in faults_list:
-            if self.colordict[fault] == '#000000':
+            if self.colordict[fault] == '#545352':
                 self.set_default_colors(fault)
             else:
-                self.colordict[fault] = '#000000'
+                self.colordict[fault] = '#545352'
                 self.set_colors()
 
+    def reset_default_colors(self):
+        self.generate_colordict()
+        self.set_colors()
+        return self.surfaces
 
 class Surfaces(object):
     """

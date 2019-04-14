@@ -794,11 +794,6 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
     read_data(geo_model, **kwargs)
 
-    if default_values is True:
-
-        geo_model.update_from_surfaces()
-        geo_model.update_from_series()
-
     return geo_model
 
 
@@ -826,6 +821,9 @@ def activate_interactive_df(geo_model: Model, plot_object=None):
 
     try:
         isinstance(geo_model.qi, QgridModelIntegration)
+        print('I am here')
+        geo_model.__delattr__('qi')
+        geo_model.qi = QgridModelIntegration(geo_model, plot_object)
     except AttributeError:
         geo_model.qi = QgridModelIntegration(geo_model, plot_object)
 

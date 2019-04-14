@@ -83,7 +83,6 @@ class Solution(object):
 
     def set_solution(self, values: Union[list, np.ndarray], compute_mesh: bool=True, sort_surfaces=True):
         self.set_values(values)
-        # TODO I do not like this here
         if compute_mesh is True:
             try:
                 self.compute_all_surfaces()
@@ -100,7 +99,7 @@ class Solution(object):
             try:
                 sfai_series = self.scalar_field_at_surface_points[e]
                 sfai_order = np.argsort(sfai_series[np.nonzero(sfai_series)]) + 1
-                idx = self.surfaces.df.groupby('series').get_group(name_series).index
+                idx = self.surfaces.df[~self.surfaces.df['isBasement']].groupby('series').get_group(name_series).index
 
                 self.surfaces.df.loc[idx, 'order_surfaces'] = sfai_order[::-1]
 

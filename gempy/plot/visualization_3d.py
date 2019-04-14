@@ -77,10 +77,10 @@ class vtkVisualization(object):
         self.geo_model = geo_data
         self.interp_data = None
         self.layer_visualization = True
-        self.C_LOT = dict(zip(self.geo_model.surfaces.df['id'], self.geo_model.surfaces.df['color']))
-
-        for surf, color in self.C_LOT.items(): #convert hex to rgb
-            self.C_LOT[surf] = mcolors.hex2color(color)
+        # self.C_LOT = #dict(zip(self.geo_model.surfaces.df['id'], self.geo_model.surfaces.df['color']))
+        #
+        # for surf, color in self.C_LOT.items(): #convert hex to rgb
+        #     self.C_LOT[surf] = mcolors.hex2color(color)
 
         self.ren_name = ren_name
         # Number of renders
@@ -294,7 +294,7 @@ class vtkVisualization(object):
 
         surf_actor = vtk.vtkActor()
         surf_actor.SetMapper(surf_mapper)
-        surf_actor.GetProperty().SetColor(self.C_LOT[fn])
+        surf_actor.GetProperty().SetColor(mcolors.hex2color(self.geo_model.surfaces.df.set_index('id')['color'][fn]))#self.C_LOT[fn])
         surf_actor.GetProperty().SetOpacity(alpha)
 
         return surf_actor, surf_mapper, surf_polydata
@@ -322,7 +322,7 @@ class vtkVisualization(object):
         Z = Z * self.ve
         s.r_f = self._e_d_avrg * r
         s.PlaceWidget(X - s.r_f, X + s.r_f, Y - s.r_f, Y + s.r_f, Z - s.r_f, Z + s.r_f)
-        s.GetSphereProperty().SetColor(self.C_LOT[fn])
+        s.GetSphereProperty().SetColor(mcolors.hex2color(self.geo_model.surfaces.df.set_index('id')['color'][fn]))#self.C_LOT[fn])
 
         s.SetCurrentRenderer(self.ren_list[n_render])
         s.n_sphere = n_sphere
@@ -382,8 +382,8 @@ class vtkVisualization(object):
         d.PlaceWidget(a, b, c, d_, e, f)
         d.SetNormal(Gx, Gy, Gz)
         d.SetCenter(X, Y, Z)
-        d.GetPlaneProperty().SetColor(self.C_LOT[fn])
-        d.GetHandleProperty().SetColor(self.C_LOT[fn])
+        d.GetPlaneProperty().SetColor(mcolors.hex2color(self.geo_model.surfaces.df.set_index('id')['color'][fn]))#self.C_LOT[fn])
+        d.GetHandleProperty().SetColor(mcolors.hex2color(self.geo_model.surfaces.df.set_index('id')['color'][fn]))#self.C_LOT[fn])
         d.GetHandleProperty().SetOpacity(alpha)
         d.SetCurrentRenderer(self.ren_list[n_render])
         d.n_plane = n_plane
@@ -670,28 +670,32 @@ class vtkVisualization(object):
                            new_center[1] - s1.r_f, new_center[1] + s1.r_f,
                            new_center[2] - s1.r_f, new_center[2] + s1.r_f)
 
-            s1.GetSphereProperty().SetColor(self.C_LOT[df_row['id']])
+            s1.GetSphereProperty().SetColor(mcolors.hex2color(
+                self.geo_model.surfaces.df.set_index('id')['color'][df_row['id']]))#self.C_LOT[df_row['id']])
 
             s2 = self.s_rend_2.loc[index, 'val']
             s2.PlaceWidget(new_center[0] - s2.r_f, new_center[0] + s2.r_f,
                            new_center[1] - s2.r_f, new_center[1] + s2.r_f,
                            new_center[2] - s2.r_f, new_center[2] + s2.r_f)
 
-            s1.GetSphereProperty().SetColor(self.C_LOT[df_row['id']])
+            s2.GetSphereProperty().SetColor(mcolors.hex2color(
+                self.geo_model.surfaces.df.set_index('id')['color'][df_row['id']]))
 
             s3 = self.s_rend_3.loc[index, 'val']
             s3.PlaceWidget(new_center[0] - s3.r_f, new_center[0] + s3.r_f,
                            new_center[1] - s3.r_f, new_center[1] + s3.r_f,
                            new_center[2] - s3.r_f, new_center[2] + s3.r_f)
 
-            s3.GetSphereProperty().SetColor(self.C_LOT[df_row['id']])
+            s3.GetSphereProperty().SetColor(mcolors.hex2color(
+                self.geo_model.surfaces.df.set_index('id')['color'][df_row['id']]))
 
             s4 = self.s_rend_4.loc[index, 'val']
             s4.PlaceWidget(new_center[0] - s4.r_f, new_center[0] + s4.r_f,
                            new_center[1] - s4.r_f, new_center[1] + s4.r_f,
                            new_center[2] - s4.r_f, new_center[2] + s4.r_f)
 
-            s4.GetSphereProperty().SetColor(self.C_LOT[df_row['id']])
+            s4.GetSphereProperty().SetColor(mcolors.hex2color(
+                self.geo_model.surfaces.df.set_index('id')['color'][df_row['id']]))
 
     def SphereCallback_delete_point(self, ind_i):
         """
@@ -772,29 +776,37 @@ class vtkVisualization(object):
             plane1.SetInputData(new_source.GetOutput())
             plane1.SetNormal(new_normal)
             plane1.SetCenter(new_center[0], new_center[1], new_center[2])
-            plane1.GetPlaneProperty().SetColor(self.C_LOT[new_values_df['id']])
-            plane1.GetHandleProperty().SetColor(self.C_LOT[new_values_df['id']])
+            plane1.GetPlaneProperty().SetColor(mcolors.hex2color(
+                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))#self.C_LOT[new_values_df['id']])
+            plane1.GetHandleProperty().SetColor(mcolors.hex2color(
+                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
 
             plane2 = self.o_rend_2.loc[index, 'val']
             plane2.SetInputData(new_source.GetOutput())
             plane2.SetNormal(new_normal)
             plane2.SetCenter(new_center[0], new_center[1], new_center[2])
-            plane2.GetPlaneProperty().SetColor(self.C_LOT[new_values_df['id']])
-            plane2.GetHandleProperty().SetColor(self.C_LOT[new_values_df['id']])
+            plane2.GetPlaneProperty().SetColor(mcolors.hex2color(
+                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
+            plane2.GetHandleProperty().SetColor(mcolors.hex2color(
+                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
 
             plane3 = self.o_rend_3.loc[index, 'val']
             plane3.SetInputData(new_source.GetOutput())
             plane3.SetNormal(new_normal)
             plane3.SetCenter(new_center[0], new_center[1], new_center[2])
-            plane3.GetPlaneProperty().SetColor(self.C_LOT[new_values_df['id']])
-            plane3.GetHandleProperty().SetColor(self.C_LOT[new_values_df['id']])
+            plane3.GetPlaneProperty().SetColor(mcolors.hex2color(
+                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
+            plane3.GetHandleProperty().SetColor(mcolors.hex2color(
+                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
 
             plane4 = self.o_rend_4.loc[index, 'val']
             plane4.SetInputData(new_source.GetOutput())
             plane4.SetNormal(new_normal)
             plane4.SetCenter(new_center[0], new_center[1], new_center[2])
-            plane4.GetPlaneProperty().SetColor(self.C_LOT[new_values_df['id']])
-            plane4.GetHandleProperty().SetColor(self.C_LOT[new_values_df['id']])
+            plane4.GetPlaneProperty().SetColor(mcolors.hex2color(
+                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
+            plane4.GetHandleProperty().SetColor(mcolors.hex2color(
+                self.geo_model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
 
     def planesCallback_delete_point(self, ind_o):
         """

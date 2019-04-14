@@ -1388,8 +1388,8 @@ class TheanoGraphPro(object):
         weights_vector = T.set_subtensor(weights_vector[len_w_0:len_w_1], weights)
         scalar_field_matrix = T.set_subtensor(scalar_field_matrix[n_series], Z_x)
         block_matrix = T.set_subtensor(block_matrix[n_series, :], block)
-        mask_matrix = T.set_subtensor(mask_matrix[n_series,:], mask_e)
         mask_matrix = T.set_subtensor(mask_matrix[n_series - 1, :], mask_o)
+        mask_matrix = T.set_subtensor(mask_matrix[n_series, :], mask_e)
         sfai = T.set_subtensor(sfai[n_series, n_surface_op-1], scalar_field_at_surface_points)
 
         return block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix

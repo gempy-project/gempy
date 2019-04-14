@@ -94,8 +94,8 @@ class DataMutation_pro(object):
     def add_series(self, series_list: Union[str, list], update_order_series=True, **kwargs):
         self.series.add_series(series_list, update_order_series)
         self.surfaces.df['series'].cat.add_categories(series_list, inplace=True)
-        self.surface_points.df['series'].add_categories(series_list, inplace=True)
-        self.orientations.df['series'].add_categories(series_list, inplace=True)
+        self.surface_points.df['series'].cat.add_categories(series_list, inplace=True)
+        self.orientations.df['series'].cat.add_categories(series_list, inplace=True)
         #self.update_from_series()
 
     def delete_series(self, indices: Union[str, list], update_order_series=True):
@@ -110,18 +110,19 @@ class DataMutation_pro(object):
         """
         self.series.delete_series(indices, update_order_series)
         self.surfaces.df['series'].cat.remove_categories(indices, inplace=True)
-        self.surface_points.df['series'].remove_categories(indices, inplace=True)
-        self.orientations.df['series'].remove_categories(indices, inplace=True)
+        self.surface_points.df['series'].cat.remove_categories(indices, inplace=True)
+        self.orientations.df['series'].cat.remove_categories(indices, inplace=True)
         self.map_data_df(self.surface_points.df)
         self.map_data_df(self.orientations.df)
 
+        self.interpolator.set_theano_shared_relations()
        # self.update_from_series()
 
     def rename_series(self, new_categories: Union[dict, list]):
         self.series.rename_series(new_categories)
         self.surfaces.df['series'].cat.rename_categories(new_categories, inplace=True)
-        self.surface_points.df['series'].rename_categories(new_categories, inplace=True)
-        self.orientations.df['series'].rename_categories(new_categories, inplace=True)
+        self.surface_points.df['series'].cat.rename_categories(new_categories, inplace=True)
+        self.orientations.df['series'].cat.rename_categories(new_categories, inplace=True)
 
     def modify_order_series(self, new_value: int, idx: str):
         self.series.modify_order_series(new_value, idx)
@@ -146,7 +147,7 @@ class DataMutation_pro(object):
         pass
 
     @_setdoc([Faults.set_is_fault.__doc__])
-    def set_is_fault(self, series_fault: Union[str, list] = None, toggle:bool = False, change_color: bool = True):
+    def set_is_fault(self, series_fault: Union[str, list] = None, toggle: bool = False, change_color: bool = True):
         self.faults.set_is_fault(series_fault, toggle)
 
         self.series.set_bottom_relation(series_fault, 'Fault')
@@ -176,8 +177,8 @@ class DataMutation_pro(object):
 
 
     @_setdoc([Faults.set_is_fault.__doc__])
-    def set_is_finite_fault(self, series_fault=None):
-        s = self.faults.set_is_finite_fault(series_fault)  # change df in Fault obj
+    def set_is_finite_fault(self, series_fault=None, toggle: bool = False):
+        s = self.faults.set_is_finite_fault(series_fault, toggle)  # change df in Fault obj
         # change shared theano variable for infinite factor
         self.interpolator.set_theano_shared_is_finite()
 
@@ -202,12 +203,20 @@ class DataMutation_pro(object):
         self.surfaces.add_surface(surface_list, update_df)
         self.surface_points.df['surface'].cat.add_categories(surface_list, inplace=True)
         self.orientations.df['surface'].cat.add_categories(surface_list, inplace=True)
+        self.update_structure()
         return self.surfaces
 
     def delete_surfaces(self, indices: Union[str, list], update_id=True):
+        indices = np.atleast_1d(indices)
         self.surfaces.delete_surface(indices, update_id)
-        self.surface_points.df['surface'].cat.remove_categories(indices, inplace=True)
-        self.orientations.df['surface'].cat.remove_categories(indices, inplace=True)
+
+        if indices.dtype == int:
+            surfaces_names = self.surfaces.df.loc[indices, 'surface']
+        else:
+            surfaces_names = indices
+
+        self.surface_points.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
+        self.orientations.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
         self.map_data_df(self.surface_points.df)
         self.map_data_df(self.orientations.df)
         return self.surfaces
@@ -307,7 +316,7 @@ class DataMutation_pro(object):
         idx = self._add_valid_idx(idx)
         self.surface_points.add_surface_points(X, Y, Z, surface, idx)
 
-        if recompute_rescale_factor is True:
+        if recompute_rescale_factor is True or idx < 20:
             # This will rescale all data again
             self.rescaling.rescale_data()
         else:
@@ -324,12 +333,26 @@ class DataMutation_pro(object):
         return self.surface_points
 
     @plot_move_surface_points
-    def modify_surface_points(self, indices: Union[int, list], **kwargs):
-
-        self.surface_points.modify_surface_points(indices, **kwargs)
+    def modify_surface_points(self, indices: Union[int, list], recompute_rescale_factor=False, **kwargs):
         keys = list(kwargs.keys())
         is_surface = np.isin('surface', keys).all()
-        if is_surface is True:
+        if is_surface:
+            assert (~self.surfaces.df[self.surfaces.df['isBasement']]['surface'].isin(
+                np.atleast_1d(kwargs['surface']))).any(),\
+                'Surface points cannot belong to Basement. Add a new surface.'
+
+        self.surface_points.modify_surface_points(indices, **kwargs)
+
+        if recompute_rescale_factor is True or np.atleast_1d(indices)[0] < 20:
+            # This will rescale all data again
+            self.rescaling.rescale_data()
+        else:
+            # This branch only recompute the added point
+            self.rescaling.set_rescaled_surface_points(indices)
+
+        keys = list(kwargs.keys())
+        is_surface = np.isin('surface', keys).all()
+        if is_surface == True:
             self.update_structure()
         return self.surface_points
 
@@ -358,7 +381,7 @@ class DataMutation_pro(object):
             self.rescaling.rescale_data()
         else:
             # This branch only recompute the added point
-            self.rescaling.set_rescaled_surface_points(idx)
+            self.rescaling.set_rescaled_orientations(idx)
 
         self.update_structure()
         return self.orientations, idx
@@ -409,14 +432,15 @@ class DataMutation_pro(object):
 
     def set_default_surface_point(self):
         if self.surface_points.df.shape[0] == 0:
-            self.add_surface_points(0.00001, 0.00001, 0.00001, self.surfaces.df['surface'].iloc[0])
+            self.add_surface_points(0.00001, 0.00001, 0.00001, self.surfaces.df['surface'].iloc[0],
+                                    recompute_rescale_factor=True)
 
     def set_default_orientation(self):
         if self.orientations.df.shape[0] == 0:
             # TODO DEBUG: I am not sure that surfaces always has at least one entry. Check it
-            self.orientations.add_orientation(.00001, .00001, .00001,
-                                              self.surfaces.df['surface'].iloc[0],
-                                              [0, 0, 1])
+            self.add_orientations(.00001, .00001, .00001,
+                                  self.surfaces.df['surface'].iloc[0],
+                                  [0, 0, 1], recompute_rescale_factor=True)
 
     def set_default_surfaces(self):
         self.add_surfaces(['surface1', 'surface2'])
@@ -439,80 +463,79 @@ class DataMutation_pro(object):
     #
     #
     #
-    # def update_from_series(self, rename_series: dict = None, reorder_series=True, sort_geometric_data=True,
-    #                        update_interpolator=True):
-    #     """
-    #     Note: update_from_series does not have the inverse, i.e. update_to_series, because Series is independent
-    #     Returns:
-    #
-    #     """
-    #     # Add categories from series to surface
-    #     # Updating surfaces['series'] categories
-    #
-    #
-    #     if rename_series is None:
-    #         self.surfaces.df['series'].cat.set_categories(self.series.df.index, inplace=True)
-    #     else:
-    #         self.surfaces.df['series'].cat.rename_categories(rename_series, inplace=True)
-    #
-    #     if reorder_series is True:
-    #         self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
-    #                                                           ordered=False, inplace=True)
-    #         # self.surface_points.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
-    #         #                                                   ordered=False, inplace=True)
-    #         # self.orientations.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
-    #         #                                                   ordered=False, inplace=True)
-    #
-    #         self.series.df.index = self.series.df.index.reorder_categories(self.series.df.index.get_values(),
-    #                                                           ordered=False)
-    #         self.surfaces.sort_surfaces()
-    #         self.update_from_surfaces(set_categories_from_series=False, set_categories_from_surfaces=True,
-    #                                   map_surface_points=False, map_orientations=False, update_structural_data=False)
-    #
-    #     self.surfaces.set_basement()
-    #
-    #     # Add categories from series
-    #     self.surface_points.set_series_categories_from_series(self.series)
-    #     self.orientations.set_series_categories_from_series(self.series)
-    #
-    #     self.surface_points.map_data_from_series(self.series, 'order_series')
-    #     self.orientations.map_data_from_series(self.series, 'order_series')
-    #
-    #     if sort_geometric_data is True:
-    #         self.surface_points.sort_table()
-    #         self.orientations.sort_table()
-    #
-    #     self.additional_data.update_structure()
-    #     # For the drift equations. TODO disentagle this property
-    #     self.additional_data.update_default_kriging()
-    #
-    #     if update_interpolator is True:
-    #         self.interpolator.set_theano_shared_structure(reset=True)
-    #
+    def update_from_series(self, rename_series: dict = None, reorder_series=True, sort_geometric_data=True,
+                           update_interpolator=True):
+        """
+        Note: update_from_series does not have the inverse, i.e. update_to_series, because Series is independent
+        Returns:
+
+        """
+        # Add categories from series to surface
+        # Updating surfaces['series'] categories
+
+        if rename_series is None:
+            self.surfaces.df['series'].cat.set_categories(self.series.df.index, inplace=True)
+        else:
+            self.surfaces.df['series'].cat.rename_categories(rename_series, inplace=True)
+
+        if reorder_series is True:
+            self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+                                                              ordered=False, inplace=True)
+            # self.surface_points.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+            #                                                   ordered=False, inplace=True)
+            # self.orientations.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+            #                                                   ordered=False, inplace=True)
+
+            self.series.df.index = self.series.df.index.reorder_categories(self.series.df.index.get_values(),
+                                                              ordered=False)
+            self.surfaces.sort_surfaces()
+            self.update_from_surfaces(set_categories_from_series=False, set_categories_from_surfaces=True,
+                                      map_surface_points=False, map_orientations=False, update_structural_data=False)
+
+        self.surfaces.set_basement()
+
+        # Add categories from series
+        self.surface_points.set_series_categories_from_series(self.series)
+        self.orientations.set_series_categories_from_series(self.series)
+
+        self.surface_points.map_data_from_series(self.series, 'order_series')
+        self.orientations.map_data_from_series(self.series, 'order_series')
+
+        if sort_geometric_data is True:
+            self.surface_points.sort_table()
+            self.orientations.sort_table()
+
+        self.additional_data.update_structure()
+        # For the drift equations. TODO disentagle this property
+        self.additional_data.update_default_kriging()
+
+        if update_interpolator is True:
+            self.interpolator.set_theano_shared_structure(reset=True)
     #
     #
-    # def update_from_surfaces(self, set_categories_from_series=True, set_categories_from_surfaces=True,
-    #                          map_surface_points=True, map_orientations=True, update_structural_data=True):
-    #     # Add categories from series
-    #     if set_categories_from_series is True:
-    #         self.surface_points.set_series_categories_from_series(self.surfaces.series)
-    #         self.orientations.set_series_categories_from_series(self.surfaces.series)
     #
-    #     # Add categories from surfaces
-    #     if set_categories_from_surfaces is True:
-    #         self.surface_points.set_surface_categories_from_surfaces(self.surfaces)
-    #         self.orientations.set_surface_categories_from_surfaces(self.surfaces)
-    #
-    #     if map_surface_points is True:
-    #         self.surface_points.map_data_from_surfaces(self.surfaces, 'series')
-    #         self.surface_points.map_data_from_surfaces(self.surfaces, 'id')
-    #
-    #     if map_orientations is True:
-    #         self.orientations.map_data_from_surfaces(self.surfaces, 'series')
-    #         self.orientations.map_data_from_surfaces(self.surfaces, 'id')
-    #
-    #     if update_structural_data is True:
-    #         self.additional_data.update_structure()
+    def update_from_surfaces(self, set_categories_from_series=True, set_categories_from_surfaces=True,
+                             map_surface_points=True, map_orientations=True, update_structural_data=True):
+        # Add categories from series
+        if set_categories_from_series is True:
+            self.surface_points.set_series_categories_from_series(self.surfaces.series)
+            self.orientations.set_series_categories_from_series(self.surfaces.series)
+
+        # Add categories from surfaces
+        if set_categories_from_surfaces is True:
+            self.surface_points.set_surface_categories_from_surfaces(self.surfaces)
+            self.orientations.set_surface_categories_from_surfaces(self.surfaces)
+
+        if map_surface_points is True:
+            self.surface_points.map_data_from_surfaces(self.surfaces, 'series')
+            self.surface_points.map_data_from_surfaces(self.surfaces, 'id')
+
+        if map_orientations is True:
+            self.orientations.map_data_from_surfaces(self.surfaces, 'series')
+            self.orientations.map_data_from_surfaces(self.surfaces, 'id')
+
+        if update_structural_data is True:
+            self.additional_data.update_structure()
     #
     # def update_to_surfaces(self):
     #     # TODO decide if makes sense. I think it is quite independent as well. The only thing would be the categories of
