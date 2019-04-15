@@ -225,30 +225,22 @@ class PlotData2D(object):
             print('not a direction')
         return _slice, extent
 
-    def extract_fault_lines(self, cell_number=25, direction='y'):  # , lb=True):
-        # TODO @elisa Update
+    def extract_fault_lines(self, cell_number=25, direction='y'):
 
-        fb = self.model.solutions.scalalar_field_matrix
-
-        all_levels = self.model.solutions.scalar_field_at_surface_points[
-            np.where(self.model.solutions.scalar_field_at_surface_points != 0)]
-
-        block_id = []
-        for i in range(fb.shape[0]):
-            block_id.append(i)
-
+        faults = list(self.model.faults.faults_relations_df.form_series[
+                          self.model.faults.faults_relations_df.form_series == True].index)
         _slice, extent = self._slice2D(cell_number, direction)
 
-        for i in range(len(block_id)):
-            plt.contour(fb[block_id[i]].reshape(self.model.grid.resolution)[_slice].T, 0,
-                        extent=extent, levels=all_levels[i], colors=self._cmap.colors[i])
-        # if lb is True:
-        #   plt.contour(geo_model.solutions.scalar_field_lith.reshape(geo_model.grid.resolution)[_slice].T, 0,
-        #   extent=extent, levels=np.sort(all_levels[len(block_id):]),
-        #   colors=self._cmap.colors[len(block_id):])
+        for fault in faults:
+            f_id = int(self.model.series.df.loc[fault, 'order_series']) - 1
+            block = self.model.solutions.scalar_field_matrix[f_id]
+            level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
+                self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
+            plt.contour(block.reshape(self.model.grid.resolution)[_slice].T, 0, extent=extent, levels=level,
+                        colors=self._cmap.colors[f_id])
 
     def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data=False, block_type='lithology', ve=1, show_faults=False, **kwargs):
+                           plot_data=False, block_type='lithology', ve=1, show_faults=True, **kwargs):
         """
         Plot a section of the block model
 
@@ -266,21 +258,6 @@ class PlotData2D(object):
         Returns:
             Block plot
         """
-        # if block is not None:
-        #     import theano
-        #     import numpy
-        #     assert (type(block) is theano.tensor.sharedvar.TensorSharedVariable or
-        #             type(block) is numpy.ndarray), \
-        #         'Block has to be a theano shared object or numpy array.'
-        #     if type(block) is numpy.ndarray:
-        #         _block = block
-        #     else:
-        #         _block = block.get_value()
-        # else:
-        #     try:
-        #         _block = self._data.interpolator.tg.final_block.get_value()
-        #     except AttributeError:
-        #         raise AttributeError('There is no block to plot')
 
         if block is not None:
             warnings.warn('Passing the block directly will get deprecated in the next version. Please use Solution'
@@ -321,7 +298,7 @@ class PlotData2D(object):
                         aspect=aspect,
                         **kwargs)
         if show_faults:
-            raise NotImplementedError
+            #raise NotImplementedError
             self.extract_fault_lines(cell_number, direction)
         if not plot_data:
             import matplotlib.patches as mpatches
