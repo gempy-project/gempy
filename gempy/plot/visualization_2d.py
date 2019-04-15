@@ -192,32 +192,32 @@ class PlotData2D(object):
             y = "Z"
             Gx = "G_y"
             Gy = "G_z"
-            extent_val = self.model.grid.extent[2], self.model.grid.extent[3], self.model.grid.extent[4], self.model.grid.extent[5]
+            extent_val = self.model.grid.extent[[2,3,4,5]]
         elif direction == "y":
             _b = cell_number
             x = "X"
             y = "Z"
             Gx = "G_x"
             Gy = "G_z"
-            extent_val = self.model.grid.extent[0], self.model.grid.extent[1], self.model.grid.extent[4], self.model.grid.extent[5]
+            extent_val = self.model.grid.extent[[0, 1, 4, 5]]
         elif direction == "z":
             _c = cell_number
             x = "X"
             y = "Y"
             Gx = "G_x"
             Gy = "G_y"
-            extent_val = self.model.grid.extent[0], self.model.grid.extent[1], self.model.grid.extent[2], self.model.grid.extent[3]
+            extent_val = self.model.grid.extent[[1, 2, 3, 4]]
         else:
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
         return _a, _b, _c, extent_val, x, y, Gx, Gy
 
     def _slice2D(self, cell_number, direction):
-        if direction == 'y':
-            _slice = np.s_[:, cell_number, :]
-            extent = self.model.grid.extent[[0, 1, 4, 5]]
-        elif direction == 'x':
+        if direction == 'x':
             _slice = np.s_[cell_number, :, :]
             extent = self.model.grid.extent[[2, 3, 4, 5]]
+        elif direction == 'y':
+            _slice = np.s_[:, cell_number, :]
+            extent = self.model.grid.extent[[0, 1, 4, 5]]
         elif direction == 'z':
             _slice = np.s_[:, :, cell_number]
             extent = self.model.grid.extent[[1, 2, 3, 4]]
