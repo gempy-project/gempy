@@ -654,7 +654,7 @@ class vtkVisualization:
 
         for surf, color in self.C_LOT.items(): #convert hex to rgb
             self.C_LOT[surf] = mcolors.hex2color(color)
-
+        print(self.C_LOT)
         self.ren_name = ren_name
         # Number of renders
         self.n_ren = 4
