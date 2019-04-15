@@ -1,0 +1,8 @@
+,surface,series,order_surfaces,isBasement,color,id
+5,fault1,fault_series1,1,False,#015482,1
+7,rock5,series2,1,False,#9f0052,2
+6,rock4,series2,2,False,#ffbe00,3
+0,rock3,series1,1,False,#728f02,4
+3,rock2,series1,2,False,#443988,5
+1,rock1,series1,3,False,#ff3f20,6
+4,basement,basement_series,1,True,#325916,7

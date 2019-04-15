@@ -145,9 +145,11 @@ class StratigraphicPile(object):
                 rects[e].set_alpha(.1)
                 rects[e].set_color('gray')
             else:
-                rects[e].set_color(color_lot[surface])
-                rects[e].set_label(surface)
-
+                try:
+                    rects[e].set_color(color_lot[surface])
+                    rects[e].set_label(surface)
+                except KeyError:
+                    pass
             dr = DraggableRectangle(rects[e], series_class, surface_class)
             dr.connect()
             dr.rect.f = surface

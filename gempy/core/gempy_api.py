@@ -30,7 +30,7 @@ import numpy as _np
 from numpy import ndarray
 from pandas import DataFrame
 from gempy.core.model import *
-from gempy.core.api_modules.data_mutation import *
+#from gempy.core.api_modules.data_mutation import *
 from typing import Union
 from gempy.utils.meta import _setdoc
 
@@ -54,15 +54,21 @@ def create_model(project_name='default_project'):
     return Model(project_name)
 
 
-@_setdoc(Model.save_model.__doc__)
+@_setdoc(Model.save_model_pickle.__doc__)
 def save_model(model: Model, path=None):
 
-    model.save_model(path)
+    model.save_model_pickle(path)
+    return True
+
+@_setdoc(Model.save_model.__doc__)
+def save_model(model: Model, name, path=None):
+
+    model.save_model(name, path)
     return True
 
 
-@_setdoc(Model.load_model.__doc__)
-def load_model(path):
+@_setdoc(Model.load_model_pickle.__doc__)
+def load_model_pickle(path):
     """
     Read InputData object from python pickle.
 
@@ -73,7 +79,119 @@ def load_model(path):
         :class:`gempy.data_management.InputData`
 
     """
-    return Model.load_model(path)
+    return Model.load_model_pickle(path)
+
+
+def load_model(name, path=None, recompile=False):
+    """
+    Loading model saved with model.save_model function.
+
+    Args:
+        name: name of folder with saved files
+        path (str): path to folder directory
+        recompile (bool): if true, theano functions will be recompiled
+
+    Returns:
+        :class:`gempy.core.model
+
+    """
+    # TODO: Divide each dataframe in its own function
+    # TODO: Include try except in case some of the datafiles is missing
+    #
+
+    if not path:
+        path = './'
+    path = f'{path}/{name}'
+
+    # create model with extent and resolution from csv - check
+    geo_model = create_model()
+    init_data(geo_model, np.load(f'{path}/{name}_extent.npy'), np.load(f'{path}/{name}_resolution.npy'))
+    # rel_matrix = np.load()
+    # set additonal data
+    geo_model.additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0,
+                                            dtype={'range': 'float64', '$C_o$': 'float64', 'drift equations': object,
+                                            'nugget grad': 'float64', 'nugget scalar': 'float64'})
+
+    geo_model.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0,
+                                            dtype={'dtype': 'category', 'output': 'category',
+                                            'theano_optimizer': 'category', 'device': 'category',
+                                            'verbosity': object})
+    geo_model.additional_data.options.df['dtype'].cat.set_categories(['float32', 'float64'], inplace=True)
+    geo_model.additional_data.options.df['theano_optimizer'].cat.set_categories(['fast_run', 'fast_compile'], inplace=True)
+    geo_model.additional_data.options.df['device'].cat.set_categories(['cpu', 'cuda'], inplace=True)
+    geo_model.additional_data.options.df['output'].cat.set_categories(['geology', 'gradients'], inplace=True)
+
+    # do series properly - this needs proper check
+    geo_model.series.df = pn.read_csv(f'{path}/{name}_series.csv', index_col=0,
+                                            dtype={'order_series': 'int32', 'BottomRelation': 'category'})
+    series_index = pn.CategoricalIndex(geo_model.series.df.index.values)
+    # geo_model.series.df.index = pn.CategoricalIndex(series_index)
+    geo_model.series.df.index = series_index
+    geo_model.series.df['BottomRelation'].cat.set_categories(['Erosion', 'Onlap', 'Fault'], inplace=True)
+
+    cat_series = geo_model.series.df.index.values
+
+    # do faults properly - check
+    geo_model.faults.df = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0,
+                                            dtype={'isFault': 'bool', 'isFinite': 'bool'})
+    geo_model.faults.df.index = series_index
+
+    # # do faults relations properly - this is where I struggle
+    geo_model.faults.faults_relations_df = pn.read_csv(f'{path}/{name}_faults_relations.csv', index_col=0)
+    geo_model.faults.faults_relations_df.index = series_index
+    geo_model.faults.faults_relations_df.columns = series_index
+
+    geo_model.faults.faults_relations_df.fillna(False, inplace=True)
+
+    # do surfaces properly
+    geo_model.surfaces.df = pn.read_csv(f'{path}/{name}_surfaces.csv', index_col=0,
+                                            dtype={'surface': 'str', 'series': 'category',
+                                                   'order_surfaces': 'int64', 'isBasement': 'bool', 'id': 'int64',
+                                                   'color': 'str'}).reindex(geo_model.surfaces._columns, axis=1)
+    geo_model.surfaces.colors.generate_colordict()
+    geo_model.surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
+
+    cat_surfaces = geo_model.surfaces.df['surface'].values
+
+    # do orientations properly, reset all dtypes
+    geo_model.orientations.df = pn.read_csv(f'{path}/{name}_orientations.csv', index_col=0,
+                                            dtype={'X': 'float64', 'Y': 'float64', 'Z': 'float64',
+                                                   'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
+                                                   'dip': 'float64', 'azimuth': 'float64', 'polarity': 'float64',
+                                                   'surface': 'category', 'series': 'category',
+                                                   'id': 'int64', 'order_series': 'int64'})
+    geo_model.orientations.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
+    geo_model.orientations.df['series'].cat.set_categories(cat_series, inplace=True)
+
+    # do surface_points properly, reset all dtypes
+    geo_model.surface_points.df = pn.read_csv(f'{path}/{name}_surface_points.csv', index_col=0,
+                                              dtype={'X': 'float64', 'Y': 'float64', 'Z': 'float64',
+                                                     'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
+                                                     'surface': 'category', 'series': 'category',
+                                                     'id': 'int64', 'order_series': 'int64'})
+    geo_model.surface_points.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
+    geo_model.surface_points.df['series'].cat.set_categories(cat_series, inplace=True)
+
+    # update structure from loaded input
+    geo_model.additional_data.structure_data.update_structure_from_input()
+
+    # load solutions in npy files
+    geo_model.solutions.lith_block = np.load(f'{path}/{name}_lith_block.npy')
+    geo_model.solutions.scalar_field_lith = np.load(f"{path}/{name}_scalar_field_lith.npy")
+    geo_model.solutions.fault_blocks = np.load(f'{path}/{name}_fault_blocks.npy')
+    geo_model.solutions.scalar_field_faults = np.load(f'{path}/{name}_scalar_field_faults.npy')
+    geo_model.solutions.gradient = np.load(f'{path}/{name}_gradient.npy')
+    geo_model.solutions.values_block = np.load(f'{path}/{name}_values_block.npy')
+
+    geo_model.solutions.additional_data.kriging_data.df = geo_model.additional_data.kriging_data.df
+    geo_model.solutions.additional_data.options.df = geo_model.additional_data.options.df
+    geo_model.solutions.additional_data.rescaling_data.df = geo_model.additional_data.rescaling_data.df
+
+
+    if recompile is True:
+        set_interpolation_data(geo_model, verbose=[0])
+
+    return geo_model
 # endregion
 
 
@@ -88,22 +206,34 @@ def set_series(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = N
 
 
 def map_series_to_surfaces(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = None,
-                             set_series=True, sort_data: bool = True, remove_unused_series=True, quiet=False):
+                             set_series=True, sort_geometric_data: bool = True, remove_unused_series=True, quiet=False):
+    """
+    Map the series (column) of the Surface object accordingly to the mapping_object
+    Args:
+        geo_model:
+        mapping_object:
+        set_series:
+        sort_data:
+        remove_unused_series:
+        quiet:
 
-    geo_model.map_series_to_surfaces(mapping_object, set_series, sort_data)
+    Returns:
 
-    if remove_unused_series is True:
-        geo_model.surfaces.df['series'].cat.remove_unused_categories(inplace=True)
-        unused_cat = geo_model.series.df.index[~geo_model.series.df.index.isin(
-            geo_model.surfaces.df['series'].cat.categories)]
-        geo_model.series.delete_series(unused_cat)
+    """
+    geo_model.map_series_to_surfaces(mapping_object, set_series, sort_geometric_data, remove_unused_series)
+
+    # if remove_unused_series is True:
+    #     geo_model.surfaces.df['series'].cat.remove_unused_categories(inplace=True)
+    #     unused_cat = geo_model.series.df.index[~geo_model.series.df.index.isin(
+    #         geo_model.surfaces.df['series'].cat.categories)]
+    #     geo_model.series.delete_series(unused_cat)
 
     # TODO: Give the same name to sort surfaces and seires
-    geo_model.series.update_order_series()
-    geo_model.surfaces.sort_surfaces()
-
-    geo_model.update_from_series()
-    geo_model.update_from_surfaces()
+    # geo_model.series.update_order_series()
+    # geo_model.surfaces.sort_surfaces()
+    #
+    # geo_model.update_from_series()
+    # geo_model.update_from_surfaces()
 
     if quiet is True:
         return True
@@ -145,7 +275,7 @@ def select_series_TOUPDATE(geo_data, series):
     return new_geo_data
 
 
-def get_series(model: Model):
+def get_series_DEP(model: Model):
     return model.series
 
 
@@ -173,17 +303,17 @@ def set_surface_names(geo_model: Model, list_names: list, update_df=True):
     geo_model.update_from_surfaces()
     return geo_model.surfaces
 
-def get_surfaces(model: Model):
+def get_surfaces_DEP(model: Model):
     return model.surfaces
 # endregion
 
 
 # region Fault functionality
-def set_faults(model: Model, faults: Faults):
+def set_faults_DEP(model: Model, faults: Faults):
     model.faults = faults
 
 
-def get_faults(model: Model):
+def get_faults_DEP(model: Model):
     return model.faults
 # endregion
 
@@ -197,7 +327,7 @@ def set_grid(model: Model, grid: Grid, update_model=True):
     model.set_grid_object(grid=grid, update_model=update_model)
 
 
-def get_grid(model: Model):
+def get_grid_DEP(model: Model):
     """
     Coordinates can be found in :class:`gempy.core.data.GridClass.values`
 
@@ -242,7 +372,7 @@ def set_surface_points_object(geo_data: Model, surface_points: SurfacePoints, up
     return True
 
 
-def get_surface_points(model: Model):
+def get_surface_points_DEP(model: Model):
     return model.surface_points
 
 
@@ -303,7 +433,7 @@ def set_orientation_from_surface_points_TOUPDATE(geo_data, indices_array):
     return geo_data.orientations
 
 
-def get_orientations(model: Model):
+def get_orientations_DEP(model: Model):
     return model.orientations
 
 
@@ -321,7 +451,7 @@ def rescale_data(geo_model: Model, rescaling_factor=None, centers=None):
     """
 
     geo_model.rescaling.rescale_data(rescaling_factor, centers)
-    return True
+    return geo_model.additional_data.rescaling_data
 # endregion
 
 
@@ -354,8 +484,10 @@ def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=
     geo_model.surface_points.sort_table()
     geo_model.orientations.sort_table()
 
-    geo_model.interpolator.set_theano_graph(geo_model.interpolator.create_theano_graph())
-    geo_model.interpolator.set_theano_shared_parameters()
+   # geo_model.interpolator.set_theano_graph(geo_model.interpolator.create_theano_graph())
+    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True)
+#    geo_model.interpolator.reset_flow_control()
+    geo_model.interpolator.set_all_shared_parameters(reset=True)
 
     if compile_theano is True:
         geo_model.interpolator.compile_th_fn(inplace=inplace)
@@ -397,10 +529,10 @@ def update_additional_data(model: Model, update_structure=True, update_rescaling
 
 
 def get_additional_data(model: Model):
-    return model.additional_data
+    return model.get_additional_data()
 
 
-def get_kriging_parameters(model: Model):
+def get_kriging_parameters_DEP(model: Model):
     """
     Print the kringing parameters
 
@@ -415,7 +547,8 @@ def get_kriging_parameters(model: Model):
 
 
 # region Computing the model
-def compute_model(model: Model, compute_mesh=True, debug=False)-> Solution:
+def compute_model(model: Model, compute_mesh=True, reset_weights=False, reset_scalar=False, reset_block=False,
+                  debug=False) -> Solution:
     """
     Computes the geological model and any extra output given in the additional data option.
 
@@ -434,7 +567,9 @@ def compute_model(model: Model, compute_mesh=True, debug=False)-> Solution:
 
     # TODO: Assert frame by frame that all data is like is supposed. Otherwise,
     # return clear messages
-    i = model.interpolator.get_input_matrix()
+    model.interpolator.reset_flow_control(reset_weights, reset_scalar, reset_block)
+
+    i = model.interpolator.get_python_input_block(append_control=True, fault_drift=None)
 
     # assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1,  \
     #     'To compute the model is necessary at least 2 interface points per layer'
@@ -529,7 +664,7 @@ def set_values_to_default_DEP(model: Model, series_distribution=None, order_seri
         model.faults.set_is_fault()
 
     if map_surfaces_from_series is True:
-        model.surfaces.df = model.surfaces.set_id(model.surfaces.df)
+        model.surfaces.df = model.surfaces.update_id(model.surfaces.df)
         try:
             model.surfaces.add_basement()
         except AssertionError:
@@ -659,17 +794,12 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
     read_data(geo_model, **kwargs)
 
-    if default_values is True:
-
-        geo_model.update_from_surfaces()
-        geo_model.update_from_series()
-
     return geo_model
 
 
 # endregion
 
-def activate_interactive_df(geo_model: Model, vtk_object=None):
+def activate_interactive_df(geo_model: Model, plot_object=None):
     """
     TODO evaluate the use of this functionality
 
@@ -691,7 +821,10 @@ def activate_interactive_df(geo_model: Model, vtk_object=None):
 
     try:
         isinstance(geo_model.qi, QgridModelIntegration)
+        print('I am here')
+        geo_model.__delattr__('qi')
+        geo_model.qi = QgridModelIntegration(geo_model, plot_object)
     except AttributeError:
-        geo_model.qi = QgridModelIntegration(geo_model, vtk_object)
+        geo_model.qi = QgridModelIntegration(geo_model, plot_object)
 
     return geo_model.qi

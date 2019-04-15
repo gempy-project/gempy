@@ -1,6 +1,7 @@
 
 # region Auxiliary
 
+
 def _setdoc(docstring):
     if type(docstring) is list:
         try:
