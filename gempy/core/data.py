@@ -15,6 +15,9 @@ from gempy.plot.sequential_pile import StratigraphicPile
 import re
 import ipywidgets as widgets
 pn.options.mode.chained_assignment = None
+import skimage
+from gempy.utils.create_topography import Load_DEM_artificial, Load_DEM_GDAL
+import matplotlib.pyplot as plt
 
 
 class MetaData(object):
@@ -542,6 +545,68 @@ class Colors:
         self.generate_colordict()
         self.set_colors()
         return self.surfaces
+
+
+class Topography:
+    # todo allow numpy array to be passed
+    def __init__(self, model, filepath=None, **kwargs):
+        self.model = model
+        if filepath is not None:
+            self.load_from_gdal(filepath)
+        else:
+            self.create_random(**kwargs)
+        self.xyz_box = self.topo.xyz_box
+
+        self.test_extent()
+        self._rescale()
+
+    def load_from_gdal(self, filepath):
+        self.topo = Load_DEM_GDAL(filepath,model=self.model)
+
+    def create_random(self,**kwargs):
+        self.topo = Load_DEM_artificial(self.model, **kwargs)
+
+    # todo can be removed
+    def test_extent(self):
+        cornerpoints_geo = self._get_cornerpoints(self.model.grid.extent)
+        cornerpoints_dtm = self._get_cornerpoints(self.topo.extent)
+        if np.any(cornerpoints_geo[:2] - cornerpoints_dtm[:2]) != 0:
+            print('lalülala')
+
+    # todo implement _crop and then it can be removed
+    def _get_cornerpoints(self, extent):
+        upleft = ([extent[0], extent[3]])
+        lowleft = ([extent[0], extent[2]])
+        upright = ([extent[1], extent[3]])
+        lowright = ([extent[1], extent[2]])
+        return np.array([upleft, lowleft, upright, lowright])
+
+    def _crop(self):
+        pass
+
+    def _rescale(self):
+        self.xyz_box_resized = skimage.transform.resize(self.xyz_box,
+                                                        (self.model.grid.resolution[0], self.model.grid.resolution[1]),
+                                                        mode='constant',
+                                                        anti_aliasing=False, preserve_range=True)
+
+    def show(self):
+        plt.imshow(self.topo.xyz_box[:, :, 2], extent=(self.topo.extent[:4]))
+        plt.colorbar()
+
+    def line_in_section(self, direction='y', cell_number=0):
+        if np.any(self.topo.resolution - self.model.grid.resolution[:2]) != 0:
+            # print('Gefahr')
+            cell_number_res = (self.xyz_box.shape[:2] / self.model.grid.resolution[:2] * cell_number).astype(int)
+            cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
+        if direction == 'x':
+            topoline = self.xyz_box[cell_number, :, :][:, [0, 2]].astype(int)
+        elif direction == 'y':
+            topoline = self.xyz_box[:, cell_number, :][:, [1, 2]].astype(int)
+        else:
+            raise NotImplementedError
+        return topoline
+
 
 class Surfaces(object):
     """

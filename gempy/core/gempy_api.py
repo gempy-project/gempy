@@ -81,6 +81,22 @@ def load_model_pickle(path):
     """
     return Model.load_model_pickle(path)
 
+def create_topography(geo_model:Model, filepath=None, **kwargs):
+    """
+    Loads topography from raster files or creates artificial topography
+    Parameters
+    ----------
+    geo_model: geo_model
+    filepath: path to raster file. If none, artificial topography is generated
+    kwargs: gp.utils.create_topography.Load_DEM_artificial kwargs: z_ext, resolution
+
+    Returns
+    :class:`gempy.core.Model.Topography`
+    -------
+    """
+    from gempy.core.data import Topography
+    geo_model.Topography = Topography(geo_model, filepath, **kwargs)
+
 
 def load_model(name, path=None, recompile=False):
     """
