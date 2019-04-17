@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pn
 from typing import Union
 import warnings
 from gempy.utils.meta import _setdoc
@@ -95,19 +96,31 @@ class Solution(object):
         return self
 
     def set_model_order(self):
-        for e, name_series in enumerate(self.series.df.index):
+        # TODO time this function
+        spu = self.surface_points.df['surface'].unique()
+        sps = self.surface_points.df['series'].unique()
+        sel = self.surfaces.df['surface'].isin(spu)
+       # print(sel)
+        for e, name_series in enumerate(sps):
             try:
                 sfai_series = self.scalar_field_at_surface_points[e]
                 sfai_order = np.argsort(sfai_series[np.nonzero(sfai_series)]) + 1
-                idx = self.surfaces.df[~self.surfaces.df['isBasement']].groupby('series').get_group(name_series).index
+                # select surfaces which exist in surface_points
+                group = self.surfaces.df[sel].groupby('series').get_group(name_series)
+                idx = group.index
+                surface_names = group['surface']
 
-                self.surfaces.df.loc[idx, 'order_surfaces'] = sfai_order[::-1]
+        #        print(sfai_order)
+                self.surfaces.df.loc[idx, 'order_surfaces'] = self.surfaces.df.loc[idx, 'surface'].map(
+                    pn.DataFrame(sfai_order[::-1], index=surface_names)[0])
 
             except IndexError:
                 pass
 
         self.surfaces.sort_surfaces()
         self.surfaces.set_basement()
+        self.surface_points.df['id'] = self.surface_points.df['surface'].map(self.surfaces.df.set_index('surface')['id'])
+
         return self.surfaces
 
     def set_values(self, values: Union[list, np.ndarray], compute_mesh: bool=True):
@@ -153,8 +166,6 @@ class Solution(object):
         #
         # self.scalar_field_faults = faults[1::2]
         # self.fault_blocks = faults[::2]
-
-
 
     def compute_surface_regular_grid(self, level: float, scalar_field, mask_array=None, **kwargs):
         """
@@ -236,7 +247,9 @@ class Solution(object):
         self.vertices = []
         self.edges = []
         self.padding_mask_matrix()
-        series_type = np.append('init', self.series.df['BottomRelation'])
+       # series_type = np.append('init', self.series.df['BottomRelation'])
+        series_type = self.series.df['BottomRelation']
+
         # We loop the scalar fields
         for e, scalar_field in enumerate(self.scalar_field_matrix):
             sfas = self.scalar_field_at_surface_points[e]
@@ -244,6 +257,8 @@ class Solution(object):
             sfas = sfas[np.nonzero(sfas)]
             if series_type[e] == 'Onlap':
                 mask_array = self.mask_matrix_pad[e+1]
+            elif series_type[e] == 'Fault':
+                mask_array = None
             else:
                 mask_array = self.mask_matrix_pad[e]
 

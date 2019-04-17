@@ -30,6 +30,7 @@ import copy
 import pandas as pn
 import numpy as np
 import sys
+import gempy as gp
 
 try:
     import vtk
@@ -189,6 +190,7 @@ class vtkVisualization(object):
         if key is 'h' or key is 'p':
             print('holding... Use vtk.resume to go back to the interactive window')
             self.interactor.ExitCallback()
+            self.interactor.holding = True
 
         if key is 'l':
             if self.layer_visualization is True:
@@ -658,7 +660,7 @@ class vtkVisualization(object):
         self.geo_model.modify_surface_points(index, X=[new_center[0]], Y=[new_center[1]], Z=[new_center[2]])
 
     def SphereCallbak_move_changes(self, indices):
-
+        print(indices)
         df_changes = self.geo_model.surface_points.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
         for index, df_row in df_changes.iterrows():
             new_center = df_row[['X', 'Y', 'Z']].values
@@ -762,7 +764,7 @@ class vtkVisualization(object):
         self.geo_model.calculate_orientations()
 
     def planesCallback_move_changes(self, indices):
-
+        print(indices)
         df_changes = self.geo_model.orientations.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'id']]
         for index, new_values_df in df_changes.iterrows():
             new_center = new_values_df[['X', 'Y', 'Z']].values
@@ -773,7 +775,7 @@ class vtkVisualization(object):
             new_source.Update()
 
             plane1 = self.o_rend_1.loc[index, 'val']
-            plane1.SetInputData(new_source.GetOutput())
+          #  plane1.SetInputData(new_source.GetOutput())
             plane1.SetNormal(new_normal)
             plane1.SetCenter(new_center[0], new_center[1], new_center[2])
             plane1.GetPlaneProperty().SetColor(mcolors.hex2color(
@@ -994,16 +996,19 @@ class vtkVisualization(object):
 
         if delete is True:
             self.delete_surfaces()
-        gp.compute_model(self.geo_model, compute_mesh=True)
         try:
-            v_l, s_l = gp.get_surfaces(self.geo_model)
+            gp.compute_model(self.geo_model, sort_surfaces=False, compute_mesh=True)
+        except:
+            print('Model not computed')
+        try:
+            v_l, s_l = self.geo_model.solutions.vertices, self.geo_model.solutions.edges
         except IndexError:
             try:
-                v_l, s_l = gp.get_surfaces(self.geo_model)
+                v_l, s_l = self.geo_model.solutions.vertices, self.geo_model.solutions.edges
             except IndexError:
-                v_l, s_l = gp.get_surfaces(self.geo_model)
+                v_l, s_l = self.geo_model.solutions.vertices, self.geo_model.solutions.edges
 
-        self.set_surfaces(list(v_l.values()), list(s_l.values()))
+        self.set_surfaces(v_l, s_l)
         return True
 
     @staticmethod

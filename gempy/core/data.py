@@ -543,6 +543,7 @@ class Colors:
         self.set_colors()
         return self.surfaces
 
+
 class Surfaces(object):
     """
     Class that contains the surfaces of the model and the values of each of them.
@@ -564,7 +565,7 @@ class Surfaces(object):
 
         self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'color', 'id']
         self.series = series
-
+        self.colors = Colors(self)
 
         df_ = pn.DataFrame(columns=self._columns)
         self.df = df_.astype({'surface': str, 'series': 'category',
@@ -577,10 +578,11 @@ class Surfaces(object):
         self.df['series'].cat.add_categories(['Default series'], inplace=True)
         if surface_names is not None:
             self.set_surfaces_names(surface_names)
+      #  else:
+      #      self.add_surface(['surface1', 'surface2'])
         if values_array is not None:
             self.set_surfaces_values(values_array=values_array, properties_names=properties_names)
 
-        self.colors = Colors(self)
 
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
@@ -665,7 +667,7 @@ class Surfaces(object):
             self.update_sequential_pile()
         return True
 
-    def delete_surface(self, indices: Union[int, str, list], update_id=True):
+    def delete_surface(self, indices: Union[int, str, list, np.ndarray], update_id=True):
 
         indices = np.atleast_1d(indices)
         if indices.dtype == int:
@@ -693,11 +695,11 @@ class Surfaces(object):
         #self.colors.update_colors()
 
     @_setdoc(pn.Series.replace.__doc__)
-    def rename_surfaces(self, to_replace:Union[str, list, dict], value: Union[str, list] = None, **kwargs):
+    def rename_surfaces(self, to_replace:Union[str, list, dict],  **kwargs):
         if np.isin(to_replace, self.df['surface']).any():
             print('Two surfaces cannot have the same name.')
         else:
-            self.df['surface'].replace(to_replace, value, inplace=True, **kwargs)
+            self.df['surface'].replace(to_replace,  inplace=True, **kwargs)
         return True
 
     def update_order_surfaces(self):
@@ -804,6 +806,7 @@ class Surfaces(object):
         Returns:
 
         """
+
         if id_list is None:
             id_list = self.df.reset_index().index + 1
 
@@ -1002,6 +1005,8 @@ class SurfacePoints(GeometricData):
             self.df: pn.DataFrame
 
         self.set_surface_points(coord, surface)
+     #   if coord is None or surface is None:
+     #       self.set_default_surface_points()
 
     def set_surface_points(self, coord: np.ndarray = None, surface: list = None):
         self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'surface'], dtype=float)
@@ -1190,6 +1195,9 @@ class Orientations(GeometricData):
             self.df: pn.DataFrame
 
         self.set_orientations(coord, pole_vector, orientation, surface)
+   #     if coord is None or surface is None:
+   #         self.set_default_orientation()
+
 
     def set_orientations(self, coord: np.ndarray = None, pole_vector: np.ndarray = None,
                          orientation: np.ndarray = None, surface: list = None):
@@ -2129,3 +2137,5 @@ class AdditionalData(object):
 
     def update_structure(self):
         self.structure_data.update_structure_from_input()
+        self.kriging_data.set_u_grade()
+

@@ -263,35 +263,45 @@ class InterpolatorModel(Interpolator_pro):
 
         super().__init__(surface_points, orientations, grid, surfaces, series, faults,
                                                 additional_data, **kwargs)
-        self.len_series_i = np.empty(0)
-        self.len_series_o = np.empty(0)
-        self.len_series_u = np.empty(0)
-        self.len_series_f = np.empty(0)
-        self.len_series_w = np.empty(0)
+        self.len_series_i = np.zeros(1)
+        self.len_series_o = np.zeros(1)
+        self.len_series_u = np.zeros(1)
+        self.len_series_f = np.zeros(1)
+        self.len_series_w = np.zeros(1)
 
-        n_series = self.additional_data.get_additional_data()['values']['Structure', 'number series']
+        self.set_initial_results()
+        #n_series = self.additional_data.get_additional_data()['values']['Structure', 'number series']
+
+        n_series = 1000
         self.compute_weights_ctrl = np.ones(n_series, dtype=bool)
         self.compute_scalar_ctrl = np.ones(n_series, dtype=bool)
         self.compute_block_ctrl = np.ones(n_series, dtype=bool)
 
-    def reset_flow_control(self, reset_weights=True, reset_scalar=True, reset_block=True):
+    def reset_flow_control_initial_results(self, reset_weights=True, reset_scalar=True, reset_block=True):
         n_series = self.additional_data.get_additional_data()['values']['Structure', 'number series']
         x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
 
         if reset_weights is True:
-            self.compute_weights_ctrl = np.ones(n_series, dtype=bool)
+            self.compute_weights_ctrl = np.ones(10000, dtype=bool)
             self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum())))
 
         if reset_scalar is True:
-            self.compute_scalar_ctrl = np.ones(n_series, dtype=bool)
+            self.compute_scalar_ctrl = np.ones(10000, dtype=bool)
             self.theano_graph.scalar_fields_matrix.set_value(
                 np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
 
         if reset_block is True:
-            self.compute_block_ctrl = np.ones(n_series, dtype=bool)
+            self.compute_block_ctrl = np.ones(10000, dtype=bool)
             self.theano_graph.mask_matrix.set_value(np.zeros((n_series, x_to_interp_shape), dtype='bool'))
             self.theano_graph.block_matrix.set_value(np.zeros((n_series, self.surfaces.df.iloc[:, 5:].values.shape[1],
                                                                x_to_interp_shape), dtype=self.dtype))
+
+    def set_flow_control(self):
+        # n_series = self.additional_data.get_additional_data()['values']['Structure', 'number series']
+        n_series = 1000
+        self.compute_weights_ctrl = np.ones(n_series, dtype=bool)
+        self.compute_scalar_ctrl = np.ones(n_series, dtype=bool)
+        self.compute_block_ctrl = np.ones(n_series, dtype=bool)
 
     def set_all_shared_parameters(self, reset=False):
         self.set_theano_shared_loop()
@@ -301,26 +311,40 @@ class InterpolatorModel(Interpolator_pro):
 
         if reset is True:
             #self.set_initial_results()
-            self.reset_flow_control()
+            self.reset_flow_control_initial_results()
 
     def set_theano_shared_structure(self, reset=False):
         self.set_theano_shared_loop()
         self.set_theano_shared_relations()
         self.set_theano_shared_structure_surfaces()
+        # universal grades
+        self.theano_graph.n_universal_eq_T.set_value(
+            list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')))
 
         if reset is True:
             # self.set_initial_results()
-            self.reset_flow_control()
+            self.reset_flow_control_initial_results()
 
     def _compute_len_series(self):
         self.len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
                             self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
+        if self.len_series_i.shape[0] == 0:
+            self.len_series_i = np.zeros(1, dtype=int)
 
         self.len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
             'int32')
+        if self.len_series_o.shape[0] == 0:
+            self.len_series_o = np.zeros(1, dtype=int)
+
         self.len_series_u = self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')
+        if self.len_series_u.shape[0] == 0:
+            self.len_series_u = np.zeros(1, dtype=int)
+
         self.len_series_f = self.faults.faults_relations_df.sum(axis=0).values.astype('int32')[
                             :self.additional_data.get_additional_data()['values']['Structure', 'number series']]
+        if self.len_series_f.shape[0] == 0:
+            self.len_series_f = np.zeros(1, dtype=int)
+
         self.len_series_w = self.len_series_i + self.len_series_o * 3 + self.len_series_u + self.len_series_f
 
     def set_theano_shared_loop(self):
@@ -336,6 +360,8 @@ class InterpolatorModel(Interpolator_pro):
             self.additional_data.structure_data.df.loc['values', 'number surfaces per series'].cumsum(), 0, 0). \
             astype('int32')
         self.theano_graph.n_surfaces_per_series.set_value(n_surfaces_per_serie)
+        self.theano_graph.n_universal_eq_T.set_value(
+            list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')))
 
     def set_theano_shared_weights(self):
         # TODO Used set_fault_relation
@@ -397,17 +423,127 @@ class InterpolatorModel(Interpolator_pro):
         self.theano_graph.block_matrix.set_value(np.zeros((n_series, self.surfaces.df.iloc[:, 5:].values.shape[1],
                                                            x_to_interp_shape), dtype=self.dtype))
 
-    def reset_initial_results(self, pos=None):
+    def set_initial_results_matrices(self):
+        self._compute_len_series()
+
         x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
         n_series = self.additional_data.structure_data.df.loc['values', 'number series']
 
-        self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum())))
         self.theano_graph.scalar_fields_matrix.set_value(
             np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
 
         self.theano_graph.mask_matrix.set_value(np.zeros((n_series, x_to_interp_shape), dtype='bool'))
         self.theano_graph.block_matrix.set_value(np.zeros((n_series, self.surfaces.df.iloc[:, 5:].values.shape[1],
                                                            x_to_interp_shape), dtype=self.dtype))
+
+    def modify_results_matrices_pro(self):
+
+        old_len_i = self.len_series_i
+        new_len_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
+                    self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
+        if new_len_i.shape[0] != old_len_i[0]:
+            self.set_initial_results()
+        else:
+            scalar_fields_matrix = self.theano_graph.scalar_fields_matrix.get_value()
+            mask_matrix = self.theano_graph.mask_matrix.get_value()
+            block_matrix = self.theano_graph.block_matrix.get_value()
+
+            len_i_diff = new_len_i - old_len_i
+            for e, i in enumerate(len_i_diff):
+                loc = self.grid.values_r.shape[0] + old_len_i[e]
+                i *= 2
+                if i == 0:
+                    pass
+                elif i > 0:
+                    self.theano_graph.scalar_fields_matrix.set_value(
+                        np.insert(scalar_fields_matrix, [loc], np.zeros(i), axis=1))
+                    self.theano_graph.mask_matrix.set_value(np.insert(mask_matrix, [loc], np.zeros(i), axis=1))
+                    self.theano_graph.block_matrix.set_value(np.insert(block_matrix, [loc], np.zeros(i), axis=2))
+
+                else:
+                    self.theano_graph.scalar_fields_matrix.set_value(
+                        np.delete(scalar_fields_matrix, np.arange(loc, loc+i, -1) - 1, axis=1))
+                    self.theano_graph.mask_matrix.set_value(np.delete(mask_matrix, np.arange(loc, loc+i, -1) - 1, axis=1))
+                    self.theano_graph.block_matrix.set_value(np.delete(block_matrix, np.arange(loc, loc+i, -1) - 1, axis=2))
+
+        self.modify_results_weights()
+
+    def modify_results_weights(self):
+
+        old_len_w = self.len_series_w
+        self._compute_len_series()
+        new_len_w = self.len_series_w
+        if new_len_w.shape[0] != old_len_w[0]:
+            self.set_initial_results()
+        else:
+            weights = self.theano_graph.weights_vector.get_value()
+            len_w_diff = new_len_w - old_len_w
+            for e, i in enumerate(len_w_diff):
+                print(len_w_diff, weights)
+                if i == 0:
+                    pass
+                elif i > 0:
+                    self.theano_graph.weights_vector.set_value(np.insert(weights, old_len_w[e], np.zeros(i)))
+                else:
+                    print(np.delete(weights, np.arange(old_len_w[e],  old_len_w[e] + i, -1)-1))
+                    self.theano_graph.weights_vector.set_value(np.delete(weights, np.arange(old_len_w[e],  old_len_w[e] + i, -1)-1))
+
+    def _add_to_blocks_pro(self, loc, n_col):
+        pass
+
+
+    def _delete_in_blocks(self, loc, i):
+        pass
+
+    def add_to_results(self, surface):
+
+        s = self.surfaces.df[self.surfaces.df['surface'].isin(surface)]['series']
+        loc_series = self.series.df.loc[s, 'order_series'] - 1
+        # self.interpolator.reset_initial_results(series)
+        self._add_to_blocks(loc_series)
+        self._add_to_weights(loc_series, 1)
+        self._compute_len_series()
+
+    def add_to_weights(self, surface, n_rows=1):
+      #  self._compute_len_series()
+
+        s = self.surfaces.df[self.surfaces.df['surface'].isin(surface)]['series']
+        loc_series = self.series.df.loc[s, 'order_series'] - 1
+        self._add_to_weights(loc_series, n_rows)
+
+    def _add_to_blocks(self, loc_series):
+        scalar_fields_matrix = self.theano_graph.scalar_fields_matrix.get_value()
+        mask_matrix = self.theano_graph.mask_matrix.get_value()
+        block_matrix = self.theano_graph.block_matrix.get_value()
+
+        self.theano_graph.scalar_fields_matrix.set_value(
+            np.insert(scalar_fields_matrix, self.grid.values_r.shape[0] + self.len_series_i[loc_series] * 2,
+                      np.zeros(2), axis=1))
+        self.theano_graph.mask_matrix.set_value(
+            np.insert(mask_matrix, self.grid.values_r.shape[0] + self.len_series_i[loc_series] * 2, np.zeros(2), axis=1))
+        self.theano_graph.block_matrix.set_value(
+            np.insert(block_matrix, self.grid.values_r.shape[0] + self.len_series_i[loc_series] * 2, np.zeros(2), axis=2))
+
+    def _add_to_weights(self, loc_series, n_rows):
+
+        weights = self.theano_graph.weights_vector.get_value()
+        self.theano_graph.weights_vector.set_value(np.insert(weights, self.len_series_w[loc_series],
+                                                             np.zeros(n_rows)))
+
+
+    # def reset_initial_results(self, pos=None):
+    #     x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
+    #     n_series = self.additional_data.structure_data.df.loc['values', 'number series']
+    #
+    #     self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum())))
+    #
+    #     scalar_fields_matrix = self.theano_graph.scalar_fields_matrix.get_value()
+    #     scalar_fields_matrix[pos] = 0
+    #     self.theano_graph.scalar_fields_matrix.set_value(scalar_fields_matrix, dtype=self.dtype)
+    #
+    #     self.theano_graph.mask_matrix.set_value(np.zeros((n_series, x_to_interp_shape), dtype='bool'))
+    #     self.theano_graph.block_matrix.set_value(np.zeros((n_series, self.surfaces.df.iloc[:, 5:].values.shape[1],
+    #                                                        x_to_interp_shape), dtype=self.dtype))
 
     def get_python_input_block(self, append_control=True, fault_drift=None):
         """
