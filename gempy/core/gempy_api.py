@@ -55,13 +55,13 @@ def create_model(project_name='default_project'):
 
 
 @_setdoc(Model.save_model_pickle.__doc__)
-def save_model(model: Model, path=None):
+def save_model_to_pickle(model: Model, path=None):
 
     model.save_model_pickle(path)
     return True
 
 @_setdoc(Model.save_model.__doc__)
-def save_model(model: Model, name, path=None):
+def save_model(model: Model, name=None, path=None):
 
     model.save_model(name, path)
     return True
@@ -175,17 +175,17 @@ def load_model(name, path=None, recompile=False):
     # update structure from loaded input
     geo_model.additional_data.structure_data.update_structure_from_input()
 
-    # load solutions in npy files
-    geo_model.solutions.lith_block = np.load(f'{path}/{name}_lith_block.npy')
-    geo_model.solutions.scalar_field_lith = np.load(f"{path}/{name}_scalar_field_lith.npy")
-    geo_model.solutions.fault_blocks = np.load(f'{path}/{name}_fault_blocks.npy')
-    geo_model.solutions.scalar_field_faults = np.load(f'{path}/{name}_scalar_field_faults.npy')
-    geo_model.solutions.gradient = np.load(f'{path}/{name}_gradient.npy')
-    geo_model.solutions.values_block = np.load(f'{path}/{name}_values_block.npy')
-
-    geo_model.solutions.additional_data.kriging_data.df = geo_model.additional_data.kriging_data.df
-    geo_model.solutions.additional_data.options.df = geo_model.additional_data.options.df
-    geo_model.solutions.additional_data.rescaling_data.df = geo_model.additional_data.rescaling_data.df
+    # # load solutions in npy files
+    # geo_model.solutions.lith_block = np.load(f'{path}/{name}_lith_block.npy')
+    # geo_model.solutions.scalar_field_lith = np.load(f"{path}/{name}_scalar_field_lith.npy")
+    # geo_model.solutions.fault_blocks = np.load(f'{path}/{name}_fault_blocks.npy')
+    # geo_model.solutions.scalar_field_faults = np.load(f'{path}/{name}_scalar_field_faults.npy')
+    # geo_model.solutions.gradient = np.load(f'{path}/{name}_gradient.npy')
+    # geo_model.solutions.values_block = np.load(f'{path}/{name}_values_block.npy')
+    #
+    # geo_model.solutions.additional_data.kriging_data.df = geo_model.additional_data.kriging_data.df
+    # geo_model.solutions.additional_data.options.df = geo_model.additional_data.options.df
+    # geo_model.solutions.additional_data.rescaling_data.df = geo_model.additional_data.rescaling_data.df
 
 
     if recompile is True:
@@ -486,7 +486,7 @@ def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=
 
    # geo_model.interpolator.set_theano_graph(geo_model.interpolator.create_theano_graph())
     geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True)
-#    geo_model.interpolator.reset_flow_control()
+#    geo_model.interpolator.reset_flow_control_initial_results()
     geo_model.interpolator.set_all_shared_parameters(reset=True)
 
     if compile_theano is True:
@@ -548,7 +548,7 @@ def get_kriging_parameters_DEP(model: Model):
 
 # region Computing the model
 def compute_model(model: Model, compute_mesh=True, reset_weights=False, reset_scalar=False, reset_block=False,
-                  debug=False) -> Solution:
+                  sort_surfaces=True, debug=False) -> Solution:
     """
     Computes the geological model and any extra output given in the additional data option.
 
@@ -567,7 +567,7 @@ def compute_model(model: Model, compute_mesh=True, reset_weights=False, reset_sc
 
     # TODO: Assert frame by frame that all data is like is supposed. Otherwise,
     # return clear messages
-    model.interpolator.reset_flow_control(reset_weights, reset_scalar, reset_block)
+    model.interpolator.reset_flow_control_initial_results(reset_weights, reset_scalar, reset_block)
 
     i = model.interpolator.get_python_input_block(append_control=True, fault_drift=None)
 
@@ -579,7 +579,7 @@ def compute_model(model: Model, compute_mesh=True, reset_weights=False, reset_sc
     if debug is True:
         return sol
     else:
-        model.solutions.set_values(sol, compute_mesh=compute_mesh)
+        model.solutions.set_solution(sol, compute_mesh=compute_mesh, sort_surfaces=sort_surfaces)
 
         return model.solutions
 
@@ -609,7 +609,7 @@ def compute_model_at(new_grid: Union[Grid, ndarray], model: Model, compute_mesh=
 
 # region Solution
 # TODO compute, set? Right now is computed always
-def get_surfaces(model: Model):
+def get_meshes(model: Model):
     """
     gey vertices and simplices of the surface_points for its vtk visualization and further
     analysis
@@ -818,13 +818,14 @@ def activate_interactive_df(geo_model: Model, plot_object=None):
         from gempy.core.qgrid_integration import QgridModelIntegration
     except ImportError:
         raise ImportError('qgrid package is not installed. No interactive dataframes available.')
+    geo_model.qi = QgridModelIntegration(geo_model, plot_object)
+    # try:
+    #     isinstance(geo_model.qi, QgridModelIntegration)
+    #     # print('I am here')
+    #     # geo_model.__delattr__('qi')
+    #     # geo_model.qi = QgridModelIntegration(geo_model, plot_object)
+    #     pass
+    # except AttributeError:
 
-    try:
-        isinstance(geo_model.qi, QgridModelIntegration)
-        print('I am here')
-        geo_model.__delattr__('qi')
-        geo_model.qi = QgridModelIntegration(geo_model, plot_object)
-    except AttributeError:
-        geo_model.qi = QgridModelIntegration(geo_model, plot_object)
 
     return geo_model.qi
