@@ -95,7 +95,7 @@ def create_topography(geo_model:Model, filepath=None, **kwargs):
     -------
     """
     from gempy.core.data import Topography
-    geo_model.Topography = Topography(geo_model, filepath, **kwargs)
+    geo_model.topography = Topography(geo_model, filepath, **kwargs)
 
 
 def load_model(name, path=None, recompile=False):

@@ -650,6 +650,7 @@ class Model(DataMutation_pro):
 
         self.meta = MetaData(project_name=project_name)
         super().__init__()
+        self.topography = None
 
     def __repr__(self):
         return self.meta.project_name + ' ' + self.meta.date

@@ -561,7 +561,7 @@ class Topography:
         self._rescale()
 
     def load_from_gdal(self, filepath):
-        self.topo = Load_DEM_GDAL(filepath,model=self.model)
+        self.topo = Load_DEM_GDAL(filepath, model=self.model)
 
     def create_random(self,**kwargs):
         self.topo = Load_DEM_artificial(self.model, **kwargs)

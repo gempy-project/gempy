@@ -100,7 +100,7 @@ class Load_DEM_GDAL():
         return np.array([upleft, lowleft, upright, lowright])
 
 class Load_DEM_artificial():
-    def __init__(self, model, resolution=None, z_ext=None):
+    def __init__(self, model, fd=2.2, resolution=None, z_ext=None):
         """resolution:np 2D array with extent in X and Y direction"""
         self.model = model
         if resolution is None:
@@ -116,14 +116,14 @@ class Load_DEM_artificial():
             self.z_ext = z_ext
 
         self.extent = np.concatenate((self.model.grid.extent[:4], self.z_ext))
-        topo = self.fractalGrid(N=self.resolution.max())
+        topo = self.fractalGrid(fd, N=self.resolution.max())
         topo = np.interp(topo, (topo.min(), topo.max()), (self.z_ext))
 
         self.dem_zval = topo[:self.resolution[0], :self.resolution[1]]  # crop fractal grid with resolution
 
         self.create_topo_array()
 
-    def fractalGrid(self, fd=2.2, N=256):
+    def fractalGrid(self, fd, N=256):
         '''
         Copied of https://github.com/samthiele/pycompass/blob/master/examples/3_Synthetic%20Examples.ipynb
 
