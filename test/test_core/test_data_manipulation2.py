@@ -69,3 +69,8 @@ def test_add_surface_points():
     mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
     mm.add_surface_points(400, 300, -500, 'foo2')
 
+
+def test_add_default_orientation():
+    mm = gp.DataMutation_pro()
+    mm.set_default_surfaces()
+    mm.set_default_orientation()

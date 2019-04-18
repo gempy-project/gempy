@@ -16,8 +16,10 @@ class QgridModelIntegration(object):
         self._geo_model = geo_model
         self._plot_object = plot_object
         if plot_object is not None:
-            self._plot_object.set_surface_points()
-            self._plot_object.set_orientations()
+            # Check if the window is already open
+            if not hasattr(plot_object, 'interactor'):
+                self._plot_object.set_surface_points()
+                self._plot_object.set_orientations()
 
         self.qgrid_fo = self.set_interactive_df('surfaces')
         self.qgrid_se = self.set_interactive_df('series')
@@ -63,6 +65,12 @@ class QgridModelIntegration(object):
                                  ' surface_points, orientations,'
                                   'options, kriging or rescale. UPDATE message')
         # return self.qgrid_widget
+
+    def set_vtk_object(self, vtk_object):
+        self._plot_object = vtk_object
+        if not hasattr(vtk_object, 'interactor'):
+            self._plot_object.set_surface_points()
+            self._plot_object.set_orientations()
 
     def update_qgrd_objects(self):
         qgrid_objects = [self.qgrid_fo, self.qgrid_se, self.qgrid_fa, self.qgrid_fr, self.qgrid_in,
@@ -246,7 +254,9 @@ class QgridModelIntegration(object):
                 print(widget)
 
             # This data frame is quite independent to anything else:
-            faults_object.faults_relations_df.update(qgrid_widget.get_changed_df())
+            self._geo_model.set_fault_relation(qgrid_widget.get_changed_df().values)
+
+            # faults_object.faults_relations_df.update(qgrid_widget.get_changed_df())
 
             self.update_qgrd_objects()
 
@@ -402,7 +412,7 @@ class QgridModelIntegration(object):
                 print(event)
                 print(widget)
             if event['column'] == 'surface':
-                self._geo_model.rename_surfaces(event['old'], event['new'])
+                self._geo_model.rename_surfaces({event['old']: event['new']})
             if event['column'] == 'series':
                 idx = event['index']
                 new_series = event['new']
@@ -470,7 +480,7 @@ class QgridModelIntegration(object):
             idx = event['indices']
             cat_idx = qgrid_widget.df.loc[idx, 'series_names']
 
-            series_object.delete_series(cat_idx)
+            self._geo_model.delete_series(cat_idx)
 
             qgrid_widget.df = series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype(
                 {'series_names': str})
@@ -491,7 +501,7 @@ class QgridModelIntegration(object):
             if event['column'] == 'BottomRelation':
                 #series_object.df.loc[cat_idx, 'BottomRelation'] = event['new']
                 self._geo_model.set_bottom_relation(cat_idx, event['new'])
-            if event['column'] == 'order_surfaces':
+            if event['column'] == 'order_series':
                 idx = event['index']
                 try:
                     self._geo_model.modify_order_series(int(event['new']), idx)

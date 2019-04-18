@@ -38,7 +38,7 @@ class DataMutation_pro(object):
 
         self.solutions = Solution(self.additional_data, self.grid, self.surface_points, self.series, self.surfaces)
 
-    def _add_valid_idx(self, idx):
+    def _add_valid_idx_s(self, idx):
         if idx is None:
             idx = self.surface_points.df.index.max()
             if idx is np.nan:
@@ -50,9 +50,29 @@ class DataMutation_pro(object):
 
         return idx
 
-    def update_structure(self):
-        """Update python and theano structure paramteres"""
+    def _add_valid_idx_o(self, idx):
+        if idx is None:
+            idx = self.orientations.df.index.max()
+            if idx is np.nan:
+                idx = 0
+            else:
+                idx += 1
+        else:
+            assert isinstance(idx, (int, list, np.ndarray)), 'idx must be an int or a list of ints'
+
+        return idx
+
+    def update_structure(self, update_theano=None):
+        """Update python and theano structure paramteres
+        Args:
+            update_theano: str['matrices', 'weights']
+        """
+
         self.additional_data.update_structure()
+        if update_theano == 'matrices':
+            self.interpolator.modify_results_matrices_pro()
+        elif update_theano == 'weights':
+            self.interpolator.modify_results_weights()
         self.interpolator.set_theano_shared_structure()
 
     # region Grid
@@ -71,6 +91,7 @@ class DataMutation_pro(object):
     def set_regular_grid(self, extent, resolution):
         self.grid.set_regular_grid(extent, resolution)
         self.rescaling.rescale_data()
+        self.interpolator.set_initial_results_matrices()
 
     def set_custom_grid(self):
         pass
@@ -96,6 +117,14 @@ class DataMutation_pro(object):
         self.surfaces.df['series'].cat.add_categories(series_list, inplace=True)
         self.surface_points.df['series'].cat.add_categories(series_list, inplace=True)
         self.orientations.df['series'].cat.add_categories(series_list, inplace=True)
+
+        self.interpolator.set_flow_control()
+        # self.interpolator.compute_weights_ctrl = np.append(self.interpolator.compute_weights_ctrl,
+        #                                                    np.ones(series_list.shape[0]))
+        # self.interpolator.compute_scalar_ctrl = np.append(self.interpolator.compute_scalar_ctrl,
+        #                                                   np.ones(series_list.shape[0]))
+        # self.interpolator.compute_block_ctrl = np.append(self.interpolator.compute_block_ctrl,
+        #                                                  np.ones(series_list.shape[0]))
         #self.update_from_series()
 
     def delete_series(self, indices: Union[str, list], update_order_series=True):
@@ -116,6 +145,7 @@ class DataMutation_pro(object):
         self.map_data_df(self.orientations.df)
 
         self.interpolator.set_theano_shared_relations()
+        self.interpolator.set_flow_control()
        # self.update_from_series()
 
     def rename_series(self, new_categories: Union[dict, list]):
@@ -138,6 +168,7 @@ class DataMutation_pro(object):
         self.map_data_df(self.orientations.df)
         self.orientations.sort_table()
 
+        self.interpolator.set_flow_control()
         self.update_structure()
 
     # endregion
@@ -175,7 +206,6 @@ class DataMutation_pro(object):
         # # TODO this update from series is alsod related to the move in the pile
         # self.update_from_series()
 
-
     @_setdoc([Faults.set_is_fault.__doc__])
     def set_is_finite_fault(self, series_fault=None, toggle: bool = False):
         s = self.faults.set_is_finite_fault(series_fault, toggle)  # change df in Fault obj
@@ -206,7 +236,7 @@ class DataMutation_pro(object):
         self.update_structure()
         return self.surfaces
 
-    def delete_surfaces(self, indices: Union[str, list], update_id=True):
+    def delete_surfaces(self, indices: Union[str, list, np.ndarray], update_id=True):
         indices = np.atleast_1d(indices)
         self.surfaces.delete_surface(indices, update_id)
 
@@ -221,8 +251,9 @@ class DataMutation_pro(object):
         self.map_data_df(self.orientations.df)
         return self.surfaces
 
-    def rename_surfaces(self, to_replace: Union[list, dict], value: Union[list] = None, **kwargs):
-        self.surfaces.rename_surfaces(to_replace, value, *kwargs)
+    def rename_surfaces(self, to_replace: Union[dict], **kwargs):
+
+        self.surfaces.rename_surfaces(to_replace, **kwargs)
         self.surface_points.df['surface'].cat.rename_categories(to_replace, inplace=True)
         self.orientations.df['surface'].cat.rename_categories(to_replace, inplace=True)
         return self.surfaces
@@ -312,8 +343,8 @@ class DataMutation_pro(object):
     @plot_add_surface_points
     def add_surface_points(self, X, Y, Z, surface, idx: Union[int, list, np.ndarray] = None,
                            recompute_rescale_factor=False, **kwargs):
-
-        idx = self._add_valid_idx(idx)
+        surface = np.atleast_1d(surface)
+        idx = self._add_valid_idx_s(idx)
         self.surface_points.add_surface_points(X, Y, Z, surface, idx)
 
         if recompute_rescale_factor is True or idx < 20:
@@ -323,13 +354,21 @@ class DataMutation_pro(object):
             # This branch only recompute the added point
             self.rescaling.set_rescaled_surface_points(idx)
 
-        self.update_structure()
+        print(surface, surface.ndim)
+        # Add results has to be called before we update the theano len_series_i
+        # if surface.ndim == 1:
+        #     self.interpolator.add_to_results(surface)
+        # else:
+        #     self.interpolator.set_initial_results()
+        #self.interpolator.modify_results_matrices_pro()
+        self.update_structure(update_theano='matrices')
+
         return self.surface_points, idx
 
     @plot_delete_surface_points
     def delete_surface_points(self, indices: Union[list, int], **kwargs):
         self.surface_points.del_surface_points(indices)
-        self.update_structure()
+        self.update_structure(update_theano='matrices')
         return self.surface_points
 
     @plot_move_surface_points
@@ -353,7 +392,7 @@ class DataMutation_pro(object):
         keys = list(kwargs.keys())
         is_surface = np.isin('surface', keys).all()
         if is_surface == True:
-            self.update_structure()
+            self.update_structure(update_theano='matrices')
         return self.surface_points
 
     # endregion
@@ -373,23 +412,27 @@ class DataMutation_pro(object):
                          orientation: np.ndarray = None, idx=None, recompute_rescale_factor=False,
                          **kwargs):
 
-        idx = self._add_valid_idx(idx)
+        surface = np.atleast_1d(surface)
+        idx = self._add_valid_idx_o(idx)
         self.orientations.add_orientation(X, Y, Z, surface, pole_vector=pole_vector,
                                           orientation=orientation, idx=idx)
-        if recompute_rescale_factor is True:
+        if recompute_rescale_factor is True or idx < 5:
             # This will rescale all data again
             self.rescaling.rescale_data()
         else:
             # This branch only recompute the added point
             self.rescaling.set_rescaled_orientations(idx)
 
-        self.update_structure()
+        #self.interpolator.add_to_weights(surface, n_rows=3)
+        #self.interpolator.modify_results_weights()
+        self.update_structure(update_theano='weights')
+
         return self.orientations, idx
 
     @plot_delete_orientations
     def delete_orientations(self, indices: Union[list, int], **kwargs ):
         self.orientations.del_orientation(indices)
-        self.update_structure()
+        self.update_structure(update_theano='weights')
         return self.orientations
 
     @plot_move_orientations
@@ -401,7 +444,7 @@ class DataMutation_pro(object):
         self.orientations.modify_orientations(indices, **kwargs)
 
         if is_surface:
-            self.update_structure()
+            self.update_structure(update_theano='weights')
 
         return self.orientations
     # endregion
@@ -583,7 +626,7 @@ class DataMutation_pro(object):
 
     def update_to_interpolator(self, reset=True):
         self.interpolator.set_all_shared_parameters()
-        self.interpolator.reset_flow_control()
+        self.interpolator.reset_flow_control_initial_results()
 
     # endregion
 
@@ -694,17 +737,16 @@ class Model(DataMutation_pro):
         self.additional_data.rescaling_data.df.to_csv(f'{path}/{name}_rescaling_data.csv')
         self.additional_data.options.df.to_csv(f'{path}/{name}_options.csv')
 
-        # save resolution and extent as npy
-        np.save(f'{path}/{name}_extent.npy', self.grid.extent)
-        np.save(f'{path}/{name}_resolution.npy', self.grid.resolution)
-
-        # save solutions as npy
-        np.save(f'{path}/{name}_lith_block.npy' ,self.solutions.lith_block)
-        np.save(f'{path}/{name}_scalar_field_lith.npy', self.solutions.scalar_field_lith)
-        np.save(f'{path}/{name}_fault_blocks.npy', self.solutions.fault_blocks)
-        np.save(f'{path}/{name}_scalar_field_faults.npy', self.solutions.scalar_field_faults)
-        np.save(f'{path}/{name}_gradient.npy', self.solutions.gradient)
-        np.save(f'{path}/{name}_values_block.npy', self.solutions.values_block)
+        # # save resolution and extent as npy
+        # np.save(f'{path}/{name}_extent.npy', self.grid.extent)
+        # np.save(f'{path}/{name}_resolution.npy', self.grid.resolution)
+        #
+        # # save solutions as npy
+        # np.save(f'{path}/{name}_lith_block.npy' ,self.solutions.lith_block)
+        # np.save(f'{path}/{name}_scalar_field_lith.npy', self.solutions.scalar_field_matrix)
+        #
+        # np.save(f'{path}/{name}_gradient.npy', self.solutions.gradient)
+        # np.save(f'{path}/{name}_values_block.npy', self.solutions.matr)
 
         return True
 

@@ -171,8 +171,8 @@ class TheanoGraphPro(object):
         # Shared
         # ------
         self.is_finite_ctrl = theano.shared(np.zeros(3, dtype='int32'), 'The series (fault) is finite')
-        self.is_finite = theano.shared(np.ones(3, dtype='int32'), 'The series (fault) is finite')
-        self.inf_factor = self.is_finite * 10
+        # self.is_finite = theano.shared(np.ones(3, dtype='int32'), 'The series (fault) is finite')
+        self.inf_factor = 0 #self.is_finite * 10
         self.is_fault = theano.shared(np.zeros(5000, dtype=bool))
 
         # COMPUTE LOOP
@@ -251,7 +251,7 @@ class TheanoGraphPro(object):
                 dict(initial=self.block_matrix),
                 dict(initial=self.weights_vector),
                 dict(initial=self.scalar_fields_matrix),
-                dict(initial=T.zeros([self.compute_weights_ctrl.shape[0], self.n_surfaces_per_series[-1]])),
+                dict(initial=T.zeros([self.is_erosion.shape[0], self.n_surfaces_per_series[-1]])),
                 dict(initial=self.mask_matrix),
 
             ],  # This line may be used for the df network
@@ -1356,9 +1356,8 @@ class TheanoGraphPro(object):
         if 'weights' in self.verbose:
             weights = theano.printing.Print('weights foo')(weights)
 
-        Z_x = tif.ifelse(compute_scalar_ctr,
-                                   self.compute_scalar_field(weights, self.grid_val_T),
-                                   scalar_field_matrix[n_series])
+        Z_x = tif.ifelse(compute_scalar_ctr, self.compute_scalar_field(weights, self.grid_val_T),
+                         scalar_field_matrix[n_series])
 
         scalar_field_at_surface_points = self.get_scalar_field_at_surface_points(Z_x, self.npf_op)
 
