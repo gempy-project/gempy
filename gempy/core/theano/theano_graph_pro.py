@@ -56,6 +56,7 @@ class TheanoGraphPro(object):
         self.dot_version = False
 
         theano.config.floatX = dtype
+        theano.config.optimizer = optimizer
 
         # CONSTANT PARAMETERS FOR ALL SERIES
         # KRIGING
@@ -230,8 +231,8 @@ class TheanoGraphPro(object):
 
     def compute_fault_block(self, Z_x, scalar_field_at_surface_points, values, n_series, grid):
         grid_val = self.x_to_interpolate(grid)
-        finite_faults_sel = self.select_finite_faults(n_series, grid_val)
-        return self.export_fault_block(Z_x, scalar_field_at_surface_points, values, finite_faults_sel)
+        finite_faults_ellipse = self.select_finite_faults(n_series, grid_val)
+        return self.export_fault_block(Z_x, scalar_field_at_surface_points, values, finite_faults_ellipse)
 
     def compute_final_block(self, mask, block):
 
@@ -1076,22 +1077,28 @@ class TheanoGraphPro(object):
         ctr = T.mean(fault_points, axis=1)
         x = fault_points - ctr.reshape((-1, 1))
         M = T.dot(x, x.T)
-        U = T.nlinalg.svd(M)[2]
-        rotated_x = T.dot(grid, U)
-        rotated_fault_points = T.dot(fault_points.T, U)
+        U, D, V = T.nlinalg.svd(M)#[2]
+        rotated_x = T.dot(T.dot(grid, U), V)
+        rotated_fault_points = T.dot(T.dot(fault_points.T, U), V)
         rotated_ctr = T.mean(rotated_fault_points, axis=0)
-        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()) / 2 + self.inf_factor[
-            n_series - 1]
-        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()) / 2 + self.inf_factor[
-            n_series - 1]
-        sel = T.lt((rotated_x[:, 0] - rotated_ctr[0]) ** 2 / a_radio ** 2 + (
-                rotated_x[:, 1] - rotated_ctr[1]) ** 2 / b_radio ** 2,
-                   1)
+        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()) / 2  #+ self.inf_factor[
+            #n_series - 1]
+        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()) / 2 #+ self.inf_factor[
+           # n_series - 1]
+        # sel = T.lt((rotated_x[:, 0] - rotated_ctr[0]) ** 2 / a_radio ** 2 + (
+        #         rotated_x[:, 1] - rotated_ctr[1]) ** 2 / b_radio ** 2,
+        #            1)
+        #
+        # if "select_finite_faults" in self.verbose:
+        #     sel = theano.printing.Print("scalar_field_iter")(sel)
+
+        ellipse_factor = (rotated_x[:, 0] - rotated_ctr[0])**2 / a_radio**2 + \
+            (rotated_x[:, 1] - rotated_ctr[1])**2 / b_radio**2
 
         if "select_finite_faults" in self.verbose:
-            sel = theano.printing.Print("scalar_field_iter")(sel)
+            ellipse_factor = theano.printing.Print("h")(ellipse_factor)
 
-        return sel
+        return ellipse_factor
 
     def compare(self, a, b, slice_init, Z_x, l, n_surface, drift):
         """
@@ -1133,7 +1140,8 @@ class TheanoGraphPro(object):
         #      n_surface = theano.printing.Print("n_surface")(n_surface)
         return sigm
 
-    def export_fault_block(self, Z_x, scalar_field_at_surface_points, values_properties_op, finite_faults_sel, slope=50, offset_slope=5000):
+    def export_fault_block(self, Z_x, scalar_field_at_surface_points, values_properties_op, finite_faults_sel,
+                           slope=50, offset_slope=950):
         """
         Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
 
@@ -1167,6 +1175,27 @@ class TheanoGraphPro(object):
         # This is the different line with respect layers
         l = T.switch(finite_faults_sel, offset_slope / (max_pot - min_pot), slope / (max_pot - min_pot))
         #  l = theano.printing.Print("l")(l)
+
+
+        # Alex Schaaf contribution:
+        # ellipse_factor = self.select_finite_faults()
+        ellipse_factor_rectified = T.switch(finite_faults_sel < 1., finite_faults_sel, 1.)
+
+        if "select_finite_faults" in self.verbose:
+            ellipse_factor_rectified = theano.printing.Print("h_factor_rectified")(ellipse_factor_rectified)
+
+        if "select_finite_faults" in self.verbose:
+            min_pot = theano.printing.Print("min_pot")(min_pot)
+            max_pot = theano.printing.Print("max_pot")(max_pot)
+
+        self.not_l = theano.shared(50.)
+        self.ellipse_factor_exponent = theano.shared(2.)
+        # sigmoid_slope = (self.not_l * (1 / ellipse_factor_rectified)**3) / (max_pot - min_pot)
+        sigmoid_slope = offset_slope - offset_slope * ellipse_factor_rectified ** self.ellipse_factor_exponent + self.not_l
+        # l = T.switch(self.select_finite_faults(), 5000 / (max_pot - min_pot), 50 / (max_pot - min_pot))
+
+        if "select_finite_faults" in self.verbose:
+            sigmoid_slope = theano.printing.Print("l")(sigmoid_slope)
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
@@ -1202,7 +1231,7 @@ class TheanoGraphPro(object):
             outputs_info=None,
             sequences=[dict(input=scalar_field_iter, taps=[0, 1]),
                        T.arange(0, n_surface_op_float_sigmoid.shape[1], 2, dtype='int64')],
-            non_sequences=[Z_x, l, n_surface_op_float_sigmoid, drift],
+            non_sequences=[Z_x, sigmoid_slope, n_surface_op_float_sigmoid, drift],
             name='Looping compare',
             profile=False,
             return_list=False)

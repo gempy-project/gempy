@@ -217,7 +217,7 @@ class Solution(object):
                 mask_series_reshape, True)).T)
 
     @staticmethod
-    def find_interfaces_from_block_bottoms(block, value, shift=3):
+    def find_interfaces_from_block_bottoms(block, value, shift=2):
         """
         Find the voxel at an interface. We shift left since gempy is based on bottoms
 
