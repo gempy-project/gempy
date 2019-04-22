@@ -179,9 +179,16 @@ class DataMutation_pro(object):
 
     @_setdoc([Faults.set_is_fault.__doc__])
     def set_is_fault(self, series_fault: Union[str, list] = None, toggle: bool = False, change_color: bool = True):
-        self.faults.set_is_fault(series_fault, toggle)
+        series_fault = np.atleast_1d(series_fault)
 
-        self.series.set_bottom_relation(series_fault, 'Fault')
+        self.faults.set_is_fault(series_fault, toggle=toggle)
+
+        if toggle is True:
+            already_fault = self.series.df.loc[series_fault, 'BottomRelation'] == 'Fault'
+            self.series.df.loc[series_fault[already_fault], 'BottomRelation'] = 'Erosion'
+            self.series.df.loc[series_fault[~already_fault], 'BottomRelation'] = 'Fault'
+        else:
+            self.series.df.loc[series_fault, 'BottomRelation'] = 'Fault'
 
         self.additional_data.structure_data.set_number_of_faults()
         self.interpolator.set_theano_shared_relations()
@@ -211,6 +218,7 @@ class DataMutation_pro(object):
         s = self.faults.set_is_finite_fault(series_fault, toggle)  # change df in Fault obj
         # change shared theano variable for infinite factor
         self.interpolator.set_theano_shared_is_finite()
+        return s
 
     def set_fault_relation(self, rel_matrix):
         self.faults.set_fault_relation(rel_matrix)
@@ -634,7 +642,7 @@ class DataMutation_pro(object):
         d['series'] = d['surface'].map(self.surfaces.df.set_index('surface')['series'])
         d['id'] = d['surface'].map(self.surfaces.df.set_index('surface')['id'])
         d['order_series'] = d['series'].map(self.series.df['order_series'])
-        d['isFault'] = d['series'].map(self.faults.df['isFault'])
+      #  d['isFault'] = d['series'].map(self.faults.df['isFault'])
 
     def update_from_additional_data(self):
         pass

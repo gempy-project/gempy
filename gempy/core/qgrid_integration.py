@@ -31,6 +31,12 @@ class QgridModelIntegration(object):
         self.qgrid_kr = self.set_interactive_df('kriging')
         self.qgrid_re = self.set_interactive_df('rescale')
 
+    def update_plot(self):
+        if self._plot_object is not None:
+            self._plot_object.update_model()
+        else:
+            pass
+
     def set_interactive_df(self, data_type: str):
         if data_type == 'surfaces':
             self.qgrid_fo = self.create_surfaces_qgrid()
@@ -73,7 +79,8 @@ class QgridModelIntegration(object):
             self._plot_object.set_orientations()
 
     def update_qgrd_objects(self):
-        qgrid_objects = [self.qgrid_fo, self.qgrid_se, self.qgrid_fa, self.qgrid_fr, self.qgrid_in,
+        qgrid_objects = [self.qgrid_fo, self.qgrid_se, self.qgrid_fa, #self.qgrid_fr,
+                         self.qgrid_in,
                          self.qgrid_or, self.qgrid_op, self.qgrid_kr, self.qgrid_re]
 
         for e, qgrid_object in enumerate(qgrid_objects):
@@ -154,12 +161,14 @@ class QgridModelIntegration(object):
                 #      cat_idx = qgrid_widget.df.loc[idx, 'series_names']
 
                 self._geo_model.set_is_fault([idx], toggle=True)
+                self.update_plot()
 
             if event['column'] == 'isFinite':
                 idx = event['index']
                 #      cat_idx = qgrid_widget.df.loc[idx, 'series_names']
 
                 self._geo_model.set_is_finite_fault([idx], toggle=True)
+                self.update_plot()
 
             self.update_qgrd_objects()
             self.qgrid_fr._rebuild_widget()
@@ -184,6 +193,7 @@ class QgridModelIntegration(object):
             value = event['new']
             self._geo_model.modify_rescaling_parameters(event['column'], value)
             self.update_qgrd_objects()
+            self.update_plot()
 
         qgrid_widget.on('cell_edited', handle_row_edit)
         return qgrid_widget
@@ -209,6 +219,7 @@ class QgridModelIntegration(object):
                 value = event['new']
             self._geo_model.modify_options(event['column'], value)
             self.update_qgrd_objects()
+            self.update_plot()
 
         qgrid_widget.on('cell_edited', handle_row_edit)
         return qgrid_widget
@@ -230,6 +241,7 @@ class QgridModelIntegration(object):
 
             self._geo_model.modify_kriging_parameters(event['column'], event['new'])
             self.update_qgrd_objects()
+            self.update_plot()
 
         qgrid_widget.on('cell_edited', handle_row_edit)
         return qgrid_widget
@@ -259,7 +271,7 @@ class QgridModelIntegration(object):
             # faults_object.faults_relations_df.update(qgrid_widget.get_changed_df())
 
             self.update_qgrd_objects()
-
+            self.update_plot()
         qgrid_widget.on('cell_edited', handle_set_fault_relation)
         return qgrid_widget
 
@@ -507,6 +519,8 @@ class QgridModelIntegration(object):
                     self._geo_model.modify_order_series(int(event['new']), idx)
                 except AssertionError:
                     pass
+
+            self.update_plot()
 
          #   self._geo_model.update_from_series(rename_series={event['old']: event['new']})
             # Hack for the faults relations

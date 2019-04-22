@@ -1177,7 +1177,10 @@ class GemPyvtkInteract(vtkVisualization):
             self.update_surfaces_real_time()
         self.interactor.Render()
 
-
+    def update_model(self):
+        if self.real_time is True:
+            self.update_surfaces_real_time()
+            self.interactor.Render()
 
 
 class steno3D():

@@ -237,7 +237,11 @@ class Series(object):
 
     def set_bottom_relation(self, series: Union[str, list], bottom_relation: Union[str, list]):
         self.df.loc[series, 'BottomRelation'] = bottom_relation
-        if bottom_relation == 'Fault':
+
+        if self.faults.df.loc[series, 'isFault'] is True:
+            self.faults.set_is_fault(series, toggle=True)
+
+        elif bottom_relation == 'Fault':
             self.faults.df.loc[series, 'isFault'] = True
 
     def add_series(self, series_list: Union[str, list], update_order_series=True):
@@ -354,7 +358,7 @@ class Faults(object):
         self.faults_relations_df.sort_index(inplace=True)
         self.faults_relations_df.sort_index(axis=1, inplace=True)
 
-    def set_is_fault(self, series_fault:Union[str, list]=None, toggle=False):
+    def set_is_fault(self, series_fault: Union[str, list, np.ndarray] = None, toggle=False):
         """
         Set a flag to the series that are df.
 
@@ -375,6 +379,7 @@ class Faults(object):
                 self.df.loc[series_fault, 'isFault'] = self.df.loc[series_fault, 'isFault'] ^ True
             else:
                 self.df.loc[series_fault, 'isFault'] = self.df.loc[series_fault, 'isFault']
+        self.df['isFinite'] = np.bitwise_and(self.df['isFault'], self.df['isFinite'])
         self.n_faults = self.df['isFault'].sum()
 
         return self.df
@@ -2100,6 +2105,18 @@ class KrigingParameters(object):
 
         else:
             self.df.loc['values', property] = value
+
+    def str2int_u_grage(self, **kwargs):
+        u_grade_sep = kwargs.get('u_grade_sep', ',')
+        value = self.df.loc['values', 'drift equations']
+        if type(value) is str:
+            value = np.fromstring(value[1:-1], sep=u_grade_sep, dtype=int)
+        try:
+            assert value.shape[0] is self.structure.df.loc['values', 'len series surface_points'].shape[0]
+            self.df.at['values', 'drift equations'] = value
+
+        except AssertionError:
+            print('u_grade length must be the same as the number of series')
 
     def set_default_range(self, extent=None):
         """

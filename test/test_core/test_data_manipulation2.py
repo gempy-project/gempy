@@ -74,3 +74,10 @@ def test_add_default_orientation():
     mm = gp.DataMutation_pro()
     mm.set_default_surfaces()
     mm.set_default_orientation()
+
+
+def test_set_is_fault():
+    mm = gp.DataMutation_pro()
+    mm.add_series(['foo1', 'foo2', 'foo3'])
+    mm.set_is_fault(['foo2'])
+    mm.set_is_fault(['foo2'], toggle=True)
