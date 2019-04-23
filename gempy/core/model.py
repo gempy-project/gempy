@@ -669,6 +669,7 @@ class DataMutation_pro(object):
                 print('to load a raster file, a path to the file must be provided')
         else:
             print('source must be either random or gdal')
+        self.grid.mask_topo = self.topography._create_grid_mask()
         self.topography.show()
 
 @_setdoc([MetaData.__doc__, Grid.__doc__])

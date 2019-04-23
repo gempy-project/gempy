@@ -69,6 +69,7 @@ class Grid(object):
         self.values = np.empty((1, 3))
         self.values_r = np.empty((1, 3))
         self.length = self.values.shape[0]
+        self.mask_topo = None
 
         if grid_type is 'regular_grid':
             self.set_regular_grid(**kwargs)
@@ -583,25 +584,18 @@ class Topography:
             self.values_3D[:, :, 0].ravel(), self.values_3D[:, :, 1].ravel(),
             self.values_3D[:, :, 2].ravel())).T.astype("float64")
 
-        self._test_extent()
-        self._rescale()
         self.extent = self.topo.extent
         self.resolution = self.topo.resolution
 
-    # todo can be removed
-    def _test_extent(self):
-        cornerpoints_geo = self._get_cornerpoints(self.model.grid.extent)
-        cornerpoints_dtm = self._get_cornerpoints(self.topo.extent)
-        if np.any(cornerpoints_geo[:2] - cornerpoints_dtm[:2]) != 0:
-            print('lalülala')
+        if np.any(self.model.grid.extent[:4] - self.extent) != 0:
+            print('obacht')
+            self._crop()
 
-    # todo implement _crop and then it can be removed
-    def _get_cornerpoints(self, extent):
-        upleft = ([extent[0], extent[3]])
-        lowleft = ([extent[0], extent[2]])
-        upright = ([extent[1], extent[3]])
-        lowright = ([extent[1], extent[2]])
-        return np.array([upleft, lowleft, upright, lowright])
+        if np.any(self.model.grid.resolution[:2] - self.resolution) != 0:
+            self._rescale()
+        else:
+            self.values_3D_res = self.values_3D
+            self.values_res = self.values
 
     def _crop(self):
         pass
@@ -619,6 +613,21 @@ class Topography:
     def show(self):
         plt.imshow(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]))
         plt.colorbar()
+
+    def _create_grid_mask(self):
+        ind = self._find_indices()
+        gridz = self.model.grid.values[:,2].reshape(50,50,50).copy()
+        for x in range(self.model.grid.resolution[0]):
+            for y in range(self.model.grid.resolution[1]):
+                z = ind[x, y]
+                gridz[x, y, z:] = 99999
+        mask = (gridz == 99999)
+        return np.multiply(np.full(self.model.grid.values.shape, True).T, mask.ravel()).T
+
+    def _find_indices(self):
+        zs = np.linspace(self.model.grid.extent[4], self.model.grid.extent[5], self.model.grid.resolution[2])
+        dz = (zs[-1] - zs[0]) / len(zs)
+        return ((self.values_3D_res[:,:,2] - zs[0]) / dz).astype(int)
 
     def _line_in_section(self, direction='y', cell_number=0):
         if np.any(self.topo.resolution - self.model.grid.resolution[:2]) != 0:
