@@ -478,24 +478,35 @@ class Colors:
         else:
             self.colordict = colordict
 
-    def change_colors(self):
-        """opens widget to change colors"""
+    def change_colors(self, cdict = None):
+        ''' Updates the colors in self.colordict and in surfaces_df.
+        Args:
+            cdict: dict with surface names mapped to hex color codes, e.g. {'layer1':'#6b0318'}
+            if None: opens jupyter widget to change colors interactively.
 
-        items = [widgets.ColorPicker(description=surface, value=color)
-                 for surface, color in self.colordict.items()]
+        Returns: None
 
-        colbox = widgets.VBox(items)
-        print('Click to select new colors.')
-        display(colbox)
+        '''
+        if cdict is not None:
+            self._update_colors(cdict)
+            return self.surfaces
 
-        def on_change(v):
-            self.colordict[v['owner'].description] = v['new']  # updates colordict
-            self.set_colors()
+        else:
+            items = [widgets.ColorPicker(description=surface, value=color)
+                     for surface, color in self.colordict.items()]
 
-        for cols in colbox.children:
-            cols.observe(on_change, 'value')
+            colbox = widgets.VBox(items)
+            print('Click to select new colors.')
+            display(colbox)
 
-    def update_colors(self, cdict=None):
+            def on_change(v):
+                self.colordict[v['owner'].description] = v['new']  # update colordict
+                self._set_colors()
+
+            for cols in colbox.children:
+                cols.observe(on_change, 'value')
+
+    def _update_colors(self, cdict=None):
         ''' Updates the colors in self.colordict and in surfaces_df.
         Args:
             cdict: dict with surface names mapped to hex color codes, e.g. {'layer1':'#6b0318'}
@@ -506,7 +517,7 @@ class Colors:
         if cdict == None:
             # assert if one surface does not have color
             try:
-                self.add_colors()
+                self._add_colors()
             except AttributeError:
                 self.generate_colordict()
         else:
@@ -516,9 +527,9 @@ class Colors:
                 assert re.search(r'^#(?:[0-9a-fA-F]{3}){1,2}$', color), str(color) + ' is not a HEX color code'
                 self.colordict[surf] = color
 
-        self.set_colors()
+        self._set_colors()
 
-    def add_colors(self):
+    def _add_colors(self):
         '''assign color to last entry of surfaces df or check isnull and assign color there'''
         # can be done easier
         new_colors = self.generate_colordict(out=True)
@@ -527,7 +538,7 @@ class Colors:
         # this is the dict in-build function to update colors
         self.colordict.update(dict(zip(form2col, [new_colors[x] for x in form2col])))
 
-    def set_colors(self):
+    def _set_colors(self):
         '''sets colordict in surfaces dataframe'''
         for surf, color in self.colordict.items():
             self.surfaces.df.loc[self.surfaces.df['surface'] == surf, 'color'] = color
@@ -535,7 +546,7 @@ class Colors:
     def set_default_colors(self, surfaces = None):
         if surfaces is not None:
             self.colordict[surfaces] = self.colordict_default[surfaces]
-        self.set_colors()
+        self._set_colors()
 
     def make_faults_black(self, series_fault):
         faults_list = list(self.surfaces.df[self.surfaces.df.series.isin(series_fault)]['surface'])
@@ -544,35 +555,41 @@ class Colors:
                 self.set_default_colors(fault)
             else:
                 self.colordict[fault] = '#545352'
-                self.set_colors()
+                self._set_colors()
 
     def reset_default_colors(self):
         self.generate_colordict()
-        self.set_colors()
+        self._set_colors()
         return self.surfaces
 
 
 class Topography:
     # todo allow numpy array to be passed
-    def __init__(self, model, filepath=None, **kwargs):
+    def __init__(self, model):
         self.model = model
-        if filepath is not None:
-            self.load_from_gdal(filepath)
-        else:
-            self.create_random(**kwargs)
-        self.xyz_box = self.topo.xyz_box
-
-        self.test_extent()
-        self._rescale()
 
     def load_from_gdal(self, filepath):
-        self.topo = Load_DEM_GDAL(filepath, model=self.model)
+        self.topo = Load_DEM_GDAL(filepath, self.model)
+        self._create()
 
-    def create_random(self,**kwargs):
+    def load_random_hills(self,**kwargs):
         self.topo = Load_DEM_artificial(self.model, **kwargs)
+        self._create()
+
+    def _create(self):
+        self.values_3D = self.topo.values_3D
+
+        self.values = np.vstack((
+            self.values_3D[:, :, 0].ravel(), self.values_3D[:, :, 1].ravel(),
+            self.values_3D[:, :, 2].ravel())).T.astype("float64")
+
+        self._test_extent()
+        self._rescale()
+        self.extent = self.topo.extent
+        self.resolution = self.topo.resolution
 
     # todo can be removed
-    def test_extent(self):
+    def _test_extent(self):
         cornerpoints_geo = self._get_cornerpoints(self.model.grid.extent)
         cornerpoints_dtm = self._get_cornerpoints(self.topo.extent)
         if np.any(cornerpoints_geo[:2] - cornerpoints_dtm[:2]) != 0:
@@ -590,24 +607,28 @@ class Topography:
         pass
 
     def _rescale(self):
-        self.xyz_box_resized = skimage.transform.resize(self.xyz_box,
+        self.values_3D_res = skimage.transform.resize(self.values_3D,
                                                         (self.model.grid.resolution[0], self.model.grid.resolution[1]),
                                                         mode='constant',
                                                         anti_aliasing=False, preserve_range=True)
 
+        self.values_res = np.vstack((
+            self.values_3D_res[:, :, 0].ravel(), self.values_3D_res[:, :, 1].ravel(),
+            self.values_3D_res[:, :, 2].ravel())).T.astype("float64")
+
     def show(self):
-        plt.imshow(self.topo.xyz_box[:, :, 2], extent=(self.topo.extent[:4]))
+        plt.imshow(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]))
         plt.colorbar()
 
-    def line_in_section(self, direction='y', cell_number=0):
+    def _line_in_section(self, direction='y', cell_number=0):
         if np.any(self.topo.resolution - self.model.grid.resolution[:2]) != 0:
             # print('Gefahr')
-            cell_number_res = (self.xyz_box.shape[:2] / self.model.grid.resolution[:2] * cell_number).astype(int)
+            cell_number_res = (self.values_3D.shape[:2] / self.model.grid.resolution[:2] * cell_number).astype(int)
             cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
         if direction == 'x':
-            topoline = self.xyz_box[cell_number, :, :][:, [0, 2]].astype(int)
+            topoline = self.values_3D[cell_number, :, :][:, [0, 2]].astype(int)
         elif direction == 'y':
-            topoline = self.xyz_box[:, cell_number, :][:, [1, 2]].astype(int)
+            topoline = self.values_3D[:, cell_number, :][:, [1, 2]].astype(int)
         else:
             raise NotImplementedError
         return topoline
@@ -702,7 +723,7 @@ class Surfaces(object):
             self.update_id()
             self.set_basement()
             self.update_order_surfaces()
-            self.colors.update_colors()
+            self.colors._update_colors()
             self.update_sequential_pile()
         return True
 
@@ -732,7 +753,7 @@ class Surfaces(object):
             self.update_id()
             self.set_basement()
             self.update_order_surfaces()
-            self.colors.update_colors()
+            self.colors._update_colors()
             self.update_sequential_pile()
         return True
 

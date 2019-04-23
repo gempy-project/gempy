@@ -21,23 +21,22 @@ import scipy
 class Load_DEM_GDAL():
     '''Class to include height elevation data (e.g. DEMs) with the geological model '''
 
-    def __init__(self, path_dem, model=None, output_path=None):
+    def __init__(self, path_dem, model=None):
         '''
         Args:
             path_dem: path where dem is stored. file format: GDAL raster formats
-            output_path: path to a folder. Must be defined for gdal to perform modifications on the raster
             if model: cropped to geomodel extent
         '''
 
         self.dem = gdal.Open(path_dem)
         self.dem_zval = self.dem.ReadAsArray()
-        self.extent, self.resolution = self._get_raster_dimensions()
+        self._get_raster_dimensions()
 
         if model is not None:
             self.model = model
             self.crop2grid()
         else:
-            print('pass geo_model to directly cut the DEM to the model extent')
+            print('pass geo_model to directly crop the DEM to the model extent')
 
         self.convert2xyz()
 
@@ -49,8 +48,9 @@ class Load_DEM_GDAL():
             print('Obacht! DEM is not north-oriented.')
         lrx = ulx + (self.dem.RasterXSize * xres)
         lry = uly + (self.dem.RasterYSize * yres)
-        res = np.array([(uly - lry) / (-yres), (lrx - ulx) / xres]).astype(int)
-        return np.array([ulx, lrx, lry, uly, z.min(), z.max()]).astype(int), res
+        self.resolution = np.array([(uly - lry) / (-yres), (lrx - ulx) / xres]).astype(int)
+        self.extent = np.array([ulx, lrx, lry, uly]).astype(int)
+        self.d_z = np.array([z.min(), z.max()])
 
     def crop2grid(self):
         '''
@@ -69,7 +69,8 @@ class Load_DEM_GDAL():
 
             self.dem = gdal.Open(path_dest)
             self.dem_zval = self.dem.ReadAsArray()
-            self.extent, self.resolution = self._get_raster_dimensions()
+            self._get_raster_dimensions()
+        print('Cropped raster to geo_model.grid.extent.')
 
     def convert2xyz(self):
         '''
@@ -85,7 +86,7 @@ class Load_DEM_GDAL():
         y = np.flip(xyz[:, 1].reshape(shape), axis=0)
         z = np.flip(xyz[:, 2].reshape(shape), axis=0)
 
-        self.xyz_box = np.dstack([x, y, z])
+        self.values_3D = np.dstack([x, y, z])
 
     def resize(self):
         pass
@@ -100,24 +101,22 @@ class Load_DEM_GDAL():
         return np.array([upleft, lowleft, upright, lowright])
 
 class Load_DEM_artificial():
-    def __init__(self, model, fd=2.2, resolution=None, z_ext=None):
+    def __init__(self, model, fd=2.2, extent=None, resolution=None, d_z=None):
         """resolution:np 2D array with extent in X and Y direction"""
         self.model = model
-        if resolution is None:
-            self.resolution = model.grid.resolution[:2]
-        else:
-            self.resolution = resolution
 
-        if z_ext is None:
-            self.z_ext = np.array(
+        self.resolution = model.grid.resolution[:2] if resolution is None else resolution
+        self.extent = self.model.grid.extent[:4] if extent is None else extent
+
+        if d_z is None:
+            self.d_z = np.array(
                 [self.model.grid.extent[5] - (self.model.grid.extent[5] - self.model.grid.extent[4]) * 1 / 5,
                  self.model.grid.extent[5]])
         else:
-            self.z_ext = z_ext
+            self.d_z = d_z
 
-        self.extent = np.concatenate((self.model.grid.extent[:4], self.z_ext))
         topo = self.fractalGrid(fd, N=self.resolution.max())
-        topo = np.interp(topo, (topo.min(), topo.max()), (self.z_ext))
+        topo = np.interp(topo, (topo.min(), topo.max()), (self.d_z))
 
         self.dem_zval = topo[:self.resolution[0], :self.resolution[1]]  # crop fractal grid with resolution
 
@@ -188,5 +187,5 @@ class Load_DEM_artificial():
         x = np.linspace(self.model.grid.values[:, 0].min(), self.model.grid.values[:, 0].max(), self.resolution[1])
         y = np.linspace(self.model.grid.values[:, 1].min(), self.model.grid.values[:, 1].max(), self.resolution[0])
         xx, yy = np.meshgrid(x, y, indexing='ij')
-        self.xyz_box = np.dstack([xx.T, yy.T, self.dem_zval])
+        self.values_3D = np.dstack([xx.T, yy.T, self.dem_zval])
 
