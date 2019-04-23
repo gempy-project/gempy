@@ -17,7 +17,7 @@ class QgridModelIntegration(object):
         self._plot_object = plot_object
         if plot_object is not None:
             # Check if the window is already open
-            if not hasattr(plot_object, 'interactor'):
+            if hasattr(plot_object, 'interactor'):
                 self._plot_object.set_surface_points()
                 self._plot_object.set_orientations()
 
@@ -205,7 +205,7 @@ class QgridModelIntegration(object):
                                        show_toolbar=False,
                                        grid_options={'sortable': False, 'highlightSelectedCell': True})
 
-        def handle_row_edit(event, widget, debug=True):
+        def handle_row_edit(event, widget, debug=False):
             if debug is True:
                 print(event)
                 print(widget)
@@ -277,8 +277,8 @@ class QgridModelIntegration(object):
 
     def create_surface_points_qgrid(self):
         surface_points_object = self._geo_model.surface_points
-
-        self._geo_model.set_default_surface_point()
+        self._geo_model.set_default_surfaces()
+        self._geo_model.set_default_surface_point(plot_object=self._plot_object)
 
         qgrid_widget = qgrid.show_grid(
             surface_points_object.df,
@@ -332,7 +332,7 @@ class QgridModelIntegration(object):
 
     def create_orientations_qgrid(self):
         orientations_object = self._geo_model.orientations
-        self._geo_model.set_default_orientation()
+        self._geo_model.set_default_orientation(plot_object=self._plot_object)
 
         qgrid_widget = qgrid.show_grid(
             orientations_object.df,
@@ -500,7 +500,7 @@ class QgridModelIntegration(object):
             self.qgrid_fo._rebuild_widget()
             self.qgrid_fr._rebuild_widget()
 
-        def handle_cell_series_edit(event, widget, debug=True):
+        def handle_cell_series_edit(event, widget, debug=False):
             idx = event['index']
             cat_idx = qgrid_widget.df.loc[idx, 'series_names']
             if debug is True:

@@ -173,6 +173,7 @@ class vtkVisualization(object):
     def set_text(self):
         txt = vtk.vtkTextActor()
         txt.SetInput("Press L to toggle layers visibility \n"
+                     "Press R to toggle real time updates \n"
                      "Press H or P to go back to Python \n"
                      "Press Q to quit")
         txtprop = txt.GetTextProperty()
@@ -230,6 +231,9 @@ class vtkVisualization(object):
 
                 r.AddActor(axe)
                 r.ResetCamera()
+
+        if key is 'r':
+            self.real_time = self.real_time ^ True
 
     def create_surface_points(self, vertices):
         """
@@ -398,7 +402,7 @@ class vtkVisualization(object):
 
         return d
 
-    def set_surfaces(self, vertices, simplices, alpha=1):
+    def set_surfaces_old(self, vertices, simplices, alpha=1):
         """
         Create all the surfaces and set them to the corresponding renders for their posterior visualization with
         render_model
@@ -418,11 +422,24 @@ class vtkVisualization(object):
         surfaces = self.surface_name
 
         fns = self.geo_model.surface_points.df['id'].unique().squeeze()
-        assert type(vertices) is list, 'vertices and simpleces have to be a list of arrays even when only one' \
-                                       ' surface is passed'
+        assert type(vertices) is list or type(vertices) is np.ndarray, 'vertices and simpleces have to be a list of' \
+                                                                       ' arrays even when only one' \
+                                                                       ' surface is passed'
         assert 'DefaultBasement' not in surfaces, 'Remove DefaultBasement from the list of surfaces'
         for v, s, fn in zip(vertices, simplices, np.atleast_1d(fns)):
             act, map, pol = self.create_surface(v, s, fn, alpha)
+            self.surf_rend_1.append(act)
+
+            self.ren_list[0].AddActor(act)
+            self.ren_list[1].AddActor(act)
+            self.ren_list[2].AddActor(act)
+            self.ren_list[3].AddActor(act)
+
+    def set_surfaces(self, surfaces, alpha=1):
+        self.surf_rend_1 = []
+
+        for idx, val in surfaces.df[['vertices', 'edges', 'id']].dropna().iterrows():
+            act, map, pol = self.create_surface(val['vertices'], val['edges'], val['id'], alpha)
             self.surf_rend_1.append(act)
 
             self.ren_list[0].AddActor(act)
@@ -750,16 +767,15 @@ class vtkVisualization(object):
               #  vertices, simpleces =
               #  self.set_surfaces(vertices, simpleces)
             except AssertionError:
-                os.system('cls')
                 print('Not enough data to compute the model')
 
     def planesCallback_change_df(self, index, new_center, new_normal):
 
         # Modify Pandas DataFrame
         # update the gradient vector components and its location
-        self.geo_model.modify_orientation(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
-                                          G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2],
-                                          recalculate_orientations=True)
+        self.geo_model.modify_orientations(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
+                                           G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2],
+                                           recalculate_orientations=True)
         # update the dip and azimuth values according to the new gradient
         self.geo_model.calculate_orientations()
 
@@ -998,17 +1014,19 @@ class vtkVisualization(object):
             self.delete_surfaces()
         try:
             gp.compute_model(self.geo_model, sort_surfaces=False, compute_mesh=True)
-        except:
-            print('Model not computed')
-        try:
-            v_l, s_l = self.geo_model.solutions.vertices, self.geo_model.solutions.edges
         except IndexError:
-            try:
-                v_l, s_l = self.geo_model.solutions.vertices, self.geo_model.solutions.edges
-            except IndexError:
-                v_l, s_l = self.geo_model.solutions.vertices, self.geo_model.solutions.edges
+            print('IndexError: Model not computed. Laking data in some surface')
+        except AssertionError:
+            print('AssertionError: Model not computed. Laking data in some surface')
+        # try:
+        #     v_l, s_l = self.geo_model.surfaces.df['vertices'], self.geo_model.surfaces.df['edges']
+        # except IndexError:
+        #     try:
+        #         v_l, s_l = self.geo_model.surfaces.df['vertices'], self.geo_model.surfaces.df['edges']
+        #     except IndexError:
+        #         v_l, s_l = self.geo_model.surfaces.df['vertices'], self.geo_model.surfaces.df['edges']
 
-        self.set_surfaces(v_l, s_l)
+        self.set_surfaces(self.geo_model.surfaces)
         return True
 
     @staticmethod
@@ -1175,6 +1193,11 @@ class GemPyvtkInteract(vtkVisualization):
         self.planesCallback_delete_point(indices)
         if self.real_time is True:
             self.update_surfaces_real_time()
+        self.interactor.Render()
+
+    def render_surfaces(self, alpha=1):
+        self.delete_surfaces()
+        self.set_surfaces(self.geo_model.surfaces, alpha=alpha)
         self.interactor.Render()
 
     def update_model(self):
