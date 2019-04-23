@@ -647,13 +647,13 @@ class DataMutation_pro(object):
     def update_from_additional_data(self):
         pass
 
-    def load_topography(self, source = 'random', filepath = None, **kwargs):
+    def add_topography(self, source = 'random', filepath = None, **kwargs):
         """
 
         Args:
             mode: 'random': random topography is generated
                    'gdal'. filepath must be provided
-            filepath: filepath to a raster file
+            filepath: path to raster file
             kwargs: gp.utils.create_topography.Load_DEM_artificial kwargs: z_ext, resolution
 
         Returns: :class:gempy.core.data.Topography
@@ -669,7 +669,7 @@ class DataMutation_pro(object):
                 print('to load a raster file, a path to the file must be provided')
         else:
             print('source must be either random or gdal')
-        self.grid.mask_topo = self.topography._create_grid_mask()
+
         self.topography.show()
 
 @_setdoc([MetaData.__doc__, Grid.__doc__])

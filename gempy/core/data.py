@@ -597,6 +597,8 @@ class Topography:
             self.values_3D_res = self.values_3D
             self.values_res = self.values
 
+        self.model.grid.mask_topo = self._create_grid_mask()
+
     def _crop(self):
         pass
 
@@ -631,7 +633,7 @@ class Topography:
 
     def _line_in_section(self, direction='y', cell_number=0):
         if np.any(self.topo.resolution - self.model.grid.resolution[:2]) != 0:
-            # print('Gefahr')
+            print('Gefahr weil resolution')
             cell_number_res = (self.values_3D.shape[:2] / self.model.grid.resolution[:2] * cell_number).astype(int)
             cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
         if direction == 'x':
