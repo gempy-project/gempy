@@ -293,8 +293,9 @@ class InterpolatorModel(Interpolator_pro):
         if reset_block is True:
             self.compute_block_ctrl = np.ones(10000, dtype=bool)
             self.theano_graph.mask_matrix.set_value(np.zeros((n_series, x_to_interp_shape), dtype='bool'))
-            self.theano_graph.block_matrix.set_value(np.zeros((n_series, self.surfaces.df.iloc[:, 5:].values.shape[1],
-                                                               x_to_interp_shape), dtype=self.dtype))
+            self.theano_graph.block_matrix.set_value(
+                np.zeros((n_series, self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
+                          x_to_interp_shape), dtype=self.dtype))
 
     def set_flow_control(self):
         # n_series = self.additional_data.get_additional_data()['values']['Structure', 'number series']
@@ -420,8 +421,9 @@ class InterpolatorModel(Interpolator_pro):
             np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
 
         self.theano_graph.mask_matrix.set_value(np.zeros((n_series, x_to_interp_shape), dtype='bool'))
-        self.theano_graph.block_matrix.set_value(np.zeros((n_series, self.surfaces.df.iloc[:, 5:].values.shape[1],
-                                                           x_to_interp_shape), dtype=self.dtype))
+        self.theano_graph.block_matrix.set_value(
+            np.zeros((n_series, self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
+                      x_to_interp_shape), dtype=self.dtype))
 
     def set_initial_results_matrices(self):
         self._compute_len_series()
@@ -433,8 +435,9 @@ class InterpolatorModel(Interpolator_pro):
             np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
 
         self.theano_graph.mask_matrix.set_value(np.zeros((n_series, x_to_interp_shape), dtype='bool'))
-        self.theano_graph.block_matrix.set_value(np.zeros((n_series, self.surfaces.df.iloc[:, 5:].values.shape[1],
-                                                           x_to_interp_shape), dtype=self.dtype))
+        self.theano_graph.block_matrix.set_value(
+            np.zeros((n_series, self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
+                      x_to_interp_shape), dtype=self.dtype))
 
     def modify_results_matrices_pro(self):
 
@@ -566,7 +569,7 @@ class InterpolatorModel(Interpolator_pro):
         if fault_drift is None:
             fault_drift = np.zeros((0, grid.shape[0] + 2 * self.len_series_i.sum()))
 
-        values_properties = self.surfaces.df.iloc[:, 5:].values.astype(self.dtype).T
+        values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
 
         # Set all in a list casting them in the chosen dtype
         idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
@@ -601,6 +604,8 @@ class InterpolatorModel(Interpolator_pro):
         Returns:
 
         """
+        from theano.compile.nanguardmode import NanGuardMode
+
         self.set_all_shared_parameters(reset=False)
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.theano_graph.input_parameters_loop
@@ -612,7 +617,7 @@ class InterpolatorModel(Interpolator_pro):
                                          (self.theano_graph.weights_vector, self.theano_graph.new_weights),
                                          (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
                                          (self.theano_graph.mask_matrix, self.theano_graph.new_mask)],
-                                # mode=NanGuardMode(nan_is_error=True),
+                                mode=NanGuardMode(nan_is_error=True),
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
                                 profile=False)
@@ -659,7 +664,7 @@ class InterpolatorBlock(Interpolator_pro):
         if fault_drift is None:
             fault_drift = np.zeros((0, grid.shape[0] + surface_points_coord.shape[0]))
 
-        values_properties = self.surfaces.df.iloc[:, 5:].values.astype(self.dtype).T
+        values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
 
         # Set all in a list casting them in the chosen dtype
         idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord,

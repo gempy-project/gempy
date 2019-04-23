@@ -358,11 +358,11 @@ class DataMutation_pro(object):
         if recompute_rescale_factor is True or idx < 20:
             # This will rescale all data again
             self.rescaling.rescale_data()
+            self.interpolator.set_theano_shared_kriging()
         else:
             # This branch only recompute the added point
             self.rescaling.set_rescaled_surface_points(idx)
 
-        print(surface, surface.ndim)
         # Add results has to be called before we update the theano len_series_i
         # if surface.ndim == 1:
         #     self.interpolator.add_to_results(surface)
@@ -393,6 +393,7 @@ class DataMutation_pro(object):
         if recompute_rescale_factor is True or np.atleast_1d(indices)[0] < 20:
             # This will rescale all data again
             self.rescaling.rescale_data()
+            self.interpolator.set_theano_shared_kriging()
         else:
             # This branch only recompute the added point
             self.rescaling.set_rescaled_surface_points(indices)
@@ -450,6 +451,7 @@ class DataMutation_pro(object):
         keys = list(kwargs.keys())
         is_surface = np.isin('surface', keys).all()
         self.orientations.modify_orientations(indices, **kwargs)
+        self.rescaling.set_rescaled_orientations(indices)
 
         if is_surface:
             self.update_structure(update_theano='weights')
@@ -467,6 +469,9 @@ class DataMutation_pro(object):
     # region Kriging
     def modify_kriging_parameters(self, property, value, **kwargs):
         self.additional_data.kriging_data.modify_kriging_parameters(property, value, **kwargs)
+        self.interpolator.set_theano_shared_kriging()
+        if property == 'drift equations':
+            self.interpolator.set_initial_results()
 
     # endregion
 
@@ -481,20 +486,21 @@ class DataMutation_pro(object):
     # --------------------------------------
     # ======================================
 
-    def set_default_surface_point(self):
+    def set_default_surface_point(self, **kwargs):
         if self.surface_points.df.shape[0] == 0:
             self.add_surface_points(0.00001, 0.00001, 0.00001, self.surfaces.df['surface'].iloc[0],
-                                    recompute_rescale_factor=True)
+                                    recompute_rescale_factor=True, **kwargs)
 
-    def set_default_orientation(self):
+    def set_default_orientation(self, **kwargs):
         if self.orientations.df.shape[0] == 0:
             # TODO DEBUG: I am not sure that surfaces always has at least one entry. Check it
             self.add_orientations(.00001, .00001, .00001,
                                   self.surfaces.df['surface'].iloc[0],
-                                  [0, 0, 1], recompute_rescale_factor=True)
+                                  [0, 0, 1], recompute_rescale_factor=True, **kwargs)
 
     def set_default_surfaces(self):
-        self.add_surfaces(['surface1', 'surface2'])
+        if self.surfaces.df.shape[0] == 0:
+            self.add_surfaces(['surface1', 'surface2'])
         # self.surfaces.set_default_surface_name()
         # self.update_from_surfaces()
         return self.surfaces
@@ -647,6 +653,38 @@ class DataMutation_pro(object):
     def update_from_additional_data(self):
         pass
 
+    def set_surface_order_from_solution(self):
+        # TODO time this function
+        spu = self.surface_points.df['surface'].unique()
+        sps = self.surface_points.df['series'].unique()
+        sel = self.surfaces.df['surface'].isin(spu)
+        # print(sel)
+        for e, name_series in enumerate(sps):
+            try:
+                sfai_series = self.solutions.scalar_field_at_surface_points[e]
+                sfai_order_aux = np.argsort(sfai_series[np.nonzero(sfai_series)])
+                sfai_order = (sfai_order_aux - sfai_order_aux.shape[0]) * -1
+                # select surfaces which exist in surface_points
+                group = self.surfaces.df[sel].groupby('series').get_group(name_series)
+                idx = group.index
+                surface_names = group['surface']
+             #   print('idx', idx)
+             #   print(sfai_order)
+                self.surfaces.df.loc[idx, 'order_surfaces'] = self.surfaces.df.loc[idx, 'surface'].map(
+                    pn.DataFrame(sfai_order, index=surface_names)[0])
+             #   print(pn.DataFrame(sfai_order, index=surface_names)[0])
+             #   print(self.surfaces.df)
+            except IndexError:
+                pass
+
+        self.surfaces.sort_surfaces()
+        self.surfaces.set_basement()
+        self.surface_points.df['id'] = self.surface_points.df['surface'].map(
+            self.surfaces.df.set_index('surface')['id'])
+        self.surface_points.sort_table()
+        self.update_structure()
+        return self.surfaces
+
 
 @_setdoc([MetaData.__doc__, Grid.__doc__])
 class Model(DataMutation_pro):
@@ -746,8 +784,8 @@ class Model(DataMutation_pro):
         self.additional_data.options.df.to_csv(f'{path}/{name}_options.csv')
 
         # # save resolution and extent as npy
-        # np.save(f'{path}/{name}_extent.npy', self.grid.extent)
-        # np.save(f'{path}/{name}_resolution.npy', self.grid.resolution)
+        np.save(f'{path}/{name}_extent.npy', self.grid.extent)
+        np.save(f'{path}/{name}_resolution.npy', self.grid.resolution)
         #
         # # save solutions as npy
         # np.save(f'{path}/{name}_lith_block.npy' ,self.solutions.lith_block)
@@ -841,6 +879,8 @@ class Model(DataMutation_pro):
             raw_data = self.faults.faults_relations_df
         elif itype == 'additional data' or itype == 'additional_data':
             raw_data = self.additional_data
+        elif itype == 'kriging':
+            raw_data = self.additional_data.kriging_data
         else:
             raise AttributeError('itype has to be \'data\', \'additional data\', \'surface_points\', \'orientations\','
                                  ' \'surfaces\',\'series\', \'faults\' or \'faults_relations_df\'')
