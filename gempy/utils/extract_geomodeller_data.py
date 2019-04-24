@@ -18,6 +18,8 @@ class ReadGeoModellerXML:
         settings (e.g. extent and sequential pile). It uses ElementTree to parse the XML and the tree's root can
         be accessed using self.root for more direct access to the file.
 
+        Todo: - extract faults
+
         Args:
             fp (str): Filepath for the GeoModeller xml file to be read.
 
@@ -30,11 +32,16 @@ class ReadGeoModellerXML:
 
         self.extent = self._get_extent()
         self.data = self.extract_data()
-        self.interfaces, self.orientations = self.get_dataframes()
-        self.stratigraphic_column = self.get_stratigraphic_column()
-        self.faults = self.get_faults()
+
+        self.series = list(self.data.keys())
+        self.stratigraphic_column, self.surface_points, self.orientations = self.get_dataframes()
+
         self.series_info = self._get_series_fmt_dict()
-        self.series_distribution = self.get_series_distribution()
+        #self.interfaces, self.orientations = self.get_dataframes()
+        #self.stratigraphic_column = self.get_stratigraphic_column()
+        #self.faults = self.get_faults()
+
+        #self.series_distribution = self.get_series_distribution()
 
         # self.fault_matrix = self.get_fault_matrix()
 
@@ -113,6 +120,9 @@ class ReadGeoModellerXML:
                             for sol in cc:
                                 data[sn]["solutions"].append(float(sol.get("sol")))
 
+                        if cc.tag == "{" + self.xmlns + "}ModelFaults":
+                            print('hey')
+
                     # convert from str to float
                     data[sn]["gradients"] = np.array(data[sn]["gradients"]).astype(float)
                     data[sn]["interfaces"] = np.array(data[sn]["interfaces"]).astype(float)
@@ -121,95 +131,49 @@ class ReadGeoModellerXML:
 
         return data
 
+    def get_dataframes(self):
+
+        strat_pile = dict.fromkeys(self.series)
+        surface_points = pn.DataFrame()
+        orientations = pn.DataFrame()
+
+        for serie in self.series:
+            strat_pile[serie] = self.data[serie]['formations']
+
+            interf_s = self.data[serie].get('interfaces')
+            orient_s = self.data[serie].get('gradients')
+
+            formations = self.data[serie].get('formations')
+            if interf_s is not None:
+                interf = pn.DataFrame(columns=['X', 'Y', 'Z'], data=interf_s)
+                interf['series'] = serie
+
+                if len(formations) > 1:
+                    interf_formations = []
+                    for j, fmt in enumerate(formations):
+                        for n in range(int(self.data[serie].get('interfaces_counters')[j, 0])):
+                            interf_formations.append(fmt)
+                    interf['formation'] = interf_formations
+
+                else:
+                    interf['formation'] = formations[0]
+
+                surface_points = pn.DataFrame.append(surface_points, interf)
+
+            if orient_s is not None:
+                orient = pn.DataFrame(columns=['G_x', 'G_y', 'G_z', 'X', 'Y', 'Z'], data=orient_s)
+                orient['series'] = serie
+                orient['formation'] = formations[0]  # formation is wrong here but does not matter for orientations
+
+                orientations = pn.DataFrame.append(orientations, orient)
+
+        return strat_pile, surface_points, orientations
+
     def get_psc(self):
         """Returns the ProjectStratigraphicColumn tree element used for several data extractions."""
         return self.root.find("{" + self.xmlns + "}GeologicalModel").find(
             "{" + self.xmlns + "}ProjectStratigraphicColumn")
 
-    def get_dataframes(self):
-        # print(self.data)
-        """
-        Extracts dataframe information from the self.data dictionary and returns GemPy-compatible interfaces and
-        orientations dataframes.
-
-        Returns:
-            (tuple) of GemPy dataframes (interfaces, orientations)
-        """
-        interf_formation = []
-        interf_series = []
-
-        orient_series = []
-        # print(self.data.keys())
-
-        for i, s in enumerate(self.data.keys()):  # loop over all series
-            # print(i,s)
-            # print(self.data[s].get('interfaces'))
-            # print(self.data[s])
-            if i == 0:
-                coords = self.data[s].get("interfaces")
-                grads = self.data[s].get("gradients")
-
-            else:
-                coords = np.append(coords, self.data[s].get("interfaces"))
-                grads = np.append(grads, self.data[s].get("gradients"))
-
-            # print(coords)
-            if self.data[s].get('interfaces') is not None:
-                for j, fmt in enumerate(self.data[s]["formations"]):
-                    # print(j,fmt)
-                    # print(self.data[s].get("interfaces_counters"))
-                    for n in range(int(self.data[s].get("interfaces_counters")[j, 0])):
-                        # print(n)
-                        interf_formation.append(fmt)
-                        interf_series.append(s)
-
-            gradssub = np.delete(grads, 0)
-            lengrads = gradssub.reshape(-1, 6)
-            # print(lengrads.shape)
-        for k in range(lengrads.shape[0]):
-            orient_series.append(s)
-
-        coords = np.delete(coords, 0)  # because first value is none
-        grads = np.delete(grads, 0)
-
-        interfaces = pn.DataFrame(coords.reshape(-1, 3), columns=['X', 'Y', 'Z'])
-        # print(len(interfaces), len(interf_formation))
-        # print(len(interf_series))
-        interfaces["formation"] = interf_formation
-        interfaces["series"] = interf_series
-
-        # print(grads)
-
-        orientations = pn.DataFrame(grads.reshape(-1, 6), columns=['G_x', 'G_y', 'G_z', 'X', 'Y', 'Z'])
-        # print(len(orientations),len(orient_series))
-        orientations["series"] = orient_series
-
-        dips = []
-        azs = []
-        pols = []
-        for i, row in orientations.iterrows():
-            dip, az, pol = gp.data_management.get_orientation((row["G_x"], row["G_y"], row["G_z"]))
-            dips.append(dip)
-            azs.append(az)
-            pols.append(pol)
-
-        orientations["dip"] = dips
-        orientations["azimuth"] = azs
-        orientations["polarity"] = pols
-
-        return interfaces, orientations
-
-    def get_stratigraphic_column(self):
-        """
-        Extracts series names from ElementTree root.
-
-        Returns:
-            tuple: Series names (str) in stratigraphic order.
-        """
-        stratigraphic_column = []
-        for s in self.get_psc():
-            stratigraphic_column.append(s.get("name"))
-        return tuple(stratigraphic_column)
 
     def get_order_formations(self):
         order_formations = []

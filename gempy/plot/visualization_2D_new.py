@@ -21,7 +21,7 @@ Tested on Ubuntu 14
 
 Created on 23/09/2016
 
-@author: Miguel de la Varga
+@author: Elisa Heim, Miguel de la Varga
 """
 
 import warnings
@@ -43,18 +43,6 @@ plt.style.use(['seaborn-white', 'seaborn-talk'])
 
 
 class PlotParams(object):
-    """
-    Class to make the different plot related with gempy
-
-    Args:
-        geo_data(gempy.InputData): All values of a DataManagement object
-        block(numpy.array): 3D array containing the lithology block
-        **kwargs: Arbitrary keyword arguments.
-
-    Keyword Args:
-        scalar_field(numpy.ndarray): 3D array containing a individual potential field
-        verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0
-    """
 
     def __init__(self, model, **kwargs):
 
