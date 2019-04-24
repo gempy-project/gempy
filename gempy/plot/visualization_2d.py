@@ -240,7 +240,7 @@ class PlotData2D(object):
                         colors=self._cmap.colors[f_id])
 
     def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data=False, block_type='lithology', ve=1, show_faults=True, **kwargs):
+                           plot_data=False, block_type='lithology', ve=1, show_faults=False, **kwargs):
         """
         Plot a section of the block model
 

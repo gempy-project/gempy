@@ -42,7 +42,7 @@ sns.set_context('talk')
 plt.style.use(['seaborn-white', 'seaborn-talk'])
 
 
-class PlotParams(object):
+class Plot(object):
 
     def __init__(self, model, **kwargs):
 
@@ -52,18 +52,33 @@ class PlotParams(object):
         self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors)+0.5)
 
-    def
+    def slice2D(self):
+        pass
+
+    def slice3D(self):
+        pass
+
+    def create_plot_params(self):
+        # plot type
+        # extent
+        # data types
+    def data_types(self):
+        # boolean array: (orientations, interfaces, solution)
 
 
 class PlotData(PlotParams):
     def __init__(self):
         pass
 
-    def plot_orientations(self):
+    def plot_orientations_2D(self):
         pass
 
-    def plot_surface_points(self):
+    def plot_orientations_stereonet(self):
         pass
+
+    def plot_surface_points_2D(self):
+        pass
+
 
     def filter_points_in_section(self, distance=10):
         pass
