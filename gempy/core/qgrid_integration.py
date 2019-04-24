@@ -17,7 +17,7 @@ class QgridModelIntegration(object):
         self._plot_object = plot_object
         if plot_object is not None:
             # Check if the window is already open
-            if not hasattr(plot_object, 'interactor'):
+            if hasattr(plot_object, 'interactor'):
                 self._plot_object.set_surface_points()
                 self._plot_object.set_orientations()
 
@@ -30,6 +30,12 @@ class QgridModelIntegration(object):
         self.qgrid_op = self.set_interactive_df('options')
         self.qgrid_kr = self.set_interactive_df('kriging')
         self.qgrid_re = self.set_interactive_df('rescale')
+
+    def update_plot(self):
+        if self._plot_object is not None:
+            self._plot_object.update_model()
+        else:
+            pass
 
     def set_interactive_df(self, data_type: str):
         if data_type == 'surfaces':
@@ -73,7 +79,8 @@ class QgridModelIntegration(object):
             self._plot_object.set_orientations()
 
     def update_qgrd_objects(self):
-        qgrid_objects = [self.qgrid_fo, self.qgrid_se, self.qgrid_fa, self.qgrid_fr, self.qgrid_in,
+        qgrid_objects = [self.qgrid_fo, self.qgrid_se, self.qgrid_fa, #self.qgrid_fr,
+                         self.qgrid_in,
                          self.qgrid_or, self.qgrid_op, self.qgrid_kr, self.qgrid_re]
 
         for e, qgrid_object in enumerate(qgrid_objects):
@@ -154,12 +161,14 @@ class QgridModelIntegration(object):
                 #      cat_idx = qgrid_widget.df.loc[idx, 'series_names']
 
                 self._geo_model.set_is_fault([idx], toggle=True)
+                self.update_plot()
 
             if event['column'] == 'isFinite':
                 idx = event['index']
                 #      cat_idx = qgrid_widget.df.loc[idx, 'series_names']
 
                 self._geo_model.set_is_finite_fault([idx], toggle=True)
+                self.update_plot()
 
             self.update_qgrd_objects()
             self.qgrid_fr._rebuild_widget()
@@ -184,6 +193,7 @@ class QgridModelIntegration(object):
             value = event['new']
             self._geo_model.modify_rescaling_parameters(event['column'], value)
             self.update_qgrd_objects()
+            self.update_plot()
 
         qgrid_widget.on('cell_edited', handle_row_edit)
         return qgrid_widget
@@ -195,7 +205,7 @@ class QgridModelIntegration(object):
                                        show_toolbar=False,
                                        grid_options={'sortable': False, 'highlightSelectedCell': True})
 
-        def handle_row_edit(event, widget, debug=True):
+        def handle_row_edit(event, widget, debug=False):
             if debug is True:
                 print(event)
                 print(widget)
@@ -209,6 +219,7 @@ class QgridModelIntegration(object):
                 value = event['new']
             self._geo_model.modify_options(event['column'], value)
             self.update_qgrd_objects()
+            self.update_plot()
 
         qgrid_widget.on('cell_edited', handle_row_edit)
         return qgrid_widget
@@ -230,6 +241,7 @@ class QgridModelIntegration(object):
 
             self._geo_model.modify_kriging_parameters(event['column'], event['new'])
             self.update_qgrd_objects()
+            self.update_plot()
 
         qgrid_widget.on('cell_edited', handle_row_edit)
         return qgrid_widget
@@ -259,14 +271,14 @@ class QgridModelIntegration(object):
             # faults_object.faults_relations_df.update(qgrid_widget.get_changed_df())
 
             self.update_qgrd_objects()
-
+            self.update_plot()
         qgrid_widget.on('cell_edited', handle_set_fault_relation)
         return qgrid_widget
 
     def create_surface_points_qgrid(self):
         surface_points_object = self._geo_model.surface_points
-
-        self._geo_model.set_default_surface_point()
+        self._geo_model.set_default_surfaces()
+        self._geo_model.set_default_surface_point(plot_object=self._plot_object)
 
         qgrid_widget = qgrid.show_grid(
             surface_points_object.df,
@@ -320,7 +332,7 @@ class QgridModelIntegration(object):
 
     def create_orientations_qgrid(self):
         orientations_object = self._geo_model.orientations
-        self._geo_model.set_default_orientation()
+        self._geo_model.set_default_orientation(plot_object=self._plot_object)
 
         qgrid_widget = qgrid.show_grid(
             orientations_object.df,
@@ -488,7 +500,7 @@ class QgridModelIntegration(object):
             self.qgrid_fo._rebuild_widget()
             self.qgrid_fr._rebuild_widget()
 
-        def handle_cell_series_edit(event, widget, debug=True):
+        def handle_cell_series_edit(event, widget, debug=False):
             idx = event['index']
             cat_idx = qgrid_widget.df.loc[idx, 'series_names']
             if debug is True:
@@ -507,6 +519,8 @@ class QgridModelIntegration(object):
                     self._geo_model.modify_order_series(int(event['new']), idx)
                 except AssertionError:
                     pass
+
+            self.update_plot()
 
          #   self._geo_model.update_from_series(rename_series={event['old']: event['new']})
             # Hack for the faults relations

@@ -112,6 +112,8 @@ def load_model(name, path=None, recompile=False):
                                             dtype={'range': 'float64', '$C_o$': 'float64', 'drift equations': object,
                                             'nugget grad': 'float64', 'nugget scalar': 'float64'})
 
+    geo_model.additional_data.kriging_data.str2int_u_grage()
+
     geo_model.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0,
                                             dtype={'dtype': 'category', 'output': 'category',
                                             'theano_optimizer': 'category', 'device': 'category',
@@ -579,8 +581,9 @@ def compute_model(model: Model, compute_mesh=True, reset_weights=False, reset_sc
     if debug is True:
         return sol
     else:
-        model.solutions.set_solution(sol, compute_mesh=compute_mesh, sort_surfaces=sort_surfaces)
-
+        model.solutions.set_solution(sol, compute_mesh=compute_mesh)
+        if sort_surfaces:
+            model.set_surface_order_from_solution()
         return model.solutions
 
 
@@ -724,6 +727,14 @@ def get_data(model: Model, itype='data', numeric=False):
     """
     return model.get_data(itype=itype, numeric=numeric)
 
+
+def get_surfaces(model_solution: Union[Model, Solution]):
+    if isinstance(model_solution, Model):
+        return model_solution.solutions.vertices, model_solution.solutions.edges
+    elif isinstance(model_solution, Solution):
+        return model_solution.vertices, model_solution.edges
+    else:
+        raise AttributeError
 
 #@_setdoc([set_values_to_default.__doc__])
 def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] = (50, 50, 50),

@@ -54,59 +54,79 @@ def plot_data_3D(geo_data, **kwargs):
     return vv
 
 
-def plot_surfaces_3D_real_time(geo_model, vertices_l, simplices_l,
-                               plot_data=True, posterior=None, samples=None, **kwargs):
-
+def plot_3D(geo_model, render_surfaces=True, real_time=False, **kwargs):
     """
-    Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.
-    IMPORTANT NOTE it is highly recommended to have the flag fast_run in the theano optimization. Also note that the
-    time needed to compute each model increases linearly with every potential field (i.e. fault or discontinuity). It
-    may be better to just modify each potential field individually to increase the speed (See gempy.select_series).
+        Plot in vtk all the input data of a model
+        Args:
+            geo_model (gempy.DataManagement.InputData): Input data of the model
 
-    Args:
-        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
-        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
-        formations_names_l (list): Name of the formation of the surfaces
-        formation_numbers_l (list): formation_numbers (int)
-        alpha (float): Opacity
-        plot_data (bool): Default True
-        size (tuple): Resolution of the window
-        fullscreen (bool): Launch window in full screen or not
+        Returns:
+            None
+        """
+    vv = GemPyvtkInteract(geo_model, real_time=real_time, **kwargs)
+    # vv.restart()
+    vv.set_surface_points()
+    vv.set_orientations()
+    if render_surfaces is True:
+        vv.set_surfaces(geo_model.surfaces)
 
-    Returns:
-        vtkPlot
-    """
-
-    vv = vtkPlot(geo_model, **kwargs)
-    vv.plot_surfaces_3D_real_time(vertices_l, simplices_l, plot_data=plot_data, posterior=posterior,
-                                  samples=samples, **kwargs)
+    vv.render_model(**kwargs)
 
     return vv
 
-
-def plot_surfaces_3D(geo_data, vertices_l=None, simplices_l=None,
-                     alpha=1, plot_data=True,
-                     **kwargs):
-    """
-    Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
-
-    Args:
-        vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
-        simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
-        formations_names_l (list): Name of the formation of the surfaces
-        formation_numbers_l (list): formation_numbers (int)
-        alpha (float): Opacity
-        plot_data (bool): Default True
-        size (tuple): Resolution of the window
-        fullscreen (bool): Launch window in full screen or not
-
-    Returns:
-        None
-    """
-    vv = vtkPlot(geo_data, **kwargs)
-    vv.plot_surfaces_3D(vertices_l, simplices_l,
-                        plot_data=plot_data)
-    return vv
+# def plot_surfaces_3D_real_time(geo_model, vertices_l, simplices_l,
+#                                plot_data=True, posterior=None, samples=None, **kwargs):
+#
+#     """
+#     Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.
+#     IMPORTANT NOTE it is highly recommended to have the flag fast_run in the theano optimization. Also note that the
+#     time needed to compute each model increases linearly with every potential field (i.e. fault or discontinuity). It
+#     may be better to just modify each potential field individually to increase the speed (See gempy.select_series).
+#
+#     Args:
+#         vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
+#         simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
+#         formations_names_l (list): Name of the formation of the surfaces
+#         formation_numbers_l (list): formation_numbers (int)
+#         alpha (float): Opacity
+#         plot_data (bool): Default True
+#         size (tuple): Resolution of the window
+#         fullscreen (bool): Launch window in full screen or not
+#
+#     Returns:
+#         vtkPlot
+#     """
+#
+#     vv = vtkPlot(geo_model, **kwargs)
+#     vv.plot_surfaces_3D_real_time(vertices_l, simplices_l, plot_data=plot_data, posterior=posterior,
+#                                   samples=samples, **kwargs)
+#
+#     return vv
+#
+#
+# def plot_surfaces_3D(geo_data, vertices_l=None, simplices_l=None,
+#                      alpha=1, plot_data=True,
+#                      **kwargs):
+#     """
+#     Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
+#
+#     Args:
+#         vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
+#         simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
+#         formations_names_l (list): Name of the formation of the surfaces
+#         formation_numbers_l (list): formation_numbers (int)
+#         alpha (float): Opacity
+#         plot_data (bool): Default True
+#         size (tuple): Resolution of the window
+#         fullscreen (bool): Launch window in full screen or not
+#
+#     Returns:
+#         None
+#     """
+#     vv = vtkPlot(geo_data, **kwargs)
+#     vv.plot_surfaces_3D(vertices_l, simplices_l,
+#                         plot_data=plot_data)
+#     return vv
 
 
 def plot_surfaces_3d_ipv(geo_model, ver, sim):
@@ -130,11 +150,11 @@ def export_to_vtk(geo_data, path=None, name=None, voxels=True, surfaces=True):
     _gempy.warnings.warn("gempy plot functionality will be moved in version 1.2, "
                   "use gempy.plot module instead", FutureWarning)
     if voxels is True:
-        vtkVisualization.export_vtk_lith_block(geo_data, geo_data.solutions.lith_block, path=path)
+        GemPyvtkInteract.export_vtk_lith_block(geo_data, geo_data.solutions.lith_block, path=path)
     if surfaces is True:
         geo_data.solutions.compute_all_surfaces()
         ver, sim = _gempy.get_surfaces(geo_data)
-        vtkVisualization.export_vtk_surfaces(ver, sim, path=path, name=name)
+        GemPyvtkInteract.export_vtk_surfaces(ver, sim, path=path, name=name)
 
 
 def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
@@ -182,7 +202,7 @@ def plot_section(model, cell_number, block_type=None, direction="y", **kwargs):
 
 
 def plot_scalar_field(model, cell_number, N=20,
-                      direction="y", plot_data=True, series="all", *args, **kwargs):
+                      direction="y", plot_data=True, series=0, *args, **kwargs):
     """
     Plot a potential field in a given direction.
 

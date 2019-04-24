@@ -234,7 +234,11 @@ class Series(object):
 
     def set_bottom_relation(self, series: Union[str, list], bottom_relation: Union[str, list]):
         self.df.loc[series, 'BottomRelation'] = bottom_relation
-        if bottom_relation == 'Fault':
+
+        if self.faults.df.loc[series, 'isFault'] is True:
+            self.faults.set_is_fault(series, toggle=True)
+
+        elif bottom_relation == 'Fault':
             self.faults.df.loc[series, 'isFault'] = True
 
     def add_series(self, series_list: Union[str, list], update_order_series=True):
@@ -334,9 +338,10 @@ class Faults(object):
         self.df = pn.DataFrame(np.array([[False, False]]), index=pn.CategoricalIndex(['Default series']),
                                columns=['isFault', 'isFinite'], dtype=bool)
 
-        self.set_is_fault(series_fault=series_fault)
         self.faults_relations_df = pn.DataFrame(index=pn.CategoricalIndex(['Default series']),
                                                 columns=pn.CategoricalIndex(['Default series', '']), dtype='bool')
+
+        self.set_is_fault(series_fault=series_fault)
         self.set_fault_relation(rel_matrix=rel_matrix)
         self.n_faults = 0
 
@@ -351,7 +356,7 @@ class Faults(object):
         self.faults_relations_df.sort_index(inplace=True)
         self.faults_relations_df.sort_index(axis=1, inplace=True)
 
-    def set_is_fault(self, series_fault:Union[str, list]=None, toggle=False):
+    def set_is_fault(self, series_fault: Union[str, list, np.ndarray] = None, toggle=False):
         """
         Set a flag to the series that are df.
 
@@ -371,7 +376,13 @@ class Faults(object):
             if toggle is True:
                 self.df.loc[series_fault, 'isFault'] = self.df.loc[series_fault, 'isFault'] ^ True
             else:
-                self.df.loc[series_fault, 'isFault'] = self.df.loc[series_fault, 'isFault']
+                self.df.loc[series_fault, 'isFault'] = True
+            self.df['isFinite'] = np.bitwise_and(self.df['isFault'], self.df['isFinite'])
+            # Update default fault relations
+            for a_series in series_fault:
+                col_pos = self.faults_relations_df.columns.get_loc(a_series)
+                self.faults_relations_df.iloc[col_pos, col_pos + 1:] = True
+
         self.n_faults = self.df['isFault'].sum()
 
         return self.df
@@ -412,6 +423,8 @@ class Faults(object):
             assert type(rel_matrix) is np.ndarray, 'rel_matrix muxt be a 2D numpy array'
         self.faults_relations_df = pn.DataFrame(rel_matrix, index=self.df.index,
                                                 columns=self.df.index, dtype='bool')
+
+        self.faults_relations_df.iloc[np.tril(np.ones(self.df.index.shape[0])).astype(bool)] = False
 
         return self.faults_relations_df
 
@@ -563,14 +576,16 @@ class Surfaces(object):
     def __init__(self, series: Series, values_array=None, properties_names=None, surface_names=None,
                  ):
 
-        self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'color', 'id']
+        self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'color', 'vertices', 'edges', 'id']
+        self._columns_vis = ['surface', 'series', 'order_surfaces', 'isBasement', 'color', 'id']
+        self._n_properties = len(self._columns) -1
         self.series = series
         self.colors = Colors(self)
 
         df_ = pn.DataFrame(columns=self._columns)
         self.df = df_.astype({'surface': str, 'series': 'category',
                               'order_surfaces': int, 'isBasement': bool,
-                              'color': bool, 'id': int})
+                              'color': bool, 'id': int, 'vertices': object, 'edges': object})
 
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
             self.df: pn.DataFrame
@@ -591,7 +606,7 @@ class Surfaces(object):
 
     def _repr_html_(self):
         #return self.df.to_html()
-        return self.df.style.applymap(self.background_color, subset=['color']).render()
+        return self.df[self._columns_vis].style.applymap(self.background_color, subset=['color']).render()
 
     def background_color(self, value):
         if type(value) == str:
@@ -911,7 +926,7 @@ class GeometricData(object):
         """
 
         # We order the pandas table by surface (also by series in case something weird happened)
-        self.df.sort_values(by=['order_series', 'surface'],
+        self.df.sort_values(by=['order_series', 'id'],
                             ascending=True, kind='mergesort',
                             inplace=True)
         return self.df
@@ -1083,7 +1098,7 @@ class SurfacePoints(GeometricData):
         values = np.array(list(kwargs.values()))
 
         # If we pass multiple index we need to transpose the numpy array
-        if type(idx) is list:
+        if type(idx) is list or type(idx) is np.ndarray:
             values = values.T
 
         # Selecting the properties passed to be modified
@@ -1904,7 +1919,7 @@ class Structure(object):
         # Extracting lengths
         # ==================
         # Array containing the size of every surface. SurfacePoints
-        lssp = self.surface_points.df.groupby('surface')['order_series'].count().values
+        lssp = self.surface_points.df.groupby('id')['order_series'].count().values
         lssp_nonzero = lssp[np.nonzero(lssp)]
 
         self.df.at['values', 'len surfaces surface_points'] = lssp_nonzero#self.surface_points.df['id'].value_counts(sort=False).values
@@ -2036,6 +2051,18 @@ class KrigingParameters(object):
 
         else:
             self.df.loc['values', property] = value
+
+    def str2int_u_grage(self, **kwargs):
+        u_grade_sep = kwargs.get('u_grade_sep', ',')
+        value = self.df.loc['values', 'drift equations']
+        if type(value) is str:
+            value = np.fromstring(value[1:-1], sep=u_grade_sep, dtype=int)
+        try:
+            assert value.shape[0] is self.structure.df.loc['values', 'len series surface_points'].shape[0]
+            self.df.at['values', 'drift equations'] = value
+
+        except AssertionError:
+            print('u_grade length must be the same as the number of series')
 
     def set_default_range(self, extent=None):
         """

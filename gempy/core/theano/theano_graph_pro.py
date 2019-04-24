@@ -56,6 +56,7 @@ class TheanoGraphPro(object):
         self.dot_version = False
 
         theano.config.floatX = dtype
+        theano.config.optimizer = optimizer
 
         # CONSTANT PARAMETERS FOR ALL SERIES
         # KRIGING
@@ -230,8 +231,8 @@ class TheanoGraphPro(object):
 
     def compute_fault_block(self, Z_x, scalar_field_at_surface_points, values, n_series, grid):
         grid_val = self.x_to_interpolate(grid)
-        finite_faults_sel = self.select_finite_faults(n_series, grid_val)
-        return self.export_fault_block(Z_x, scalar_field_at_surface_points, values, finite_faults_sel)
+        finite_faults_ellipse = self.select_finite_faults(n_series, grid_val)
+        return self.export_fault_block(Z_x, scalar_field_at_surface_points, values, finite_faults_ellipse)
 
     def compute_final_block(self, mask, block):
 
@@ -1076,20 +1077,28 @@ class TheanoGraphPro(object):
         ctr = T.mean(fault_points, axis=1)
         x = fault_points - ctr.reshape((-1, 1))
         M = T.dot(x, x.T)
-        U = T.nlinalg.svd(M)[2]
-        rotated_x = T.dot(grid, U)
-        rotated_fault_points = T.dot(fault_points.T, U)
+        U, D, V = T.nlinalg.svd(M)#[2]
+        rotated_x = T.dot(T.dot(grid, U), V)
+        rotated_fault_points = T.dot(T.dot(fault_points.T, U), V)
         rotated_ctr = T.mean(rotated_fault_points, axis=0)
-        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()) / 2 # + self.inf_factor[n_series - 1]
-        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()) / 2 # + self.inf_factor[n_series - 1]
-        sel = T.lt((rotated_x[:, 0] - rotated_ctr[0]) ** 2 / a_radio ** 2 + (
-                rotated_x[:, 1] - rotated_ctr[1]) ** 2 / b_radio ** 2,
-                   1)
+        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()) / 2  #+ self.inf_factor[
+            #n_series - 1]
+        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()) / 2 #+ self.inf_factor[
+           # n_series - 1]
+        # sel = T.lt((rotated_x[:, 0] - rotated_ctr[0]) ** 2 / a_radio ** 2 + (
+        #         rotated_x[:, 1] - rotated_ctr[1]) ** 2 / b_radio ** 2,
+        #            1)
+        #
+        # if "select_finite_faults" in self.verbose:
+        #     sel = theano.printing.Print("scalar_field_iter")(sel)
+
+        ellipse_factor = (rotated_x[:, 0] - rotated_ctr[0])**2 / a_radio**2 + \
+            (rotated_x[:, 1] - rotated_ctr[1])**2 / b_radio**2
 
         if "select_finite_faults" in self.verbose:
-            sel = theano.printing.Print("scalar_field_iter")(sel)
+            ellipse_factor = theano.printing.Print("h")(ellipse_factor)
 
-        return sel
+        return ellipse_factor
 
     def compare(self, a, b, slice_init, Z_x, l, n_surface, drift):
         """
