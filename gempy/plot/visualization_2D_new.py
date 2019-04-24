@@ -42,7 +42,7 @@ sns.set_context('talk')
 plt.style.use(['seaborn-white', 'seaborn-talk'])
 
 
-class PlotData2D(object):
+class PlotParams(object):
     """
     Class to make the different plot related with gempy
 
@@ -64,7 +64,32 @@ class PlotData2D(object):
         self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors)+0.5)
 
-        self._set_style()
+    def
+
+
+class PlotData(PlotParams):
+    def __init__(self):
+        pass
+
+    def plot_orientations(self):
+        pass
+
+    def plot_surface_points(self):
+        pass
+
+    def filter_points_in_section(self, distance=10):
+        pass
+
+class PlotSolution(PlotParams):
+    def __init__(self):
+        pass
+
+    def plot_section(self):
+        pass
+
+    def plot_scalar_field(self):
+        pass
+
 
     @staticmethod
     def _set_style():

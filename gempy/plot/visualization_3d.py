@@ -70,7 +70,7 @@ class vtkVisualization(object):
 
     def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, real_time=False, bg_color=None, ve=1):
         if VTK_IMPORT is False:
-            raise ImportError('vtk is not installed. Not vtk capabilities are possible')
+            raise ImportError('vtk is not installed. No vtk capabilities are possible')
 
         self.ve = ve
 
