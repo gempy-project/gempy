@@ -314,7 +314,10 @@ class PlotData2D(object):
 
         if show_topo:
             if self.model.topography is not None:
-                self.plot_topography(cell_number=cell_number, direction=direction)
+                if direction == 'z':
+                    plt.contour(self.model.topography.values_3D[:, :, 2], extent=extent_val, colors='k')
+                else:
+                    self.plot_topography(cell_number=cell_number, direction=direction)
 
         if not plot_data:
             import matplotlib.patches as mpatches

@@ -621,8 +621,13 @@ class Topography:
             self.values_3D_res[:, :, 2].ravel())).T.astype("float64")
 
     def show(self):
-        plt.imshow(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]))
-        plt.colorbar()
+        plt.contour(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), colors='k')
+        plt.contourf(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), cmap='terrain')
+        cbar = plt.colorbar()
+        cbar.set_label('elevation')
+        plt.xlabel('X')
+        plt.ylabel('Y')
+        plt.title('Model topography')
 
     def _create_grid_mask(self):
         ind = self._find_indices()

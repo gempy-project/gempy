@@ -657,10 +657,14 @@ class DataMutation_pro(object):
         """
 
         Args:
-            mode: 'random': random topography is generated
-                   'gdal'. filepath must be provided
+            mode: 'random': random topography is generated (based on a fractal grid).
+                   'gdal': filepath must be provided to load topography from a raster file.
             filepath: path to raster file
-            kwargs: gp.utils.create_topography.Load_DEM_artificial kwargs: z_ext, resolution
+            kwargs: only when mode is 'random', gp.utils.create_topography.Load_DEM_artificial kwargs:
+                fd: fractal dimension, defaults to 2.0
+                d_z: height difference. If none, last 20% of the model in z direction
+                extent: extent in xy direction. If none, geo_model.grid.extent
+                resolution: resolution of the topography array. If none, geo_model.grid.resoution
 
         Returns: :class:gempy.core.data.Topography
 
@@ -677,6 +681,7 @@ class DataMutation_pro(object):
             print('source must be either random or gdal')
 
         self.topography.show()
+
     def set_surface_order_from_solution(self):
         # TODO time this function
         spu = self.surface_points.df['surface'].unique()

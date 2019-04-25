@@ -101,7 +101,7 @@ class Load_DEM_GDAL():
         return np.array([upleft, lowleft, upright, lowright])
 
 class Load_DEM_artificial():
-    def __init__(self, model, fd=2.2, extent=None, resolution=None, d_z=None):
+    def __init__(self, model, fd=2.0, extent=None, resolution=None, d_z=None):
         """resolution:np 2D array with extent in X and Y direction"""
         self.model = model
 
