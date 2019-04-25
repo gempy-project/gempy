@@ -637,9 +637,10 @@ class Topography:
     def _find_indices(self):
         zs = np.linspace(self.model.grid.extent[4], self.model.grid.extent[5], self.model.grid.resolution[2])
         dz = (zs[-1] - zs[0]) / len(zs)
-        return ((self.values_3D_res[:,:,2] - zs[0]) / dz).astype(int)
+        return ((self.values_3D_res[:, :, 2] - zs[0]) / dz).astype(int)
 
     def _line_in_section(self, direction='y', cell_number=0):
+        # todo use slice2D of plotting class for this
         if np.any(self.topo.resolution - self.model.grid.resolution[:2]) != 0:
             print('Gefahr weil resolution')
             cell_number_res = (self.values_3D.shape[:2] / self.model.grid.resolution[:2] * cell_number).astype(int)

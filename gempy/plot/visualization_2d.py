@@ -225,6 +225,17 @@ class PlotData2D(object):
             print('not a direction')
         return _slice, extent
 
+    def plot_topography(self, cell_number, direction):
+        line = self.model.topography._line_in_section(cell_number=cell_number, direction=direction)
+        if direction == 'x':
+            ext = self.model.grid.extent[[2, 3, 4, 5]]
+        elif direction == 'y':
+            ext = self.model.grid.extent[[0, 1, 4, 5]]
+        # add corners
+        line = np.append(line, ([ext[1], line[0, -1]], [ext[1], ext[3]], [ext[0], ext[3]], [ext[0], line[0, 1]])).reshape(-1,2)
+        plt.fill(line[:, 0], line[:, 1], color='k', alpha=0.5)
+
+
     def extract_fault_lines(self, cell_number=25, direction='y'):
 
         faults = list(self.model.faults.faults_relations_df.form_series[
@@ -240,7 +251,7 @@ class PlotData2D(object):
                         colors=self._cmap.colors[f_id])
 
     def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data=False, block_type='lithology', ve=1, show_faults=False, **kwargs):
+                           plot_data=False, block_type='lithology', ve=1, show_faults=False, show_topo = True, **kwargs):
         """
         Plot a section of the block model
 
@@ -300,6 +311,11 @@ class PlotData2D(object):
         if show_faults:
             #raise NotImplementedError
             self.extract_fault_lines(cell_number, direction)
+
+        if show_topo:
+            if self.model.topography is not None:
+                self.plot_topography(cell_number=cell_number, direction=direction)
+
         if not plot_data:
             import matplotlib.patches as mpatches
             patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
