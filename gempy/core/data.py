@@ -621,6 +621,7 @@ class Topography:
             self.values_3D_res[:, :, 2].ravel())).T.astype("float64")
 
     def show(self):
+        print('showing...')
         plt.contour(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), colors='k')
         plt.contourf(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), cmap='terrain')
         cbar = plt.colorbar()

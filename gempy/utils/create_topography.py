@@ -31,13 +31,15 @@ class Load_DEM_GDAL():
         self.dem = gdal.Open(path_dem)
         self.dem_zval = self.dem.ReadAsArray()
         self._get_raster_dimensions()
+        print(self.extent, self.resolution)
 
         if model is not None:
             self.model = model
             self.crop2grid()
         else:
             print('pass geo_model to directly crop the DEM to the model extent')
-
+            print('depending on the size of the raster, this can take forever')
+        print(self.extent, self.resolution)
         self.convert2xyz()
 
     def _get_raster_dimensions(self):
@@ -77,6 +79,7 @@ class Load_DEM_GDAL():
         Returns: array with the x,y,z coordinates of the topography  [0]: shape(a,b,3), [1]: shape(a*b,3)
         '''
         path_dest = '_topo.xyz'
+        print('storing converted file...')
         shape = self.dem_zval.shape
         gdal.Translate(path_dest, self.dem, options=gdal.TranslateOptions(options=['format'], format="XYZ"))
 
