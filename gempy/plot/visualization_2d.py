@@ -238,8 +238,8 @@ class PlotData2D(object):
 
     def extract_fault_lines(self, cell_number=25, direction='y'):
 
-        faults = list(self.model.faults.faults_relations_df.form_series[
-                          self.model.faults.faults_relations_df.form_series == True].index)
+        faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
+
         _slice, extent = self._slice2D(cell_number, direction)
 
         for fault in faults:
