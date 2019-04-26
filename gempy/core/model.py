@@ -78,7 +78,15 @@ class DataMutation_pro(object):
     # region Grid
 
     def set_grid_object(self, grid: Grid, update_model=True):
-        pass
+        self.grid.values = grid.values
+        self.rescaling.set_rescaled_grid()
+        self.grid.grid_type = grid.grid_type
+        self.grid.resolution = grid.resolution
+        self.grid.extent = grid.extent
+
+        self.grid.length = grid.values.shape[0]
+        self.grid.mask_topo = grid.mask_topo
+        self.interpolator.set_initial_results_matrices()
         # self.grid = grid
         # self.additional_data.grid = grid
         # self.rescaling.grid = grid
