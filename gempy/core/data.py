@@ -710,9 +710,9 @@ class Surfaces(object):
 
     def _repr_html_(self):
         #return self.df.to_html()
-        c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
+        #c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis))]
 
-        return self.df[c_].style.applymap(self.background_color, subset=['color']).render()
+        return self.df.style.applymap(self.background_color, subset=['color']).render()
 
     def _repr_html2_(self, df):
         return df.style.applymap(self.background_color, subset=['color']).render()
