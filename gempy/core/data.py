@@ -18,6 +18,7 @@ pn.options.mode.chained_assignment = None
 import skimage
 from gempy.utils.create_topography import Load_DEM_artificial, Load_DEM_GDAL
 import matplotlib.pyplot as plt
+from IPython.core.display import HTML
 
 
 class MetaData(object):
@@ -652,9 +653,9 @@ class Topography:
             cell_number_res = (self.values_3D.shape[:2] / self.model.grid.resolution[:2] * cell_number).astype(int)
             cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
         if direction == 'x':
-            topoline = self.values_3D[cell_number, :, :][:, [0, 2]].astype(int)
-        elif direction == 'y':
             topoline = self.values_3D[:, cell_number, :][:, [1, 2]].astype(int)
+        elif direction == 'y':
+            topoline = self.values_3D[cell_number, :, :][:, [0, 2]].astype(int)
         else:
             raise NotImplementedError
         return topoline
@@ -708,8 +709,22 @@ class Surfaces(object):
         return self.df.to_string()
 
     def _repr_html_(self):
-        #return self.df.to_html()
         return self.df[self._columns_vis].style.applymap(self.background_color, subset=['color']).render()
+
+    def _repr_html2_(self, df):
+        return df.style.applymap(self.background_color, subset=['color']).render()
+
+    def _repr_html_new_(self):
+        idx = list(self.df[self.df['order_surfaces']==1]['id']-1)
+        tables = np.array_split(self.df[self._columns_vis], idx)[1:]
+        return display(HTML(
+            '<table><tr style="background-color:white;">' +
+            ''.join(['<td>' + self._repr_html2_(table) + '</td>' + '<tr>\n' for table in tables]) +
+            '</tr></table>'
+        ))
+
+
+        #return self.df[self._columns_vis].style.applymap(self.background_color, subset=['color']).render()
 
     def background_color(self, value):
         if type(value) == str:
