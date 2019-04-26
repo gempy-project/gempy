@@ -709,7 +709,10 @@ class Surfaces(object):
         return self.df.to_string()
 
     def _repr_html_(self):
-        return self.df[self._columns_vis].style.applymap(self.background_color, subset=['color']).render()
+        #return self.df.to_html()
+        c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
+
+        return self.df[c_].style.applymap(self.background_color, subset=['color']).render()
 
     def _repr_html2_(self, df):
         return df.style.applymap(self.background_color, subset=['color']).render()
@@ -981,7 +984,7 @@ class Surfaces(object):
     def modify_surface_values(self, idx, properties_names, values):
         """Method to modify values using loc of pandas"""
         properties_names = np.atleast_1d(properties_names)
-        assert ~properties_names.isin(['surface', 'series', 'order_surfaces', 'id', 'isBasement', 'color']),\
+        assert ~np.isin(properties_names, ['surface', 'series', 'order_surfaces', 'id', 'isBasement', 'color']),\
             'only property names can be modified with this method'
 
         self.df.loc[idx, properties_names] = values
