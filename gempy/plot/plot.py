@@ -178,7 +178,7 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     return p
 
 
-def plot_section(model, cell_number, block_type=None, direction="y", **kwargs):
+def plot_section(model, cell_number, block=None, direction="y", **kwargs):
     """
     Plot a section of the block model
 
@@ -197,7 +197,7 @@ def plot_section(model, cell_number, block_type=None, direction="y", **kwargs):
         None
     """
     plot = PlotData2D(model)
-    plot.plot_block_section(model.solutions, cell_number, block=block_type, direction=direction, **kwargs)
+    plot.plot_block_section(model.solutions, cell_number, block=block, direction=direction, **kwargs)
     # TODO saving options
 
 

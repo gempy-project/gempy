@@ -293,19 +293,12 @@ class PlotData2D(object):
         """
 
         if type(block) is not str:
-            warnings.warn('Passing the block directly will get deprecated in the next version. Please use Solution'
-                          'and block_type instead', FutureWarning)
+            # warnings.warn('Passing the block directly will get deprecated in the next version. Please use Solution'
+            #               'and block_type instead', FutureWarning)
             _block = block
         else:
-            if block_type is 'lithology':
+            if block_type is None:
                 _block = solution.lith_block
-
-            elif block_type is 'fault1':
-                _block = solution.fault_blocks
-
-            else:
-                assert block_type in self.model.surfaces.df.columns, 'The value to be plotted has to be in surfaces: \\' + \
-                                                                   str(self.model.surfaces.df)
 
         plot_block = _block.reshape(self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]

@@ -66,8 +66,8 @@ class Grid(object):
         self.grid_type = grid_type
         self.resolution = np.empty(3)
         self.extent = np.empty(6, dtype='float64')
-        self.values = np.empty((1, 3))
-        self.values_r = np.empty((1, 3))
+        self.values = np.empty((0, 3))
+        self.values_r = np.empty((0, 3))
         self.length = self.values.shape[0]
         self.mask_topo = None
 
@@ -285,7 +285,7 @@ class Series(object):
         self.update_faults_index()
 
     @_setdoc([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
-    def reorder_series(self, new_categories:list):
+    def reorder_series(self, new_categories: Union[list, np.ndarray]):
         idx = self.df.index.reorder_categories(new_categories).sort_values()
         self.df.index = idx
         self.update_faults_index()
@@ -680,7 +680,7 @@ class Surfaces(object):
                  ):
 
         self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'color', 'vertices', 'edges', 'id']
-        self._columns_vis = ['surface', 'series', 'order_surfaces', 'isBasement', 'color', 'id']
+        self._columns_vis_drop = ['vertices', 'edges',]
         self._n_properties = len(self._columns) -1
         self.series = series
         self.colors = Colors(self)
@@ -709,7 +709,9 @@ class Surfaces(object):
 
     def _repr_html_(self):
         #return self.df.to_html()
-        return self.df[self._columns_vis].style.applymap(self.background_color, subset=['color']).render()
+        c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
+
+        return self.df[c_].style.applymap(self.background_color, subset=['color']).render()
 
     def background_color(self, value):
         if type(value) == str:
@@ -849,6 +851,7 @@ class Surfaces(object):
         Returns:
             True
         """
+
         self.df['isBasement'] = False
         idx = self.df.last_valid_index()
         if idx is not None:
@@ -966,7 +969,7 @@ class Surfaces(object):
     def modify_surface_values(self, idx, properties_names, values):
         """Method to modify values using loc of pandas"""
         properties_names = np.atleast_1d(properties_names)
-        assert ~properties_names.isin(['surface', 'series', 'order_surfaces', 'id', 'isBasement', 'color']),\
+        assert ~np.isin(properties_names, ['surface', 'series', 'order_surfaces', 'id', 'isBasement', 'color']),\
             'only property names can be modified with this method'
 
         self.df.loc[idx, properties_names] = values
