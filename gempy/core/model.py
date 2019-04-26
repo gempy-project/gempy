@@ -147,12 +147,14 @@ class DataMutation_pro(object):
         self.interpolator.set_theano_shared_relations()
         self.interpolator.set_flow_control()
        # self.update_from_series()
+        return self.series
 
     def rename_series(self, new_categories: Union[dict, list]):
         self.series.rename_series(new_categories)
         self.surfaces.df['series'].cat.rename_categories(new_categories, inplace=True)
         self.surface_points.df['series'].cat.rename_categories(new_categories, inplace=True)
         self.orientations.df['series'].cat.rename_categories(new_categories, inplace=True)
+        return self.series
 
     def modify_order_series(self, new_value: int, idx: str):
         self.series.modify_order_series(new_value, idx)
@@ -170,6 +172,24 @@ class DataMutation_pro(object):
 
         self.interpolator.set_flow_control()
         self.update_structure()
+        return self.series
+
+    def reorder_series(self, new_categories: Union[list, np.ndarray]):
+        self.series.reorder_series(new_categories)
+        self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+                                                          ordered=False, inplace=True)
+
+        self.surfaces.sort_surfaces()
+        self.surfaces.set_basement()
+
+        self.map_data_df(self.surface_points.df)
+        self.surface_points.sort_table()
+        self.map_data_df(self.orientations.df)
+        self.orientations.sort_table()
+
+        self.interpolator.set_flow_control()
+        self.update_structure()
+        return self.series
 
     # endregion
 
@@ -289,15 +309,19 @@ class DataMutation_pro(object):
 
     def add_surface_values(self,  values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
         self.surfaces.add_surfaces_values(values_array, properties_names)
+        return self.surfaces
 
     def delete_surface_values(self, properties_names: list):
         self.delete_surface_values(properties_names)
+        return self.surfaces
 
     def modify_surface_values(self, idx, properties_names, values):
         self.surfaces.modify_surface_values(idx, properties_names, values)
+        return self.surfaces
 
     def set_surface_values(self, values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
         self.surfaces.set_surfaces_values(values_array, properties_names)
+        return self.surfaces
 
     @_setdoc([Surfaces.map_series.__doc__])
     def map_series_to_surfaces(self, mapping_object: Union[dict, pn.Categorical] = None,
@@ -312,6 +336,8 @@ class DataMutation_pro(object):
                 self.series.add_series(series_list)
             else:
                 raise AttributeError(str(type(mapping_object)) + ' is not the right attribute type.')
+
+
 
         self.surfaces.map_series(mapping_object)
 
@@ -332,6 +358,10 @@ class DataMutation_pro(object):
         if sort_geometric_data is True:
             self.surface_points.sort_table()
             self.orientations.sort_table()
+
+        if set_series is True and self.series.df.index.isin(['Basement']).any():
+            aux = self.series.df.index.drop('Basement').get_values()
+            self.reorder_series(np.append(aux, 'Basement'))
 
         return self.surfaces.sequential_pile.figure
 
@@ -818,7 +848,7 @@ class Model(DataMutation_pro):
             self.orientations.read_orientations(path_o, inplace=True, **kwargs)
         if add_basement is True:
             self.surfaces.add_surface(['basement'])
-
+            self.map_series_to_surfaces({'Basement': 'basement'}, set_series=True)
         self.rescaling.rescale_data()
 
         self.additional_data.update_structure()

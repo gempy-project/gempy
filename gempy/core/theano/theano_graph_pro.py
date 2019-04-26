@@ -1422,3 +1422,49 @@ class TheanoGraphPro(object):
 
         return block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix
 
+    def compute_forward_gravity(self):  # densities, tz, select,
+
+        tz = theano.shared(np.empty((0, 1), dtype='float32'), 'tz component')
+        # TODO: Assert outside that densities is the same size as surfaces (minus df)
+        # Compute the geological model
+        pos_density = T.scalar('position of the density', dtype='int32')
+        density_matrix = self.compute_series()[0][pos_density, :- 2 * self.len_points]
+
+        # if n_faults == 0:
+        #     surfaces = T.concatenate([self.n_surface[::-1], T.stack([0])])
+        # else:
+        #     surfaces = T.concatenate([self.n_surface[:n_faults-1:-1], T.stack([0])])
+        #
+        #     if False:
+        #         surfaces = theano.printing.Print('surfaces')(surfaces)
+        #
+        # # Substitue lithologies by its density
+        # density_block_loop, updates4 = theano.scan(self.switch_densities,
+        #                             outputs_info=[lith_matrix[0]],
+        #                              sequences=[surfaces, self.densities],
+        #                             return_list = True
+        # )
+
+        # if False:
+        #     density_block_loop_f = T.set_subtensor(density_block_loop[-1][-1][self.weigths_index], self.weigths_weigths)
+        #
+        # else:
+        #density_block_loop_f = lith_matrix[0]
+
+        if 'density_block' in self.verbose:
+            density_block_loop_f = theano.printing.Print('density block')(density_block_loop_f)
+
+        n_measurements = self.tz.shape[0]
+        # Tiling the density block for each measurent and picking just the closer to them. This has to be possible to
+        # optimize
+
+        # densities_rep = T.tile(density_block_loop[-1][-1], n_measurements)
+        densities_rep = T.tile(density_block_loop_f, n_measurements)
+        densities_selected = densities_rep[T.nonzero(T.cast(self.select, "int8"))[0]]
+        densities_selected_reshaped = densities_selected.reshape((n_measurements, -1))
+        #
+        # # density times the component z of gravity
+        grav = densities_selected_reshaped * self.tz
+
+        # return [lith_matrix, self.fault_matrix, pfai, grav.sum(axis=1)]
+        return [lith_matrix, fault_matrix, grav.sum(axis=1), pfai]
