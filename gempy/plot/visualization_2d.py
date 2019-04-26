@@ -76,7 +76,7 @@ class PlotData2D(object):
         plt.style.use(['seaborn-white', 'seaborn-talk'])
         sns.set_context("talk")
 
-    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1, **kwargs):
+    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1,show_topo=True, **kwargs):
         """
         Plot the projecton of the raw data (surface_points and orientations) in 2D following a
         specific directions
@@ -176,6 +176,15 @@ class PlotData2D(object):
         plt.xlabel(x)
         plt.ylabel(y)
 
+
+        if show_topo:
+            if self.model.topography is not None:
+                if direction == 'z':
+                    plt.contour(self.model.topography.values_3D[:, :, 2], extent=extent, colors='k')
+                else:
+                    self.plot_topography(cell_number=0, direction=direction)
+
+
         #return fig, ax, p
 
     def _slice(self, direction, cell_number=25):
@@ -250,6 +259,19 @@ class PlotData2D(object):
             plt.contour(block.reshape(self.model.grid.resolution)[_slice].T, 0, extent=extent, levels=level,
                         colors=self._cmap.colors[f_id])
 
+    def plot_map(self, solution: Solution):
+        lith = solution.lith_block
+        geomap = lith.reshape(self.model.topography.topo.dem_zval.shape)  # resolution of topo gives much better map
+        # geomap = np.flip(geomap, axis=0) #to match the orientation of the other plotting options
+
+        plt.imshow(geomap, origin="upper", cmap=self._cmap, norm=self._norm)
+        plt.contour(self.model.topography.values_3D[:, :, 2],  cmap='Greys')
+        cbar = plt.colorbar()
+        cbar.set_label('elevation')
+        plt.title("Geological map", fontsize=15)
+        plt.xlabel('X')
+        plt.ylabel('Y')
+
     def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
                            plot_data=False, block_type='lithology', ve=1, show_faults=False, show_topo = True, **kwargs):
         """
@@ -315,7 +337,7 @@ class PlotData2D(object):
         if show_topo:
             if self.model.topography is not None:
                 if direction == 'z':
-                    plt.contour(self.model.topography.values_3D[:, :, 2], extent=extent_val, colors='k')
+                    plt.contour(self.model.topography.values_3D[:, :, 2], extent=extent_val, cmap='Grays')
                 else:
                     self.plot_topography(cell_number=cell_number, direction=direction)
 
