@@ -228,7 +228,7 @@ class Series(object):
         # TODO: isnt this the behaviour we get fif we do not do the rename=True?
         for c in series_order:
             self.df.loc[c, 'BottomRelation'] = 'Erosion'
-            self.faults.df.loc[c, 'isFault'] = False
+            self.faults.df.loc[c] = [False, False]
             self.faults.faults_relations_df.loc[c, c] = False
 
         self.faults.faults_relations_df.fillna(False, inplace=True)

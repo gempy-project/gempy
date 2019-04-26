@@ -6,11 +6,7 @@ Created on 16.04.2019
 @author: Elisa Heim
 """
 
-try:
-    import gdal
-except ImportError:
-    import warnings
-    warnings.warn("gdal package is not installed. No support for raster formats")
+
 
 import numpy as np
 import pandas as pn
@@ -27,6 +23,12 @@ class Load_DEM_GDAL():
             path_dem: path where dem is stored. file format: GDAL raster formats
             if model: cropped to geomodel extent
         '''
+
+        try:
+            import gdal
+        except ImportError:
+            import warnings
+            warnings.warn("gdal package is not installed. No support for raster formats")
 
         self.dem = gdal.Open(path_dem)
         self.dem_zval = self.dem.ReadAsArray()

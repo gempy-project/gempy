@@ -100,8 +100,15 @@ class PlotData2D(object):
 
         x, y, Gx, Gy = self._slice(direction)[4:]
         extent = self._slice(direction)[3]
-        aspect = (extent[1] - extent[0])/(extent[3] - extent[2])
+        print(extent)
+        # ext_abs = np.array([abs(extent[1] - extent[0]) , abs(extent[3] - extent[2])])
+        #
+        # aspect = ext_abs.max()/ext_abs.min()
+        # print(aspect)
+        #
+        # print(x,y)
 
+        aspect = (extent[1] - extent[0]) / (extent[3] - extent[2])
         # apply vertical exageration
         if direction == 'x' or direction == 'y':
             aspect /= ve
@@ -110,7 +117,7 @@ class PlotData2D(object):
             min_axis = 'width'
         else:
             min_axis = 'height'
-
+        print(aspect)
         if series == "all":
             series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"].
                 isin(self.model.series.df.index.values)]
@@ -127,6 +134,7 @@ class PlotData2D(object):
     #    series_to_plot_i['surface'] = series_to_plot_i['surface'].cat.remove_unused_categories()
     #    series_to_plot_f['surface'] = series_to_plot_f['surface'].cat.remove_unused_categories()
         #print(self._color_lot)
+        print(kwargs)
         if data_type == 'all':
             p = sns.lmplot(x, y,
                            data=series_to_plot_i,
@@ -139,6 +147,10 @@ class PlotData2D(object):
                            palette= self._color_lot,#np.asarray([tuple(i) for i in self._color_lot.values()]),
                            **kwargs)
 
+            # if direction == 'z':
+            #     p.axes[0, 0].set_xlim(extent[2], extent[3])
+            #     p.axes[0, 0].set_ylim(extent[0], extent[1])
+            # else:
             p.axes[0, 0].set_ylim(extent[2], extent[3])
             p.axes[0, 0].set_xlim(extent[0], extent[1])
 
@@ -161,13 +173,10 @@ class PlotData2D(object):
             p.axes[0, 0].set_ylim(extent[2], extent[3])
             p.axes[0, 0].set_xlim(extent[0], extent[1])
 
-
         if data_type == 'orientations':
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
                        pivot="tail", scale_units=min_axis, scale=15)
-
-
 
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
@@ -175,7 +184,6 @@ class PlotData2D(object):
         # plt.ylim(extent[2] - extent[2]*0.05, extent[3] + extent[3]*0.05)
         plt.xlabel(x)
         plt.ylabel(y)
-
 
         if show_topo:
             if self.model.topography is not None:
@@ -201,7 +209,7 @@ class PlotData2D(object):
             y = "Z"
             Gx = "G_y"
             Gy = "G_z"
-            extent_val = self.model.grid.extent[[2,3,4,5]]
+            extent_val = self.model.grid.extent[[2, 3, 4, 5]]
         elif direction == "y":
             _b = cell_number
             x = "X"
@@ -215,7 +223,7 @@ class PlotData2D(object):
             y = "Y"
             Gx = "G_x"
             Gy = "G_y"
-            extent_val = self.model.grid.extent[[1, 2, 3, 4]]
+            extent_val = self.model.grid.extent[[0, 1, 2, 3]]#self.model.grid.extent[[1, 2, 3, 4]]
         else:
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
         return _a, _b, _c, extent_val, x, y, Gx, Gy
@@ -273,7 +281,7 @@ class PlotData2D(object):
         plt.ylabel('Y')
 
     def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data=False, block_type='lithology', ve=1, show_faults=False, show_topo = True, **kwargs):
+                           plot_data=False, block_type=None, ve=1, show_faults=False, show_topo = True, **kwargs):
         """
         Plot a section of the block model
 
@@ -292,13 +300,13 @@ class PlotData2D(object):
             Block plot
         """
 
-        if type(block) is not str:
-            # warnings.warn('Passing the block directly will get deprecated in the next version. Please use Solution'
-            #               'and block_type instead', FutureWarning)
-            _block = block
+        if block is None:
+            _block = solution.lith_block
         else:
-            if block_type is None:
-                _block = solution.lith_block
+            _block = block
+
+        if block_type is not None:
+            raise NotImplementedError
 
         plot_block = _block.reshape(self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
