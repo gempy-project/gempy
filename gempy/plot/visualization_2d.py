@@ -185,14 +185,6 @@ class PlotData2D(object):
         plt.xlabel(x)
         plt.ylabel(y)
 
-        if show_topo:
-            if self.model.topography is not None:
-                if direction == 'z':
-                    plt.contour(self.model.topography.values_3D[:, :, 2], extent=extent, colors='k')
-                else:
-                    self.plot_topography(cell_number=0, direction=direction)
-
-
         #return fig, ax, p
 
     def _slice(self, direction, cell_number=25):
