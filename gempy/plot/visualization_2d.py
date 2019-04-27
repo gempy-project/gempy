@@ -100,13 +100,8 @@ class PlotData2D(object):
 
         x, y, Gx, Gy = self._slice(direction)[4:]
         extent = self._slice(direction)[3]
-        print(extent)
-        # ext_abs = np.array([abs(extent[1] - extent[0]) , abs(extent[3] - extent[2])])
-        #
-        # aspect = ext_abs.max()/ext_abs.min()
-        # print(aspect)
-        #
-        # print(x,y)
+
+
 
         aspect = (extent[1] - extent[0]) / (extent[3] - extent[2])
         # apply vertical exageration
@@ -117,7 +112,6 @@ class PlotData2D(object):
             min_axis = 'width'
         else:
             min_axis = 'height'
-        print(aspect)
         if series == "all":
             series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"].
                 isin(self.model.series.df.index.values)]
@@ -134,7 +128,7 @@ class PlotData2D(object):
     #    series_to_plot_i['surface'] = series_to_plot_i['surface'].cat.remove_unused_categories()
     #    series_to_plot_f['surface'] = series_to_plot_f['surface'].cat.remove_unused_categories()
         #print(self._color_lot)
-        print(kwargs)
+
         if data_type == 'all':
             p = sns.lmplot(x, y,
                            data=series_to_plot_i,
