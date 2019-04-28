@@ -18,6 +18,7 @@ pn.options.mode.chained_assignment = None
 import skimage
 from gempy.utils.create_topography import Load_DEM_artificial, Load_DEM_GDAL
 import matplotlib.pyplot as plt
+from gempy.core.grid_modules import grid_types
 
 
 class MetaData(object):
@@ -41,6 +42,87 @@ class MetaData(object):
             project_name += self.date
 
         self.project_name = project_name
+
+
+class Grid_pro(object):
+    def __init__(self, grid_type=None, **kwargs):
+
+        self.values = np.empty((0, 3))
+        self.values_r = np.empty((0, 3))
+        self.length = np.empty(0)
+        self.grid_types = np.array(['regular', 'custom', 'topography', 'gravity'])
+        self.grid_active = np.zeros(4, dtype=bool)
+        # All grid types must have values
+
+        self.regular_grid = None
+        self.regular_grid_active = False
+        self.custom_grid = None
+        self.custom_grid_grid_active = False
+        self.topography = None
+        self.topography_grid_active = False
+        self.gravity_grid = None
+        self.gravity_grid_active = False
+
+    def __str__(self):
+        return 'Grid Object. Values: \n' + np.array2string(self.values)
+
+    def __repr__(self):
+        return 'Grid Object. Values: \n' + np.array_repr(self.values)
+
+    def set_regular_grid(self, extent, resolution):
+        self.regular_grid = grid_types.RegularGrid(extent, resolution)
+        self.set_active('regular')
+
+    def set_custom_grid(self, custom_grid: np.ndarray):
+        self.custom_grid = grid_types.CustomGrid(custom_grid)
+        self.set_active('custom')
+
+    def set_topography(self, source='random', **kwargs):
+        self.topography = grid_types.Topography(self.regular_grid)
+
+        if source == 'random':
+            self.topography.load_random_hills(**kwargs)
+        elif source == 'gdal':
+            filepath = kwargs.get('filepath', None)
+            if filepath is not None:
+                self.topography.load_from_gdal(filepath)
+            else:
+                print('to load a raster file, a path to the file must be provided')
+        else:
+            print('source must be either random or gdal')
+
+        self.topography.show()
+
+        self.set_active('topography')
+
+    def set_gravity_grid(self):
+        self.gravity_grid = grid_types.GravityGrid()
+        self.grid_active = np.zeros(4, dtype=bool)
+        self.set_active('gravity')
+
+    def set_active(self, grid_name: Union[str, np.ndarray]):
+        where = self.grid_types == grid_name
+        self.grid_active += where
+        self.update_grid_values()
+
+    def set_inactive(self, grid_name: str):
+        where = self.grid_types == grid_name
+        self.grid_active -= where
+        self.update_grid_values()
+
+    def update_grid_values(self):
+        self.length = np.empty((0))
+        self.values = np.empty((0, 3))
+        lengths = [0]
+
+        for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.gravity_grid]):
+            if self.grid_active[e]:
+                self.values = np.vstack((self.values, grid_types.values))
+                lengths.append(grid_types.values.shape[0])
+            else:
+                lengths.append(0)
+
+        self.length = np.array(lengths).cumsum()
 
 
 class Grid(object):
