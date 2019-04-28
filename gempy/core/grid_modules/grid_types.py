@@ -6,9 +6,14 @@ from scipy.constants import G
 
 
 class RegularGrid:
-    def __init__(self, extent, resolution):
-        self.set_regular_grid(extent, resolution)
-        self.dx, self.dy, self.dz = self.get_dx_dy_dz()
+    def __init__(self, extent=None, resolution=None):
+        self.grid_type = 'regurlar grid'
+        self.resolution = np.ones(3, dtype='int64')
+        self.extent = np.empty(6, dtype='float64')
+        self.values = np.empty((0, 3))
+        if extent is not None and resolution is not None:
+            self.set_regular_grid(extent, resolution)
+            self.dx, self.dy, self.dz = self.get_dx_dy_dz()
 
     @staticmethod
     def create_regular_grid_3d(extent, resolution):
@@ -134,15 +139,33 @@ class GravityGrid():
         return kernel_g, kernel_d_left, kernel_d_right
 
     def set_irregular_kernel(self, resolution, radio):
-        self.values, self.kernel_dxyz_left, self.kernel_dxyz_right = self.create_irregular_grid_kernel(
+        self.kernel_centers, self.kernel_dxyz_left, self.kernel_dxyz_right = self.create_irregular_grid_kernel(
             resolution, radio)
 
-        return self.values
+        return self.kernel_centers
+    #
+    # def set_airborne_plane(self, z, ai_resolution):
+    #
+    #     # TODO Include all in the loop. At the moment I am tiling all grids and is useless
+    #     # Rescale z
+    #     z_res = z  # (z-self.interp_data.centers[2])/self.interp_data.rescaling_factor + 0.5001
+    #     ai_extent_rescaled = (self.ai_extent - np.repeat(self.interp_data.centers, 2)) / \
+    #                          self.interp_data.rescaling_factor + 0.5001
+    #
+    #     # Create xy meshgrid
+    #     xy = np.meshgrid(np.linspace(ai_extent_rescaled.iloc[0], ai_extent_rescaled.iloc[1], self.ai_resolution[0]),
+    #                      np.linspace(ai_extent_rescaled.iloc[2], ai_extent_rescaled.iloc[3], self.ai_resolution[1]))
+    #     z = np.ones(self.ai_resolution[0] * self.ai_resolution[1]) * z_res
+    #
+    #     # Transformation
+    #     xy_ravel = np.vstack(map(np.ravel, xy))
+    #     airborne_plane = np.vstack((xy_ravel, z)).T.astype(self.interp_data.dtype)
+
 
     def set_irregular_grid(self, centers, kernel_centers=None, **kwargs):
         self.values =np.empty((0, 3))
         if kernel_centers is None:
-            kernel_centers, _, _ = self.create_irregular_grid_kernel(**kwargs)
+            kernel_centers = self.set_irregular_kernel(**kwargs)
 
         centers = np.atleast_2d(centers)
         for i in centers:
@@ -151,10 +174,10 @@ class GravityGrid():
         self.length = self.values.shape[0]
 
     def set_tz_kernel(self, **kwargs):
-        if self.values.size == 0:
+        if self.kernel_centers.size == 0:
             self.set_irregular_kernel(**kwargs)
 
-        grid_values = self.values
+        grid_values = self.kernel_centers
        # dx, dy, dz = dxdydz
 
         s_gr_x = grid_values[:, 0]

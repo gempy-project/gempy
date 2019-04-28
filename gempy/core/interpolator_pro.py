@@ -797,6 +797,10 @@ class InterpolatorModel(Interpolator_pro):
 
 
 class InterpolatorGravity(InterpolatorModel):
+
+    def set_theano_shared_tz_kernel(self):
+        self.theano_graph.tz.set_value(self.grid.gravity_grid.tz.astype(self.dtype))
+
     def compile_th_fn(self, density = None, pos_density=None, inplace=False,
                       debug=False):
         """

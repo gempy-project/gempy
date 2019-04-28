@@ -209,7 +209,7 @@ class TheanoGraphPro(object):
         self.offset = theano.shared(10.)
 
         # Gravity
-        self.tz = theano.shared(np.empty((0), dtype='float32'), 'tz component')
+        self.tz = theano.shared(np.empty((0), dtype=dtype), 'tz component')
         self.density_matrix = T.vector('density vector')
 
         # Results matrix

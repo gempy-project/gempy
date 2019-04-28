@@ -44,9 +44,28 @@ class MetaData(object):
         self.project_name = project_name
 
 
-class Grid_pro(object):
-    def __init__(self, grid_type=None, **kwargs):
+class Grid(object):
+    """
+       Class to generate grids. This class is used to create points where to
+       evaluate the geological model. So far only regular grids and custom_grids are implemented.
 
+       Args:
+           grid_type (str): type of pre-made grids provide by GemPy
+           **kwargs: see args of the given grid type
+
+       Attributes:
+           grid_type (str): type of premade grids provide by GemPy
+           resolution (list[int]): [x_min, x_max, y_min, y_max, z_min, z_max]
+           extent (list[float]):  [nx, ny, nz]
+           values (np.ndarray): coordinates where the model is going to be evaluated
+           values_r (np.ndarray): rescaled coordinates where the model is going to be evaluated
+
+    """
+    def __init__(self, **kwargs):
+
+        extent = kwargs.get('extent', [0, 1000, 0, 1000, -1000, 0])
+
+        self.extent = np.atleast_1d(extent)
         self.values = np.empty((0, 3))
         self.values_r = np.empty((0, 3))
         self.length = np.empty(0)
@@ -54,8 +73,7 @@ class Grid_pro(object):
         self.grid_active = np.zeros(4, dtype=bool)
         # All grid types must have values
 
-        self.regular_grid = None
-        self.regular_grid_active = False
+        # Init optional grids
         self.custom_grid = None
         self.custom_grid_grid_active = False
         self.topography = None
@@ -63,15 +81,25 @@ class Grid_pro(object):
         self.gravity_grid = None
         self.gravity_grid_active = False
 
+        # Init basic grid empty
+        self.regular_grid = self.set_regular_grid(**kwargs)
+        self.regular_grid_active = False
+
     def __str__(self):
         return 'Grid Object. Values: \n' + np.array2string(self.values)
 
     def __repr__(self):
         return 'Grid Object. Values: \n' + np.array_repr(self.values)
 
-    def set_regular_grid(self, extent, resolution):
-        self.regular_grid = grid_types.RegularGrid(extent, resolution)
+    def set_regular_grid(self, *args, **kwargs):
+
+        self.regular_grid = grid_types.RegularGrid(*args, **kwargs)
+        # print(kwargs, 'extent' in kwargs)
+        if 'extent' in kwargs:
+            self.extent = np.atleast_1d(kwargs['extent'])
+
         self.set_active('regular')
+        return self.regular_grid
 
     def set_custom_grid(self, custom_grid: np.ndarray):
         self.custom_grid = grid_types.CustomGrid(custom_grid)
@@ -124,8 +152,20 @@ class Grid_pro(object):
 
         self.length = np.array(lengths).cumsum()
 
+    def get_grid_args(self, grid_name: str):
+        assert type(grid_name) is str, 'Only one grid type can be retrieve'
 
-class Grid(object):
+        where = np.where(self.grid_types == grid_name)[0][0]
+        return self.length[where], self.length[where+1]
+
+    def get_grid(self, grid_name: str):
+        assert type(grid_name) is str, 'Only one grid type can be retrieve'
+
+        l_0, l_1 = self.get_grid_args(grid_name)
+        return self.values[l_0:l_1]
+
+
+class Grid_DEP(object):
     """
     Class to generate grids. This class is used to create points where to
     evaluate the geological model. So far only regular grids and custom_grids are implemented.
@@ -654,92 +694,92 @@ class Colors:
         return self.surfaces
 
 
-class Topography:
-    # todo allow numpy array to be passed
-    def __init__(self, grid: Grid):
-        self.grid = grid
-
-    def load_from_gdal(self, filepath):
-        self.topo = Load_DEM_GDAL(filepath, self.grid)
-        self._create()
-
-    def load_random_hills(self,**kwargs):
-        self.topo = Load_DEM_artificial(self.grid, **kwargs)
-        self._create()
-
-    def _create(self):
-        self.values_3D = self.topo.values_3D
-
-        self.values = np.vstack((
-            self.values_3D[:, :, 0].ravel(), self.values_3D[:, :, 1].ravel(),
-            self.values_3D[:, :, 2].ravel())).T.astype("float64")
-
-        self.extent = self.topo.extent
-        self.resolution = self.topo.resolution
-
-        if np.any(self.grid.extent[:4] - self.extent) != 0:
-            print('obacht')
-            self._crop()
-
-        if np.any(self.grid.resolution[:2] - self.resolution) != 0:
-            self._resize()
-        else:
-            self.values_3D_res = self.values_3D
-            self.values_res = self.values
-
-        self.grid.mask_topo = self._create_grid_mask()
-
-    def _crop(self):
-        pass
-
-    def _resize(self):
-        self.values_3D_res = skimage.transform.resize(self.values_3D,
-                                                      (self.grid.resolution[0], self.grid.resolution[1]),
-                                                      mode='constant',
-                                                      anti_aliasing=False, preserve_range=True)
-
-        self.values_res = np.vstack((
-            self.values_3D_res[:, :, 0].ravel(), self.values_3D_res[:, :, 1].ravel(),
-            self.values_3D_res[:, :, 2].ravel())).T.astype("float64")
-
-    def show(self):
-        print('showing...')
-        plt.contour(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), colors='k')
-        plt.contourf(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), cmap='terrain')
-        cbar = plt.colorbar()
-        cbar.set_label('elevation')
-        plt.xlabel('X')
-        plt.ylabel('Y')
-        plt.title('Model topography')
-
-    def _create_grid_mask(self):
-        ind = self._find_indices()
-        gridz = self.grid.values[:, 2].reshape(50, 50, 50).copy()
-        for x in range(self.grid.resolution[0]):
-            for y in range(self.grid.resolution[1]):
-                z = ind[x, y]
-                gridz[x, y, z:] = 99999
-        mask = (gridz == 99999)
-        return np.multiply(np.full(self.grid.values.shape, True).T, mask.ravel()).T
-
-    def _find_indices(self):
-        zs = np.linspace(self.grid.extent[4], self.grid.extent[5], self.grid.resolution[2])
-        dz = (zs[-1] - zs[0]) / len(zs)
-        return ((self.values_3D_res[:, :, 2] - zs[0]) / dz).astype(int)
-
-    def _line_in_section(self, direction='y', cell_number=0):
-        # todo use slice2D of plotting class for this
-        if np.any(self.topo.resolution - self.grid.resolution[:2]) != 0:
-            print('Gefahr weil resolution')
-            cell_number_res = (self.values_3D.shape[:2] / self.grid.resolution[:2] * cell_number).astype(int)
-            cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
-        if direction == 'x':
-            topoline = self.values_3D[cell_number, :, :][:, [0, 2]].astype(int)
-        elif direction == 'y':
-            topoline = self.values_3D[:, cell_number, :][:, [1, 2]].astype(int)
-        else:
-            raise NotImplementedError
-        return topoline
+# class Topography:
+#     # todo allow numpy array to be passed
+#     def __init__(self, grid: Grid):
+#         self.grid = grid
+#
+#     def load_from_gdal(self, filepath):
+#         self.topo = Load_DEM_GDAL(filepath, self.grid)
+#         self._create()
+#
+#     def load_random_hills(self,**kwargs):
+#         self.topo = Load_DEM_artificial(self.grid, **kwargs)
+#         self._create()
+#
+#     def _create(self):
+#         self.values_3D = self.topo.values_3D
+#
+#         self.values = np.vstack((
+#             self.values_3D[:, :, 0].ravel(), self.values_3D[:, :, 1].ravel(),
+#             self.values_3D[:, :, 2].ravel())).T.astype("float64")
+#
+#         self.extent = self.topo.extent
+#         self.resolution = self.topo.resolution
+#
+#         if np.any(self.grid.extent[:4] - self.extent) != 0:
+#             print('obacht')
+#             self._crop()
+#
+#         if np.any(self.grid.resolution[:2] - self.resolution) != 0:
+#             self._resize()
+#         else:
+#             self.values_3D_res = self.values_3D
+#             self.values_res = self.values
+#
+#         self.grid.mask_topo = self._create_grid_mask()
+#
+#     def _crop(self):
+#         pass
+#
+#     def _resize(self):
+#         self.values_3D_res = skimage.transform.resize(self.values_3D,
+#                                                       (self.grid.resolution[0], self.grid.resolution[1]),
+#                                                       mode='constant',
+#                                                       anti_aliasing=False, preserve_range=True)
+#
+#         self.values_res = np.vstack((
+#             self.values_3D_res[:, :, 0].ravel(), self.values_3D_res[:, :, 1].ravel(),
+#             self.values_3D_res[:, :, 2].ravel())).T.astype("float64")
+#
+#     def show(self):
+#         print('showing...')
+#         plt.contour(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), colors='k')
+#         plt.contourf(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), cmap='terrain')
+#         cbar = plt.colorbar()
+#         cbar.set_label('elevation')
+#         plt.xlabel('X')
+#         plt.ylabel('Y')
+#         plt.title('Model topography')
+#
+#     def _create_grid_mask(self):
+#         ind = self._find_indices()
+#         gridz = self.grid.values[:, 2].reshape(50, 50, 50).copy()
+#         for x in range(self.grid.resolution[0]):
+#             for y in range(self.grid.resolution[1]):
+#                 z = ind[x, y]
+#                 gridz[x, y, z:] = 99999
+#         mask = (gridz == 99999)
+#         return np.multiply(np.full(self.grid.values.shape, True).T, mask.ravel()).T
+#
+#     def _find_indices(self):
+#         zs = np.linspace(self.grid.extent[4], self.grid.extent[5], self.grid.resolution[2])
+#         dz = (zs[-1] - zs[0]) / len(zs)
+#         return ((self.values_3D_res[:, :, 2] - zs[0]) / dz).astype(int)
+#
+#     def _line_in_section(self, direction='y', cell_number=0):
+#         # todo use slice2D of plotting class for this
+#         if np.any(self.topo.resolution - self.grid.resolution[:2]) != 0:
+#             print('Gefahr weil resolution')
+#             cell_number_res = (self.values_3D.shape[:2] / self.grid.resolution[:2] * cell_number).astype(int)
+#             cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
+#         if direction == 'x':
+#             topoline = self.values_3D[cell_number, :, :][:, [0, 2]].astype(int)
+#         elif direction == 'y':
+#             topoline = self.values_3D[:, cell_number, :][:, [1, 2]].astype(int)
+#         else:
+#             raise NotImplementedError
+#         return topoline
 
 
 class Surfaces(object):
@@ -2045,8 +2085,8 @@ class RescaledData(object):
              Set the rescaled coordinates and extent into a grid object
         """
 
-        self.grid.extent_r, self.grid.values_r = self.rescale_grid(self.grid, self.df.loc['values', 'rescaling factor'],
-                                                                   self.df.loc['values', 'centers'])
+        self.grid.extent_r, self.grid.values_r = self.rescale_grid(
+            self.grid, self.df.loc['values', 'rescaling factor'], self.df.loc['values', 'centers'])
 
 
 class Structure(object):
