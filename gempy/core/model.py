@@ -19,6 +19,7 @@ from gempy.utils.meta import _setdoc
 from gempy.plot.visualization_3d import vtkVisualization
 from gempy.plot.decorators import *
 
+
 class DataMutation_pro(object):
     def __init__(self):
 
@@ -707,7 +708,7 @@ class DataMutation_pro(object):
         Returns: :class:gempy.core.data.Topography
 
         """
-        self.topography = Topography(self)
+        self.topography = Topography(self.grid)
         if source == 'random':
             self.topography.load_random_hills(**kwargs)
         elif source == 'gdal':

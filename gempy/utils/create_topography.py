@@ -15,31 +15,31 @@ import scipy
 
 
 class Load_DEM_GDAL():
-    '''Class to include height elevation data (e.g. DEMs) with the geological model '''
+    '''Class to include height elevation data (e.g. DEMs) with the geological grid '''
 
-    def __init__(self, path_dem, model=None):
+    def __init__(self, path_dem, grid=None):
         '''
         Args:
             path_dem: path where dem is stored. file format: GDAL raster formats
-            if model: cropped to geomodel extent
+            if grid: cropped to geomodel extent
         '''
 
         try:
             import gdal
         except ImportError:
-            import warnings
-            warnings.warn("gdal package is not installed. No support for raster formats")
+            #import warnings
+            raise ImportError("gdal package is not installed. No support for raster formats")
 
         self.dem = gdal.Open(path_dem)
         self.dem_zval = self.dem.ReadAsArray()
         self._get_raster_dimensions()
         print(self.extent, self.resolution)
 
-        if model is not None:
-            self.model = model
+        if grid is not None:
+            self.grid = grid
             self.crop2grid()
         else:
-            print('pass geo_model to directly crop the DEM to the model extent')
+            print('pass geo_model to directly crop the DEM to the grid extent')
             print('depending on the size of the raster, this can take forever')
         print(self.extent, self.resolution)
         self.convert2xyz()
@@ -62,12 +62,12 @@ class Load_DEM_GDAL():
             output_path:
         Returns:
         '''
-        cornerpoints_geo = self._get_cornerpoints(self.model.grid.extent)
+        cornerpoints_geo = self._get_cornerpoints(self.grid.extent)
         cornerpoints_dtm = self._get_cornerpoints(self.extent)
 
         if np.any(cornerpoints_geo[:2] - cornerpoints_dtm[:2]) != 0:
             path_dest = '_cropped_DEM.tif'
-            new_bounds = (self.model.grid.extent[[0, 2, 1, 3]])
+            new_bounds = (self.grid.extent[[0, 2, 1, 3]])
             gdal.Warp(path_dest, self.dem, options=gdal.WarpOptions(
                 options=['outputBounds'], outputBounds=new_bounds))
 
@@ -106,17 +106,17 @@ class Load_DEM_GDAL():
         return np.array([upleft, lowleft, upright, lowright])
 
 class Load_DEM_artificial():
-    def __init__(self, model, fd=2.0, extent=None, resolution=None, d_z=None):
+    def __init__(self, grid, fd=2.0, extent=None, resolution=None, d_z=None):
         """resolution:np 2D array with extent in X and Y direction"""
-        self.model = model
+        self.grid = grid
 
-        self.resolution = model.grid.resolution[:2] if resolution is None else resolution
-        self.extent = self.model.grid.extent[:4] if extent is None else extent
+        self.resolution = grid.resolution[:2] if resolution is None else resolution
+        self.extent = self.grid.extent[:4] if extent is None else extent
 
         if d_z is None:
             self.d_z = np.array(
-                [self.model.grid.extent[5] - (self.model.grid.extent[5] - self.model.grid.extent[4]) * 1 / 5,
-                 self.model.grid.extent[5]])
+                [self.grid.extent[5] - (self.grid.extent[5] - self.grid.extent[4]) * 1 / 5,
+                 self.grid.extent[5]])
         else:
             self.d_z = d_z
 
@@ -189,8 +189,8 @@ class Load_DEM_artificial():
 
     def create_topo_array(self):
         '''for masking the lith block'''
-        x = np.linspace(self.model.grid.values[:, 0].min(), self.model.grid.values[:, 0].max(), self.resolution[1])
-        y = np.linspace(self.model.grid.values[:, 1].min(), self.model.grid.values[:, 1].max(), self.resolution[0])
+        x = np.linspace(self.grid.values[:, 0].min(), self.grid.values[:, 0].max(), self.resolution[1])
+        y = np.linspace(self.grid.values[:, 1].min(), self.grid.values[:, 1].max(), self.resolution[0])
         xx, yy = np.meshgrid(x, y, indexing='ij')
         self.values_3D = np.dstack([xx.T, yy.T, self.dem_zval])
 
