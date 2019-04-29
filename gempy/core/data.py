@@ -19,6 +19,7 @@ import skimage
 from gempy.utils.create_topography import Load_DEM_artificial, Load_DEM_GDAL
 import matplotlib.pyplot as plt
 from IPython.core.display import HTML
+from gempy.core.grid_modules import grid_types
 
 
 class MetaData(object):

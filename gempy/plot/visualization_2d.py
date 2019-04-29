@@ -76,7 +76,7 @@ class PlotData2D(object):
         plt.style.use(['seaborn-white', 'seaborn-talk'])
         sns.set_context("talk")
 
-    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1,  show_topo=True, **kwargs):
+    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1, **kwargs):
         """
         Plot the projecton of the raw data (surface_points and orientations) in 2D following a
         specific directions
@@ -178,14 +178,6 @@ class PlotData2D(object):
         # plt.ylim(extent[2] - extent[2]*0.05, extent[3] + extent[3]*0.05)
         plt.xlabel(x)
         plt.ylabel(y)
-
-        if show_topo:
-            if self.model.grid.topography is not None:
-                if direction == 'z':
-                    plt.contour(self.model.grid.topography.values_3D[:, :, 2], extent=extent, colors='k')
-                else:
-                    self.plot_topography(cell_number=topography_cell_number, direction=direction)
-
 
         #return fig, ax, p
 
