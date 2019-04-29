@@ -7,11 +7,16 @@ Created on 16.04.2019
 """
 
 
-
 import numpy as np
-import pandas as pn
 import scipy
+import pandas as pn
 
+# you can not import libraries inside a class?!
+try:
+    import gdal
+except ImportError:
+    print('no gdal')
+    #raise ImportError("gdal package is not installed. No support for raster formats")
 
 
 class Load_DEM_GDAL():
@@ -23,12 +28,6 @@ class Load_DEM_GDAL():
             path_dem: path where dem is stored. file format: GDAL raster formats
             if grid: cropped to geomodel extent
         '''
-
-        try:
-            import gdal
-        except ImportError:
-            #import warnings
-            raise ImportError("gdal package is not installed. No support for raster formats")
 
         self.dem = gdal.Open(path_dem)
         self.dem_zval = self.dem.ReadAsArray()

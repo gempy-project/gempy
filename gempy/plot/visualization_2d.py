@@ -76,7 +76,7 @@ class PlotData2D(object):
         plt.style.use(['seaborn-white', 'seaborn-talk'])
         sns.set_context("talk")
 
-    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1,  show_topo=True, **kwargs):
+    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1, **kwargs):
         """
         Plot the projecton of the raw data (surface_points and orientations) in 2D following a
         specific directions
@@ -179,14 +179,6 @@ class PlotData2D(object):
         plt.xlabel(x)
         plt.ylabel(y)
 
-        if show_topo:
-            if self.model.grid.topography is not None:
-                if direction == 'z':
-                    plt.contour(self.model.grid.topography.values_3D[:, :, 2], extent=extent, colors='k')
-                else:
-                    self.plot_topography(cell_number=topography_cell_number, direction=direction)
-
-
         #return fig, ax, p
 
     def _slice(self, direction, cell_number=25):
@@ -244,7 +236,7 @@ class PlotData2D(object):
             ext = self.model.grid.extent[[0, 1, 4, 5]]
         # add corners
         line = np.append(line, ([ext[1], line[0, -1]], [ext[1], ext[3]], [ext[0], ext[3]], [ext[0], line[0, 1]])).reshape(-1,2)
-        plt.fill(line[:, 0], line[:, 1], color='k', alpha=0.5)
+        plt.fill(line[:, 0], line[:, 1], color='k')#, alpha=0.5)
 
     def extract_fault_lines(self, cell_number=25, direction='y'):
 
@@ -264,11 +256,12 @@ class PlotData2D(object):
         lith = solution.lith_block
         geomap = lith.reshape(self.model.grid.topography.topo.dem_zval.shape)  # resolution of topo gives much better map
         # geomap = np.flip(geomap, axis=0) #to match the orientation of the other plotting options
-
+        fig, ax = plt.subplots()
         plt.imshow(geomap, origin="upper", cmap=self._cmap, norm=self._norm)
-        plt.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys')
-        cbar = plt.colorbar()
-        cbar.set_label('elevation')
+        CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys')
+        ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
+        cbar = plt.colorbar(CS)
+        cbar.set_label('elevation [m]')
         plt.title("Geological map", fontsize=15)
         plt.xlabel('X')
         plt.ylabel('Y')

@@ -261,7 +261,6 @@ class Topography:
             self.values_3D_res[:, :, 2].ravel())).T.astype("float64")
 
     def show(self):
-        print('showing...')
         plt.contour(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), colors='k')
         plt.contourf(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), cmap='terrain')
         cbar = plt.colorbar()
@@ -292,9 +291,9 @@ class Topography:
             cell_number_res = (self.values_3D.shape[:2] / self.regular_grid.resolution[:2] * cell_number).astype(int)
             cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
         if direction == 'x':
-            topoline = self.values_3D[cell_number, :, :][:, [0, 2]].astype(int)
-        elif direction == 'y':
             topoline = self.values_3D[:, cell_number, :][:, [1, 2]].astype(int)
+        elif direction == 'y':
+            topoline = self.values_3D[cell_number, :, :][:, [0, 2]].astype(int)
         else:
             raise NotImplementedError
         return topoline

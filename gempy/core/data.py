@@ -18,6 +18,7 @@ pn.options.mode.chained_assignment = None
 import skimage
 from gempy.utils.create_topography import Load_DEM_artificial, Load_DEM_GDAL
 import matplotlib.pyplot as plt
+from IPython.core.display import HTML
 from gempy.core.grid_modules import grid_types
 
 
@@ -699,94 +700,6 @@ class Colors:
         return self.surfaces
 
 
-# class Topography:
-#     # todo allow numpy array to be passed
-#     def __init__(self, grid: Grid):
-#         self.grid = grid
-#
-#     def load_from_gdal(self, filepath):
-#         self.topo = Load_DEM_GDAL(filepath, self.grid)
-#         self._create()
-#
-#     def load_random_hills(self,**kwargs):
-#         self.topo = Load_DEM_artificial(self.grid, **kwargs)
-#         self._create()
-#
-#     def _create(self):
-#         self.values_3D = self.topo.values_3D
-#
-#         self.values = np.vstack((
-#             self.values_3D[:, :, 0].ravel(), self.values_3D[:, :, 1].ravel(),
-#             self.values_3D[:, :, 2].ravel())).T.astype("float64")
-#
-#         self.extent = self.topo.extent
-#         self.resolution = self.topo.resolution
-#
-#         if np.any(self.grid.extent[:4] - self.extent) != 0:
-#             print('obacht')
-#             self._crop()
-#
-#         if np.any(self.grid.resolution[:2] - self.resolution) != 0:
-#             self._resize()
-#         else:
-#             self.values_3D_res = self.values_3D
-#             self.values_res = self.values
-#
-#         self.grid.mask_topo = self._create_grid_mask()
-#
-#     def _crop(self):
-#         pass
-#
-#     def _resize(self):
-#         self.values_3D_res = skimage.transform.resize(self.values_3D,
-#                                                       (self.grid.resolution[0], self.grid.resolution[1]),
-#                                                       mode='constant',
-#                                                       anti_aliasing=False, preserve_range=True)
-#
-#         self.values_res = np.vstack((
-#             self.values_3D_res[:, :, 0].ravel(), self.values_3D_res[:, :, 1].ravel(),
-#             self.values_3D_res[:, :, 2].ravel())).T.astype("float64")
-#
-#     def show(self):
-#         print('showing...')
-#         plt.contour(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), colors='k')
-#         plt.contourf(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), cmap='terrain')
-#         cbar = plt.colorbar()
-#         cbar.set_label('elevation')
-#         plt.xlabel('X')
-#         plt.ylabel('Y')
-#         plt.title('Model topography')
-#
-#     def _create_grid_mask(self):
-#         ind = self._find_indices()
-#         gridz = self.grid.values[:, 2].reshape(50, 50, 50).copy()
-#         for x in range(self.grid.resolution[0]):
-#             for y in range(self.grid.resolution[1]):
-#                 z = ind[x, y]
-#                 gridz[x, y, z:] = 99999
-#         mask = (gridz == 99999)
-#         return np.multiply(np.full(self.grid.values.shape, True).T, mask.ravel()).T
-#
-#     def _find_indices(self):
-#         zs = np.linspace(self.grid.extent[4], self.grid.extent[5], self.grid.resolution[2])
-#         dz = (zs[-1] - zs[0]) / len(zs)
-#         return ((self.values_3D_res[:, :, 2] - zs[0]) / dz).astype(int)
-#
-#     def _line_in_section(self, direction='y', cell_number=0):
-#         # todo use slice2D of plotting class for this
-#         if np.any(self.topo.resolution - self.grid.resolution[:2]) != 0:
-#             print('Gefahr weil resolution')
-#             cell_number_res = (self.values_3D.shape[:2] / self.grid.resolution[:2] * cell_number).astype(int)
-#             cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
-#         if direction == 'x':
-#             topoline = self.values_3D[cell_number, :, :][:, [0, 2]].astype(int)
-#         elif direction == 'y':
-#             topoline = self.values_3D[:, cell_number, :][:, [1, 2]].astype(int)
-#         else:
-#             raise NotImplementedError
-#         return topoline
-
-
 class Surfaces(object):
     """
     Class that contains the surfaces of the model and the values of each of them.
@@ -836,9 +749,24 @@ class Surfaces(object):
 
     def _repr_html_(self):
         #return self.df.to_html()
-        c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
+        #c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis))]
 
-        return self.df[c_].style.applymap(self.background_color, subset=['color']).render()
+        return self.df.style.applymap(self.background_color, subset=['color']).render()
+
+    def _repr_html2_(self, df):
+        return df.style.applymap(self.background_color, subset=['color']).render()
+
+    def _repr_html_new_(self):
+        idx = list(self.df[self.df['order_surfaces']==1]['id']-1)
+        tables = np.array_split(self.df[self._columns_vis], idx)[1:]
+        return display(HTML(
+            '<table><tr style="background-color:white;">' +
+            ''.join(['<td>' + self._repr_html2_(table) + '</td>' + '<tr>\n' for table in tables]) +
+            '</tr></table>'
+        ))
+
+
+        #return self.df[self._columns_vis].style.applymap(self.background_color, subset=['color']).render()
 
     def background_color(self, value):
         if type(value) == str:
@@ -2090,8 +2018,8 @@ class RescaledData(object):
              Set the rescaled coordinates and extent into a grid object
         """
 
-        self.grid.extent_r, self.grid.values_r = self.rescale_grid(
-            self.grid, self.df.loc['values', 'rescaling factor'], self.df.loc['values', 'centers'])
+        self.grid.extent_r, self.grid.values_r = self.rescale_grid(self.grid, self.df.loc['values', 'rescaling factor'],
+                                                                   self.df.loc['values', 'centers'])
 
 
 class Structure(object):
