@@ -318,8 +318,6 @@ class PlotData2D(object):
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
 
-        print(kwargs)
-
         im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
                         extent=extent_val,
                         interpolation=interpolation,
