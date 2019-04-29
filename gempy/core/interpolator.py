@@ -269,6 +269,3 @@ class Interpolator(object):
         return th_fn
 
 
-class Interpolator_pro(Interpolator):
-    pass
-
