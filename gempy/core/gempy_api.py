@@ -151,7 +151,7 @@ def load_model(name, path=None, recompile=False):
                                  'order_surfaces': 'int64', 'isBasement': 'bool', 'id': 'int64',
                                  'color': 'str'})
     c_ = surf_df.columns[~(surf_df.columns.isin(geo_model.surfaces._columns_vis_drop))]
-    geo_model.surfaces.df = surf_df#.reindex(c_, axis=1)
+    geo_model.surfaces.df[surf_df.columns] = surf_df#.reindex(c_, axis=1)
     geo_model.surfaces.colors.generate_colordict()
     geo_model.surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
 
@@ -621,9 +621,11 @@ def compute_model_at(new_grid: Union[ndarray], model: Model, **kwargs):
     #     set_grid(model, Grid('custom_grid', custom_grid=new_grid))
     # elif isinstance(new_grid, Grid):
     #     set_grid(model, new_grid)
+    model.grid.deactivate_all_grids()
     model.set_custom_grid(new_grid)
+
     # Now we are good to compute the model again only in the new point
-    sol = compute_model(model, **kwargs)
+    sol = compute_model(model, set_solutions=False, **kwargs)
     return sol
 # endregion
 
