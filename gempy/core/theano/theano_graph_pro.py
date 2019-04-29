@@ -184,12 +184,6 @@ class TheanoGraphPro(object):
         self.fault_relation = theano.shared(np.array([[0, 0],
                                                       [0, 0]]), 'fault relation matrix')
 
-        # Results matrix
-        self.weights_vector = theano.shared(np.cast[dtype](np.zeros(10000)), 'Weights vector')
-        self.scalar_fields_matrix = theano.shared(np.cast[dtype](np.zeros((3, 10000))), 'Scalar matrix')
-        self.block_matrix = theano.shared(np.cast[dtype](np.zeros((3, 3, 10000))), "block matrix")
-        self.mask_matrix = theano.shared(np.zeros((3, 10000), dtype='bool'), "mask matrix")
-
         # Structure
         self.n_surfaces_per_series = theano.shared(np.arange(2, dtype='int32'), 'List with the number of surfaces')
         self.len_series_i = theano.shared(np.arange(2, dtype='int32'), 'Length of surface_points in every series')
@@ -213,6 +207,23 @@ class TheanoGraphPro(object):
         self.is_onlap = theano.shared(np.array([0, 1]))
 
         self.offset = theano.shared(10.)
+
+        # Gravity
+        self.tz = theano.shared(np.empty((0), dtype=dtype), 'tz component')
+        self.density_matrix = T.vector('density vector')
+
+        # Results matrix
+        self.weights_vector = theano.shared(np.cast[dtype](np.zeros(10000)), 'Weights vector')
+        self.scalar_fields_matrix = theano.shared(np.cast[dtype](np.zeros((3, 10000))), 'Scalar matrix')
+        self.block_matrix = theano.shared(np.cast[dtype](np.zeros((3, 3, 10000))), "block matrix")
+        self.mask_matrix = theano.shared(np.zeros((3, 10000), dtype='bool'), "mask matrix")
+        self.sfai = T.zeros([self.is_erosion.shape[0], self.n_surfaces_per_series[-1]])
+
+        self.new_block = self.block_matrix
+        self.new_weights = self.weights_vector
+        self.new_scalar = self.scalar_fields_matrix
+        self.new_mask = self.mask_matrix
+        self.new_sfai = self.sfai
 
     def compute_weights(self):
      #   self.fault_drift_at_surface_points_ref = T.repeat(fault_drift[:, [0]], self.number_of_points_per_surface_T[0], axis=0)
@@ -252,7 +263,7 @@ class TheanoGraphPro(object):
                 dict(initial=self.block_matrix),
                 dict(initial=self.weights_vector),
                 dict(initial=self.scalar_fields_matrix),
-                dict(initial=T.zeros([self.is_erosion.shape[0], self.n_surfaces_per_series[-1]])),
+                dict(initial=self.sfai),
                 dict(initial=self.mask_matrix),
 
             ],  # This line may be used for the df network
@@ -1422,13 +1433,15 @@ class TheanoGraphPro(object):
 
         return block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix
 
-    def compute_forward_gravity(self):  # densities, tz, select,
+    def compute_forward_gravity(self, densities):  # densities, tz, select,
 
-        tz = theano.shared(np.empty((0, 1), dtype='float32'), 'tz component')
+        n_devices = T.cast((densities.shape[0] / self.tz.shape[0]), dtype='int32')
+        tz_rep = T.tile(self.tz, n_devices)
+
         # TODO: Assert outside that densities is the same size as surfaces (minus df)
         # Compute the geological model
-        pos_density = T.scalar('position of the density', dtype='int32')
-        density_matrix = self.compute_series()[0][pos_density, :- 2 * self.len_points]
+       # pos_density = T.scalar('position of the density', dtype='int32')
+        #density_matrix = self.compute_series()[0][pos_density, :- 2 * self.len_points]
 
         # if n_faults == 0:
         #     surfaces = T.concatenate([self.n_surface[::-1], T.stack([0])])
@@ -1450,21 +1463,21 @@ class TheanoGraphPro(object):
         #
         # else:
         #density_block_loop_f = lith_matrix[0]
+        #
+        # if 'density_block' in self.verbose:
+        #     density_block_loop_f = theano.printing.Print('density block')(density_block_loop_f)
 
-        if 'density_block' in self.verbose:
-            density_block_loop_f = theano.printing.Print('density block')(density_block_loop_f)
-
-        n_measurements = self.tz.shape[0]
-        # Tiling the density block for each measurent and picking just the closer to them. This has to be possible to
-        # optimize
-
-        # densities_rep = T.tile(density_block_loop[-1][-1], n_measurements)
-        densities_rep = T.tile(density_block_loop_f, n_measurements)
-        densities_selected = densities_rep[T.nonzero(T.cast(self.select, "int8"))[0]]
-        densities_selected_reshaped = densities_selected.reshape((n_measurements, -1))
+        # n_measurements = self.tz.shape[0]
+        # # Tiling the density block for each measurent and picking just the closer to them. This has to be possible to
+        # # optimize
+        #
+        # # densities_rep = T.tile(density_block_loop[-1][-1], n_measurements)
+        # densities_rep = T.tile(density_block_loop_f, n_measurements)
+        # densities_selected = densities_rep[T.nonzero(T.cast(self.select, "int8"))[0]]
+        # densities_selected_reshaped = densities_selected.reshape((n_measurements, -1))
         #
         # # density times the component z of gravity
-        grav = densities_selected_reshaped * self.tz
+        grav = (densities * tz_rep).reshape((n_devices, -1)).sum(axis=1)
 
         # return [lith_matrix, self.fault_matrix, pfai, grav.sum(axis=1)]
-        return [lith_matrix, fault_matrix, grav.sum(axis=1), pfai]
+        return grav

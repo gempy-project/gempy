@@ -29,7 +29,7 @@ class GravityGrid(Grid):
         self.kernel_values = np.empty((0, 3))
         self.kernel_dxyz_left = np.empty((0, 3))
         self.kernel_dxyz_right = np.empty((0, 3))
-        self.tz = np.empty(6)
+        self.tz = np.empty((0))
 
     @staticmethod
     def create_irregular_grid_kernel(resolution, radio):
@@ -79,14 +79,14 @@ class GravityGrid(Grid):
 
         return self.kernel_values
 
-    def set_irregular_grid(self, centers, conv_irr=None, **kwargs):
-
-        if conv_irr is None:
-            conv_irr, _, _ = self.create_irregular_grid_kernel(**kwargs)
+    def set_irregular_grid(self, centers, kernel_centers=None, **kwargs):
+        self.values =np.empty((0, 3))
+        if kernel_centers is None:
+            kernel_centers, _, _ = self.create_irregular_grid_kernel(**kwargs)
 
         centers = np.atleast_2d(centers)
         for i in centers:
-            self.values = np.vstack((self.values, i + conv_irr))
+            self.values = np.vstack((self.values, i + kernel_centers))
 
         self.length = self.values.shape[0]
 

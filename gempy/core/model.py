@@ -11,13 +11,14 @@ sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 import pandas as pn
 pn.options.mode.chained_assignment = None
 from .data import AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
-    Surfaces, Topography, Options, Structure, KrigingParameters
+    Surfaces, Options, Structure, KrigingParameters
 from .solution import Solution
 from .interpolator import Interpolator
-from .interpolator_pro import InterpolatorModel
+from .interpolator_pro import InterpolatorModel, InterpolatorGravity
 from gempy.utils.meta import _setdoc
 from gempy.plot.visualization_3d import vtkVisualization
 from gempy.plot.decorators import *
+
 
 class DataMutation_pro(object):
     def __init__(self):
@@ -78,15 +79,19 @@ class DataMutation_pro(object):
     # region Grid
 
     def set_grid_object(self, grid: Grid, update_model=True):
-        self.grid.values = grid.values
-        self.rescaling.set_rescaled_grid()
-        self.grid.grid_type = grid.grid_type
-        self.grid.resolution = grid.resolution
-        self.grid.extent = grid.extent
-
-        self.grid.length = grid.values.shape[0]
-        self.grid.mask_topo = grid.mask_topo
-        self.interpolator.set_initial_results_matrices()
+        pass
+        # self.grid.values = grid.values
+        # self.rescaling.set_rescaled_grid()
+        # self.grid.grid_type = grid.grid_type
+        # self.grid.resolution = grid.resolution
+        # self.grid.extent = grid.extent
+        #
+        # self.grid.length = grid.values.shape[0]
+        # self.grid.mask_topo = grid.mask_topo
+        #
+        # self.rescaling.set_rescaled_grid()
+        #
+        # self.interpolator.set_initial_results_matrices()
         # self.grid = grid
         # self.additional_data.grid = grid
         # self.rescaling.grid = grid
@@ -97,12 +102,16 @@ class DataMutation_pro(object):
         #     self.update_from_grid()
 
     def set_regular_grid(self, extent, resolution):
-        self.grid.set_regular_grid(extent, resolution)
+        self.grid.set_regular_grid(extent = extent, resolution = resolution)
         self.rescaling.rescale_data()
         self.interpolator.set_initial_results_matrices()
+        return self.grid
 
-    def set_custom_grid(self):
-        pass
+    def set_custom_grid(self, custom_grid):
+        self.grid.set_custom_grid(custom_grid)
+        self.rescaling.set_rescaled_grid()
+        self.interpolator.set_initial_results_matrices()
+        return self.grid
 
     # endregion
 
@@ -345,8 +354,6 @@ class DataMutation_pro(object):
             else:
                 raise AttributeError(str(type(mapping_object)) + ' is not the right attribute type.')
 
-
-
         self.surfaces.map_series(mapping_object)
 
         # Here we remove the series that were not assigned to a surface
@@ -543,6 +550,10 @@ class DataMutation_pro(object):
         # self.update_from_surfaces()
         return self.surfaces
 
+    def set_extent(self, extent: Union[list, np.ndarray]):
+        extent = np.atleast_1d(extent)
+        self.grid.extent = extent
+        self.rescaling.set_rescaled_grid()
 
     # def update_from_grid(self):
     #     """
@@ -691,7 +702,8 @@ class DataMutation_pro(object):
     def update_from_additional_data(self):
         pass
 
-    def add_topography(self, source = 'random', filepath = None, **kwargs):
+    def set_topography(self, source = 'random', **kwargs):
+        #
         """
 
         Args:
@@ -707,18 +719,22 @@ class DataMutation_pro(object):
         Returns: :class:gempy.core.data.Topography
 
         """
-        self.topography = Topography(self)
-        if source == 'random':
-            self.topography.load_random_hills(**kwargs)
-        elif source == 'gdal':
-            if filepath is not None:
-                self.topography.load_from_gdal(filepath)
-            else:
-                print('to load a raster file, a path to the file must be provided')
-        else:
-            print('source must be either random or gdal')
+        # self.topography = Topography(self.grid)
+        # if source == 'random':
+        #     self.topography.load_random_hills(**kwargs)
+        # elif source == 'gdal':
+        #     if filepath is not None:
+        #         self.topography.load_from_gdal(filepath)
+        #     else:
+        #         print('to load a raster file, a path to the file must be provided')
+        # else:
+        #     print('source must be either random or gdal')
+        #
+        # self.topography.show()
 
-        self.topography.show()
+        self.grid.set_topography(source, **kwargs)
+        self.rescaling.set_rescaled_grid()
+        self.interpolator.set_initial_results_matrices()
 
     def set_surface_order_from_solution(self):
         # TODO time this function
@@ -763,7 +779,8 @@ class Model(DataMutation_pro):
 
         self.meta = MetaData(project_name=project_name)
         super().__init__()
-        self.topography = None
+        self.interpolator_gravity = None
+        # self.topography = None
 
     def __repr__(self):
         return self.meta.project_name + ' ' + self.meta.date
@@ -828,12 +845,12 @@ class Model(DataMutation_pro):
         Returns:
             True
         """
+        if name is None:
+            name = self.meta.project_name
+
         if not path:
             path = './'
         path = f'{path}/{name}'
-
-        if name is None:
-            name = self.meta.project_name
 
         if os.path.isdir(path):
             print("Directory already exists, files will be overwritten")
@@ -853,7 +870,7 @@ class Model(DataMutation_pro):
 
         # # save resolution and extent as npy
         np.save(f'{path}/{name}_extent.npy', self.grid.extent)
-        np.save(f'{path}/{name}_resolution.npy', self.grid.resolution)
+        np.save(f'{path}/{name}_resolution.npy', self.grid.regular_grid.resolution)
         #
         # # save solutions as npy
         # np.save(f'{path}/{name}_lith_block.npy' ,self.solutions.lith_block)
@@ -957,6 +974,61 @@ class Model(DataMutation_pro):
 
     def get_additional_data(self):
         return self.additional_data.get_additional_data()
+
+    def set_gravity_interpolator(self, density_block= None, pos_density=None, inplace=True, compile_theano: bool = True,
+                                 theano_optimizer=None, verbose: list = None):
+        """
+
+        Args:
+            geo_model:
+            inplace:
+            compile_theano
+
+        Returns:
+
+        """
+       # from .interpolator_pro import InterpolatorGravity
+        assert self.grid.gravity_grid is not None, 'First you need to set up a gravity grid to compile the graph'
+        assert density_block is not None or pos_density is not None, 'If you do not pass the density block you need to pass' \
+                                                                     'the position of surface values where density is' \
+                                                                     ' assigned'
+
+        # TODO Possibly this is only necessary when computing gravity
+        self.grid.grid_active = np.zeros(4, dtype=bool)
+        self.grid.set_active('gravity')
+        self.interpolator.set_initial_results_matrices()
+
+        # TODO output is dep
+        #if output is not None:
+        #    self.additional_data.options.df.at['values', 'output'] = output
+        if theano_optimizer is not None:
+            self.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
+        if verbose is not None:
+            self.additional_data.options.df.at['values', 'verbosity'] = verbose
+
+        # TODO add kwargs
+        self.rescaling.rescale_data()
+        self.update_structure()
+
+        # This two should be unnecessary now too
+        self.surface_points.sort_table()
+        self.orientations.sort_table()
+
+        self.interpolator_gravity = InterpolatorGravity(
+            self.surface_points, self.orientations, self.grid, self.surfaces,
+            self.series, self.faults, self.additional_data)
+
+        # geo_model.interpolator.set_theano_graph(geo_model.interpolator.create_theano_graph())
+        self.interpolator_gravity.create_theano_graph(self.additional_data, inplace=True)
+
+        # set shared variables
+        self.interpolator_gravity.set_theano_shared_tz_kernel()
+        self.interpolator_gravity.set_all_shared_parameters(reset=True)
+
+        if compile_theano is True:
+            self.interpolator_gravity.compile_th_fn(density_block, pos_density, inplace=inplace)
+
+        return self.additional_data.options
 
     # def get_theano_input(self):
     #     pass

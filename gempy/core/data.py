@@ -46,6 +46,127 @@ class MetaData(object):
 
 class Grid(object):
     """
+       Class to generate grids. This class is used to create points where to
+       evaluate the geological model. So far only regular grids and custom_grids are implemented.
+
+       Args:
+           grid_type (str): type of pre-made grids provide by GemPy
+           **kwargs: see args of the given grid type
+
+       Attributes:
+           grid_type (str): type of premade grids provide by GemPy
+           resolution (list[int]): [x_min, x_max, y_min, y_max, z_min, z_max]
+           extent (list[float]):  [nx, ny, nz]
+           values (np.ndarray): coordinates where the model is going to be evaluated
+           values_r (np.ndarray): rescaled coordinates where the model is going to be evaluated
+
+    """
+    def __init__(self, **kwargs):
+
+        extent = kwargs.get('extent', [0, 1000, 0, 1000, -1000, 0])
+
+        self.extent = np.atleast_1d(extent)
+        self.values = np.empty((0, 3))
+        self.values_r = np.empty((0, 3))
+        self.length = np.empty(0)
+        self.grid_types = np.array(['regular', 'custom', 'topography', 'gravity'])
+        self.grid_active = np.zeros(4, dtype=bool)
+        # All grid types must have values
+
+        # Init optional grids
+        self.custom_grid = None
+        self.custom_grid_grid_active = False
+        self.topography = None
+        self.topography_grid_active = False
+        self.gravity_grid = None
+        self.gravity_grid_active = False
+
+        # Init basic grid empty
+        self.regular_grid = self.set_regular_grid(**kwargs)
+        self.regular_grid_active = False
+
+    def __str__(self):
+        return 'Grid Object. Values: \n' + np.array2string(self.values)
+
+    def __repr__(self):
+        return 'Grid Object. Values: \n' + np.array_repr(self.values)
+
+    def set_regular_grid(self, *args, **kwargs):
+
+        self.regular_grid = grid_types.RegularGrid(*args, **kwargs)
+        # print(kwargs, 'extent' in kwargs)
+        if 'extent' in kwargs:
+            self.extent = np.atleast_1d(kwargs['extent'])
+
+        self.set_active('regular')
+        return self.regular_grid
+
+    def set_custom_grid(self, custom_grid: np.ndarray):
+        self.custom_grid = grid_types.CustomGrid(custom_grid)
+        self.set_active('custom')
+
+    def set_topography(self, source='random', **kwargs):
+        self.topography = grid_types.Topography(self.regular_grid)
+
+        if source == 'random':
+            self.topography.load_random_hills(**kwargs)
+        elif source == 'gdal':
+            filepath = kwargs.get('filepath', None)
+            if filepath is not None:
+                self.topography.load_from_gdal(filepath)
+            else:
+                print('to load a raster file, a path to the file must be provided')
+        else:
+            print('source must be either random or gdal')
+
+        self.topography.show()
+
+        self.set_active('topography')
+
+    def set_gravity_grid(self):
+        self.gravity_grid = grid_types.GravityGrid()
+        self.grid_active = np.zeros(4, dtype=bool)
+        self.set_active('gravity')
+
+    def set_active(self, grid_name: Union[str, np.ndarray]):
+        where = self.grid_types == grid_name
+        self.grid_active += where
+        self.update_grid_values()
+
+    def set_inactive(self, grid_name: str):
+        where = self.grid_types == grid_name
+        self.grid_active -= where
+        self.update_grid_values()
+
+    def update_grid_values(self):
+        self.length = np.empty((0))
+        self.values = np.empty((0, 3))
+        lengths = [0]
+
+        for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.gravity_grid]):
+            if self.grid_active[e]:
+                self.values = np.vstack((self.values, grid_types.values))
+                lengths.append(grid_types.values.shape[0])
+            else:
+                lengths.append(0)
+
+        self.length = np.array(lengths).cumsum()
+
+    def get_grid_args(self, grid_name: str):
+        assert type(grid_name) is str, 'Only one grid type can be retrieve'
+
+        where = np.where(self.grid_types == grid_name)[0][0]
+        return self.length[where], self.length[where+1]
+
+    def get_grid(self, grid_name: str):
+        assert type(grid_name) is str, 'Only one grid type can be retrieve'
+
+        l_0, l_1 = self.get_grid_args(grid_name)
+        return self.values[l_0:l_1]
+
+
+class Grid_DEP(object):
+    """
     Class to generate grids. This class is used to create points where to
     evaluate the geological model. So far only regular grids and custom_grids are implemented.
 
@@ -65,10 +186,10 @@ class Grid(object):
     def __init__(self, grid_type=None, **kwargs):
 
         self.grid_type = grid_type
-        self.resolution = np.empty(3)
+        self.resolution = np.ones(3, dtype='int64')
         self.extent = np.empty(6, dtype='float64')
-        self.values = np.empty((1, 3))
-        self.values_r = np.empty((1, 3))
+        self.values = np.empty((0, 3))
+        self.values_r = np.empty((0, 3))
         self.length = self.values.shape[0]
         self.mask_topo = None
 
@@ -229,7 +350,7 @@ class Series(object):
         # TODO: isnt this the behaviour we get fif we do not do the rename=True?
         for c in series_order:
             self.df.loc[c, 'BottomRelation'] = 'Erosion'
-            self.faults.df.loc[c, 'isFault'] = False
+            self.faults.df.loc[c] = [False, False]
             self.faults.faults_relations_df.loc[c, c] = False
 
         self.faults.faults_relations_df.fillna(False, inplace=True)
@@ -286,7 +407,7 @@ class Series(object):
         self.update_faults_index()
 
     @_setdoc([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
-    def reorder_series(self, new_categories:list):
+    def reorder_series(self, new_categories: Union[list, np.ndarray]):
         idx = self.df.index.reorder_categories(new_categories).sort_values()
         self.df.index = idx
         self.update_faults_index()
@@ -681,7 +802,7 @@ class Surfaces(object):
                  ):
 
         self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'color', 'vertices', 'edges', 'id']
-        self._columns_vis = ['surface', 'series', 'order_surfaces', 'isBasement', 'color', 'id']
+        self._columns_vis_drop = ['vertices', 'edges',]
         self._n_properties = len(self._columns) -1
         self.series = series
         self.colors = Colors(self)
@@ -867,6 +988,7 @@ class Surfaces(object):
         Returns:
             True
         """
+
         self.df['isBasement'] = False
         idx = self.df.last_valid_index()
         if idx is not None:

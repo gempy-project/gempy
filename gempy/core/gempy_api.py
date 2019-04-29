@@ -81,6 +81,7 @@ def load_model_pickle(path):
     """
     return Model.load_model_pickle(path)
 
+
 def load_model(name, path=None, recompile=False):
     """
     Loading model saved with model.save_model function.
@@ -145,10 +146,12 @@ def load_model(name, path=None, recompile=False):
     geo_model.faults.faults_relations_df.fillna(False, inplace=True)
 
     # do surfaces properly
-    geo_model.surfaces.df = pn.read_csv(f'{path}/{name}_surfaces.csv', index_col=0,
-                                            dtype={'surface': 'str', 'series': 'category',
-                                                   'order_surfaces': 'int64', 'isBasement': 'bool', 'id': 'int64',
-                                                   'color': 'str'}).reindex(geo_model.surfaces._columns, axis=1)
+    surf_df = pn.read_csv(f'{path}/{name}_surfaces.csv', index_col=0,
+                          dtype={'surface': 'str', 'series': 'category',
+                                 'order_surfaces': 'int64', 'isBasement': 'bool', 'id': 'int64',
+                                 'color': 'str'})
+    c_ = surf_df.columns[~(surf_df.columns.isin(geo_model.surfaces._columns_vis_drop))]
+    geo_model.surfaces.df = surf_df#.reindex(c_, axis=1)
     geo_model.surfaces.colors.generate_colordict()
     geo_model.surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
 
@@ -548,8 +551,8 @@ def get_kriging_parameters_DEP(model: Model):
 
 
 # region Computing the model
-def compute_model(model: Model, compute_mesh=True, reset_weights=False, reset_scalar=False, reset_block=False,
-                  sort_surfaces=True, debug=False) -> Solution:
+def compute_model(model: Model, output='geology', compute_mesh=True, reset_weights=False, reset_scalar=False,
+                  reset_block=False, sort_surfaces=True, debug=False, set_solutions=True) -> Solution:
     """
     Computes the geological model and any extra output given in the additional data option.
 
@@ -568,25 +571,39 @@ def compute_model(model: Model, compute_mesh=True, reset_weights=False, reset_sc
 
     # TODO: Assert frame by frame that all data is like is supposed. Otherwise,
     # return clear messages
-    model.interpolator.reset_flow_control_initial_results(reset_weights, reset_scalar, reset_block)
+    assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1, \
+        'To compute the model is necessary at least 2 interface points per layer'
 
-    i = model.interpolator.get_python_input_block(append_control=True, fault_drift=None)
+    if output == 'geology':
+        assert model.interpolator.theano_function is not None, 'You need to compile the theano function first'
+        i = model.interpolator.get_python_input_block(append_control=True, fault_drift=None)
+        model.interpolator.reset_flow_control_initial_results(reset_weights, reset_scalar, reset_block)
 
-    # assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1,  \
-    #     'To compute the model is necessary at least 2 interface points per layer'
+        sol = model.interpolator.theano_function(*i)
+    elif output == 'gravity':
+        assert isinstance(model.interpolator_gravity, InterpolatorGravity), 'You need to set the gravity interpolator' \
+                                                                            'first. See `Model.set_gravity_interpolator'
+        i = model.interpolator_gravity.get_python_input_block(append_control=True, fault_drift=None)
 
-    sol = model.interpolator.theano_function(*i)
+        # TODO So far I reset all shared parameters to be sure. In the future this should be optimize as interpolator
+        model.interpolator_gravity.set_theano_shared_tz_kernel()
+        model.interpolator_gravity.set_all_shared_parameters(reset=True)
+        sol = model.interpolator_gravity.theano_function(*i)
 
-    if debug is True:
+        set_solutions = False
+    else:
+        raise NotImplementedError('Only geology and gravity are implemented so far')
+
+    if debug is True or set_solutions is False:
         return sol
     else:
-        model.solutions.set_solution(sol, compute_mesh=compute_mesh)
+        model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh)
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions
 
 
-def compute_model_at(new_grid: Union[Grid, ndarray], model: Model, compute_mesh=False):
+def compute_model_at(new_grid: Union[ndarray], model: Model, **kwargs):
     """
     This function does the same as :func:`gempy.core.gempy_front.compute_model` plus the addion functionallity of
      passing a given array of points where evaluate the model instead of using the :class:`gempy.core.data.GridClass`.
@@ -594,17 +611,19 @@ def compute_model_at(new_grid: Union[Grid, ndarray], model: Model, compute_mesh=
     Args:
         model:
         new_grid (:class:`_np.array`): 2D array with XYZ (columns) coorinates
+        kwargs: `compute_model` arguments
 
     Returns:
         gempy.core.data.Solution
     """
-    if type(new_grid) is np.ndarray:
-    #TODO create backup of the mesh and a method to go back to it
-        set_grid(model, Grid('custom_grid', custom_grid=new_grid))
-    elif isinstance(new_grid, Grid):
-        set_grid(model, new_grid)
+    # if type(new_grid) is np.ndarray:
+    # #TODO create backup of the mesh and a method to go back to it
+    #     set_grid(model, Grid('custom_grid', custom_grid=new_grid))
+    # elif isinstance(new_grid, Grid):
+    #     set_grid(model, new_grid)
+    model.set_custom_grid(new_grid)
     # Now we are good to compute the model again only in the new point
-    sol = compute_model(model, compute_mesh=compute_mesh)
+    sol = compute_model(model, **kwargs)
     return sol
 # endregion
 
@@ -836,6 +855,4 @@ def activate_interactive_df(geo_model: Model, plot_object=None):
     #     # geo_model.qi = QgridModelIntegration(geo_model, plot_object)
     #     pass
     # except AttributeError:
-
-
     return geo_model.qi
