@@ -204,7 +204,7 @@ class Solution(object):
                                  self.grid.regular_grid.resolution[2]),
             level,
             spacing=self.grid.regular_grid.get_dx_dy_dz(),
-            #mask=mask_array,
+            mask=mask_array,
             **kwargs
         )
 
@@ -224,7 +224,7 @@ class Solution(object):
                 mask_series_reshape, True)).T)
 
     @staticmethod
-    def find_interfaces_from_block_bottoms(block, value, shift=2):
+    def find_interfaces_from_block_bottoms(block, value, shift=3):
         """
         Find the voxel at an interface. We shift left since gempy is based on bottoms
 

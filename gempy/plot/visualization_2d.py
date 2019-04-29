@@ -290,6 +290,11 @@ class PlotData2D(object):
             _block = solution.lith_block
         else:
             _block = block
+            print(_block.dtype is bool)
+            if _block.dtype is bool:
+
+                kwargs['cmap'] = 'viridis'
+                kwargs['norm'] = None
 
         if block_type is not None:
             raise NotImplementedError
@@ -313,6 +318,8 @@ class PlotData2D(object):
             kwargs['cmap'] = self._cmap
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
+
+        print(kwargs)
 
         im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
                         extent=extent_val,

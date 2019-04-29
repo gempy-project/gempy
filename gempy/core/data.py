@@ -129,6 +129,9 @@ class Grid(object):
         self.grid_active = np.zeros(4, dtype=bool)
         self.set_active('gravity')
 
+    def deactivate_all_grids(self):
+        self.grid_active = np.zeros(4, dtype=bool)
+
     def set_active(self, grid_name: Union[str, np.ndarray]):
         where = self.grid_types == grid_name
         self.grid_active += where
@@ -1343,7 +1346,7 @@ class SurfacePoints(GeometricData):
                    for p, f in zip(point_num, self.df['id'])]
 
         self.df['annotations'] = point_l
-
+        return self
 
 class Orientations(GeometricData):
     """
