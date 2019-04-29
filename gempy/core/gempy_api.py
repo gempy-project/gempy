@@ -598,6 +598,7 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
         return sol
     else:
         model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh)
+        #model.solutions.topography_map = sol[0]
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions

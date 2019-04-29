@@ -130,6 +130,8 @@ class Grid(object):
 
     def deactivate_all_grids(self):
         self.grid_active = np.zeros(4, dtype=bool)
+        self.update_grid_values()
+        return self.grid_active
 
     def set_active(self, grid_name: Union[str, np.ndarray]):
         where = self.grid_types == grid_name

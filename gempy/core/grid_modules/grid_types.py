@@ -8,7 +8,7 @@ from scipy.constants import G
 class RegularGrid:
     def __init__(self, extent=None, resolution=None):
         self.grid_type = 'regurlar grid'
-        self.resolution = np.ones(3, dtype='int64')
+        self.resolution = np.ones((0, 3), dtype='int64')
         self.extent = np.empty(6, dtype='float64')
         self.values = np.empty((0, 3))
         if extent is not None and resolution is not None:
