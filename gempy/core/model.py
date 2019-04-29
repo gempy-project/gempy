@@ -13,8 +13,7 @@ pn.options.mode.chained_assignment = None
 from .data import AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
     Surfaces, Options, Structure, KrigingParameters
 from .solution import Solution
-from .interpolator import Interpolator
-from .interpolator_pro import InterpolatorModel, InterpolatorGravity
+from .interpolator import InterpolatorModel, InterpolatorGravity
 from gempy.utils.meta import _setdoc
 from gempy.plot.visualization_3d import vtkVisualization
 from gempy.plot.decorators import *
@@ -676,13 +675,13 @@ class DataMutation_pro(object):
 
 
     # region Theano interface
-    def set_theano_graph(self, interpolator: Interpolator):
+    def set_theano_graph(self, interpolator: InterpolatorModel):
         self.interpolator.theano_graph = interpolator.theano_graph
         self.interpolator.theano_function = interpolator.theano_function
         self.update_to_interpolator()
 
 
-    def set_theano_function(self, interpolator: Interpolator):
+    def set_theano_function(self, interpolator: InterpolatorModel):
         self.interpolator.theano_graph = interpolator.theano_graph
         self.interpolator.theano_function = interpolator.theano_function
         self.interpolator.set_all_shared_parameters()
