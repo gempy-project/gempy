@@ -741,7 +741,6 @@ class Surfaces(object):
         if values_array is not None:
             self.set_surfaces_values(values_array=values_array, properties_names=properties_names)
 
-
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
     def __repr__(self):
