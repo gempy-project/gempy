@@ -1266,13 +1266,18 @@ class steno3D():
 
 
 class ipyvolumeVisualization:
-    def __init__(self, geo_model, ver, sim):
+    def __init__(self, geo_model):
+        """ipyvolume-based 3-D visualization for gempy.
+
+        Args:
+            geo_model (gempy.core.model.Model):
+        """
         if VTK_IMPORT is False:
             raise ImportError('ipyvolume package is not installed.')
 
         self.geo_model = geo_model
-        self.ver = ver
-        self.sim = sim
+        self.ver = self.geo_model.solutions.vertices
+        self.sim = self.geo_model.solutions.edges
 
     def get_color_id(self, surface):
         """Get id of given surface (str)."""
@@ -1282,22 +1287,24 @@ class ipyvolumeVisualization:
 
     def get_color(self, surface):
         """Get color code of given gempy surface."""
-        return gp.plot.color_lot[self.get_color_id(surface)]
+        f = self.geo_model.surfaces.df.surface==surface
+        return self.geo_model.surfaces.df[f].color
 
-    def plot_ipyvolume(self):
+
+    def plot_surfaces(self):
         """Plot gempy surface model."""
         ipv.figure()
         meshes = []
         for surf in range(len(self.ver)):
             points = self.ver[surf]
             triangles = self.sim[surf]
-            # color
-
-            mesh = ipv.plot_trisurf(points[:, 0] + self.geo_model.grid.extent[0],
-                                    points[:, 1] + self.geo_model.grid.extent[2],
-                                    points[:, 2] + self.geo_model.grid.extent[4],
-                                    triangles=triangles,
-                                    color=list(self.geo_model.surfaces.df['color'])[surf])
+            mesh = ipv.plot_trisurf(
+                points[:, 0],
+                points[:, 1],
+                points[:, 2],
+                triangles=triangles,
+                color=list(self.geo_model.surfaces.df['color'])[surf]
+            )
             meshes.append(mesh)
 
         ipv.xlim(self.geo_model.grid.extent[0], self.geo_model.grid.extent[1])
@@ -1305,6 +1312,27 @@ class ipyvolumeVisualization:
         ipv.zlim(self.geo_model.grid.extent[4], self.geo_model.grid.extent[5])
         ipv.show()
         return ipv
+
+    def plot_data(self):
+        """Plot gempy surface points."""
+        raise NotImplementedError
+        ipv.figure()
+        points = self.geo_model.surface_points.df
+
+        for surf, i in points.groupby("surface").groups.items():
+            if surf == "basement":
+                continue
+            ipv.scatter(
+                points.loc[i].X,
+                points.loc[i].Y,
+                points.loc[i].Z,
+                color="black"
+            )
+
+        ipv.xlim(self.geo_model.grid.extent[0], self.geo_model.grid.extent[1])
+        ipv.ylim(self.geo_model.grid.extent[2], self.geo_model.grid.extent[3])
+        ipv.zlim(self.geo_model.grid.extent[4], self.geo_model.grid.extent[5])
+        ipv.show()
 
 
 def get_fault_ellipse_params(fault_points:np.ndarray):

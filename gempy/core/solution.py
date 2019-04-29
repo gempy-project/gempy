@@ -204,7 +204,7 @@ class Solution(object):
                                  self.grid.regular_grid.resolution[2]),
             level,
             spacing=self.grid.regular_grid.get_dx_dy_dz(),
-            mask=mask_array,
+            # mask=mask_array,
             **kwargs
         )
 

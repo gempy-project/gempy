@@ -129,9 +129,24 @@ def plot_3D(geo_model, render_surfaces=True, real_time=False, **kwargs):
 #     return vv
 
 
-def plot_surfaces_3d_ipv(geo_model, ver, sim):
-    vv = ipyvolumeVisualization(geo_model, ver, sim)
-    vv.plot_ipyvolume()
+def plot_surfaces_3d_ipv(geo_model: object) -> None:
+    """
+
+    Args:
+        geo_model (gempy.core.model.Model):
+    """
+    ipvv = ipyvolumeVisualization(geo_model)
+    ipvv.plot_surfaces()
+
+
+def plot_data_3d_ipv(geo_model: object) -> None:
+    """
+
+    Args:
+        geo_model (gempy.core.model.Model):
+    """
+    ipvv = ipyvolumeVisualization(geo_model)
+    ipvv.plot_data()
 
 
 def export_to_vtk(geo_data, path=None, name=None, voxels=True, surfaces=True):
