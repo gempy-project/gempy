@@ -290,8 +290,7 @@ class PlotData2D(object):
             _block = solution.lith_block
         else:
             _block = block
-            print(_block.dtype is bool)
-            if _block.dtype is bool:
+            if _block.dtype == bool:
 
                 kwargs['cmap'] = 'viridis'
                 kwargs['norm'] = None

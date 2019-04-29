@@ -224,7 +224,7 @@ class Solution(object):
                 mask_series_reshape, True)).T)
 
     @staticmethod
-    def find_interfaces_from_block_bottoms(block, value, shift=3):
+    def find_interfaces_from_block_bottoms(block, value, shift=2):
         """
         Find the voxel at an interface. We shift left since gempy is based on bottoms
 
@@ -263,14 +263,15 @@ class Solution(object):
             sfas = self.scalar_field_at_surface_points[e]
             # Drop
             sfas = sfas[np.nonzero(sfas)]
-            if series_type[e] == 'Onlap':
-                mask_array = self.mask_matrix_pad[e+1]
+            if series_type[e-1] == 'Onlap':
+                mask_array = self.mask_matrix_pad[e-1]
             elif series_type[e] == 'Fault':
                 mask_array = None
             else:
                 mask_array = self.mask_matrix_pad[e]
 
             for level in sfas:
+                # print(mask_array, e)
                 v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
                 self.vertices.append(v)
                 self.edges.append(s)
