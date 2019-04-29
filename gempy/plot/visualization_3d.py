@@ -1315,7 +1315,6 @@ class ipyvolumeVisualization:
 
     def plot_data(self):
         """Plot gempy surface points."""
-        raise NotImplementedError
         ipv.figure()
         points = self.geo_model.surface_points.df
 
@@ -1323,10 +1322,10 @@ class ipyvolumeVisualization:
             if surf == "basement":
                 continue
             ipv.scatter(
-                points.loc[i].X,
-                points.loc[i].Y,
-                points.loc[i].Z,
-                color="black"
+                points.loc[i, "X"].values,
+                points.loc[i, "Y"].values,
+                points.loc[i, "Z"].values,
+                color=list(self.geo_model.surfaces.df["color"])[surf]
             )
 
         ipv.xlim(self.geo_model.grid.extent[0], self.geo_model.grid.extent[1])
