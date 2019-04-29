@@ -70,7 +70,7 @@ class vtkVisualization(object):
 
     def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, real_time=False, bg_color=None, ve=1):
         if VTK_IMPORT is False:
-            raise ImportError('vtk is not installed. Not vtk capabilities are possible')
+            raise ImportError('vtk is not installed. No vtk capabilities are possible')
 
         self.ve = ve
 
@@ -111,7 +111,7 @@ class vtkVisualization(object):
         self.o_rend_4 = pn.DataFrame(columns=['val'])
 
         # Resolution
-        self.res = self.geo_model.grid.resolution
+        self.res = self.geo_model.grid.regular_grid.resolution
 
         # create render window, settings
         self.renwin = vtk.vtkRenderWindow()
@@ -1049,7 +1049,7 @@ class vtkVisualization(object):
 
         # Dimensions
 
-        nx, ny, nz = geo_data.grid.resolution
+        nx, ny, nz = geo_data.grid.regular_grid.resolution
 
         lx = geo_data.grid.extent[1] - geo_data.grid.extent[0]
         ly = geo_data.grid.extent[3] - geo_data.grid.extent[2]

@@ -257,9 +257,170 @@ class InterpolatorScalar(Interpolator_pro):
         return th_fn
 
 
+class InterpolatorBlock(Interpolator_pro):
+
+    def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "GridClass",
+                 surfaces: "Surfaces", faults: "Faults", additional_data: "AdditionalData", **kwargs):
+
+        super(InterpolatorBlock, self).__init__(surface_points, orientations, grid, surfaces, faults, additional_data,
+                                                  **kwargs)
+
+    def get_python_input_block(self, fault_drift=None):
+        """
+             Get values from the data objects used during the interpolation:
+                 - dip positions XYZ
+                 - dip angles
+                 - azimuth
+                 - polarity
+                 - surface_points coordinates XYZ
+             Returns:
+                 (list)
+             """
+        # orientations, this ones I tile them inside theano. PYTHON VAR
+        dips_position = self.orientations.df[['X_r', 'Y_r', 'Z_r']].values
+        dip_angles = self.orientations.df["dip"].values
+        azimuth = self.orientations.df["azimuth"].values
+        polarity = self.orientations.df["polarity"].values
+        surface_points_coord = self.surface_points.df[['X_r', 'Y_r', 'Z_r']].values
+        grid = self.grid.values_r
+        if fault_drift is None:
+            fault_drift = np.zeros((0, grid.shape[0] + surface_points_coord.shape[0]))
+
+        values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
+
+        # Set all in a list casting them in the chosen dtype
+        idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
+                                                  fault_drift, grid, values_properties)]
+        return idl
+
+    def compile_th_fn_formation_block(self, Z_x=None, weights=None, grid=None, values_properties=None, inplace=False,
+                                  debug=False):
+        """
+
+        Args:
+            weights: Constant weights
+            grid:  Constant grids
+            inplace:
+            debug:
+
+        Returns:
+
+        """
+        self.set_theano_shared_kriging()
+        self.set_theano_shared_structure_surfaces()
+        # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
+        input_data_T = self.theano_graph.input_parameters_block
+        print('Compiling theano function...')
+
+        if weights is None:
+            weights = self.theano_graph.compute_weights()
+        else:
+            weights = theano.shared(weights)
+
+        if grid is None:
+            grid = self.theano_graph.grid_val_T
+        else:
+            grid = theano.shared(grid)
+
+        if values_properties is None:
+            values_properties = self.theano_graph.values_properties_op
+        else:
+            values_properties = theano.shared(values_properties)
+
+        if Z_x is None:
+            Z_x = self.theano_graph.compute_scalar_field(weights, grid)
+        else:
+            Z_x = theano.shared(Z_x)
+
+        th_fn = theano.function(input_data_T,
+                                self.theano_graph.compute_formation_block(
+                                    Z_x,
+                                    self.theano_graph.get_scalar_field_at_surface_points(Z_x),
+                                    values_properties
+                                ),
+                                # mode=NanGuardMode(nan_is_error=True),
+                                on_unused_input='ignore',
+                                allow_input_downcast=False,
+                                profile=False)
+
+        if inplace is True:
+            self.theano_function_formation = th_fn
+
+        if debug is True:
+            print('Level of Optimization: ', theano.config.optimizer)
+            print('Device: ', theano.config.device)
+            print('Precision: ', self.dtype)
+            print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
+        print('Compilation Done!')
+
+        return th_fn
+
+    def compile_th_fn_fault_block(self, Z_x=None, weights=None, grid=None, values_properties=None, inplace=False, debug=False):
+        """
+
+        Args:
+            weights: Constant weights
+            grid:  Constant grids
+            inplace:
+            debug:
+
+        Returns:
+
+        """
+        self.set_theano_shared_kriging()
+        self.set_theano_shared_structure_surfaces()
+        # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
+        input_data_T = self.theano_graph.input_parameters_block
+        print('Compiling theano function...')
+
+        if weights is None:
+            weights = self.theano_graph.compute_weights()
+        else:
+            weights = theano.shared(weights)
+
+        if grid is None:
+            grid = self.theano_graph.grid_val_T
+        else:
+            grid = theano.shared(grid)
+
+        if values_properties is None:
+            values_properties = self.theano_graph.values_properties_op
+        else:
+            values_properties = theano.shared(values_properties)
+
+        if Z_x is None:
+            Z_x = self.theano_graph.compute_scalar_field(weights, grid)
+        else:
+            Z_x = theano.shared(Z_x)
+
+        th_fn = theano.function(input_data_T,
+                                self.theano_graph.compute_fault_block(
+                                    Z_x,
+                                    self.theano_graph.get_scalar_field_at_surface_points(Z_x),
+                                    values_properties,
+                                    0,
+                                    grid
+                               ),
+                                # mode=NanGuardMode(nan_is_error=True),
+                                on_unused_input='ignore',
+                                allow_input_downcast=False,
+                                profile=False)
+
+        if inplace is True:
+            self.theano_function_faults = th_fn
+
+        if debug is True:
+            print('Level of Optimization: ', theano.config.optimizer)
+            print('Device: ', theano.config.device)
+            print('Precision: ', self.dtype)
+            print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
+        print('Compilation Done!')
+        return th_fn
+
+
 class InterpolatorModel(Interpolator_pro):
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "GridClass",
-                 surfaces: "Surfaces", series, faults: "Faults", additional_data: "AdditionalData", **kwargs):        
+                 surfaces: "Surfaces", series, faults: "Faults", additional_data: "AdditionalData", **kwargs):
 
         super().__init__(surface_points, orientations, grid, surfaces, series, faults,
                                                 additional_data, **kwargs)
@@ -578,7 +739,7 @@ class InterpolatorModel(Interpolator_pro):
             idl.append(self.compute_weights_ctrl)
             idl.append(self.compute_scalar_ctrl)
             idl.append(self.compute_block_ctrl)
-        
+
         return idl
 
     def print_theano_shared(self):
@@ -635,94 +796,53 @@ class InterpolatorModel(Interpolator_pro):
         return th_fn
 
 
-class InterpolatorBlock(Interpolator_pro):
+class InterpolatorGravity(InterpolatorModel):
 
-    def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "GridClass",
-                 surfaces: "Surfaces", faults: "Faults", additional_data: "AdditionalData", **kwargs):
+    def set_theano_shared_tz_kernel(self):
+        self.theano_graph.tz.set_value(self.grid.gravity_grid.tz.astype(self.dtype))
 
-        super(InterpolatorBlock, self).__init__(surface_points, orientations, grid, surfaces, faults, additional_data,
-                                                  **kwargs)
-
-    def get_python_input_block(self, fault_drift=None):
-        """
-             Get values from the data objects used during the interpolation:
-                 - dip positions XYZ
-                 - dip angles
-                 - azimuth
-                 - polarity
-                 - surface_points coordinates XYZ
-             Returns:
-                 (list)
-             """
-        # orientations, this ones I tile them inside theano. PYTHON VAR
-        dips_position = self.orientations.df[['X_r', 'Y_r', 'Z_r']].values
-        dip_angles = self.orientations.df["dip"].values
-        azimuth = self.orientations.df["azimuth"].values
-        polarity = self.orientations.df["polarity"].values
-        surface_points_coord = self.surface_points.df[['X_r', 'Y_r', 'Z_r']].values
-        grid = self.grid.values_r
-        if fault_drift is None:
-            fault_drift = np.zeros((0, grid.shape[0] + surface_points_coord.shape[0]))
-
-        values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
-
-        # Set all in a list casting them in the chosen dtype
-        idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
-                                                  fault_drift, grid, values_properties)]
-        return idl
-
-    def compile_th_fn_formation_block(self, Z_x=None, weights=None, grid=None, values_properties=None, inplace=False,
-                                  debug=False):
+    def compile_th_fn(self, density = None, pos_density=None, inplace=False,
+                      debug=False):
         """
 
         Args:
             weights: Constant weights
-            grid:  Constant grids
+            grid: Constant grids
             inplace:
             debug:
 
         Returns:
 
         """
-        self.set_theano_shared_kriging()
-        self.set_theano_shared_structure_surfaces()
+        assert density is not None or pos_density is not None, 'If you do not pass the density block you need to pass' \
+                                                               'the position of surface values where density is' \
+                                                               ' assigned'
+
+        from theano.compile.nanguardmode import NanGuardMode
+
+        self.set_all_shared_parameters(reset=False)
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
-        input_data_T = self.theano_graph.input_parameters_block
+        input_data_T = self.theano_graph.input_parameters_loop
         print('Compiling theano function...')
+        if density is None:
+            density = self.theano_graph.compute_series()[0][pos_density, :- 2 * self.theano_graph.len_points]
 
-        if weights is None:
-            weights = self.theano_graph.compute_weights()
         else:
-            weights = theano.shared(weights)
-
-        if grid is None:
-            grid = self.theano_graph.grid_val_T
-        else:
-            grid = theano.shared(grid)
-
-        if values_properties is None:
-            values_properties = self.theano_graph.values_properties_op
-        else:
-            values_properties = theano.shared(values_properties)
-
-        if Z_x is None:
-            Z_x = self.theano_graph.compute_scalar_field(weights, grid)
-        else:
-            Z_x = theano.shared(Z_x)
+            density = theano.shared(density)
 
         th_fn = theano.function(input_data_T,
-                                self.theano_graph.compute_formation_block(
-                                    Z_x,
-                                    self.theano_graph.get_scalar_field_at_surface_points(Z_x),
-                                    values_properties
-                                ),
-                                # mode=NanGuardMode(nan_is_error=True),
+                                self.theano_graph.compute_forward_gravity(density),
+                                updates=[(self.theano_graph.block_matrix, self.theano_graph.new_block),
+                                         (self.theano_graph.weights_vector, self.theano_graph.new_weights),
+                                         (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
+                                         (self.theano_graph.mask_matrix, self.theano_graph.new_mask)],
+                                mode=NanGuardMode(nan_is_error=True),
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
                                 profile=False)
 
         if inplace is True:
-            self.theano_function_formation = th_fn
+            self.theano_function = th_fn
 
         if debug is True:
             print('Level of Optimization: ', theano.config.optimizer)
@@ -733,65 +853,4 @@ class InterpolatorBlock(Interpolator_pro):
 
         return th_fn
 
-    def compile_th_fn_fault_block(self, Z_x=None, weights=None, grid=None, values_properties=None, inplace=False, debug=False):
-        """
-
-        Args:
-            weights: Constant weights
-            grid:  Constant grids
-            inplace:
-            debug:
-
-        Returns:
-
-        """
-        self.set_theano_shared_kriging()
-        self.set_theano_shared_structure_surfaces()
-        # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
-        input_data_T = self.theano_graph.input_parameters_block
-        print('Compiling theano function...')
-
-        if weights is None:
-            weights = self.theano_graph.compute_weights()
-        else:
-            weights = theano.shared(weights)
-
-        if grid is None:
-            grid = self.theano_graph.grid_val_T
-        else:
-            grid = theano.shared(grid)
-
-        if values_properties is None:
-            values_properties = self.theano_graph.values_properties_op
-        else:
-            values_properties = theano.shared(values_properties)
-
-        if Z_x is None:
-            Z_x = self.theano_graph.compute_scalar_field(weights, grid)
-        else:
-            Z_x = theano.shared(Z_x)
-
-        th_fn = theano.function(input_data_T,
-                                self.theano_graph.compute_fault_block(
-                                    Z_x,
-                                    self.theano_graph.get_scalar_field_at_surface_points(Z_x),
-                                    values_properties,
-                                    0,
-                                    grid
-                               ),
-                                # mode=NanGuardMode(nan_is_error=True),
-                                on_unused_input='ignore',
-                                allow_input_downcast=False,
-                                profile=False)
-
-        if inplace is True:
-            self.theano_function_faults = th_fn
-
-        if debug is True:
-            print('Level of Optimization: ', theano.config.optimizer)
-            print('Device: ', theano.config.device)
-            print('Precision: ', self.dtype)
-            print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
-        print('Compilation Done!')
-        return th_fn
 

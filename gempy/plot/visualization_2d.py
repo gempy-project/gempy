@@ -98,10 +98,12 @@ class PlotData2D(object):
                                      "edgecolors": "black",
                                      "linewidths": 1}
 
+        topography_cell_number = kwargs.get('topography_cell_number', 0)
+
         x, y, Gx, Gy = self._slice(direction)[4:]
         extent = self._slice(direction)[3]
-        aspect = (extent[1] - extent[0])/(extent[3] - extent[2])
 
+        aspect = (extent[1] - extent[0]) / (extent[3] - extent[2])
         # apply vertical exageration
         if direction == 'x' or direction == 'y':
             aspect /= ve
@@ -110,7 +112,6 @@ class PlotData2D(object):
             min_axis = 'width'
         else:
             min_axis = 'height'
-
         if series == "all":
             series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"].
                 isin(self.model.series.df.index.values)]
@@ -127,6 +128,7 @@ class PlotData2D(object):
     #    series_to_plot_i['surface'] = series_to_plot_i['surface'].cat.remove_unused_categories()
     #    series_to_plot_f['surface'] = series_to_plot_f['surface'].cat.remove_unused_categories()
         #print(self._color_lot)
+
         if data_type == 'all':
             p = sns.lmplot(x, y,
                            data=series_to_plot_i,
@@ -139,6 +141,10 @@ class PlotData2D(object):
                            palette= self._color_lot,#np.asarray([tuple(i) for i in self._color_lot.values()]),
                            **kwargs)
 
+            # if direction == 'z':
+            #     p.axes[0, 0].set_xlim(extent[2], extent[3])
+            #     p.axes[0, 0].set_ylim(extent[0], extent[1])
+            # else:
             p.axes[0, 0].set_ylim(extent[2], extent[3])
             p.axes[0, 0].set_xlim(extent[0], extent[1])
 
@@ -161,13 +167,10 @@ class PlotData2D(object):
             p.axes[0, 0].set_ylim(extent[2], extent[3])
             p.axes[0, 0].set_xlim(extent[0], extent[1])
 
-
         if data_type == 'orientations':
             plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
                        series_to_plot_f[Gx], series_to_plot_f[Gy],
                        pivot="tail", scale_units=min_axis, scale=15)
-
-
 
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
@@ -183,41 +186,41 @@ class PlotData2D(object):
         Slice the 3D array (blocks or scalar field) in the specific direction selected in the plot functions
 
         """
-        _a, _b, _c = (slice(0, self.model.grid.resolution[0]),
-                      slice(0, self.model.grid.resolution[1]),
-                      slice(0, self.model.grid.resolution[2]))
+        _a, _b, _c = (slice(0, self.model.grid.regular_grid.resolution[0]),
+                      slice(0, self.model.grid.regular_grid.resolution[1]),
+                      slice(0, self.model.grid.regular_grid.resolution[2]))
         if direction == "x":
             _a = cell_number
             x = "Y"
             y = "Z"
             Gx = "G_y"
             Gy = "G_z"
-            extent_val = self.model.grid.extent[2], self.model.grid.extent[3], self.model.grid.extent[4], self.model.grid.extent[5]
+            extent_val = self.model.grid.extent[[2, 3, 4, 5]]
         elif direction == "y":
             _b = cell_number
             x = "X"
             y = "Z"
             Gx = "G_x"
             Gy = "G_z"
-            extent_val = self.model.grid.extent[0], self.model.grid.extent[1], self.model.grid.extent[4], self.model.grid.extent[5]
+            extent_val = self.model.grid.extent[[0, 1, 4, 5]]
         elif direction == "z":
             _c = cell_number
             x = "X"
             y = "Y"
             Gx = "G_x"
             Gy = "G_y"
-            extent_val = self.model.grid.extent[0], self.model.grid.extent[1], self.model.grid.extent[2], self.model.grid.extent[3]
+            extent_val = self.model.grid.extent[[0, 1, 2, 3]]#self.model.grid.extent[[1, 2, 3, 4]]
         else:
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
         return _a, _b, _c, extent_val, x, y, Gx, Gy
 
     def _slice2D(self, cell_number, direction):
-        if direction == 'y':
-            _slice = np.s_[:, cell_number, :]
-            extent = self.model.grid.extent[[0, 1, 4, 5]]
-        elif direction == 'x':
+        if direction == 'x':
             _slice = np.s_[cell_number, :, :]
             extent = self.model.grid.extent[[2, 3, 4, 5]]
+        elif direction == 'y':
+            _slice = np.s_[:, cell_number, :]
+            extent = self.model.grid.extent[[0, 1, 4, 5]]
         elif direction == 'z':
             _slice = np.s_[:, :, cell_number]
             extent = self.model.grid.extent[[1, 2, 3, 4]]
@@ -225,30 +228,46 @@ class PlotData2D(object):
             print('not a direction')
         return _slice, extent
 
-    def extract_fault_lines(self, cell_number=25, direction='y'):  # , lb=True):
-        # TODO @elisa Update
+    def plot_topography(self, cell_number, direction):
+        line = self.model.grid.topography._line_in_section(cell_number=cell_number, direction=direction)
+        if direction == 'x':
+            ext = self.model.grid.extent[[2, 3, 4, 5]]
+        elif direction == 'y':
+            ext = self.model.grid.extent[[0, 1, 4, 5]]
+        # add corners
+        line = np.append(line, ([ext[1], line[0, -1]], [ext[1], ext[3]], [ext[0], ext[3]], [ext[0], line[0, 1]])).reshape(-1,2)
+        plt.fill(line[:, 0], line[:, 1], color='k')#, alpha=0.5)
 
-        fb = self.model.solutions.scalalar_field_matrix
+    def extract_fault_lines(self, cell_number=25, direction='y'):
 
-        all_levels = self.model.solutions.scalar_field_at_surface_points[
-            np.where(self.model.solutions.scalar_field_at_surface_points != 0)]
-
-        block_id = []
-        for i in range(fb.shape[0]):
-            block_id.append(i)
+        faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
 
         _slice, extent = self._slice2D(cell_number, direction)
 
-        for i in range(len(block_id)):
-            plt.contour(fb[block_id[i]].reshape(self.model.grid.resolution)[_slice].T, 0,
-                        extent=extent, levels=all_levels[i], colors=self._cmap.colors[i])
-        # if lb is True:
-        #   plt.contour(geo_model.solutions.scalar_field_lith.reshape(geo_model.grid.resolution)[_slice].T, 0,
-        #   extent=extent, levels=np.sort(all_levels[len(block_id):]),
-        #   colors=self._cmap.colors[len(block_id):])
+        for fault in faults:
+            f_id = int(self.model.series.df.loc[fault, 'order_series']) - 1
+            block = self.model.solutions.scalar_field_matrix[f_id]
+            level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
+                self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
+            plt.contour(block.reshape(self.model.grid.regular_grid.resolution)[_slice].T, 0, extent=extent, levels=level,
+                        colors=self._cmap.colors[f_id])
+
+    def plot_map(self, solution: Solution):
+        lith = solution.lith_block
+        geomap = lith.reshape(self.model.grid.topography.topo.dem_zval.shape)  # resolution of topo gives much better map
+        # geomap = np.flip(geomap, axis=0) #to match the orientation of the other plotting options
+        fig, ax = plt.subplots()
+        plt.imshow(geomap, origin="upper", cmap=self._cmap, norm=self._norm)
+        CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys')
+        ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
+        cbar = plt.colorbar(CS)
+        cbar.set_label('elevation [m]')
+        plt.title("Geological map", fontsize=15)
+        plt.xlabel('X')
+        plt.ylabel('Y')
 
     def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data=False, block_type='lithology', ve=1, show_faults=False, **kwargs):
+                           plot_data=False, block_type=None, ve=1, show_faults=False, show_topo = True, **kwargs):
         """
         Plot a section of the block model
 
@@ -266,38 +285,22 @@ class PlotData2D(object):
         Returns:
             Block plot
         """
-        # if block is not None:
-        #     import theano
-        #     import numpy
-        #     assert (type(block) is theano.tensor.sharedvar.TensorSharedVariable or
-        #             type(block) is numpy.ndarray), \
-        #         'Block has to be a theano shared object or numpy array.'
-        #     if type(block) is numpy.ndarray:
-        #         _block = block
-        #     else:
-        #         _block = block.get_value()
-        # else:
-        #     try:
-        #         _block = self._data.interpolator.tg.final_block.get_value()
-        #     except AttributeError:
-        #         raise AttributeError('There is no block to plot')
 
-        if block is not None:
-            warnings.warn('Passing the block directly will get deprecated in the next version. Please use Solution'
-                          'and block_type instead', FutureWarning)
-            _block = block
+        if block is None:
+            _block = solution.lith_block
         else:
-            if block_type is 'lithology':
-                _block = solution.lith_block
+            _block = block
+            if _block.dtype == bool:
 
-            elif block_type is 'fault1':
-                _block = solution.fault_blocks
+                kwargs['cmap'] = 'viridis'
+                kwargs['norm'] = None
 
-            else:
-                assert block_type in self.model.surfaces.df.columns, 'The value to be plotted has to be in surfaces: \\' + \
-                                                                   str(self.model.surfaces.df)
+        if block_type is not None:
+            raise NotImplementedError
 
-        plot_block = _block.reshape(self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])
+        plot_block = _block.reshape(self.model.grid.regular_grid.resolution[0],
+                                    self.model.grid.regular_grid.resolution[1],
+                                    self.model.grid.regular_grid.resolution[2])
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
 
         if plot_data:
@@ -311,7 +314,7 @@ class PlotData2D(object):
             aspect = 1
 
         if 'cmap' not in kwargs:
-            kwargs['cmap'] = self._cmap #
+            kwargs['cmap'] = self._cmap
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
 
@@ -321,8 +324,16 @@ class PlotData2D(object):
                         aspect=aspect,
                         **kwargs)
         if show_faults:
-            raise NotImplementedError
+            #raise NotImplementedError
             self.extract_fault_lines(cell_number, direction)
+
+        if show_topo:
+            if self.model.grid.topography is not None:
+                if direction == 'z':
+                    plt.contour(self.model.grid.topography.values_3D[:, :, 2], extent=extent_val, cmap='Grays')
+                else:
+                    self.plot_topography(cell_number=cell_number, direction=direction)
+
         if not plot_data:
             import matplotlib.patches as mpatches
             patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
@@ -365,13 +376,13 @@ class PlotData2D(object):
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
 
         plt.contour(scalar_field.reshape(
-            self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])[_a, _b, _c].T,
+            self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[_a, _b, _c].T,
                     N,
                     extent=extent_val, *args,
                     **kwargs)
 
         plt.contourf(scalar_field.reshape(
-            self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])[_a, _b, _c].T,
+            self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[_a, _b, _c].T,
                     N,
                     extent=extent_val, alpha=0.6, *args,
                     **kwargs)
@@ -477,33 +488,33 @@ class PlotData2D(object):
         if direction == "y":
             if plot_scalar:
                 self.plot_scalar_field(scalar_field, cell_number, direction=direction, plot_data=False)
-            U = gx.reshape(self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])[::quiver_stepsize,
+            U = gx.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize,
                  cell_number, ::quiver_stepsize].T
-            V = gz.reshape(self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])[::quiver_stepsize,
+            V = gz.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize,
                  cell_number, ::quiver_stepsize].T
-            plt.quiver(self.model.grid.values[:, 0].reshape(self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])[::quiver_stepsize, cell_number, ::quiver_stepsize].T,
-                   self.model.grid.values[:, 2].reshape(self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])[::quiver_stepsize, cell_number, ::quiver_stepsize].T, U, V, pivot="tail",
+            plt.quiver(self.model.grid.values[:, 0].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, cell_number, ::quiver_stepsize].T,
+                   self.model.grid.values[:, 2].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, cell_number, ::quiver_stepsize].T, U, V, pivot="tail",
                    color='blue', alpha=.6)
         elif direction == "x":
             if plot_scalar:
                 self.plot_scalar_field(scalar_field, cell_number, direction=direction, plot_data=False)
-            U = gy.reshape(self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])[cell_number, ::quiver_stepsize, ::quiver_stepsize].T
-            V = gz.reshape(self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])[cell_number, ::quiver_stepsize, ::quiver_stepsize].T
-            plt.quiver(self.model.grid.values[:, 1].reshape(self.model.grid.resolution[0], self.model.grid.resolution[1],
-                                                            self.model.grid.resolution[2])[cell_number, ::quiver_stepsize,  ::quiver_stepsize].T,
-                       self.model.grid.values[:, 2].reshape(self.model.grid.resolution[0], self.model.grid.resolution[1],
-                                                            self.model.grid.resolution[2])[cell_number, ::quiver_stepsize,  ::quiver_stepsize].T, U, V,
+            U = gy.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize, ::quiver_stepsize].T
+            V = gz.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize, ::quiver_stepsize].T
+            plt.quiver(self.model.grid.values[:, 1].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize,  ::quiver_stepsize].T,
+                       self.model.grid.values[:, 2].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize,  ::quiver_stepsize].T, U, V,
                        pivot="tail",
                        color='blue', alpha=.6)
         elif direction== "z":
             if plot_scalar:
                 self.plot_scalar_field(scalar_field, cell_number, direction=direction, plot_data=False)
-            U = gx.reshape(self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T
-            V = gy.reshape(self.model.grid.resolution[0], self.model.grid.resolution[1], self.model.grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T
-            plt.quiver(self.model.grid.values[:, 0].reshape(self.model.grid.resolution[0], self.model.grid.resolution[1],
-                                                            self.model.grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T,
-                       self.model.grid.values[:, 1].reshape(self.model.grid.resolution[0], self.model.grid.resolution[1],
-                                                            self.model.grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T, U, V,
+            U = gx.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T
+            V = gy.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T
+            plt.quiver(self.model.grid.values[:, 0].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T,
+                       self.model.grid.values[:, 1].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T, U, V,
                        pivot="tail",
                        color='blue', alpha=.6)
         else:

@@ -6,7 +6,7 @@ from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 import mplstereonet
 
-'''This solution for vMF sampling originally appeared here: 
+'''The solution for vMF sampling originally appeared here: 
 - https://github.com/pymc-devs/pymc3/issues/2458 and
 - https://github.com/jasonlaska/spherecluster/blob/master/spherecluster/util.py'''
 

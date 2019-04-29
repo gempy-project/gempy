@@ -82,9 +82,9 @@ class Solution(object):
         return '\nLithology ids \n  %s \n' \
                % (np.array2string(self.lith_block))
 
-    def set_solution(self, values: Union[list, np.ndarray], compute_mesh: bool = True #, sort_surfaces=True
-                     ):
-        self.set_values(values)
+    def set_solution_to_regular_grid(self, values: Union[list, np.ndarray], compute_mesh: bool = True  #, sort_surfaces=True
+                                     ):
+        self.set_values_to_regular_grid(values)
         if compute_mesh is True:
             try:
                 self.compute_all_surfaces()
@@ -127,7 +127,7 @@ class Solution(object):
     #
     #     return self.surfaces
 
-    def set_values(self, values: Union[list, np.ndarray], compute_mesh: bool=True):
+    def set_values_to_regular_grid(self, values: Union[list, np.ndarray], compute_mesh: bool=True):
         # TODO ============ Set asserts of give flexibility 20.09.18 =============
         """
         Set all solution values to the correspondant attribute
@@ -138,25 +138,28 @@ class Solution(object):
         Returns:
 
         """
-        self.scalar_field_matrix = values[3][:, :self.grid.length]
+        regular_grid_length_l0, regular_grid_length_l1 = self.grid.get_grid_args('regular')
+        x_to_intep_length = self.grid.length[-1]
+
+        self.scalar_field_matrix = values[3][:, regular_grid_length_l0: regular_grid_length_l1]
         self.scalar_field_at_surface_points = values[4]
-        self._scalar_field_at_surface = values[3][:, self.grid.length:]
+        self._scalar_field_at_surface = values[3][:, x_to_intep_length:]
 
         self.weights_vector = values[2]
 
         # Axis 0 is the series. Axis 1 is the value
-        self.block_matrix = values[1][:, :, :self.grid.length]
-        self.block_at_surface_points = values[1][:, :, self.grid.length:]
+        self.block_matrix = values[1][:, :, regular_grid_length_l0: regular_grid_length_l1]
+        self.block_at_surface_points = values[1][:, :,x_to_intep_length:]
 
-        self.mask_matrix = values[5][:, :self.grid.length]
-        self.mask_at_surface_points = values[5][:, self.grid.length:]
+        self.mask_matrix = values[5][:, regular_grid_length_l0: regular_grid_length_l1]
+        self.mask_at_surface_points = values[5][:, x_to_intep_length:]
 
         # Lithology final block
-        self.lith_block = values[0][0, :self.grid.length]
+        self.lith_block = values[0][0, regular_grid_length_l0: regular_grid_length_l1]
 
         # Properties
-        self.values_matrix = values[0][1:, :self.grid.length]
-        self.values_at_surface_points = values[0][1:, self.grid.length:]
+        self.values_matrix = values[0][1:, regular_grid_length_l0: regular_grid_length_l1]
+        self.values_at_surface_points = values[0][1:, x_to_intep_length:]
 
         # TODO Adapt it to the gradients
         # try:
@@ -196,12 +199,12 @@ class Solution(object):
         #           'in the implementation.' % surface_id)
 
         vertices, simplices, normals, values = measure.marching_cubes_lewiner(
-            scalar_field.reshape(self.grid.resolution[0],
-                                 self.grid.resolution[1],
-                                 self.grid.resolution[2]),
+            scalar_field.reshape(self.grid.regular_grid.resolution[0],
+                                 self.grid.regular_grid.resolution[1],
+                                 self.grid.regular_grid.resolution[2]),
             level,
-            spacing=self.grid.get_dx_dy_dz(),
-            # mask=mask_array,
+            spacing=self.grid.regular_grid.get_dx_dy_dz(),
+            mask=mask_array,
             **kwargs
         )
 
@@ -214,9 +217,9 @@ class Solution(object):
     def padding_mask_matrix(self):
         self.mask_matrix_pad = []
         for mask_series in self.mask_matrix:
-            mask_series_reshape = mask_series.reshape((self.grid.resolution[0],
-                                                       self.grid.resolution[1],
-                                                       self.grid.resolution[2]))
+            mask_series_reshape = mask_series.reshape((self.grid.regular_grid.resolution[0],
+                                                       self.grid.regular_grid.resolution[1],
+                                                       self.grid.regular_grid.resolution[2]))
             self.mask_matrix_pad.append((mask_series_reshape + self.find_interfaces_from_block_bottoms(
                 mask_series_reshape, True)).T)
 
@@ -260,14 +263,15 @@ class Solution(object):
             sfas = self.scalar_field_at_surface_points[e]
             # Drop
             sfas = sfas[np.nonzero(sfas)]
-            if series_type[e] == 'Onlap':
-                mask_array = self.mask_matrix_pad[e+1]
+            if series_type[e-1] == 'Onlap':
+                mask_array = self.mask_matrix_pad[e-1]
             elif series_type[e] == 'Fault':
                 mask_array = None
             else:
                 mask_array = self.mask_matrix_pad[e]
 
             for level in sfas:
+                # print(mask_array, e)
                 v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
                 self.vertices.append(v)
                 self.edges.append(s)

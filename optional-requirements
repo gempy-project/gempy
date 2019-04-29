@@ -1,4 +1,5 @@
 pymc
 steno3d
-vtk==8.0.0.dev20170717
+vtk
+gdal
 pymc3
