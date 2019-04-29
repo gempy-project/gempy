@@ -460,8 +460,8 @@ def rescale_data(geo_model: Model, rescaling_factor=None, centers=None):
 
 
 # region Interpolator functionality
-@_setdoc([Interpolator.__doc__,
-         Interpolator.set_theano_shared_parameters.__doc__])
+@_setdoc([InterpolatorModel.__doc__,
+         InterpolatorModel.set_all_shared_parameters.__doc__])
 def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=True, output=None,
                            theano_optimizer=None, verbose:list = None):
     """

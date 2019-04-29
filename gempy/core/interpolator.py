@@ -419,6 +419,9 @@ class InterpolatorBlock(Interpolator):
 
 
 class InterpolatorModel(Interpolator):
+    """
+    fooo
+    """
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "GridClass",
                  surfaces: "Surfaces", series, faults: "Faults", additional_data: "AdditionalData", **kwargs):
 
@@ -466,6 +469,14 @@ class InterpolatorModel(Interpolator):
         self.compute_block_ctrl = np.ones(n_series, dtype=bool)
 
     def set_all_shared_parameters(self, reset=False):
+        """
+        foo
+        Args:
+            reset:
+
+        Returns:
+
+        """
         self.set_theano_shared_loop()
         self.set_theano_shared_relations()
         self.set_theano_shared_kriging()
@@ -652,13 +663,6 @@ class InterpolatorModel(Interpolator):
                     print(np.delete(weights, np.arange(old_len_w[e],  old_len_w[e] + i, -1)-1))
                     self.theano_graph.weights_vector.set_value(np.delete(weights, np.arange(old_len_w[e],  old_len_w[e] + i, -1)-1))
 
-    def _add_to_blocks_pro(self, loc, n_col):
-        pass
-
-
-    def _delete_in_blocks(self, loc, i):
-        pass
-
     def add_to_results(self, surface):
 
         s = self.surfaces.df[self.surfaces.df['surface'].isin(surface)]['series']
@@ -669,7 +673,6 @@ class InterpolatorModel(Interpolator):
         self._compute_len_series()
 
     def add_to_weights(self, surface, n_rows=1):
-      #  self._compute_len_series()
 
         s = self.surfaces.df[self.surfaces.df['surface'].isin(surface)]['series']
         loc_series = self.series.df.loc[s, 'order_series'] - 1

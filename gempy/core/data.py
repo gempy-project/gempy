@@ -1812,7 +1812,7 @@ class RescaledData(object):
 
         return new_coord_orientations
 
-    def set_rescaled_orientations(self, idx: list = None):
+    def set_rescaled_orientations(self, idx: Union[list, np.ndarray] = None):
         """
         Set the rescaled coordinates into the orientations categories_df
         Returns:
