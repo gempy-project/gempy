@@ -48,8 +48,6 @@ class Interpolator(object):
         self.faults = faults
 
         self.dtype = additional_data.options.df.loc['values', 'dtype']
-       # DEP self.input_matrices = self.get_input_matrix()
-
         self.theano_graph = self.create_theano_graph(additional_data, inplace=False)
 
         if 'compile_theano' in kwargs:
