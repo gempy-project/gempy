@@ -8,18 +8,16 @@ import warnings
 
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-import pandas as pn
 pn.options.mode.chained_assignment = None
 from .data import AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
     Surfaces, Options, Structure, KrigingParameters
 from .solution import Solution
 from .interpolator import InterpolatorModel, InterpolatorGravity
 from gempy.utils.meta import _setdoc
-from gempy.plot.visualization_3d import vtkVisualization
 from gempy.plot.decorators import *
 
 
-class DataMutation_pro(object):
+class DataMutation(object):
     def __init__(self):
 
         self.grid = Grid()
@@ -769,7 +767,7 @@ class DataMutation_pro(object):
 
 
 @_setdoc([MetaData.__doc__, Grid.__doc__])
-class Model(DataMutation_pro):
+class Model(DataMutation):
     """
     Container class of all objects that constitute a GemPy model. In addition the class provides the methods that
     act in more than one of this class.

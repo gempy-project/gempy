@@ -2,7 +2,7 @@ import numpy as np
 import theano
 
 
-class Interpolator_pro(object):
+class Interpolator(object):
     """
     Class that act as:
      1) linker between the data objects and the theano graph
@@ -115,7 +115,7 @@ class Interpolator_pro(object):
         self.theano_graph.number_of_points_per_surface_T.set_value(len_rest_form.astype('int32'))
 
 
-class InterpolatorWeights(Interpolator_pro):
+class InterpolatorWeights(Interpolator):
 
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "GridClass",
                  surfaces: "Surfaces", series, faults: "Faults", additional_data: "AdditionalData", **kwargs):
@@ -174,7 +174,7 @@ class InterpolatorWeights(Interpolator_pro):
         return th_fn
 
 
-class InterpolatorScalar(Interpolator_pro):
+class InterpolatorScalar(Interpolator):
 
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "GridClass",
                  surfaces: "Surfaces", series, faults: "Faults", additional_data: "AdditionalData", **kwargs):
@@ -257,7 +257,7 @@ class InterpolatorScalar(Interpolator_pro):
         return th_fn
 
 
-class InterpolatorBlock(Interpolator_pro):
+class InterpolatorBlock(Interpolator):
 
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "GridClass",
                  surfaces: "Surfaces", faults: "Faults", additional_data: "AdditionalData", **kwargs):
@@ -418,7 +418,7 @@ class InterpolatorBlock(Interpolator_pro):
         return th_fn
 
 
-class InterpolatorModel(Interpolator_pro):
+class InterpolatorModel(Interpolator):
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "GridClass",
                  surfaces: "Surfaces", series, faults: "Faults", additional_data: "AdditionalData", **kwargs):
 

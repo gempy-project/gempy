@@ -12,7 +12,7 @@ import pandas as pn
 import matplotlib.pyplot as plt
 import pytest
 
-mm = gp.DataMutation_pro()
+mm = gp.DataMutation()
 mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
 
 def test_add_surface_points_raise_non_surface():
@@ -52,7 +52,7 @@ def test_delete_surface_values():
 
 
 def test_modify_surface_values():
-    mm = gp.DataMutation_pro()
+    mm = gp.DataMutation()
     mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
     mm.add_surface_points(400, 300, -500, 'foo2')
     print(mm.surface_points)
@@ -65,19 +65,19 @@ def test_set_surface_values():
 
 
 def test_add_surface_points():
-    mm = gp.DataMutation_pro()
+    mm = gp.DataMutation()
     mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
     mm.add_surface_points(400, 300, -500, 'foo2')
 
 
 def test_add_default_orientation():
-    mm = gp.DataMutation_pro()
+    mm = gp.DataMutation()
     mm.set_default_surfaces()
     mm.set_default_orientation()
 
 
 def test_set_is_fault():
-    mm = gp.DataMutation_pro()
+    mm = gp.DataMutation()
     mm.add_series(['foo1', 'foo2', 'foo3'])
     mm.set_is_fault(['foo2'])
     mm.set_is_fault(['foo2'], toggle=True)
