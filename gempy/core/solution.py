@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pn
 from typing import Union
 import warnings
 from gempy.utils.meta import _setdoc
@@ -91,41 +90,7 @@ class Solution(object):
             except RuntimeError:
                 warnings.warn('It is not possible to compute the mesh.')
 
-        # if sort_surfaces is True:
-        #     self.set_model_order()
-
         return self
-
-    # def set_model_order(self):
-    #     # TODO time this function
-    #     spu = self.surface_points.df['surface'].unique()
-    #     sps = self.surface_points.df['series'].unique()
-    #     sel = self.surfaces.df['surface'].isin(spu)
-    #    # print(sel)
-    #     for e, name_series in enumerate(sps):
-    #         try:
-    #             sfai_series = self.scalar_field_at_surface_points[e]
-    #             sfai_order_aux = np.argsort(sfai_series[np.nonzero(sfai_series)])
-    #             sfai_order =  (sfai_order_aux - sfai_order_aux.shape[0]) * -1
-    #             # select surfaces which exist in surface_points
-    #             group = self.surfaces.df[sel].groupby('series').get_group(name_series)
-    #             idx = group.index
-    #             surface_names = group['surface']
-    #             print('idx', idx)
-    #             print(sfai_order)
-    #             self.surfaces.df.loc[idx, 'order_surfaces'] = self.surfaces.df.loc[idx, 'surface'].map(
-    #                 pn.DataFrame(sfai_order, index=surface_names)[0])
-    #             print( pn.DataFrame(sfai_order, index=surface_names)[0])
-    #             print(self.surfaces.df)
-    #         except IndexError:
-    #             pass
-    #
-    #     self.surfaces.sort_surfaces()
-    #     self.surfaces.set_basement()
-    #     self.surface_points.df['id'] = self.surface_points.df['surface'].map(self.surfaces.df.set_index('surface')['id'])
-    #     self.surface_points.sort_table()
-    #
-    #     return self.surfaces
 
     def set_values_to_regular_grid(self, values: Union[list, np.ndarray], compute_mesh: bool=True):
         # TODO ============ Set asserts of give flexibility 20.09.18 =============
@@ -162,17 +127,6 @@ class Solution(object):
         self.values_at_surface_points = values[0][1:, x_to_intep_length:]
 
         # TODO Adapt it to the gradients
-        # try:
-        #     if self.additional_data.options.df.loc['values', 'output'] is 'gradients':
-        #         self.values_block = lith[2:-3]
-        #         self.gradient = lith[-3:]
-        #     else:
-        #         self.values_block = lith[2:]
-        # except AttributeError:
-        #     self.values_block = lith[2:]
-        #
-        # self.scalar_field_faults = faults[1::2]
-        # self.fault_blocks = faults[::2]
 
     def compute_surface_regular_grid(self, level: float, scalar_field, mask_array=None, **kwargs):
         """
@@ -187,16 +141,6 @@ class Solution(object):
         """
 
         from skimage import measure
-        # # Check that the scalar field of the surface is whithin the boundaries
-        # if not scalar_field.max() > level:
-        #     level = scalar_field.max()
-        #     print('Scalar field value at the surface %i is outside the grid boundaries. Probably is due to an error'
-        #           'in the implementation.' % surface_id)
-        #
-        # if not scalar_field.min() < pot_int[surface_id]:
-        #     pot_int[surface_id] = scalar_field.min()
-        #     print('Scalar field value at the surface %i is outside the grid boundaries. Probably is due to an error'
-        #           'in the implementation.' % surface_id)
 
         vertices, simplices, normals, values = measure.marching_cubes_lewiner(
             scalar_field.reshape(self.grid.regular_grid.resolution[0],
@@ -260,10 +204,9 @@ class Solution(object):
         self.vertices = []
         self.edges = []
         self.padding_mask_matrix()
-       # series_type = np.append('init', self.series.df['BottomRelation'])
         series_type = self.series.df['BottomRelation']
-
         s_n = 0
+
         # We loop the scalar fields
         for e, scalar_field in enumerate(self.scalar_field_matrix):
             sfas = self.scalar_field_at_surface_points[e]
@@ -277,7 +220,6 @@ class Solution(object):
                 mask_array = self.mask_matrix_pad[e]
 
             for level in sfas:
-                # print(mask_array, e)
                 v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
                 self.vertices.append(v)
                 self.edges.append(s)
@@ -285,10 +227,5 @@ class Solution(object):
                 self.surfaces.df.loc[idx, 'vertices'] = [v]
                 self.surfaces.df.loc[idx, 'edges'] = [s]
                 s_n += 1
+
         return self.vertices, self.edges
-    #
-    # def set_vertices(self, surface_name, vertices):
-    #     self.vertices[surface_name] = vertices
-    #
-    # def set_edges(self, surface_name, edges):
-    #     self.edges[surface_name] = edges
