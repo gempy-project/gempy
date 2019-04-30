@@ -703,9 +703,7 @@ class DataMutation_pro(object):
         pass
 
     def set_topography(self, source = 'random', **kwargs):
-        #
         """
-
         Args:
             mode: 'random': random topography is generated (based on a fractal grid).
                    'gdal': filepath must be provided to load topography from a raster file.
@@ -717,20 +715,7 @@ class DataMutation_pro(object):
                 resolution: resolution of the topography array. If none, geo_model.grid.resoution
 
         Returns: :class:gempy.core.data.Topography
-
         """
-        # self.topography = Topography(self.grid)
-        # if source == 'random':
-        #     self.topography.load_random_hills(**kwargs)
-        # elif source == 'gdal':
-        #     if filepath is not None:
-        #         self.topography.load_from_gdal(filepath)
-        #     else:
-        #         print('to load a raster file, a path to the file must be provided')
-        # else:
-        #     print('source must be either random or gdal')
-        #
-        # self.topography.show()
 
         self.grid.set_topography(source, **kwargs)
         self.rescaling.set_rescaled_grid()
