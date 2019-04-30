@@ -37,13 +37,12 @@ class ReadGeoModellerXML:
         self.stratigraphic_column, self.surface_points, self.orientations = self.get_dataframes()
 
         self.series_info = self._get_series_fmt_dict()
-        #self.interfaces, self.orientations = self.get_dataframes()
-        #self.stratigraphic_column = self.get_stratigraphic_column()
-        #self.faults = self.get_faults()
 
-        #self.series_distribution = self.get_series_distribution()
+        self.faults = self.get_faults()
 
-        # self.fault_matrix = self.get_fault_matrix()
+        self.series_distribution = self.get_series_distribution()
+
+        self.fault_matrix = self.get_fault_matrix()
 
     def _get_extent(self):
         """
@@ -237,3 +236,27 @@ class ReadGeoModellerXML:
             sp[s]["InfluencedByFault"] = influenced_by
 
         return sp
+
+
+    def _where_do_faults_stop(self):
+        fstop = {}
+        for i, f in enumerate(self.root[2]):
+
+            stops_on = []
+            for c in self.root[2][i][2:]:
+                stops_on.append(c.get("Name"))
+
+            fstop[f.get("Name")] = stops_on
+
+        return fstop
+
+    def get_fault_matrix(self):
+        nf = len(self.faults)
+        fm = np.zeros((nf, nf))  # zero matrix of n_faults²
+        fstop = self._where_do_faults_stop()
+        for i, f in enumerate(self.faults):
+            for fs in fstop[f]:
+                j = np.where(np.array(self.faults) == fs)[0][0]
+                fm[i, j] = 1
+
+        return fm

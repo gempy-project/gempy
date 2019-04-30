@@ -579,7 +579,6 @@ class DataMutation(object):
     def set_topography(self, source='random', **kwargs):
         #
         """
-
         Args:
             mode: 'random': random topography is generated (based on a fractal grid).
                    'gdal': filepath must be provided to load topography from a raster file.
@@ -591,7 +590,6 @@ class DataMutation(object):
                 resolution: resolution of the topography array. If none, geo_model.grid.resoution
 
         Returns: :class:gempy.core.data.Topography
-
         """
 
         self.grid.set_topography(source, **kwargs)
