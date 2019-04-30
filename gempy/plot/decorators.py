@@ -87,7 +87,7 @@ def plot_set_topography(func):
 
         if plot_object is not None:
             if isinstance(plot_object, GemPyvtkInteract):
-                plot_object.render_topography(args[1])
+                plot_object.render_topography()
             else:
                 raise AttributeError('plot_object must be one GemPy compatible plot')
         return topography

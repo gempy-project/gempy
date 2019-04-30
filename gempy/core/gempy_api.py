@@ -149,7 +149,8 @@ def load_model(name, path=None, recompile=False):
                                  'order_surfaces': 'int64', 'isBasement': 'bool', 'id': 'int64',
                                  'color': 'str'})
     c_ = surf_df.columns[~(surf_df.columns.isin(geo_model.surfaces._columns_vis_drop))]
-    geo_model.surfaces.df[surf_df.columns] = surf_df#.reindex(c_, axis=1)
+    geo_model.surfaces.df[c_] = surf_df[c_]#.reindex(c_, axis=1)
+    #geo_model.surfaces.df[['vertices', 'edges']] = np.nan
     geo_model.surfaces.colors.generate_colordict()
     geo_model.surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
 
@@ -188,6 +189,10 @@ def load_model(name, path=None, recompile=False):
     # geo_model.solutions.additional_data.kriging_data.df = geo_model.additional_data.kriging_data.df
     # geo_model.solutions.additional_data.options.df = geo_model.additional_data.options.df
     # geo_model.solutions.additional_data.rescaling_data.df = geo_model.additional_data.rescaling_data.df
+
+    geo_model.update_from_series()
+    geo_model.update_from_surfaces()
+    geo_model.update_structure()
 
     if recompile is True:
         set_interpolation_data(geo_model, verbose=[0])
@@ -413,8 +418,9 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
     else:
         model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh)
         # TODO @elisa elaborate this
-        # if model.grid.active_grids[2] is True:
-            #model.solutions.topography_map = sol[0]
+        if model.grid.active_grids[2] == True:
+            l0, l1 = model.grid.get_grid_args('topography')
+            model.solutions.topography_map = sol[0][:, l0: l1]
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions

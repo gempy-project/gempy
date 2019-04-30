@@ -85,10 +85,10 @@ class Solution(object):
                                      ):
         self.set_values_to_regular_grid(values)
         if compute_mesh is True:
-            try:
-                self.compute_all_surfaces()
-            except RuntimeError:
-                warnings.warn('It is not possible to compute the mesh.')
+
+            self.compute_all_surfaces()
+            # except RuntimeError:
+            #     warnings.warn('It is not possible to compute the mesh.')
 
         return self
 
@@ -159,7 +159,8 @@ class Solution(object):
         return [vertices, simplices, normals, values]
 
     def mask_topo(self, mask_matrix):
-        return ~self.grid.regular_grid.mask_topo * mask_matrix
+        a = (~self.grid.regular_grid.mask_topo) * mask_matrix
+        return a
 
     def padding_mask_matrix(self, mask_topography=True):
         self.mask_matrix_pad = []
@@ -168,8 +169,8 @@ class Solution(object):
                                                        self.grid.regular_grid.resolution[1],
                                                        self.grid.regular_grid.resolution[2]))
 
-            mask_pad = mask_series_reshape + self.find_interfaces_from_block_bottoms(
-                mask_series_reshape, True)
+            mask_pad = (mask_series_reshape + self.find_interfaces_from_block_bottoms(
+                mask_series_reshape, True))
 
             if mask_topography and self.grid.regular_grid.mask_topo.size != 0:
                 mask_pad = self.mask_topo(mask_pad)
@@ -223,7 +224,14 @@ class Solution(object):
                 mask_array = self.mask_matrix_pad[e]
 
             for level in sfas:
-                v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
+                try:
+                    v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
+
+                except Exception as e:
+                    warnings.warn('Surfaces not computed due to: ' + str(e))
+                    v = np.nan
+                    s = np.nan
+
                 self.vertices.append(v)
                 self.edges.append(s)
                 idx = self.surfaces.df.index[s_n]

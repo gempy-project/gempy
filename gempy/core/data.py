@@ -141,13 +141,15 @@ class Grid(object):
         self.length = np.empty(0)
         self.values = np.empty((0, 3))
         lengths = [0]
-
-        for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.gravity_grid]):
-            if self.active_grids[e]:
-                self.values = np.vstack((self.values, grid_types.values))
-                lengths.append(grid_types.values.shape[0])
-            else:
-                lengths.append(0)
+        try:
+            for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.gravity_grid]):
+                if self.active_grids[e]:
+                    self.values = np.vstack((self.values, grid_types.values))
+                    lengths.append(grid_types.values.shape[0])
+                else:
+                    lengths.append(0)
+        except AttributeError:
+            raise AttributeError('Grid type do not exist yet. Set the grid before activate it.')
 
         self.length = np.array(lengths).cumsum()
 

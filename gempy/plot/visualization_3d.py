@@ -470,19 +470,19 @@ class vtkVisualization(object):
         # Add the grid points to a polydata object
         polydata = vtk.vtkPolyData()
         polydata.SetPoints(points)
-
-        glyphFilter = vtk.vtkVertexGlyphFilter()
-        glyphFilter.SetInputData(polydata)
-        glyphFilter.Update()
-
-        # Create a mapper and actor
-        pointsMapper = vtk.vtkPolyDataMapper()
-        pointsMapper.SetInputConnection(glyphFilter.GetOutputPort())
-
-        pointsActor = vtk.vtkActor()
-        pointsActor.SetMapper(pointsMapper)
-        pointsActor.GetProperty().SetPointSize(3)
-        pointsActor.GetProperty().SetColor(colors.GetColor3d("Red"))
+        #
+        # glyphFilter = vtk.vtkVertexGlyphFilter()
+        # glyphFilter.SetInputData(polydata)
+        # glyphFilter.Update()
+        #
+        # # Create a mapper and actor
+        # pointsMapper = vtk.vtkPolyDataMapper()
+        # pointsMapper.SetInputConnection(glyphFilter.GetOutputPort())
+        #
+        # pointsActor = vtk.vtkActor()
+        # pointsActor.SetMapper(pointsMapper)
+        # pointsActor.GetProperty().SetPointSize(3)
+        # pointsActor.GetProperty().SetColor(colors.GetColor3d("Red"))
 
         # Triangulate the grid points
         delaunay = vtk.vtkDelaunay2D()
@@ -497,6 +497,8 @@ class vtkVisualization(object):
         triangulatedActor.SetMapper(triangulatedMapper)
 
         self.topography_surface = triangulatedActor
+        self._topography_polydata = polydata
+        self._topography_delauny = delaunay
         self.ren_list[0].AddActor(triangulatedActor)
         self.ren_list[1].AddActor(triangulatedActor)
         self.ren_list[2].AddActor(triangulatedActor)
@@ -1264,10 +1266,13 @@ class GemPyvtkInteract(vtkVisualization):
         self.interactor.Render()
 
     def render_topography(self):
-        self.ren_list[0].RemoveActor(self.topography_surface)
-        self.ren_list[1].RemoveActor(self.topography_surface)
-        self.ren_list[2].RemoveActor(self.topography_surface)
-        self.ren_list[3].RemoveActor(self.topography_surface)
+        try:
+            self.ren_list[0].RemoveActor(self.topography_surface)
+            self.ren_list[1].RemoveActor(self.topography_surface)
+            self.ren_list[2].RemoveActor(self.topography_surface)
+            self.ren_list[3].RemoveActor(self.topography_surface)
+        except AttributeError:
+            pass
 
         self.set_topography()
         if self.real_time is True:
