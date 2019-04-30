@@ -741,7 +741,6 @@ class Surfaces(object):
         if values_array is not None:
             self.set_surfaces_values(values_array=values_array, properties_names=properties_names)
 
-
         self.sequential_pile = StratigraphicPile(self.series, self.df)
 
     def __repr__(self):
@@ -749,21 +748,21 @@ class Surfaces(object):
 
     def _repr_html_(self):
         #return self.df.to_html()
-        #c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis))]
+        c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
 
-        return self.df.style.applymap(self.background_color, subset=['color']).render()
+        return self.df[c_].style.applymap(self.background_color, subset=['color']).render()
 
-    def _repr_html2_(self, df):
-        return df.style.applymap(self.background_color, subset=['color']).render()
-
-    def _repr_html_new_(self):
-        idx = list(self.df[self.df['order_surfaces']==1]['id']-1)
-        tables = np.array_split(self.df[self._columns_vis], idx)[1:]
-        return display(HTML(
-            '<table><tr style="background-color:white;">' +
-            ''.join(['<td>' + self._repr_html2_(table) + '</td>' + '<tr>\n' for table in tables]) +
-            '</tr></table>'
-        ))
+    # def _repr_html2_(self, df):
+    #     return df.style.applymap(self.background_color, subset=['color']).render()
+    #
+    # def _repr_html_new_(self):
+    #     idx = list(self.df[self.df['order_surfaces']==1]['id']-1)
+    #     tables = np.array_split(self.df[self._columns_vis], idx)[1:]
+    #     return display(HTML(
+    #         '<table><tr style="background-color:white;">' +
+    #         ''.join(['<td>' + self._repr_html2_(table) + '</td>' + '<tr>\n' for table in tables]) +
+    #         '</tr></table>'
+    #     ))
 
 
         #return self.df[self._columns_vis].style.applymap(self.background_color, subset=['color']).render()
