@@ -22,15 +22,13 @@
 
 from os import path
 import sys
-
-# This is for sphenix to find the packages
-sys.path.append(path.dirname( path.dirname( path.abspath(__file__) ) ) )
-
 import numpy as _np
 from numpy import ndarray
-from pandas import DataFrame
-from gempy.core.model import *
 from typing import Union
+
+# This is for sphenix to find the packages
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+from gempy.core.model import *
 from gempy.utils.meta import _setdoc
 
 # This warning comes from numpy complaining about a theano optimization

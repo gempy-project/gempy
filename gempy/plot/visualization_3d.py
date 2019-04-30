@@ -204,6 +204,17 @@ class vtkVisualization(object):
                     layer.VisibilityOn()
                 self.layer_visualization = True
                 self.interactor.Render()
+
+        if key is 't':
+            if self.topo_visualization is True:
+                self.topography_surface.VisibilityOff()
+                self.topo_visualization = False
+                self.interactor.Render()
+            elif self.topo_visualization is False:
+                self.topography_surface.VisibilityOn()
+                self.topo_visualization = True
+                self.interactor.Render()
+
         if key is 'q':
             print('closing vtk')
             self.close_window()
@@ -447,6 +458,51 @@ class vtkVisualization(object):
             self.ren_list[2].AddActor(act)
             self.ren_list[3].AddActor(act)
 
+    def set_topography(self):
+        colors = vtk.vtkNamedColors()
+        # Create points on an XY grid with random Z coordinate
+        vertices = self.geo_model.grid.topography.values
+
+        points = vtk.vtkPoints()
+        for v in vertices:
+            v[-1] = v[-1]
+            points.InsertNextPoint(v)
+
+        # Add the grid points to a polydata object
+        polydata = vtk.vtkPolyData()
+        polydata.SetPoints(points)
+
+        glyphFilter = vtk.vtkVertexGlyphFilter()
+        glyphFilter.SetInputData(polydata)
+        glyphFilter.Update()
+
+        # Create a mapper and actor
+        pointsMapper = vtk.vtkPolyDataMapper()
+        pointsMapper.SetInputConnection(glyphFilter.GetOutputPort())
+
+        pointsActor = vtk.vtkActor()
+        pointsActor.SetMapper(pointsMapper)
+        pointsActor.GetProperty().SetPointSize(3)
+        pointsActor.GetProperty().SetColor(colors.GetColor3d("Red"))
+
+        # Triangulate the grid points
+        delaunay = vtk.vtkDelaunay2D()
+        delaunay.SetInputData(polydata)
+        delaunay.Update()
+
+        # Create a mapper and actor
+        triangulatedMapper = vtk.vtkPolyDataMapper()
+        triangulatedMapper.SetInputConnection(delaunay.GetOutputPort())
+
+        triangulatedActor = vtk.vtkActor()
+        triangulatedActor.SetMapper(triangulatedMapper)
+
+        self.topography_surface = triangulatedActor
+        self.ren_list[0].AddActor(triangulatedActor)
+        self.ren_list[1].AddActor(triangulatedActor)
+        self.ren_list[2].AddActor(triangulatedActor)
+        self.ren_list[3].AddActor(triangulatedActor)
+
     def set_surface_points(self, indices=None):
         """
         Create all the surface_points points and set them to the corresponding renders for their posterior visualization
@@ -682,7 +738,7 @@ class vtkVisualization(object):
         for index, df_row in df_changes.iterrows():
             new_center = df_row[['X', 'Y', 'Z']].values
 
-            # Update  renderers
+            # Update renderers
             s1 = self.s_rend_1.loc[index, 'val']
 
             s1.PlaceWidget(new_center[0] - s1.r_f, new_center[0] + s1.r_f,
@@ -1078,7 +1134,7 @@ class vtkVisualization(object):
         gridToVTK(path+'_lith_block', x, y, z, cellData={"Lithology": lith})
 
     @staticmethod
-    def export_vtk_surfaces(vertices:dict, simplices, path=None, name='_surfaces', alpha=1):
+    def export_vtk_surfaces(geo_model, vertices:dict, simplices, path=None, name='_surfaces', alpha=1):
         """
         Export data to a vtk file for posterior visualizations
 
@@ -1130,7 +1186,7 @@ class vtkVisualization(object):
 
             surf_actor = vtk.vtkActor()
             surf_actor.SetMapper(surf_mapper)
-            surf_actor.GetProperty().SetColor(color_lot[s_n])
+            surf_actor.GetProperty().SetColor(mcolors.hex2color(geo_model.surfaces.df.set_index('id')['color'][s_n]))
             surf_actor.GetProperty().SetOpacity(alpha)
 
             if not path:
@@ -1151,6 +1207,14 @@ class GemPyvtkInteract(vtkVisualization):
 
     def resume(self):
         self.interactor.Start()
+
+    def restart(self, render_surfaces=True, **kwargs):
+        self.set_surface_points()
+        self.set_orientations()
+        if render_surfaces is True:
+            self.set_surfaces(self.geo_model.surfaces)
+
+        self.render_model(**kwargs)
 
     def set_real_time_on(self):
 
@@ -1198,6 +1262,15 @@ class GemPyvtkInteract(vtkVisualization):
     def render_surfaces(self, alpha=1):
         self.delete_surfaces()
         self.set_surfaces(self.geo_model.surfaces, alpha=alpha)
+        self.interactor.Render()
+
+    def render_topography(self):
+        self.ren_list[0].RemoveActor(self.topography_surface)
+        self.ren_list[1].RemoveActor(self.topography_surface)
+        self.ren_list[2].RemoveActor(self.topography_surface)
+        self.ren_list[3].RemoveActor(self.topography_surface)
+
+        self.set_topography()
         self.interactor.Render()
 
     def update_model(self):
