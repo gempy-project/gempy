@@ -448,7 +448,6 @@ class vtkVisualization(object):
 
     def set_surfaces(self, surfaces, alpha=1):
         self.surf_rend_1 = []
-
         for idx, val in surfaces.df[['vertices', 'edges', 'id']].dropna().iterrows():
             act, map, pol = self.create_surface(val['vertices'], val['edges'], val['id'], alpha)
             self.surf_rend_1.append(act)
@@ -1271,6 +1270,8 @@ class GemPyvtkInteract(vtkVisualization):
         self.ren_list[3].RemoveActor(self.topography_surface)
 
         self.set_topography()
+        if self.real_time is True:
+            self.update_surfaces_real_time()
         self.interactor.Render()
 
     def update_model(self):

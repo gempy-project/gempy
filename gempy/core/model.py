@@ -575,6 +575,7 @@ class DataMutation(object):
         d['id'] = d['surface'].map(self.surfaces.df.set_index('surface')['id'])
         d['order_series'] = d['series'].map(self.series.df['order_series'])
 
+    @plot_set_topography
     def set_topography(self, source='random', **kwargs):
         #
         """

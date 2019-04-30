@@ -78,3 +78,17 @@ def plot_move_orientations(func):
                 raise AttributeError('plot_object must be one GemPy compatible plot')
         return orientations
     return pmo
+
+
+def plot_set_topography(func):
+    def pst(*args, **kwargs):
+        plot_object = kwargs.pop('plot_object') if 'plot_object' in kwargs else None
+        topography = func(*args, **kwargs)
+
+        if plot_object is not None:
+            if isinstance(plot_object, GemPyvtkInteract):
+                plot_object.render_topography(args[1])
+            else:
+                raise AttributeError('plot_object must be one GemPy compatible plot')
+        return topography
+    return pst
