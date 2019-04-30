@@ -214,17 +214,24 @@ class Solution(object):
 
         return [vertices, simplices, normals, values]
 
-    def padding_mask_matrix(self):
+    def mask_topo(self, mask_matrix):
+        return ~self.grid.regular_grid.mask_topo * mask_matrix
+
+    def padding_mask_matrix(self, mask_topography=True):
         self.mask_matrix_pad = []
         for mask_series in self.mask_matrix:
             mask_series_reshape = mask_series.reshape((self.grid.regular_grid.resolution[0],
                                                        self.grid.regular_grid.resolution[1],
                                                        self.grid.regular_grid.resolution[2]))
+            if mask_topography:
+                #try:
+                mask_series_reshape = self.mask_topo(mask_series_reshape)
+
             self.mask_matrix_pad.append((mask_series_reshape + self.find_interfaces_from_block_bottoms(
                 mask_series_reshape, True)).T)
 
     @staticmethod
-    def find_interfaces_from_block_bottoms(block, value, shift=2):
+    def find_interfaces_from_block_bottoms(block, value, shift=3):
         """
         Find the voxel at an interface. We shift left since gempy is based on bottoms
 

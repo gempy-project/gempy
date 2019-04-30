@@ -11,6 +11,7 @@ class RegularGrid:
         self.resolution = np.ones((0, 3), dtype='int64')
         self.extent = np.empty(6, dtype='float64')
         self.values = np.empty((0, 3))
+        self.mask_topo = np.empty((0,3), dtype=bool)
         if extent is not None and resolution is not None:
             self.set_regular_grid(extent, resolution)
             self.dx, self.dy, self.dz = self.get_dx_dy_dz()
@@ -277,7 +278,7 @@ class Topography:
                 z = ind[x, y]
                 gridz[x, y, z:] = 99999
         mask = (gridz == 99999)
-        return np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
+        return mask.swapaxes(0,1)# np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
 
     def _find_indices(self):
         zs = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.regular_grid.resolution[2])
