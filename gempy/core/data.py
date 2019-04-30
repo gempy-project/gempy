@@ -66,7 +66,7 @@ class Grid(object):
         self.values_r = np.empty((0, 3))
         self.length = np.empty(0)
         self.grid_types = np.array(['regular', 'custom', 'topography', 'gravity'])
-        self.grid_active = np.zeros(4, dtype=bool)
+        self.active_grids = np.zeros(4, dtype=bool)
         # All grid types must have values
 
         # Init optional grids
@@ -119,22 +119,22 @@ class Grid(object):
 
     def set_gravity_grid(self):
         self.gravity_grid = grid_types.GravityGrid()
-        self.grid_active = np.zeros(4, dtype=bool)
+        self.active_grids = np.zeros(4, dtype=bool)
         self.set_active('gravity')
 
     def deactivate_all_grids(self):
-        self.grid_active = np.zeros(4, dtype=bool)
+        self.active_grids = np.zeros(4, dtype=bool)
         self.update_grid_values()
-        return self.grid_active
+        return self.active_grids
 
     def set_active(self, grid_name: Union[str, np.ndarray]):
         where = self.grid_types == grid_name
-        self.grid_active += where
+        self.active_grids += where
         self.update_grid_values()
 
     def set_inactive(self, grid_name: str):
         where = self.grid_types == grid_name
-        self.grid_active -= where
+        self.active_grids -= where
         self.update_grid_values()
 
     def update_grid_values(self):
@@ -143,7 +143,7 @@ class Grid(object):
         lengths = [0]
 
         for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.gravity_grid]):
-            if self.grid_active[e]:
+            if self.active_grids[e]:
                 self.values = np.vstack((self.values, grid_types.values))
                 lengths.append(grid_types.values.shape[0])
             else:

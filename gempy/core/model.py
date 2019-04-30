@@ -849,7 +849,7 @@ class Model(DataMutation):
                                                                      ' assigned'
 
         # TODO Possibly this is only necessary when computing gravity
-        self.grid.grid_active = np.zeros(4, dtype=bool)
+        self.grid.active_grids = np.zeros(4, dtype=bool)
         self.grid.set_active('gravity')
         self.interpolator.set_initial_results_matrices()
 
