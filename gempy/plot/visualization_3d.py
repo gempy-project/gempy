@@ -31,6 +31,8 @@ import pandas as pn
 import numpy as np
 import sys
 import gempy as gp
+from vtk.util.numpy_support import numpy_to_vtk
+import warnings
 
 try:
     import vtk
@@ -263,9 +265,13 @@ class vtkVisualization(object):
             vtk.vtkPoints: with the coordinates of the points
         """
         Points = vtk.vtkPoints()
-        for v in vertices:
-            v[-1] = self.ve * v[-1]
-            Points.InsertNextPoint(v)
+        if self.ve != 1:
+            raise NotImplementedError('Vertical exageration for surfaces not implemented yet.')
+        # for v in vertices:
+        #     v[-1] = self.ve * v[-1]
+        #     Points.InsertNextPoint(v)
+        Points.SetData(numpy_to_vtk(vertices))
+
         return Points
 
     @staticmethod
@@ -465,14 +471,14 @@ class vtkVisualization(object):
             self.ren_list[3].AddActor(act)
 
     def set_topography(self):
-        colors = vtk.vtkNamedColors()
         # Create points on an XY grid with random Z coordinate
         vertices = self.geo_model.grid.topography.values
 
         points = vtk.vtkPoints()
-        for v in vertices:
-            v[-1] = v[-1]
-            points.InsertNextPoint(v)
+        # for v in vertices:
+        #     v[-1] = v[-1]
+        #     points.InsertNextPoint(v)
+        points.SetData(numpy_to_vtk(vertices))
 
         # Add the grid points to a polydata object
         polydata = vtk.vtkPolyData()
@@ -510,6 +516,24 @@ class vtkVisualization(object):
         self.ren_list[1].AddActor(triangulatedActor)
         self.ren_list[2].AddActor(triangulatedActor)
         self.ren_list[3].AddActor(triangulatedActor)
+        try:
+            self.set_geological_map()
+        except AttributeError as ae:
+            warnings.warn(str(ae))
+
+    def set_geological_map(self):
+        assert self.geo_model.solutions.geological_map is not None, 'Geological map not computed. First' \
+                                                                    'set active the topography grid'
+        arr_ = np.empty((0, 3), dtype='int')
+
+        # Convert hex colors to rgb
+        for idx, val in self.geo_model.surfaces.df['color'].iteritems():
+            rgb = (255 * np.array(mcolors.hex2color(val)))
+            arr_ = np.vstack((arr_, rgb))
+
+        sel = np.round(self.geo_model.solutions.geological_map).astype(int)[0]
+        nv = numpy_to_vtk(arr_[sel - 1], array_type=3)
+        self._topography_delauny.GetOutput().GetPointData().SetScalars(nv)
 
     def set_surface_points(self, indices=None):
         """
@@ -1230,36 +1254,42 @@ class GemPyvtkInteract(vtkVisualization):
 
     def render_move_surface_points(self, indices):
         self.SphereCallbak_move_changes(indices)
+        print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_add_surface_points(self, indices):
         self.set_surface_points(indices)
+        print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_delete_surface_points(self, indices):
         self.SphereCallback_delete_point(indices)
+        print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_move_orientations(self, indices):
         self.planesCallback_move_changes(indices)
+        print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_add_orientations(self, indices):
         self.set_orientations(indices)
+        print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_delete_orientations(self, indices):
         self.planesCallback_delete_point(indices)
+        print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
@@ -1278,9 +1308,11 @@ class GemPyvtkInteract(vtkVisualization):
         except AttributeError:
             pass
 
-        self.set_topography()
+        print('vtk-gempy real time is:' +str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
+
+        self.set_topography()
         self.interactor.Render()
 
     def update_model(self):

@@ -22,14 +22,19 @@
 
 from os import path
 import sys
-import numpy as _np
+import numpy as np
+import pandas as pn
 from numpy import ndarray
 from typing import Union
+import warnings
 
 # This is for sphenix to find the packages
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-from gempy.core.model import *
+from gempy.core.model import Model, DataMutation
+from gempy.core.solution import Solution
 from gempy.utils.meta import _setdoc
+from gempy.core.interpolator import InterpolatorGravity, InterpolatorModel
+
 
 # This warning comes from numpy complaining about a theano optimization
 warnings.filterwarnings("ignore",
@@ -232,7 +237,7 @@ def map_series_to_surfaces(geo_model: Model, mapping_object: Union[dict, pn.Cate
 
 
 # region Point-Orientation functionality
-@_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
+@_setdoc([Model.read_data.__doc__])
 def read_csv(geo_model: Model, path_i=None, path_o=None, **kwargs):
     if path_i is not None or path_o is not None:
         geo_model.read_data(path_i, path_o, **kwargs)
@@ -254,7 +259,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
         :attr:`gempy.data_management.InputData.orientations`: Already updated inplace
     """
 
-    if _np.ndim(indices_array) is 1:
+    if np.ndim(indices_array) is 1:
         indices = indices_array
         form = geo_model.surface_points['surface'].loc[indices].unique()
         assert form.shape[0] is 1, 'The interface points must belong to the same surface'
@@ -265,7 +270,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
                                   dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                   G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
                                   surface=form)
-    elif _np.ndim(indices_array) is 2:
+    elif np.ndim(indices_array) is 2:
         for indices in indices_array:
             form = geo_model.surface_points['surface'].loc[indices].unique()
             assert form.shape[0] is 1, 'The interface points must belong to the same surface'
@@ -420,7 +425,9 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
         # TODO @elisa elaborate this
         if model.grid.active_grids[2] == True:
             l0, l1 = model.grid.get_grid_args('topography')
-            model.solutions.topography_map = sol[0][:, l0: l1]
+            model.solutions.geological_map = sol[0][:, l0: l1]
+        else:
+            model.solutions.geological_map = None
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions

@@ -77,6 +77,8 @@ class Solution(object):
         self.vertices = []
         self.edges = []
 
+        self.geological_map = None
+
     def __repr__(self):
         return '\nLithology ids \n  %s \n' \
                % (np.array2string(self.lith_block))
