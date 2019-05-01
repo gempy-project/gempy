@@ -174,12 +174,8 @@ class PlotData2D(object):
 
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
-        # plt.xlim(extent[0] - extent[0]*0.05, extent[1] + extent[1]*0.05)
-        # plt.ylim(extent[2] - extent[2]*0.05, extent[3] + extent[3]*0.05)
         plt.xlabel(x)
         plt.ylabel(y)
-
-        #return fig, ax, p
 
     def _slice(self, direction, cell_number=25):
         """
@@ -209,7 +205,7 @@ class PlotData2D(object):
             y = "Y"
             Gx = "G_x"
             Gy = "G_y"
-            extent_val = self.model.grid.extent[[0, 1, 2, 3]]#self.model.grid.extent[[1, 2, 3, 4]]
+            extent_val = self.model.grid.extent[[0, 1, 2, 3]]
         else:
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
         return _a, _b, _c, extent_val, x, y, Gx, Gy
