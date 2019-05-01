@@ -263,7 +263,7 @@ class PlotData2D(object):
         plt.ylabel('Y')
 
     def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
-                           plot_data=False, block_type=None, ve=1, show_faults=False, show_topo = True, **kwargs):
+                           show_data=False, show_faults=False, show_topo = True,  block_type=None, ve=1, **kwargs):
         """
         Plot a section of the block model
 
@@ -299,7 +299,7 @@ class PlotData2D(object):
                                     self.model.grid.regular_grid.resolution[2])
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
 
-        if plot_data:
+        if show_data:
             self.plot_data(direction, 'all')
         # TODO: plot_topo option - need fault_block for that
 
@@ -330,7 +330,7 @@ class PlotData2D(object):
                 else:
                     self.plot_topography(cell_number=cell_number, direction=direction)
 
-        if not plot_data:
+        if not show_data:
             import matplotlib.patches as mpatches
             patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)

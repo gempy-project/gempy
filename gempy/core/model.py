@@ -203,6 +203,7 @@ class DataMutation(object):
         if change_color:
             print('Fault colors changed. If you do not like this behavior, set change_color to False.')
             self.surfaces.colors.make_faults_black(series_fault)
+        self.update_structure(update_theano='matrices')
         return self.faults
 
     @_setdoc([Faults.set_is_fault.__doc__])
@@ -597,6 +598,12 @@ class DataMutation(object):
         self.interpolator.set_initial_results_matrices()
 
     def set_surface_order_from_solution(self):
+        """
+        Order the surfaces respect the last computation. Therefore if you call this method,
+        after sorting surface_points without recomputing you may get wrong results
+        Returns:
+
+        """
         # TODO time this function
         spu = self.surface_points.df['surface'].unique()
         sps = self.surface_points.df['series'].unique()

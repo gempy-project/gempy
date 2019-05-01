@@ -180,7 +180,8 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     return plot
 
 
-def plot_section(model, cell_number, block=None, direction="y", **kwargs):
+def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
+                 show_data=False, show_faults=True, show_topo = True,  block_type=None, ve=1, **kwargs):
     """
     Plot a section of the block model
 
@@ -199,9 +200,11 @@ def plot_section(model, cell_number, block=None, direction="y", **kwargs):
         None
     """
     plot = PlotData2D(model)
-    plot.plot_block_section(model.solutions, cell_number, block=block, direction=direction, **kwargs)
+    plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
+                            show_data, show_faults, show_topo,  block_type, ve, **kwargs)
     # TODO saving options
     return plot
+
 
 def plot_scalar_field(model, cell_number, N=20,
                       direction="y", plot_data=True, series=0, *args, **kwargs):
