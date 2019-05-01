@@ -30,7 +30,8 @@ import warnings
 
 # This is for sphenix to find the packages
 sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-from gempy.core.model import Model, DataMutation
+from gempy.core.model import Model, DataMutation, AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
+    Surfaces, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
 from gempy.utils.meta import _setdoc
 from gempy.core.interpolator import InterpolatorGravity, InterpolatorModel

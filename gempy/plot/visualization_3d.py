@@ -1115,6 +1115,8 @@ class vtkVisualization(object):
         #         v_l, s_l = self.geo_model.surfaces.df['vertices'], self.geo_model.surfaces.df['edges']
 
         self.set_surfaces(self.geo_model.surfaces)
+        if self.geo_model.solutions.geological_map is not None:
+            self.set_geological_map()
         return True
 
     @staticmethod
@@ -1254,42 +1256,42 @@ class GemPyvtkInteract(vtkVisualization):
 
     def render_move_surface_points(self, indices):
         self.SphereCallbak_move_changes(indices)
-        print('vtk-gempy real time is:' + str(self.real_time))
+       # print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_add_surface_points(self, indices):
         self.set_surface_points(indices)
-        print('vtk-gempy real time is:' + str(self.real_time))
+       # print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_delete_surface_points(self, indices):
         self.SphereCallback_delete_point(indices)
-        print('vtk-gempy real time is:' + str(self.real_time))
+      #  print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_move_orientations(self, indices):
         self.planesCallback_move_changes(indices)
-        print('vtk-gempy real time is:' + str(self.real_time))
+      #  print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_add_orientations(self, indices):
         self.set_orientations(indices)
-        print('vtk-gempy real time is:' + str(self.real_time))
+     #   print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_delete_orientations(self, indices):
         self.planesCallback_delete_point(indices)
-        print('vtk-gempy real time is:' + str(self.real_time))
+     #   print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
@@ -1308,7 +1310,7 @@ class GemPyvtkInteract(vtkVisualization):
         except AttributeError:
             pass
 
-        print('vtk-gempy real time is:' +str(self.real_time))
+      #  print('vtk-gempy real time is:' +str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
 

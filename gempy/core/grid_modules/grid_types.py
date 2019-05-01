@@ -230,10 +230,10 @@ class Topography:
 
     def load_from_saved(self, filepath):
         #assert filepath ending is .npy
-        topo = np.load(filepath)
-        self.values_3D = topo[0]
-        self.extent = topo[1]
-        self.resolution = topo[2]
+        self.topo = np.load(filepath)
+        self.values_3D = self.topo[0]
+        self.extent = self.topo[1]
+        self.resolution = self.topo[2]
         self._fit2model()
 
     def _create_init(self):
