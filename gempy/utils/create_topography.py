@@ -14,9 +14,9 @@ import pandas as pn
 # you can not import libraries inside a class?!
 try:
     import gdal
+    GDAL_IMPORT = True
 except ImportError:
-    print('no gdal')
-    #raise ImportError("gdal package is not installed. No support for raster formats")
+    GDAL_IMPORT = False
 
 
 class Load_DEM_GDAL():
@@ -28,7 +28,8 @@ class Load_DEM_GDAL():
             path_dem: path where dem is stored. file format: GDAL raster formats
             if grid: cropped to geomodel extent
         '''
-
+        if GDAL_IMPORT == False:
+            raise ImportError('Gdal package is not installed. No support for raster formats.')
         self.dem = gdal.Open(path_dem)
         self.dem_zval = self.dem.ReadAsArray()
         self._get_raster_dimensions()

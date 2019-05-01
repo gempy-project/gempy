@@ -252,16 +252,16 @@ class PlotData2D(object):
             plt.contour(block.reshape(self.model.grid.regular_grid.resolution)[_slice].T, 0, extent=extent, levels=level,
                         colors=self._cmap.colors[f_id])
 
-    def plot_map(self, solution: Solution):
-        lith = solution.lith_block
-        geomap = lith.reshape(self.model.grid.topography.topo.dem_zval.shape)  # resolution of topo gives much better map
-        # geomap = np.flip(geomap, axis=0) #to match the orientation of the other plotting options
+    def plot_map(self, solution: Solution, contour_lines=True):
+        assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
+        geomap = solution.geological_map.reshape(self.model.grid.topography.topo.dem_zval.shape)
         fig, ax = plt.subplots()
         plt.imshow(geomap, origin="upper", cmap=self._cmap, norm=self._norm)
-        CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys')
-        ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
-        cbar = plt.colorbar(CS)
-        cbar.set_label('elevation [m]')
+        if contour_lines == True:
+            CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys')
+            ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
+            cbar = plt.colorbar(CS)
+            cbar.set_label('elevation [m]')
         plt.title("Geological map", fontsize=15)
         plt.xlabel('X')
         plt.ylabel('Y')

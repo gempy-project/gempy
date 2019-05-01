@@ -111,8 +111,14 @@ class Grid(object):
                 self.topography.load_from_gdal(filepath)
             else:
                 print('to load a raster file, a path to the file must be provided')
+        elif source == 'npy':
+            filepath = kwargs.get('filepath', None)
+            if filepath is not None:
+                self.topography.load_from_saved(filepath)
+            else:
+                print('path to .npy file must be provided')
         else:
-            print('source must be either random or gdal')
+            print('source must be random, gdal or npy')
 
         self.topography.show()
         self.set_active('topography')
@@ -155,7 +161,7 @@ class Grid(object):
 
     def get_grid_args(self, grid_name: str):
         assert type(grid_name) is str, 'Only one grid type can be retrieve'
-
+        assert grid_name in self.grid_types, 'possible grid types are ' + str(self.grid_types)
         where = np.where(self.grid_types == grid_name)[0][0]
         return self.length[where], self.length[where+1]
 
@@ -708,7 +714,7 @@ class Surfaces(object):
             self.set_basement()
             self.update_order_surfaces()
             self.colors._update_colors()
-            self.update_sequential_pile()
+            #self.update_sequential_pile()
         return True
 
     def delete_surface(self, indices: Union[int, str, list, np.ndarray], update_id=True):
@@ -1110,7 +1116,7 @@ class SurfacePoints(GeometricData):
 
     def read_surface_points(self, file_path, debug=False, inplace=False, append=False, kwargs_pandas:dict = {}, **kwargs, ):
         """
-        Read tabular using pandas tools and if inplace set it properly to the Interace object
+        Read tabular using pandas tools and if inplace set it properly to the surface points object
         Args:
             file_path:
             debug:
