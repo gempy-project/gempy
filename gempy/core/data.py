@@ -580,10 +580,10 @@ class Colors:
     def make_faults_black(self, series_fault):
         faults_list = list(self.surfaces.df[self.surfaces.df.series.isin(series_fault)]['surface'])
         for fault in faults_list:
-            if self.colordict[fault] == '#545352':
+            if self.colordict[fault] == '#527682':
                 self.set_default_colors(fault)
             else:
-                self.colordict[fault] = '#545352'
+                self.colordict[fault] = '#527682'
                 self._set_colors()
 
     def reset_default_colors(self):
@@ -653,7 +653,7 @@ class Surfaces(object):
         Returns:
 
         """
-        self.sequential_pile = StratigraphicPile(self.series, self.df)
+        pass #self.sequential_pile = StratigraphicPile(self.series, self.df)
 
 # region set formation names
     def set_surfaces_names(self, list_names: list, update_df=True):
@@ -723,7 +723,7 @@ class Surfaces(object):
         if indices.dtype == int:
             self.df.drop(indices, inplace=True)
         else:
-            self.df.drop(self.df.index[self.df['surface'].isin(indices)])
+            self.df.drop(self.df.index[self.df['surface'].isin(indices)], inplace=True)
         if update_id is True:
             self.update_id()
             self.set_basement()
@@ -1938,7 +1938,7 @@ class Structure(object):
 
     def set_number_of_faults(self):
         # Number of faults existing in the surface_points df
-        self.df.at['values', 'number faults'] = self.faults.df.loc[self.surface_points.df['series'].unique(), 'isFault'].sum()
+        self.df.at['values', 'number faults'] = self.faults.df['isFault'].sum()#.loc[self.surface_points.df['series'].unique(), 'isFault'].sum()
         return self.df
 
     def set_number_of_surfaces(self):

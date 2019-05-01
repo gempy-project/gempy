@@ -1011,7 +1011,8 @@ class TheanoGraphPro(object):
         if 'grid_shape' in self.verbose:
             grid_shape = theano.printing.Print('grid_shape')(grid_shape)
 
-        steps = 1e13 / self.matrices_shapes()[-1] / grid_shape
+       # self.steps = theano.shared(1e12, dtype='float64')
+        steps = 1e12 / self.matrices_shapes()[-1] / grid_shape
         slices = T.concatenate((T.arange(0, grid_shape[0], steps[0], dtype='int64'), grid_shape))
 
         if 'slices' in self.verbose:

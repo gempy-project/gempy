@@ -53,7 +53,6 @@ except ImportError:
     IPV_IMPORT = False
 
 
-
 class vtkVisualization(object):
     """
     Class to visualize data and results in 3D. Init will create all the render properties while the method render

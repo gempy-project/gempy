@@ -9,6 +9,11 @@ def check_for_nans(array_like):
         array_like = None
     return array_like
 
+
+def check_for_nans_input_theano():
+    pass
+
+
 def check_kriging():
     # TODO check range and covariance are not 0
     pass
