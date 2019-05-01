@@ -111,9 +111,14 @@ class Grid(object):
                 self.topography.load_from_gdal(filepath)
             else:
                 print('to load a raster file, a path to the file must be provided')
-
+        elif source == 'npy':
+            filepath = kwargs.get('filepath', None)
+            if filepath is not None:
+                self.topography.load_from_saved(filepath)
+            else:
+                print('path to .npy file must be provided')
         else:
-            print('source must be either random or gdal')
+            print('source must be random, gdal or npy')
 
         self.topography.show()
         self.set_active('topography')

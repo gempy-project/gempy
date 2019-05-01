@@ -220,21 +220,31 @@ class Topography:
 
     def load_from_gdal(self, filepath):
         self.topo = Load_DEM_GDAL(filepath, self.regular_grid)
-        self._create()
+        self._create_init()
+        self._fit2model()
 
     def load_random_hills(self, **kwargs):
         self.topo = Load_DEM_artificial(self.regular_grid, **kwargs)
-        self._create()
+        self._create_init()
+        self._fit2model()
 
-    def _create(self):
+    def load_from_saved(self, filepath):
+        #assert filepath ending is .npy
+        topo = np.load(filepath)
+        self.values_3D = topo[0]
+        self.extent = topo[1]
+        self.resolution = topo[2]
+        self._fit2model()
+
+    def _create_init(self):
         self.values_3D = self.topo.values_3D
+        self.extent = self.topo.extent
+        self.resolution = self.topo.resolution
 
+    def _fit2model(self):
         self.values_original = np.vstack((
             self.values_3D[:, :, 0].ravel(), self.values_3D[:, :, 1].ravel(),
             self.values_3D[:, :, 2].ravel())).T.astype("float64")
-
-        self.extent = self.topo.extent
-        self.resolution = self.topo.resolution
 
         if np.any(self.regular_grid.extent[:4] - self.extent) != 0:
             print('obacht')
@@ -262,13 +272,18 @@ class Topography:
             self.values_3D_res[:, :, 2].ravel())).T.astype("float64")
 
     def show(self):
-        plt.contour(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), colors='k')
-        plt.contourf(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), cmap='terrain')
+        plt.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k')
+        plt.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
         cbar = plt.colorbar()
         cbar.set_label('elevation')
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.title('Model topography')
+
+    def save(self, filepath):
+        np.save(filepath, np.array([self.values_3D, self.extent, self.resolution]))
+        print('saved')
+
 
     def _create_grid_mask(self):
         ind = self._find_indices()
