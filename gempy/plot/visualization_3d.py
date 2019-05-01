@@ -185,6 +185,13 @@ class vtkVisualization(object):
         # assign actor to the renderer
         self.ren_list[0].AddActor(txt)
 
+    def close_window(self):
+        # close_window(interactor)
+        render_window = self.interactor.GetRenderWindow()
+        render_window.Finalize()
+        self.interactor.TerminateApp()
+        del self.renwin, self.interactor
+
     def key_callbacks(self, obj, event):
         key = self.interactor.GetKeySym()
 
@@ -1202,9 +1209,6 @@ class vtkVisualization(object):
 
 
 class GemPyvtkInteract(vtkVisualization):
-    def close_window(self):
-        # close_window(interactor)
-        del self.renwin, self.interactor
 
     def resume(self):
         self.interactor.Start()
