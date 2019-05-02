@@ -562,7 +562,6 @@ class Colors:
         '''assign color to last entry of surfaces df or check isnull and assign color there'''
         # can be done easier
         new_colors = self.generate_colordict(out=True)
-       # print(new_colors)
         form2col = list(self.surfaces.df.loc[self.surfaces.df['color'].isnull(), 'surface'])
         # this is the dict in-build function to update colors
         self.colordict.update(dict(zip(form2col, [new_colors[x] for x in form2col])))

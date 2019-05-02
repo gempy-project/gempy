@@ -230,6 +230,7 @@ class Topography:
 
     def load_from_saved(self, filepath):
         #assert filepath ending is .npy
+        assert filepath[-4:] == '.npy', 'The file must end on .npy'
         topo = np.load(filepath)
         self.values_3D = topo[0]
         self.extent = topo[1]
