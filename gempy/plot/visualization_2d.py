@@ -41,6 +41,12 @@ from gempy.core.solution import Solution
 sns.set_context('talk')
 plt.style.use(['seaborn-white', 'seaborn-talk'])
 
+#try:
+    #import mplstereonet
+    #MPLST_IMPORT = True
+#except ImportError:
+    #MPLST_IMPORT = False
+
 
 class PlotData2D(object):
     """
@@ -515,6 +521,74 @@ class PlotData2D(object):
                        color='blue', alpha=.6)
         else:
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
+
+    def plot_stereonet(self, litho=None, planes=True, poles=True, single_plots=False,
+                       show_density=False):
+        '''
+        Plot an equal-area projection of the orientations dataframe using mplstereonet.
+
+        Args:
+            geo_model (gempy.DataManagement.InputData): Input data of the model
+            series_only: To select whether a stereonet is plotted per series or per formation
+            litho: selection of formation or series names, as list. If None, all are plotted
+            planes: If True, azimuth and dip are plotted as great circles
+            poles: If True, pole points (plane normal vectors) of azimuth and dip are plotted
+            single_plots: If True, each formation is plotted in a single stereonet
+            show_density: If True, density contour plot around the pole points is shown
+
+        Returns:
+            None
+        '''
+
+        try:
+            import mplstereonet
+        except ImportError:
+            warnings.warn('mplstereonet package is not installed. No stereographic projection available.')
+
+        from collections import OrderedDict
+        import pandas as pn
+
+        if litho is None:
+            litho = self.model.orientations.df['surface'].unique()
+
+        if single_plots is False:
+            fig, ax = mplstereonet.subplots(figsize=(5, 5))
+            df_sub2 = pn.DataFrame()
+            for i in litho:
+                df_sub2 = df_sub2.append(self.model.orientations.df[self.model.orientations.df['surface'] == i])
+
+        for formation in litho:
+            if single_plots:
+                fig = plt.figure(figsize=(5, 5))
+                ax = fig.add_subplot(111, projection='stereonet')
+                ax.set_title(formation, y=1.1)
+
+            #if series_only:
+                #df_sub = self.model.orientations.df[self.model.orientations.df['series'] == formation]
+            #else:
+            df_sub = self.model.orientations.df[self.model.orientations.df['surface'] == formation]
+
+            if poles:
+                ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=7,
+                        markerfacecolor=self._color_lot[formation],
+                        markeredgewidth=1.1, markeredgecolor='gray', label=formation + ': ' + 'pole point')
+            if planes:
+                ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=self._color_lot[formation],
+                         linewidth=1.5, label=formation + ': ' + 'azimuth/dip')
+            if show_density:
+                if single_plots:
+                    ax.density_contourf(df_sub['azimuth'] - 90, df_sub['dip'],
+                                        measurement='poles', cmap='viridis', alpha=.5)
+                else:
+                    ax.density_contourf(df_sub2['azimuth'] - 90, df_sub2['dip'], measurement='poles', cmap='viridis',
+                                        alpha=.5)
+
+            fig.subplots_adjust(top=0.8)
+            handles, labels = ax.get_legend_handles_labels()
+            by_label = OrderedDict(zip(labels, handles))
+            ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
+            ax.grid(True, color='black', alpha=0.25)
+
 
     # TODO: Incorporate to the class
     @staticmethod
