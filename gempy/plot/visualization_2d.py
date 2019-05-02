@@ -252,15 +252,16 @@ class PlotData2D(object):
             level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
                 self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
             plt.contour(block.reshape(self.model.grid.regular_grid.resolution)[_slice].T, 0, extent=extent, levels=level,
-                        colors=self._cmap.colors[f_id])
+                        colors=self._cmap.colors[f_id], linestyles='solid')
 
     def plot_map(self, solution: Solution, contour_lines=True):
+        # maybe add contour kwargs
         assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
         geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:,:,2].shape)
         fig, ax = plt.subplots()
         plt.imshow(geomap, origin="upper", cmap=self._cmap, norm=self._norm)
         if contour_lines == True:
-            CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys')
+            CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys', linestyles='solid')
             ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
             cbar = plt.colorbar(CS)
             cbar.set_label('elevation [m]')
