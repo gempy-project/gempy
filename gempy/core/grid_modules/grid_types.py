@@ -213,7 +213,6 @@ class GravityGrid():
 
 
 class Topography:
-    # todo allow numpy array to be passed
     def __init__(self, regular_grid):
         self.regular_grid = regular_grid
         self.values = np.zeros((0, 3))
@@ -298,7 +297,7 @@ class Topography:
 
     def _line_in_section(self, direction='y', cell_number=0):
         # todo use slice2D of plotting class for this
-        if np.any(self.topo.resolution - self.regular_grid.resolution[:2]) != 0:
+        if np.any(self.resolution - self.regular_grid.resolution[:2]) != 0:
             cell_number_res = (self.values_3D.shape[:2] / self.regular_grid.resolution[:2] * cell_number).astype(int)
             cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
         if direction == 'x':
