@@ -1,16 +1,10 @@
 import sys
 from os import path
 
-# This is for sphenix to find the packages
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
 import numpy as np
 import pandas as pn
 from typing import Union
 import warnings
-from gempy.core.checkers import check_for_nans
-from gempy.utils.meta import _setdoc
-from gempy.plot.sequential_pile import StratigraphicPile
 import re
 try:
     import ipywidgets as widgets
@@ -19,7 +13,13 @@ except ModuleNotFoundError:
     VTK_IMPORT = False
 
 pn.options.mode.chained_assignment = None
+
+# This is for sphenix to find the packages
+sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from gempy.core.grid_modules import grid_types
+from gempy.core.checkers import check_for_nans
+from gempy.utils.meta import _setdoc
+from gempy.plot.sequential_pile import StratigraphicPile
 
 
 class MetaData(object):
