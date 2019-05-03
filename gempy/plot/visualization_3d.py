@@ -31,7 +31,6 @@ import pandas as pn
 import numpy as np
 import sys
 import gempy as gp
-from vtk.util.numpy_support import numpy_to_vtk
 import warnings
 
 
@@ -40,6 +39,7 @@ warnings.filterwarnings("ignore",
                         append=True)
 try:
     import vtk
+    from vtk.util.numpy_support import numpy_to_vtk
     VTK_IMPORT = True
 except ImportError:
     VTK_IMPORT = False
