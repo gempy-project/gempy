@@ -15,7 +15,7 @@ except ModuleNotFoundError:
 pn.options.mode.chained_assignment = None
 
 # This is for sphenix to find the packages
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+#sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from gempy.core.grid_modules import grid_types
 from gempy.core.checkers import check_for_nans
 from gempy.utils.meta import _setdoc
