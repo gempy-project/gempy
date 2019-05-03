@@ -5,15 +5,15 @@ Code
 
 GemPy API
 ---------
-.. automodule:: core/gempy_front
+.. automodule:: ../../gempy/core/gempy_front
     :members:
 Data
 ----
-.. automodule:: core/data
+.. automodule:: data
     :members:
 Grids
 -----
-.. automodule:: /core/grid_modules/grid_types
+.. automodule:: /grid_modules/grid_types
     :members:
 Solution
 --------

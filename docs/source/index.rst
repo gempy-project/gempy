@@ -14,7 +14,7 @@ Software for 3D structural geologic implicit modeling in Python.
 .. image:: ../logos/logo_CGRE.png
    :width: 59%
 
-GemPy is an open-source tool for generating 3D structural geological models in Python (GemPy's code can be viewed in its repository: https://github.com/cgre-aachen/gempy.)
+GemPy is an open-source tool for generating 3D structural geological models in Python (GemPy's code can be viewed in its repository: https://github.com/cgre-aachen/gempy.). Also, check our new website https://www.gempy.org/.
 It is capable of creating complex 3D geological models,
 including stratigraphic and structural features such as:
 
