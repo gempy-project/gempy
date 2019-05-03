@@ -5,7 +5,7 @@ Code
 
 GemPy API
 ---------
-.. automodule:: ../../gempy/core/gempy_front
+.. automodule:: gempy_front
     :members:
 Data
 ----
@@ -13,47 +13,47 @@ Data
     :members:
 Grids
 -----
-.. automodule:: /grid_modules/grid_types
+.. automodule:: grid_types
     :members:
 Solution
 --------
-.. automodule:: core/solution
+.. automodule:: solution
     :members:
 qgrid integration
 -----------------
-.. automodule:: core/qgrid_integration
+.. automodule:: qgrid_integration
     :members:
 Model
 -----
-.. automodule:: core/module
+.. automodule:: module
     :members:
 Interpolator
 ------------
-.. automodule:: core/interpolator
+.. automodule:: interpolator
     :members:
 Theano Graph
 ------------
-.. automodule:: core/theano/theano_graph_pro
+.. automodule:: theano_graph_pro
     :members:
 Geophysics
 ----------
-.. automodule:: assets/geophysics
+.. automodule:: geophysics
     :members:
 Topology
 --------
-.. automodule:: assets/topology
+.. automodule:: topology
     :members:
 Posterior Analysis
 ------------------
-.. automodule:: bayesian/posterior_analysis
+.. automodule:: posterior_analysis
     :members:
 Visualization
 -------------
-.. automodule:: plot/visualization_2d
+.. automodule:: visualization_2d
     :members:
 
-.. automodule:: plot/visualization_3d
+.. automodule:: visualization_3d
     :members:
 
-.. automodule:: plot/plot
+.. automodule:: plot
     :members:
