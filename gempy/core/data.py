@@ -12,7 +12,12 @@ from gempy.core.checkers import check_for_nans
 from gempy.utils.meta import _setdoc
 from gempy.plot.sequential_pile import StratigraphicPile
 import re
-import ipywidgets as widgets
+try:
+    import ipywidgets as widgets
+    ipywidgets_import = True
+except ModuleNotFoundError:
+    VTK_IMPORT = False
+
 pn.options.mode.chained_assignment = None
 from gempy.core.grid_modules import grid_types
 
@@ -516,6 +521,8 @@ class Colors:
         Returns: None
 
         '''
+        assert ipywidgets_import, 'ipywidgets not imported. Make sure the library is installed.'
+
         if cdict is not None:
             self._update_colors(cdict)
             return self.surfaces
