@@ -22,6 +22,7 @@ import sys
 import IPython.sphinxext
 from pygments.plugin import find_plugin_lexers
 sys.path.insert(0, os.path.abspath('../../gempy'))
+sys.path.append('/home/workspace/myproj/myproj')
 
 from unittest.mock import MagicMock
 
