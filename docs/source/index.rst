@@ -33,8 +33,6 @@ Contents:
 
    self
    ./_theory/motivation
-   tutorial
-   theory
    code
    about
 
@@ -55,7 +53,7 @@ GemPy itself offers direct visualization of 2D sections via matplotlib
 and in full 3D using the Visualization Toolkit (VTK).
 
 
-.. image:: _images/gempy-animation.gif
+.. image:: _images/vtkFault.png
    :target: https://github.com/cgre-aachen/gempy.github.io/blob/master/
    :width: 70%
 
@@ -85,7 +83,7 @@ in the model space. Simple Monte Carlo simulation via PyMC will then result in d
 .. |z_unc| image:: ./images/gempy_zunc.png
    :width: 40%
 
-.. |wobble| image:: ./images/model_wobble.gif
+.. |wobble| image:: ./images/uncertainty1.pdf
    :width: 55%
 
 Theano allows the automated computation of gradients opening the door to the use of advanced gradient-based sampling methods
@@ -120,7 +118,7 @@ of a beamer. This results in an interactive model with which the user can intera
 In addition to applications in teaching and research, this development offers great potential as an interactive exhibit with high outreach for the geosciences thanks to its intuitive operation.
 The finished sandbox can be used in numerous lectures and public events , but is mainly used as an interface to GemPy software and for rapid prototyping of implicit geological models.
 
-.. image:: ./images/Sandbox.gif
+.. image:: ./images/sandbox.jpg
 
 Remote Geomod: From GoogleEarth to 3-D Geology
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
