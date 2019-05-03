@@ -9,10 +9,34 @@ import mplstereonet
 '''The solution for vMF sampling originally appeared here: 
 - https://github.com/pymc-devs/pymc3/issues/2458 and
 - https://github.com/jasonlaska/spherecluster/blob/master/spherecluster/util.py'''
+"""
+    This file is part of gempy.
+
+    gempy is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    gempy is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with gempy.  If not, see <http://www.gnu.org/licenses/>.
+
+    Parts of this solution for vMF sampling originally appeared here (12.12.2018): 
+    - https://github.com/pymc-devs/pymc3/issues/2458 and
+    - https://github.com/jasonlaska/spherecluster/blob/master/spherecluster/util.py
+
+    @author: Elisa Heim
+"""
+
+
 
 
 class vMF():
-    '''draws and visualizes samples from a van mises fisher distribution based on mean, concentration and number of
+    '''draws and visualizes samples from a von mises fisher distribution based on mean, concentration and number of
     samples for stochastic simulations with orientation uncertainty'''
 
     def __init__(self, mu, kappa, num_samples):
@@ -126,8 +150,8 @@ class vMF():
             ax.pole(mean[0] - 90, mean[1], color='r', markersize=6, label='mean')
         ax.grid()
         ax.density_contourf(points_sph[:, 0] - 90, points_sph[:, 1], measurement='poles', cmap='inferno', alpha=0.7)
-        ax.set_title('kappa = '+str(self.kappa),y=1.1)
-        return fig
+        ax.set_title('kappa = '+str(self.kappa), y=1.2)
+        #return fig
 
     def xyz_to_spherical_coordinates(self, gamma1):
         '''conversion of cartesian to spherical coordinates'''
