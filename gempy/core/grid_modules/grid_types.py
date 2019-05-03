@@ -230,10 +230,11 @@ class Topography:
 
     def load_from_saved(self, filepath):
         #assert filepath ending is .npy
-        self.topo = np.load(filepath)
-        self.values_3D = self.topo[0]
-        self.extent = self.topo[1]
-        self.resolution = self.topo[2]
+        assert filepath[-4:] == '.npy', 'The file must end on .npy'
+        topo = np.load(filepath)
+        self.values_3D = topo[0]
+        self.extent = topo[1]
+        self.resolution = topo[2]
         self._fit2model()
 
     def _create_init(self):
@@ -242,7 +243,7 @@ class Topography:
         self.resolution = self.topo.resolution
 
     def _fit2model(self):
-        self.values_original = np.vstack((
+        self.values = np.vstack((
             self.values_3D[:, :, 0].ravel(), self.values_3D[:, :, 1].ravel(),
             self.values_3D[:, :, 2].ravel())).T.astype("float64")
 
@@ -254,7 +255,6 @@ class Topography:
             self._resize()
         else:
             self.values_3D_res = self.values_3D
-            self.values = self.values_original
 
         self.regular_grid.mask_topo = self._create_grid_mask()
 
@@ -267,12 +267,8 @@ class Topography:
                                                       mode='constant',
                                                       anti_aliasing=False, preserve_range=True)
 
-        self.values = np.vstack((
-            self.values_3D_res[:, :, 0].ravel(), self.values_3D_res[:, :, 1].ravel(),
-            self.values_3D_res[:, :, 2].ravel())).T.astype("float64")
-
     def show(self):
-        plt.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k')
+        plt.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k', linestyles='solid')
         plt.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
         cbar = plt.colorbar()
         cbar.set_label('elevation')
