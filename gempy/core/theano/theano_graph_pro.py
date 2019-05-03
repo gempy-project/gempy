@@ -23,12 +23,14 @@ Returns:
     theano function for the potential field
     theano function for the block
 """
+
 import theano
 import theano.tensor as T
 import theano.ifelse as tif
 import numpy as np
 import sys
 from .theano_graph import TheanoGeometry, TheanoOptions
+
 
 theano.config.openmp_elemwise_minsize = 10000
 theano.config.openmp = True
