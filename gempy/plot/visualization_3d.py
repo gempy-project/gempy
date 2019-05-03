@@ -34,6 +34,10 @@ import gempy as gp
 from vtk.util.numpy_support import numpy_to_vtk
 import warnings
 
+
+warnings.filterwarnings("ignore",
+                        message='.*Conversion of the second argument of issubdtype *.',
+                        append=True)
 try:
     import vtk
     VTK_IMPORT = True
@@ -765,7 +769,7 @@ class vtkVisualization(object):
         self.geo_model.modify_surface_points(index, X=[new_center[0]], Y=[new_center[1]], Z=[new_center[2]])
 
     def SphereCallbak_move_changes(self, indices):
-        print(indices)
+       # print(indices)
         df_changes = self.geo_model.surface_points.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
         for index, df_row in df_changes.iterrows():
             new_center = df_row[['X', 'Y', 'Z']].values
@@ -1115,8 +1119,11 @@ class vtkVisualization(object):
         #         v_l, s_l = self.geo_model.surfaces.df['vertices'], self.geo_model.surfaces.df['edges']
 
         self.set_surfaces(self.geo_model.surfaces)
-        if self.geo_model.solutions.geological_map is not None:
-            self.set_geological_map()
+        # if self.geo_model.solutions.geological_map is not None:
+        #     try:
+        #         self.set_geological_map()
+        #     except AttributeError:
+        #         pass
         return True
 
     @staticmethod
@@ -1313,7 +1320,6 @@ class GemPyvtkInteract(vtkVisualization):
       #  print('vtk-gempy real time is:' +str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
-
         self.set_topography()
         self.interactor.Render()
 
