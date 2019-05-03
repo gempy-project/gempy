@@ -55,8 +55,8 @@ GemPy itself offers direct visualization of 2D sections via matplotlib
 and in full 3D using the Visualization Toolkit (VTK).
 
 
-.. image:: gempy-animation.gif
-   :target: https://github.com/cgre-aachen/gempy.github.io/blob/master/_images/gempy-animation.gif
+.. image:: _images/gempy-animation.gif
+   :target: https://github.com/cgre-aachen/gempy.github.io/blob/master/
    :width: 70%
 
 These VTK files can also be exported
