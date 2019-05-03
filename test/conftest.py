@@ -29,8 +29,8 @@ def interpolator_islith_isfault():
 
     # Importing the data from CSV-files and setting extent and resolution
     gp.init_data(geo_model,
-                 path_o="input_data/simple_fault_model_orientations.csv",
-                 path_i="input_data/simple_fault_model_points.csv", default_values=True)
+                 path_o=input_path + "/simple_fault_model_orientations.csv",
+                 path_i=input_path + "/simple_fault_model_points.csv", default_values=True)
 
     gp.map_series_to_surfaces(geo_model, {"Fault_Series": 'Main_Fault',
                                             "Strat_Series": ('Sandstone_2', 'Siltstone',
