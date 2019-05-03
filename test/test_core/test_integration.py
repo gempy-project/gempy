@@ -22,8 +22,8 @@ def load_model():
 
     # Importing the data from CSV-files and setting extent and resolution
     gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50 ,50 ,50],
-          path_o = os.pardir+"/input_data/simple_fault_model_orientations.csv",
-          path_i = os.pardir+"/input_data/simple_fault_model_points.csv", default_values=True)
+          path_o = input_path+"/simple_fault_model_orientations.csv",
+          path_i = input_path+"/simple_fault_model_points.csv", default_values=True)
 
     gp.get_data(geo_model, 'surface_points').head()
     return geo_model
@@ -65,21 +65,22 @@ def test_compute_model(interpolator_islith_isfault, map_sequential_pile):
 
     gp.compute_model(geo_model, compute_mesh=False)
 
+    test_values = [45, 150, 2500]
     if False:
-        np.save(input_path+'/test_integration_lith_block.npy', geo_model.solutions.lith_block)
+        np.save(input_path+'/test_integration_lith_block.npy', geo_model.solutions.lith_block[test_values])
 
     # Load model
     real_sol = np.load(input_path + '/test_integration_lith_block.npy')
 
     # We only compare the block because the absolute pot field I changed it
-    np.testing.assert_array_almost_equal(np.round(geo_model.solutions.lith_block), real_sol, decimal=0)
+    np.testing.assert_array_almost_equal(np.round(geo_model.solutions.lith_block[test_values]), real_sol, decimal=0)
 
     gp.plot.plot_section(geo_model, cell_number=25,
-                         direction='y', plot_data=True)
+                         direction='y', show_data=True)
     plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_lith_block')
 
     gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
-                              direction='y', plot_data=True)
+                              direction='y', show_data=True)
 
     plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_scalar')
 

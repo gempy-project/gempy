@@ -32,7 +32,7 @@ rgeomod = pytest.importorskip("rgeomod")
 input_path = os.path.dirname(__file__)+'/../input_data'
 
 
-def test_rgeomod_integration(theano_f):
+def TOUPDATE_rgeomod_integration(theano_f):
     geo_data=gp.create_data(extent=[612000, 622000, 2472000, 2480000, -1000, 1000],
                             resolution=[50, 50, 50],
                             path_f=input_path+"/gempy_foliations.csv",

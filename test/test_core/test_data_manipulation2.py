@@ -34,11 +34,15 @@ def test_delete_surface():
 
 
 def test_rename_surface():
+    mm = gp.DataMutation()
+    mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
     mm.rename_surfaces({'foo1': 'changed'})
     assert mm.surfaces.df.loc[1, 'surface'] == 'changed'
 
 
 def test_modify_order_surfaces():
+    mm = gp.DataMutation()
+    mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
     mm.modify_order_surfaces(3, 2)
     assert mm.surfaces.df.iloc[2, 0] == 'foo2'
 

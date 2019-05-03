@@ -338,7 +338,7 @@ def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=
     if compile_theano is True:
         geo_model.interpolator.compile_th_fn(inplace=inplace)
 
-    return geo_model.additional_data.options
+    return geo_model.interpolator
 
 
 def get_interpolator(model: Model):

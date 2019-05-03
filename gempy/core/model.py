@@ -563,6 +563,7 @@ class DataMutation(object):
         self.interpolator.theano_graph = interpolator.theano_graph
         self.interpolator.theano_function = interpolator.theano_function
         self.interpolator.set_all_shared_parameters()
+        self.update_structure(update_theano='matrices')
 
     def update_to_interpolator(self, reset=True):
         self.interpolator.set_all_shared_parameters()

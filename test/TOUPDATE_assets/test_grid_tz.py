@@ -15,4 +15,4 @@ import pytest
 
 def test_irregular_grid():
     g = GravityGrid()
-    g.set_irregular_grid([5, 5, 5], 20, [100,100,100])
+    g.set_irregular_grid([5, 5, 5], [100,100,100])
