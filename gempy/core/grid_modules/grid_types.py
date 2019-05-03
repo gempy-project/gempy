@@ -267,9 +267,11 @@ class Topography:
                                                       anti_aliasing=False, preserve_range=True)
 
     def show(self):
-        plt.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k', linestyles='solid')
-        plt.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
-        cbar = plt.colorbar()
+        fig, ax = plt.subplots()
+        CS= ax.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k', linestyles='solid')
+        ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
+        CS2 = ax.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
+        cbar = plt.colorbar(CS2)
         cbar.set_label('elevation')
         plt.xlabel('X')
         plt.ylabel('Y')
