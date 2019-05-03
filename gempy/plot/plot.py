@@ -179,6 +179,10 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     # TODO saving options
     return plot
 
+def plot_map(model, contour_lines=True):
+    plot = PlotData2D(model)
+    plot.plot_map(model.solutions, contour_lines=contour_lines)
+
 
 def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
                  show_data=False, show_faults=True, show_topo = True,  block_type=None, ve=1, **kwargs):
