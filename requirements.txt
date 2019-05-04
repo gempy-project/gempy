@@ -1,14 +1,9 @@
 pandas>=0.21.0
-tqdm
-scikit_image>=0.13
+git+git://github.com/Leguark/scikit-image@master
 Theano
 matplotlib
 numpy
 pytest
-scipy
 nbsphinx
-sphinxcontrib-bibtex
 seaborn
-scikit_learn
 networkx
-Ipython

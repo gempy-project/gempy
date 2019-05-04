@@ -431,6 +431,7 @@ class InterpolatorModel(Interpolator):
         self.set_initial_results()
 
         n_series = 1000
+
         self.compute_weights_ctrl = np.ones(n_series, dtype=bool)
         self.compute_scalar_ctrl = np.ones(n_series, dtype=bool)
         self.compute_block_ctrl = np.ones(n_series, dtype=bool)
@@ -440,16 +441,16 @@ class InterpolatorModel(Interpolator):
         x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
 
         if reset_weights is True:
-            self.compute_weights_ctrl = np.ones(10000, dtype=bool)
+            self.compute_weights_ctrl = np.ones(1000, dtype=bool)
             self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum())))
 
         if reset_scalar is True:
-            self.compute_scalar_ctrl = np.ones(10000, dtype=bool)
+            self.compute_scalar_ctrl = np.ones(1000, dtype=bool)
             self.theano_graph.scalar_fields_matrix.set_value(
                 np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
 
         if reset_block is True:
-            self.compute_block_ctrl = np.ones(10000, dtype=bool)
+            self.compute_block_ctrl = np.ones(1000, dtype=bool)
             self.theano_graph.mask_matrix.set_value(np.zeros((n_series, x_to_interp_shape), dtype='bool'))
             self.theano_graph.block_matrix.set_value(
                 np.zeros((n_series, self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
@@ -722,7 +723,7 @@ class InterpolatorModel(Interpolator):
                                          (self.theano_graph.weights_vector, self.theano_graph.new_weights),
                                          (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
                                          (self.theano_graph.mask_matrix, self.theano_graph.new_mask)],
-                                mode=NanGuardMode(nan_is_error=True),
+                             #   mode=NanGuardMode(nan_is_error=True),
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
                                 profile=False)
@@ -773,7 +774,7 @@ class InterpolatorGravity(InterpolatorModel):
                                          (self.theano_graph.weights_vector, self.theano_graph.new_weights),
                                          (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
                                          (self.theano_graph.mask_matrix, self.theano_graph.new_mask)],
-                                mode=NanGuardMode(nan_is_error=True),
+                             #   mode=NanGuardMode(nan_is_error=True),
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
                                 profile=False)

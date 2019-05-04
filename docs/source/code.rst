@@ -5,7 +5,7 @@ Code
 
 GemPy API
 ---------
-.. automodule:: gempy_front
+.. automodule:: gempy_api
     :members:
 Data
 ----
@@ -25,7 +25,7 @@ qgrid integration
     :members:
 Model
 -----
-.. automodule:: module
+.. automodule:: model
     :members:
 Interpolator
 ------------
@@ -34,10 +34,6 @@ Interpolator
 Theano Graph
 ------------
 .. automodule:: theano_graph_pro
-    :members:
-Geophysics
-----------
-.. automodule:: geophysics
     :members:
 Topology
 --------
