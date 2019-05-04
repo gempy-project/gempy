@@ -1,5 +1,7 @@
+git+git://github.com/Leguark/scikit-image@master
 steno3d
 vtk
 gdal
+qgrid
 pymc
 pymc3
