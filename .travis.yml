@@ -4,6 +4,7 @@ python:
 install:
   - pip install cython
   - pip install -r requirements.txt
+  - pip install -r optional-requirements
 script:
   - pytest
 before_script: # configure a headless display to test plot generation
