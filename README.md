@@ -157,21 +157,26 @@ map, which can then be reimported into GoogleEarth.
 
 *GemPy* requires Python 3 and makes use of numerous open-source libraries:
 
-* pandas
-* tqdm
-* scikit_image
+* pandas>=0.21.0
+* cython
 * Theano
 * matplotlib
 * numpy
 * pytest
-* scipy
-* ipython
+* nbsphinx
 * seaborn
-* setuptools
-* scikit_learn
 * networkx
+* ipywidgets
 
 Optional:
+
+* git+git://github.com/Leguark/scikit-image@master
+* steno3d
+* vtk
+* gdal
+* qgrid
+* pymc
+* pymc3
 
 * `vtk>=7` for interactive 3-D visualization 
 * `pymc` or `pymc3`
