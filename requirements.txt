@@ -1,14 +1,10 @@
 pandas>=0.21.0
-tqdm
-scikit_image>=0.13
+cython
 Theano
 matplotlib
 numpy
 pytest
-scipy
 nbsphinx
-sphinxcontrib-bibtex
 seaborn
-scikit_learn
 networkx
-Ipython
+ipywidgets

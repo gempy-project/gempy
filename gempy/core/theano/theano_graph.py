@@ -1455,8 +1455,10 @@ class TheanoGraph(object):
         n_surface_op_float_sigmoid = T.repeat(self.n_surface_op_float, 2, axis=1)
 
         # TODO: instead -1 at the border look for the average distance of the input!
-        n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], -1)
-                                                    #- T.sqrt(T.square(n_surface_op_float_sigmoid[0] - n_surface_op_float_sigmoid[2])))
+
+        # This -1 makes that after the last interfaces the gradient goes on upwards
+        n_formation_op_float_sigmoid = T.set_subtensor(n_formation_op_float_sigmoid[0], -1)
+                                                    #- T.sqrt(T.square(n_formation_op_float_sigmoid[0] - n_formation_op_float_sigmoid[2])))
 
         n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, -1], -1)
                                                     #- T.sqrt(T.square(n_surface_op_float_sigmoid[3] - n_surface_op_float_sigmoid[-1])))

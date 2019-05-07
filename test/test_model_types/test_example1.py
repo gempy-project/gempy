@@ -4,7 +4,7 @@ import numpy as np
 import os
 import pytest
 import matplotlib.pyplot as plt
-input_path = os.path.dirname(__file__)+'/../../notebooks'
+input_path = os.path.dirname(__file__)+'/../../notebooks/data'
 
 
 class TestFabianModel:
@@ -25,15 +25,9 @@ class TestFabianModel:
     def test_init_model(self, geo_model):
         print(geo_model)
 
-    def test_save_model(self, geo_model):
-        geo_model.save_model(os.pardir +"/input_data/test_solution.pickle")
-
     def test_get_data(self, geo_model):
         print(gp.get_data(geo_model))
         print(gp.get_data(geo_model, itype='additional_data'))
-
-    def test_get_sequential_pile(self, geo_model):
-        gp.get_sequential_pile(geo_model)
 
     def test_plotting_data(self, geo_model):
         gp.plot.plot_data(geo_model)
@@ -57,7 +51,7 @@ class TestFabianModel:
     def test_plot_section(self, geo_model, compute_model):
 
         gp.plot.plot_section(geo_model, cell_number=25,
-                                 direction='y', plot_data=True)
+                             direction='y', show_data=True)
 
-        plt.savefig(os.pardir+'/figs/example1.png')
+       # plt.savefig(os.pardir+'/../figs/example1.png')
 

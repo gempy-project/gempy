@@ -23,12 +23,14 @@ Returns:
     theano function for the potential field
     theano function for the block
 """
+
 import theano
 import theano.tensor as T
 import theano.ifelse as tif
 import numpy as np
 import sys
 from .theano_graph import TheanoGeometry, TheanoOptions
+
 
 theano.config.openmp_elemwise_minsize = 10000
 theano.config.openmp = True
@@ -45,11 +47,10 @@ theano.config.profile = False
 
 
 class TheanoGraphPro(object):
-    def __init__(self, output='geology', optimizer='fast_compile', verbose=[0], dtype='float32',
-                 is_fault=None, is_lith=None):
+    def __init__(self, optimizer='fast_compile', verbose=None, dtype='float32', ):
         # OPTIONS
         # -------
-        if verbose is np.nan:
+        if verbose is None:
             self.verbose = [None]
         else:
             self.verbose = verbose
@@ -83,7 +84,7 @@ class TheanoGraphPro(object):
         self.npf = T.cumsum(T.concatenate((T.stack([0]), self.number_of_points_per_surface_T[:-1])))
         self.npf_op = self.npf
         self.npf.name = 'Number of points per surfaces after rest-ref. This is used for finding the different' \
-                           'surface points withing a layer.'
+                        'surface points withing a layer.'
 
         # COMPUTE WEIGHTS
         # ---------
@@ -107,7 +108,6 @@ class TheanoGraphPro(object):
         self.dip_angles = self.dip_angles_all
         self.azimuth = self.azimuth_all
         self.polarity = self.polarity_all
-       # self.surface_points_op = self.surface_points_all
 
         self.ref_layer_points_all = self.set_rest_ref_matrix(self.number_of_points_per_surface_T)[0]
         self.rest_layer_points_all = self.set_rest_ref_matrix(self.number_of_points_per_surface_T)[1]
@@ -115,10 +115,6 @@ class TheanoGraphPro(object):
         self.ref_layer_points = self.ref_layer_points_all
         self.rest_layer_points = self.rest_layer_points_all
 
-        # self.ref_layer_points = self.set_rest_ref_matrix()[0]
-        # self.rest_layer_points = self.set_rest_ref_matrix()[1]
-
-       # self.fault_drift = T.matrix('Drift matrix due to faults')
         self.fault_matrix = T.matrix('Full block matrix for faults or drift. We take 2 times len points for the fault'
                                      'drift.')
 
@@ -138,12 +134,8 @@ class TheanoGraphPro(object):
         # VARIABLES
         # ---------
         self.grid_val_T = T.matrix('Coordinates of the grid points to interpolate')
-        #self.fault_matrix = T.matrix('Full block matrix for x_to_interpolate')
-
-        #self.weights = T.vector('kriging weights')
-
         self.input_parameters_export = [self.dips_position_all, self.surface_points_all,
-                                        self.fault_matrix,# self.weights,
+                                        self.fault_matrix,
                                         self.grid_val_T]
 
         self.input_parameters_kriging_export = [self.dips_position_all, self.dip_angles_all, self.azimuth_all,
@@ -155,13 +147,9 @@ class TheanoGraphPro(object):
         # ---------
         # VARIABLES
         # ---------
-      #  self.Z_x = T.vector('Scalar')
-      #  self.scalar_field_at_surface_points_values = self.Z_x[-2 * self.len_points: -self.len_points][self.npf_op]
-
         self.values_properties_op = T.matrix('Values that the blocks are taking')
 
-        #self.n_surface = theano.shared(np.arange(1, 5000, dtype='int32'), "ID of the surface")
-        self.n_surface = T.arange(1, 5000, dtype='int32')#T.vector('ID of the surface')
+        self.n_surface = T.arange(1, 5000, dtype='int32')
         self.n_surface.name = 'ID of surfaces'
 
         self.input_parameters_block = [self.dips_position_all, self.dip_angles_all, self.azimuth_all,
@@ -172,8 +160,7 @@ class TheanoGraphPro(object):
         # Shared
         # ------
         self.is_finite_ctrl = theano.shared(np.zeros(3, dtype='int32'), 'The series (fault) is finite')
-        # self.is_finite = theano.shared(np.ones(3, dtype='int32'), 'The series (fault) is finite')
-        self.inf_factor = 0 #self.is_finite * 10
+        self.inf_factor = 0
         self.is_fault = theano.shared(np.zeros(5000, dtype=bool))
 
         # COMPUTE LOOP
@@ -209,7 +196,7 @@ class TheanoGraphPro(object):
         self.offset = theano.shared(10.)
 
         # Gravity
-        self.tz = theano.shared(np.empty((0), dtype=dtype), 'tz component')
+        self.tz = theano.shared(np.empty(0, dtype=dtype), 'tz component')
         self.density_matrix = T.vector('density vector')
 
         # Results matrix
@@ -226,15 +213,10 @@ class TheanoGraphPro(object):
         self.new_sfai = self.sfai
 
     def compute_weights(self):
-     #   self.fault_drift_at_surface_points_ref = T.repeat(fault_drift[:, [0]], self.number_of_points_per_surface_T[0], axis=0)
-      #  self.fault_drift_at_surface_points_rest = fault_drift[:, 1:]
-
         return self.solve_kriging()
 
     def compute_scalar_field(self, weights, grid):
-        #self.fault_matrix = fault_matrix
         grid_val = self.x_to_interpolate(grid)
-
         return self.scalar_field_at_all(weights, grid_val)
 
     def compute_formation_block(self, Z_x, scalar_field_at_surface_points, values):
@@ -242,7 +224,7 @@ class TheanoGraphPro(object):
 
     def compute_fault_block(self, Z_x, scalar_field_at_surface_points, values, n_series, grid):
         grid_val = self.x_to_interpolate(grid)
-        finite_faults_ellipse = self.select_finite_faults(n_series, grid_val)
+        finite_faults_ellipse = self.select_finite_faults(grid_val)
         return self.export_fault_block(Z_x, scalar_field_at_surface_points, values, finite_faults_ellipse)
 
     def compute_final_block(self, mask, block):
@@ -254,8 +236,6 @@ class TheanoGraphPro(object):
 
     def compute_series(self):
         # TODO make a function to create the grid with special conditions. e.g for the sandbox
-
-
         # Looping
         series, updates1 = theano.scan(
             fn=self.compute_a_series,
@@ -279,8 +259,6 @@ class TheanoGraphPro(object):
                        dict(input=self.is_erosion, taps=[0]),
                        dict(input=self.is_onlap, taps=[0]),
                        dict(input=T.arange(0, 5000, dtype='int32'), taps=[0])
-                       # dict(input=self.weights_vector),
-                       # dict(input=self.scalar_fields_matrix)
                        ],
             non_sequences=[],
             name='Looping',
@@ -298,10 +276,6 @@ class TheanoGraphPro(object):
         self.new_mask = mask * mask_rev_cumprod
 
         final_model = self.compute_final_block(self.new_mask, self.new_block)
-
-
-        #self.new_mask = series[4][-1]
-
         return [final_model, self.new_block, self.new_weights, self.new_scalar, self.new_sfai, self.new_mask]
 
     # region Geometry
@@ -333,10 +307,6 @@ class TheanoGraphPro(object):
             (x_2 ** 2).sum(1).reshape((1, x_2.shape[0])) -
             2 * x_1.dot(x_2.T), 1e-12
         ))
-
-
-        #    sqd = theano.printing.Print('sed')(sqd)
-
         return sqd
 
     def matrices_shapes(self):
@@ -825,12 +795,6 @@ class TheanoGraphPro(object):
         Returns:
             theano.tensor.matrix: Matrix with the Dk parameters repeated for all the points to interpolate
         """
-
-      #  grid_val = self.x_to_interpolate()
-        # if self.weights.get_value() is None:
-        #     DK_parameters = self.solve_kriging()
-        # else:
-        #     DK_parameters = self.weights
         DK_parameters = weights
         # Creation of a matrix of dimensions equal to the grid with the weights for every point (big 4D matrix in
         # ravel form)
@@ -896,7 +860,7 @@ class TheanoGraphPro(object):
 
         return sigma_0_grad
 
-    def contribution_interface(self, grid_val=None, weights=None):
+    def contribution_interface(self, grid_val, weights=None):
         """
           Computation of the contribution of the surface_points at every point to interpolate
 
@@ -905,9 +869,8 @@ class TheanoGraphPro(object):
           """
 
         if weights is None:
-            weights = self.extend_dual_kriging()
-        if grid_val is None:
-            grid_val = self.x_to_interpolate()
+            weights = self.compute_weights()
+
         length_of_CG, length_of_CGI = self.matrices_shapes()[:2]
 
         # Euclidian distances
@@ -949,7 +912,7 @@ class TheanoGraphPro(object):
 
         return sigma_0_interf
 
-    def contribution_universal_drift(self, grid_val=None, weights=None, a=0, b=100000000):
+    def contribution_universal_drift(self, grid_val, weights=None):
         """
         Computation of the contribution of the universal drift at every point to interpolate
 
@@ -957,9 +920,7 @@ class TheanoGraphPro(object):
             theano.tensor.vector: Contribution of the universal drift (input) at every point to interpolate
         """
         if weights is None:
-            weights = self.extend_dual_kriging()
-        if grid_val is None:
-            grid_val = self.x_to_interpolate()
+            weights = self.compute_weights()
 
         length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C = self.matrices_shapes()
 
@@ -970,7 +931,6 @@ class TheanoGraphPro(object):
                      grid_val[:, 0] * grid_val[:, 2],
                      grid_val[:, 1] * grid_val[:, 2]), axis=1)).T
 
-        # These are the magic terms to get the same as geomodeller
         i_rescale_aux = T.repeat(self.gi_reescale, 9)
         i_rescale_aux = T.set_subtensor(i_rescale_aux[:3], 1)
         _aux_magic_term = T.tile(i_rescale_aux[:self.n_universal_eq_T_op], (grid_val.shape[0], 1)).T
@@ -978,7 +938,8 @@ class TheanoGraphPro(object):
         # Drif contribution
         f_0 = (T.sum(
             weights[
-            length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I] * self.gi_reescale * _aux_magic_term *
+            length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I] * self.gi_reescale *
+            _aux_magic_term *
             universal_grid_surface_points_matrix[:self.n_universal_eq_T_op]
             , axis=0))
 
@@ -1005,10 +966,10 @@ class TheanoGraphPro(object):
             theano.tensor.vector: Contribution of the df drift (input) at every point to interpolate
         """
         if weights is None:
-            weights = self.extend_dual_kriging()
+            weights = self.compute_weights()
         length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C = self.matrices_shapes()
 
-        fault_matrix_selection_non_zero = self.fault_matrix[:, a:b]  # * self.fault_mask[a:b] + 1
+        fault_matrix_selection_non_zero = self.fault_matrix[:, a:b]
 
         f_1 = T.sum(
             weights[length_of_CG + length_of_CGI + length_of_U_I:, :] * fault_matrix_selection_non_zero, axis=0)
@@ -1029,7 +990,7 @@ class TheanoGraphPro(object):
 
         sigma_0_grad = self.contribution_gradient_interface(grid_val[a:b], weights[:, a:b])
         sigma_0_interf = self.contribution_interface(grid_val[a:b], weights[:, a:b])
-        f_0 = self.contribution_universal_drift(grid_val[a:b], weights[:, a:b], a, b)
+        f_0 = self.contribution_universal_drift(grid_val[a:b], weights[:, a:b])
         f_1 = self.contribution_faults(weights[:, a:b], a, b)
 
         # Add an arbitrary number at the potential field to get unique values for each of them
@@ -1052,7 +1013,8 @@ class TheanoGraphPro(object):
         if 'grid_shape' in self.verbose:
             grid_shape = theano.printing.Print('grid_shape')(grid_shape)
 
-        steps = 1e13 / self.matrices_shapes()[-1] / grid_shape
+       # self.steps = theano.shared(1e12, dtype='float64')
+        steps = 1e12 / self.matrices_shapes()[-1] / grid_shape
         slices = T.concatenate((T.arange(0, grid_shape[0], steps[0], dtype='int64'), grid_shape))
 
         if 'slices' in self.verbose:
@@ -1083,25 +1045,17 @@ class TheanoGraphPro(object):
     # endregion
 
     # region Block export
-    def select_finite_faults(self, n_series, grid):
+    def select_finite_faults(self, grid):
         fault_points = T.vertical_stack(T.stack([self.ref_layer_points[0]], axis=0), self.rest_layer_points).T
         ctr = T.mean(fault_points, axis=1)
         x = fault_points - ctr.reshape((-1, 1))
         M = T.dot(x, x.T)
-        U, D, V = T.nlinalg.svd(M)#[2]
+        U, D, V = T.nlinalg.svd(M)
         rotated_x = T.dot(T.dot(grid, U), V)
         rotated_fault_points = T.dot(T.dot(fault_points.T, U), V)
         rotated_ctr = T.mean(rotated_fault_points, axis=0)
-        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()) / 2  #+ self.inf_factor[
-            #n_series - 1]
-        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()) / 2 #+ self.inf_factor[
-           # n_series - 1]
-        # sel = T.lt((rotated_x[:, 0] - rotated_ctr[0]) ** 2 / a_radio ** 2 + (
-        #         rotated_x[:, 1] - rotated_ctr[1]) ** 2 / b_radio ** 2,
-        #            1)
-        #
-        # if "select_finite_faults" in self.verbose:
-        #     sel = theano.printing.Print("scalar_field_iter")(sel)
+        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()) / 2
+        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()) / 2
 
         ellipse_factor = (rotated_x[:, 0] - rotated_ctr[0])**2 / a_radio**2 + \
             (rotated_x[:, 1] - rotated_ctr[1])**2 / b_radio**2
@@ -1140,15 +1094,11 @@ class TheanoGraphPro(object):
             n_surface_1 = theano.printing.Print("n_surface_1")(n_surface_1)
             drift = theano.printing.Print("drift[slice_init:slice_init+1][0]")(drift)
 
-        # drift = T.switch(slice_init == 0, n_surface_1, n_surface_0)
-        #    drift = T.set_subtensor(n_surface[0], n_surface[1])
-
         # The 5 rules the slope of the function
         sigm = (-n_surface_0.reshape((-1, 1)) / (1 + T.exp(-l * (Z_x - a)))) - \
                (n_surface_1.reshape((-1, 1)) / (1 + T.exp(l * (Z_x - b)))) + drift.reshape((-1, 1))
         if 'sigma' in self.verbose:
             sigm = theano.printing.Print("middle point")(sigm)
-        #      n_surface = theano.printing.Print("n_surface")(n_surface)
         return sigm
 
     def export_fault_block(self, Z_x, scalar_field_at_surface_points, values_properties_op, finite_faults_sel, slope=50, offset_slope=5000):
@@ -1169,7 +1119,7 @@ class TheanoGraphPro(object):
         # min_pot -= min_pot * 0.1
 
         # Value of the potential field at the surface_points of the computed series
-        # TODO timeit
+        # TODO timeit. I think the
         max_pot = T.max(Z_x)
         # max_pot = theano.printing.Print("max_pot")(max_pot)
 

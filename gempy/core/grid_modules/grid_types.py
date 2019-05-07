@@ -11,6 +11,7 @@ class RegularGrid:
         self.resolution = np.ones((0, 3), dtype='int64')
         self.extent = np.empty(6, dtype='float64')
         self.values = np.empty((0, 3))
+        self.mask_topo = np.empty((0,3), dtype=bool)
         if extent is not None and resolution is not None:
             self.set_regular_grid(extent, resolution)
             self.dx, self.dy, self.dz = self.get_dx_dy_dz()
@@ -212,28 +213,38 @@ class GravityGrid():
 
 
 class Topography:
-    # todo allow numpy array to be passed
     def __init__(self, regular_grid):
         self.regular_grid = regular_grid
         self.values = np.zeros((0, 3))
 
     def load_from_gdal(self, filepath):
         self.topo = Load_DEM_GDAL(filepath, self.regular_grid)
-        self._create()
+        self._create_init()
+        self._fit2model()
 
     def load_random_hills(self, **kwargs):
         self.topo = Load_DEM_artificial(self.regular_grid, **kwargs)
-        self._create()
+        self._create_init()
+        self._fit2model()
 
-    def _create(self):
+    def load_from_saved(self, filepath):
+        #assert filepath ending is .npy
+        assert filepath[-4:] == '.npy', 'The file must end on .npy'
+        topo = np.load(filepath)
+        self.values_3D = topo[0]
+        self.extent = topo[1]
+        self.resolution = topo[2]
+        self._fit2model()
+
+    def _create_init(self):
         self.values_3D = self.topo.values_3D
-
-        self.values_original = np.vstack((
-            self.values_3D[:, :, 0].ravel(), self.values_3D[:, :, 1].ravel(),
-            self.values_3D[:, :, 2].ravel())).T.astype("float64")
-
         self.extent = self.topo.extent
         self.resolution = self.topo.resolution
+
+    def _fit2model(self):
+        self.values = np.vstack((
+            self.values_3D[:, :, 0].ravel(), self.values_3D[:, :, 1].ravel(),
+            self.values_3D[:, :, 2].ravel())).T.astype("float64")
 
         if np.any(self.regular_grid.extent[:4] - self.extent) != 0:
             print('obacht')
@@ -243,7 +254,6 @@ class Topography:
             self._resize()
         else:
             self.values_3D_res = self.values_3D
-            self.values = self.values_original
 
         self.regular_grid.mask_topo = self._create_grid_mask()
 
@@ -256,18 +266,21 @@ class Topography:
                                                       mode='constant',
                                                       anti_aliasing=False, preserve_range=True)
 
-        self.values = np.vstack((
-            self.values_3D_res[:, :, 0].ravel(), self.values_3D_res[:, :, 1].ravel(),
-            self.values_3D_res[:, :, 2].ravel())).T.astype("float64")
-
     def show(self):
-        plt.contour(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), colors='k')
-        plt.contourf(self.topo.values_3D[:, :, 2], extent=(self.topo.extent[:4]), cmap='terrain')
-        cbar = plt.colorbar()
+        fig, ax = plt.subplots()
+        CS= ax.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k', linestyles='solid')
+        ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
+        CS2 = ax.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
+        cbar = plt.colorbar(CS2)
         cbar.set_label('elevation')
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.title('Model topography')
+
+    def save(self, filepath):
+        np.save(filepath, np.array([self.values_3D, self.extent, self.resolution]))
+        print('saved')
+
 
     def _create_grid_mask(self):
         ind = self._find_indices()
@@ -277,17 +290,16 @@ class Topography:
                 z = ind[x, y]
                 gridz[x, y, z:] = 99999
         mask = (gridz == 99999)
-        return np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
+        return mask.swapaxes(0,1)# np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
 
     def _find_indices(self):
         zs = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.regular_grid.resolution[2])
         dz = (zs[-1] - zs[0]) / len(zs)
-        return ((self.values_3D_res[:, :, 2] - zs[0]) / dz).astype(int)
+        return ((self.values_3D_res[:, :, 2] - zs[0]) / dz + 1).astype(int)
 
     def _line_in_section(self, direction='y', cell_number=0):
         # todo use slice2D of plotting class for this
-        if np.any(self.topo.resolution - self.regular_grid.resolution[:2]) != 0:
-            print('Gefahr weil resolution')
+        if np.any(self.resolution - self.regular_grid.resolution[:2]) != 0:
             cell_number_res = (self.values_3D.shape[:2] / self.regular_grid.resolution[:2] * cell_number).astype(int)
             cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
         if direction == 'x':

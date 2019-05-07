@@ -34,8 +34,6 @@ from .visualization_3d import steno3D, GemPyvtkInteract, ipyvolumeVisualization
 import gempy as _gempy
 
 
-
-
 def plot_data_3D(geo_data, **kwargs):
     """
     Plot in vtk all the input data of a model
@@ -54,7 +52,8 @@ def plot_data_3D(geo_data, **kwargs):
     return vv
 
 
-def plot_3D(geo_model, render_surfaces=True, real_time=False, **kwargs):
+def plot_3D(geo_model, render_surfaces=True, render_data=True, render_topography= True,
+            real_time=False, **kwargs):
     """
         Plot in vtk all the input data of a model
         Args:
@@ -65,10 +64,13 @@ def plot_3D(geo_model, render_surfaces=True, real_time=False, **kwargs):
         """
     vv = GemPyvtkInteract(geo_model, real_time=real_time, **kwargs)
     # vv.restart()
-    vv.set_surface_points()
-    vv.set_orientations()
+    if render_data is True:
+        vv.set_surface_points()
+        vv.set_orientations()
     if render_surfaces is True:
         vv.set_surfaces(geo_model.surfaces)
+    if render_topography is True and geo_model.grid.topography is not None:
+        vv.set_topography()
 
     vv.render_model(**kwargs)
 
@@ -192,8 +194,13 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     # TODO saving options
     return plot
 
+def plot_map(model, contour_lines=True):
+    plot = PlotData2D(model)
+    plot.plot_map(model.solutions, contour_lines=contour_lines)
 
-def plot_section(model, cell_number, block=None, direction="y", **kwargs):
+
+def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
+                 show_data=False, show_faults=True, show_topo = True,  block_type=None, ve=1, **kwargs):
     """
     Plot a section of the block model
 
@@ -212,9 +219,11 @@ def plot_section(model, cell_number, block=None, direction="y", **kwargs):
         None
     """
     plot = PlotData2D(model)
-    plot.plot_block_section(model.solutions, cell_number, block=block, direction=direction, **kwargs)
+    plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
+                            show_data, show_faults, show_topo,  block_type, ve, **kwargs)
     # TODO saving options
     return plot
+
 
 def plot_scalar_field(model, cell_number, N=20,
                       direction="y", plot_data=True, series=0, *args, **kwargs):
@@ -284,80 +293,4 @@ def plot_topology(geo_data, G, centroids, direction="y", label_kwargs=None, node
     """
     PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction,
                            label_kwargs=label_kwargs, node_kwargs=node_kwargs, edge_kwargs=edge_kwargs)
-
-
-def plot_stereonet(geo_data, series_only=False, litho=None, planes=True, poles=True, single_plots=False, show_density=False):
-    '''
-    Plot an equal-area projection of the orientations dataframe using mplstereonet.
-
-    Args:
-        geo_data (gempy.DataManagement.InputData): Input data of the model
-        series_only: To select whether a stereonet is plotted per series or per formation
-        litho: selection of formation or series names, as list. If None, all are plotted
-        planes: If True, azimuth and dip are plotted as great circles
-        poles: If True, pole points (plane normal vectors) of azimuth and dip are plotted
-        single_plots: If True, each formation is plotted in a single stereonet
-        show_density: If True, density contour plot around the pole points is shown
-
-    Returns:
-        None
-    '''
-
-    import warnings
-    try:
-        import mplstereonet
-    except ImportError:
-        warnings.warn('mplstereonet package is not installed. No stereographic projection available.')
-
-    import matplotlib.pyplot as plt
-    from gempy.plotting.colors import cmap
-    from collections import OrderedDict
-    import pandas as pn
-
-    if litho is None:
-        if series_only:
-            litho=geo_data.orientations['series'].unique()
-        else:
-            litho = geo_data.orientations['formation'].unique()
-
-    if single_plots is False:
-        fig, ax = mplstereonet.subplots(figsize=(5, 5))
-        df_sub2 = pn.DataFrame()
-        for i in litho:
-            if series_only:
-                df_sub2 = df_sub2.append(geo_data.orientations[geo_data.orientations['series'] == i])
-            else:
-                df_sub2 = df_sub2.append(geo_data.orientations[geo_data.orientations['formation'] == i])
-
-    for formation in litho:
-        if single_plots:
-            fig = plt.figure(figsize=(5, 5))
-            ax = fig.add_subplot(111, projection='stereonet')
-            ax.set_title(formation, y=1.1)
-
-        if series_only:
-            df_sub = geo_data.orientations[geo_data.orientations['series'] == formation]
-        else:
-            df_sub = geo_data.orientations[geo_data.orientations['formation'] == formation]
-
-        if poles:
-            ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=7,
-                    markerfacecolor=cmap(df_sub['formation_number'].values[0]),
-                    markeredgewidth=1.1, markeredgecolor='gray', label=formation+': '+'pole point')
-        if planes:
-            ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=cmap(df_sub['formation_number'].values[0]),
-                     linewidth=1.5, label=formation+': '+'azimuth/dip')
-        if show_density:
-            if single_plots:
-                ax.density_contourf(df_sub['azimuth'] - 90, df_sub['dip'],
-                                    measurement='poles', cmap='viridis', alpha=.5)
-            else:
-                ax.density_contourf(df_sub2['azimuth'] - 90, df_sub2['dip'], measurement='poles', cmap='viridis',
-                                    alpha=.5)
-
-        fig.subplots_adjust(top=0.8)
-        handles, labels = ax.get_legend_handles_labels()
-        by_label = OrderedDict(zip(labels, handles))
-        ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
-        ax.grid(True, color='black', alpha=0.25)
 

@@ -17,9 +17,11 @@ class QgridModelIntegration(object):
         self._plot_object = plot_object
         if plot_object is not None:
             # Check if the window is already open
-            if hasattr(plot_object, 'interactor'):
-                self._plot_object.set_surface_points()
-                self._plot_object.set_orientations()
+            self.set_vtk_object(plot_object)
+
+            # if hasattr(plot_object, 'interactor'):
+            #     self._plot_object.set_surface_points()
+            #     self._plot_object.set_orientations()
 
         self.qgrid_fo = self.set_interactive_df('surfaces')
         self.qgrid_se = self.set_interactive_df('series')

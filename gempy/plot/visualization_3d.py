@@ -31,9 +31,15 @@ import pandas as pn
 import numpy as np
 import sys
 import gempy as gp
+import warnings
 
+
+warnings.filterwarnings("ignore",
+                        message='.*Conversion of the second argument of issubdtype *.',
+                        append=True)
 try:
     import vtk
+    from vtk.util.numpy_support import numpy_to_vtk
     VTK_IMPORT = True
 except ImportError:
     VTK_IMPORT = False
@@ -185,6 +191,13 @@ class vtkVisualization(object):
         # assign actor to the renderer
         self.ren_list[0].AddActor(txt)
 
+    def close_window(self):
+        # close_window(interactor)
+        render_window = self.interactor.GetRenderWindow()
+        render_window.Finalize()
+        self.interactor.TerminateApp()
+        del self.renwin, self.interactor
+
     def key_callbacks(self, obj, event):
         key = self.interactor.GetKeySym()
 
@@ -204,6 +217,17 @@ class vtkVisualization(object):
                     layer.VisibilityOn()
                 self.layer_visualization = True
                 self.interactor.Render()
+
+        if key is 't':
+            if self.topo_visualization is True:
+                self.topography_surface.VisibilityOff()
+                self.topo_visualization = False
+                self.interactor.Render()
+            elif self.topo_visualization is False:
+                self.topography_surface.VisibilityOn()
+                self.topo_visualization = True
+                self.interactor.Render()
+
         if key is 'q':
             print('closing vtk')
             self.close_window()
@@ -245,9 +269,13 @@ class vtkVisualization(object):
             vtk.vtkPoints: with the coordinates of the points
         """
         Points = vtk.vtkPoints()
-        for v in vertices:
-            v[-1] = self.ve * v[-1]
-            Points.InsertNextPoint(v)
+        if self.ve != 1:
+            raise NotImplementedError('Vertical exageration for surfaces not implemented yet.')
+        # for v in vertices:
+        #     v[-1] = self.ve * v[-1]
+        #     Points.InsertNextPoint(v)
+        Points.SetData(numpy_to_vtk(vertices))
+
         return Points
 
     @staticmethod
@@ -437,7 +465,6 @@ class vtkVisualization(object):
 
     def set_surfaces(self, surfaces, alpha=1):
         self.surf_rend_1 = []
-
         for idx, val in surfaces.df[['vertices', 'edges', 'id']].dropna().iterrows():
             act, map, pol = self.create_surface(val['vertices'], val['edges'], val['id'], alpha)
             self.surf_rend_1.append(act)
@@ -446,6 +473,71 @@ class vtkVisualization(object):
             self.ren_list[1].AddActor(act)
             self.ren_list[2].AddActor(act)
             self.ren_list[3].AddActor(act)
+
+    def set_topography(self):
+        # Create points on an XY grid with random Z coordinate
+        vertices = self.geo_model.grid.topography.values
+
+        points = vtk.vtkPoints()
+        # for v in vertices:
+        #     v[-1] = v[-1]
+        #     points.InsertNextPoint(v)
+        points.SetData(numpy_to_vtk(vertices))
+
+        # Add the grid points to a polydata object
+        polydata = vtk.vtkPolyData()
+        polydata.SetPoints(points)
+        #
+        # glyphFilter = vtk.vtkVertexGlyphFilter()
+        # glyphFilter.SetInputData(polydata)
+        # glyphFilter.Update()
+        #
+        # # Create a mapper and actor
+        # pointsMapper = vtk.vtkPolyDataMapper()
+        # pointsMapper.SetInputConnection(glyphFilter.GetOutputPort())
+        #
+        # pointsActor = vtk.vtkActor()
+        # pointsActor.SetMapper(pointsMapper)
+        # pointsActor.GetProperty().SetPointSize(3)
+        # pointsActor.GetProperty().SetColor(colors.GetColor3d("Red"))
+
+        # Triangulate the grid points
+        delaunay = vtk.vtkDelaunay2D()
+        delaunay.SetInputData(polydata)
+        delaunay.Update()
+
+        # Create a mapper and actor
+        triangulatedMapper = vtk.vtkPolyDataMapper()
+        triangulatedMapper.SetInputConnection(delaunay.GetOutputPort())
+
+        triangulatedActor = vtk.vtkActor()
+        triangulatedActor.SetMapper(triangulatedMapper)
+
+        self.topography_surface = triangulatedActor
+        self._topography_polydata = polydata
+        self._topography_delauny = delaunay
+        self.ren_list[0].AddActor(triangulatedActor)
+        self.ren_list[1].AddActor(triangulatedActor)
+        self.ren_list[2].AddActor(triangulatedActor)
+        self.ren_list[3].AddActor(triangulatedActor)
+        try:
+            self.set_geological_map()
+        except AttributeError as ae:
+            warnings.warn(str(ae))
+
+    def set_geological_map(self):
+        assert self.geo_model.solutions.geological_map is not None, 'Geological map not computed. First' \
+                                                                    'set active the topography grid'
+        arr_ = np.empty((0, 3), dtype='int')
+
+        # Convert hex colors to rgb
+        for idx, val in self.geo_model.surfaces.df['color'].iteritems():
+            rgb = (255 * np.array(mcolors.hex2color(val)))
+            arr_ = np.vstack((arr_, rgb))
+
+        sel = np.round(self.geo_model.solutions.geological_map).astype(int)[0]
+        nv = numpy_to_vtk(arr_[sel - 1], array_type=3)
+        self._topography_delauny.GetOutput().GetPointData().SetScalars(nv)
 
     def set_surface_points(self, indices=None):
         """
@@ -677,12 +769,12 @@ class vtkVisualization(object):
         self.geo_model.modify_surface_points(index, X=[new_center[0]], Y=[new_center[1]], Z=[new_center[2]])
 
     def SphereCallbak_move_changes(self, indices):
-        print(indices)
+       # print(indices)
         df_changes = self.geo_model.surface_points.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
         for index, df_row in df_changes.iterrows():
             new_center = df_row[['X', 'Y', 'Z']].values
 
-            # Update  renderers
+            # Update renderers
             s1 = self.s_rend_1.loc[index, 'val']
 
             s1.PlaceWidget(new_center[0] - s1.r_f, new_center[0] + s1.r_f,
@@ -1027,6 +1119,11 @@ class vtkVisualization(object):
         #         v_l, s_l = self.geo_model.surfaces.df['vertices'], self.geo_model.surfaces.df['edges']
 
         self.set_surfaces(self.geo_model.surfaces)
+        # if self.geo_model.solutions.geological_map is not None:
+        #     try:
+        #         self.set_geological_map()
+        #     except AttributeError:
+        #         pass
         return True
 
     @staticmethod
@@ -1078,7 +1175,7 @@ class vtkVisualization(object):
         gridToVTK(path+'_lith_block', x, y, z, cellData={"Lithology": lith})
 
     @staticmethod
-    def export_vtk_surfaces(vertices:dict, simplices, path=None, name='_surfaces', alpha=1):
+    def export_vtk_surfaces(geo_model, vertices:dict, simplices, path=None, name='_surfaces', alpha=1):
         """
         Export data to a vtk file for posterior visualizations
 
@@ -1130,7 +1227,7 @@ class vtkVisualization(object):
 
             surf_actor = vtk.vtkActor()
             surf_actor.SetMapper(surf_mapper)
-            surf_actor.GetProperty().SetColor(color_lot[s_n])
+            surf_actor.GetProperty().SetColor(mcolors.hex2color(geo_model.surfaces.df.set_index('id')['color'][s_n]))
             surf_actor.GetProperty().SetOpacity(alpha)
 
             if not path:
@@ -1145,12 +1242,17 @@ class vtkVisualization(object):
 
 
 class GemPyvtkInteract(vtkVisualization):
-    def close_window(self):
-        # close_window(interactor)
-        del self.renwin, self.interactor
 
     def resume(self):
         self.interactor.Start()
+
+    def restart(self, render_surfaces=True, **kwargs):
+        self.set_surface_points()
+        self.set_orientations()
+        if render_surfaces is True:
+            self.set_surfaces(self.geo_model.surfaces)
+
+        self.render_model(**kwargs)
 
     def set_real_time_on(self):
 
@@ -1161,36 +1263,42 @@ class GemPyvtkInteract(vtkVisualization):
 
     def render_move_surface_points(self, indices):
         self.SphereCallbak_move_changes(indices)
+       # print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_add_surface_points(self, indices):
         self.set_surface_points(indices)
+       # print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_delete_surface_points(self, indices):
         self.SphereCallback_delete_point(indices)
+      #  print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_move_orientations(self, indices):
         self.planesCallback_move_changes(indices)
+      #  print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_add_orientations(self, indices):
         self.set_orientations(indices)
+     #   print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
 
     def render_delete_orientations(self, indices):
         self.planesCallback_delete_point(indices)
+     #   print('vtk-gempy real time is:' + str(self.real_time))
         if self.real_time is True:
             self.update_surfaces_real_time()
         self.interactor.Render()
@@ -1198,6 +1306,21 @@ class GemPyvtkInteract(vtkVisualization):
     def render_surfaces(self, alpha=1):
         self.delete_surfaces()
         self.set_surfaces(self.geo_model.surfaces, alpha=alpha)
+        self.interactor.Render()
+
+    def render_topography(self):
+        try:
+            self.ren_list[0].RemoveActor(self.topography_surface)
+            self.ren_list[1].RemoveActor(self.topography_surface)
+            self.ren_list[2].RemoveActor(self.topography_surface)
+            self.ren_list[3].RemoveActor(self.topography_surface)
+        except AttributeError:
+            pass
+
+      #  print('vtk-gempy real time is:' +str(self.real_time))
+        if self.real_time is True:
+            self.update_surfaces_real_time()
+        self.set_topography()
         self.interactor.Render()
 
     def update_model(self):

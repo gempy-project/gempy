@@ -1,25 +1,25 @@
 import sys
 from os import path
 
-# This is for sphenix to find the packages
-sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-
-import os
 import numpy as np
 import pandas as pn
 from typing import Union
 import warnings
+import re
+try:
+    import ipywidgets as widgets
+    ipywidgets_import = True
+except ModuleNotFoundError:
+    VTK_IMPORT = False
+
+pn.options.mode.chained_assignment = None
+
+# This is for sphenix to find the packages
+#sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
+from gempy.core.grid_modules import grid_types
 from gempy.core.checkers import check_for_nans
 from gempy.utils.meta import _setdoc
 from gempy.plot.sequential_pile import StratigraphicPile
-import re
-import ipywidgets as widgets
-pn.options.mode.chained_assignment = None
-import skimage
-from gempy.utils.create_topography import Load_DEM_artificial, Load_DEM_GDAL
-import matplotlib.pyplot as plt
-from IPython.core.display import HTML
-from gempy.core.grid_modules import grid_types
 
 
 class MetaData(object):
@@ -71,7 +71,7 @@ class Grid(object):
         self.values_r = np.empty((0, 3))
         self.length = np.empty(0)
         self.grid_types = np.array(['regular', 'custom', 'topography', 'gravity'])
-        self.grid_active = np.zeros(4, dtype=bool)
+        self.active_grids = np.zeros(4, dtype=bool)
         # All grid types must have values
 
         # Init optional grids
@@ -95,7 +95,6 @@ class Grid(object):
     def set_regular_grid(self, *args, **kwargs):
 
         self.regular_grid = grid_types.RegularGrid(*args, **kwargs)
-        # print(kwargs, 'extent' in kwargs)
         if 'extent' in kwargs:
             self.extent = np.atleast_1d(kwargs['extent'])
 
@@ -117,50 +116,57 @@ class Grid(object):
                 self.topography.load_from_gdal(filepath)
             else:
                 print('to load a raster file, a path to the file must be provided')
+        elif source == 'npy':
+            filepath = kwargs.get('filepath', None)
+            if filepath is not None:
+                self.topography.load_from_saved(filepath)
+            else:
+                print('path to .npy file must be provided')
         else:
-            print('source must be either random or gdal')
+            print('source must be random, gdal or npy')
 
         self.topography.show()
-
         self.set_active('topography')
 
     def set_gravity_grid(self):
         self.gravity_grid = grid_types.GravityGrid()
-        self.grid_active = np.zeros(4, dtype=bool)
+        self.active_grids = np.zeros(4, dtype=bool)
         self.set_active('gravity')
 
     def deactivate_all_grids(self):
-        self.grid_active = np.zeros(4, dtype=bool)
+        self.active_grids = np.zeros(4, dtype=bool)
         self.update_grid_values()
-        return self.grid_active
+        return self.active_grids
 
     def set_active(self, grid_name: Union[str, np.ndarray]):
         where = self.grid_types == grid_name
-        self.grid_active += where
+        self.active_grids += where
         self.update_grid_values()
 
     def set_inactive(self, grid_name: str):
         where = self.grid_types == grid_name
-        self.grid_active -= where
+        self.active_grids -= where
         self.update_grid_values()
 
     def update_grid_values(self):
-        self.length = np.empty((0))
+        self.length = np.empty(0)
         self.values = np.empty((0, 3))
         lengths = [0]
-
-        for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.gravity_grid]):
-            if self.grid_active[e]:
-                self.values = np.vstack((self.values, grid_types.values))
-                lengths.append(grid_types.values.shape[0])
-            else:
-                lengths.append(0)
+        try:
+            for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.gravity_grid]):
+                if self.active_grids[e]:
+                    self.values = np.vstack((self.values, grid_types.values))
+                    lengths.append(grid_types.values.shape[0])
+                else:
+                    lengths.append(0)
+        except AttributeError:
+            raise AttributeError('Grid type do not exist yet. Set the grid before activate it.')
 
         self.length = np.array(lengths).cumsum()
 
     def get_grid_args(self, grid_name: str):
         assert type(grid_name) is str, 'Only one grid type can be retrieve'
-
+        assert grid_name in self.grid_types, 'possible grid types are ' + str(self.grid_types)
         where = np.where(self.grid_types == grid_name)[0][0]
         return self.length[where], self.length[where+1]
 
@@ -171,124 +177,15 @@ class Grid(object):
         return self.values[l_0:l_1]
 
 
-class Grid_DEP(object):
-    """
-    Class to generate grids. This class is used to create points where to
-    evaluate the geological model. So far only regular grids and custom_grids are implemented.
-
-    Args:
-        grid_type (str): type of pre-made grids provide by GemPy
-        **kwargs: see args of the given grid type
-
-    Attributes:
-        grid_type (str): type of premade grids provide by GemPy
-        resolution (list[int]): [x_min, x_max, y_min, y_max, z_min, z_max]
-        extent (list[float]):  [nx, ny, nz]
-        values (np.ndarray): coordinates where the model is going to be evaluated
-        values_r (np.ndarray): rescaled coordinates where the model is going to be evaluated
-
-    """
-
-    def __init__(self, grid_type=None, **kwargs):
-
-        self.grid_type = grid_type
-        self.resolution = np.ones(3, dtype='int64')
-        self.extent = np.empty(6, dtype='float64')
-        self.values = np.empty((0, 3))
-        self.values_r = np.empty((0, 3))
-        self.length = self.values.shape[0]
-        self.mask_topo = None
-
-        if grid_type is 'regular_grid':
-            self.set_regular_grid(**kwargs)
-        elif grid_type is 'custom_grid':
-            self.set_custom_grid(**kwargs)
-        elif grid_type is None:
-            pass
-        else:
-            warnings.warn('No valid grid_type. Grid is empty.')
-
-    def __str__(self):
-        return 'Grid Object. Values: \n' + np.array2string(self.values)
-
-    def __repr__(self):
-        return 'Grid Object. Values: \n' + np.array_repr(self.values)
-
-    def set_custom_grid(self, custom_grid: np.ndarray):
-        """
-        Give the coordinates of an external generated grid
-
-        Args:
-            custom_grid (numpy.ndarray like): XYZ (in columns) of the desired coordinates
-
-        Returns:
-              numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular
-               grid
-        """
-        custom_grid = np.atleast_2d(custom_grid)
-        assert type(custom_grid) is np.ndarray and custom_grid.shape[1] is 3, 'The shape of new grid must be (n,3)' \
-                                                                              ' where n is the number of points of ' \
-                                                                              'the grid'
-
-        self.values = custom_grid
-        self.length = self.values.shape[0]
-        return self.values
-
-    @staticmethod
-    def create_regular_grid_3d(extent, resolution):
-        """
-        Method to create a 3D regular grid where is interpolated
-
-        Args:
-            extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]
-            resolution (list): [nx, ny, nz].
-
-        Returns:
-            numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid
-        """
-
-        dx, dy, dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0], \
-                     (extent[5] - extent[4]) / resolution[0]
-
-        g = np.meshgrid(
-            np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0], dtype="float64"),
-            np.linspace(extent[2] + dy / 2, extent[3] - dy / 2, resolution[1], dtype="float64"),
-            np.linspace(extent[4] + dz / 2, extent[5] - dz / 2, resolution[2], dtype="float64"), indexing="ij"
-        )
-
-        values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
-        return values
-
-    def get_dx_dy_dz(self):
-        dx = (self.extent[1] - self.extent[0]) / self.resolution[0]
-        dy = (self.extent[3] - self.extent[2]) / self.resolution[1]
-        dz = (self.extent[5] - self.extent[4]) / self.resolution[2]
-        return dx, dy, dz
-
-    def set_regular_grid(self, extent, resolution):
-        """
-        Set a regular grid into the values parameters for further computations
-        Args:
-             extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]
-            resolution (list): [nx, ny, nz]
-        """
-
-        self.extent = np.asarray(extent, dtype='float64')
-        self.resolution = np.asarray(resolution)
-        self.values = self.create_regular_grid_3d(extent, resolution)
-        self.length = self.values.shape[0]
-        return self.values
-
-
 class Series(object):
     """
     Series is a class that contains the relation between series/df and each individual surface/layer. This can be
     illustrated in the sequential pile.
 
     Args:
-        series_distribution (dict or :class:`pn.core.frame.DataFrames`): with the name of the serie as key and the
+        faults: (dict or :class:`pn.core.frame.DataFrames`): with the name of the serie as key and the
          name of the surfaces as values.
-        order(Optional[list]): order of the series by default takes the dictionary keys which until python 3.6 are
+        series_order(Optional[list]): order of the series by default takes the dictionary keys which until python 3.6 are
             random. This is important to set the erosion relations between the different series
 
     Attributes:
@@ -319,7 +216,7 @@ class Series(object):
 
     def update_order_series(self):
         """
-        Inex of df is categorical and order, but we need to numerate that order to map it later on to the Data dfs
+        Index of df is categorical and order, but we need to numerate that order to map it later on to the Data dfs
         """
         self.df.at[:, 'order_series'] = pn.RangeIndex(1, self.df.shape[0] + 1)
 
@@ -345,6 +242,7 @@ class Series(object):
             raise AttributeError('series_order is not neither list or SurfacePoints object.')
 
         series_idx = list_of_series
+
         # Categoriacal index does not have inplace
         # This update the categories
         self.df.index = self.df.index.set_categories(series_idx, rename=True)
@@ -440,8 +338,7 @@ class Series(object):
         self.faults.faults_relations_df.index = idx
         self.faults.faults_relations_df.columns = idx
 
-        # TODO: This is a hack for qgrid
-
+        #  This is a hack for qgrid
         #  We need to add the qgrid special columns to categories
         self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.add_categories(
             ['index', 'qgrid_unfiltered_index'])
@@ -624,6 +521,8 @@ class Colors:
         Returns: None
 
         '''
+        assert ipywidgets_import, 'ipywidgets not imported. Make sure the library is installed.'
+
         if cdict is not None:
             self._update_colors(cdict)
             return self.surfaces
@@ -670,7 +569,6 @@ class Colors:
         '''assign color to last entry of surfaces df or check isnull and assign color there'''
         # can be done easier
         new_colors = self.generate_colordict(out=True)
-       # print(new_colors)
         form2col = list(self.surfaces.df.loc[self.surfaces.df['color'].isnull(), 'surface'])
         # this is the dict in-build function to update colors
         self.colordict.update(dict(zip(form2col, [new_colors[x] for x in form2col])))
@@ -688,10 +586,10 @@ class Colors:
     def make_faults_black(self, series_fault):
         faults_list = list(self.surfaces.df[self.surfaces.df.series.isin(series_fault)]['surface'])
         for fault in faults_list:
-            if self.colordict[fault] == '#545352':
+            if self.colordict[fault] == '#527682':
                 self.set_default_colors(fault)
             else:
-                self.colordict[fault] = '#545352'
+                self.colordict[fault] = '#527682'
                 self._set_colors()
 
     def reset_default_colors(self):
@@ -736,8 +634,7 @@ class Surfaces(object):
         self.df['series'].cat.add_categories(['Default series'], inplace=True)
         if surface_names is not None:
             self.set_surfaces_names(surface_names)
-      #  else:
-      #      self.add_surface(['surface1', 'surface2'])
+
         if values_array is not None:
             self.set_surfaces_values(values_array=values_array, properties_names=properties_names)
 
@@ -752,21 +649,6 @@ class Surfaces(object):
 
         return self.df[c_].style.applymap(self.background_color, subset=['color']).render()
 
-    # def _repr_html2_(self, df):
-    #     return df.style.applymap(self.background_color, subset=['color']).render()
-    #
-    # def _repr_html_new_(self):
-    #     idx = list(self.df[self.df['order_surfaces']==1]['id']-1)
-    #     tables = np.array_split(self.df[self._columns_vis], idx)[1:]
-    #     return display(HTML(
-    #         '<table><tr style="background-color:white;">' +
-    #         ''.join(['<td>' + self._repr_html2_(table) + '</td>' + '<tr>\n' for table in tables]) +
-    #         '</tr></table>'
-    #     ))
-
-
-        #return self.df[self._columns_vis].style.applymap(self.background_color, subset=['color']).render()
-
     def background_color(self, value):
         if type(value) == str:
             return "background-color: %s" % value
@@ -777,7 +659,7 @@ class Surfaces(object):
         Returns:
 
         """
-        self.sequential_pile = StratigraphicPile(self.series, self.df)
+        pass #self.sequential_pile = StratigraphicPile(self.series, self.df)
 
 # region set formation names
     def set_surfaces_names(self, list_names: list, update_df=True):
@@ -838,7 +720,7 @@ class Surfaces(object):
             self.set_basement()
             self.update_order_surfaces()
             self.colors._update_colors()
-            self.update_sequential_pile()
+            #self.update_sequential_pile()
         return True
 
     def delete_surface(self, indices: Union[int, str, list, np.ndarray], update_id=True):
@@ -847,26 +729,13 @@ class Surfaces(object):
         if indices.dtype == int:
             self.df.drop(indices, inplace=True)
         else:
-            self.df.drop(self.df.index[self.df['surface'].isin(indices)])
+            self.df.drop(self.df.index[self.df['surface'].isin(indices)], inplace=True)
         if update_id is True:
             self.update_id()
             self.set_basement()
             self.update_order_surfaces()
             self.update_sequential_pile()
         return True
-
-    @_setdoc([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
-    def reorder_surfaces_DEP(self, list_names):
-        """"""
-
-        # check if list_names are all already in the columns
-        assert self.df['surface'].shape[0] == len(list_names), 'list_names and the surface column mush have the same' \
-                                                                 'lenght'
-        assert self.df['surface'].isin(list_names).all(), 'Every element of list_names must already exist in the df'
-
-        self.df['surface'] = list_names
-        self.set_basement()
-        #self.colors.update_colors()
 
     @_setdoc(pn.Series.replace.__doc__)
     def rename_surfaces(self, to_replace:Union[str, list, dict],  **kwargs):
@@ -877,7 +746,6 @@ class Surfaces(object):
         return True
 
     def update_order_surfaces(self):
-        #self.df['order_surfaces'] = 1
         self.df['order_surfaces'] = self.df.groupby('series').cumcount() + 1
 
     def modify_order_surfaces(self, new_value: int, idx: int, series: str = None):
@@ -1140,22 +1008,6 @@ class GeometricData(object):
 
         self.df.loc[idx, 'isFault'] = self.df.loc[[idx], 'series'].map(faults.df['isFault'])
 
-    def set_dypes_DEP(self):
-        """
-        Method to set each column of the dataframe to the right data type. Inplace
-        Returns:
-
-        """
-        # Choose types
-        self.df['surface'] = self.df['surface'].astype('category', copy=True)
-        self.df['series'] = self.df['series'].astype('category', copy=True)
-        self.df['isFault'] = self.df['isFault'].astype('bool')
-        try:
-            self.df[['order_series', 'id']] = self.df[
-                ['order_series', 'id']].astype(int, copy=True)
-        except ValueError:
-            warnings.warn('You may have non-finite values (NA or inf) on the dataframe')
-
 
 class SurfacePoints(GeometricData):
     """
@@ -1180,8 +1032,6 @@ class SurfacePoints(GeometricData):
             self.df: pn.DataFrame
 
         self.set_surface_points(coord, surface)
-     #   if coord is None or surface is None:
-     #       self.set_default_surface_points()
 
     def set_surface_points(self, coord: np.ndarray = None, surface: list = None):
         self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'surface'], dtype=float)
@@ -1272,7 +1122,7 @@ class SurfacePoints(GeometricData):
 
     def read_surface_points(self, file_path, debug=False, inplace=False, append=False, kwargs_pandas:dict = {}, **kwargs, ):
         """
-        Read tabular using pandas tools and if inplace set it properly to the Interace object
+        Read tabular using pandas tools and if inplace set it properly to the surface points object
         Args:
             file_path:
             debug:
@@ -1349,6 +1199,7 @@ class SurfacePoints(GeometricData):
         self.df['annotations'] = point_l
         return self
 
+
 class Orientations(GeometricData):
     """
     Data child with specific methods to manipulate orientation data. It is initialize without arguments to give
@@ -1370,9 +1221,6 @@ class Orientations(GeometricData):
             self.df: pn.DataFrame
 
         self.set_orientations(coord, pole_vector, orientation, surface)
-   #     if coord is None or surface is None:
-   #         self.set_default_orientation()
-
 
     def set_orientations(self, coord: np.ndarray = None, pole_vector: np.ndarray = None,
                          orientation: np.ndarray = None, surface: list = None):
@@ -1518,7 +1366,6 @@ class Orientations(GeometricData):
         """
         Calculate the gradient vector of module 1 given dip and azimuth to be able to plot the orientations
         """
-        # TODO @Elisa is this already the last version?
         if idx is None:
             self.df['G_x'] = np.sin(np.deg2rad(self.df["dip"].astype('float'))) * \
                              np.sin(np.deg2rad(self.df["azimuth"].astype('float'))) * \
@@ -1566,33 +1413,32 @@ class Orientations(GeometricData):
             self.df["azimuth"][self.df["azimuth"] < 0] += 360  # shift values from [-pi, 0] to [pi,2*pi]
             self.df["azimuth"][self.df["dip"] < 0.001] = 0  # because if dip is zero azimuth is undefined
 
-    def create_orientation_from_interface_UPDATE(self, surface_points: SurfacePoints, indices):
+    def create_orientation_from_interface(self, surface_points: SurfacePoints, indices):
         # TODO test!!!!
         """
         Create and set orientations from at least 3 points categories_df
         Args:
+            surface_points
             indices
         """
         selected_points = surface_points.df[['X', 'Y', 'Z']].loc[indices].values.T
 
-        center, normal = plane_fit(selected_points)
-        orientation = get_orientation(normal)
+        center, normal = self.plane_fit(selected_points)
+        orientation = self.get_orientation(normal)
 
         return np.array([*center, *orientation, *normal])
 
     def set_default_orientation(self):
-        # TODO: TEST
         """
         Set a default point at the middle of the extent area to be able to start making the model
         """
         if self.df.shape[0] == 0:
-            # TODO DEBUG: I am not sure that surfaces always has at least one entry. Check it
             self.add_orientation(.00001, .00001, .00001,
                                  self.surfaces.df['surface'].iloc[0],
                                  [0, 0, 1],
                                  )
 
-    def read_orientations(self, filepath, debug=False, inplace=True, append=False, kwargs_pandas = {}, **kwargs):
+    def read_orientations(self, filepath, debug=False, inplace=True, kwargs_pandas = {}, **kwargs):
         """
         Read tabular using pandas tools and if inplace set it properly to the Orientations object
         Args:
@@ -1754,13 +1600,11 @@ class RescaledData(object):
         self.surface_points = surface_points
         self.orientations = orientations
         self.grid = grid
-       # self.centers = centers
 
         self.df = pn.DataFrame(np.array([rescaling_factor, centers]).reshape(1, -1),
                                index=['values'],
                                columns=['rescaling factor', 'centers'])
 
-       # self.rescaling_factor = rescaling_factor
         self.rescale_data(rescaling_factor=rescaling_factor, centers=centers)
 
     def __repr__(self):
@@ -1818,8 +1662,6 @@ class RescaledData(object):
         Returns:
 
         """
-        # TODO return an image of the interface and orientations categories_df with the X_r.. columns
-        warnings.warn('This method is not developed yet')
         return self.surface_points.df[['X_r', 'Y_r', 'Z_r']],
 
     def get_rescaled_orientations(self):
@@ -1829,8 +1671,6 @@ class RescaledData(object):
         Returns:
 
         """
-        # TODO return an image of the interface and orientations categories_df with the X_r.. columns
-        warnings.warn('This method is not developed yet')
         return self.orientations.df[['X_r', 'Y_r', 'Z_r']]
 
     @staticmethod
@@ -1943,15 +1783,13 @@ class RescaledData(object):
         """
         if idx is None:
             idx = self.surface_points.df.index
-            # if idx.empty:
-            #     idx = 0
 
         self.surface_points.df.loc[idx, ['X_r', 'Y_r', 'Z_r']] = self.rescale_surface_points(self.surface_points,
                                                                                      self.df.loc['values', 'rescaling factor'],
                                                                                      self.df.loc['values', 'centers'],
                                                                                      idx=idx)
 
-        return True
+        return self.surface_points
 
     def rescale_data_point(self, data_points: np.ndarray, rescaling_factor=None, centers=None):
         """This method now is very similar to set_rescaled_surface_points passing an index"""
@@ -1980,8 +1818,6 @@ class RescaledData(object):
         if idx is None:
             idx = orientations.df.index
 
-            # if idx.empty:
-            #     idx = 0
         # Change the coordinates of orientations
         new_coord_orientations = (orientations.df.loc[idx, ['X', 'Y', 'Z']] -
                                   centers) / rescaling_factor + 0.5001
@@ -1990,7 +1826,7 @@ class RescaledData(object):
 
         return new_coord_orientations
 
-    def set_rescaled_orientations(self, idx: list = None):
+    def set_rescaled_orientations(self, idx: Union[list, np.ndarray] = None):
         """
         Set the rescaled coordinates into the orientations categories_df
         Returns:
@@ -2095,32 +1931,27 @@ class Structure(object):
 
         self.df.at['values','len series surface_points'] = len_series_i
         self.df['number series'] = len(len_series_i)
-        return True
+        return self.df
 
     def set_length_series_o(self):
         # Array containing the size of every series. orientations.
         self.df.at['values', 'len series orientations'] = self.orientations.df['order_series'].value_counts(sort=False).values
-        return True
-
-    def set_ref_position(self):
-        # TODO DEP? Ah ja, this is what is done now in theano
-        self.ref_position = np.insert(self.len_surfaces_i[:-1], 0, 0).cumsum()
-        return self.ref_position
+        return self.df
 
     def set_number_of_surfaces_per_series(self):
         self.df.at['values', 'number surfaces per series'] = self.surface_points.df.groupby('order_series').surface.nunique().values
-        return True
+        return self.df
 
     def set_number_of_faults(self):
         # Number of faults existing in the surface_points df
-        self.df.at['values', 'number faults'] = self.faults.df.loc[self.surface_points.df['series'].unique(), 'isFault'].sum()
-        return True
+        self.df.at['values', 'number faults'] = self.faults.df['isFault'].sum()#.loc[self.surface_points.df['series'].unique(), 'isFault'].sum()
+        return self.df
 
     def set_number_of_surfaces(self):
         # Number of surfaces existing in the surface_points df
         self.df.at['values', 'number surfaces'] = self.surface_points.df['surface'].nunique()
 
-        return True
+        return self.df
 
     def set_is_lith_is_fault(self):
         """
@@ -2132,7 +1963,7 @@ class Structure(object):
         self.df['isLith'] = True if self.df.loc['values', 'number series'] >= self.df.loc['values', 'number faults'] else False
         self.df['isFault'] = True if self.df.loc['values', 'number faults'] > 0 else False
 
-        return True
+        return self.df
 
 
 class Options(object):
@@ -2309,11 +2140,6 @@ class AdditionalData(object):
         concat_ = pn.concat([self.structure_data.df, self.options.df, self.kriging_data.df, self.rescaling_data.df],
                             axis=1, keys=['Structure', 'Options', 'Kriging', 'Rescaling'])
         return concat_.T
-
-    # def update_rescaling_data(self):
-    #     #TODO check uses and if they are still relevant
-    #     self.rescaling_data['values', 'rescaling factor'] = self.rescaling_data.df['rescaling factor']
-    #     self.rescaling_data['values', 'centers'] = self.rescaling_data.df['centers']
 
     def update_default_kriging(self):
         self.kriging_data.set_default_range()

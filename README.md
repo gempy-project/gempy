@@ -20,17 +20,20 @@
 constructing complex 3D geological models of folded structures, fault networks and unconformities. It was designed from the 
 ground up to support easy embedding in probabilistic frameworks for the uncertainty analysis of subsurface structures.
 
-Check out the documentaion either in [github pages](https://gempy.rocks) (better option), or [read the docs](http://gempy.readthedocs.io/).
+Check out the documentaion either in [github pages](https://www.gempy.org/) (better option), or [read the docs](http://gempy.readthedocs.io/).
 
 ## Table of Contents
 
-* [Features](##Features)
-* [Getting Started](##GettingStarted)
-    * [Dependecies](###Dependecies)
-    * [Installation](###Installation)
-* [Documentation](##Documentation)
-* [References](##References)
+* [Features](#feat)
+    * [Sandbox](#sandbox)
+    * [Remote Geomod](#remotegeo)
+* [Getting Started](#getstart)
+    * [Dependencies](#depend)
+    * [Installation](#installation)
+* [Documentation](#doc)
+* [References](#ref)
 
+<a name="feat"></a>
 ## News
 ### GemPy v2.0 beta release
 
@@ -115,6 +118,7 @@ For a more detailed elaboration of the theory behind *GemPy*, take a look at the
 
 Besides the main functionality GemPy is powering currently some further projects:
 
+<a name="sandbox"></a>
 ### Sandbox
 
 New developments in the field of augmented reality, i.e. the superimposition of real and digital objects, offer interesting and diverse possibilities that have hardly been exploited to date.
@@ -130,7 +134,7 @@ The finished sandbox can be used in numerous lectures and public events , but is
 
 <p align="center"><img src="docs/source/images/Sandbox.gif" width="600"></p>
 
-
+<a name="remotegeo"></a>
 ### Remote Geomod: From GoogleEarth to 3-D Geology
 
 We support this effort here with a full 3-D geomodeling exercise
@@ -145,28 +149,34 @@ map, which can then be reimported into GoogleEarth.
 
 <p align="center"><img src="docs/source/images/ge.png" width="900"></p>
 
-
+<a name="getstart"></a>
 ## Getting Started
 
-### Dependecies
+<a name="depend"></a>
+### Dependencies
 
 *GemPy* requires Python 3 and makes use of numerous open-source libraries:
 
-* pandas
-* tqdm
-* scikit_image
+* pandas>=0.21.0
+* cython
 * Theano
 * matplotlib
 * numpy
 * pytest
-* scipy
-* ipython
+* nbsphinx
 * seaborn
-* setuptools
-* scikit_learn
 * networkx
+* ipywidgets
 
 Optional:
+
+* git+git://github.com/Leguark/scikit-image@master
+* steno3d
+* vtk
+* gdal
+* qgrid
+* pymc
+* pymc3
 
 * `vtk>=7` for interactive 3-D visualization 
 * `pymc` or `pymc3`
@@ -192,6 +202,7 @@ Note that this is not yet available in the conda package manager.
 * vtk: Right now (Fall 2018), does not have compatibility with python 3.7. The simplest solution to install it is to
 use `conda install python=3.6` to downgrade the python version and then using `pip install vtk`.
 
+<a name="installation"></a>
 ### Installation
 
 We provide the latest release version of *GemPy* via the **Conda** and **PyPi** package services. We highly
@@ -213,14 +224,16 @@ and then manually install it using the provided Python install file by calling
 
 in the cloned or downloaded repository folder. Make sure you have installed all necessary dependencies listed above before using *GemPy*.
 
+<a name="doc"></a>
 ## Documentation
 
 Extensive documentation for *GemPy* is hosted at [gempy.readthedocs.io](http://gempy.readthedocs.io/),
 explaining its capabilities, [the theory behind it](http://gempy.readthedocs.io/Kriging.html) and 
 providing detailed [tutorials](http://gempy.readthedocs.io/tutorial.html) on how to use it.
 
+<a name="ref"></a>
 ## References
 
-* de la Varga, M., Schaaf, A., & Wellmann, F. GemPy 1.0: open-source stochastic geological modeling and inversion.
+* de la Varga, M., Schaaf, A., and Wellmann, F.: GemPy 1.0: open-source stochastic geological modeling and inversion, Geosci. Model Dev., 12, 1-32, https://doi.org/10.5194/gmd-12-1-2019, 2019
 * Calcagno, P., Chilès, J. P., Courrioux, G., & Guillen, A. (2008). Geological modelling from field data and geological knowledge: Part I. Modelling method coupling 3D potential-field interpolation and geological rules. Physics of the Earth and Planetary Interiors, 171(1-4), 147-157.
 * Lajaunie, C., Courrioux, G., & Manuel, L. (1997). Foliation fields and 3D cartography in geology: principles of a method based on potential interpolation. Mathematical Geology, 29(4), 571-584.
