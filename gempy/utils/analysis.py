@@ -141,5 +141,3 @@ def get_unique_regions(lith_block, fault_block, n_faults, neighbors=8, noddy=Fal
         labels_block += 1
 
     return labels_block
-
-# TODO: curvature <- based on sim, ver of interfaces
