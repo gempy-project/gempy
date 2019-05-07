@@ -10,6 +10,7 @@ class _StochasticSurfaceAbstract(ABC):
     # TODO: Store samples
     """Abstract StochasticSurface class that contains functionality independant
     from individual parametrization or sampling libraries."""
+    stochastic_surfaces = {}
 
     def __init__(self, geo_model: object, surface: str):
         # class attributes, shared across all instances to allow access to the
@@ -21,6 +22,7 @@ class _StochasticSurfaceAbstract(ABC):
 
         # instance attributes
         self.surface = surface
+        self.stochastic_surfaces[surface] = self
 
         self.fsurf_bool = geo_model.surface_points.df.surface == surface
         self.isurf = geo_model.surface_points.df[self.fsurf_bool].index
@@ -49,6 +51,11 @@ class _StochasticSurfaceAbstract(ABC):
     @abstractmethod
     def draw_surfpts(self) -> Array:
         pass
+
+    @classmethod
+    def modify_surface_points_all(self) -> None:
+        for stochastic_surface in self.stochastic_surfaces.values():
+            stochastic_surface.modify_surface_points()
 
     def modify_surface_points(self) -> None:
         """Modify geomodel dataframe surface point Z-values."""

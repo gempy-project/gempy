@@ -1416,6 +1416,7 @@ class ipyvolumeVisualization:
 
     def plot_surfaces(self):
         """Plot gempy surface model."""
+        # TODO: add plot_data option
         ipv.figure()
         meshes = []
         for surf in range(len(self.ver)):
@@ -1438,6 +1439,7 @@ class ipyvolumeVisualization:
 
     def plot_data(self):
         """Plot gempy surface points."""
+        # TODO: orientations
         ipv.figure()
         points = self.geo_model.surface_points.df
 
@@ -1448,7 +1450,8 @@ class ipyvolumeVisualization:
                 points.loc[i, "X"].values,
                 points.loc[i, "Y"].values,
                 points.loc[i, "Z"].values,
-                color=list(self.geo_model.surfaces.df["color"])[surf]
+                color=self.geo_model.surfaces.df[
+                    self.geo_model.surfaces.df.surface == surf].color.values
             )
 
         ipv.xlim(self.geo_model.grid.extent[0], self.geo_model.grid.extent[1])
