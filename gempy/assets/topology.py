@@ -75,21 +75,27 @@ def compute_topology(geo_model,
             labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithology id.
     """
     assert hasattr(geo_model, "solutions"), "geo_model object must contain .solutions attribute."
+    isfault = np.where(geo_model.faults.df.isFault == True)[0]
+    fault_arrays = np.round(np.atleast_2d(geo_model.solutions.block_matrix[isfault])[:, 0, :])
+    iszero = np.where(fault_arrays==0)
+    fault_arrays[iszero] += 1
+    fault_arrays = fault_arrays * ~(fault_arrays == np.min(np.round(fault_arrays), axis=1).reshape(-1, 1))
 
-    fault_block = np.atleast_2d(geo_model.solutions.fault_blocks).sum(axis=0)
+    fault_block = fault_arrays.sum(axis=0)
+    res = geo_model.grid.regular_grid.resolution
 
     if cell_number is None or direction is None:  # topology of entire block
-        lb = geo_model.solutions.lith_block.reshape(geo_model.grid.resolution)
-        fb = fault_block.reshape(geo_model.grid.resolution)
+        lb = geo_model.solutions.lith_block.reshape(*res)
+        fb = fault_block.reshape(*res)
     elif direction == "x":
-        lb = geo_model.solutions.lith_block.reshape(geo_model.grid.resolution)[cell_number, :, :]
-        fb = fault_block.reshape(geo_model.grid.resolution)[cell_number, :, :]
+        lb = geo_model.solutions.lith_block.reshape(*res)[cell_number, :, :]
+        fb = fault_block.reshape(*res)[cell_number, :, :]
     elif direction == "y":
-        lb = geo_model.solutions.lith_block.reshape(geo_model.grid.resolution)[:, cell_number, :]
-        fb = fault_block.reshape(geo_model.grid.resolution)[:, cell_number, :]
+        lb = geo_model.solutions.lith_block.reshape(*res)[:, cell_number, :]
+        fb = fault_block.reshape(*res)[:, cell_number, :]
     elif direction == "z":
-        lb = geo_model.solutions.lith_block.reshape(geo_model.grid.resolution)[:, :, cell_number]
-        fb = fault_block.reshape(geo_model.grid.resolution)[:, :, cell_number]
+        lb = geo_model.solutions.lith_block.reshape(*res)[:, :, cell_number]
+        fb = fault_block.reshape(*res)[:, :, cell_number]
 
     return _topology_analyze(lb, fb, geo_model.faults.n_faults,
                              areas_bool=compute_areas,
