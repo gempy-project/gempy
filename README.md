@@ -20,7 +20,7 @@
 constructing complex 3D geological models of folded structures, fault networks and unconformities. It was designed from the 
 ground up to support easy embedding in probabilistic frameworks for the uncertainty analysis of subsurface structures.
 
-Check out the documentaion either in [github pages](https://gempy.rocks) (better option), or [read the docs](http://gempy.readthedocs.io/).
+Check out the documentaion either in [github pages](https://www.gempy.org/) (better option), or [read the docs](http://gempy.readthedocs.io/).
 
 ## Table of Contents
 
@@ -34,6 +34,42 @@ Check out the documentaion either in [github pages](https://gempy.rocks) (better
 * [References](#ref)
 
 <a name="feat"></a>
+## News
+### GemPy v2.0 beta release
+
+It has been a long journey since the release of GemPy v1.0. What started as a small library to carry out research
+on uncertainty analysis for structural geology has grown to be use in multiple projects around the world. Carried
+by the community enthusiasm in our tool, we commenced a way-longer-than-planned rewritten of the code in order to
+not only be able to fulfil the needs of many of you but also to set the foundations of a package driven by the
+community. For this end, all the logic has been splat into multiple modules, classes and containers limiting
+duplicities and exposing a large mutation api at different levels of abstraction. Hope the work has been worth it.
+
+So long,
+
+Miguel
+
+#### What is new
+- Full redesign of the back-end: much more modular, explicit and avoiding object duplicities to insane levels
+- Topography
+- Onlap, Erosion relations
+- Choose your favourite type of fault: infinite faults, finite faults, faults offsetting faults, faults ending on series
+- Masked marching cubes: this fix the ugly surfaces following the voxels faces
+- All series are fully stored after interpolation
+- Save your model
+- Compile once, modify as much as you want
+- Full integration with qgrid
+- Real time computations via vtk or python-qgrid
+- Adaptive regular grids for geophysics
+- Refactored some legacy names:
+    + formations renamed to surfaces
+    + interfaces renamed to surfaces_points
+- Minor changes:
+    + New colormap and easy way to change the surfaces colors (even integration with widgets!)
+    + The order of the formations will be given by the interpolation itself if the input was wrong
+    + The split between reference and rest surface_points happens in theano. This makes much easier the modification
+    of reference points
+
+
 ## Features
 
 The core algorithm of *GemPy* is based on a universal cokriging interpolation method devised by
@@ -121,21 +157,26 @@ map, which can then be reimported into GoogleEarth.
 
 *GemPy* requires Python 3 and makes use of numerous open-source libraries:
 
-* pandas
-* tqdm
-* scikit_image
+* pandas>=0.21.0
+* cython
 * Theano
 * matplotlib
 * numpy
 * pytest
-* scipy
-* ipython
+* nbsphinx
 * seaborn
-* setuptools
-* scikit_learn
 * networkx
+* ipywidgets
 
 Optional:
+
+* git+git://github.com/Leguark/scikit-image@master
+* steno3d
+* vtk
+* gdal
+* qgrid
+* pymc
+* pymc3
 
 * `vtk>=7` for interactive 3-D visualization 
 * `pymc` or `pymc3`
@@ -151,8 +192,12 @@ its dependencies.
 Installing Theano (specially in windows) and vtk sometimes is problematic. Here we give a few advices that
 usually works for us:
 * Theano: install the following packages before installing theano: `conda install mingw libpython m2w64-toolchain`. Then install Theano via `conda install theano`. 
-if the installation fails at some point try to re-install anaconda for a single user (no administrator priveleges) and with the Path Environment set.
+If the installation fails at some point try to re-install anaconda for a single user (no administrator priveleges) and with the Path Environment set.
+To use Theano with `numpy version 1.16.0` or following, it has to be updated to `Theano 1.0.4` using `pip install theano --upgrade`.
+Note that this is not yet available in the conda package manager.
 
+* scikit_image (Spring 2019): To use scikit_image with `numpy version 1.16.0` or following, it has to be updated to `scikit_image 1.14.2` using `pip install scikit_image --upgrade`.
+Note that this is not yet available in the conda package manager.
 
 * vtk: Right now (Fall 2018), does not have compatibility with python 3.7. The simplest solution to install it is to
 use `conda install python=3.6` to downgrade the python version and then using `pip install vtk`.
@@ -189,6 +234,6 @@ providing detailed [tutorials](http://gempy.readthedocs.io/tutorial.html) on how
 <a name="ref"></a>
 ## References
 
-* de la Varga, M., Schaaf, A., and Wellmann, F.: GemPy 1.0: open-source stochastic geological modeling and inversion, Geosci. Model Dev., 12, 1-32, https://doi.org/10.5194/gmd-12-1-2019, 2019  
+* de la Varga, M., Schaaf, A., and Wellmann, F.: GemPy 1.0: open-source stochastic geological modeling and inversion, Geosci. Model Dev., 12, 1-32, https://doi.org/10.5194/gmd-12-1-2019, 2019
 * Calcagno, P., Chilès, J. P., Courrioux, G., & Guillen, A. (2008). Geological modelling from field data and geological knowledge: Part I. Modelling method coupling 3D potential-field interpolation and geological rules. Physics of the Earth and Planetary Interiors, 171(1-4), 147-157.
 * Lajaunie, C., Courrioux, G., & Manuel, L. (1997). Foliation fields and 3D cartography in geology: principles of a method based on potential interpolation. Mathematical Geology, 29(4), 571-584.

@@ -1,11 +1,14 @@
-
+import math
 import numpy as np
 import matplotlib.pyplot as plt
-#from mpl_toolkits.mplot3d import Axes3D
+from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 import mplstereonet
 
+'''The solution for vMF sampling originally appeared here: 
+- https://github.com/pymc-devs/pymc3/issues/2458 and
+- https://github.com/jasonlaska/spherecluster/blob/master/spherecluster/util.py'''
 """
     This file is part of gempy.
 

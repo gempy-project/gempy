@@ -1,4 +1,7 @@
-pymc
+git+git://github.com/Leguark/scikit-image@master
 steno3d
-vtk==8.0.0.dev20170717
+vtk
+gdal
+qgrid
+pymc
 pymc3

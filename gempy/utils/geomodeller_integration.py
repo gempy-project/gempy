@@ -42,6 +42,38 @@ try:
 except ImportError:
     import xml.etree.ElementTree as ET
 
+# TODO fix this function and importing it to gempy.utils.create_from_geomodeller_xml
+def create_from_geomodeller_xml(fp, resolution=(50, 50, 50), return_xml=False, **kwargs):
+    """
+    EXPERIMENTAL
+    Creates InputData object from a GeoModeller xml file. Automatically extracts and sets model extent, interface
+    and orientation data as well as the stratigraphic pile.
+
+    Args:
+        fp (str): Filepath for the GeoModeller xml file to be read.
+        resolution (tuple, optional): Tuple containing the number of voxels in dimensions (x,y,z). Defaults to 50.
+        return_xml (bool, optional): Toggles returning the ReadGeoModellerXML instance to leverage further info from the
+            xml file (e.g. for stratigraphic pile ordering). Defaults to True.
+        **kwargs: Keyword arguments for create_data function.
+
+    Returns:
+        gp.data_management.InputData
+    """
+    gmx = _ReadGeoModellerXML(fp)  # instantiate parser class with filepath of xml
+
+    # instantiate InputData object with extent and resolution
+    geo_data = create_data(gmx.extent, resolution, **kwargs)
+
+    # set interface and orientation dataframes
+    geo_data.surface_points = gmx.surface_points
+    geo_data.orientations = gmx.orientations
+
+    if return_xml:
+        return geo_data, gmx
+    else:
+        return geo_data
+
+
 
 class ReadGeoModellerXML:
     def __init__(self, fp):
@@ -63,10 +95,10 @@ class ReadGeoModellerXML:
         self.extent = self._get_extent()
 
         self.data = self.extract_data()
-        self.interfaces, self.orientations = self.get_dataframes()
+        self.surface_points, self.orientations = self.get_dataframes()
 
         # self.stratigraphic_column = self.get_stratigraphic_column()
-        # self.faults = self.get_faults()
+        # self.df = self.get_faults()
         #
         # self.series_info = self._get_series_fmt_dict()
         # self.series_distribution = self.get_series_distribution()
@@ -103,8 +135,8 @@ class ReadGeoModellerXML:
                 if c.tag == "{"+self.xmlns+"}PotentialField":
 
                     data[sn]["gradients"] = []
-                    data[sn]["interfaces"] = []
-                    data[sn]["interfaces_counters"] = []
+                    data[sn]["surface_points"] = []
+                    data[sn]["surface_points_counters"] = []
                     data[sn]["solutions"] = []
                     data[sn]["constraints"] = []
 
@@ -119,15 +151,15 @@ class ReadGeoModellerXML:
                                 data[sn]["gradients"].append([gr.get("Gx"), gr.get("Gy"), gr.get("Gz"),
                                                               gr.get("XGr"), gr.get("YGr"), gr.get("ZGr")])
 
-                        # INTERFACES
+                        # surface_points
                         if cc.tag == "{" + self.xmlns + "}Points":
                             for co in cc:
-                                data[sn]["interfaces"].append([float(co[0].text), float(co[1].text), float(co[2].text)])
+                                data[sn]["surface_points"].append([float(co[0].text), float(co[1].text), float(co[2].text)])
 
                         # INTERFACE COUNTERS
                         if cc.tag == "{" + self.xmlns + "}InterfacePoints":
                             for ip in cc:
-                                data[sn]["interfaces_counters"].append([int(ip.get("npnt")), int(ip.get("pnt"))])
+                                data[sn]["surface_points_counters"].append([int(ip.get("npnt")), int(ip.get("pnt"))])
 
                         # CONSTRAINTS
                         if cc.tag == "{" + self.xmlns + "}Constraints":
@@ -141,19 +173,19 @@ class ReadGeoModellerXML:
 
                     # convert from str to float
                     data[sn]["gradients"] = np.array(data[sn]["gradients"]).astype(float)
-                    data[sn]["interfaces"] = np.array(data[sn]["interfaces"]).astype(float)
-                    data[sn]["interfaces_counters"] = np.array(data[sn]["interfaces_counters"]).astype(float)
+                    data[sn]["surface_points"] = np.array(data[sn]["surface_points"]).astype(float)
+                    data[sn]["surface_points_counters"] = np.array(data[sn]["surface_points_counters"]).astype(float)
                     data[sn]["solutions"] = np.array(data[sn]["solutions"]).astype(float)
 
         return data
 
     def get_dataframes(self):
         """
-        Extracts dataframe information from the self.data dictionary and returns GemPy-compatible interfaces and
+        Extracts dataframe information from the self.data dictionary and returns GemPy-compatible surface_points and
         orientations dataframes.
 
         Returns:
-            (tuple) of GemPy dataframes (interfaces, orientations)
+            (tuple) of GemPy dataframes (surface_points, orientations)
         """
         interf_formation = []
         interf_series = []
@@ -162,23 +194,23 @@ class ReadGeoModellerXML:
 
         for i, s in enumerate(self.data.keys()):  # loop over all series
             if i == 0:
-                coords = self.data[s]["interfaces"]
+                coords = self.data[s]["surface_points"]
                 grads = self.data[s]["gradients"]
             else:
-                coords = np.append(coords, self.data[s]["interfaces"])
+                coords = np.append(coords, self.data[s]["surface_points"])
                 grads = np.append(grads, self.data[s]["gradients"])
 
             for j, fmt in enumerate(self.data[s]["formations"]):
-                for n in range(int(self.data[s]["interfaces_counters"][j, 0])):
+                for n in range(int(self.data[s]["surface_points_counters"][j, 0])):
                     interf_formation.append(fmt)
                     interf_series.append(s)
 
             for k in range(len(grads)):
                 orient_series.append(s)
 
-        interfaces = pn.DataFrame(coords, columns=['X', 'Y', 'Z'])
-        interfaces["formation"] = interf_formation
-        interfaces["series"] = interf_series
+        surface_points = pn.DataFrame(coords, columns=['X', 'Y', 'Z'])
+        surface_points["formation"] = interf_formation
+        surface_points["series"] = interf_series
 
         orientations = pn.DataFrame(grads, columns=['G_x', 'G_y', 'G_z', 'X', 'Y', 'Z'])
         orientations["series"] = orient_series
@@ -196,7 +228,7 @@ class ReadGeoModellerXML:
         orientations["azimuth"] = azs
         orientations["polarity"] = pols
 
-        return interfaces, orientations
+        return surface_points, orientations
 
 
     def get_stratigraphic_column(self):
@@ -236,11 +268,11 @@ class ReadGeoModellerXML:
 
     def get_series_distribution(self):
         """
-        Combines faults and stratigraphic series into an unordered dictionary as keys and maps the correct
+        Combines df and stratigraphic series into an unordered dictionary as keys and maps the correct
         formations to them as a list value. Faults series get a list of their own string assigned as formation.
 
         Returns:
-            (dict): maps Series (str) -> Formations (list of str)
+            (dict): maps Series (str) -> Surfaces (list of str)
         """
         series_distribution = {}
         for key in self.series_info.keys():
@@ -269,13 +301,13 @@ class ReadGeoModellerXML:
                                xy["Ymin"], xy["Ymax"],
                                 z["Zmin"],  z["Zmax"]]).astype(float))
 
-    def get_interfaces_df(self):
+    def get_surface_points_df(self):
         """
-        Extracts the interface data points stored in the GeoModeller xml file and returns it as a GemPy interfaces
+        Extracts the interface data points stored in the GeoModeller xml file and returns it as a GemPy surface_points
         dataframe.
 
         Returns:
-            pandas.DataFrame: InputData.interfaces dataframe
+            pandas.DataFrame: InputData.surface_points dataframe
         """
         if self.root.find("{" + self.xmlns + "}Structural3DData") is None:
             print("No 3D data stored in given xml file.")
@@ -298,9 +330,9 @@ class ReadGeoModellerXML:
                     entry.append(series)
                     xyzf.append(entry)
 
-            interfaces = pn.DataFrame(np.array(xyzf), columns=['X', 'Y', 'Z', "formation", "series"])
-            interfaces[["X", "Y", "Z"]] = interfaces[["X", "Y", "Z"]].astype(float)
-            return interfaces
+            surface_points = pn.DataFrame(np.array(xyzf), columns=['X', 'Y', 'Z', "formation", "series"])
+            surface_points[["X", "Y", "Z"]] = surface_points[["X", "Y", "Z"]].astype(float)
+            return surface_points
 
     def get_orientation_df(self):
         """
@@ -392,9 +424,9 @@ def read_vox(geo_data, path):
 
     geo_res = geo_res.iloc[9:]
 
-    # ip_addresses = geo_res['nx 50'].unique()  # geo_data.interfaces["formation"].unique()
+    # ip_addresses = geo_res['nx 50'].unique()  # geo_model.surface_points["formation"].unique()
     ip_dict = geo_data.get_formation_number()
-  #  ip_dict = geo_data.interfaces['formation_number'].unique()
+  #  ip_dict = geo_model.surface_points['formation_number'].unique()
 
     geo_res_num = geo_res.iloc[:, 0].replace(ip_dict)
     block_geomodeller = np.ravel(geo_res_num.values.reshape(
@@ -498,12 +530,12 @@ class GeomodellerClass:
             faults_parent = self.rootelement.findall("{"+self.xmlns+"}Faults")[0]
             self.faults = faults_parent.findall("{"+self.xmlns+"}Fault")
         except IndexError:
-            print("No faults found in model")
+            print("No df found in model")
         return self.faults
 
     def get_formations(self):
         """get formation elements out of rootelement and safe as local list"""
-        formations_parent = self.rootelement.findall("{"+self.xmlns+"}Formations")[0]
+        formations_parent = self.rootelement.findall("{"+self.xmlns+"}Surfaces")[0]
         self.formations = formations_parent.findall("{"+self.xmlns+"}Formation")
 
     def get_stratigraphy_list(self, **kwds):
@@ -673,7 +705,7 @@ class GeomodellerClass:
         try:
             self.faults
         except AttributeError:
-            print ("Create Formations list")
+            print ("Create Surfaces list")
             self.get_faults()
         self.fault_dict = {}
         for fault in self.faults:
@@ -751,7 +783,7 @@ class GeomodellerClass:
         tmp_element = section_element.find("{"+self.xmlns+"}Structural2DData")
         # check in case there is no formation points defined in this section
         try:
-            tmp_element2 = tmp_element.find("{"+self.xmlns+"}Interfaces")
+            tmp_element2 = tmp_element.find("{"+self.xmlns+"}SurfacePoints")
         except AttributeError:
             return None
         return tmp_element2.findall("{"+self.xmlns+"}Interface")
@@ -1057,11 +1089,11 @@ class GeomodellerClass:
         # Idea: stoachstic apporach to twt -> depth conversion: apply several
         # possible formulae for quality estimation of resulting model?
         struct_data = sec_element.find("{"+self.xmlns+"}Structural2DData")
-        interfaces = struct_data.find("{"+self.xmlns+"}Interfaces").findall("{"+self.xmlns+"}Interface")
+        surface_points = struct_data.find("{"+self.xmlns+"}SurfacePoints").findall("{"+self.xmlns+"}Interface")
         # save data in list to create a plot to check validity of conversion
         t_list = []
         v_list = []
-        for interface in interfaces:
+        for interface in surface_points:
             gml_coords_element = interface.find("{"+self.gml+"}LineString").find("{"+self.gml+"}coordinates")
             # check for correct decimal, column (cs) and text separator (ts)
             ts = gml_coords_element.get("ts")
