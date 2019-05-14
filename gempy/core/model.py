@@ -579,7 +579,6 @@ class DataMutation(object):
 
     @plot_set_topography
     def set_topography(self, source='random', **kwargs):
-        #
         """
         Args:
             mode: 'random': random topography is generated (based on a fractal grid).

@@ -31,7 +31,11 @@ class Load_DEM_GDAL():
         if GDAL_IMPORT == False:
             raise ImportError('Gdal package is not installed. No support for raster formats.')
         self.dem = gdal.Open(path_dem)
-        self.dem_zval = self.dem.ReadAsArray()
+        try:
+            self.dem_zval = self.dem.ReadAsArray()
+        except AttributeError:
+            print('Filepath seems to be wrong.')
+            raise
         self._get_raster_dimensions()
         print(self.extent, self.resolution)
 
@@ -87,9 +91,13 @@ class Load_DEM_GDAL():
 
         xyz = pn.read_csv(path_dest, header=None, sep=' ').values
         # print(xyz.shape)
-        x = np.flip(xyz[:, 0].reshape(shape), axis=0)
-        y = np.flip(xyz[:, 1].reshape(shape), axis=0)
-        z = np.flip(xyz[:, 2].reshape(shape), axis=0)
+        x = np.flipud(xyz[:, 0].reshape(shape))
+        y = np.flipud(xyz[:, 1].reshape(shape))
+        z = np.flipud(xyz[:, 2].reshape(shape))
+
+        #x = xyz[:, 0].reshape(shape)
+        #y = xyz[:, 1].reshape(shape)
+        #z = xyz[:, 2].reshape(shape)
 
         self.values_3D = np.dstack([x, y, z])
 
