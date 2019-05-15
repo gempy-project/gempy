@@ -239,7 +239,7 @@ class DataMutation(object):
         self.update_structure()
         return self.surfaces
 
-    def delete_surfaces(self, indices: Union[str, list, np.ndarray], update_id=True):
+    def delete_surfaces(self, indices: Union[str, list, np.ndarray], update_id=True, remove_data=False):
         indices = np.atleast_1d(indices)
         self.surfaces.delete_surface(indices, update_id)
 
@@ -247,7 +247,11 @@ class DataMutation(object):
             surfaces_names = self.surfaces.df.loc[indices, 'surface']
         else:
             surfaces_names = indices
-
+        if remove_data:
+            self.surface_points.del_surface_points(self.surface_points.df[self.surface_points.df.surface.isin(surfaces_names)].index)
+            self.orientations.del_orientation(self.orientations.df[self.orientations.df.surface.isin(surfaces_names)].index)
+            self.update_structure(update_theano='matrices')
+            self.update_structure(update_theano='weights')
         self.surface_points.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
         self.orientations.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
         self.map_data_df(self.surface_points.df)

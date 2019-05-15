@@ -730,6 +730,7 @@ class Surfaces(object):
             self.df.drop(indices, inplace=True)
         else:
             self.df.drop(self.df.index[self.df['surface'].isin(indices)], inplace=True)
+
         if update_id is True:
             self.update_id()
             self.set_basement()
