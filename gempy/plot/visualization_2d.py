@@ -327,8 +327,11 @@ class PlotData2D(object):
                         interpolation=interpolation,
                         aspect=aspect,
                         **kwargs)
+
+        if extent_val[4] < 0:   # then extent from -z to -Z -> flip y-axis
+            plt.gca().invert_yaxis()
+
         if show_faults:
-            #raise NotImplementedError
             self.extract_fault_lines(cell_number, direction)
 
         if show_topo:
