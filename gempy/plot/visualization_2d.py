@@ -336,7 +336,7 @@ class PlotData2D(object):
                         aspect=aspect,
                         **kwargs)
 
-        if extent_val[4] < 0:           # correct vertical orientation of plot
+        if extent_val[3] < 0:           # correct vertical orientation of plot
             plt.gca().invert_yaxis()    # if maximum vertical extent negative
 
         if show_faults:
