@@ -1120,7 +1120,8 @@ class SurfacePoints(GeometricData):
             self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
             self.sort_table()
 
-    def read_surface_points(self, file_path, debug=False, inplace=False, append=False, kwargs_pandas:dict = {}, **kwargs, ):
+    def read_surface_points(self, file_path, debug=False, inplace=False,
+                            kwargs_pandas:dict = {}, **kwargs, ):
         """
         Read tabular using pandas tools and if inplace set it properly to the surface points object
         Args:
