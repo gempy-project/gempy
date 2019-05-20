@@ -339,7 +339,7 @@ class DataMutation(object):
             aux = self.series.df.index.drop('Basement').get_values()
             self.reorder_series(np.append(aux, 'Basement'))
 
-        return self.surfaces.sequential_pile.figure
+        return self.surfaces
 
     # endregion
 

@@ -1,0 +1,4 @@
+X,Y,Z,azimuth,dip,polarity,formation
+1000,1000,-1050,90,18.435,1,target
+400,1000,-600,90,18.435,1,seawater
+500,1000,-1135.398,270,71.565,1,fault

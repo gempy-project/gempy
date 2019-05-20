@@ -638,7 +638,7 @@ class Surfaces(object):
         if values_array is not None:
             self.set_surfaces_values(values_array=values_array, properties_names=properties_names)
 
-        self.sequential_pile = StratigraphicPile(self.series, self.df)
+      #  self.sequential_pile = StratigraphicPile(self.series, self.df)
 
     def __repr__(self):
         return self.df.to_string()
@@ -735,7 +735,7 @@ class Surfaces(object):
             self.update_id()
             self.set_basement()
             self.update_order_surfaces()
-            self.update_sequential_pile()
+           # self.update_sequential_pile()
         return True
 
     @_setdoc(pn.Series.replace.__doc__)
@@ -1121,7 +1121,8 @@ class SurfacePoints(GeometricData):
             self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
             self.sort_table()
 
-    def read_surface_points(self, file_path, debug=False, inplace=False, append=False, kwargs_pandas:dict = {}, **kwargs, ):
+    def read_surface_points(self, file_path, debug=False, inplace=False,
+                            kwargs_pandas:dict = {}, **kwargs, ):
         """
         Read tabular using pandas tools and if inplace set it properly to the surface points object
         Args:

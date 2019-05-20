@@ -130,7 +130,7 @@ class Solution(object):
 
         # TODO Adapt it to the gradients
 
-    def compute_surface_regular_grid(self, level: float, scalar_field, mask_array=None, **kwargs):
+    def compute_surface_regular_grid(self, level: float, scalar_field, mask_array=None, classic=True, **kwargs):
         """
         Compute the surface (vertices and edges) of a given surface by computing marching cubes (by skimage)
         Args:
@@ -144,15 +144,26 @@ class Solution(object):
 
         from skimage import measure
 
-        vertices, simplices, normals, values = measure.marching_cubes_lewiner(
-            scalar_field.reshape(self.grid.regular_grid.resolution[0],
-                                 self.grid.regular_grid.resolution[1],
-                                 self.grid.regular_grid.resolution[2]),
-            level,
-            spacing=self.grid.regular_grid.get_dx_dy_dz(),
-            mask=mask_array,
-            **kwargs
-        )
+        if classic is True:
+            vertices, simplices, normals, values = measure.marching_cubes_lewiner(
+                scalar_field.reshape(self.grid.regular_grid.resolution[0],
+                                     self.grid.regular_grid.resolution[1],
+                                     self.grid.regular_grid.resolution[2]),
+                level,
+                spacing=self.grid.regular_grid.get_dx_dy_dz(),
+                **kwargs
+            )
+
+        else:
+            vertices, simplices, normals, values = measure.marching_cubes_lewiner(
+                scalar_field.reshape(self.grid.regular_grid.resolution[0],
+                                     self.grid.regular_grid.resolution[1],
+                                     self.grid.regular_grid.resolution[2]),
+                level,
+                spacing=self.grid.regular_grid.get_dx_dy_dz(),
+                mask=mask_array,
+                **kwargs
+            )
 
         vertices += np.array([self.grid.extent[0],
                               self.grid.extent[2],
@@ -228,6 +239,10 @@ class Solution(object):
             for level in sfas:
                 try:
                     v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
+
+                except AttributeError:
+                    v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array,
+                                                                        classic=False, **kwargs)
 
                 except Exception as e:
                     warnings.warn('Surfaces not computed due to: ' + str(e))
