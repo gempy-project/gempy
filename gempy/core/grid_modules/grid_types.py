@@ -267,15 +267,22 @@ class Topography:
                                                       anti_aliasing=False, preserve_range=True)
 
     def show(self):
+        from mpl_toolkits.axes_grid1 import make_axes_locatable
         fig, ax = plt.subplots()
         CS= ax.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k', linestyles='solid')
         ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
         CS2 = ax.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
-        cbar = plt.colorbar(CS2)
-        cbar.set_label('elevation')
+        plt.axis('scaled')
+        #plt.axes().set_aspect('equal','datalim')
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.title('Model topography')
+        divider = make_axes_locatable(ax)
+        cax1 = divider.append_axes("right", size="5%", pad=0.05)
+        #fig.colorbar(i, cax=cax1)
+        cbar = plt.colorbar(CS2, cax=cax1)
+        cbar.set_label('elevation')
+
 
     def save(self, filepath):
         np.save(filepath, np.array([self.values_3D, self.extent, self.resolution]))
@@ -297,15 +304,41 @@ class Topography:
         dz = (zs[-1] - zs[0]) / len(zs)
         return ((self.values_3D_res[:, :, 2] - zs[0]) / dz + 1).astype(int)
 
-    def _line_in_section(self, direction='y', cell_number=0):
+    def _line_in_section_DEP(self, direction='y', cell_number=0):
         # todo use slice2D of plotting class for this
         if np.any(self.resolution - self.regular_grid.resolution[:2]) != 0:
-            cell_number_res = (self.values_3D.shape[:2] / self.regular_grid.resolution[:2] * cell_number).astype(int)
+            cell_number_res = (self.resolution / self.regular_grid.resolution[:2] * cell_number).astype(int)
             cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
+        print(cell_number_res, cell_number)
+        print(self.values_3D[:,:,2].shape)
         if direction == 'x':
             topoline = self.values_3D[:, cell_number, :][:, [1, 2]].astype(int)
         elif direction == 'y':
             topoline = self.values_3D[cell_number, :, :][:, [0, 2]].astype(int)
         else:
             raise NotImplementedError
+        return topoline
+
+    def _line_in_section(self, direction='y', cell_number=1):
+        x = self.values_3D_res[:, :, 0]
+        y = self.values_3D_res[:, :, 1]
+        z = self.values_3D_res[:, :, 2]
+
+        if direction == 'y':
+            a = x[cell_number, :]
+            b = y[cell_number, :]
+            c = z[cell_number, :]
+            assert len(np.unique(b)) == 1
+            topoline = np.dstack((a, c)).reshape(-1, 2).astype(int)
+
+        elif direction == 'x':
+            a = x[:, cell_number]
+            b = y[:, cell_number]
+            c = z[:, cell_number]
+            assert len(np.unique(a)) == 1
+            topoline = np.dstack((b, c)).reshape(-1, 2).astype(int)
+
+        elif direction == "z":
+            print('not implemented')
+
         return topoline
