@@ -4,7 +4,7 @@ import skimage
 import matplotlib.pyplot as plt
 from scipy.constants import G
 
-
+import pandas as pn
 class RegularGrid:
     def __init__(self, extent=None, resolution=None):
         self.grid_type = 'regurlar grid'
@@ -60,6 +60,44 @@ class RegularGrid:
         self.values = self.create_regular_grid_3d(extent, resolution)
         self.length = self.values.shape[0]
         return self.values
+
+
+class Sections:
+    def __init__(self, regular_grid, section_dict):
+        self.regular_grid = regular_grid
+        self.section_dict = section_dict
+        self.df = pn.DataFrame(columns=['section name', '(x,y)1', '(x,y)2', 'cell size', 'n points'])
+        self.section_names = list(self.section_dict.keys())
+        self.coordinates = dict.fromkeys(self.section_names)
+        self.read_sections()
+        self.compute_section_coordinates()
+        self.values = np.concatenate(list(self.coordinates.values()))
+
+    def read_sections(self):
+        self.df['section name'] = self.section_names
+        for i, section in enumerate(self.section_names):
+            self.df.loc[i]['(x,y)1'] = self.section_dict[section][0]
+            self.df.loc[i]['(x,y)2'] = self.section_dict[self.section_names[i]][1]
+            self.df.loc[i]['cell size'] = self.section_dict[self.section_names[i]][2]
+            self.df.loc[i]['n points'] = self.section_dict[self.section_names[i]][2]**2
+    def compute_section_coordinates(self):  # , p1,p2,cell_size):
+        for i, section in enumerate(self.section_names):
+            p1, p2, cell_size = self.df.loc[i][['(x,y)1', '(x,y)2', 'cell size']]
+            x1, y1 = p1[0], p1[1]
+            x2, y2 = p2[0], p2[1]
+
+            xaxis = np.linspace(x1, x2, cell_size, dtype="float64")
+            yaxis = np.linspace(y1, y2, cell_size, dtype="float64")
+
+            zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], cell_size, dtype="float64")
+
+            xy = np.concatenate((xaxis, yaxis)).reshape(cell_size, -1)
+
+            xy_rep = np.repeat(xy, cell_size, axis=0)
+            z = np.repeat(zaxis, cell_size)
+            z_res = z.reshape(cell_size, cell_size).ravel('F').reshape(cell_size * cell_size, 1)
+
+            self.coordinates[section] = np.hstack((xy_rep, z_res))
 
 
 class CustomGrid:

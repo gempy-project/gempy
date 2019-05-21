@@ -70,8 +70,8 @@ class Grid(object):
         self.values = np.empty((0, 3))
         self.values_r = np.empty((0, 3))
         self.length = np.empty(0)
-        self.grid_types = np.array(['regular', 'custom', 'topography', 'gravity'])
-        self.active_grids = np.zeros(4, dtype=bool)
+        self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'gravity'])
+        self.active_grids = np.zeros(5, dtype=bool)
         # All grid types must have values
 
         # Init optional grids
@@ -79,6 +79,10 @@ class Grid(object):
         self.custom_grid_grid_active = False
         self.topography = None
         self.topography_grid_active = False
+
+        self.sections = None
+        self.sections_grid_active = False
+
         self.gravity_grid = None
         self.gravity_grid_active = False
 
@@ -128,6 +132,11 @@ class Grid(object):
         self.topography.show()
         self.set_active('topography')
 
+    def set_section_grid(self, section_dict):
+        self.sections = grid_types.Sections(self.regular_grid, section_dict)
+        self.set_active('sections')
+
+
     def set_gravity_grid(self):
         self.gravity_grid = grid_types.GravityGrid()
         self.active_grids = np.zeros(4, dtype=bool)
@@ -140,12 +149,12 @@ class Grid(object):
 
     def set_active(self, grid_name: Union[str, np.ndarray]):
         where = self.grid_types == grid_name
-        self.active_grids += where
+        self.active_grids[where] = True
         self.update_grid_values()
 
     def set_inactive(self, grid_name: str):
         where = self.grid_types == grid_name
-        self.active_grids -= where
+        self.active_grids[where] = False
         self.update_grid_values()
 
     def update_grid_values(self):
@@ -153,7 +162,7 @@ class Grid(object):
         self.values = np.empty((0, 3))
         lengths = [0]
         try:
-            for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.gravity_grid]):
+            for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.sections, self.gravity_grid]):
                 if self.active_grids[e]:
                     self.values = np.vstack((self.values, grid_types.values))
                     lengths.append(grid_types.values.shape[0])
