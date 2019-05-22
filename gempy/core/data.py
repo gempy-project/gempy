@@ -139,11 +139,11 @@ class Grid(object):
 
     def set_gravity_grid(self):
         self.gravity_grid = grid_types.GravityGrid()
-        self.active_grids = np.zeros(4, dtype=bool)
+        self.active_grids = np.zeros(5, dtype=bool)
         self.set_active('gravity')
 
     def deactivate_all_grids(self):
-        self.active_grids = np.zeros(4, dtype=bool)
+        self.active_grids = np.zeros(5, dtype=bool)
         self.update_grid_values()
         return self.active_grids
 

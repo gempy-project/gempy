@@ -80,7 +80,9 @@ class Sections:
             self.df.loc[i]['(x,y)2'] = self.section_dict[self.section_names[i]][1]
             self.df.loc[i]['cell size'] = self.section_dict[self.section_names[i]][2]
             self.df.loc[i]['n points'] = self.section_dict[self.section_names[i]][2]**2
+
     def compute_section_coordinates(self):  # , p1,p2,cell_size):
+        # Todo this is ugly
         for i, section in enumerate(self.section_names):
             p1, p2, cell_size = self.df.loc[i][['(x,y)1', '(x,y)2', 'cell size']]
             x1, y1 = p1[0], p1[1]
@@ -286,6 +288,7 @@ class Topography:
 
         if np.any(self.regular_grid.extent[:4] - self.extent) != 0:
             print('obacht')
+            # todo if grid extent bigger fill missing values with nans for chloe
             self._crop()
 
         if np.any(self.regular_grid.resolution[:2] - self.resolution) != 0:
@@ -335,7 +338,7 @@ class Topography:
                 z = ind[x, y]
                 gridz[x, y, z:] = 99999
         mask = (gridz == 99999)
-        return mask.swapaxes(0,1)# np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
+        return mask#.swapaxes(0,1)# np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
 
     def _find_indices(self):
         zs = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.regular_grid.resolution[2])
