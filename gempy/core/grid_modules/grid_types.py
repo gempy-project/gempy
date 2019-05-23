@@ -64,14 +64,17 @@ class RegularGrid:
 
 class Sections:
     def __init__(self, regular_grid, section_dict):
+        # Todo this is embarrassing
         self.regular_grid = regular_grid
         self.section_dict = section_dict
         self.df = pn.DataFrame(columns=['section name', '(x,y)1', '(x,y)2', 'cell size', 'n points'])
         self.section_names = list(self.section_dict.keys())
+        self.section_types = np.array([self.section_names])[0] # this is all very bad code
         self.coordinates = dict.fromkeys(self.section_names)
         self.read_sections()
         self.compute_section_coordinates()
         self.values = np.concatenate(list(self.coordinates.values()))
+        self.length = self.df['n points'].values.cumsum()
 
     def read_sections(self):
         self.df['section name'] = self.section_names

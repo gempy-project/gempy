@@ -169,22 +169,34 @@ class Grid(object):
                 else:
                     lengths.append(0)
         except AttributeError:
-            raise AttributeError('Grid type do not exist yet. Set the grid before activate it.')
+            raise AttributeError('Grid type does not exist yet. Set the grid before activating it.')
 
         self.length = np.array(lengths).cumsum()
 
     def get_grid_args(self, grid_name: str):
-        assert type(grid_name) is str, 'Only one grid type can be retrieve'
+        assert type(grid_name) is str, 'Only one grid type can be retrieved'
         assert grid_name in self.grid_types, 'possible grid types are ' + str(self.grid_types)
         where = np.where(self.grid_types == grid_name)[0][0]
         return self.length[where], self.length[where+1]
 
     def get_grid(self, grid_name: str):
-        assert type(grid_name) is str, 'Only one grid type can be retrieve'
+        assert type(grid_name) is str, 'Only one grid type can be retrieved'
 
         l_0, l_1 = self.get_grid_args(grid_name)
         return self.values[l_0:l_1]
 
+    def get_section_args(self, section_name: str):
+        assert type(section_name) is str, 'Only one section type can be retrieved'
+        l0, l1 = self.get_grid_args('sections')
+        where = np.where(self.sections.section_types == section_name)[0][0]
+        if where != 0:
+            return l0 + self.sections.length[where-1], l0 + self.sections.length[where]
+        else:
+            return l0, l0 + self.sections.length[where]
+
+    def get_section_grid(self, section_name: str):
+        l0, l1 = self.get_section_args(section_name)
+        return self.values[l0:l1]
 
 class Series(object):
     """
