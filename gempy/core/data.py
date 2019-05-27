@@ -186,17 +186,10 @@ class Grid(object):
         return self.values[l_0:l_1]
 
     def get_section_args(self, section_name: str):
-        assert type(section_name) is str, 'Only one section type can be retrieved'
+        #assert type(section_name) is str, 'Only one section type can be retrieved'
         l0, l1 = self.get_grid_args('sections')
-        where = np.where(self.sections.section_types == section_name)[0][0]
-        if where != 0:
-            return l0 + self.sections.length[where-1], l0 + self.sections.length[where]
-        else:
-            return l0, l0 + self.sections.length[where]
-
-    def get_section_grid(self, section_name: str):
-        l0, l1 = self.get_section_args(section_name)
-        return self.values[l0:l1]
+        where = np.where(self.sections.names == section_name)[0][0]
+        return l0 + self.sections.length[where], l0 + self.sections.length[where+1]
 
 class Series(object):
     """

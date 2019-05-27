@@ -64,45 +64,50 @@ class RegularGrid:
 
 class Sections:
     def __init__(self, regular_grid, section_dict):
-        # Todo this is embarrassing
         self.regular_grid = regular_grid
         self.section_dict = section_dict
-        self.df = pn.DataFrame(columns=['section name', '(x,y)1', '(x,y)2', 'cell size', 'n points'])
-        self.section_names = list(self.section_dict.keys())
-        self.section_types = np.array([self.section_names])[0] # this is all very bad code
-        self.coordinates = dict.fromkeys(self.section_names)
-        self.read_sections()
+        self.names = np.array(list(self.section_dict.keys()))
+
+        self.points = []
+        self.resolution = []
+        self.length = [0]
+        self.dist = []
+        self.get_section_params()
+        self.values = []
         self.compute_section_coordinates()
-        self.values = np.concatenate(list(self.coordinates.values()))
-        self.length = self.df['n points'].values.cumsum()
 
-    def read_sections(self):
-        self.df['section name'] = self.section_names
-        for i, section in enumerate(self.section_names):
-            self.df.loc[i]['(x,y)1'] = self.section_dict[section][0]
-            self.df.loc[i]['(x,y)2'] = self.section_dict[self.section_names[i]][1]
-            self.df.loc[i]['cell size'] = self.section_dict[self.section_names[i]][2]
-            self.df.loc[i]['n points'] = self.section_dict[self.section_names[i]][2]**2
+        self.extent = None
 
-    def compute_section_coordinates(self):  # , p1,p2,cell_size):
-        # Todo this is ugly
-        for i, section in enumerate(self.section_names):
-            p1, p2, cell_size = self.df.loc[i][['(x,y)1', '(x,y)2', 'cell size']]
-            x1, y1 = p1[0], p1[1]
-            x2, y2 = p2[0], p2[1]
+    def get_section_params(self):
+        for i, section in enumerate(self.names):
+            points = [self.section_dict[section][0], self.section_dict[section][1]]
+            self.points.append(points)
+            self.dist.append(np.sqrt((points[1][0]-points[0][0])**2+(points[1][1]-points[1][0])**2))
+            self.resolution.append(self.section_dict[section][2])
+            self.length.append(self.section_dict[section][2][0] * self.section_dict[section][2][1])
+        self.length = np.array(self.length).cumsum()
 
-            xaxis = np.linspace(x1, x2, cell_size, dtype="float64")
-            yaxis = np.linspace(y1, y2, cell_size, dtype="float64")
+    def compute_section_coordinates(self):
+        for i in range(len(self.names)):
+            self.xaxis = np.linspace(self.points[i][0][0], self.points[i][1][0], self.resolution[i][0], dtype="float64")
+            self.yaxis = np.linspace(self.points[i][0][1], self.points[i][1][1], self.resolution[i][0], dtype="float64")
+            self.zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][1],
+                                     dtype="float64")
+            Y, Z = np.meshgrid(self.yaxis, self.zaxis, indexing='ij')
+            X, Z = np.meshgrid(self.xaxis, self.zaxis, indexing='ij')
+            xyz = np.vstack((X.flatten(), Y.flatten(), Z.flatten())).T
+            if i == 0:
+                self.values = xyz
+            else:
+                self.values = np.vstack((self.values, xyz))
 
-            zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], cell_size, dtype="float64")
+    def get_section_args(self, section_name: str):
+        where = np.where(self.names == section_name)[0][0]
+        return self.length[where], self.length[where+1]
 
-            xy = np.concatenate((xaxis, yaxis)).reshape(cell_size, -1)
-
-            xy_rep = np.repeat(xy, cell_size, axis=0)
-            z = np.repeat(zaxis, cell_size)
-            z_res = z.reshape(cell_size, cell_size).ravel('F').reshape(cell_size * cell_size, 1)
-
-            self.coordinates[section] = np.hstack((xy_rep, z_res))
+    def get_section_grid(self, section_name: str):
+        l0, l1 = self.get_section_args(section_name)
+        return self.values[l0:l1]
 
 
 class CustomGrid:
