@@ -39,9 +39,9 @@ Check out the documentaion either in [github pages](https://www.gempy.org/) (bet
 
 It has been a long journey since the release of GemPy v1.0. What started as a small library to carry out research
 on uncertainty analysis for structural geology has grown to be use in multiple projects around the world. Carried
-by the community enthusiasm in our tool, we commenced a way-longer-than-planned rewritten of the code in order to
-not only be able to fulfil the needs of many of you but also to set the foundations of a package driven by the
-community. For this end, all the logic has been splat into multiple modules, classes and containers limiting
+by the communities enthusiasm for our tool, we commenced a way-longer-than-planned rewriting of the code to
+not only meet the needs of many of you, but also lay the foundation of a package driven by the
+community. For this purpose, all the logic was divided into multiple modules, classes and containers limiting
 duplicities and exposing a large mutation api at different levels of abstraction. Hope the work has been worth it.
 
 So long,
@@ -66,8 +66,8 @@ Miguel
 - Minor changes:
     + New colormap and easy way to change the surfaces colors (even integration with widgets!)
     + The order of the formations will be given by the interpolation itself if the input was wrong
-    + The split between reference and rest surface_points happens in theano. This makes much easier the modification
-    of reference points
+    + The split between reference and rest surface_points happens in theano. This makes the modification
+    of reference points much easier
 
 
 ## Features
