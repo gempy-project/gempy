@@ -270,6 +270,47 @@ class PlotData2D(object):
         plt.xlabel('X')
         plt.ylabel('Y')
 
+    def plot_sections(self, show_traces=True, show_data=True):
+        assert self.model.solutions.sections is not None, 'no sections for plotting defined'
+        if show_traces:
+            self.plot_section_traces(show_data=show_data)
+        shapes = self.model.grid.sections.resolution
+        zdist = self.model.grid.regular_grid.extent[5] - self.model.grid.regular_grid.extent[4]
+        fig, axes = plt.subplots(nrows=len(self.model.grid.sections.names), ncols=1)
+        plt.subplots_adjust(bottom=0.5, top=3)
+        for i, section in enumerate(self.model.grid.sections.names):
+            l0, l1 = self.model.grid.sections.get_section_args(section)
+            axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[i][0], shapes[i][1]).T,
+                           origin='bottom',
+                           cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[i], 0, zdist])
+            axes[i].set(title=self.model.grid.sections.names[i], xlabel='X/Y', ylabel='Z')
+            # todo set labels correctly
+            axes[i].set_aspect(self.model.grid.sections.dist[i] / zdist)
+
+    def plot_section_traces(self, show_data=True):
+        # fig = plt.figure()
+        # ax = fig.add_subplot(111)
+        if self.model.solutions.geological_map is not None:
+            self.plot_map(self.model.solutions, contour_lines=False)
+        elif self.model.solutions.lith_block.shape[0] !=0:
+            self.plot_block_section(self.model.solutions, cell_number=self.model.grid.regular_grid.resolution[2] - 1,
+                                 direction='z', show_faults=False, show_topo=False, show_data=show_data)
+            plt.title('Section traces, z direction')
+        else:
+            #fig = plt.figure()
+            #plt.title('Section traces, z direction')
+            if show_data:
+                self.plot_data('z', 'all')
+        for i, name in enumerate(self.model.grid.sections.names):
+            plt.plot([self.model.grid.sections.points[i][0][0], self.model.grid.sections.points[i][1][0]],
+                     [self.model.grid.sections.points[i][0][1], self.model.grid.sections.points[i][1][1]], label=name)
+
+            plt.xlim(self.model.grid.regular_grid.extent[:2])
+            plt.ylim(self.model.grid.regular_grid.extent[2:4])
+            # ax.set_aspect(np.diff(geo_model.grid.regular_grid.extent[:2])/np.diff(geo_model.grid.regular_grid.extent[2:4]))
+            plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
+
     def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
                            show_data=False, show_faults=False, show_topo = True,  block_type=None, ve=1, **kwargs):
         """
@@ -334,7 +375,7 @@ class PlotData2D(object):
         if show_topo:
             if self.model.grid.topography is not None:
                 if direction == 'z':
-                    plt.contour(self.model.grid.topography.values_3D[:, :, 2], extent=extent_val, cmap='Grays')
+                    plt.contour(self.model.grid.topography.values_3D[:, :, 2], extent=extent_val, cmap='Greys')
                 else:
                     self.plot_topography(cell_number=cell_number, direction=direction)
 
