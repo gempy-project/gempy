@@ -285,7 +285,7 @@ class PlotData2D(object):
                            cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[i], 0, zdist])
             axes[i].set(title=self.model.grid.sections.names[i], xlabel='X/Y', ylabel='Z')
             # todo set labels correctly
-            axes[i].set_aspect(self.model.grid.sections.dist[i] / zdist)
+            #axes[i].set_aspect(self.model.grid.sections.dist[i] / zdist)
 
     def plot_section_traces(self, show_data=True):
         # fig = plt.figure()

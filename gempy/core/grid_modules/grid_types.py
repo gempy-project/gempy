@@ -73,6 +73,7 @@ class Sections:
         self.length = [0]
         self.dist = []
         self.get_section_params()
+        self.calculate_distance()
         self.values = []
         self.compute_section_coordinates()
 
@@ -82,12 +83,17 @@ class Sections:
         for i, section in enumerate(self.names):
             points = [self.section_dict[section][0], self.section_dict[section][1]]
             self.points.append(points)
-            self.dist.append(np.sqrt((points[1][0]-points[0][0])**2+(points[1][1]-points[1][0])**2))
+            #self.dist.append(np.sqrt((points[1][0]-points[0][0])**2+(points[1][1]-points[1][0])**2))
             self.resolution.append(self.section_dict[section][2])
             self.length.append(self.section_dict[section][2][0] * self.section_dict[section][2][1])
         self.length = np.array(self.length).cumsum()
 
+    def calculate_distance(self):
+        self.coordinates = np.array(self.points).ravel().reshape(-1, 4) #axis are x1,y1,x2,y2
+        self.dist = np.sqrt(np.diff(self.coordinates[:, [0, 2]])**2 + np.diff(self.coordinates[:, [1, 3]])**2)
+
     def compute_section_coordinates(self):
+        #todo can do that without loop with self.coordinates
         for i in range(len(self.names)):
             self.xaxis = np.linspace(self.points[i][0][0], self.points[i][1][0], self.resolution[i][0], dtype="float64")
             self.yaxis = np.linspace(self.points[i][0][1], self.points[i][1][1], self.resolution[i][0], dtype="float64")
