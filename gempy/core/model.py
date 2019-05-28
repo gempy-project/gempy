@@ -6,18 +6,18 @@ import pandas as pn
 from typing import Union
 import warnings
 
-# This is for sphenix to find the packages
-sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-pn.options.mode.chained_assignment = None
-from .data import AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
+from gempy.core.data import AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
     Surfaces, Options, Structure, KrigingParameters
-from .solution import Solution
-from .interpolator import InterpolatorModel, InterpolatorGravity
+from gempy.core.solution import Solution
+from gempy.core.interpolator import InterpolatorModel, InterpolatorGravity
 from gempy.utils.meta import _setdoc
 from gempy.plot.decorators import *
 
+pn.options.mode.chained_assignment = None
+
 
 class DataMutation(object):
+    """Is just a problem with writing something?"""
     def __init__(self):
 
         self.grid = Grid()
@@ -736,7 +736,7 @@ class Model(DataMutation):
         self.additional_data.options.df.to_csv(f'{path}/{name}_options.csv')
 
         # # save resolution and extent as npy
-        np.save(f'{path}/{name}_extent.npy', self.grid.extent)
+        np.save(f'{path}/{name}_extent.npy', self.grid.regular_grid.extent)
         np.save(f'{path}/{name}_resolution.npy', self.grid.regular_grid.resolution)
 
         # # save solutions as npy

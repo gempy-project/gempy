@@ -386,8 +386,8 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
     """
     Computes the geological model and any extra output given in the additional data option.
 
-    Args:
-        model (:obj:`gempy.core.data.Model`)
+     Args:
+        model (:class:`gempy.core.model.Model`)
         compute_mesh (bool): If true compute polydata
 
     Returns:

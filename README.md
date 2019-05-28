@@ -20,7 +20,7 @@
 constructing complex 3D geological models of folded structures, fault networks and unconformities. It was designed from the 
 ground up to support easy embedding in probabilistic frameworks for the uncertainty analysis of subsurface structures.
 
-Check out the documentaion either in [github pages](https://www.gempy.org/) (better option), or [read the docs](http://gempy.readthedocs.io/).
+Check out the documentation either in [gempy.org](https://www.gempy.org/) (better option), or [read the docs](http://gempy.readthedocs.io/).
 
 ## Table of Contents
 
@@ -89,7 +89,7 @@ and in full, interactive 3D using the Visualization Toolkit (VTK). The VTK suppo
 of the 3-D model, allowing for the exact modification of data. Models can also easily be exportes in VTK file format
 for further visualization and processing in other software such as ParaView.
 
-<p align="center"><img src="docs/source/images/gempy-animation.gif" width="600"></p>
+<p align="center"><img src="docs/source/images/vtkFault.png" width="600"></p>
 
 
 *GemPy* was designed from the beginning to support stochastic geological modeling for uncertainty analysis (e.g. Monte Carlo simulations, Bayesian inference). This was achieved by writing *GemPy*'s core architecture
@@ -132,7 +132,7 @@ of a beamer. This results in an interactive model with which the user can intera
 In addition to applications in teaching and research, this development offers great potential as an interactive exhibit with high outreach for the geosciences thanks to its intuitive operation.
 The finished sandbox can be used in numerous lectures and public events , but is mainly used as an interface to GemPy software and for rapid prototyping of implicit geological models.
 
-<p align="center"><img src="docs/source/images/Sandbox.gif" width="600"></p>
+<p align="center"><a href="https://youtu.be/oE3Atw-YvSA"><img src="https://img.youtube.com/vi/oE3Atw-YvSA/0.jpg" width="600"></p>
 
 <a name="remotegeo"></a>
 ### Remote Geomod: From GoogleEarth to 3-D Geology

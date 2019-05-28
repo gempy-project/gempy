@@ -3,11 +3,27 @@ import numpy as np
 import skimage
 import matplotlib.pyplot as plt
 from scipy.constants import G
+from typing import Optional
 
 
 class RegularGrid:
+    """Class with the methods and properties to manage 3D regular grids where the model will be interpolated.
+
+    Args:
+        extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]
+        resolution (np.ndarray): [nx, ny, nz]
+
+    Attributes:
+        extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]
+        resolution (np.ndarray): [nx, ny, nz]
+        values (np.ndarray): XYZ coordinates
+        mask_topo (np.ndarray): TODO @elisa fill
+        dx (float): size of the cells on x
+        dy (float): size of the cells on y
+        dz (float): size of the cells on z
+
+    """
     def __init__(self, extent=None, resolution=None):
-        self.grid_type = 'regurlar grid'
         self.resolution = np.ones((0, 3), dtype='int64')
         self.extent = np.empty(6, dtype='float64')
         self.values = np.empty((0, 3))
@@ -27,6 +43,7 @@ class RegularGrid:
 
         Returns:
             numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid
+
         """
 
         dx, dy, dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0], \
@@ -63,6 +80,14 @@ class RegularGrid:
 
 
 class CustomGrid:
+    """Object that contains arbitrary XYZ coordinates.
+
+    Args:
+        custom_grid (numpy.ndarray like): XYZ (in columns) of the desired coordinates
+
+    Attributes:
+        values (np.ndarray): XYZ coordinates
+    """
     def __init__(self, custom_grid: np.ndarray):
         self.values = np.zeros((0, 3))
         self.set_custom_grid(custom_grid)
@@ -89,6 +114,10 @@ class CustomGrid:
 
 
 class GravityGrid():
+    """
+    TODO @Miguel
+    """
+
     def __init__(self):
        # Grid.__init__(self)
         self.grid_type = 'irregular_grid'
@@ -213,6 +242,9 @@ class GravityGrid():
 
 
 class Topography:
+    """
+    TODO @Elisa
+    """
     def __init__(self, regular_grid):
         self.regular_grid = regular_grid
         self.values = np.zeros((0, 3))
