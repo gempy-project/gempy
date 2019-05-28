@@ -65,7 +65,7 @@ class Grid(object):
          concatenation of all active grids.
         values_r (np.ndarray): rescaled coordinates where the model is going to be evaluated
         length (np.ndarray): array which contain the slicing index for each grid type in order. The first element will
-         be 0, the second the lenght of the regular grid; the third custom and so on. This can be used to slice the
+         be 0, the second the length of the regular grid; the third custom and so on. This can be used to slice the
          solutions correspondent to each of the grids
         grid_types(np.ndarray[str]): names of the current grids of GemPy
         active_grids(np.ndarray[bool]): boolean array which control which type of grid is going to be computed and
@@ -180,10 +180,10 @@ class Grid(object):
         self.values = np.empty((0, 3))
         lengths = [0]
         try:
-            for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.gravity_grid]):
+            for e, grid_types_ in enumerate([self.regular_grid, self.custom_grid, self.topography, self.gravity_grid]):
                 if self.active_grids[e]:
-                    self.values = np.vstack((self.values, grid_types.values))
-                    lengths.append(grid_types.values.shape[0])
+                    self.values = np.vstack((self.values, grid_types_.values))
+                    lengths.append(grid_types_.values.shape[0])
                 else:
                     lengths.append(0)
         except AttributeError:
@@ -1876,7 +1876,7 @@ class RescaledData(object):
 
     @staticmethod
     def rescale_grid(grid, rescaling_factor, centers: pn.DataFrame):
-        new_grid_extent = (grid.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
+        new_grid_extent = (grid.regular_grid.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
         new_grid_values = (grid.values - centers) / rescaling_factor + 0.5001
         return new_grid_extent, new_grid_values
 
