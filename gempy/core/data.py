@@ -1,11 +1,10 @@
 import sys
-from os import path
-
 import numpy as np
 import pandas as pn
 from typing import Union
 import warnings
 import re
+
 try:
     import ipywidgets as widgets
     ipywidgets_import = True
@@ -15,21 +14,20 @@ except ModuleNotFoundError:
 pn.options.mode.chained_assignment = None
 
 # This is for sphenix to find the packages
-#sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from gempy.core.grid_modules import grid_types
 from gempy.core.checkers import check_for_nans
 from gempy.utils.meta import _setdoc
-from gempy.plot.sequential_pile import StratigraphicPile
 
 
 class MetaData(object):
-    """
-    Set of attibutes and methods that are not related directly with the geological model but more with the project
+    """Class containing metadata of the project.
 
-    Args:
+    Set of attributes and methods that are not related directly with the geological model but more with the project
+
+     Args:
         project_name (str): Name of the project. This is use as default value for some I/O actions
 
-    Attributes:
+     Attributes:
         date (str): Time of the creations of the project
         project_name (str): Name of the project. This is use as default value for some I/O actions
     """
@@ -47,19 +45,27 @@ class MetaData(object):
 
 class Grid(object):
     """
-       Class to generate grids. This class is used to create points where to
-       evaluate the geological model. So far only regular grids and custom_grids are implemented.
+    Class to generate grids. This class is used to create points where to
+    evaluate the geological model. This class serves a container which transmit the XYZ coordinates to the
+    interpolator. There are several type of grids objects will feed into the Grid class
 
-       Args:
-           grid_type (str): type of pre-made grids provide by GemPy
-           **kwargs: see args of the given grid type
+    Args:
+         **kwargs: See bellow
 
-       Attributes:
-           grid_type (str): type of premade grids provide by GemPy
-           resolution (list[int]): [x_min, x_max, y_min, y_max, z_min, z_max]
-           extent (list[float]):  [nx, ny, nz]
-           values (np.ndarray): coordinates where the model is going to be evaluated
-           values_r (np.ndarray): rescaled coordinates where the model is going to be evaluated
+    Keyword Args:
+         regular (:class:`grid_types.RegularGrid`): this does things
+
+         custom (:func:`grid_types.RegularGrid`)
+
+    Yields:
+        foo
+
+    Attributes:
+       grid_type (str): type of premade grids provide by GemPy
+       resolution (list[int]): [x_min, x_max, y_min, y_max, z_min, z_max]
+       extent (list[float]):  [nx, ny, nz]
+       values (np.ndarray): coordinates where the model is going to be evaluated
+       values_r (np.ndarray): rescaled coordinates where the model is going to be evaluated
 
     """
     def __init__(self, **kwargs):

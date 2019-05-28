@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='gempy',
-    version='2.0b.dev1',
+    version='2.0b.dev2',
     packages=find_packages(exclude=('test', 'docs')),
     include_package_data=True,
     install_requires=[
