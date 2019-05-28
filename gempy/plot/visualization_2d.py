@@ -259,7 +259,7 @@ class PlotData2D(object):
         assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
         geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:,:,2].shape)
         fig, ax = plt.subplots()
-        plt.imshow(geomap, origin="upper", extent=self.model.grid.topography.extent, cmap=self._cmap, norm=self._norm)
+        plt.imshow(geomap, origin="lower", extent=self.model.grid.topography.extent, cmap=self._cmap, norm=self._norm)
         if contour_lines == True:
             CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys', linestyles='solid',
                             extent=self.model.grid.topography.extent)

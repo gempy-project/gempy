@@ -1417,6 +1417,8 @@ class ipyvolumeVisualization:
     def plot_surfaces(self):
         """Plot gempy surface model."""
         # TODO: add plot_data option
+        if IPV_IMPORT == False:
+            raise ImportError('ipyvolume package is not installed. 3D visualization not available.')
         ipv.figure()
         meshes = []
         for surf in range(len(self.ver)):
