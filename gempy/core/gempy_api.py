@@ -46,12 +46,13 @@ warnings.filterwarnings("ignore",
 # region Model
 @_setdoc(Model.__doc__)
 def create_model(project_name='default_project'):
-    """
+    """sss
     Create Model Object
-
-
+    Args:
+        a: agag
     Returns:
         Model
+
     """
 
     return Model(project_name)

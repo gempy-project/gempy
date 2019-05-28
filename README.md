@@ -224,6 +224,31 @@ and then manually install it using the provided Python install file by calling
 
 in the cloned or downloaded repository folder. Make sure you have installed all necessary dependencies listed above before using *GemPy*.
 
+##### Windows installation guide (Jun 2019)
+
+1) Install CUDA if you do not have it already.
+
+2) Install Anaconda3 2019.03 with Python 3.7 (this is the last release).
+
+3) Install Theano and associated packages from the Anaconda prompt as administrator, and finally install GemPy 2.0:
+
+- conda update --all
+- conda install libpython
+- conda install m2w64-toolchain
+- conda install git
+- conda install pygpu
+- pip install theano==1.0.4
+- pip install gempy==2.0b0.dev2
+
+Note that:
+
+a) some other packages required by Theano are already included in Anaconda: numpy, scipy, mkl-service, nose, and sphinx.
+
+b) pydot-ng (suggested on Theano web site) yields a lot of errors. I dropped this. It is needed to handle large picture for gif/images and probably it is not needed by GemPy.
+
+c) Trying to install all the packages in one go but it does not work, as well as doing the same in Anaconda Navigator, or installing an older Anaconda release with Python 3.5 (Anaconda3 4.2.0) as indicated in some tutorial on Theano.
+
+
 <a name="doc"></a>
 ## Documentation
 
