@@ -270,26 +270,42 @@ class PlotData2D(object):
         plt.xlabel('X')
         plt.ylabel('Y')
 
-    def plot_sections(self, show_traces=True, show_data=True):
+    def plot_sections(self, show_traces=True, show_data=True, section_names = None):
         assert self.model.solutions.sections is not None, 'no sections for plotting defined'
+        if section_names is not None:
+            if type(section_names) == list:
+                section_names = np.array(section_names)
+                #, 'you have to pass a list of the desired section names'
+        else:
+            section_names = self.model.grid.sections.names
         if show_traces:
-            self.plot_section_traces(show_data=show_data)
+            self.plot_section_traces(show_data=show_data, section_names=section_names)
         shapes = self.model.grid.sections.resolution
         zdist = self.model.grid.regular_grid.extent[5] - self.model.grid.regular_grid.extent[4]
-        fig, axes = plt.subplots(nrows=len(self.model.grid.sections.names), ncols=1)
+        fig, axes = plt.subplots(nrows=len(section_names), ncols=1)
         plt.subplots_adjust(bottom=0.5, top=3)
-        for i, section in enumerate(self.model.grid.sections.names):
+        for i, section in enumerate(section_names):
+            j = np.where(self.model.grid.sections.names == section)[0][0]
             l0, l1 = self.model.grid.sections.get_section_args(section)
-            axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[i][0], shapes[i][1]).T,
-                           origin='bottom',
-                           cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[i], 0, zdist])
-            axes[i].set(title=self.model.grid.sections.names[i], xlabel='X/Y', ylabel='Z')
-            # todo set labels correctly
+            if len(section_names) == 1:
+                axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
+                               origin='bottom',
+                               cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j], 0, zdist])
+                axes.set(title=self.model.grid.sections.names[j], xlabel='X/Y', ylabel='Z')
+            else:
+                axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
+                               origin='bottom',
+                               cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j], 0, zdist])
+                axes[i].set(title=self.model.grid.sections.names[j], xlabel='X/Y', ylabel='Z')
+                # todo set labels correctly
             #axes[i].set_aspect(self.model.grid.sections.dist[i] / zdist)
+        #fig.tight_layout()
 
-    def plot_section_traces(self, show_data=True):
+    def plot_section_traces(self, show_data=True, section_names=None):
         # fig = plt.figure()
         # ax = fig.add_subplot(111)
+        if section_names is None:
+            section_names = self.model.grid.sections.names
         if self.model.solutions.geological_map is not None:
             self.plot_map(self.model.solutions, contour_lines=False)
         elif self.model.solutions.lith_block.shape[0] !=0:
@@ -301,9 +317,10 @@ class PlotData2D(object):
             #plt.title('Section traces, z direction')
             if show_data:
                 self.plot_data('z', 'all')
-        for i, name in enumerate(self.model.grid.sections.names):
-            plt.plot([self.model.grid.sections.points[i][0][0], self.model.grid.sections.points[i][1][0]],
-                     [self.model.grid.sections.points[i][0][1], self.model.grid.sections.points[i][1][1]], label=name)
+        for section in section_names:
+            j = np.where(self.model.grid.sections.names == section)[0][0]
+            plt.plot([self.model.grid.sections.points[j][0][0], self.model.grid.sections.points[j][1][0]],
+                     [self.model.grid.sections.points[j][0][1], self.model.grid.sections.points[j][1][1]], label=section)
 
             plt.xlim(self.model.grid.regular_grid.extent[:2])
             plt.ylim(self.model.grid.regular_grid.extent[2:4])
