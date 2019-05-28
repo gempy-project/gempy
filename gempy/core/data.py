@@ -53,7 +53,7 @@ class Grid(object):
          **kwargs: See bellow
 
     Keyword Args:
-         regular (:class:`grid_types.RegularGrid`): this does things
+         regular (:class:`nana <grid_types.RegularGrid>`): this does things
 
          custom (:func:`grid_types.RegularGrid`)
 

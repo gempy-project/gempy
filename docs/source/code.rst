@@ -19,10 +19,6 @@ Solution
 --------
 .. automodule:: solution
     :members:
-qgrid integration
------------------
-.. automodule:: qgrid_integration
-    :members:
 Model
 -----
 .. automodule:: model

@@ -20,13 +20,13 @@ class Solution(object):
             4) Gradients of scalar field y
             5) Gradients of scalar field z
 
-    Attributes:
-        additional_data (AdditionalData):
+     Attributes:
+        additional_data (:class:`gempy.core.data.AdditionalData`):
         surfaces (Surfaces)
         grid (Grid)
         scalar_field_at_surface_points (np.ndarray): Array containing the values of the scalar field at each interface. Axis
         0 is each series and axis 1 contain each surface in order
-         lith_block (np.ndndarray): Array with the id of each layer evaluated in each point of
+         lith_block (:obj:`np.ndndarray`): Array with the id of each layer evaluated in each point of
          `attribute:GridClass.values`
         fault_block (np.ndarray): Array with the id of each fault block evaluated in each point of
          `attribute:GridClass.values`
