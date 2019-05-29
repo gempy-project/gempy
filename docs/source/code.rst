@@ -9,8 +9,9 @@ Data
 .. currentmodule:: data
 .. autosummary::
     :toctree: Data
-    :template: module
 
     Grid
+    Faults
+    Series
     Surfaces
     Orientations
