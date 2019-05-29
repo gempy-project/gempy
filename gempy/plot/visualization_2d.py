@@ -197,21 +197,21 @@ class PlotData2D(object):
             y = "Z"
             Gx = "G_y"
             Gy = "G_z"
-            extent_val = self.model.grid.extent[[2, 3, 4, 5]]
+            extent_val = self.model.grid.regular_grid.extent[[2, 3, 4, 5]]
         elif direction == "y":
             _b = cell_number
             x = "X"
             y = "Z"
             Gx = "G_x"
             Gy = "G_z"
-            extent_val = self.model.grid.extent[[0, 1, 4, 5]]
+            extent_val = self.model.grid.regular_grid.extent[[0, 1, 4, 5]]
         elif direction == "z":
             _c = cell_number
             x = "X"
             y = "Y"
             Gx = "G_x"
             Gy = "G_y"
-            extent_val = self.model.grid.extent[[0, 1, 2, 3]]
+            extent_val = self.model.grid.regular_grid.extent[[0, 1, 2, 3]]
         else:
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
         return _a, _b, _c, extent_val, x, y, Gx, Gy
@@ -219,13 +219,13 @@ class PlotData2D(object):
     def _slice2D(self, cell_number, direction):
         if direction == 'x':
             _slice = np.s_[cell_number, :, :]
-            extent = self.model.grid.extent[[2, 3, 4, 5]]
+            extent = self.model.grid.regular_grid.extent[[2, 3, 4, 5]]
         elif direction == 'y':
             _slice = np.s_[:, cell_number, :]
-            extent = self.model.grid.extent[[0, 1, 4, 5]]
+            extent = self.model.grid.regular_grid.extent[[0, 1, 4, 5]]
         elif direction == 'z':
             _slice = np.s_[:, :, cell_number]
-            extent = self.model.grid.extent[[1, 2, 3, 4]]
+            extent = self.model.grid.regular_grid.extent[[1, 2, 3, 4]]
         else:
             print('not a direction')
         return _slice, extent
@@ -233,9 +233,9 @@ class PlotData2D(object):
     def plot_topography(self, cell_number, direction):
         line = self.model.grid.topography._line_in_section(cell_number=cell_number, direction=direction)
         if direction == 'x':
-            ext = self.model.grid.extent[[2, 3, 4, 5]]
+            ext = self.model.grid.regular_grid.extent[[2, 3, 4, 5]]
         elif direction == 'y':
-            ext = self.model.grid.extent[[0, 1, 4, 5]]
+            ext = self.model.grid.regular_grid.extent[[0, 1, 4, 5]]
         # add corners
         line = np.append(line, ([ext[1], line[0, -1]], [ext[1], ext[3]], [ext[0], ext[3]], [ext[0], line[0, 1]])).reshape(-1,2)
         plt.fill(line[:, 0], line[:, 1], color='k')#, alpha=0.5)
@@ -403,30 +403,30 @@ class PlotData2D(object):
         res = geo_model.grid.regular_grid.resolution
         if direction == "y":
             c1, c2 = (0, 2)
-            e1 = geo_model.grid.extent[1] - geo_model.grid.extent[0]
-            e2 = geo_model.grid.extent[5] - geo_model.grid.extent[4]
-            d1 = geo_model.grid.extent[0]
-            d2 = geo_model.grid.extent[4]
+            e1 = geo_model.grid.regular_grid.extent[1] - geo_model.grid.regular_grid.extent[0]
+            e2 = geo_model.grid.regular_grid.extent[5] - geo_model.grid.regular_grid.extent[4]
+            d1 = geo_model.grid.regular_grid.extent[0]
+            d2 = geo_model.grid.regular_grid.extent[4]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = res[0]
             r2 = res[2]
         elif direction == "x":
             c1, c2 = (1, 2)
-            e1 = geo_model.grid.extent[3] - geo_model.grid.extent[2]
-            e2 = geo_model.grid.extent[5] - geo_model.grid.extent[4]
-            d1 = geo_model.grid.extent[2]
-            d2 = geo_model.grid.extent[4]
+            e1 = geo_model.grid.regular_grid.extent[3] - geo_model.grid.regular_grid.extent[2]
+            e2 = geo_model.grid.regular_grid.extent[5] - geo_model.grid.regular_grid.extent[4]
+            d1 = geo_model.grid.regular_grid.extent[2]
+            d2 = geo_model.grid.regular_grid.extent[4]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = res[1]
             r2 = res[2]
         elif direction == "z":
             c1, c2 = (0, 1)
-            e1 = geo_model.grid.extent[1] - geo_model.grid.extent[0]
-            e2 = geo_model.grid.extent[3] - geo_model.grid.extent[2]
-            d1 = geo_model.grid.extent[0]
-            d2 = geo_model.grid.extent[2]
+            e1 = geo_model.grid.regular_grid.extent[1] - geo_model.grid.regular_grid.extent[0]
+            e2 = geo_model.grid.regular_grid.extent[3] - geo_model.grid.regular_grid.extent[2]
+            d1 = geo_model.grid.regular_grid.extent[0]
+            d2 = geo_model.grid.regular_grid.extent[2]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = res[0]

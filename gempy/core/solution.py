@@ -170,9 +170,9 @@ class Solution(object):
                 **kwargs
             )
 
-        vertices += np.array([self.grid.extent[0],
-                              self.grid.extent[2],
-                              self.grid.extent[4]]).reshape(1, 3)
+        vertices += np.array([self.grid.regular_grid.extent[0],
+                              self.grid.regular_grid.extent[2],
+                              self.grid.regular_grid.extent[4]]).reshape(1, 3)
 
         return [vertices, simplices, normals, values]
 
