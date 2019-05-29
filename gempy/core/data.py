@@ -11,12 +11,12 @@ try:
 except ModuleNotFoundError:
     VTK_IMPORT = False
 
-pn.options.mode.chained_assignment = None
-
 # This is for sphenix to find the packages
 from gempy.core.grid_modules import grid_types
 from gempy.core.checkers import check_for_nans
-from gempy.utils.meta import _setdoc
+from gempy.utils.meta import _setdoc, _setdoc_pro
+
+pn.options.mode.chained_assignment = None
 
 
 class MetaData(object):
@@ -43,36 +43,41 @@ class MetaData(object):
         self.project_name = project_name
 
 
+@_setdoc_pro([grid_types.RegularGrid.__doc__, grid_types.CustomGrid.__doc__])
 class Grid(object):
-    """
-    Class to generate grids. This class is used to create points where to
+    """ Class to generate grids.
+    This class is used to create points where to
     evaluate the geological model. This class serves a container which transmit the XYZ coordinates to the
     interpolator. There are several type of grids objects will feed into the Grid class
 
     Args:
-         **kwargs: See bellow
+         **kwargs: See below
 
     Keyword Args:
-         regular (:class:`grid_types.RegularGrid`): this does things
-
-         custom (:func:`grid_types.RegularGrid`)
-
-    Yields:
-        foo
+         regular (:class:`gempy.core.grid_modules.grid_types.RegularGrid`): [s0]
+         custom (:class:`gempy.core.grid_modules.grid_types.CustomGrid`): [s1]
+         topography (:class:`gempy.core.grid_modules.grid_types.Topography`): [s2]
+         section TODO @ Elisa
+         gravity (:class:`gempy.core.grid_modules.grid_types.Gravity`):
 
     Attributes:
-       grid_type (str): type of premade grids provide by GemPy
-       resolution (list[int]): [x_min, x_max, y_min, y_max, z_min, z_max]
-       extent (list[float]):  [nx, ny, nz]
-       values (np.ndarray): coordinates where the model is going to be evaluated
-       values_r (np.ndarray): rescaled coordinates where the model is going to be evaluated
-
+        values (np.ndarray): coordinates where the model is going to be evaluated. This are the coordinates
+         concatenation of all active grids.
+        values_r (np.ndarray): rescaled coordinates where the model is going to be evaluated
+        length (np.ndarray): array which contain the slicing index for each grid type in order. The first element will
+         be 0, the second the length of the regular grid; the third custom and so on. This can be used to slice the
+         solutions correspondent to each of the grids
+        grid_types(np.ndarray[str]): names of the current grids of GemPy
+        active_grids(np.ndarray[bool]): boolean array which control which type of grid is going to be computed and
+         hence on the property `values`.
+        regular_grid (:class:`gempy.core.grid_modules.grid_types.RegularGrid`)
+        custom_grid (:class:`gempy.core.grid_modules.grid_types.CustomGrid`)
+        topography (:class:`gempy.core.grid_modules.grid_types.Topography`)
+        section TODO @ Elisa
+        gravity_grid (:class:`gempy.core.grid_modules.grid_types.Gravity`)
     """
     def __init__(self, **kwargs):
 
-        extent = kwargs.get('extent', [0, 1000, 0, 1000, -1000, 0])
-
-        self.extent = np.atleast_1d(extent)
         self.values = np.empty((0, 3))
         self.values_r = np.empty((0, 3))
         self.length = np.empty(0)
@@ -103,19 +108,20 @@ class Grid(object):
         return 'Grid Object. Values: \n' + np.array_repr(self.values)
 
     def set_regular_grid(self, *args, **kwargs):
-
+        """
+        Set a new regular grid and activate it.
+        """
         self.regular_grid = grid_types.RegularGrid(*args, **kwargs)
-        if 'extent' in kwargs:
-            self.extent = np.atleast_1d(kwargs['extent'])
-
         self.set_active('regular')
         return self.regular_grid
 
     def set_custom_grid(self, custom_grid: np.ndarray):
+        """Set a new regular grid and activate it."""
         self.custom_grid = grid_types.CustomGrid(custom_grid)
         self.set_active('custom')
 
     def set_topography(self, source='random', **kwargs):
+        """Set a topography grid and activate it. TODO @Elisa"""
         self.topography = grid_types.Topography(self.regular_grid)
 
         if source == 'random':
@@ -144,6 +150,7 @@ class Grid(object):
 
 
     def set_gravity_grid(self):
+        """Initialize gravity grid. Deactivate the rest of the grids"""
         self.gravity_grid = grid_types.GravityGrid()
         self.active_grids = np.zeros(5, dtype=bool)
         self.set_active('gravity')
@@ -154,30 +161,45 @@ class Grid(object):
         return self.active_grids
 
     def set_active(self, grid_name: Union[str, np.ndarray]):
+        """
+        Set active a given or several grids
+        Args:
+            grid_name (str, list):
+
+        """
         where = self.grid_types == grid_name
         self.active_grids[where] = True
         self.update_grid_values()
+        return self.active_grids
 
     def set_inactive(self, grid_name: str):
         where = self.grid_types == grid_name
         self.active_grids[where] = False
         self.update_grid_values()
+        return self.active_grids
 
     def update_grid_values(self):
+        """
+        Copy XYZ coordinates from each specific grid to Grid.values for those which are active.
+        Returns:
+            values
+
+        """
         self.length = np.empty(0)
         self.values = np.empty((0, 3))
         lengths = [0]
         try:
             for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.sections, self.gravity_grid]):
                 if self.active_grids[e]:
-                    self.values = np.vstack((self.values, grid_types.values))
-                    lengths.append(grid_types.values.shape[0])
+                    self.values = np.vstack((self.values, grid_types_.values))
+                    lengths.append(grid_types_.values.shape[0])
                 else:
                     lengths.append(0)
         except AttributeError:
             raise AttributeError('Grid type does not exist yet. Set the grid before activating it.')
 
         self.length = np.array(lengths).cumsum()
+        return self.values
 
     def get_grid_args(self, grid_name: str):
         assert type(grid_name) is str, 'Only one grid type can be retrieved'
@@ -1866,7 +1888,7 @@ class RescaledData(object):
 
     @staticmethod
     def rescale_grid(grid, rescaling_factor, centers: pn.DataFrame):
-        new_grid_extent = (grid.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
+        new_grid_extent = (grid.regular_grid.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
         new_grid_values = (grid.values - centers) / rescaling_factor + 0.5001
         return new_grid_extent, new_grid_values
 
@@ -2087,7 +2109,7 @@ class KrigingParameters(object):
 
         """
         if extent is None:
-            extent = self.grid.extent
+            extent = self.grid.regular_grid.extent
         try:
             range_var = np.sqrt(
                 (extent[0] - extent[1]) ** 2 +
@@ -2141,6 +2163,9 @@ class KrigingParameters(object):
 
 
 class AdditionalData(object):
+    """
+    This is testing
+    """
     def __init__(self, surface_points: SurfacePoints, orientations: Orientations, grid: Grid,
                  faults: Faults, surfaces: Surfaces, rescaling: RescaledData):
 

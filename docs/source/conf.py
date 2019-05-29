@@ -25,6 +25,7 @@ sys.path.insert(0, os.path.abspath('../..'))
 sys.path.insert(0, os.path.abspath('../../gempy/grid_modules/'))
 sys.path.insert(0, os.path.abspath('../../gempy/core/'))
 sys.path.insert(0, os.path.abspath('../../gempy/core/theano/'))
+sys.path.insert(0, os.path.abspath('../../gempy/core/grid_modules/'))
 sys.path.insert(0, os.path.abspath('../../gempy/assets/'))
 sys.path.insert(0, os.path.abspath('../../gempy/bayesian/'))
 sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
@@ -55,6 +56,7 @@ extensions = [
     'matplotlib.sphinxext.mathmpl',
     'matplotlib.sphinxext.plot_directive',
     'sphinx.ext.autodoc',
+    'sphinx.ext.autosummary',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
     'sphinx.ext.todo',
@@ -71,6 +73,9 @@ napoleon_google_docstring = True
 
 nbsphinx_execute = 'never'
 nbsphinx_allow_errors = True
+
+autodoc_default_flags = ['members']
+autosummary_generate = True
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -137,7 +142,7 @@ html_theme_options = {
                         'logo_name' : True,
                         'travis_button': True,
                         'page_width':'1200px',
-                        'fixed_sidebar': False,
+                        'fixed_sidebar': True,
                         }
 
 

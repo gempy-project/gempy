@@ -2,6 +2,7 @@ import numpy as np
 from typing import Union
 import warnings
 from gempy.utils.meta import _setdoc
+from gempy.core.data import AdditionalData
 
 
 class Solution(object):
@@ -20,14 +21,18 @@ class Solution(object):
             4) Gradients of scalar field y
             5) Gradients of scalar field z
 
-    Attributes:
-        additional_data (AdditionalData):
+     Attributes:
+        additional_data (:py:class:`gempy.core.data.AdditionalData`): Is it sphinx updating
+
         surfaces (Surfaces)
         grid (Grid)
+
         scalar_field_at_surface_points (np.ndarray): Array containing the values of the scalar field at each interface. Axis
         0 is each series and axis 1 contain each surface in order
-         lith_block (np.ndndarray): Array with the id of each layer evaluated in each point of
+
+         lith_block (:obj:`np.ndndarray`): Array with the id of each layer evaluated in each point of
          `attribute:GridClass.values`
+
         fault_block (np.ndarray): Array with the id of each fault block evaluated in each point of
          `attribute:GridClass.values`
         scalar_field_lith(np.ndarray): Array with the scalar field of each layer evaluated in each point of
@@ -46,7 +51,7 @@ class Solution(object):
         values (np.ndarray): values returned by `function: gempy.compute_model` function
     """
 
-    def __init__(self, additional_data = None, grid = None,
+    def __init__(self, additional_data: AdditionalData = None, grid = None,
                  surface_points = None, series=None, surfaces=None):
 
         self.additional_data = additional_data
@@ -167,9 +172,9 @@ class Solution(object):
                 **kwargs
             )
 
-        vertices += np.array([self.grid.extent[0],
-                              self.grid.extent[2],
-                              self.grid.extent[4]]).reshape(1, 3)
+        vertices += np.array([self.grid.regular_grid.extent[0],
+                              self.grid.regular_grid.extent[2],
+                              self.grid.regular_grid.extent[4]]).reshape(1, 3)
 
         return [vertices, simplices, normals, values]
 
