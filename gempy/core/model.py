@@ -325,8 +325,7 @@ class DataMutation(object):
                 self.surfaces.df['series'].cat.categories)]
             self.series.delete_series(unused_cat)
 
-        self.surfaces.update_sequential_pile()
-        self.series.update_order_series()
+        self.series.reset_order_series()
 
         self.update_from_surfaces()
         self.update_from_series()

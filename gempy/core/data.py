@@ -181,6 +181,7 @@ class Grid(object):
     def update_grid_values(self):
         """
         Copy XYZ coordinates from each specific grid to Grid.values for those which are active.
+
         Returns:
             values
 
@@ -219,189 +220,21 @@ class Grid(object):
         where = np.where(self.sections.names == section_name)[0][0]
         return l0 + self.sections.length[where], l0 + self.sections.length[where+1]
 
-class Series(object):
-    """
-    Series is a class that contains the relation between series/df and each individual surface/layer. This can be
-    illustrated in the sequential pile.
-
-    Args:
-        faults: (dict or :class:`pn.core.frame.DataFrames`): with the name of the serie as key and the
-         name of the surfaces as values.
-        series_order(Optional[list]): order of the series by default takes the dictionary keys which until python 3.6 are
-            random. This is important to set the erosion relations between the different series
-
-    Attributes:
-        categories_df (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and the surfaces contained
-            on them
-        sequential_pile?
-
-    """
-
-    def __init__(self, faults, series_order=None, ):
-
-        self.faults = faults
-
-        if series_order is None:
-            series_order = ['Default series']
-
-        self.df = pn.DataFrame(np.array([[1, np.nan]]), index=pn.CategoricalIndex(series_order, ordered=False),
-                               columns=['order_series', 'BottomRelation'])
-
-        self.df['order_series'] = self.df['order_series'].astype(int)
-        self.df['BottomRelation'] = pn.Categorical(['Erosion'], categories=['Erosion', 'Onlap', 'Fault'])
-
-    def __repr__(self):
-        return self.df.to_string()
-
-    def _repr_html_(self):
-        return self.df.to_html()
-
-    def update_order_series(self):
-        """
-        Index of df is categorical and order, but we need to numerate that order to map it later on to the Data dfs
-        """
-        self.df.at[:, 'order_series'] = pn.RangeIndex(1, self.df.shape[0] + 1)
-
-    def set_series_index(self, series_order: Union[pn.DataFrame, list, np.ndarray], update_order_series=True):
-        """
-        Rewrite the index of the series df
-        Args:
-            series_order:
-            update_order_series:
-
-        Returns:
-
-        """
-        if isinstance(series_order, SurfacePoints):
-            try:
-                list_of_series = series_order.df['series'].unique()
-            except KeyError:
-                raise KeyError('Interface does not have series attribute')
-        elif type(series_order) is list or type(series_order) is np.ndarray:
-            list_of_series = np.atleast_1d(series_order)
-
-        else:
-            raise AttributeError('series_order is not neither list or SurfacePoints object.')
-
-        series_idx = list_of_series
-
-        # Categoriacal index does not have inplace
-        # This update the categories
-        self.df.index = self.df.index.set_categories(series_idx, rename=True)
-        self.faults.df.index = self.faults.df.index.set_categories(series_idx, rename=True)
-        self.faults.faults_relations_df.index = self.faults.faults_relations_df.index.set_categories(series_idx, rename=True)
-        self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.set_categories(series_idx, rename=True)
-
-        # But we need to update the values too
-        # TODO: isnt this the behaviour we get fif we do not do the rename=True?
-        for c in series_order:
-            self.df.loc[c, 'BottomRelation'] = 'Erosion'
-            self.faults.df.loc[c] = [False, False]
-            self.faults.faults_relations_df.loc[c, c] = False
-
-        self.faults.faults_relations_df.fillna(False, inplace=True)
-
-        if update_order_series is True:
-            self.update_order_series()
-
-    def set_bottom_relation(self, series: Union[str, list], bottom_relation: Union[str, list]):
-        self.df.loc[series, 'BottomRelation'] = bottom_relation
-
-        if self.faults.df.loc[series, 'isFault'] is True:
-            self.faults.set_is_fault(series, toggle=True)
-
-        elif bottom_relation == 'Fault':
-            self.faults.df.loc[series, 'isFault'] = True
-
-    def add_series(self, series_list: Union[str, list], update_order_series=True):
-        series_list = np.atleast_1d(series_list)
-
-        # Remove from the list categories that already exist
-        series_list = series_list[~np.in1d(series_list, self.df.index.categories)]
-
-        idx = self.df.index.add_categories(series_list)
-        self.df.index = idx
-        self.update_faults_index()
-
-        for c in series_list:
-            self.df.loc[c, 'BottomRelation'] = 'Erosion'
-            self.faults.df.loc[c] = [False, False]
-            self.faults.faults_relations_df.loc[c, c] = False
-
-        self.faults.faults_relations_df.fillna(False, inplace=True)
-
-        if update_order_series is True:
-            self.update_order_series()
-
-    def delete_series(self, indices, update_order_series=True):
-        self.df.drop(indices, inplace=True)
-        self.faults.df.drop(indices, inplace=True)
-        self.faults.faults_relations_df.drop(indices, axis=0, inplace=True)
-        self.faults.faults_relations_df.drop(indices, axis=1, inplace=True)
-
-        idx = self.df.index.remove_unused_categories()
-        self.df.index = idx
-        self.update_faults_index()
-
-        if update_order_series is True:
-            self.update_order_series()
-
-    @_setdoc(pn.CategoricalIndex.rename_categories.__doc__)
-    def rename_series(self, new_categories:Union[dict, list]):
-        idx = self.df.index.rename_categories(new_categories)
-        self.df.index = idx
-        self.update_faults_index()
-
-    @_setdoc([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
-    def reorder_series(self, new_categories: Union[list, np.ndarray]):
-        idx = self.df.index.reorder_categories(new_categories).sort_values()
-        self.df.index = idx
-        self.update_faults_index()
-
-    def modify_order_series(self, new_value: int, idx: str):
-
-        group = self.df['order_series']
-        assert np.isin(new_value, group), 'new_value must exist already in the order_surfaces group.'
-        old_value = group[idx]
-        self.df['order_series'] = group.replace([new_value, old_value], [old_value, new_value])
-        self.sort_series()
-        self.update_faults_index()
-
-        self.faults.sort_faults()
-        return self
-
-    def sort_series(self):
-        self.df.sort_values(by='order_series', inplace=True)
-        self.df.index = self.df.index.reorder_categories(self.df.index.get_values())
-
-    def update_faults_index(self):
-        idx = self.df.index
-        self.faults.df.index = idx
-        self.faults.faults_relations_df.index = idx
-        self.faults.faults_relations_df.columns = idx
-
-        #  This is a hack for qgrid
-        #  We need to add the qgrid special columns to categories
-        self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.add_categories(
-            ['index', 'qgrid_unfiltered_index'])
-
-
 class Faults(object):
     """
     Class that encapsulate faulting related content. Mainly, which surfaces/surfaces are faults. The fault network
-    ---i.e. which faults offset other faults---and fault types---finite vs infinite
-        Args:
-            series (Series): Series object
-            series_fault (list): List with the name of the series that are faults
-            rel_matrix (numpy.array): 2D Boolean array with the logic. Rows affect (offset) columns
+    ---i.e. which faults offset other faults---and fault types---finite vs infinite.
 
-        Attributes:
-           series (Series): Series object
-           df (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and if they are faults or
-            not (otherwise they are lithologies) and in case of being fault if is finite
-           faults_relations_df (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the offsetting relations
-            between each fault and the rest of the series (either other faults or lithologies)
-           n_faults (int): Number of faults in the object
+    Args:
+        series_fault(str, list[str]): Name of the series which are faults
+        rel_matrix (numpy.array[bool]): 2D Boolean array with boolean logic. Rows affect (offset) columns
+
+    Attributes:
+       df (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series as index and if they are faults
+        or not (otherwise they are lithologies) and in case of being fault if is finite
+       faults_relations_df (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the offsetting relations
+        between each fault and the rest of the series (either other faults or lithologies)
+       n_faults (int): Number of faults in the object
     """
 
     def __init__(self, series_fault=None, rel_matrix=None):
@@ -422,18 +255,18 @@ class Faults(object):
     def _repr_html_(self):
         return self.df.to_html()
 
-    def sort_faults(self):
-        self.df.sort_index(inplace=True)
-        self.faults_relations_df.sort_index(inplace=True)
-        self.faults_relations_df.sort_index(axis=1, inplace=True)
+    # def sort_faults(self):
+    #     self.df.sort_index(inplace=True)
+    #     self.faults_relations_df.sort_index(inplace=True)
+    #     self.faults_relations_df.sort_index(axis=1, inplace=True)
 
     def set_is_fault(self, series_fault: Union[str, list, np.ndarray] = None, toggle=False):
         """
-        Set a flag to the series that are df.
+        Set a flag to the series that are faults.
 
         Args:
-            series (Series): Series object
-            series_fault(list or SurfacePoints): Name of the series which are df
+            series_fault(str, list[str]): Name of the series which are faults
+            toggle (bool): if True, passing a name which is already True will set it False.
         """
         series_fault = np.atleast_1d(series_fault)
         self.df['isFault'].fillna(False, inplace=True)
@@ -449,6 +282,7 @@ class Faults(object):
             else:
                 self.df.loc[series_fault, 'isFault'] = True
             self.df['isFinite'] = np.bitwise_and(self.df['isFault'], self.df['isFinite'])
+
             # Update default fault relations
             for a_series in series_fault:
                 col_pos = self.faults_relations_df.columns.get_loc(a_series)
@@ -458,33 +292,34 @@ class Faults(object):
 
         return self.df
 
-    def set_is_finite_fault(self, series_fault=None, toggle=False):
+    def set_is_finite_fault(self, series_finite: Union[str, list, np.ndarray] = None, toggle=False):
         """
         Toggles given series' finite fault property.
 
         Args:
-            series_fault (list): Name of the series
+            series_finite (str, list[str]): Name of the series which are finite
+            toggle (bool): if True, passing a name which is already True will set it False.
         """
-        if series_fault[0] is not None:
+        if series_finite[0] is not None:
             # check if given series is/are in dataframe
-            assert np.isin(series_fault, self.df.index).all(), "series_fault must already exist" \
+            assert np.isin(series_finite, self.df.index).all(), "series_fault must already exist" \
                                                                 "in the series DataFrame."
-            assert self.df.loc[series_fault].isFault.all(), "series_fault contains non-fault series" \
-                                                            ", which can't be set as finite faults."
+            assert self.df.loc[series_finite].isFault.all(), "series_fault contains non-fault series" \
+                                                             ", which can't be set as finite faults."
             # if so, toggle True/False for given series or list of series
             if toggle is True:
-                self.df.loc[series_fault, 'isFinite'] = self.df.loc[series_fault, 'isFinite'] ^ True
+                self.df.loc[series_finite, 'isFinite'] = self.df.loc[series_finite, 'isFinite'] ^ True
             else:
-                self.df.loc[series_fault, 'isFinite'] = self.df.loc[series_fault, 'isFinite']
+                self.df.loc[series_finite, 'isFinite'] = self.df.loc[series_finite, 'isFinite']
 
         return self.df
 
     def set_fault_relation(self, rel_matrix=None):
         """
-        Method to set the df that offset a given sequence and therefore also another fault
+        Method to set the df that offset a given sequence and therefore also another fault.
 
         Args:
-            rel_matrix (numpy.array): 2D Boolean array with the logic. Rows affect (offset) columns
+            rel_matrix (numpy.array[bool]): 2D Boolean array with boolean logic. Rows affect (offset) columns
         """
         # TODO: block the lower triangular matrix of being changed
         if rel_matrix is None:
@@ -515,28 +350,240 @@ class Faults(object):
         return faults_series
 
 
+@_setdoc_pro(Faults.__doc__)
+class Series(object):
+    """ Class that contains the functionality and attributes related to the series. Notice that series does not only
+    refers to stratigraphic series but to any set of surfaces which will be interpolated together (comfortably).
+
+    Args:
+        faults (:class:`Faults`): [s0]
+        series_names(Optional[list]): name of the series. They are also ordered
+
+    Attributes:
+        df (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the series and the surfaces contained
+            on them. TODO describe df columns
+        faults (:class:`Faults`)
+    """
+
+    def __init__(self, faults, series_names:list = None):
+
+        self.faults = faults
+
+        if series_names is None:
+            series_names = ['Default series']
+
+        self.df = pn.DataFrame(np.array([[1, np.nan]]), index=pn.CategoricalIndex(series_names, ordered=False),
+                               columns=['order_series', 'BottomRelation'])
+
+        self.df['order_series'] = self.df['order_series'].astype(int)
+        self.df['BottomRelation'] = pn.Categorical(['Erosion'], categories=['Erosion', 'Onlap', 'Fault'])
+
+    def __repr__(self):
+        return self.df.to_string()
+
+    def _repr_html_(self):
+        return self.df.to_html()
+
+    def reset_order_series(self):
+        """
+        Reset the column order series to monotonic ascendant values
+        """
+        self.df.at[:, 'order_series'] = pn.RangeIndex(1, self.df.shape[0] + 1)
+
+    @_setdoc_pro(reset_order_series.__doc__)
+    def set_series_index(self, series_order: Union[list, np.ndarray], reset_order_series=True):
+        """
+        Rewrite the index of the series df
+
+        Args:
+            series_order (list, :class:`SurfacePoints`): List with names and order of series. If :class:`SurfacePoints`
+            is passed then the unique values will be taken.
+            reset_order_series (bool): if true [s0]
+
+        Returns:
+             :class:`Series`: Series
+        """
+        if isinstance(series_order, SurfacePoints):
+            try:
+                list_of_series = series_order.df['series'].unique()
+            except KeyError:
+                raise KeyError('Interface does not have series attribute')
+        elif type(series_order) is list or type(series_order) is np.ndarray:
+            list_of_series = np.atleast_1d(series_order)
+
+        else:
+            raise AttributeError('series_order is not neither list or SurfacePoints object.')
+
+        series_idx = list_of_series
+
+        # Categorical index does not have inplace
+        # This update the categories
+        self.df.index = self.df.index.set_categories(series_idx, rename=True)
+        self.faults.df.index = self.faults.df.index.set_categories(series_idx, rename=True)
+        self.faults.faults_relations_df.index = self.faults.faults_relations_df.index.set_categories(
+            series_idx, rename=True)
+        self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.set_categories(
+            series_idx, rename=True)
+
+        # But we need to update the values too
+        for c in series_order:
+            self.df.loc[c, 'BottomRelation'] = 'Erosion'
+            self.faults.df.loc[c] = [False, False]
+            self.faults.faults_relations_df.loc[c, c] = False
+
+        self.faults.faults_relations_df.fillna(False, inplace=True)
+
+        if reset_order_series is True:
+            self.reset_order_series()
+        return self
+
+    def set_bottom_relation(self, series_list: Union[str, list], bottom_relation: Union[str, list]):
+        """Set the bottom relation between the series and the one below.
+
+        Args:
+            series_list (str, list): name or list of names of the series to apply the functionality
+            bottom_relation (str{Onlap, Erode, Fault}, list[str]):
+
+        Returns:
+
+        """
+        self.df.loc[series_list, 'BottomRelation'] = bottom_relation
+
+        if self.faults.df.loc[series_list, 'isFault'] is True:
+            self.faults.set_is_fault(series_list, toggle=True)
+
+        elif bottom_relation == 'Fault':
+            self.faults.df.loc[series_list, 'isFault'] = True
+        return self
+
+    @_setdoc_pro(reset_order_series.__doc__)
+    def add_series(self, series_list: Union[str, list], reset_order_series=True):
+        """ Add series to the df
+
+        Args:
+            series_list (str, list): name or list of names of the series to apply the functionality
+            reset_order_series (bool): if true [s0]
+
+        Returns:
+
+        """
+        series_list = np.atleast_1d(series_list)
+
+        # Remove from the list categories that already exist
+        series_list = series_list[~np.in1d(series_list, self.df.index.categories)]
+
+        idx = self.df.index.add_categories(series_list)
+        self.df.index = idx
+        self.update_faults_index()
+
+        for c in series_list:
+            self.df.loc[c, 'BottomRelation'] = 'Erosion'
+            self.faults.df.loc[c] = [False, False]
+            self.faults.faults_relations_df.loc[c, c] = False
+
+        self.faults.faults_relations_df.fillna(False, inplace=True)
+
+        if reset_order_series is True:
+            self.reset_order_series()
+
+    @_setdoc_pro([reset_order_series.__doc__, pn.DataFrame.drop.__doc__])
+    def delete_series(self, indices: Union[str, list], reset_order_series=True):
+        """[s1]
+
+        Args:
+            indices (str, list): name or list of names of the series to apply the functionality
+            reset_order_series (bool): if true [s0]
+
+        Returns:
+
+        """
+        self.df.drop(indices, inplace=True)
+        self.faults.df.drop(indices, inplace=True)
+        self.faults.faults_relations_df.drop(indices, axis=0, inplace=True)
+        self.faults.faults_relations_df.drop(indices, axis=1, inplace=True)
+
+        idx = self.df.index.remove_unused_categories()
+        self.df.index = idx
+        self.update_faults_index()
+
+        if reset_order_series is True:
+            self.reset_order_series()
+
+    @_setdoc_pro(pn.CategoricalIndex.rename_categories.__doc__)
+    def rename_series(self, new_categories: Union[dict, list]):
+        """
+        [s0]
+
+        Args:
+            new_categories (list, dict):
+                * list-like: all items must be unique and the number of items in the new categories must match the
+                  existing number of categories.
+
+                * dict-like: specifies a mapping from old categories to new. Categories not contained in the mapping are
+                  passed through and extra categories in the mapping are ignored.
+        Returns:
+
+        """
+        idx = self.df.index.rename_categories(new_categories)
+        self.df.index = idx
+        self.update_faults_index()
+
+        return self
+
+    @_setdoc_pro([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
+    def reorder_series(self, new_categories: Union[list, np.ndarray]):
+        """[s0] [s1]
+
+        Args:
+            new_categories (list): list with all series names in the desired order.
+
+        Returns:
+
+        """
+        idx = self.df.index.reorder_categories(new_categories).sort_values()
+        self.df.index = idx
+        self.update_faults_index()
+        return self
+
+    def modify_order_series(self, new_value: int, series_name: str):
+        """
+        Replace to the new location the old series
+        Args:
+            new_value (int): New location
+            series_name (str): name of the series to be moved
+
+        Returns:
+
+        """
+        group = self.df['order_series']
+        assert np.isin(new_value, group), 'new_value must exist already in the order_surfaces group.'
+        old_value = group[series_name]
+        self.df['order_series'] = group.replace([new_value, old_value], [old_value, new_value])
+        self.sort_series()
+        self.update_faults_index()
+
+        return self
+
+    def sort_series(self):
+        self.df.sort_values(by='order_series', inplace=True)
+        self.df.index = self.df.index.reorder_categories(self.df.index.get_values())
+
+    def update_faults_index(self):
+        idx = self.df.index
+        self.faults.df.index = idx
+        self.faults.faults_relations_df.index = idx
+        self.faults.faults_relations_df.columns = idx
+
+        #  This is a hack for qgrid
+        #  We need to add the qgrid special columns to categories
+        self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.add_categories(
+            ['index', 'qgrid_unfiltered_index'])
+
+
 class Colors:
+    # TODO @elisa
     def __init__(self, surfaces):
         self.surfaces = surfaces
-
-    def generate_colordict_DEP(self, out = False):
-        '''generate colordict that assigns black to faults and random colors to surfaces'''
-        gp_defcols = [
-            ['#325916', '#5DA629', '#78CB68', '#84C47A', '#129450'],
-            ['#F2930C', '#F24C0C', '#E00000', '#CF522A', '#990902'],
-            ['#26BEFF', '#227dac', '#443988', '#2A186C', '#0F5B90']]
-
-        for i, series in enumerate(self.surfaces.df['series'].unique()):
-            form_in_series = list(self.surfaces.df.loc[self.surfaces.df['series'] == series, 'surface'])
-            newcols = gp_defcols[i][:len(form_in_series)]
-            if i == 0:
-                colordict = dict(zip(form_in_series, newcols))
-            else:
-                colordict.update(zip(form_in_series, newcols))
-        if out:
-            return colordict
-        else:
-            self.colordict = colordict
 
     def generate_colordict(self, out = False):
         """generate colordict that assigns black to faults and random colors to surfaces"""
@@ -566,7 +613,7 @@ class Colors:
         assert ipywidgets_import, 'ipywidgets not imported. Make sure the library is installed.'
 
         if cdict is not None:
-            self._update_colors(cdict)
+            self.update_colors(cdict)
             return self.surfaces
 
         else:
@@ -584,7 +631,7 @@ class Colors:
             for cols in colbox.children:
                 cols.observe(on_change, 'value')
 
-    def _update_colors(self, cdict=None):
+    def update_colors(self, cdict=None):
         ''' Updates the colors in self.colordict and in surfaces_df.
         Args:
             cdict: dict with surface names mapped to hex color codes, e.g. {'layer1':'#6b0318'}
@@ -640,24 +687,26 @@ class Colors:
         return self.surfaces
 
 
+@_setdoc_pro(Series.__doc__)
 class Surfaces(object):
     """
     Class that contains the surfaces of the model and the values of each of them.
 
     Args:
+        surface_names (list or np.ndarray): list containing the names of the surfaces
+        series (:class:`Series`): [s0]
         values_array (np.ndarray): 2D array with the values of each surface
         properties names (list or np.ndarray): list containing the names of each properties
-        surface_names (list or np.ndarray): list contatinig the names of the surfaces
-
 
     Attributes:
-        df (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the surfaces names and the value
-         used for each voxel in the final model and the lithological order
-        surface_names (list[str]): List in order of the surfaces
+        df (:class:`pn.core.frame.DataFrames`): Pandas data frame containing the surfaces names mapped to series and
+            the value used for each voxel in the final model.
+        series (:class:`Series`)
+        colors (:class:`Colors`)
+
     """
 
-    def __init__(self, series: Series, values_array=None, properties_names=None, surface_names=None,
-                 ):
+    def __init__(self, series: Series, surface_names=None, values_array=None, properties_names=None):
 
         self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'color', 'vertices', 'edges', 'id']
         self._columns_vis_drop = ['vertices', 'edges',]
@@ -680,41 +729,51 @@ class Surfaces(object):
         if values_array is not None:
             self.set_surfaces_values(values_array=values_array, properties_names=properties_names)
 
-      #  self.sequential_pile = StratigraphicPile(self.series, self.df)
-
     def __repr__(self):
         return self.df.to_string()
 
     def _repr_html_(self):
-        #return self.df.to_html()
         c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
 
         return self.df[c_].style.applymap(self.background_color, subset=['color']).render()
 
-    def background_color(self, value):
+    def update_id(self, id_list: list = None):
+        """
+        Set id of the layers (1 based)
+        Args:
+            id_list (list):
+
+        Returns:
+             :class:`Surfaces`:
+
+        """
+
+        if id_list is None:
+            id_list = self.df.reset_index().index + 1
+
+        self.df['id'] = id_list
+
+        return self
+
+    @staticmethod
+    def background_color(value):
         if type(value) == str:
             return "background-color: %s" % value
 
-    def update_sequential_pile(self):
-        """
-        Method to update the sequential pile plot
-        Returns:
-
-        """
-        pass #self.sequential_pile = StratigraphicPile(self.series, self.df)
-
 # region set formation names
-    def set_surfaces_names(self, list_names: list, update_df=True):
+    def set_surfaces_names(self, surfaces_list: list, update_df=True):
         """
          Method to set the names of the surfaces in order. This applies in the surface column of the df
+
          Args:
-             list_names (list[str]):
+             surfaces_list (list[str]):  list of names of surfaces. They are ordered.
+             update_df (bool): Update Surfaces.df columns with the default values
 
          Returns:
-             None
+             :class:`Surfaces`:
          """
-        if type(list_names) is list or type(list_names) is np.ndarray:
-            list_names = np.asarray(list_names)
+        if type(surfaces_list) is list or type(surfaces_list) is np.ndarray:
+            surfaces_list = np.asarray(surfaces_list)
 
         else:
             raise AttributeError('list_names must be either array_like type')
@@ -722,29 +781,56 @@ class Surfaces(object):
         # Deleting all columns if they exist
         # TODO check if some of the names are in the df and not deleting them?
         self.df.drop(self.df.index, inplace=True)
-
-        self.df['surface'] = list_names
+        self.df['surface'] = surfaces_list
 
         # Changing the name of the series is the only way to mutate the series object from surfaces
         if update_df is True:
             self.map_series()
             self.update_id()
             self.set_basement()
-            self.update_order_surfaces()
-            self.colors._update_colors()
-            self.update_sequential_pile()
-        return True
+            self.reset_order_surfaces()
+            self.colors.update_colors()
+        return self
 
     def set_default_surface_name(self):
+        """
+        Set the minimum number of surfaces to compute a model i.e. surfaces_names: surface1 and basement
+
+        Returns:
+             :class:`Surfaces`:
+
+        """
         if self.df.shape[0] == 0:
             # TODO DEBUG: I am not sure that surfaces always has at least one entry. Check it
             self.set_surfaces_names(['surface1', 'basement'])
         return self
 
     def set_surfaces_names_from_surface_points(self, surface_points):
+        """
+        Set surfaces names from a :class:`Surface_points` object. This can be useful if the surface points are imported
+        from a table.
+
+        Args:
+            surface_points (:class:`Surface_points`):
+
+        Returns:
+
+        """
         self.set_surfaces_names(surface_points.df['surface'].unique())
+        return self
 
     def add_surface(self, surface_list: Union[str, list], update_df=True):
+        """ Add surface to the df.
+
+        Args:
+            surface_list (str, list): name or list of names of the surfaces to apply the functionality
+            update_df (bool): Update Surfaces.df columns with the default values
+
+        Returns:
+             :class:`Surfaces`:
+
+        """
+
         surface_list = np.atleast_1d(surface_list)
 
         # Remove from the list categories that already exist
@@ -760,13 +846,22 @@ class Surfaces(object):
             self.map_series()
             self.update_id()
             self.set_basement()
-            self.update_order_surfaces()
-            self.colors._update_colors()
-            #self.update_sequential_pile()
-        return True
+            self.reset_order_surfaces()
+            self.colors.update_colors()
+        return self
 
+    @_setdoc_pro([update_id.__doc__, pn.DataFrame.drop.__doc__])
     def delete_surface(self, indices: Union[int, str, list, np.ndarray], update_id=True):
+        """[s1]
 
+        Args:
+            indices (str, list): name or list of names of the series to apply the functionality
+            update_id (bool): if true [s0]
+
+        Returns:
+             :class:`Surfaces`:
+
+        """
         indices = np.atleast_1d(indices)
         if indices.dtype == int:
             self.df.drop(indices, inplace=True)
@@ -776,34 +871,46 @@ class Surfaces(object):
         if update_id is True:
             self.update_id()
             self.set_basement()
-            self.update_order_surfaces()
-           # self.update_sequential_pile()
-        return True
+            self.reset_order_surfaces()
+        return self
 
     @_setdoc(pn.Series.replace.__doc__)
-    def rename_surfaces(self, to_replace:Union[str, list, dict],  **kwargs):
+    def rename_surfaces(self, to_replace: Union[str, list, dict],  **kwargs):
         if np.isin(to_replace, self.df['surface']).any():
             print('Two surfaces cannot have the same name.')
         else:
             self.df['surface'].replace(to_replace,  inplace=True, **kwargs)
-        return True
+        return self
 
-    def update_order_surfaces(self):
+    def reset_order_surfaces(self):
         self.df['order_surfaces'] = self.df.groupby('series').cumcount() + 1
 
-    def modify_order_surfaces(self, new_value: int, idx: int, series: str = None):
+    def modify_order_surfaces(self, new_value: int, idx: int, series_name: str = None):
+        """
+          Replace to the new location the old series
 
-        if series is None:
-            series = self.df.loc[idx, 'series']
+          Args:
+              new_value (int): New location
+              idx (int): Index of the surface to be moved
+              series_name (str): name of the series to be moved
 
-        group = self.df.groupby('series').get_group(series)['order_surfaces']
+          Returns:
+             :class:`Surfaces`:
+
+          """
+        if series_name is None:
+            series_name = self.df.loc[idx, 'series']
+
+        group = self.df.groupby('series').get_group(series_name)['order_surfaces']
         assert np.isin(new_value, group), 'new_value must exist already in the order_surfaces group.'
         old_value = group[idx]
         self.df.loc[group.index, 'order_surfaces'] = group.replace([new_value, old_value], [old_value, new_value])
         self.sort_surfaces()
         self.set_basement()
+        return self
 
     def sort_surfaces(self):
+        """Sort surfaces by series and order_surfaces"""
 
         self.df.sort_values(by=['series', 'order_surfaces'], inplace=True)
         self.update_id()
@@ -811,10 +918,11 @@ class Surfaces(object):
 
     def set_basement(self):
         """
-
+        Set isBasement property to true to the last series of the df.
 
         Returns:
-            True
+             :class:`Surfaces`:
+
         """
 
         self.df['isBasement'] = False
@@ -824,25 +932,34 @@ class Surfaces(object):
 
         # TODO add functionality of passing the basement and calling reorder to push basement surface to the bottom
         #  of the data frame
-
         assert self.df['isBasement'].values.astype(bool).sum() <= 1, 'Only one surface can be basement'
+        return self
+
 # endregion
 
 # set_series
-    def map_series(self, mapping_object: Union[dict, pn.Categorical] = None, idx=None):
+    def map_series(self, mapping_object: Union[dict, pn.DataFrame] = None):
         """
+        Method to map to which series every surface belongs to. This step is necessary to assign differenct tectonics
+        such as unconformities or faults.
+
 
         Args:
-            mapping_object:
+            mapping_object (dict, :class:`pn.DataFrame`):
+                * dict: keys are the series and values the surfaces belonging to that series
+
+                * pn.DataFrame: Dataframe with surfaces as index and a column series with the correspondent series name
+                  of each surface
 
         Returns:
+             :class:`Surfaces`:
 
         """
 
         # Updating surfaces['series'] categories
         self.df['series'].cat.set_categories(self.series.df.index, inplace=True)
 
-        # TODO Fixing this. It is overriding the formtions already mapped
+        # TODO Fixing this. It is overriding the formations already mapped
         if mapping_object is not None:
             # If none is passed and series exist we will take the name of the first series as a default
 
@@ -856,10 +973,11 @@ class Surfaces(object):
                         f.append(form)
 
                 new_series_mapping = pn.DataFrame([pn.Categorical(s, self.series.df.index)],
-                                                   f, columns=['series'])
+                                                  f, columns=['series'])
 
             elif isinstance(mapping_object, pn.Categorical):
                 # This condition is for the case we have surface on the index and in 'series' the category
+                # TODO Test this
                 new_series_mapping = mapping_object
 
             else:
@@ -876,32 +994,30 @@ class Surfaces(object):
         self.df['series'].fillna(self.series.df.index.values[-1], inplace=True)
 
         # Reorganize the pile
-        self.update_order_surfaces()
+        self.reset_order_surfaces()
         self.sort_surfaces()
         self.set_basement()
+        return self
 
 # endregion
 
 # region update_id
-    def update_id(self, id_list: list = None):
-        """
-        Set id of the layers (1 based)
-        Args:
-            df:
 
-        Returns:
-
-        """
-
-        if id_list is None:
-            id_list = self.df.reset_index().index + 1
-
-        self.df['id'] = id_list
-
-        return self.df
 # endregion
 
     def add_surfaces_values(self, values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
+        """
+        Add values to be interpolated for each surfaces
+        Args:
+            values_array (np.ndarray, list): array-like of the same length as number of surfaces. This functionality
+            can be used to assign different geophysical properties to each layer
+            properties_names (list): list of names for each values_array columns. This must be of same size as
+            values_array axis 1. By default properties will take the column name: 'value_X'.
+
+        Returns:
+             :class:`Surfaces`:
+
+        """
         values_array = np.atleast_2d(values_array)
         properties_names = np.asarray(properties_names)
         if properties_names.shape[0] != values_array.shape[0]:
@@ -915,12 +1031,34 @@ class Surfaces(object):
                 raise ValueError('value_array must have the same length in axis 0 as the number of surfaces')
         return self
 
-    def delete_surface_values(self, properties_names):
+    def delete_surface_values(self, properties_names: Union[str, list]):
+        """
+        Delete a property or several properties column.
+        Args:
+            properties_names (str, list[str]): Name of the property to delete
+
+        Returns:
+             :class:`Surfaces`:
+
+        """
+
         properties_names = np.asarray(properties_names)
         self.df.drop(properties_names, axis=1, inplace=True)
         return True
 
     def set_surfaces_values(self, values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
+        """
+        Set values to be interpolated for each surfaces. This method will delete the previous values.
+        Args:
+            values_array (np.ndarray, list): array-like of the same length as number of surfaces. This functionality
+            can be used to assign different geophysical properties to each layer
+            properties_names (list): list of names for each values_array columns. This must be of same size as
+            values_array axis 1. By default properties will take the column name: 'value_X'.
+
+        Returns:
+             :class:`Surfaces`:
+
+        """
         # Check if there are values columns already
         old_prop_names = self.df.columns[~self.df.columns.isin(['surface', 'series', 'order_surfaces',
                                                                 'id', 'isBasement', 'color'])]
@@ -932,18 +1070,38 @@ class Surfaces(object):
         return self
 
     def modify_surface_values(self, idx, properties_names, values):
-        """Method to modify values using loc of pandas"""
+        """Method to modify values using loc of pandas.
+
+        Args:
+            idx (int, list[int]):
+            properties_names (str, list[str]:
+            values (float, np.ndarray):
+
+        Returns:
+             :class:`Surfaces`:
+
+        """
         properties_names = np.atleast_1d(properties_names)
         assert ~np.isin(properties_names, ['surface', 'series', 'order_surfaces', 'id', 'isBasement', 'color']),\
             'only property names can be modified with this method'
 
         self.df.loc[idx, properties_names] = values
+        return self
 
 
+@_setdoc_pro(Surfaces.__doc__)
 class GeometricData(object):
     """
-    Parent class of the objects which contatin the input parameters: surface_points and orientations. This class contain
+    Parent class of the objects which containing the input parameters: surface_points and orientations. This class contain
     the common methods for both types of data sets.
+
+    Args:
+        surfaces (:class:`Surfaces`): [s0]
+
+    Attributes:
+        surfaces (:class:`Surfaces`)
+        df (:class:`pn.DataFrame`): Pandas DataFrame containing all the properties of each individual data point i.e.
+        surface points and orientations
     """
 
     def __init__(self, surfaces: Surfaces):
@@ -958,9 +1116,15 @@ class GeometricData(object):
         return self.df.to_html()
 
     def update_series_category(self):
-        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
+        """Update the series categorical columns with the series categories of the :class:`Surfaces` attribute."""
 
-    def set_dependent_properties(self):
+        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
+        return True
+
+    def init_dependent_properties(self):
+        """Set the defaults values to the columns before gets mapped with the the :class:`Surfaces` attribute. This
+        method will get invoked for example when we add a new point."""
+
         # series
         self.df['series'] = 'Default series'
         self.df['series'] = self.df['series'].astype('category', copy=True)
@@ -971,14 +1135,16 @@ class GeometricData(object):
 
         # order_series
         self.df['order_series'] = 1
+        return self
 
     @staticmethod
+    @_setdoc(pn.read_csv.__doc__)
     def read_data(file_path, **kwargs):
         """
         Read method of pandas for different types of tabular data
         Args:
             file_path(str):
-            **kwargs:  See pandas read_table
+            ** kwargs:  See pandas read_table
 
         Returns:
              pandas.core.frame.DataFrame: Data frame with the raw data
@@ -1087,7 +1253,7 @@ class SurfacePoints(GeometricData):
         self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
 
         # Choose types
-        self.set_dependent_properties()
+        self.init_dependent_properties()
 
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
@@ -1313,7 +1479,7 @@ class Orientations(GeometricData):
         self.df['surface'] = self.df['surface'].astype('category', copy=True)
         self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
 
-        self.set_dependent_properties()
+        self.init_dependent_properties()
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
 
