@@ -140,8 +140,6 @@ def create_surfaces(create_series):
 
     print(surfaces)
 
-    surfaces.update_sequential_pile()
-
     # We can use `set_is_fault` to choose which of our series are faults:
     return surfaces
 

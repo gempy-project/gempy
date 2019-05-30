@@ -961,7 +961,7 @@ class Surfaces(object):
                         f.append(form)
 
                 new_series_mapping = pn.DataFrame([pn.Categorical(s, self.series.df.index)],
-                                                   f, columns=['series'])
+                                                  f, columns=['series'])
 
             elif isinstance(mapping_object, pn.Categorical):
                 # This condition is for the case we have surface on the index and in 'series' the category
@@ -1077,10 +1077,19 @@ class Surfaces(object):
         return self
 
 
+@_setdoc_pro(Surfaces.__doc__)
 class GeometricData(object):
     """
-    Parent class of the objects which contatin the input parameters: surface_points and orientations. This class contain
+    Parent class of the objects which containing the input parameters: surface_points and orientations. This class contain
     the common methods for both types of data sets.
+
+    Args:
+        surfaces (:class:`Surfaces`): [s0]
+
+    Attributes:
+        surfaces (:class:`Surfaces`)
+        df (:class:`pn.DataFrame`): Pandas DataFrame containing all the properties of each individual data point i.e.
+        surface points and orientations
     """
 
     def __init__(self, surfaces: Surfaces):
@@ -1095,9 +1104,15 @@ class GeometricData(object):
         return self.df.to_html()
 
     def update_series_category(self):
-        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
+        """Update the series categorical columns with the series categories of the :class:`Surfaces` attribute."""
 
-    def set_dependent_properties(self):
+        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
+        return True
+
+    def init_dependent_properties(self):
+        """Set the defaults values to the columns before gets mapped with the the :class:`Surfaces` attribute. This
+        method will get invoked for example when we add a new point."""
+
         # series
         self.df['series'] = 'Default series'
         self.df['series'] = self.df['series'].astype('category', copy=True)
@@ -1108,14 +1123,16 @@ class GeometricData(object):
 
         # order_series
         self.df['order_series'] = 1
+        return self
 
     @staticmethod
+    @_setdoc(pn.read_csv.__doc__)
     def read_data(file_path, **kwargs):
         """
         Read method of pandas for different types of tabular data
         Args:
             file_path(str):
-            **kwargs:  See pandas read_table
+            ** kwargs:  See pandas read_table
 
         Returns:
              pandas.core.frame.DataFrame: Data frame with the raw data
@@ -1224,7 +1241,7 @@ class SurfacePoints(GeometricData):
         self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
 
         # Choose types
-        self.set_dependent_properties()
+        self.init_dependent_properties()
 
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
@@ -1450,7 +1467,7 @@ class Orientations(GeometricData):
         self.df['surface'] = self.df['surface'].astype('category', copy=True)
         self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
 
-        self.set_dependent_properties()
+        self.init_dependent_properties()
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
 
