@@ -14,4 +14,15 @@ Data
     Faults
     Series
     Surfaces
+    GeometricData
+    SurfacePoints
     Orientations
+    RescaledData
+
+Model
+-----
+.. currentmodule:: model
+.. autosummary::
+    :toctree: Model
+
+    DataMutation

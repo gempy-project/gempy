@@ -15,7 +15,8 @@ def _setdoc(docstring):
 
             func.__doc__ = docstring
         else:
-            func.__doc__ += '\n' + docstring
+            aux = docstring.replace('\n', '\n        ')
+            func.__doc__ += '\n    Notes:\n        ' + aux
 
         return func
 
@@ -55,7 +56,7 @@ def _setdoc_pro(docstring):
                 if text == -1:
                     text = 'No break found'
                 text = text.replace('\n    ', '')
-                print(loc_0, text)
+               # print(loc_0, text)
                 func.__doc__ = func.__doc__[:loc_0] + ' -(inserted)- ' + text + func.__doc__[loc_0:]
         return func
 

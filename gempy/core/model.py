@@ -1,6 +1,5 @@
 import os
 import sys
-from os import path
 import numpy as np
 import pandas as pn
 from typing import Union
@@ -10,14 +9,32 @@ from gempy.core.data import AdditionalData, Faults, Grid, MetaData, Orientations
     Surfaces, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
 from gempy.core.interpolator import InterpolatorModel, InterpolatorGravity
-from gempy.utils.meta import _setdoc
+from gempy.utils.meta import _setdoc, _setdoc_pro
 from gempy.plot.decorators import *
 
 pn.options.mode.chained_assignment = None
 
 
+@_setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__, SurfacePoints.__doc__,
+              Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
+              Solution.__doc__])
 class DataMutation(object):
-    """Is just a problem with writing something?"""
+    """This class handles all the mutation of an object belonging to model and the update of every single object depend
+     on that.
+
+     Attributes:
+        grid (:class:`Grid`): [s0]
+        faults (:class:`Faults`): [s1]
+        series (:class:`Series`): [s2]
+        surfaces (:class:`Surfaces`): [s3]
+        surface_points (:class:`SurfacePoints`): [s4]
+        orientations (:class:`Orientations`): [s5]
+        rescaling (:class:`Rescaling`): [s6]
+        additional_data (:class:`AdditionalData`): [s7]
+        interpolator (:class:`InterpolatorModel`): [s8]
+        solutions (:class:`Solutions`): [s9]
+
+     """
     def __init__(self):
 
         self.grid = Grid()

@@ -268,7 +268,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
         form = form[0]
         print()
         ori_parameters = geo_model.create_orientation_from_surface_points(indices)
-        geo_model.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+        geo_model.add_orientation(x=ori_parameters[0], y=ori_parameters[1], z=ori_parameters[2],
                                   dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                   G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
                                   surface=form)
@@ -278,7 +278,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
             assert form.shape[0] is 1, 'The interface points must belong to the same surface'
             form = form[0]
             ori_parameters = geo_model.create_orientation_from_surface_points(indices)
-            geo_model.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+            geo_model.add_orientation(x=ori_parameters[0], y=ori_parameters[1], z=ori_parameters[2],
                                       dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                       G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
                                       surface=form)
