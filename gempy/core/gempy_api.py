@@ -117,7 +117,7 @@ def load_model(name, path=None, recompile=False):
                                             dtype={'range': 'float64', '$C_o$': 'float64', 'drift equations': object,
                                             'nugget grad': 'float64', 'nugget scalar': 'float64'})
 
-    geo_model.additional_data.kriging_data.str2int_u_grage()
+    geo_model.additional_data.kriging_data.str2int_u_grade()
 
     geo_model.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0,
                                             dtype={'dtype': 'category', 'output': 'category',
