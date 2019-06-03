@@ -2250,22 +2250,29 @@ class RescaledData(object):
                                                                    self.df.loc['values', 'centers'])
 
 
+@_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Surfaces.__doc__, Faults.__doc__])
 class Structure(object):
     """
-    The structure_data class analyse the different lenths of subset in the interface and orientations categories_df to pass them to
-    the theano function.
+    The structure_data class analyse the different lengths of subset in the interface and orientations categories_df
+    to pass them to the theano function.
 
     Attributes:
-
-        len_surfaces_i (list): length of each surface/fault in surface_points
-        len_series_i (list) : length of each series in surface_points
-        len_series_o (list) : length of each series in orientations
-        nfs (list): number of surfaces per series
-        ref_position (list): location of the first point of each surface/fault in interface
-
+        surface_points (:class:`SurfacePoints`): [s0]
+        orientations (:class:`Orientations`): [s1]
+        surfaces (:class:`Surfaces`): [s2]
+        faults (:class:`Faults`): [s3]
+        df (:class:`pn.DataFrame`):
+            * len surfaces surface_points (list): length of each surface/fault in surface_points
+            * len series surface_points (list) : length of each series in surface_points
+            * len series orientations (list) : length of each series in orientations
+            * number surfaces per series (list): number of surfaces per series
+            * ...
     Args:
-        surface_points (SurfacePoints)
-        orientations (Orientations)
+        surface_points (:class:`SurfacePoints`): [s0]
+        orientations (:class:`Orientations`): [s1]
+        surfaces (:class:`Surfaces`): [s2]
+        faults (:class:`Faults`): [s3]
+
     """
 
     def __init__(self, surface_points: SurfacePoints, orientations: Orientations, surfaces: Surfaces, faults: Faults):
@@ -2275,7 +2282,7 @@ class Structure(object):
         self.surfaces = surfaces
         self.faults = faults
 
-        df_ = pn.DataFrame(np.array(['False', 'False', -1, -1, -1, -1, -1, -1, -1],).reshape(1,-1),
+        df_ = pn.DataFrame(np.array(['False', 'False', -1, -1, -1, -1, -1, -1, -1],).reshape(1, -1),
                            index=['values'],
                            columns=['isLith', 'isFault',
                                     'number faults', 'number surfaces', 'number series',
@@ -2284,7 +2291,7 @@ class Structure(object):
                                     'len series orientations'])
 
         self.df = df_.astype({'isLith': bool, 'isFault': bool, 'number faults': int,
-                              'number surfaces': int, 'number series':int})
+                              'number surfaces': int, 'number series': int})
 
         self.update_structure_from_input()
 
@@ -2295,6 +2302,12 @@ class Structure(object):
         return self.df.T.to_html()
 
     def update_structure_from_input(self):
+        """
+        Update all fields dependent on the linked Data objects.
+
+        Returns:
+            bool: True
+        """
         self.set_length_surfaces_i()
         self.set_series_and_length_series_i()
         self.set_length_series_o()
@@ -2302,8 +2315,16 @@ class Structure(object):
         self.set_number_of_faults()
         self.set_number_of_surfaces()
         self.set_is_lith_is_fault()
+        return True
 
     def set_length_surfaces_i(self):
+        """
+        Set the length of each **surface** on `SurfacePoints` i.e. how many data points are for each surface
+
+        Returns:
+            :class:`pn.DataFrame`: df where Structural data is stored
+
+        """
         # ==================
         # Extracting lengths
         # ==================
@@ -2311,36 +2332,74 @@ class Structure(object):
         lssp = self.surface_points.df.groupby('id')['order_series'].count().values
         lssp_nonzero = lssp[np.nonzero(lssp)]
 
-        self.df.at['values', 'len surfaces surface_points'] = lssp_nonzero#self.surface_points.df['id'].value_counts(sort=False).values
+        self.df.at['values', 'len surfaces surface_points'] = lssp_nonzero
 
-        return True
+        return self.df
 
     def set_series_and_length_series_i(self):
+        """
+        Set the length of each **series** on `SurfacePoints` i.e. how many data points are for each series. Also
+        sets the number of series itself.
+
+        Returns:
+            :class:`pn.DataFrame`: df where Structural data is stored
+
+        """
         # Array containing the size of every series. SurfacePoints.
         len_series_i = self.surface_points.df['order_series'].value_counts(sort=False).values
 
         if len_series_i.shape[0] is 0:
             len_series_i = np.insert(len_series_i, 0, 0)
 
-        self.df.at['values','len series surface_points'] = len_series_i
+        self.df.at['values', 'len series surface_points'] = len_series_i
         self.df['number series'] = len(len_series_i)
         return self.df
 
     def set_length_series_o(self):
+        """
+        Set the length of each **series** on `Orientations` i.e. how many orientations are for each series.
+
+        Returns:
+            :class:`pn.DataFrame`: df where Structural data is stored
+
+        """
         # Array containing the size of every series. orientations.
-        self.df.at['values', 'len series orientations'] = self.orientations.df['order_series'].value_counts(sort=False).values
+        self.df.at['values', 'len series orientations'] = self.orientations.df['order_series'].value_counts(
+            sort=False).values
         return self.df
 
     def set_number_of_surfaces_per_series(self):
-        self.df.at['values', 'number surfaces per series'] = self.surface_points.df.groupby('order_series').surface.nunique().values
+        """
+        Set number of surfaces for each series
+
+        Returns:
+            :class:`pn.DataFrame`: df where Structural data is stored
+
+        """
+        self.df.at['values', 'number surfaces per series'] = self.surface_points.df.groupby('order_series').\
+            surface.nunique().values
         return self.df
 
     def set_number_of_faults(self):
+        """
+        Set number of faults series. This method in gempy v2 is simply informative
+
+        Returns:
+            :class:`pn.DataFrame`: df where Structural data is stored
+
+        """
         # Number of faults existing in the surface_points df
-        self.df.at['values', 'number faults'] = self.faults.df['isFault'].sum()#.loc[self.surface_points.df['series'].unique(), 'isFault'].sum()
+        self.df.at['values', 'number faults'] = self.faults.df['isFault'].sum()
         return self.df
 
     def set_number_of_surfaces(self):
+        """
+        Set the number of total surfaces
+
+        Returns:
+            :class:`pn.DataFrame`: df where Structural data is stored
+
+        """
         # Number of surfaces existing in the surface_points df
         self.df.at['values', 'number surfaces'] = self.surface_points.df['surface'].nunique()
 
@@ -2348,24 +2407,33 @@ class Structure(object):
 
     def set_is_lith_is_fault(self):
         """
-         TODO Update string
-        Check if there is lithologies in the data and/or df
+        Check if there is lithologies in the data and/or df. This method in gempy v2 is simply informative
+
         Returns:
-            list(bool)
+            :class:`pn.DataFrame`: df where Structural data is stored
         """
-        self.df['isLith'] = True if self.df.loc['values', 'number series'] >= self.df.loc['values', 'number faults'] else False
+        self.df['isLith'] = True if self.df.loc['values', 'number series'] >= self.df.loc['values', 'number faults']\
+            else False
         self.df['isFault'] = True if self.df.loc['values', 'number faults'] > 0 else False
 
         return self.df
 
 
 class Options(object):
+    """The class options contains the auxiliary user editable flags mainly independent to the model.
+
+     Attributes:
+        df (:class:`pn.DataFrame`): df containing the flags. All fields are pandas categories allowing the user to
+         change among those categories.
+
+     """
     def __init__(self):
         df_ = pn.DataFrame(np.array(['float64', 'geology', 'fast_compile', 'cpu', None]).reshape(1, -1),
                            index=['values'],
                            columns=['dtype', 'output', 'theano_optimizer', 'device', 'verbosity'])
-        self.df = df_.astype({'dtype': 'category', 'output' : 'category',
-                              'theano_optimizer' : 'category', 'device': 'category',
+
+        self.df = df_.astype({'dtype': 'category', 'output': 'category',
+                              'theano_optimizer': 'category', 'device': 'category',
                               'verbosity': object})
 
         self.df['dtype'].cat.set_categories(['float32', 'float64'], inplace=True)
@@ -2380,32 +2448,60 @@ class Options(object):
     def _repr_html_(self):
         return self.df.T.to_html()
 
-    def modify_options(self, property, value):
-        assert np.isin(property, self.df.columns).all(), 'Valid properties are: ' + np.array2string(self.df.columns)
-        self.df.loc['values', property] = value
+    def modify_options(self, attribute, value):
+        """
+        Method to modify a given field
+
+        Args:
+            attribute (str): Name of the field to modify
+            value: new value of the field. It will have to exist in the category in order for pandas to modify it.
+
+        Returns:
+            :class:`pn.DataFrame`: df where options data is stored
+        """
+
+        assert np.isin(attribute, self.df.columns).all(), 'Valid properties are: ' + np.array2string(self.df.columns)
+        self.df.loc['values', attribute] = value
+        return self.df
 
     def default_options(self):
         """
         Set default options.
 
         Returns:
-
+            bool: True
         """
         self.df['dtype'] = 'float64'
         self.df['output'] = 'geology'
         self.df['theano_optimizer'] = 'fast_compile'
         self.df['device'] = 'cpu'
+        return True
 
 
+@_setdoc_pro([Grid.__doc__, Structure.__doc__])
 class KrigingParameters(object):
+    """
+    Class that stores and computes the default values for the kriging parameters used during the interpolation.
+    The default values will be computed from the :class:`Grid` and :class:`Structure` linked objects
+
+    Attributes:
+        grid (:class:`Grid`): [s0]
+        structure (:class:`Structure`): [s1]
+        df (:class:`pn.DataFrame`): df containing the kriging parameters.
+
+    Args:
+        grid (:class:`Grid`): [s0]
+        structure (:class:`Structure`): [s1]
+    """
+
     def __init__(self, grid: Grid, structure: Structure):
         self.structure = structure
         self.grid = grid
 
         df_ = pn.DataFrame(np.array([np.nan, np.nan, 3, 0.01, 1e-6]).reshape(1, -1),
-                               index=['values'],
-                               columns=['range', '$C_o$', 'drift equations',
-                                        'nugget grad', 'nugget scalar'])
+                           index=['values'],
+                           columns=['range', '$C_o$', 'drift equations',
+                                    'nugget grad', 'nugget scalar'])
 
         self.df = df_.astype({'drift equations': object})
         self.set_default_range()
@@ -2418,25 +2514,48 @@ class KrigingParameters(object):
     def _repr_html_(self):
         return self.df.T.to_html()
 
-    def modify_kriging_parameters(self, property:str, value, **kwargs):
+    def modify_kriging_parameters(self, attribute: str, value, **kwargs):
+        """
+        Method to modify a given field
+
+        Args:
+            attribute (str): Name of the field to modify
+            value: new value of the field. It will have to exist in the category in order for pandas to modify it.
+            kwargs:
+                * u_grade_sep (str): If drift equations values are `str`, symbol that separates the values.
+
+        Returns:
+            :class:`pn.DataFrame`: df where options data is stored
+        """
+
         u_grade_sep = kwargs.get('u_grade_sep', ',')
 
-        assert np.isin(property, self.df.columns).all(), 'Valid properties are: ' + np.array2string(self.df.columns)
+        assert np.isin(attribute, self.df.columns).all(), 'Valid properties are: ' + np.array2string(self.df.columns)
 
-        if property == 'drift equations':
+        if attribute == 'drift equations':
             if type(value) is str:
                 value = np.fromstring(value[1:-1], sep=u_grade_sep, dtype=int)
             try:
                 assert value.shape[0] is self.structure.df.loc['values', 'len series surface_points'].shape[0]
-                self.df.at['values', property] = value
+                self.df.at['values', attribute] = value
 
             except AssertionError:
                 print('u_grade length must be the same as the number of series')
 
         else:
-            self.df.loc['values', property] = value
+            self.df.loc['values', attribute] = value
 
-    def str2int_u_grage(self, **kwargs):
+    def str2int_u_grade(self, **kwargs):
+        """
+        Convert u_grade to ints
+
+        Args:
+            **kwargs:
+                * u_grade_sep (str): If drift equations values are `str`, symbol that separates the values.
+
+        Returns:
+
+        """
         u_grade_sep = kwargs.get('u_grade_sep', ',')
         value = self.df.loc['values', 'drift equations']
         if type(value) is str:
@@ -2448,11 +2567,15 @@ class KrigingParameters(object):
         except AssertionError:
             print('u_grade length must be the same as the number of series')
 
+        return self.df
+
     def set_default_range(self, extent=None):
         """
         Set default kriging_data range
+
         Args:
-            extent:
+            extent (Optional[float, np.array]): extent used to compute the default range--i.e. largest diagonal. If None
+             extent of the linked :class:`Grid` will be used.
 
         Returns:
 
@@ -2474,6 +2597,16 @@ class KrigingParameters(object):
         return range_var
 
     def set_default_c_o(self, range_var=None):
+        """
+        Set default covariance at 0.
+
+        Args:
+            range_var (Optional[float, np.array]): range used to compute the default c_0--i.e. largest diagonal. If None
+             the already computed range will be used.
+
+        Returns:
+
+        """
         if range_var is None:
             range_var = self.df['range']
 
@@ -2482,13 +2615,15 @@ class KrigingParameters(object):
 
     def set_u_grade(self, u_grade: list = None):
         """
-             Set default universal grade. Transform polinomial grades to number of equations
-             Args:
-                 **kwargs:
+         Set default universal grade. Transform polynomial grades to number of equations
 
-             Returns:
+         Args:
 
-             """
+             u_grade (list):
+
+         Returns:
+
+         """
         # =========================
         # Choosing Universal drifts
         # =========================
@@ -2501,7 +2636,7 @@ class KrigingParameters(object):
         else:
             u_grade = np.array(u_grade)
 
-        # Transformin grade to number of equations
+        # Transforming grade to number of equations
         n_universal_eq = np.zeros_like(u_grade)
         n_universal_eq[u_grade == 0] = 0
         n_universal_eq[u_grade == 1] = 3
@@ -2511,9 +2646,27 @@ class KrigingParameters(object):
         return self.df['drift equations']
 
 
+@_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Grid.__doc__, Surfaces.__doc__, Faults.__doc__,
+              RescaledData.__doc__, Structure.__doc__, KrigingParameters.__doc__, Options.__doc__])
 class AdditionalData(object):
     """
-    This is testing
+    Container class that encapsulate :class:`Structure`, :class:`KrigingParameters`, :class:`Options` and
+    rescaling parameters
+
+    Args:
+        surface_points (:class:`SurfacePoints`): [s0]
+        orientations (:class:`Orientations`): [s1]
+        grid (:class:`Grid`): [s2]
+        faults (:class:`Faults`): [s4]
+        surfaces (:class:`Surfaces`): [s3]
+        rescaling (:class:`RescaledData`): [s5]
+
+    Attributes:
+        structure_data (:class:`Structure`): [s6]
+        options (:class:`Options`): [s8]
+        kriging_data (:class:`Structure`): [s7]
+        rescaling_data (:class:`RescaledData`):
+
     """
     def __init__(self, surface_points: SurfacePoints, orientations: Orientations, grid: Grid,
                  faults: Faults, surfaces: Surfaces, rescaling: RescaledData):
@@ -2533,11 +2686,20 @@ class AdditionalData(object):
         return concat_.to_html()
 
     def get_additional_data(self):
+        """
+        Concatenate all linked data frames and transpose them for a nice visualization.
+
+        Returns:
+            pn.DataFrame: concatenated and transposed dataframe
+        """
         concat_ = pn.concat([self.structure_data.df, self.options.df, self.kriging_data.df, self.rescaling_data.df],
                             axis=1, keys=['Structure', 'Options', 'Kriging', 'Rescaling'])
         return concat_.T
 
     def update_default_kriging(self):
+        """
+        Update default kriging values.
+        """
         self.kriging_data.set_default_range()
         self.kriging_data.set_default_c_o()
         self.kriging_data.set_u_grade()
@@ -2545,6 +2707,9 @@ class AdditionalData(object):
         self.kriging_data.df['nugget scalar'] = 1e-6
 
     def update_structure(self):
+        """
+        Update fields dependent on input data sucha as structure and universal kriging grade
+        """
         self.structure_data.update_structure_from_input()
         self.kriging_data.set_u_grade()
 

@@ -18,6 +18,10 @@ Data
     SurfacePoints
     Orientations
     RescaledData
+    Structure
+    KrigingParameters
+    Options
+    AdditionalData
 
 Model
 -----
