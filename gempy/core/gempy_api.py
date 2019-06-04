@@ -117,7 +117,7 @@ def load_model(name, path=None, recompile=False):
                                             dtype={'range': 'float64', '$C_o$': 'float64', 'drift equations': object,
                                             'nugget grad': 'float64', 'nugget scalar': 'float64'})
 
-    geo_model.additional_data.kriging_data.str2int_u_grage()
+    geo_model.additional_data.kriging_data.str2int_u_grade()
 
     geo_model.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0,
                                             dtype={'dtype': 'category', 'output': 'category',
@@ -268,7 +268,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
         form = form[0]
         print()
         ori_parameters = geo_model.create_orientation_from_surface_points(indices)
-        geo_model.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+        geo_model.add_orientation(x=ori_parameters[0], y=ori_parameters[1], z=ori_parameters[2],
                                   dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                   G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
                                   surface=form)
@@ -278,7 +278,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
             assert form.shape[0] is 1, 'The interface points must belong to the same surface'
             form = form[0]
             ori_parameters = geo_model.create_orientation_from_surface_points(indices)
-            geo_model.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+            geo_model.add_orientation(x=ori_parameters[0], y=ori_parameters[1], z=ori_parameters[2],
                                       dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                       G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
                                       surface=form)
@@ -577,7 +577,11 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
     else:
         geo_model.set_regular_grid(extent, resolution)
 
-    read_csv(geo_model, **kwargs)
+    if 'path_i' in kwargs or 'path_o' in kwargs:
+        read_csv(geo_model, **kwargs)
+
+    if 'surface_points_df' in kwargs:
+        geo_model.set_surface_points(kwargs['surface_points_df'], **kwargs)
 
     return geo_model
 # endregion

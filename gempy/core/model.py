@@ -1,6 +1,5 @@
 import os
 import sys
-from os import path
 import numpy as np
 import pandas as pn
 from typing import Union
@@ -10,14 +9,32 @@ from gempy.core.data import AdditionalData, Faults, Grid, MetaData, Orientations
     Surfaces, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
 from gempy.core.interpolator import InterpolatorModel, InterpolatorGravity
-from gempy.utils.meta import _setdoc
+from gempy.utils.meta import _setdoc, _setdoc_pro
 from gempy.plot.decorators import *
 
 pn.options.mode.chained_assignment = None
 
 
+@_setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__, SurfacePoints.__doc__,
+              Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
+              Solution.__doc__])
 class DataMutation(object):
-    """Is just a problem with writing something?"""
+    """This class handles all the mutation of an object belonging to model and the update of every single object depend
+     on that.
+
+     Attributes:
+        grid (:class:`Grid`): [s0]
+        faults (:class:`Faults`): [s1]
+        series (:class:`Series`): [s2]
+        surfaces (:class:`Surfaces`): [s3]
+        surface_points (:class:`SurfacePoints`): [s4]
+        orientations (:class:`Orientations`): [s5]
+        rescaling (:class:`Rescaling`): [s6]
+        additional_data (:class:`AdditionalData`): [s7]
+        interpolator (:class:`InterpolatorModel`): [s8]
+        solutions (:class:`Solutions`): [s9]
+
+     """
     def __init__(self):
 
         self.grid = Grid()
@@ -347,6 +364,33 @@ class DataMutation(object):
     def set_surface_points_object(self, surface_points: SurfacePoints, update_model=True):
         raise NotImplementedError
 
+    def set_surface_points(self, table: pn.DataFrame, **kwargs):
+        coord_x_name = kwargs.get('coord_x_name', "X")
+        coord_y_name = kwargs.get('coord_y_name', "Y")
+        coord_z_name = kwargs.get('coord_z_name', "Z")
+        surface_name = kwargs.get('surface_name', "surface")
+        update_surfaces = kwargs.get('update_surfaces', True)
+
+        if update_surfaces is True:
+            self.add_surfaces(table[surface_name].unique())
+
+        c = np.array(self.surface_points._columns_i_1)
+        surface_points_table = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
+        self.surface_points.set_surface_points(surface_points_table[[coord_x_name, coord_y_name, coord_z_name]],
+                                               surface=surface_points_table[surface_name])
+
+        if update_surfaces is True:
+            self.map_data_df(self.surface_points.df)
+
+        if 'add_basement' in kwargs:
+            if kwargs['add_basement'] is True:
+                self.surfaces.add_surface(['basement'])
+                self.map_series_to_surfaces({'Basement': 'basement'}, set_series=True)
+
+        self.rescaling.rescale_data()
+        self.additional_data.update_structure()
+        self.additional_data.update_default_kriging()
+
     @plot_add_surface_points
     def add_surface_points(self, X, Y, Z, surface, idx: Union[int, list, np.ndarray] = None,
                            recompute_rescale_factor=False):
@@ -370,6 +414,13 @@ class DataMutation(object):
         self.surface_points.del_surface_points(indices)
         self.update_structure(update_theano='matrices')
         return self.surface_points
+
+    def delete_surface_points_basement(self):
+        """Delete surface points belonging to the basement layer if any"""
+        basement_name = self.surfaces.df['surface'][self.surfaces.df['isBasement']].values
+        select = (self.surface_points.df['surface'] == basement_name)
+        self.delete_surface_points(self.surface_points.df.index[select])
+        return True
 
     @plot_move_surface_points
     def modify_surface_points(self, indices: Union[int, list], recompute_rescale_factor=False, **kwargs):
@@ -575,7 +626,7 @@ class DataMutation(object):
 
     # endregion
 
-    def map_data_df(self, d:pn.DataFrame):
+    def map_data_df(self, d: pn.DataFrame):
         d['series'] = d['surface'].map(self.surfaces.df.set_index('surface')['series'])
         d['id'] = d['surface'].map(self.surfaces.df.set_index('surface')['id'])
         d['order_series'] = d['series'].map(self.series.df['order_series'])
