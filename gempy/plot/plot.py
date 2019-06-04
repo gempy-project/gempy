@@ -219,7 +219,7 @@ def plot_section(model, cell_number=13, block=None, direction="y", interpolation
         None
     """
     plot = PlotData2D(model)
-    plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
+    plot.fig = plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
                             show_data, show_faults, show_topo,  block_type, ve, **kwargs)
     # TODO saving options
     return plot

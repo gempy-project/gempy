@@ -74,7 +74,8 @@ class vtkVisualization(object):
         ren_list (list): list containing the vtk renderers
     """
 
-    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, real_time=False, bg_color=None, ve=1):
+    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, real_time=False, bg_color=None, ve=1,
+                 **kwargs):
         if VTK_IMPORT is False:
             raise ImportError('vtk is not installed. No vtk capabilities are possible')
 
@@ -96,7 +97,7 @@ class vtkVisualization(object):
         self.surface_name = geo_data.surface_points.df['surface'].unique()
 
         # Extents
-        self.extent = self.geo_model.grid.extent
+        self.extent = self.geo_model.grid.regular_grid.extent
         self.extent[-1] = ve * self.extent[-1]
         self.extent[-2] = ve * self.extent[-2]
         _e = self.extent
@@ -143,6 +144,7 @@ class vtkVisualization(object):
 
             r.AddActor(axe)
             r.ResetCamera()
+        # TODO panel does not deal with text
         self.set_text()
 
     #
@@ -171,10 +173,14 @@ class vtkVisualization(object):
 
         if 'fullscreen' in kwargs:
             self.renwin.FullScreenOn()
+
+        silent = kwargs.get('silent', False)
+
         self.renwin.SetSize(kwargs['size'])
 
-        self.interactor.Initialize()
-        self.interactor.Start()
+        if silent is False:
+            self.interactor.Initialize()
+            self.interactor.Start()
 
     def set_text(self):
         txt = vtk.vtkTextActor()
@@ -1148,9 +1154,9 @@ class vtkVisualization(object):
 
         nx, ny, nz = geo_data.grid.regular_grid.resolution
 
-        lx = geo_data.grid.extent[1] - geo_data.grid.extent[0]
-        ly = geo_data.grid.extent[3] - geo_data.grid.extent[2]
-        lz = geo_data.grid.extent[5] - geo_data.grid.extent[4]
+        lx = geo_data.grid.regular_grid.extent[1] - geo_data.grid.regular_grid.extent[0]
+        ly = geo_data.grid.regular_grid.extent[3] - geo_data.grid.regular_grid.extent[2]
+        lz = geo_data.grid.regular_grid.extent[5] - geo_data.grid.regular_grid.extent[4]
 
         dx, dy, dz = lx / nx, ly / ny, lz / nz
 
@@ -1159,11 +1165,11 @@ class vtkVisualization(object):
         npoints = (nx + 1) * (ny + 1) * (nz + 1)
 
         # Coordinates
-        x = np.arange(geo_data.grid.extent[0], geo_data.grid.extent[1] + 0.1, dx, dtype='float64')
+        x = np.arange(geo_data.grid.regular_grid.extent[0], geo_data.grid.regular_grid.extent[1] + 0.1, dx, dtype='float64')
 
-        y = np.arange(geo_data.grid.extent[2], geo_data.grid.extent[3] + 0.1, dy, dtype='float64')
+        y = np.arange(geo_data.grid.regular_grid.extent[2], geo_data.grid.regular_grid.extent[3] + 0.1, dy, dtype='float64')
 
-        z = np.arange(geo_data.grid.extent[4], geo_data.grid.extent[5] + 0.1, dz, dtype='float64')
+        z = np.arange(geo_data.grid.regular_grid.extent[4], geo_data.grid.regular_grid.extent[5] + 0.1, dz, dtype='float64')
 
         lith = lith_block.reshape((nx, ny, nz))
 
@@ -1395,7 +1401,7 @@ class ipyvolumeVisualization:
         Args:
             geo_model (gempy.core.model.Model):
         """
-        if VTK_IMPORT is False:
+        if IPV_IMPORT is False:
             raise ImportError('ipyvolume package is not installed.')
 
         self.geo_model = geo_model
@@ -1412,7 +1418,6 @@ class ipyvolumeVisualization:
         """Get color code of given gempy surface."""
         f = self.geo_model.surfaces.df.surface==surface
         return self.geo_model.surfaces.df[f].color
-
 
     def plot_surfaces(self):
         """Plot gempy surface model."""
@@ -1433,9 +1438,9 @@ class ipyvolumeVisualization:
             )
             meshes.append(mesh)
 
-        ipv.xlim(self.geo_model.grid.extent[0], self.geo_model.grid.extent[1])
-        ipv.ylim(self.geo_model.grid.extent[2], self.geo_model.grid.extent[3])
-        ipv.zlim(self.geo_model.grid.extent[4], self.geo_model.grid.extent[5])
+        ipv.xlim(self.geo_model.grid.regular_grid.extent[0], self.geo_model.grid.regular_grid.extent[1])
+        ipv.ylim(self.geo_model.grid.regular_grid.extent[2], self.geo_model.grid.regular_grid.extent[3])
+        ipv.zlim(self.geo_model.grid.regular_grid.extent[4], self.geo_model.grid.regular_grid.extent[5])
         ipv.show()
         return ipv
 
@@ -1456,9 +1461,9 @@ class ipyvolumeVisualization:
                     self.geo_model.surfaces.df.surface == surf].color.values
             )
 
-        ipv.xlim(self.geo_model.grid.extent[0], self.geo_model.grid.extent[1])
-        ipv.ylim(self.geo_model.grid.extent[2], self.geo_model.grid.extent[3])
-        ipv.zlim(self.geo_model.grid.extent[4], self.geo_model.grid.extent[5])
+        ipv.xlim(self.geo_model.grid.regular_grid.extent[0], self.geo_model.grid.regular_grid.extent[1])
+        ipv.ylim(self.geo_model.grid.regular_grid.extent[2], self.geo_model.grid.regular_grid.extent[3])
+        ipv.zlim(self.geo_model.grid.regular_grid.extent[4], self.geo_model.grid.regular_grid.extent[5])
         ipv.show()
 
 

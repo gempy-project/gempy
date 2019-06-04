@@ -2712,4 +2712,3 @@ class AdditionalData(object):
         """
         self.structure_data.update_structure_from_input()
         self.kriging_data.set_u_grade()
-

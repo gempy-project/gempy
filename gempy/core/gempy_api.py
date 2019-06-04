@@ -571,7 +571,11 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
     else:
         geo_model.set_regular_grid(extent, resolution)
 
-    read_csv(geo_model, **kwargs)
+    if 'path_i' in kwargs or 'path_o' in kwargs:
+        read_csv(geo_model, **kwargs)
+
+    if 'surface_points_df' in kwargs:
+        geo_model.set_surface_points(kwargs['surface_points_df'], **kwargs)
 
     return geo_model
 # endregion
