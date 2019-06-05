@@ -4,14 +4,16 @@ python:
   - '3.6'
 
 install:
+  - pip install --upgrade setuptools pip
   - pip install cython
   - pip install -r requirements.txt
+  - pip install nbval
   - pip install git+git://github.com/Leguark/scikit-image@master
   - pip install vtk
 
 script:
 
-  - pytest -v notebooks/tutorials/ --nbval-lax --current-env
+  - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='ch1-6'
   - pytest
 
 sudo: required
