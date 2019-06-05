@@ -600,7 +600,7 @@ class InterpolatorModel(Interpolator):
                       x_to_interp_shape), dtype=self.dtype))
 
     def modify_results_matrices_pro(self):
-
+        """Modify all theano shared matrices to the right size according to the structure data."""
         old_len_i = self.len_series_i
         new_len_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
                     self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
@@ -634,7 +634,7 @@ class InterpolatorModel(Interpolator):
         self.modify_results_weights()
 
     def modify_results_weights(self):
-
+    """Modify the theano shared weights vector according to the structure."""
         old_len_w = self.len_series_w
         self._compute_len_series()
         new_len_w = self.len_series_w

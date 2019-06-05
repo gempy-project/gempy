@@ -77,10 +77,15 @@ class DataMutation(object):
 
         return idx
 
+    @_setdoc_pro([AdditionalData.update_structure.__doc__, InterpolatorModel.set_theano_shared_structure.__doc__,
+                  InterpolatorModel.modify_results_matrices_pro.__doc__,
+                  InterpolatorModel.modify_results_weights.__doc__])
     def update_structure(self, update_theano=None):
-        """Update python and theano structure paramteres
+        """Update python and theano structure parameters.
+        [s0] [s1]
+
         Args:
-            update_theano: str['matrices', 'weights']
+            update_theano: str{'matrices', 'weights'}: [s2] [s3]
         """
 
         self.additional_data.update_structure()
@@ -88,6 +93,7 @@ class DataMutation(object):
             self.interpolator.modify_results_matrices_pro()
         elif update_theano == 'weights':
             self.interpolator.modify_results_weights()
+
         self.interpolator.set_theano_shared_structure()
         return self.additional_data.structure_data
     # region Grid
