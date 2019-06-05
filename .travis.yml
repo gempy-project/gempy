@@ -16,7 +16,7 @@ install:
 
 script:
 
-  - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='ch1-6' --ignore-glob='ch1-7'
+  - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='ch1-6*' --ignore-glob='ch1-7*'
   - pytest
 
 sudo: required
