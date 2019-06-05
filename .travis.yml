@@ -9,7 +9,6 @@ install:
   - pip install --upgrade setuptools pip
   - pip install cython
   - pip install -r requirements.txt
-  - conda install gdal
   - pip install qgrid
   - pip install nbval
   - pip install git+git://github.com/Leguark/scikit-image@master
@@ -17,7 +16,7 @@ install:
 
 script:
 
-  - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='ch1-6'
+  - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='ch1-6' --ignore-glob='ch1-7'
   - pytest
 
 sudo: required
