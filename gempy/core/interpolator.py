@@ -480,7 +480,7 @@ class InterpolatorModel(Interpolator):
             self.reset_flow_control_initial_results()
 
     def set_theano_shared_structure(self, reset=False):
-        """Set all theano shared variable dependent on :class:Structure"""
+        """Set all theano shared variable dependent on :class:`Structure`."""
         self.set_theano_shared_loop()
         self.set_theano_shared_relations()
         self.set_theano_shared_structure_surfaces()
