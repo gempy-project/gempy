@@ -634,7 +634,8 @@ class InterpolatorModel(Interpolator):
         self.modify_results_weights()
 
     def modify_results_weights(self):
-    """Modify the theano shared weights vector according to the structure."""
+        """Modify the theano shared weights vector according to the structure.
+        """
         old_len_w = self.len_series_w
         self._compute_len_series()
         new_len_w = self.len_series_w
