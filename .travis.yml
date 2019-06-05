@@ -9,7 +9,8 @@ install:
   - pip install --upgrade setuptools pip
   - pip install cython
   - pip install -r requirements.txt
-  - pip install -r optional-requirements.txt
+  - conda install gdal
+  - pip install qgrid
   - pip install nbval
   - pip install git+git://github.com/Leguark/scikit-image@master
   - pip install vtk
