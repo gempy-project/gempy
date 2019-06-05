@@ -82,10 +82,14 @@ class DataMutation(object):
                   InterpolatorModel.modify_results_weights.__doc__])
     def update_structure(self, update_theano=None):
         """Update python and theano structure parameters.
-        [s0] [s1]
+
+        [s0]
+        [s1]
 
         Args:
-            update_theano: str{'matrices', 'weights'}: [s2] [s3]
+            update_theano: str{'matrices', 'weights'}:
+                * matrices [s2]
+                * weights [s3]
         """
 
         self.additional_data.update_structure()
