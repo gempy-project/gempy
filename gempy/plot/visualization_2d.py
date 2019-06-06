@@ -241,13 +241,16 @@ class PlotData2D(object):
         plt.fill(line[:, 0], line[:, 1], color='k')#, alpha=0.5)
 
 
-    def plot_map(self, solution: Solution, contour_lines=True, show_faults = True):
+    def plot_map(self, solution: Solution, contour_lines=True, show_faults = True, show_data=True):
         # Todo maybe add contour kwargs
         assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
         geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:,:,2].shape)
-        fig, ax = plt.subplots()
+        if show_data:
+            self.plot_data(direction='z')
+        else:
+            fig, ax = plt.subplots()
         plt.imshow(geomap, origin="lower", extent=self.model.grid.topography.extent, cmap=self._cmap, norm=self._norm)
-        if contour_lines == True:
+        if contour_lines==True and show_data==False:
             CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys', linestyles='solid',
                             extent=self.model.grid.topography.extent)
             ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
@@ -259,7 +262,7 @@ class PlotData2D(object):
         plt.xlabel('X')
         plt.ylabel('Y')
 
-    def extract_section_fault_lines(self, section_name=None):
+    def extract_section_fault_lines(self, section_name=None, axes=None):
         # Todo merge this with extract fault lines
         faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
         if section_name == 'topography':
@@ -279,7 +282,17 @@ class PlotData2D(object):
                 plt.contour(block.reshape(shape), 0, levels=level, colors=self._cmap.colors[f_id], linestyles='solid',
                             extent=self.model.grid.topography.extent)
             else:
-                plt.contour(block.reshape(shape).T, 0, levels=level, colors=self._cmap.colors[f_id], linestyles='solid')
+                if axes is not None:
+                    axes.contour(block.reshape(shape).T, 0, levels=level, colors=self._cmap.colors[f_id],
+                                linestyles='solid',
+                                extent=[0, self.model.grid.sections.dist[j],
+                                        self.model.grid.regular_grid.extent[4],
+                                        self.model.grid.regular_grid.extent[5]])
+                else:
+                    plt.contour(block.reshape(shape).T, 0, levels=level, colors=self._cmap.colors[f_id], linestyles='solid',
+                             extent=[0, self.model.grid.sections.dist[j],
+                                     self.model.grid.regular_grid.extent[4],
+                                     self.model.grid.regular_grid.extent[5]])
 
     def extract_fault_lines(self, cell_number=25, direction='y'):
         faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
@@ -297,7 +310,6 @@ class PlotData2D(object):
         if section_names is not None:
             if type(section_names) == list:
                 section_names = np.array(section_names)
-                #, 'you have to pass a list of the desired section names'
         else:
             section_names = self.model.grid.sections.names
         if show_traces:
@@ -310,29 +322,57 @@ class PlotData2D(object):
             j = np.where(self.model.grid.sections.names == section)[0][0]
             l0, l1 = self.model.grid.sections.get_section_args(section)
             if len(section_names) == 1:
+                if show_faults:
+                    self.extract_section_fault_lines(section, axes)
                 axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
                                origin='bottom',
-                               cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j], 0, zdist])
-                axes.set(title=self.model.grid.sections.names[j], xlabel='X/Y', ylabel='Z')
+                               cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
+                                                                         self.model.grid.regular_grid.extent[4],
+                                                                         self.model.grid.regular_grid.extent[5]])
+                labels, axname = self._make_section_xylabels(section, len(axes.get_xticklabels()))
+                axes.set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
+                axes.set_xticklabels(labels)
             else:
+                if show_faults:
+                    self.extract_section_fault_lines(section, axes[i])
                 axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
                                origin='bottom',
-                               cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j], 0, zdist])
-                axes[i].set(title=self.model.grid.sections.names[j], xlabel='X/Y', ylabel='Z')
-            #if show_faults == True:
-
-                # todo set labels correctly
+                               cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
+                                                                         self.model.grid.regular_grid.extent[4],
+                                                                         self.model.grid.regular_grid.extent[5]])
+                labels, axname = self._make_section_xylabels(section, len(axes[i].get_xticklabels()))
+                axes[i].set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
+                axes[i].set_xticklabels(labels)
             #axes[i].set_aspect(self.model.grid.sections.dist[i] / zdist)
         fig.tight_layout()
+
+    def _make_section_xylabels(self, section_name, n=5):
+        j = np.where(self.model.grid.sections.names == section_name)[0][0]
+        step = np.full(n, int(len(self.model.grid.sections.xaxis[j]) / n))
+        step[0] = 0
+        indexes = step.cumsum()
+        if len(np.unique(self.model.grid.sections.xaxis[j])) == 1:
+            labels = self.model.grid.sections.yaxis[j][indexes].astype(int)
+            axname = 'Y'
+        elif len(np.unique(self.model.grid.sections.yaxis[j])) == 1:
+            labels = self.model.grid.sections.xaxis[j][indexes].astype(int)
+            axname = 'X'
+        else:
+            labels = [str(int(self.model.grid.sections.xaxis[j][indexes][i])) + ',\n' +
+                      str(int(self.model.grid.sections.yaxis[j][indexes][i]))
+                      for i in range(len(indexes))]
+            axname = 'X,Y'
+        return labels, axname
 
     def plot_section_traces(self, show_data=True, section_names=None):
         # fig = plt.figure()
         # ax = fig.add_subplot(111)
         if section_names is None:
             section_names = self.model.grid.sections.names
+
         if self.model.solutions.geological_map is not None:
-            self.plot_map(self.model.solutions, contour_lines=False)
-        elif self.model.solutions.lith_block.shape[0] !=0:
+            self.plot_map(self.model.solutions, contour_lines=False, show_data=show_data)
+        elif self.model.solutions.lith_block.shape[0] != 0:
             self.plot_block_section(self.model.solutions, cell_number=self.model.grid.regular_grid.resolution[2] - 1,
                                  direction='z', show_faults=False, show_topo=False, show_data=show_data)
             plt.title('Section traces, z direction')
@@ -349,7 +389,7 @@ class PlotData2D(object):
             plt.xlim(self.model.grid.regular_grid.extent[:2])
             plt.ylim(self.model.grid.regular_grid.extent[2:4])
             # ax.set_aspect(np.diff(geo_model.grid.regular_grid.extent[:2])/np.diff(geo_model.grid.regular_grid.extent[2:4]))
-            plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
 
     def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',

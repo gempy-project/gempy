@@ -92,6 +92,8 @@ class Sections:
         self.get_section_params()
         self.calculate_distance()
         self.values = []
+        self.xaxis = [] # these two are needed for plotting
+        self.yaxis = []
         self.compute_section_coordinates()
 
         self.extent = None
@@ -112,17 +114,21 @@ class Sections:
     def compute_section_coordinates(self):
         #todo can do that without loop with self.coordinates
         for i in range(len(self.names)):
-            self.xaxis = np.linspace(self.points[i][0][0], self.points[i][1][0], self.resolution[i][0], dtype="float64")
-            self.yaxis = np.linspace(self.points[i][0][1], self.points[i][1][1], self.resolution[i][0], dtype="float64")
-            self.zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][1],
+            # todo don't do self
+            xaxis = np.linspace(self.points[i][0][0], self.points[i][1][0], self.resolution[i][0], dtype="float64")
+            yaxis = np.linspace(self.points[i][0][1], self.points[i][1][1], self.resolution[i][0], dtype="float64")
+            zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][1],
                                      dtype="float64")
-            Y, Z = np.meshgrid(self.yaxis, self.zaxis, indexing='ij')
-            X, Z = np.meshgrid(self.xaxis, self.zaxis, indexing='ij')
+            Y, Z = np.meshgrid(yaxis, zaxis, indexing='ij')
+            X, Z = np.meshgrid(xaxis, zaxis, indexing='ij')
             xyz = np.vstack((X.flatten(), Y.flatten(), Z.flatten())).T
             if i == 0:
                 self.values = xyz
             else:
                 self.values = np.vstack((self.values, xyz))
+
+            self.xaxis.append(xaxis)
+            self.yaxis.append(yaxis)
 
     def get_section_args(self, section_name: str):
         where = np.where(self.names == section_name)[0][0]
