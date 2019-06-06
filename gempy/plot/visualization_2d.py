@@ -240,22 +240,9 @@ class PlotData2D(object):
         line = np.append(line, ([ext[1], line[0, -1]], [ext[1], ext[3]], [ext[0], ext[3]], [ext[0], line[0, 1]])).reshape(-1,2)
         plt.fill(line[:, 0], line[:, 1], color='k')#, alpha=0.5)
 
-    def extract_fault_lines(self, cell_number=25, direction='y'):
 
-        faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
-
-        _slice, extent = self._slice2D(cell_number, direction)
-
-        for fault in faults:
-            f_id = int(self.model.series.df.loc[fault, 'order_series']) - 1
-            block = self.model.solutions.scalar_field_matrix[f_id]
-            level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
-                self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
-            plt.contour(block.reshape(self.model.grid.regular_grid.resolution)[_slice].T, 0, extent=extent, levels=level,
-                        colors=self._cmap.colors[f_id], linestyles='solid')
-
-    def plot_map(self, solution: Solution, contour_lines=True):
-        # maybe add contour kwargs
+    def plot_map(self, solution: Solution, contour_lines=True, show_faults = True):
+        # Todo maybe add contour kwargs
         assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
         geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:,:,2].shape)
         fig, ax = plt.subplots()
@@ -266,11 +253,46 @@ class PlotData2D(object):
             ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
             cbar = plt.colorbar(CS)
             cbar.set_label('elevation [m]')
+        if show_faults == True:
+            self.extract_section_fault_lines('topography')
         plt.title("Geological map", fontsize=15)
         plt.xlabel('X')
         plt.ylabel('Y')
 
-    def plot_sections(self, show_traces=True, show_data=True, section_names = None):
+    def extract_section_fault_lines(self, section_name=None):
+        # Todo merge this with extract fault lines
+        faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
+        if section_name == 'topography':
+            shape = self.model.grid.topography.resolution
+            a = self.model.solutions.geological_map_scalfield
+        else:
+            l0, l1 = self.model.grid.sections.get_section_args(section_name)
+            j = np.where(self.model.grid.sections.names == section_name)[0][0]
+            shape = self.model.grid.sections.resolution[j]
+            a = self.model.solutions.sections_scalfield[:, l0:l1]
+        for fault in faults:
+            f_id = int(self.model.series.df.loc[fault, 'order_series']) - 1
+            block = a[f_id]
+            level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
+                self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
+            if section_name == 'topography':
+                plt.contour(block.reshape(shape), 0, levels=level, colors=self._cmap.colors[f_id], linestyles='solid',
+                            extent=self.model.grid.topography.extent)
+            else:
+                plt.contour(block.reshape(shape).T, 0, levels=level, colors=self._cmap.colors[f_id], linestyles='solid')
+
+    def extract_fault_lines(self, cell_number=25, direction='y'):
+        faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
+        _slice, extent = self._slice2D(cell_number, direction)
+        for fault in faults:
+            f_id = int(self.model.series.df.loc[fault, 'order_series']) - 1
+            block = self.model.solutions.scalar_field_matrix[f_id]
+            level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
+                self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
+            plt.contour(block.reshape(self.model.grid.regular_grid.resolution)[_slice].T, 0, extent=extent, levels=level,
+                        colors=self._cmap.colors[f_id], linestyles='solid')
+
+    def plot_sections(self, show_traces=True, show_data=True, section_names = None, show_faults = True):
         assert self.model.solutions.sections is not None, 'no sections for plotting defined'
         if section_names is not None:
             if type(section_names) == list:
@@ -283,7 +305,7 @@ class PlotData2D(object):
         shapes = self.model.grid.sections.resolution
         zdist = self.model.grid.regular_grid.extent[5] - self.model.grid.regular_grid.extent[4]
         fig, axes = plt.subplots(nrows=len(section_names), ncols=1)
-        plt.subplots_adjust(bottom=0.5, top=3)
+        #plt.subplots_adjust(bottom=0.5, top=3)
         for i, section in enumerate(section_names):
             j = np.where(self.model.grid.sections.names == section)[0][0]
             l0, l1 = self.model.grid.sections.get_section_args(section)
@@ -297,9 +319,11 @@ class PlotData2D(object):
                                origin='bottom',
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j], 0, zdist])
                 axes[i].set(title=self.model.grid.sections.names[j], xlabel='X/Y', ylabel='Z')
+            #if show_faults == True:
+
                 # todo set labels correctly
             #axes[i].set_aspect(self.model.grid.sections.dist[i] / zdist)
-        #fig.tight_layout()
+        fig.tight_layout()
 
     def plot_section_traces(self, show_data=True, section_names=None):
         # fig = plt.figure()
@@ -461,30 +485,30 @@ class PlotData2D(object):
         res = geo_model.grid.regular_grid.resolution
         if direction == "y":
             c1, c2 = (0, 2)
-            e1 = geo_model.grid.regular_grid.extent[1] - geo_model.grid.regular_grid.extent[0]
-            e2 = geo_model.grid.regular_grid.extent[5] - geo_model.grid.regular_grid.extent[4]
-            d1 = geo_model.grid.regular_grid.extent[0]
-            d2 = geo_model.grid.regular_grid.extent[4]
+            e1 = geo_model.grid.extent[1] - geo_model.grid.extent[0]
+            e2 = geo_model.grid.extent[5] - geo_model.grid.extent[4]
+            d1 = geo_model.grid.extent[0]
+            d2 = geo_model.grid.extent[4]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = res[0]
             r2 = res[2]
         elif direction == "x":
             c1, c2 = (1, 2)
-            e1 = geo_model.grid.regular_grid.extent[3] - geo_model.grid.regular_grid.extent[2]
-            e2 = geo_model.grid.regular_grid.extent[5] - geo_model.grid.regular_grid.extent[4]
-            d1 = geo_model.grid.regular_grid.extent[2]
-            d2 = geo_model.grid.regular_grid.extent[4]
+            e1 = geo_model.grid.extent[3] - geo_model.grid.extent[2]
+            e2 = geo_model.grid.extent[5] - geo_model.grid.extent[4]
+            d1 = geo_model.grid.extent[2]
+            d2 = geo_model.grid.extent[4]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = res[1]
             r2 = res[2]
         elif direction == "z":
             c1, c2 = (0, 1)
-            e1 = geo_model.grid.regular_grid.extent[1] - geo_model.grid.regular_grid.extent[0]
-            e2 = geo_model.grid.regular_grid.extent[3] - geo_model.grid.regular_grid.extent[2]
-            d1 = geo_model.grid.regular_grid.extent[0]
-            d2 = geo_model.grid.regular_grid.extent[2]
+            e1 = geo_model.grid.extent[1] - geo_model.grid.extent[0]
+            e2 = geo_model.grid.extent[3] - geo_model.grid.extent[2]
+            d1 = geo_model.grid.extent[0]
+            d2 = geo_model.grid.extent[2]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = res[0]

@@ -194,8 +194,8 @@ class Grid(object):
         try:
             for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.sections, self.gravity_grid]):
                 if self.active_grids[e]:
-                    self.values = np.vstack((self.values, grid_types_.values))
-                    lengths.append(grid_types_.values.shape[0])
+                    self.values = np.vstack((self.values, grid_types.values))
+                    lengths.append(grid_types.values.shape[0])
                 else:
                     lengths.append(0)
         except AttributeError:

@@ -82,9 +82,14 @@ class Solution(object):
         self.vertices = []
         self.edges = []
 
+        # Todo merge this in geological_map[0] and [1]
         self.geological_map = None
-        self.custom = None
+        self.geological_map_scalfield = None
+
         self.sections = None
+        self.sections_scalfield = None
+
+        self.custom = None
 
     def __repr__(self):
         return '\nLithology ids \n  %s \n' \

@@ -194,9 +194,9 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     # TODO saving options
     return plot
 
-def plot_map(model, contour_lines=True):
+def plot_map(model, contour_lines=True, show_faults = True):
     plot = PlotData2D(model)
-    plot.plot_map(model.solutions, contour_lines=contour_lines)
+    plot.plot_map(model.solutions, contour_lines=contour_lines, show_faults=show_faults)
 
 
 def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',

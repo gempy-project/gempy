@@ -432,9 +432,11 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
         if model.grid.active_grids[2] is np.True_:
             l0, l1 = model.grid.get_grid_args('topography')
             model.solutions.geological_map = sol[0][:, l0: l1]
+            model.solutions.geological_map_scalfield = sol[3][:, l0: l1]
         if model.grid.active_grids[3] is np.True_:
             l0, l1 = model.grid.get_grid_args('sections')
             model.solutions.sections = sol[0][:, l0: l1]
+            model.solutions.sections_scalfield = sol[3][:, l0: l1]
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions
