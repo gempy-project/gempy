@@ -1,5 +1,6 @@
 FROM continuumio/miniconda3
 RUN conda create -n env python=3.6
+RUN conda install mingw
 RUN git clone https://github.com/cgre-aachen/gempy.git
 WORKDIR gempy
 RUN conda install theano gdal qgrid

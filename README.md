@@ -10,7 +10,7 @@
 [![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)]()
 [![Binder](https://mybinder.org/badge.svg)](https://mybinder.org/v2/gh/cgre-aachen/gempy/master)
 [![DOI](https://zenodo.org/badge/96211155.svg)](https://zenodo.org/badge/latestdoi/96211155)
-
+[![DOCKER](https://img.shields.io/docker/cloud/automated/leguark/gempy.svg)](https://cloud.docker.com/repository/docker/leguark/gempy)
 
 <p align="center"><img src="docs/source/images/model_examples.png" width="800"></p>
 
@@ -206,11 +206,50 @@ use `conda install python=3.6` to downgrade the python version and then using `p
 ### Installation
 
 We provide the latest release version of *GemPy* via the **Conda** and **PyPi** package services. We highly
-recommend using either Conda or PyPi as both will take care of automatically installing all dependencies.
+recommend using either PyPi as it will take care of automatically installing all dependencies.
 
 #### PyPi 
 
 `$ pip install gempy`
+
+
+#### New in GemPy 2.0: Docker image
+
+Finally e also provide precompiled Docker images hosted on Docker Hub with all necessary dependencies to get 
+GemPy up and running (**except vtk**).
+
+ocker is an operating-system-level-visualization software,
+meaning that we can package a tiny operating system with pre-installed
+software into a Docker image. This Docker image can then be shared
+with and run by others, enabling them to use intricate dependencies
+with just a few commands. For this to work the user needs to have a
+working [Docker](https://www.docker.com/) installation.
+
+##### Pull Docker image from DockerHub
+
+The easiest way to get remote-geomod running is by running the pre-compiled Docker image (containing everything you
+need) directly from the cloud service Docker Hub to get a locally running Docker container. Make sure to set your 
+Docker daemon to Linux containers in Docker's context menu.
+
+    docker run -it -p 8899:8899 leguark/gempy
+    
+This will automatically pull the Docker image from Docker Hub and run it, opening a command line shell inside of the
+running Docker container. There you have access to the file system inside of the container. Note that this pre-compiled
+Docker image already contains the GemPy repository. 
+
+Once you are in the docker console if you want to open the tutorials you will need to run:
+
+     jupyter notebook --ip 0.0.0.0 --port 8899 --no-browser --allow-root
+     
+Notice that we are running the notebook on the port  8899 to try to avoid conflicts with jupyter servers running in
+your system. If everything worked fine, the address to the jupyter notebook will be display on the console. It
+has to look something like this (Just be aware of the  brackets):
+
+    To access the notebook, open this file in a browser:
+            file:///root/.local/share/jupyter/runtime/nbserver-286-open.html
+    Or copy and paste one of these URLs:
+        http://(ce2cdcc55bb0 or 127.0.0.1):8899/?token=97d52c1dc321c42083d8c1b4d
+
 
 #### Manual
 
