@@ -3,8 +3,8 @@
 > Open-source, implicit 3D structural geological modeling in Python for uncertainty analysis.
 
 
-[![PyPI](https://img.shields.io/badge/python-3-blue.svg)]()
-[![PyPI](https://img.shields.io/badge/pypi-1.0-blue.svg)]()
+[![PyPI](https://img.shields.io/badge/python-3-blue.svg)](https://www.python.org/downloads/)
+[![PyPI](https://img.shields.io/badge/pypi-1.0-blue.svg)](https://pypi.org/project/gempy/)
 [![license: LGPL v3](https://img.shields.io/badge/license-LGPL%20v3-blue.svg)]()
 [![Documentation Status](https://readthedocs.org/projects/gempy/badge/?version=latest)](http://gempy.readthedocs.io/?badge=latest)
 [![Travis Build](https://travis-ci.org/cgre-aachen/gempy.svg?branch=master)]()
@@ -38,9 +38,9 @@ Check out the documentation either in [gempy.org](https://www.gempy.org/) (bette
 ### GemPy v2.0 beta release
 
 It has been a long journey since the release of GemPy v1.0. What started as a small library to carry out research
-on uncertainty analysis for structural geology has grown to be use in multiple projects around the world. Carried
-by the community enthusiasm in our tool, we commenced a way-longer-than-planned rewritten of the code in order to
-not only be able to fulfil the needs of many of you but also to set the foundations of a package driven by the
+on uncertainty analysis for structural geology has grown to be used in multiple projects around the world. Carried
+by the community enthusiasm, we commenced a way-longer-than-planned rewritten of the code in order to
+not only be able to fulfill the needs of many of you but also to set the foundations of a package driven by the
 community. For this end, all the logic has been splat into multiple modules, classes and containers limiting
 duplicities and exposing a large mutation api at different levels of abstraction. Hope the work has been worth it.
 
@@ -231,7 +231,7 @@ The easiest way to get remote-geomod running is by running the pre-compiled Dock
 need) directly from the cloud service Docker Hub to get a locally running Docker container. Make sure to set your 
 Docker daemon to Linux containers in Docker's context menu.
 
-    docker run -it -p 8899:8899 leguark/gempy
+    $ docker run -it -p 8899:8899 leguark/gempy
     
 This will automatically pull the Docker image from Docker Hub and run it, opening a command line shell inside of the
 running Docker container. There you have access to the file system inside of the container. Note that this pre-compiled
@@ -239,7 +239,7 @@ Docker image already contains the GemPy repository.
 
 Once you are in the docker console if you want to open the tutorials you will need to run:
 
-     jupyter notebook --ip 0.0.0.0 --port 8899 --no-browser --allow-root
+    $ jupyter notebook --ip 0.0.0.0 --port 8899 --no-browser --allow-root
      
 Notice that we are running the notebook on the port  8899 to try to avoid conflicts with jupyter servers running in
 your system. If everything worked fine, the address to the jupyter notebook will be display on the console. It

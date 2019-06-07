@@ -15,9 +15,8 @@ def _setdoc(docstring):
 
             func.__doc__ = docstring
         else:
-            aux = docstring.replace('\n', '\n        ')
-            func.__doc__ += '\n    Notes:\n        ' + aux
-
+            aux = docstring.replace('\n', '\n\n        ')
+            func.__doc__ += '-(inserted)- :\n        ' + aux
         return func
 
     return decor

@@ -592,7 +592,7 @@ class DataMutation(object):
         self.additional_data.update_default_kriging()
 
         if update_interpolator is True:
-            self.interpolator.set_theano_shared_structure(reset=True)
+            self.interpolator.set_theano_shared_structure(reset_ctrl=True)
 
     def update_from_surfaces(self, set_categories_from_series=True, set_categories_from_surfaces=True,
                              map_surface_points=True, map_orientations=True, update_structural_data=True):
@@ -946,7 +946,7 @@ class Model(DataMutation):
 
         # set shared variables
         self.interpolator_gravity.set_theano_shared_tz_kernel()
-        self.interpolator_gravity.set_all_shared_parameters(reset=True)
+        self.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
 
         if compile_theano is True:
             self.interpolator_gravity.compile_th_fn(density_block, pos_density, inplace=inplace)

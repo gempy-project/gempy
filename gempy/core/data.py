@@ -2651,7 +2651,7 @@ class KrigingParameters(object):
 class AdditionalData(object):
     """
     Container class that encapsulate :class:`Structure`, :class:`KrigingParameters`, :class:`Options` and
-    rescaling parameters
+     rescaling parameters
 
     Args:
         surface_points (:class:`SurfacePoints`): [s0]

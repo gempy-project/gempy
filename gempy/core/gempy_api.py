@@ -334,7 +334,7 @@ def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=
     geo_model.surface_points.sort_table()
     geo_model.orientations.sort_table()
     geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True)
-    geo_model.interpolator.set_all_shared_parameters(reset=True)
+    geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
 
     if compile_theano is True:
         geo_model.interpolator.compile_th_fn(inplace=inplace)
@@ -413,7 +413,7 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
 
         # TODO So far I reset all shared parameters to be sure. In the future this should be optimize as interpolator
         model.interpolator_gravity.set_theano_shared_tz_kernel()
-        model.interpolator_gravity.set_all_shared_parameters(reset=True)
+        model.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
         sol = model.interpolator_gravity.theano_function(*i)
 
         set_solutions = False
