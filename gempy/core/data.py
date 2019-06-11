@@ -167,7 +167,7 @@ class Grid(object):
 
     def set_inactive(self, grid_name: str):
         where = self.grid_types == grid_name
-        self.active_grids -= where
+        self.active_grids = self.active_grids ^ where
         self.update_grid_values()
         return self.active_grids
 
@@ -1667,7 +1667,7 @@ class Orientations(GeometricData):
 
         # Check the properties are valid
         assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip',
-                                             'azimuth', 'polarity', 'surface']).all(),\
+                                             'azimuth', 'polarity', 'surface', 'recalculate_orientations']).all(),\
             'Properties must be one or more of the following: \'X\', \'Y\', \'Z\', \'G_x\', \'G_y\', \'G_z\', \'dip,\''\
             '\'azimuth\', \'polarity\', \'surface\''
 

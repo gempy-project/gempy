@@ -184,7 +184,7 @@ def load_model(name, path=None, recompile=False):
 
     # update structure from loaded input
     geo_model.additional_data.structure_data.update_structure_from_input()
-
+    geo_model.rescaling.rescale_data()
     # # load solutions in npy files
     # geo_model.solutions.lith_block = np.load(f'{path}/{name}_lith_block.npy')
     # geo_model.solutions.scalar_field_lith = np.load(f"{path}/{name}_scalar_field_lith.npy")
