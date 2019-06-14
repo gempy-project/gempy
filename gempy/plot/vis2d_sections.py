@@ -19,9 +19,9 @@ Module with classes and methods to visualized structural geology data and potent
 the potential field method.
 Tested on Ubuntu 14
 
-Created on 23/09/2016
+Created on 14/06/2019
 
-@author: Miguel de la Varga, Elisa Heim
+@author: Elisa Heim
 """
 
 import warnings
@@ -49,24 +49,12 @@ plt.style.use(['seaborn-white', 'seaborn-talk'])
 
 
 class PlotData2D(object):
-    """
-    Class to make the different plot related with gempy
-
-    Args:
-        geo_data(gempy.InputData): All values of a DataManagement object
-        block(numpy.array): 3D array containing the lithology block
-        **kwargs: Arbitrary keyword arguments.
-
-    Keyword Args:
-        scalar_field(numpy.ndarray): 3D array containing a individual potential field
-        verbose(int): Level of verbosity during the execution of the functions (up to 5). Default 0
-    """
 
     def __init__(self, model, **kwargs):
 
         self.model = model
 
-        self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color'])) # model.surfaces.colors.colordict
+        self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
         self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors)+0.5)
 
@@ -204,30 +192,82 @@ class PlotData2D(object):
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
         return _a, _b, _c, extent_val, x, y, Gx, Gy
 
-    def _slice2D(self, cell_number, direction):
-        if direction == 'x':
-            _slice = np.s_[cell_number, :, :]
-            extent = self.model.grid.regular_grid.extent[[2, 3, 4, 5]]
-        elif direction == 'y':
-            _slice = np.s_[:, cell_number, :]
-            extent = self.model.grid.regular_grid.extent[[0, 1, 4, 5]]
-        elif direction == 'z':
-            _slice = np.s_[:, :, cell_number]
-            extent = self.model.grid.regular_grid.extent[[1, 2, 3, 4]]
-        else:
-            print('not a direction')
-        return _slice, extent
+    def plot_stereonet(self, litho=None, planes=True, poles=True, single_plots=False,
+                       show_density=False):
+        '''
+        Plot an equal-area projection of the orientations dataframe using mplstereonet.
 
-    def plot_topography(self, cell_number, direction):
-        line = self.model.grid.topography._line_in_section(cell_number=cell_number, direction=direction)
-        if direction == 'x':
-            ext = self.model.grid.regular_grid.extent[[2, 3, 4, 5]]
-        elif direction == 'y':
-            ext = self.model.grid.regular_grid.extent[[0, 1, 4, 5]]
-        # add corners
-        line = np.append(line, ([ext[1], line[0, -1]], [ext[1], ext[3]], [ext[0], ext[3]], [ext[0], line[0, 1]])).reshape(-1,2)
-        plt.fill(line[:, 0], line[:, 1], color='k')#, alpha=0.5)
+        Args:
+            geo_model (gempy.DataManagement.InputData): Input data of the model
+            series_only: To select whether a stereonet is plotted per series or per formation
+            litho: selection of formation or series names, as list. If None, all are plotted
+            planes: If True, azimuth and dip are plotted as great circles
+            poles: If True, pole points (plane normal vectors) of azimuth and dip are plotted
+            single_plots: If True, each formation is plotted in a single stereonet
+            show_density: If True, density contour plot around the pole points is shown
 
+        Returns:
+            None
+        '''
+
+        try:
+            import mplstereonet
+        except ImportError:
+            warnings.warn('mplstereonet package is not installed. No stereographic projection available.')
+
+        from collections import OrderedDict
+        import pandas as pn
+
+        if litho is None:
+            litho = self.model.orientations.df['surface'].unique()
+
+        if single_plots is False:
+            fig, ax = mplstereonet.subplots(figsize=(5, 5))
+            df_sub2 = pn.DataFrame()
+            for i in litho:
+                df_sub2 = df_sub2.append(self.model.orientations.df[self.model.orientations.df['surface'] == i])
+
+        for formation in litho:
+            if single_plots:
+                fig = plt.figure(figsize=(5, 5))
+                ax = fig.add_subplot(111, projection='stereonet')
+                ax.set_title(formation, y=1.1)
+
+            # if series_only:
+            # df_sub = self.model.orientations.df[self.model.orientations.df['series'] == formation]
+            # else:
+            df_sub = self.model.orientations.df[self.model.orientations.df['surface'] == formation]
+
+            if poles:
+                ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=7,
+                        markerfacecolor=self._color_lot[formation],
+                        markeredgewidth=1.1, markeredgecolor='gray', label=formation + ': ' + 'pole point')
+            if planes:
+                ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=self._color_lot[formation],
+                         linewidth=1.5, label=formation + ': ' + 'azimuth/dip')
+            if show_density:
+                if single_plots:
+                    ax.density_contourf(df_sub['azimuth'] - 90, df_sub['dip'],
+                                        measurement='poles', cmap='viridis', alpha=.5)
+                else:
+                    ax.density_contourf(df_sub2['azimuth'] - 90, df_sub2['dip'], measurement='poles', cmap='viridis',
+                                        alpha=.5)
+
+            fig.subplots_adjust(top=0.8)
+            handles, labels = ax.get_legend_handles_labels()
+            by_label = OrderedDict(zip(labels, handles))
+            ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
+            ax.grid(True, color='black', alpha=0.25)
+
+
+class PlotSectionSolution:
+    def __init__(self, model):
+
+        self.model = model
+
+        self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
+        self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
+        self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors)+0.5)
 
     def plot_map(self, solution: Solution, contour_lines=True, show_faults = True, show_data=True):
         # Todo maybe add contour kwargs
@@ -282,16 +322,7 @@ class PlotData2D(object):
                                      self.model.grid.regular_grid.extent[4],
                                      self.model.grid.regular_grid.extent[5]])
 
-    def extract_fault_lines(self, cell_number=25, direction='y'):
-        faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
-        _slice, extent = self._slice2D(cell_number, direction)
-        for fault in faults:
-            f_id = int(self.model.series.df.loc[fault, 'order_series']) - 1
-            block = self.model.solutions.scalar_field_matrix[f_id]
-            level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
-                self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
-            plt.contour(block.reshape(self.model.grid.regular_grid.resolution)[_slice].T, 0, extent=extent, levels=level,
-                        colors=self._cmap.colors[f_id], linestyles='solid')
+
 
     def plot_sections(self, show_traces=True, show_data=True, section_names = None, show_faults = True):
         assert self.model.solutions.sections is not None, 'no sections for plotting defined'
@@ -381,6 +412,17 @@ class PlotData2D(object):
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
 
+
+
+class PlotBlockSolution:
+    def __init__(self, model):
+
+        self.model = model
+
+        self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
+        self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
+        self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors)+0.5)
+
     def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
                            show_data=False, show_faults=False, show_topo = True,  block_type=None, ve=1, **kwargs):
         """
@@ -458,6 +500,42 @@ class PlotData2D(object):
         plt.ylabel(y)
         return plt.gcf()
 
+    def extract_fault_lines(self, cell_number=25, direction='y'):
+        faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
+        _slice, extent = self._slice2D(cell_number, direction)
+        for fault in faults:
+            f_id = int(self.model.series.df.loc[fault, 'order_series']) - 1
+            block = self.model.solutions.scalar_field_matrix[f_id]
+            level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
+                self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
+            plt.contour(block.reshape(self.model.grid.regular_grid.resolution)[_slice].T, 0, extent=extent, levels=level,
+                        colors=self._cmap.colors[f_id], linestyles='solid')
+
+    def _slice2D(self, cell_number, direction):
+        if direction == 'x':
+            _slice = np.s_[cell_number, :, :]
+            extent = self.model.grid.regular_grid.extent[[2, 3, 4, 5]]
+        elif direction == 'y':
+            _slice = np.s_[:, cell_number, :]
+            extent = self.model.grid.regular_grid.extent[[0, 1, 4, 5]]
+        elif direction == 'z':
+            _slice = np.s_[:, :, cell_number]
+            extent = self.model.grid.regular_grid.extent[[1, 2, 3, 4]]
+        else:
+            print('not a direction')
+        return _slice, extent
+
+    def plot_topography(self, cell_number, direction):
+        line = self.model.grid.topography._line_in_section(cell_number=cell_number, direction=direction)
+        if direction == 'x':
+            ext = self.model.grid.regular_grid.extent[[2, 3, 4, 5]]
+        elif direction == 'y':
+            ext = self.model.grid.regular_grid.extent[[0, 1, 4, 5]]
+        # add corners
+        line = np.append(line, ([ext[1], line[0, -1]], [ext[1], ext[3]], [ext[0], ext[3]], [ext[0], line[0, 1]])).reshape(-1,2)
+        plt.fill(line[:, 0], line[:, 1], color='k')#, alpha=0.5)
+
+
     def plot_scalar_field(self, solution, cell_number, series=0, N=20,
                           direction="y", plot_data=True, *args, **kwargs):
         """
@@ -491,16 +569,18 @@ class PlotData2D(object):
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
 
         plt.contour(scalar_field.reshape(
-            self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[_a, _b, _c].T,
+            self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+            self.model.grid.regular_grid.resolution[2])[_a, _b, _c].T,
                     N,
                     extent=extent_val, *args,
                     **kwargs)
 
         plt.contourf(scalar_field.reshape(
-            self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[_a, _b, _c].T,
-                    N,
-                    extent=extent_val, alpha=0.6, *args,
-                    **kwargs)
+            self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+            self.model.grid.regular_grid.resolution[2])[_a, _b, _c].T,
+                     N,
+                     extent=extent_val, alpha=0.6, *args,
+                     **kwargs)
 
         if 'colorbar' in kwargs:
             plt.colorbar()
@@ -574,16 +654,17 @@ class PlotData2D(object):
             a, b = edge
             # plot edges
             plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
-                          np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, **lkw)
+                     np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, **lkw)
 
             for node in G.nodes():
-                plt.plot(centroids[node][c1] * e1 / r1 + d1, centroids[node][c2] * e2 / r2 +d2,
+                plt.plot(centroids[node][c1] * e1 / r1 + d1, centroids[node][c2] * e2 / r2 + d2,
                          marker="o", color="black", markersize=10, alpha=0.75)
                 plt.text(centroids[node][c1] * e1 / r1 + d1,
                          centroids[node][c2] * e2 / r2 + d2, str(node), **tkw)
 
-    def plot_gradient(self, scalar_field, gx, gy, gz, cell_number, quiver_stepsize=5, #maybe call r sth. like "stepsize"?
-                      direction="y", plot_scalar = True, *args, **kwargs): #include plot data?
+    def plot_gradient(self, scalar_field, gx, gy, gz, cell_number, quiver_stepsize=5,
+                      # maybe call r sth. like "stepsize"?
+                      direction="y", plot_scalar=True, *args, **kwargs):  # include plot data?
         """
             Plot the gradient of the scalar field in a given direction.
 
@@ -605,140 +686,62 @@ class PlotData2D(object):
         if direction == "y":
             if plot_scalar:
                 self.plot_scalar_field(scalar_field, cell_number, direction=direction, plot_data=False)
-            U = gx.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize,
-                 cell_number, ::quiver_stepsize].T
-            V = gz.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize,
-                 cell_number, ::quiver_stepsize].T
-            plt.quiver(self.model.grid.values[:, 0].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, cell_number, ::quiver_stepsize].T,
-                   self.model.grid.values[:, 2].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, cell_number, ::quiver_stepsize].T, U, V, pivot="tail",
-                   color='blue', alpha=.6)
+            U = gx.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                           self.model.grid.regular_grid.resolution[2])[::quiver_stepsize,
+                cell_number, ::quiver_stepsize].T
+            V = gz.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                           self.model.grid.regular_grid.resolution[2])[::quiver_stepsize,
+                cell_number, ::quiver_stepsize].T
+            plt.quiver(self.model.grid.values[:, 0].reshape(self.model.grid.regular_grid.resolution[0],
+                                                            self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[
+                       ::quiver_stepsize, cell_number, ::quiver_stepsize].T,
+                       self.model.grid.values[:, 2].reshape(self.model.grid.regular_grid.resolution[0],
+                                                            self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[
+                       ::quiver_stepsize, cell_number, ::quiver_stepsize].T, U, V, pivot="tail",
+                       color='blue', alpha=.6)
         elif direction == "x":
             if plot_scalar:
                 self.plot_scalar_field(scalar_field, cell_number, direction=direction, plot_data=False)
-            U = gy.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize, ::quiver_stepsize].T
-            V = gz.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize, ::quiver_stepsize].T
-            plt.quiver(self.model.grid.values[:, 1].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
-                                                            self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize,  ::quiver_stepsize].T,
-                       self.model.grid.values[:, 2].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
-                                                            self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize,  ::quiver_stepsize].T, U, V,
+            U = gy.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                           self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize,
+                ::quiver_stepsize].T
+            V = gz.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                           self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize,
+                ::quiver_stepsize].T
+            plt.quiver(self.model.grid.values[:, 1].reshape(self.model.grid.regular_grid.resolution[0],
+                                                            self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[cell_number,
+                       ::quiver_stepsize, ::quiver_stepsize].T,
+                       self.model.grid.values[:, 2].reshape(self.model.grid.regular_grid.resolution[0],
+                                                            self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[cell_number,
+                       ::quiver_stepsize, ::quiver_stepsize].T, U, V,
                        pivot="tail",
                        color='blue', alpha=.6)
-        elif direction== "z":
+        elif direction == "z":
             if plot_scalar:
                 self.plot_scalar_field(scalar_field, cell_number, direction=direction, plot_data=False)
-            U = gx.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T
-            V = gy.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T
-            plt.quiver(self.model.grid.values[:, 0].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
-                                                            self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T,
-                       self.model.grid.values[:, 1].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
-                                                            self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T, U, V,
+            U = gx.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                           self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize,
+                cell_number].T
+            V = gy.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                           self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize,
+                cell_number].T
+            plt.quiver(self.model.grid.values[:, 0].reshape(self.model.grid.regular_grid.resolution[0],
+                                                            self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[
+                       ::quiver_stepsize, ::quiver_stepsize, cell_number].T,
+                       self.model.grid.values[:, 1].reshape(self.model.grid.regular_grid.resolution[0],
+                                                            self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[
+                       ::quiver_stepsize, ::quiver_stepsize, cell_number].T, U, V,
                        pivot="tail",
                        color='blue', alpha=.6)
         else:
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
 
-    def plot_stereonet(self, litho=None, planes=True, poles=True, single_plots=False,
-                       show_density=False):
-        '''
-        Plot an equal-area projection of the orientations dataframe using mplstereonet.
-
-        Args:
-            geo_model (gempy.DataManagement.InputData): Input data of the model
-            series_only: To select whether a stereonet is plotted per series or per formation
-            litho: selection of formation or series names, as list. If None, all are plotted
-            planes: If True, azimuth and dip are plotted as great circles
-            poles: If True, pole points (plane normal vectors) of azimuth and dip are plotted
-            single_plots: If True, each formation is plotted in a single stereonet
-            show_density: If True, density contour plot around the pole points is shown
-
-        Returns:
-            None
-        '''
-
-        try:
-            import mplstereonet
-        except ImportError:
-            warnings.warn('mplstereonet package is not installed. No stereographic projection available.')
-
-        from collections import OrderedDict
-        import pandas as pn
-
-        if litho is None:
-            litho = self.model.orientations.df['surface'].unique()
-
-        if single_plots is False:
-            fig, ax = mplstereonet.subplots(figsize=(5, 5))
-            df_sub2 = pn.DataFrame()
-            for i in litho:
-                df_sub2 = df_sub2.append(self.model.orientations.df[self.model.orientations.df['surface'] == i])
-
-        for formation in litho:
-            if single_plots:
-                fig = plt.figure(figsize=(5, 5))
-                ax = fig.add_subplot(111, projection='stereonet')
-                ax.set_title(formation, y=1.1)
-
-            #if series_only:
-                #df_sub = self.model.orientations.df[self.model.orientations.df['series'] == formation]
-            #else:
-            df_sub = self.model.orientations.df[self.model.orientations.df['surface'] == formation]
-
-            if poles:
-                ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=7,
-                        markerfacecolor=self._color_lot[formation],
-                        markeredgewidth=1.1, markeredgecolor='gray', label=formation + ': ' + 'pole point')
-            if planes:
-                ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=self._color_lot[formation],
-                         linewidth=1.5, label=formation + ': ' + 'azimuth/dip')
-            if show_density:
-                if single_plots:
-                    ax.density_contourf(df_sub['azimuth'] - 90, df_sub['dip'],
-                                        measurement='poles', cmap='viridis', alpha=.5)
-                else:
-                    ax.density_contourf(df_sub2['azimuth'] - 90, df_sub2['dip'], measurement='poles', cmap='viridis',
-                                        alpha=.5)
-
-            fig.subplots_adjust(top=0.8)
-            handles, labels = ax.get_legend_handles_labels()
-            by_label = OrderedDict(zip(labels, handles))
-            ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
-            ax.grid(True, color='black', alpha=0.25)
 
 
-    # TODO: Incorporate to the class
-    @staticmethod
-    def annotate_plot(frame, label_col, x, y, **kwargs):
-        """
-        Annotate the plot of a given DataFrame using one of its columns
-
-        Should be called right after a DataFrame or series plot method,
-        before telling matplotlib to show the plot.
-
-        Parameters
-        ----------
-        frame : pandas.DataFrame
-
-        plot_col : str
-            The string identifying the column of frame that was plotted
-
-        label_col : str
-            The string identifying the column of frame to be used as label
-
-        kwargs:
-            Other key-word args that should be passed to plt.annotate
-
-        Returns
-        -------
-        None
-
-        Notes
-        -----
-        After calling this function you should call plt.show() to get the
-        results. This function only adds the annotations, it doesn't show
-        them.
-        """
-        import matplotlib.pyplot as plt  # Make sure we have pyplot as plt
-
-        for label, x, y in zip(frame[label_col], frame[x], frame[y]):
-            plt.annotate(label, xy=(x + 0.2, y + 0.15), **kwargs)
 

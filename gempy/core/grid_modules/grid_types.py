@@ -81,6 +81,7 @@ class RegularGrid:
 
 class Sections:
     def __init__(self, regular_grid, section_dict):
+        #todo tidy up
         self.regular_grid = regular_grid
         self.section_dict = section_dict
         self.names = np.array(list(self.section_dict.keys()))
@@ -97,6 +98,12 @@ class Sections:
         self.compute_section_coordinates()
 
         self.extent = None
+
+    def _repr_html_(self):
+        return pn.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution']).to_html()
+
+    def show(self):
+        pass
 
     def get_section_params(self):
         for i, section in enumerate(self.names):
@@ -413,25 +420,29 @@ class Topography:
         return topoline
 
     def _line_in_section(self, direction='y', cell_number=1):
-        x = self.values_3D_res[:, :, 0]
-        y = self.values_3D_res[:, :, 1]
-        z = self.values_3D_res[:, :, 2]
+        if type(direction) == list:
+            pass
 
-        if direction == 'y':
-            a = x[cell_number, :]
-            b = y[cell_number, :]
-            c = z[cell_number, :]
-            assert len(np.unique(b)) == 1
-            topoline = np.dstack((a, c)).reshape(-1, 2).astype(int)
+        else:
+            x = self.values_3D_res[:, :, 0]
+            y = self.values_3D_res[:, :, 1]
+            z = self.values_3D_res[:, :, 2]
 
-        elif direction == 'x':
-            a = x[:, cell_number]
-            b = y[:, cell_number]
-            c = z[:, cell_number]
-            assert len(np.unique(a)) == 1
-            topoline = np.dstack((b, c)).reshape(-1, 2).astype(int)
+            if direction == 'y':
+                a = x[cell_number, :]
+                b = y[cell_number, :]
+                c = z[cell_number, :]
+                assert len(np.unique(b)) == 1
+                topoline = np.dstack((a, c)).reshape(-1, 2).astype(int)
 
-        elif direction == "z":
-            print('not implemented')
+            elif direction == 'x':
+                a = x[:, cell_number]
+                b = y[:, cell_number]
+                c = z[:, cell_number]
+                assert len(np.unique(a)) == 1
+                topoline = np.dstack((b, c)).reshape(-1, 2).astype(int)
+
+            elif direction == "z":
+                print('not implemented')
 
         return topoline
