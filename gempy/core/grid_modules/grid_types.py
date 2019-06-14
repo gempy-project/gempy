@@ -329,7 +329,7 @@ class Topography:
     def load_from_saved(self, filepath):
         #assert filepath ending is .npy
         assert filepath[-4:] == '.npy', 'The file must end on .npy'
-        topo = np.load(filepath)
+        topo = np.load(filepath, allow_pickle=True)
         self.values_3D = topo[0]
         self.extent = topo[1]
         self.resolution = topo[2]
@@ -383,11 +383,9 @@ class Topography:
         cbar = plt.colorbar(CS2, cax=cax1)
         cbar.set_label('elevation')
 
-
     def save(self, filepath):
         np.save(filepath, np.array([self.values_3D, self.extent, self.resolution]))
         print('saved')
-
 
     def _create_grid_mask(self):
         ind = self._find_indices()
@@ -397,7 +395,7 @@ class Topography:
                 z = ind[x, y]
                 gridz[x, y, z:] = 99999
         mask = (gridz == 99999)
-        return mask#.swapaxes(0,1)# np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
+        return mask.swapaxes(0, 1)# np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
 
     def _find_indices(self):
         zs = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.regular_grid.resolution[2])

@@ -26,3 +26,7 @@ inplace = 'if True, perform operation in-place'
 
 centers = 'XYZ array with the center of the data. This controls how much we shift the input coordinates'
 rescaling_factor = 'Scaling factor by which all the parameters will be rescaled.'
+
+theano_graph_pro = 'GemPy object that contains all graph structure of theano'
+
+ctrl = 'List that controls what parts of the graph for each series have to be recomputed.'

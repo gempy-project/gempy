@@ -237,30 +237,32 @@ class vtkVisualization(object):
         if key is 'q':
             print('closing vtk')
             self.close_window()
-            # create render window, settings
-            self.renwin = vtk.vtkRenderWindow()
-            self.renwin.SetWindowName(self.ren_name)
 
-            # Set 4 renderers. ie 3D, X,Y,Z projections
-            self.ren_list = self.create_ren_list()
-
-            # create interactor and set interactor style, assign render window
-            self.interactor = vtk.vtkRenderWindowInteractor()
-            self.interactor.SetRenderWindow(self.renwin)
-            self.interactor.AddObserver("KeyPressEvent", self.key_callbacks)
-
-            # 3d model camera for the 4 renders
-            self.camera_list = self._create_cameras(self.extent)
-            # Setting the camera and the background color to the renders
-            self.set_camera_backcolor()
-
-            # Creating the axis
-            for e, r in enumerate(self.ren_list):
-                # add axes actor to all renderer
-                axe = self._create_axes(self.camera_list[e])
-
-                r.AddActor(axe)
-                r.ResetCamera()
+            # TODO: Decide if this even matter
+            # # create render window, settings
+            # self.renwin = vtk.vtkRenderWindow()
+            # self.renwin.SetWindowName(self.ren_name)
+            #
+            # # Set 4 renderers. ie 3D, X,Y,Z projections
+            # self.ren_list = self.create_ren_list()
+            #
+            # # create interactor and set interactor style, assign render window
+            # self.interactor = vtk.vtkRenderWindowInteractor()
+            # self.interactor.SetRenderWindow(self.renwin)
+            # self.interactor.AddObserver("KeyPressEvent", self.key_callbacks)
+            #
+            # # 3d model camera for the 4 renders
+            # self.camera_list = self._create_cameras(self.extent)
+            # # Setting the camera and the background color to the renders
+            # self.set_camera_backcolor()
+            #
+            # # Creating the axis
+            # for e, r in enumerate(self.ren_list):
+            #     # add axes actor to all renderer
+            #     axe = self._create_axes(self.camera_list[e])
+            #
+            #     r.AddActor(axe)
+            #     r.ResetCamera()
 
         if key is 'r':
             self.real_time = self.real_time ^ True
@@ -527,7 +529,8 @@ class vtkVisualization(object):
         self.ren_list[2].AddActor(triangulatedActor)
         self.ren_list[3].AddActor(triangulatedActor)
         try:
-            self.set_geological_map()
+            if self.geo_model.solutions.geological_map is not None:
+                self.set_geological_map()
         except AttributeError as ae:
             warnings.warn(str(ae))
 

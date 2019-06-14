@@ -77,10 +77,19 @@ class DataMutation(object):
 
         return idx
 
+    @_setdoc_pro([AdditionalData.update_structure.__doc__, InterpolatorModel.set_theano_shared_structure.__doc__,
+                  InterpolatorModel.modify_results_matrices_pro.__doc__,
+                  InterpolatorModel.modify_results_weights.__doc__])
     def update_structure(self, update_theano=None):
-        """Update python and theano structure paramteres
+        """Update python and theano structure parameters.
+
+        [s0]
+        [s1]
+
         Args:
-            update_theano: str['matrices', 'weights']
+            update_theano: str{'matrices', 'weights'}:
+                * matrices [s2]
+                * weights [s3]
         """
 
         self.additional_data.update_structure()
@@ -88,6 +97,7 @@ class DataMutation(object):
             self.interpolator.modify_results_matrices_pro()
         elif update_theano == 'weights':
             self.interpolator.modify_results_weights()
+
         self.interpolator.set_theano_shared_structure()
         return self.additional_data.structure_data
     # region Grid
@@ -582,7 +592,7 @@ class DataMutation(object):
         self.additional_data.update_default_kriging()
 
         if update_interpolator is True:
-            self.interpolator.set_theano_shared_structure(reset=True)
+            self.interpolator.set_theano_shared_structure(reset_ctrl=True)
 
     def update_from_surfaces(self, set_categories_from_series=True, set_categories_from_surfaces=True,
                              map_surface_points=True, map_orientations=True, update_structural_data=True):
@@ -936,7 +946,7 @@ class Model(DataMutation):
 
         # set shared variables
         self.interpolator_gravity.set_theano_shared_tz_kernel()
-        self.interpolator_gravity.set_all_shared_parameters(reset=True)
+        self.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
 
         if compile_theano is True:
             self.interpolator_gravity.compile_th_fn(density_block, pos_density, inplace=inplace)

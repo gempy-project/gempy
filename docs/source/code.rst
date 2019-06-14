@@ -23,6 +23,15 @@ Data
     Options
     AdditionalData
 
+Interpolator:
+-------------
+.. currentmodule:: interpolator
+.. autosummary::
+    :toctree: Interpolator
+
+    Interpolator
+    InterpolatorModel
+
 Model
 -----
 .. currentmodule:: model

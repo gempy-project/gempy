@@ -142,7 +142,7 @@ class Solution(object):
 
         # TODO Adapt it to the gradients
 
-    def compute_surface_regular_grid(self, level: float, scalar_field, mask_array=None, classic=True, **kwargs):
+    def compute_surface_regular_grid(self, level: float, scalar_field, mask_array=None, classic=False, **kwargs):
         """
         Compute the surface (vertices and edges) of a given surface by computing marching cubes (by skimage)
         Args:
@@ -200,7 +200,7 @@ class Solution(object):
             if mask_topography and self.grid.regular_grid.mask_topo.size != 0:
                 mask_pad = self.mask_topo(mask_pad)
 
-            self.mask_matrix_pad.append(mask_pad.T)
+            self.mask_matrix_pad.append(mask_pad)
 
     @staticmethod
     def find_interfaces_from_block_bottoms(block, value, shift=2):
@@ -252,9 +252,10 @@ class Solution(object):
                 try:
                     v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
 
-                except AttributeError:
+                except AttributeError as e:
+                    warnings.warn('Attribute error. Using non masked marching cubes'+ str(e))
                     v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array,
-                                                                        classic=False, **kwargs)
+                                                                        classic=True, **kwargs)
 
                 except Exception as e:
                     warnings.warn('Surfaces not computed due to: ' + str(e))
