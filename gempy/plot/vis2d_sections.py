@@ -36,6 +36,7 @@ from gempy.core.solution import Solution
 from matplotlib.ticker import FixedFormatter, FixedLocator
 
 class PlotSolution:
+    #Todo plot data filtered for sections and map
     def __init__(self, model):
 
         self.model = model
@@ -45,7 +46,6 @@ class PlotSolution:
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors)+0.5)
 
     def plot_map(self, solution: Solution, contour_lines=True, show_faults = True, show_data=False):
-        # Todo maybe add contour kwargs
         assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
         geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:,:,2].shape)
         if show_data:
