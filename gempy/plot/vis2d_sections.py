@@ -15,10 +15,6 @@
     along with gempy.  If not, see <http://www.gnu.org/licenses/>.
 
 
-Module with classes and methods to visualized structural geology data and potential fields of the regional modelling based on
-the potential field method.
-Tested on Ubuntu 14
-
 Created on 14/06/2019
 
 @author: Elisa Heim
@@ -37,7 +33,7 @@ import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from gempy.core.solution import Solution
-
+from matplotlib.ticker import FixedFormatter, FixedLocator
 
 class PlotSolution:
     def __init__(self, model):
@@ -48,14 +44,14 @@ class PlotSolution:
         self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors)+0.5)
 
-    def plot_map(self, solution: Solution, contour_lines=True, show_faults = True, show_data=True):
+    def plot_map(self, solution: Solution, contour_lines=True, show_faults = True, show_data=False):
         # Todo maybe add contour kwargs
         assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
         geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:,:,2].shape)
         if show_data:
             self.plot_data(direction='z')
         else:
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(figsize=(6,6))
         plt.imshow(geomap, origin="lower", extent=self.model.grid.topography.extent, cmap=self._cmap, norm=self._norm)
         if contour_lines==True and show_data==False:
             CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys', linestyles='solid',
@@ -103,7 +99,8 @@ class PlotSolution:
 
 
 
-    def plot_sections(self, show_traces=True, show_data=True, section_names = None, show_faults = True, show_topo=True):
+    def plot_sections(self, show_traces=True, show_data=False, section_names = None, show_faults = True, show_topo=True,
+                      figsize=(12,12)):
         assert self.model.solutions.sections is not None, 'no sections for plotting defined'
         if section_names is not None:
             if type(section_names) == list:
@@ -114,7 +111,7 @@ class PlotSolution:
             self.plot_section_traces(show_data=show_data, section_names=section_names)
         shapes = self.model.grid.sections.resolution
         zdist = self.model.grid.regular_grid.extent[5] - self.model.grid.regular_grid.extent[4]
-        fig, axes = plt.subplots(nrows=len(section_names), ncols=1)
+        fig, axes = plt.subplots(nrows=len(section_names), ncols=1,figsize=figsize)
         #plt.subplots_adjust(bottom=0.5, top=3)
         for i, section in enumerate(section_names):
             j = np.where(self.model.grid.sections.names == section)[0][0]
@@ -124,7 +121,7 @@ class PlotSolution:
                     self.extract_section_fault_lines(section, axes)
                 if show_topo:
                     xy = self.slice_topo_for_sections(j)
-                    axes.fill(xy[:,0],xy[:,1],'k')
+                    axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
                 axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
                                origin='bottom',
@@ -132,31 +129,36 @@ class PlotSolution:
                                                                          self.model.grid.regular_grid.extent[4],
                                                                          self.model.grid.regular_grid.extent[5]])
 
-                labels, axname = self._make_section_xylabels(section, len(axes.get_xticklabels()))
+                labels, axname = self._make_section_xylabels(section, len(axes.get_xticklabels()) - 2)
+                pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
+                axes.xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
+                axes.xaxis.set_major_formatter(FixedFormatter((labels)))
                 axes.set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
-                axes.set_xticklabels(labels)
+
             else:
                 if show_faults:
                     self.extract_section_fault_lines(section, axes[i])
                 if show_topo:
                     xy = self.slice_topo_for_sections(j)
-                    axes[i].fill(xy[:,0],xy[:,1],'k')
+                    axes[i].fill(xy[:,0],xy[:,1],'k', zorder=10)
                 axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
                                origin='bottom',
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                          self.model.grid.regular_grid.extent[4],
                                                                          self.model.grid.regular_grid.extent[5]])
-                labels, axname = self._make_section_xylabels(section, len(axes[i].get_xticklabels()))
+
+                labels, axname = self._make_section_xylabels(section, len(axes[i].get_xticklabels()) - 2)
+                pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
+                axes[i].xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
+                axes[i].xaxis.set_major_formatter(FixedFormatter((labels)))
                 axes[i].set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
-                axes[i].set_xticklabels(labels)
             #axes[i].set_aspect(self.model.grid.sections.dist[i] / zdist)
         fig.tight_layout()
 
     def _make_section_xylabels(self, section_name, n=5):
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
-        step = np.full(n, int(len(self.model.grid.sections.xaxis[j]) / n))
-        step[0] = 0
-        indexes = step.cumsum()
+        indexes = np.linspace(0, int(len(self.model.grid.sections.xaxis[j])), n).astype(int)
+        indexes[-1] -= 1
         if len(np.unique(self.model.grid.sections.xaxis[j])) == 1:
             labels = self.model.grid.sections.yaxis[j][indexes].astype(int)
             axname = 'Y'
@@ -200,7 +202,7 @@ class PlotSolution:
         return a.reshape(-1, 2)
 
 
-    def plot_section_traces(self, show_data=True, section_names=None):
+    def plot_section_traces(self, show_data=False, section_names=None):
         # fig = plt.figure()
         # ax = fig.add_subplot(111)
         if section_names is None:
