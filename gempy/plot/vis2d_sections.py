@@ -184,7 +184,7 @@ class PlotSolution:
         xvals = np.arange(0, self.model.grid.topography.resolution[0])
         yvals = (m * xvals + c).astype(int)
         # rescale y values to topography resolution
-        yvals = yvals * self.model.grid.topography.resolution[1] / (
+        yvals = (yvals - self.model.grid.topography.extent[2]) * self.model.grid.topography.resolution[1] / (
                 self.model.grid.topography.extent[3] - self.model.grid.topography.extent[2])
         ### slice topography to get zvalues
         zvals = self.model.grid.topography.values_3D[:, :, 2][xvals, np.round(yvals).astype(int)]
