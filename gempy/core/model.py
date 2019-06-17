@@ -389,14 +389,12 @@ class DataMutation(object):
         self.surface_points.set_surface_points(surface_points_table[[coord_x_name, coord_y_name, coord_z_name]],
                                                surface=surface_points_table[surface_name])
 
-        if update_surfaces is True:
-            self.map_data_df(self.surface_points.df)
 
         if 'add_basement' in kwargs:
             if kwargs['add_basement'] is True:
                 self.surfaces.add_surface(['basement'])
                 self.map_series_to_surfaces({'Basement': 'basement'}, set_series=True)
-
+        self.map_data_df(self.surface_points.df)
         self.rescaling.rescale_data()
         self.additional_data.update_structure()
         self.additional_data.update_default_kriging()

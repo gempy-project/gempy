@@ -1051,7 +1051,7 @@ class vtkVisualization(object):
             # set background color for each renderer
             self.ren_list[i].SetBackground(ren_color[i][0], ren_color[i][1], ren_color[i][2])
 
-    def _create_axes(self, camera, verbose=0, tick_vis=True):
+    def _create_axes(self, camera, verbose=0, tick_vis=False):
         """
         Create the axes boxes
         """
@@ -1093,7 +1093,7 @@ class vtkVisualization(object):
             cube_axes_actor.SetGridLineLocation(cube_axes_actor.VTK_GRID_LINES_FURTHEST)
         else:  # rather use elif == "linux" ? but what about other platforms
             try:  # apparently this can also go wrong on linux, maybe depends on vtk version?
-                cube_axes_actor.SetGridLineLocation(vtk.VTK_GRID_LINES_FURTHEST)
+                cube_axes_actor.SetGridLineLocation(cube_axes_actor.VTK_GRID_LINES_FURTHEST)
             except AttributeError:
                 pass
 
