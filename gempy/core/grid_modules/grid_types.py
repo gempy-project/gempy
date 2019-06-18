@@ -108,6 +108,7 @@ class Sections:
     def get_section_params(self):
         for i, section in enumerate(self.names):
             points = [self.section_dict[section][0], self.section_dict[section][1]]
+            assert points[0] != points[1], 'The start and end points of the section must not be identical.'
             self.points.append(points)
             #self.dist.append(np.sqrt((points[1][0]-points[0][0])**2+(points[1][1]-points[1][0])**2))
             self.resolution.append(self.section_dict[section][2])

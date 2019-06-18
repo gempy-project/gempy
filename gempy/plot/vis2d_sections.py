@@ -45,8 +45,11 @@ class PlotSolution:
         self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors)+0.5)
 
-    def plot_map(self, solution: Solution, contour_lines=True, show_faults = True, show_data=False):
-        assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
+    def plot_map(self, solution: Solution = None, contour_lines=True, show_faults = True, show_data=False):
+        if solution is not None:
+            assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
+        else:
+            solution = self.model.solutions
         geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:,:,2].shape)
         if show_data:
             self.plot_data(direction='z')
@@ -108,7 +111,7 @@ class PlotSolution:
         else:
             section_names = self.model.grid.sections.names
         if show_traces:
-            self.plot_section_traces(show_data=show_data, section_names=section_names)
+            self.plot_section_traces(show_data=show_data, section_names=section_names, contour_lines=False)
         shapes = self.model.grid.sections.resolution
         zdist = self.model.grid.regular_grid.extent[5] - self.model.grid.regular_grid.extent[4]
         fig, axes = plt.subplots(nrows=len(section_names), ncols=1,figsize=figsize)
@@ -121,6 +124,7 @@ class PlotSolution:
                     self.extract_section_fault_lines(section, axes)
                 if show_topo:
                     xy = self.slice_topo_for_sections(j)
+                    #axes.plot(xy[:,0],xy[:,1])
                     axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
                 axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
@@ -141,6 +145,7 @@ class PlotSolution:
                 if show_topo:
                     xy = self.slice_topo_for_sections(j)
                     axes[i].fill(xy[:,0],xy[:,1],'k', zorder=10)
+                    #axes[i].plot(xy[:, 0], xy[:, 1])
                 axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
                                origin='bottom',
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
@@ -174,42 +179,79 @@ class PlotSolution:
 
     def slice_topo_for_sections(self, j):
         startend = list(self.model.grid.sections.section_dict.values())[j]
-        ### calculate line equation
         points = [(startend[0]), (startend[1])]
+        if points[0][0] == points[1][0]:
+            step = (self.model.grid.topography.extent[3] - self.model.grid.topography.extent[2]) / \
+                   self.model.grid.topography.resolution[1]
+            cell_number = np.round((points[0][1] - self.model.grid.topography.extent[2]) / step).astype(int)
+            a = self.slice_topo_verthor('y', cell_number)
+        elif points[0][1] == points[1][1]:
+            step = (self.model.grid.topography.extent[1] - self.model.grid.topography.extent[0]) / \
+                   self.model.grid.topography.resolution[0]
+            cell_number = np.round((points[0][0] - self.model.grid.topography.extent[0]) / step).astype(int)
+            a = self.slice_topo_verthor('x', cell_number)
+        else:
+            a = self.slice_topo_diagonal(points, j)
+        # redistribute x values for plotting
+        a[:,0] = np.linspace(0,self.model.grid.sections.dist[j][0], a.shape[0])
+        a = np.append(a,
+                      ([self.model.grid.sections.dist[j][0], a[:, 1][-1]],
+                      [self.model.grid.sections.dist[j][0], self.model.grid.regular_grid.extent[5]],
+                      [0, self.model.grid.regular_grid.extent[5]],
+                      [0, a[:, 1][0]]))
+        return a.reshape(-1, 2)
+
+    def slice_topo_diagonal(self, points, j):
+        ### I have checked, this is the most complicated way to do it.
+        # calculate line equation
         x_coords, y_coords = zip(*points)
         A = np.vstack([x_coords, np.ones(len(x_coords))]).T
         m, c = np.linalg.lstsq(A, y_coords, rcond=None)[0]
         # print("Line Solution is y = {m}x + {c}".format(m=m,c=int(c)))
-        ### find indexes x and y
-        xvals = np.arange(0, self.model.grid.topography.resolution[0])
-        yvals = (m * xvals + c).astype(int)
-        # rescale y values to topography resolution
-        yvals = (yvals - self.model.grid.topography.extent[2]) * self.model.grid.topography.resolution[1] / (
-                self.model.grid.topography.extent[3] - self.model.grid.topography.extent[2])
-        ### slice topography to get zvalues
-        zvals = self.model.grid.topography.values_3D[:, :, 2][xvals, np.round(yvals).astype(int)]
-        ### points to plot
-        x_to_plot = np.linspace(0, self.model.grid.sections.dist[j],
-                                self.model.grid.topography.resolution[0]).ravel()
+        idx_start_x = (np.abs(self.model.grid.topography.values_3D[:, :, 0][0, :] - points[0][0])).argmin()
+        idx_end_x = (np.abs(self.model.grid.topography.values_3D[:, :, 0][0, :] - points[1][0])).argmin()
+        xvals = self.model.grid.topography.values_3D[:, :, 0][0, :][idx_start_x:idx_end_x]
+        yvals = (m * xvals[[0, -1]] + c).astype(int)
+        idx_start_y = (np.abs(self.model.grid.topography.values_3D[:, :, 1][:, 0] - yvals[0])).argmin()
+        idx_end_y = (np.abs(self.model.grid.topography.values_3D[:, :, 1][:, 0] - yvals[1])).argmin()
+        box = self.model.grid.topography.values_3D[idx_start_x:idx_end_x, idx_start_y:idx_end_y][:, :, 2]
+        zvals = np.diag(np.flipud(box))  # flip it to get the right diagonal
+        return np.vstack([xvals, zvals]).T
 
-        xy = np.vstack([x_to_plot, zvals]).T
-        ### add cornerpoints to make patch
-        a = np.append(xy,
-                      ([self.model.grid.sections.dist[j][0], xy[:, 1][-1]],
-                       [self.model.grid.sections.dist[j][0], self.model.grid.regular_grid.extent[5]],
-                       [0, self.model.grid.regular_grid.extent[5]],
-                       [0, xy[:, 1][0]]))
-        return a.reshape(-1, 2)
+    def slice_topo_verthor(self, direction='y', cell_number=1):
+        '''cell_number: topography cell number, not regular grid'''
+        x = self.model.grid.topography.values_3D[:, :, 0]
+        y = self.model.grid.topography.values_3D[:, :, 1]
+        z = self.model.grid.topography.values_3D[:, :, 2]
+
+        if direction == 'y':
+            a = x[cell_number, :]
+            b = y[cell_number, :]
+            c = z[cell_number, :]
+            assert len(np.unique(b)) == 1
+            topoline = np.dstack((a, c)).reshape(-1, 2).astype(int)
+
+        elif direction == 'x':
+            a = x[:, cell_number]
+            b = y[:, cell_number]
+            c = z[:, cell_number]
+            assert len(np.unique(a)) == 1
+            topoline = np.dstack((b, c)).reshape(-1, 2).astype(int)
+
+        elif direction == "z":
+            raise NotImplementedError
+
+        return topoline
 
 
-    def plot_section_traces(self, show_data=False, section_names=None):
+    def plot_section_traces(self, show_data=False, section_names=None, contour_lines = True):
         # fig = plt.figure()
         # ax = fig.add_subplot(111)
         if section_names is None:
             section_names = self.model.grid.sections.names
 
         if self.model.solutions.geological_map is not None:
-            self.plot_map(self.model.solutions, contour_lines=False, show_data=show_data)
+            self.plot_map(self.model.solutions, contour_lines=contour_lines, show_data=show_data)
         elif self.model.solutions.lith_block.shape[0] != 0:
             print('implement block section')
             pass
