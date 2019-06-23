@@ -215,7 +215,11 @@ class PlotSolution:
         idx_start_y = (np.abs(self.model.grid.topography.values_3D[:, :, 1][:, 0] - yvals[0])).argmin()
         idx_end_y = (np.abs(self.model.grid.topography.values_3D[:, :, 1][:, 0] - yvals[1])).argmin()
         box = self.model.grid.topography.values_3D[idx_start_x:idx_end_x, idx_start_y:idx_end_y][:, :, 2]
+
         zvals = np.diag(np.flipud(box))  # flip it to get the right diagonal
+        print(xvals.shape, zvals.shape)
+        if xvals.shape != zvals.shape:
+            raise AssertionError
         return np.vstack([xvals, zvals]).T
 
     def slice_topo_verthor(self, direction='y', cell_number=1):

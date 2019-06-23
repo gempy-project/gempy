@@ -119,7 +119,7 @@ class Sections:
         self.coordinates = np.array(self.points).ravel().reshape(-1, 4) #axis are x1,y1,x2,y2
         self.dist = np.sqrt(np.diff(self.coordinates[:, [0, 2]])**2 + np.diff(self.coordinates[:, [1, 3]])**2)
 
-    def compute_section_coordinates(self):
+    def compute_section_coordinates_DEP(self):
         #todo can do that without loop with self.coordinates
         for i in range(len(self.names)):
             # todo don't do self
@@ -137,6 +137,67 @@ class Sections:
 
             self.xaxis.append(xaxis)
             self.yaxis.append(yaxis)
+
+    def compute_section_coordinates(self):
+        for i in range(len(self.names)):
+            xy = self.calculate_line_coordinates_2points(self.points[i][0], self.points[i][1], self.resolution[i])
+            zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][2],
+                                     dtype="float64")
+            X, Z = np.meshgrid(xy[:, 0], zaxis)
+            Y, _ = np.meshgrid(xy[:, 1], zaxis)
+            xyz = np.vstack((X.flatten(), Y.flatten(), Z.flatten())).T
+            if i == 0:
+                self.values = xyz
+            else:
+                self.values = np.vstack((self.values, xyz))
+
+
+    def calculate_line_coordinates_2points(self, p1, p2, res):
+        resx = res[0]
+        resy = res[1]
+
+        x0 = p1[0]
+        x1 = p2[0]
+        y0 = p1[1]
+        y1 = p2[1]
+
+        dx = np.abs((x1 - x0) / resx)
+        dy = np.abs((y1 - y0) / resy)
+
+        if x0 == x1:  # slope is infinite
+            # for cases where phi == -np.pi/2 or phi == np.pi/2
+            xi = x0 * np.ones(resx)
+            yj = np.linspace(y0, y1, resy)
+        else:
+            # calculate support points between two points
+            phi = np.arctan2(y1 - y0, x1 - x0)  # angle of line with x-axis
+            if 0 <= phi < np.pi / 2:
+                pass
+                # print('I')
+            elif np.pi / 2 < phi <= np.pi:
+                # print('II,no')
+                phi -= np.pi
+            elif -np.pi <= phi < -np.pi / 2:
+                # print('III,no')
+                phi += np.pi  # shift values in first or fourth quadrant so that cosine is positive
+            elif -np.pi / 2 < phi < 0:
+                pass
+                # print('IV')
+            elif phi == -np.pi / 2 or phi == np.pi / 2:
+                print('not possible because catched by one if-level higher')
+            else:
+                print('nothing')
+            ds = np.abs(dx * np.cos(phi)) + np.abs(dy * np.sin(phi))  # support point spacing
+            # abs needed for cases where phi == -1/4 pi or 3/4 pi
+            if x0 > x1:
+                n_points = np.ceil((x0 - x1) / (ds * np.cos(phi)))
+            else:
+                n_points = np.ceil((x1 - x0) / (ds * np.cos(phi)))
+            xi = np.linspace(x0, x1, int(n_points))
+            m = (y1 - y0) / (x1 - x0)  # slope of line
+            yj = m * (xi - x0) + y0 * np.ones(xi.shape)  # calculate yvalues with line equation
+        return np.vstack((xi, yj)).T
+
 
     def get_section_args(self, section_name: str):
         where = np.where(self.names == section_name)[0][0]
