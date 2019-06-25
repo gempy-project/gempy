@@ -113,9 +113,7 @@ class PlotSolution:
         if show_traces:
             self.plot_section_traces(show_data=show_data, section_names=section_names, contour_lines=False)
         shapes = self.model.grid.sections.resolution
-        #zdist = self.model.grid.regular_grid.extent[5] - self.model.grid.regular_grid.extent[4]
         fig, axes = plt.subplots(nrows=len(section_names), ncols=1,figsize=figsize)
-        #plt.subplots_adjust(bottom=0.5, top=3)
         for i, section in enumerate(section_names):
             j = np.where(self.model.grid.sections.names == section)[0][0]
             l0, l1 = self.model.grid.sections.get_section_args(section)
@@ -124,7 +122,6 @@ class PlotSolution:
                     self.extract_section_fault_lines(section, axes)
                 if show_topo:
                     xy = self.make_topography_overlay_4_sections(j)
-                    #axes.plot(xy[:,0],xy[:,1])
                     axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
                 axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]),
@@ -133,11 +130,11 @@ class PlotSolution:
                                                                          self.model.grid.regular_grid.extent[4],
                                                                          self.model.grid.regular_grid.extent[5]])
 
-                #labels, axname = self._make_section_xylabels(section, len(axes.get_xticklabels()) - 2)
-                #pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
-                #axes.xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
-                #axes.xaxis.set_major_formatter(FixedFormatter((labels)))
-                #axes.set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
+                labels, axname = self._make_section_xylabels(section, len(axes.get_xticklabels()) - 2)
+                pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
+                axes.xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
+                axes.xaxis.set_major_formatter(FixedFormatter((labels)))
+                axes.set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
 
             else:
                 if show_faults:
@@ -145,35 +142,31 @@ class PlotSolution:
                 if show_topo:
                     xy = self.make_topography_overlay_4_sections(j)
                     axes[i].fill(xy[:,0],xy[:,1],'k', zorder=10)
-                    #axes[i].plot(xy[:, 0], xy[:, 1])
                 axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]),
                                origin='bottom',
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                          self.model.grid.regular_grid.extent[4],
                                                                          self.model.grid.regular_grid.extent[5]])
 
-                #labels, axname = self._make_section_xylabels(section, len(axes[i].get_xticklabels()) - 2)
-                #pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
-                #axes[i].xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
-                #axes[i].xaxis.set_major_formatter(FixedFormatter((labels)))
-                #axes[i].set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
-            #axes[i].set_aspect(self.model.grid.sections.dist[i] / zdist)
+                labels, axname = self._make_section_xylabels(section, len(axes[i].get_xticklabels()) - 2)
+                pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
+                axes[i].xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
+                axes[i].xaxis.set_major_formatter(FixedFormatter((labels)))
+                axes[i].set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
         fig.tight_layout()
 
     def _slice_topo_4_sections(self, p1, p2):
         xy = self.model.grid.sections.calculate_line_coordinates_2points(p1,p2, self.model.grid.topography.resolution[0],
                                                                     self.model.grid.topography.resolution[1])
         z = self.model.grid.topography.interpolate_zvals_at_xy(xy)
-        return xy[:,0], xy[:,1], z
+        return xy[:, 0], xy[:, 1], z
 
     def make_topography_overlay_4_sections(self, j):
         startend = list(self.model.grid.sections.section_dict.values())[j]
         p1, p2 = startend[0], startend[1]
         x, y, z = self._slice_topo_4_sections(p1, p2)
-        #print('shape z', z.shape)
         pseudo_x = np.linspace(0,self.model.grid.sections.dist[j][0], z.shape[0])
         a = np.vstack((pseudo_x, z)).T
-        #print('shape a', a.shape)
         a = np.append(a,
                       ([self.model.grid.sections.dist[j][0], a[:, 1][-1]],
                       [self.model.grid.sections.dist[j][0], self.model.grid.regular_grid.extent[5]],
@@ -182,99 +175,24 @@ class PlotSolution:
         return a.reshape(-1, 2)
 
     def _make_section_xylabels(self, section_name, n=5):
+        if n > 5:
+            n = 3 # todo I don't know why but sometimes it wants to make a lot of xticks
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
-        indexes = np.linspace(0, int(len(self.model.grid.sections.xaxis[j])), n).astype(int)
-        indexes[-1] -= 1
-        if len(np.unique(self.model.grid.sections.xaxis[j])) == 1:
-            labels = self.model.grid.sections.yaxis[j][indexes].astype(int)
+        startend = list(self.model.grid.sections.section_dict.values())[j]
+        p1, p2 = startend[0], startend[1]
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1,p2, n, n)
+        if len(np.unique(xy[:,0])) == 1:
+            labels = xy[:,1].astype(int)
             axname = 'Y'
-        elif len(np.unique(self.model.grid.sections.yaxis[j])) == 1:
-            labels = self.model.grid.sections.xaxis[j][indexes].astype(int)
+        elif len(np.unique(xy[:,1])) == 1:
+            labels = xy[:,0].astype(int)
             axname = 'X'
         else:
-            labels = [str(int(self.model.grid.sections.xaxis[j][indexes][i])) + ',\n' +
-                      str(int(self.model.grid.sections.yaxis[j][indexes][i]))
-                      for i in range(len(indexes))]
+            labels = [str(xy[:, 0].astype(int)[i]) + ',\n' + str(xy[:, 1].astype(int)[i]) for i in range(xy[:, 0].shape[0])]
             axname = 'X,Y'
         return labels, axname
 
-    def slice_topo_for_sections_DEP(self, j):
-        #todo delete
-        startend = list(self.model.grid.sections.section_dict.values())[j]
-        points = [(startend[0]), (startend[1])]
-        if points[0][0] == points[1][0]:
-            step = (self.model.grid.topography.extent[3] - self.model.grid.topography.extent[2]) / \
-                   self.model.grid.topography.resolution[1]
-            cell_number = np.round((points[0][1] - self.model.grid.topography.extent[2]) / step).astype(int)
-            a = self.slice_topo_verthor('y', cell_number)
-        elif points[0][1] == points[1][1]:
-            step = (self.model.grid.topography.extent[1] - self.model.grid.topography.extent[0]) / \
-                   self.model.grid.topography.resolution[0]
-            cell_number = np.round((points[0][0] - self.model.grid.topography.extent[0]) / step).astype(int)
-            a = self.slice_topo_verthor('x', cell_number)
-        else:
-            a = self.slice_topo_diagonal(points, j)
-        # redistribute x values for plotting
-        a[:,0] = np.linspace(0,self.model.grid.sections.dist[j][0], a.shape[0])
-        a = np.append(a,
-                      ([self.model.grid.sections.dist[j][0], a[:, 1][-1]],
-                      [self.model.grid.sections.dist[j][0], self.model.grid.regular_grid.extent[5]],
-                      [0, self.model.grid.regular_grid.extent[5]],
-                      [0, a[:, 1][0]]))
-        return a.reshape(-1, 2)
-
-    def slice_topo_diagonal_DEP(self, points, j):
-        # todo delete
-        ### I have checked, this is the most complicated way to do it.
-        # calculate line equation
-        x_coords, y_coords = zip(*points)
-        A = np.vstack([x_coords, np.ones(len(x_coords))]).T
-        m, c = np.linalg.lstsq(A, y_coords, rcond=None)[0]
-        # print("Line Solution is y = {m}x + {c}".format(m=m,c=int(c)))
-        idx_start_x = (np.abs(self.model.grid.topography.values_3D[:, :, 0][0, :] - points[0][0])).argmin()
-        idx_end_x = (np.abs(self.model.grid.topography.values_3D[:, :, 0][0, :] - points[1][0])).argmin()
-        xvals = self.model.grid.topography.values_3D[:, :, 0][0, :][idx_start_x:idx_end_x]
-        yvals = (m * xvals[[0, -1]] + c).astype(int)
-        idx_start_y = (np.abs(self.model.grid.topography.values_3D[:, :, 1][:, 0] - yvals[0])).argmin()
-        idx_end_y = (np.abs(self.model.grid.topography.values_3D[:, :, 1][:, 0] - yvals[1])).argmin()
-        box = self.model.grid.topography.values_3D[idx_start_x:idx_end_x, idx_start_y:idx_end_y][:, :, 2]
-
-        zvals = np.diag(np.flipud(box))  # flip it to get the right diagonal
-        print(xvals.shape, zvals.shape)
-        if xvals.shape != zvals.shape:
-            raise AssertionError
-        return np.vstack([xvals, zvals]).T
-
-    def slice_topo_verthor_DEP(self, direction='y', cell_number=1):
-        # todo delete
-        '''cell_number: topography cell number, not regular grid'''
-        x = self.model.grid.topography.values_3D[:, :, 0]
-        y = self.model.grid.topography.values_3D[:, :, 1]
-        z = self.model.grid.topography.values_3D[:, :, 2]
-
-        if direction == 'y':
-            a = x[cell_number, :]
-            b = y[cell_number, :]
-            c = z[cell_number, :]
-            assert len(np.unique(b)) == 1
-            topoline = np.dstack((a, c)).reshape(-1, 2).astype(int)
-
-        elif direction == 'x':
-            a = x[:, cell_number]
-            b = y[:, cell_number]
-            c = z[:, cell_number]
-            assert len(np.unique(a)) == 1
-            topoline = np.dstack((b, c)).reshape(-1, 2).astype(int)
-
-        elif direction == "z":
-            raise NotImplementedError
-
-        return topoline
-
-
     def plot_section_traces(self, show_data=False, section_names=None, contour_lines = True):
-        # fig = plt.figure()
-        # ax = fig.add_subplot(111)
         if section_names is None:
             section_names = self.model.grid.sections.names
 

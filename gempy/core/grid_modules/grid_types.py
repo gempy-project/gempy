@@ -120,25 +120,6 @@ class Sections:
         self.coordinates = np.array(self.points).ravel().reshape(-1, 4) #axis are x1,y1,x2,y2
         self.dist = np.sqrt(np.diff(self.coordinates[:, [0, 2]])**2 + np.diff(self.coordinates[:, [1, 3]])**2)
 
-    def compute_section_coordinates_DEP(self):
-        #todo can do that without loop with self.coordinates
-        for i in range(len(self.names)):
-            # todo don't do self
-            xaxis = np.linspace(self.points[i][0][0], self.points[i][1][0], self.resolution[i][0], dtype="float64")
-            yaxis = np.linspace(self.points[i][0][1], self.points[i][1][1], self.resolution[i][0], dtype="float64")
-            zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][1],
-                                     dtype="float64")
-            Y, Z = np.meshgrid(yaxis, zaxis, indexing='ij')
-            X, Z = np.meshgrid(xaxis, zaxis, indexing='ij')
-            xyz = np.vstack((X.flatten(), Y.flatten(), Z.flatten())).T
-            if i == 0:
-                self.values = xyz
-            else:
-                self.values = np.vstack((self.values, xyz))
-
-            self.xaxis.append(xaxis)
-            self.yaxis.append(yaxis)
-
     def compute_section_coordinates(self):
         for i in range(len(self.names)):
             xy = self.calculate_line_coordinates_2points(self.points[i][0], self.points[i][1], self.resolution[i][0],
@@ -152,7 +133,6 @@ class Sections:
                 self.values = xyz
             else:
                 self.values = np.vstack((self.values, xyz))
-
 
     def calculate_line_coordinates_2points(self, p1, p2, resx, resy):
         x0 = p1[0]
@@ -170,22 +150,12 @@ class Sections:
         else:
             # calculate support points between two points
             phi = np.arctan2(y1 - y0, x1 - x0)  # angle of line with x-axis
-            if 0 <= phi < np.pi / 2:
-                pass
-                # print('I')
-            elif np.pi / 2 < phi <= np.pi:
-                # print('II,no')
+            if np.pi / 2 < phi <= np.pi: #shift all values to first or fourth quadrant
                 phi -= np.pi
             elif -np.pi <= phi < -np.pi / 2:
-                # print('III,no')
                 phi += np.pi  # shift values in first or fourth quadrant so that cosine is positive
-            elif -np.pi / 2 < phi < 0:
-                pass
-                # print('IV')
-            elif phi == -np.pi / 2 or phi == np.pi / 2:
-                print('not possible because catched by one if-level higher')
             else:
-                print('nothing')
+                pass
             ds = np.abs(dx * np.cos(phi)) + np.abs(dy * np.sin(phi))  # support point spacing
             # abs needed for cases where phi == -1/4 pi or 3/4 pi
             if x0 > x1:
@@ -473,23 +443,8 @@ class Topography:
         zi = f(xy[:, 0], xy[:, 1])
         return np.diag(zi)
 
-
-    def _line_in_section_DEP(self, direction='y', cell_number=0):
-        # todo delete
-        if np.any(self.resolution - self.regular_grid.resolution[:2]) != 0:
-            cell_number_res = (self.resolution / self.regular_grid.resolution[:2] * cell_number).astype(int)
-            cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
-        print(cell_number_res, cell_number)
-        print(self.values_3D[:,:,2].shape)
-        if direction == 'x':
-            topoline = self.values_3D[:, cell_number, :][:, [1, 2]].astype(int)
-        elif direction == 'y':
-            topoline = self.values_3D[cell_number, :, :][:, [0, 2]].astype(int)
-        else:
-            raise NotImplementedError
-        return topoline
-
     def _line_in_section(self, direction='y', cell_number=1):
+        # todo delete after replacing it with the other function
         if type(direction) == list:
             pass
 
