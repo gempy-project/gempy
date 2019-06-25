@@ -3,6 +3,7 @@ import numpy as np
 import skimage
 import matplotlib.pyplot as plt
 from scipy.constants import G
+from scipy import interpolate
 from typing import Optional
 
 import pandas as pn
@@ -140,7 +141,6 @@ class Sections:
 
     def compute_section_coordinates(self):
         for i in range(len(self.names)):
-            print(self.resolution[i][0])
             xy = self.calculate_line_coordinates_2points(self.points[i][0], self.points[i][1], self.resolution[i][0],
                                                          self.resolution[i][0]) #two times xy resolution is correct
             zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][1],
@@ -463,8 +463,19 @@ class Topography:
         dz = (zs[-1] - zs[0]) / len(zs)
         return ((self.values_3D_res[:, :, 2] - zs[0]) / dz + 1).astype(int)
 
+    def interpolate_zvals_at_xy(self, xy):
+        assert xy[:, 0][0] <= xy[:, 0][-1], 'first xvalue must be smaller than second'
+        assert xy[:, 1][0] <= xy[:, 1][-1], 'first yvalue must be smaller than second'
+        xj = self.values_3D[:, :, 0][:, 0]
+        yj = self.values_3D[:, :, 1][0, :]
+        zj = self.values_3D[:, :, 2]
+        f = interpolate.RectBivariateSpline(xj, yj, zj)
+        zi = f(xy[:, 0], xy[:, 1])
+        return np.diag(zi)
+
+
     def _line_in_section_DEP(self, direction='y', cell_number=0):
-        # todo use slice2D of plotting class for this
+        # todo delete
         if np.any(self.resolution - self.regular_grid.resolution[:2]) != 0:
             cell_number_res = (self.resolution / self.regular_grid.resolution[:2] * cell_number).astype(int)
             cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]

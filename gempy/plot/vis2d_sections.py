@@ -55,9 +55,9 @@ class PlotSolution:
             self.plot_data(direction='z')
         else:
             fig, ax = plt.subplots(figsize=(6,6))
-        plt.imshow(geomap, origin="lower", extent=self.model.grid.topography.extent, cmap=self._cmap, norm=self._norm)
+        plt.imshow(np.flipud(geomap.T), extent=self.model.grid.topography.extent, cmap=self._cmap, norm=self._norm)
         if contour_lines==True and show_data==False:
-            CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys', linestyles='solid',
+            CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2].T,  cmap='Greys', linestyles='solid',
                             extent=self.model.grid.topography.extent)
             ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
             cbar = plt.colorbar(CS)
@@ -85,17 +85,17 @@ class PlotSolution:
             level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
                 self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
             if section_name == 'topography':
-                plt.contour(block.reshape(shape), 0, levels=level, colors=self._cmap.colors[f_id], linestyles='solid',
+                plt.contour(block.reshape(shape).T, 0, levels=level, colors=self._cmap.colors[f_id], linestyles='solid',
                             extent=self.model.grid.topography.extent)
             else:
                 if axes is not None:
-                    axes.contour(block.reshape(shape).T, 0, levels=level, colors=self._cmap.colors[f_id],
+                    axes.contour(block.reshape(shape), 0, levels=level, colors=self._cmap.colors[f_id],
                                 linestyles='solid',
                                 extent=[0, self.model.grid.sections.dist[j],
                                         self.model.grid.regular_grid.extent[4],
                                         self.model.grid.regular_grid.extent[5]])
                 else:
-                    plt.contour(block.reshape(shape).T, 0, levels=level, colors=self._cmap.colors[f_id], linestyles='solid',
+                    plt.contour(block.reshape(shape), 0, levels=level, colors=self._cmap.colors[f_id], linestyles='solid',
                              extent=[0, self.model.grid.sections.dist[j],
                                      self.model.grid.regular_grid.extent[4],
                                      self.model.grid.regular_grid.extent[5]])
@@ -113,7 +113,7 @@ class PlotSolution:
         if show_traces:
             self.plot_section_traces(show_data=show_data, section_names=section_names, contour_lines=False)
         shapes = self.model.grid.sections.resolution
-        zdist = self.model.grid.regular_grid.extent[5] - self.model.grid.regular_grid.extent[4]
+        #zdist = self.model.grid.regular_grid.extent[5] - self.model.grid.regular_grid.extent[4]
         fig, axes = plt.subplots(nrows=len(section_names), ncols=1,figsize=figsize)
         #plt.subplots_adjust(bottom=0.5, top=3)
         for i, section in enumerate(section_names):
@@ -123,42 +123,63 @@ class PlotSolution:
                 if show_faults:
                     self.extract_section_fault_lines(section, axes)
                 if show_topo:
-                    xy = self.slice_topo_for_sections(j)
+                    xy = self.make_topography_overlay_4_sections(j)
                     #axes.plot(xy[:,0],xy[:,1])
                     axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
-                axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
+                axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]),
                                origin='bottom',
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                          self.model.grid.regular_grid.extent[4],
                                                                          self.model.grid.regular_grid.extent[5]])
 
-                labels, axname = self._make_section_xylabels(section, len(axes.get_xticklabels()) - 2)
-                pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
-                axes.xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
-                axes.xaxis.set_major_formatter(FixedFormatter((labels)))
-                axes.set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
+                #labels, axname = self._make_section_xylabels(section, len(axes.get_xticklabels()) - 2)
+                #pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
+                #axes.xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
+                #axes.xaxis.set_major_formatter(FixedFormatter((labels)))
+                #axes.set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
 
             else:
                 if show_faults:
                     self.extract_section_fault_lines(section, axes[i])
                 if show_topo:
-                    xy = self.slice_topo_for_sections(j)
+                    xy = self.make_topography_overlay_4_sections(j)
                     axes[i].fill(xy[:,0],xy[:,1],'k', zorder=10)
                     #axes[i].plot(xy[:, 0], xy[:, 1])
-                axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
+                axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]),
                                origin='bottom',
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                          self.model.grid.regular_grid.extent[4],
                                                                          self.model.grid.regular_grid.extent[5]])
 
-                labels, axname = self._make_section_xylabels(section, len(axes[i].get_xticklabels()) - 2)
-                pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
-                axes[i].xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
-                axes[i].xaxis.set_major_formatter(FixedFormatter((labels)))
-                axes[i].set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
+                #labels, axname = self._make_section_xylabels(section, len(axes[i].get_xticklabels()) - 2)
+                #pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
+                #axes[i].xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
+                #axes[i].xaxis.set_major_formatter(FixedFormatter((labels)))
+                #axes[i].set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
             #axes[i].set_aspect(self.model.grid.sections.dist[i] / zdist)
         fig.tight_layout()
+
+    def _slice_topo_4_sections(self, p1, p2):
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1,p2, self.model.grid.topography.resolution[0],
+                                                                    self.model.grid.topography.resolution[1])
+        z = self.model.grid.topography.interpolate_zvals_at_xy(xy)
+        return xy[:,0], xy[:,1], z
+
+    def make_topography_overlay_4_sections(self, j):
+        startend = list(self.model.grid.sections.section_dict.values())[j]
+        p1, p2 = startend[0], startend[1]
+        x, y, z = self._slice_topo_4_sections(p1, p2)
+        #print('shape z', z.shape)
+        pseudo_x = np.linspace(0,self.model.grid.sections.dist[j][0], z.shape[0])
+        a = np.vstack((pseudo_x, z)).T
+        #print('shape a', a.shape)
+        a = np.append(a,
+                      ([self.model.grid.sections.dist[j][0], a[:, 1][-1]],
+                      [self.model.grid.sections.dist[j][0], self.model.grid.regular_grid.extent[5]],
+                      [0, self.model.grid.regular_grid.extent[5]],
+                      [0, a[:, 1][0]]))
+        return a.reshape(-1, 2)
 
     def _make_section_xylabels(self, section_name, n=5):
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
@@ -177,7 +198,8 @@ class PlotSolution:
             axname = 'X,Y'
         return labels, axname
 
-    def slice_topo_for_sections(self, j):
+    def slice_topo_for_sections_DEP(self, j):
+        #todo delete
         startend = list(self.model.grid.sections.section_dict.values())[j]
         points = [(startend[0]), (startend[1])]
         if points[0][0] == points[1][0]:
@@ -201,7 +223,8 @@ class PlotSolution:
                       [0, a[:, 1][0]]))
         return a.reshape(-1, 2)
 
-    def slice_topo_diagonal(self, points, j):
+    def slice_topo_diagonal_DEP(self, points, j):
+        # todo delete
         ### I have checked, this is the most complicated way to do it.
         # calculate line equation
         x_coords, y_coords = zip(*points)
@@ -222,7 +245,8 @@ class PlotSolution:
             raise AssertionError
         return np.vstack([xvals, zvals]).T
 
-    def slice_topo_verthor(self, direction='y', cell_number=1):
+    def slice_topo_verthor_DEP(self, direction='y', cell_number=1):
+        # todo delete
         '''cell_number: topography cell number, not regular grid'''
         x = self.model.grid.topography.values_3D[:, :, 0]
         y = self.model.grid.topography.values_3D[:, :, 1]

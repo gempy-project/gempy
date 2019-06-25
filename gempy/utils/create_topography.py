@@ -8,7 +8,7 @@ Created on 16.04.2019
 
 
 import numpy as np
-import scipy
+from scipy import fftpack
 import pandas as pn
 
 # you can not import libraries inside a class?!
@@ -152,8 +152,8 @@ class Load_DEM_artificial():
          -N = the size of the fractal surface/image
 
         '''
-        H = 1 - (fd - 2);
-        X = np.zeros((N, N), complex)
+        H = 1 - (fd - 2)
+        #X = np.zeros((N, N), complex)
         A = np.zeros((N, N), complex)
         powerr = -(H + 1.0) / 2.0
 
@@ -191,7 +191,7 @@ class Load_DEM_artificial():
                 A[i, N - j] = complex(rad * np.cos(phase), rad * np.sin(phase))
                 A[N - i, j] = complex(rad * np.cos(phase), -rad * np.sin(phase))
 
-        itemp = scipy.fftpack.ifft2(A)
+        itemp = fftpack.ifft2(A)
         itemp = itemp - itemp.min()
 
         return itemp.real / itemp.real.max()
