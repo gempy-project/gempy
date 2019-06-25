@@ -198,8 +198,8 @@ class Load_DEM_artificial():
 
     def create_topo_array(self):
         '''for masking the lith block'''
-        x = np.linspace(self.grid.values[:, 0].min(), self.grid.values[:, 0].max(), self.resolution[1])
-        y = np.linspace(self.grid.values[:, 1].min(), self.grid.values[:, 1].max(), self.resolution[0])
+        x = np.linspace(self.grid.values[:, 0].min(), self.grid.values[:, 0].max(), self.resolution[0])
+        y = np.linspace(self.grid.values[:, 1].min(), self.grid.values[:, 1].max(), self.resolution[1])
         xx, yy = np.meshgrid(x, y, indexing='ij')
-        self.values_3D = np.dstack([xx.T, yy.T, self.dem_zval])
+        self.values_3D = np.dstack([xx, yy, self.dem_zval])
 
