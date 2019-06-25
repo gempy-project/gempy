@@ -94,8 +94,6 @@ class Sections:
         self.get_section_params()
         self.calculate_distance()
         self.values = []
-        self.xaxis = [] # these two are needed for plotting
-        self.yaxis = []
         self.compute_section_coordinates()
 
         self.extent = None
@@ -111,7 +109,6 @@ class Sections:
             points = [self.section_dict[section][0], self.section_dict[section][1]]
             assert points[0] != points[1], 'The start and end points of the section must not be identical.'
             self.points.append(points)
-            #self.dist.append(np.sqrt((points[1][0]-points[0][0])**2+(points[1][1]-points[1][0])**2))
             self.resolution.append(self.section_dict[section][2])
             self.length.append(self.section_dict[section][2][0] * self.section_dict[section][2][1])
         self.length = np.array(self.length).cumsum()
@@ -145,7 +142,7 @@ class Sections:
 
         if x0 == x1:  # slope is infinite
             # for cases where phi == -np.pi/2 or phi == np.pi/2
-            xi = x0 * np.ones(resx)
+            xi = x0 * np.ones(resy)
             yj = np.linspace(y0, y1, resy)
         else:
             # calculate support points between two points
