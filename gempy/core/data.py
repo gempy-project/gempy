@@ -1620,8 +1620,8 @@ class Orientations(GeometricData):
                 warnings.warn('If pole_vector and orientation are passed pole_vector is used/')
         else:
             if orientation is not None:
-                self.df.loc[idx, ['X', 'Y', 'Z', 'azimuth', 'dip', 'polarity']] = np.array(
-                    [x, y, z, *orientation])
+                self.df.loc[idx, ['X', 'Y', 'Z', ]] = np.array([x, y, z])
+                self.df.loc[idx, ['azimuth', 'dip', 'polarity']] = orientation
                 self.df.loc[idx, 'surface'] = surface
 
                 self.calculate_gradient(idx)
@@ -1680,15 +1680,15 @@ class Orientations(GeometricData):
 
         # Check the properties are valid
         assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip',
-                                             'azimuth', 'polarity', 'surface', 'recalculate_orientations']).all(),\
+                                             'azimuth', 'polarity', 'surface']).all(),\
             'Properties must be one or more of the following: \'X\', \'Y\', \'Z\', \'G_x\', \'G_y\', \'G_z\', \'dip,\''\
             '\'azimuth\', \'polarity\', \'surface\''
 
         # stack properties values
-        values = np.array(list(kwargs.values()))
+        values = np.atleast_1d(list(kwargs.values()))
 
         # If we pass multiple index we need to transpose the numpy array
-        if type(idx) is list:
+        if type(idx) is list or type(idx) is np.ndarray:
             values = values.T
 
         # Selecting the properties passed to be modified
