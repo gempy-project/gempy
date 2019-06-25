@@ -140,8 +140,10 @@ class Sections:
 
     def compute_section_coordinates(self):
         for i in range(len(self.names)):
-            xy = self.calculate_line_coordinates_2points(self.points[i][0], self.points[i][1], self.resolution[i])
-            zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][2],
+            print(self.resolution[i][0])
+            xy = self.calculate_line_coordinates_2points(self.points[i][0], self.points[i][1], self.resolution[i][0],
+                                                         self.resolution[i][0]) #two times xy resolution is correct
+            zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][1],
                                      dtype="float64")
             X, Z = np.meshgrid(xy[:, 0], zaxis)
             Y, _ = np.meshgrid(xy[:, 1], zaxis)
@@ -152,10 +154,7 @@ class Sections:
                 self.values = np.vstack((self.values, xyz))
 
 
-    def calculate_line_coordinates_2points(self, p1, p2, res):
-        resx = res[0]
-        resy = res[1]
-
+    def calculate_line_coordinates_2points(self, p1, p2, resx, resy):
         x0 = p1[0]
         x1 = p2[0]
         y0 = p1[1]
