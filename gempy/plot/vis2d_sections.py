@@ -105,6 +105,8 @@ class PlotSolution:
     def plot_sections(self, show_traces=True, show_data=False, section_names = None, show_faults = True, show_topo=True,
                       figsize=(12,12)):
         assert self.model.solutions.sections is not None, 'no sections for plotting defined'
+        if self.model.grid.topography is None:
+            show_topo = False
         if section_names is not None:
             if type(section_names) == list:
                 section_names = np.array(section_names)
@@ -199,11 +201,10 @@ class PlotSolution:
         if self.model.solutions.geological_map is not None:
             self.plot_map(self.model.solutions, contour_lines=contour_lines, show_data=show_data)
         elif self.model.solutions.lith_block.shape[0] != 0:
-            print('implement block section')
             pass
-            self.plot_block_section(self.model.solutions, cell_number=self.model.grid.regular_grid.resolution[2] - 1,
-                                 direction='z', show_faults=False, show_topo=False, show_data=show_data)
-            plt.title('Section traces, z direction')
+            #self.plot_block_section(self.model.solutions, cell_number=self.model.grid.regular_grid.resolution[2] - 1,
+                                 #direction='z', show_faults=False, show_topo=False, show_data=show_data)
+            #plt.title('Section traces, z direction')
         else:
             #fig = plt.figure()
             #plt.title('Section traces, z direction')
