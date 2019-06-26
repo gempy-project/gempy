@@ -844,16 +844,38 @@ class InterpolatorModel(Interpolator):
         return th_fn
 
 
+@_setdoc([InterpolatorModel.__doc__])
 class InterpolatorGravity(InterpolatorModel):
+    """
+    Child class of :class:`InterpolatorModel` which set the specific shared variables for the gravity computation and
+    compiles the theano graph to compute the geological model, i.e. lithologies and the forward gravity.
+
+    InterpolatorModel Doc
+
+    """
 
     def set_theano_shared_tz_kernel(self):
+        """Set the theano component tz to each voxel"""
+
         self.theano_graph.tz.set_value(self.grid.gravity_grid.tz.astype(self.dtype))
 
     def compile_th_fn(self, density=None, pos_density=None, inplace=False,
                       debug=False):
         """
-        foo
+        Compile and create the theano function which can be evaluated to compute the forward gravity response for
+        a given kernel.
 
+        Args:
+            density (Optional[np.array]): array of the same size as the grid.values with the correspondant value of
+            density per voxel.
+            pos_density (Optional[int]): if density is not passed, pos_density will define which values (i.e. column
+            after id in the :class:`Surface` df is the density)
+
+            inplace (bool): If true add the attribute theano.function to the object inplace
+            debug (bool): If true print some of the theano flags
+
+        Returns:
+            theano.function: function that computes the whole interpolation
         """
         assert density is not None or pos_density is not None, 'If you do not pass the density block you need to pass' \
                                                                'the position of surface values where density is' \
@@ -866,6 +888,8 @@ class InterpolatorGravity(InterpolatorModel):
         input_data_T = self.theano_graph.input_parameters_loop
         print('Compiling theano function...')
         if density is None:
+            assert pos_density is not None, 'If a density block is not passed, you need to specify which interpolated' \
+                                            'value is density. See :class:`Surface`'
             density = self.theano_graph.compute_series()[0][pos_density, :- 2 * self.theano_graph.len_points]
 
         else:

@@ -51,7 +51,7 @@ class DataMutation(object):
         self.interpolator = InterpolatorModel(self.surface_points, self.orientations, self.grid, self.surfaces,
                                               self.series, self.faults, self.additional_data)
 
-        self.solutions = Solution(self.additional_data, self.grid, self.surface_points, self.series, self.surfaces)
+        self.solutions = Solution(self.grid, self.surfaces, self.series)
 
     def _add_valid_idx_s(self, idx):
         if idx is None:

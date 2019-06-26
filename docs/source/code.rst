@@ -31,9 +31,18 @@ Interpolator:
 
     Interpolator
     InterpolatorModel
+    InterpolatorGravity
 
-Model
------
+Solution:
+---------
+.. currentmodule:: solution
+.. autosummary::
+    :toctree: Solution
+
+    Solution
+
+Model:
+------
 .. currentmodule:: model
 .. autosummary::
     :toctree: Model
