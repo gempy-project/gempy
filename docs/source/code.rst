@@ -2,7 +2,7 @@ Code
 ====
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 2
 
 Data
 ----
@@ -23,8 +23,8 @@ Data
     Options
     AdditionalData
 
-Interpolator:
--------------
+Interpolator
+------------
 .. currentmodule:: interpolator
 .. autosummary::
     :toctree: Interpolator
@@ -33,16 +33,16 @@ Interpolator:
     InterpolatorModel
     InterpolatorGravity
 
-Solution:
----------
+Solution
+--------
 .. currentmodule:: solution
 .. autosummary::
     :toctree: Solution
 
     Solution
 
-Model:
-------
+Model
+-----
 .. currentmodule:: model
 .. autosummary::
     :toctree: Model

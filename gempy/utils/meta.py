@@ -2,7 +2,7 @@
 # region Auxiliary
 
 
-def _setdoc(docstring):
+def setdoc(docstring, indent=True):
     if type(docstring) is list:
         try:
             docstring = '-'.join(docstring)
@@ -15,14 +15,17 @@ def _setdoc(docstring):
 
             func.__doc__ = docstring
         else:
-            aux = docstring.replace('\n', '\n\n        ')
-            func.__doc__ += '-(inserted)- :\n        ' + aux
+            if indent is True:
+                aux = docstring.replace('\n', '\n\n        ')
+                func.__doc__ += ' (inserted) \n        ' + aux
+            else:
+                func.__doc__ += ' (inserted) - ' + docstring
         return func
 
     return decor
 
 
-def _setdoc_pro(docstring):
+def setdoc_pro(docstring):
     if type(docstring) is not list:
         docstring = [docstring]
         # try:

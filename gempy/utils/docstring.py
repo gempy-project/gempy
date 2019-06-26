@@ -1,3 +1,6 @@
+extent = '[x_min, x_max, y_min, y_max, z_min, z_max] '
+resolution = '(np.ndarray): [nx, ny, nz] '
+
 coord = '2D numpy array where axis 1 is the XYZ coordinates while axis 0 is n number of input '
 coord_ori = coord + 'Notice that orientations may be place anywhere in the 3D space.'
 

@@ -4,12 +4,12 @@ import warnings
 from skimage import measure
 from gempy.utils.input_manipulation import find_interfaces_from_block_bottoms
 from gempy.core.data import Grid, Surfaces, Series
-from gempy.utils.meta import _setdoc, _setdoc_pro
+from gempy.utils.meta import setdoc, setdoc_pro
 import gempy.utils.docstring as ds
 
 
-@_setdoc_pro([Grid.__doc__, Surfaces.__doc__, Series.__doc__, ds.weights_vector, ds.sfai, ds.bai, ds.mai, ds.vai,
-              ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges, ds.geological_map])
+@setdoc_pro([Grid.__doc__, Surfaces.__doc__, Series.__doc__, ds.weights_vector, ds.sfai, ds.bai, ds.mai, ds.vai,
+             ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges, ds.geological_map])
 class Solution(object):
     """
     TODO: update this
@@ -84,13 +84,13 @@ class Solution(object):
         If regular grid is active set all the solution objects dependent on them and compute mesh.
 
         Args:
-            values (list[np.array]): 'list with result of the theano evaluation (values returned by
-             :function:`gempy.compute_model` function):
-                - block_matrix
-                - weights_vector
-                - scalar_field_matrix
-                - scalar field at interfaces
-                - mask_matrix
+            values (list[np.array]): list with result of the theano evaluation (values returned by
+             :func:`gempy.compute_model` function):
+                 - block_matrix
+                 - weights_vector
+                 - scalar_field_matrix
+                 - scalar field at interfaces
+                 - mask_matrix
             compute_mesh (bool): if True perform marching cubes algorithm to recover the surface mesh from the
              implicit model.
 
@@ -140,7 +140,7 @@ class Solution(object):
         return True
         # TODO Adapt it to the gradients
 
-    @_setdoc(measure.marching_cubes_lewiner.__doc__)
+    @setdoc(measure.marching_cubes_lewiner.__doc__)
     def compute_surface_regular_grid(self, level: float, scalar_field, mask_array=None, classic=False, **kwargs):
         """
         Compute the surface (vertices and edges) of a given surface by computing marching cubes (by skimage)
@@ -209,7 +209,7 @@ class Solution(object):
             self.mask_matrix_pad.append(mask_pad)
         return True
 
-    @_setdoc(compute_surface_regular_grid.__doc__)
+    @setdoc(compute_surface_regular_grid.__doc__)
     def compute_all_surfaces(self, **kwargs):
         """
         Compute all surfaces of the model given the geological features rules.

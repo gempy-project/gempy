@@ -9,15 +9,16 @@ from gempy.core.data import AdditionalData, Faults, Grid, MetaData, Orientations
     Surfaces, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
 from gempy.core.interpolator import InterpolatorModel, InterpolatorGravity
-from gempy.utils.meta import _setdoc, _setdoc_pro
+from gempy.utils.meta import setdoc, setdoc_pro
+import gempy.utils.docstring as ds
 from gempy.plot.decorators import *
 
 pn.options.mode.chained_assignment = None
 
 
-@_setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__, SurfacePoints.__doc__,
-              Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
-              Solution.__doc__])
+@setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__, SurfacePoints.__doc__,
+             Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
+             Solution.__doc__])
 class DataMutation(object):
     """This class handles all the mutation of an object belonging to model and the update of every single object depend
      on that.
@@ -77,9 +78,9 @@ class DataMutation(object):
 
         return idx
 
-    @_setdoc_pro([AdditionalData.update_structure.__doc__, InterpolatorModel.set_theano_shared_structure.__doc__,
-                  InterpolatorModel.modify_results_matrices_pro.__doc__,
-                  InterpolatorModel.modify_results_weights.__doc__])
+    @setdoc_pro([AdditionalData.update_structure.__doc__, InterpolatorModel.set_theano_shared_structure.__doc__,
+                 InterpolatorModel.modify_results_matrices_pro.__doc__,
+                 InterpolatorModel.modify_results_weights.__doc__])
     def update_structure(self, update_theano=None):
         """Update python and theano structure parameters.
 
@@ -106,13 +107,39 @@ class DataMutation(object):
         # TODO this should go to the api and let call all different grid types
         raise NotImplementedError
 
+    @setdoc(Grid.set_regular_grid.__doc__)
+    @setdoc_pro([ds.extent, ds.resolution])
     def set_regular_grid(self, extent, resolution):
+        """
+        Set a regular grid, rescale data and initialize theano solutions.
+
+        Args:
+            extent (np.ndarray): [s0]
+            resolution (np.ndarray): [s1]
+
+        Returns:
+            Grid
+
+        Set regular grid docs
+        """
         self.grid.set_regular_grid(extent=extent, resolution=resolution)
         self.rescaling.rescale_data()
         self.interpolator.set_initial_results_matrices()
         return self.grid
 
+    @setdoc(Grid.set_custom_grid.__doc__, )
+    @setdoc_pro(ds.coord)
     def set_custom_grid(self, custom_grid):
+        """
+        Set custom grid, rescale gird and initialize theano solutions. foo
+
+        Args:
+            custom_grid (np.array): [s0]
+        Returns:
+            Grid
+
+        Set custom grid Docs
+        """
         self.grid.set_custom_grid(custom_grid)
         self.rescaling.set_rescaled_grid()
         self.interpolator.set_initial_results_matrices()
@@ -122,37 +149,35 @@ class DataMutation(object):
     # region Series
     def set_series_object(self):
         """
-        Not implemented yet. Exchange the series object of the Model object
+        Not implemented yet. Exchange the series object of the Model object. foo
         Returns:
 
         """
         raise NotImplementedError
 
+    @setdoc([Series.set_bottom_relation.__doc__], indent=False)
     def set_bottom_relation(self, series: Union[str, list], bottom_relation: Union[str, list]):
+        """"""
         self.series.set_bottom_relation(series, bottom_relation)
         self.interpolator.set_theano_shared_relations()
         return self.series
 
-    def add_series(self, series_list: Union[str, list], update_order_series=True, **kwargs):
-        self.series.add_series(series_list, update_order_series)
+    @setdoc(Series.add_series.__doc__, indent=False)
+    def add_series(self, series_list: Union[str, list], reset_order_series=True):
+        """ Add series, update the categories dependet on them and reset the flow control.
+        """
+        self.series.add_series(series_list, reset_order_series)
         self.surfaces.df['series'].cat.add_categories(series_list, inplace=True)
         self.surface_points.df['series'].cat.add_categories(series_list, inplace=True)
         self.orientations.df['series'].cat.add_categories(series_list, inplace=True)
-
         self.interpolator.set_flow_control()
         return self.series
 
-    def delete_series(self, indices: Union[str, list], update_order_series=True):
+    @setdoc(Series.delete_series.__doc__, indent=False)
+    def delete_series(self, indices: Union[str, list], refactor_order_series=True):
+        """Delete series, update the categories dependet on them and reset the flow control.
         """
-
-        Args:
-            indices: name of the series
-            update_order_series:
-
-        Returns:
-
-        """
-        self.series.delete_series(indices, update_order_series)
+        self.series.delete_series(indices, refactor_order_series)
         self.surfaces.df['series'].cat.remove_categories(indices, inplace=True)
         self.surface_points.df['series'].cat.remove_categories(indices, inplace=True)
         self.orientations.df['series'].cat.remove_categories(indices, inplace=True)
@@ -163,14 +188,22 @@ class DataMutation(object):
         self.interpolator.set_flow_control()
         return self.series
 
+    @setdoc(Series.rename_series.__doc__, indent=False)
     def rename_series(self, new_categories: Union[dict, list]):
+        """Rename series and update the categories dependet on them."""
         self.series.rename_series(new_categories)
         self.surfaces.df['series'].cat.rename_categories(new_categories, inplace=True)
         self.surface_points.df['series'].cat.rename_categories(new_categories, inplace=True)
         self.orientations.df['series'].cat.rename_categories(new_categories, inplace=True)
         return self.series
 
+    @setdoc(Series.modify_order_series.__doc__, indent=False)
     def modify_order_series(self, new_value: int, idx: str):
+        """Modify order of the series. Reorder categories of the link Surfaces, sort surface (reset the basement layer)
+        remap the Series and Surfaces to the corrspondent dataframes, sort Geometric objects, update structure and
+        reset the flow control objects.
+
+        """
         self.series.modify_order_series(new_value, idx)
 
         self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
@@ -188,7 +221,12 @@ class DataMutation(object):
         self.update_structure()
         return self.series
 
+    @setdoc(Series.reset_order_series.__doc__, indent=False)
     def reorder_series(self, new_categories: Union[list, np.ndarray]):
+        """Reorder series. Reorder categories of the link Surfaces, sort surface (reset the basement layer)
+        remap the Series and Surfaces to the corrspondent dataframes, sort Geometric objects, update structure and
+        reset the flow control objects.
+        """
         self.series.reorder_series(new_categories)
         self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
                                                           ordered=False, inplace=True)
@@ -211,8 +249,18 @@ class DataMutation(object):
     def set_fault_object(self):
         pass
 
-    @_setdoc([Faults.set_is_fault.__doc__])
-    def set_is_fault(self, series_fault: Union[str, list] = None, toggle: bool = False, change_color: bool = True):
+    @setdoc([Faults.set_is_fault.__doc__], indent=False)
+    def set_is_fault(self, series_fault: Union[str, list] = None, toggle: bool = False, offset_faults=False,
+                     change_color: bool = True):
+        """
+        Set a series to fault and update all dependet objects of the Model.
+
+        Args:
+            change_color (bool): If True faults surfaces get the default fault color (light gray)
+
+        Faults.set_is_fault Doc:
+
+        """
         series_fault = np.atleast_1d(series_fault)
 
         self.faults.set_is_fault(series_fault, toggle=toggle)
@@ -233,14 +281,18 @@ class DataMutation(object):
         self.update_structure(update_theano='matrices')
         return self.faults
 
-    @_setdoc([Faults.set_is_fault.__doc__])
+    @setdoc([Faults.set_is_finite_fault.__doc__], indent=False)
     def set_is_finite_fault(self, series_fault=None, toggle: bool = False):
+        """ """
         s = self.faults.set_is_finite_fault(series_fault, toggle)  # change df in Fault obj
         # change shared theano variable for infinite factor
         self.interpolator.set_theano_shared_is_finite()
         return s
 
+
+    @setdoc([Faults.set_fault_relation.__doc__], indent=False)
     def set_fault_relation(self, rel_matrix):
+        """"""
         self.faults.set_fault_relation(rel_matrix)
 
         # Updating
@@ -259,6 +311,7 @@ class DataMutation(object):
         """
         raise NotImplementedError
 
+    @setdoc(Surfaces.add_surface.__doc__, indent=False)
     def add_surfaces(self, surface_list: Union[str, list], update_df=True):
         self.surfaces.add_surface(surface_list, update_df)
         self.surface_points.df['surface'].cat.add_categories(surface_list, inplace=True)
@@ -266,7 +319,15 @@ class DataMutation(object):
         self.update_structure()
         return self.surfaces
 
+    @setdoc(Surfaces.delete_surface.__doc__, indent=False)
     def delete_surfaces(self, indices: Union[str, list, np.ndarray], update_id=True, remove_data=False):
+        """Delete a surface and update all related object.
+
+        Args:
+            remove_data (bool): if true delete all GeometricData labeled with the given surface.
+
+        Surface.delete_surface Doc:
+        """
         indices = np.atleast_1d(indices)
         self.surfaces.delete_surface(indices, update_id)
 
@@ -285,6 +346,7 @@ class DataMutation(object):
         self.map_data_df(self.orientations.df)
         return self.surfaces
 
+    @setdoc(Surfaces.rename_surfaces.__doc__, indent=False)
     def rename_surfaces(self, to_replace: Union[dict], **kwargs):
 
         self.surfaces.rename_surfaces(to_replace, **kwargs)
@@ -292,18 +354,10 @@ class DataMutation(object):
         self.orientations.df['surface'].cat.rename_categories(to_replace, inplace=True)
         return self.surfaces
 
-    def modify_order_surfaces(self, new_value: int, idx: int, series: str = None):
-        """
-
-        Args:
-            new_value : New position of the surface
-            idx: index of the surface. The surface should be unique all the time since the creation of the surface
-            series:
-
-        Returns:
-
-        """
-        self.surfaces.modify_order_surfaces(new_value, idx, series)
+    @setdoc(Surfaces.modify_order_surfaces.__doc__, indent=False)
+    def modify_order_surfaces(self, new_value: int, idx: int, series_name: str = None):
+        """"""
+        self.surfaces.modify_order_surfaces(new_value, idx, series_name)
 
         self.map_data_df(self.surface_points.df)
         self.surface_points.sort_table()
@@ -313,14 +367,17 @@ class DataMutation(object):
         self.update_structure()
         return self.surfaces
 
+    @setdoc(Surfaces.add_surfaces_values.__doc__, indent=False)
     def add_surface_values(self,  values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
         self.surfaces.add_surfaces_values(values_array, properties_names)
         return self.surfaces
 
+    @setdoc(Surfaces.delete_surface_values.__doc__, indent=False)
     def delete_surface_values(self, properties_names: list):
         self.delete_surface_values(properties_names)
         return self.surfaces
 
+    @setdoc(Surfaces.modify_surface_values.__doc__, indent=False)
     def modify_surface_values(self, idx, properties_names, values):
         self.surfaces.modify_surface_values(idx, properties_names, values)
         return self.surfaces
@@ -329,9 +386,21 @@ class DataMutation(object):
         self.surfaces.set_surfaces_values(values_array, properties_names)
         return self.surfaces
 
-    @_setdoc([Surfaces.map_series.__doc__])
+    @setdoc([Surfaces.map_series.__doc__], indent=False)
     def map_series_to_surfaces(self, mapping_object: Union[dict, pn.Categorical] = None,
                                set_series=True, sort_geometric_data: bool = True, remove_unused_series=True):
+        """
+        Map series to surfaces and update all related objects accordingly to the following arguments:
+
+        Args:
+            set_series (bool): if True, if mapping object has non existing series they will be created.
+            sort_geometric_data (bool): If true geometric data will be sorted accordingly to the new order of the
+             series
+            remove_unused_series (bool): if true, if an existing series is not assigned with a surface, it will get
+             removed from the Series object
+
+        Surfaces.map_series Doc:
+        """
         # Add New series to the series df
         if set_series is True:
             if type(mapping_object) is dict:
@@ -695,7 +764,7 @@ class DataMutation(object):
         return self.surfaces
 
 
-@_setdoc([MetaData.__doc__, Grid.__doc__])
+@setdoc([MetaData.__doc__, Grid.__doc__])
 class Model(DataMutation):
     """
     Container class of all objects that constitute a GemPy model. In addition the class provides the methods that
@@ -806,7 +875,7 @@ class Model(DataMutation):
 
         return True
 
-    @_setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
+    @setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
     def read_data(self, path_i=None, path_o=None, add_basement=True, **kwargs):
         """
 
