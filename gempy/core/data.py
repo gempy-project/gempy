@@ -250,13 +250,14 @@ class Faults(object):
     #     self.faults_relations_df.sort_index(inplace=True)
     #     self.faults_relations_df.sort_index(axis=1, inplace=True)
 
-    def set_is_fault(self, series_fault: Union[str, list, np.ndarray] = None, toggle=False):
+    def set_is_fault(self, series_fault: Union[str, list, np.ndarray] = None, toggle=False, offset_faults=False):
         """
         Set a flag to the series that are faults.
 
         Args:
             series_fault(str, list[str]): Name of the series which are faults
             toggle (bool): if True, passing a name which is already True will set it False.
+            offset_faults (bool): If True by default faults offset other faults
         """
         series_fault = np.atleast_1d(series_fault)
         self.df['isFault'].fillna(False, inplace=True)
@@ -276,7 +277,13 @@ class Faults(object):
             # Update default fault relations
             for a_series in series_fault:
                 col_pos = self.faults_relations_df.columns.get_loc(a_series)
+                # set the faults offset all younger
                 self.faults_relations_df.iloc[col_pos, col_pos + 1:] = True
+
+                if offset_faults is False:
+                    # set the faults does not offset the younger faults
+                    self.faults_relations_df.iloc[col_pos] = ~self.df['isFault'] & \
+                                                             self.faults_relations_df.iloc[col_pos]
 
         self.n_faults = self.df['isFault'].sum()
 
