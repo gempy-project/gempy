@@ -2,6 +2,7 @@ import numpy as np
 from typing import Union
 import warnings
 from skimage import measure
+from gempy.utils.input_manipulation import find_interfaces_from_block_bottoms
 from gempy.core.data import Grid, Surfaces, Series
 from gempy.utils.meta import _setdoc, _setdoc_pro
 import gempy.utils.docstring as ds
@@ -102,10 +103,11 @@ class Solution(object):
 
         return self
 
-    def set_values_to_regular_grid(self, values: Union[list, np.ndarray], compute_mesh: bool=True):
+    def set_values_to_regular_grid(self, values: Union[list, np.ndarray]):
         # TODO ============ Set asserts of give flexibility 20.09.18 =============
         """
-        Set all solution values to the correspondant attribute
+        Set all solution values to the correspondent attribute
+
         Args:
             values (np.ndarray): values returned by `function: gempy.compute_model` function
             compute_mesh (bool): if true compute automatically the grid
@@ -135,7 +137,7 @@ class Solution(object):
         # Properties
         self.values_matrix = values[0][1:, regular_grid_length_l0: regular_grid_length_l1]
         self.values_at_surface_points = values[0][1:, x_to_intep_length:]
-
+        return True
         # TODO Adapt it to the gradients
 
     @_setdoc(measure.marching_cubes_lewiner.__doc__)
@@ -198,7 +200,7 @@ class Solution(object):
                                                        self.grid.regular_grid.resolution[1],
                                                        self.grid.regular_grid.resolution[2]))
 
-            mask_pad = (mask_series_reshape + self.find_interfaces_from_block_bottoms(
+            mask_pad = (mask_series_reshape + find_interfaces_from_block_bottoms(
                 mask_series_reshape, True, shift=shift))
 
             if mask_topography and self.grid.regular_grid.mask_topo.size != 0:
@@ -206,35 +208,6 @@ class Solution(object):
 
             self.mask_matrix_pad.append(mask_pad)
         return True
-
-    @staticmethod
-    def find_interfaces_from_block_bottoms(block, value, shift=2):
-        """
-        Find the voxel at an interface. We shift left since gempy is based on bottoms
-
-        Args:
-            block (ndarray): matrix with the scalar values
-            value: value of which you are looking the interfaces
-            shift (int): Number of elements shifted
-
-        Returns:
-
-        """
-        A = block == value
-        final_bool = np.zeros_like(block, dtype=bool)
-
-        # Matrix shifting along axis 0
-        x_shift = A[:-shift, :, :] ^ A[shift:, :, :]
-
-        # Matrix shifting along axis 1
-        y_shift = A[:, :-shift, :] ^ A[:, shift:, :]
-
-        # Matrix shifting along axis 2
-        z_shift = A[:, :, :-shift] ^ A[:, :, shift:]
-        final_bool[shift:, shift:, shift:] = (x_shift[:, shift:, shift:] +
-                                              y_shift[shift:, :, shift:] +
-                                              z_shift[shift:, shift:, :])
-        return final_bool
 
     @_setdoc(compute_surface_regular_grid.__doc__)
     def compute_all_surfaces(self, **kwargs):
