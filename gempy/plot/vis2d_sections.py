@@ -55,9 +55,10 @@ class PlotSolution:
             self.plot_data(direction='z')
         else:
             fig, ax = plt.subplots(figsize=(6,6))
-        plt.imshow(np.flipud(geomap.T), extent=self.model.grid.topography.extent, cmap=self._cmap, norm=self._norm)
+        self.plotmap = geomap
+        plt.imshow(geomap.T, origin = 'lower', extent=self.model.grid.topography.extent, cmap=self._cmap, norm=self._norm)
         if contour_lines==True and show_data==False:
-            CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2].T,  cmap='Greys', linestyles='solid',
+            CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys', linestyles='solid',
                             extent=self.model.grid.topography.extent)
             ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
             cbar = plt.colorbar(CS)
@@ -126,7 +127,7 @@ class PlotSolution:
                     xy = self.make_topography_overlay_4_sections(j)
                     axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
-                axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]),
+                axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][1], shapes[j][0]),
                                origin='bottom',
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                          self.model.grid.regular_grid.extent[4],
@@ -144,7 +145,7 @@ class PlotSolution:
                 if show_topo:
                     xy = self.make_topography_overlay_4_sections(j)
                     axes[i].fill(xy[:,0],xy[:,1],'k', zorder=10)
-                axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]),
+                axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][1], shapes[j][0]),
                                origin='bottom',
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                          self.model.grid.regular_grid.extent[4],
