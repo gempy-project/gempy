@@ -3,11 +3,28 @@ import numpy as np
 import skimage
 import matplotlib.pyplot as plt
 from scipy.constants import G
+from typing import Optional
 
 
 class RegularGrid:
+    """
+    Class with the methods and properties to manage 3D regular grids where the model will be interpolated.
+
+    Args:
+        extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]
+        resolution (np.ndarray): [nx, ny, nz]
+
+    Attributes:
+        extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]
+        resolution (np.ndarray): [nx, ny, nz]
+        values (np.ndarray): XYZ coordinates
+        mask_topo (np.ndarray): TODO @elisa fill
+        dx (float): size of the cells on x
+        dy (float): size of the cells on y
+        dz (float): size of the cells on z
+
+    """
     def __init__(self, extent=None, resolution=None):
-        self.grid_type = 'regurlar grid'
         self.resolution = np.ones((0, 3), dtype='int64')
         self.extent = np.empty(6, dtype='float64')
         self.values = np.empty((0, 3))
@@ -27,6 +44,7 @@ class RegularGrid:
 
         Returns:
             numpy.ndarray: Unraveled 3D numpy array where every row correspond to the xyz coordinates of a regular grid
+
         """
 
         dx, dy, dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0], \
@@ -63,6 +81,14 @@ class RegularGrid:
 
 
 class CustomGrid:
+    """Object that contains arbitrary XYZ coordinates.
+
+    Args:
+        custom_grid (numpy.ndarray like): XYZ (in columns) of the desired coordinates
+
+    Attributes:
+        values (np.ndarray): XYZ coordinates
+    """
     def __init__(self, custom_grid: np.ndarray):
         self.values = np.zeros((0, 3))
         self.set_custom_grid(custom_grid)
@@ -89,6 +115,10 @@ class CustomGrid:
 
 
 class GravityGrid():
+    """
+    TODO @Miguel
+    """
+
     def __init__(self):
        # Grid.__init__(self)
         self.grid_type = 'irregular_grid'
@@ -213,6 +243,9 @@ class GravityGrid():
 
 
 class Topography:
+    """
+    TODO @Elisa
+    """
     def __init__(self, regular_grid):
         self.regular_grid = regular_grid
         self.values = np.zeros((0, 3))
@@ -230,7 +263,7 @@ class Topography:
     def load_from_saved(self, filepath):
         #assert filepath ending is .npy
         assert filepath[-4:] == '.npy', 'The file must end on .npy'
-        topo = np.load(filepath)
+        topo = np.load(filepath, allow_pickle=True)
         self.values_3D = topo[0]
         self.extent = topo[1]
         self.resolution = topo[2]
@@ -248,6 +281,7 @@ class Topography:
 
         if np.any(self.regular_grid.extent[:4] - self.extent) != 0:
             print('obacht')
+            # todo if grid extent bigger fill missing values with nans for chloe
             self._crop()
 
         if np.any(self.regular_grid.resolution[:2] - self.resolution) != 0:
@@ -267,20 +301,25 @@ class Topography:
                                                       anti_aliasing=False, preserve_range=True)
 
     def show(self):
+        from mpl_toolkits.axes_grid1 import make_axes_locatable
         fig, ax = plt.subplots()
         CS= ax.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k', linestyles='solid')
         ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
         CS2 = ax.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
-        cbar = plt.colorbar(CS2)
-        cbar.set_label('elevation')
+        plt.axis('scaled')
+        #plt.axes().set_aspect('equal','datalim')
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.title('Model topography')
+        divider = make_axes_locatable(ax)
+        cax1 = divider.append_axes("right", size="5%", pad=0.05)
+        #fig.colorbar(i, cax=cax1)
+        cbar = plt.colorbar(CS2, cax=cax1)
+        cbar.set_label('elevation')
 
     def save(self, filepath):
         np.save(filepath, np.array([self.values_3D, self.extent, self.resolution]))
         print('saved')
-
 
     def _create_grid_mask(self):
         ind = self._find_indices()
@@ -290,22 +329,48 @@ class Topography:
                 z = ind[x, y]
                 gridz[x, y, z:] = 99999
         mask = (gridz == 99999)
-        return mask.swapaxes(0,1)# np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
+        return mask.swapaxes(0, 1)# np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
 
     def _find_indices(self):
         zs = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.regular_grid.resolution[2])
         dz = (zs[-1] - zs[0]) / len(zs)
         return ((self.values_3D_res[:, :, 2] - zs[0]) / dz + 1).astype(int)
 
-    def _line_in_section(self, direction='y', cell_number=0):
+    def _line_in_section_DEP(self, direction='y', cell_number=0):
         # todo use slice2D of plotting class for this
         if np.any(self.resolution - self.regular_grid.resolution[:2]) != 0:
-            cell_number_res = (self.values_3D.shape[:2] / self.regular_grid.resolution[:2] * cell_number).astype(int)
+            cell_number_res = (self.resolution / self.regular_grid.resolution[:2] * cell_number).astype(int)
             cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
+        print(cell_number_res, cell_number)
+        print(self.values_3D[:,:,2].shape)
         if direction == 'x':
             topoline = self.values_3D[:, cell_number, :][:, [1, 2]].astype(int)
         elif direction == 'y':
             topoline = self.values_3D[cell_number, :, :][:, [0, 2]].astype(int)
         else:
             raise NotImplementedError
+        return topoline
+
+    def _line_in_section(self, direction='y', cell_number=1):
+        x = self.values_3D_res[:, :, 0]
+        y = self.values_3D_res[:, :, 1]
+        z = self.values_3D_res[:, :, 2]
+
+        if direction == 'y':
+            a = x[cell_number, :]
+            b = y[cell_number, :]
+            c = z[cell_number, :]
+            assert len(np.unique(b)) == 1
+            topoline = np.dstack((a, c)).reshape(-1, 2).astype(int)
+
+        elif direction == 'x':
+            a = x[:, cell_number]
+            b = y[:, cell_number]
+            c = z[:, cell_number]
+            assert len(np.unique(a)) == 1
+            topoline = np.dstack((b, c)).reshape(-1, 2).astype(int)
+
+        elif direction == "z":
+            print('not implemented')
+
         return topoline

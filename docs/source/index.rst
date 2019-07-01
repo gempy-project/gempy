@@ -29,10 +29,9 @@ including stratigraphic and structural features such as:
 Contents:
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
 
    self
-   ./_theory/motivation
    code
    about
 
@@ -53,7 +52,7 @@ GemPy itself offers direct visualization of 2D sections via matplotlib
 and in full 3D using the Visualization Toolkit (VTK).
 
 
-.. image:: _images/vtkFault.png
+.. image:: images/vtkFault.png
    :target: https://github.com/cgre-aachen/gempy.github.io/blob/master/
    :width: 70%
 
@@ -83,7 +82,7 @@ in the model space. Simple Monte Carlo simulation via PyMC will then result in d
 .. |z_unc| image:: ./images/gempy_zunc.png
    :width: 40%
 
-.. |wobble| image:: ./images/uncertainty1.pdf
+.. |wobble| image:: ./images/uncertainty.png
    :width: 55%
 
 Theano allows the automated computation of gradients opening the door to the use of advanced gradient-based sampling methods

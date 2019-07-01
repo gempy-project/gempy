@@ -1,6 +1,6 @@
 pandas>=0.21.0
 cython
-Theano
+Theano>=1.0.4
 matplotlib
 numpy
 pytest
@@ -8,3 +8,4 @@ nbsphinx
 seaborn
 networkx
 ipywidgets
+scikit-image

@@ -25,7 +25,7 @@ Returns:
 """
 
 import theano
-import theano.tensor as T
+from theano import tensor as T
 import theano.ifelse as tif
 import numpy as np
 import sys

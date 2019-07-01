@@ -33,7 +33,7 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from gempy.core.model import Model, DataMutation, AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
     Surfaces, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
-from gempy.utils.meta import _setdoc
+from gempy.utils.meta import setdoc
 from gempy.core.interpolator import InterpolatorGravity, InterpolatorModel
 
 
@@ -44,34 +44,35 @@ warnings.filterwarnings("ignore",
 
 
 # region Model
-@_setdoc(Model.__doc__)
+@setdoc(Model.__doc__)
 def create_model(project_name='default_project'):
-    """
+    """sss
     Create Model Object
-
-
+    Args:
+        a: agag
     Returns:
         Model
+
     """
 
     return Model(project_name)
 
 
-@_setdoc(Model.save_model_pickle.__doc__)
+@setdoc(Model.save_model_pickle.__doc__)
 def save_model_to_pickle(model: Model, path=None):
 
     model.save_model_pickle(path)
     return True
 
 
-@_setdoc(Model.save_model.__doc__)
+@setdoc(Model.save_model.__doc__)
 def save_model(model: Model, name=None, path=None):
 
     model.save_model(name, path)
     return True
 
 
-@_setdoc(Model.load_model_pickle.__doc__)
+@setdoc(Model.load_model_pickle.__doc__)
 def load_model_pickle(path):
     """
     Read InputData object from python pickle.
@@ -116,7 +117,7 @@ def load_model(name, path=None, recompile=False):
                                             dtype={'range': 'float64', '$C_o$': 'float64', 'drift equations': object,
                                             'nugget grad': 'float64', 'nugget scalar': 'float64'})
 
-    geo_model.additional_data.kriging_data.str2int_u_grage()
+    geo_model.additional_data.kriging_data.str2int_u_grade()
 
     geo_model.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0,
                                             dtype={'dtype': 'category', 'output': 'category',
@@ -183,7 +184,7 @@ def load_model(name, path=None, recompile=False):
 
     # update structure from loaded input
     geo_model.additional_data.structure_data.update_structure_from_input()
-
+    geo_model.rescaling.rescale_data()
     # # load solutions in npy files
     # geo_model.solutions.lith_block = np.load(f'{path}/{name}_lith_block.npy')
     # geo_model.solutions.scalar_field_lith = np.load(f"{path}/{name}_scalar_field_lith.npy")
@@ -238,7 +239,7 @@ def map_series_to_surfaces(geo_model: Model, mapping_object: Union[dict, pn.Cate
 
 
 # region Point-Orientation functionality
-@_setdoc([Model.read_data.__doc__])
+@setdoc([Model.read_data.__doc__])
 def read_csv(geo_model: Model, path_i=None, path_o=None, **kwargs):
     if path_i is not None or path_o is not None:
         geo_model.read_data(path_i, path_o, **kwargs)
@@ -267,7 +268,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
         form = form[0]
         print()
         ori_parameters = geo_model.create_orientation_from_surface_points(indices)
-        geo_model.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+        geo_model.add_orientation(x=ori_parameters[0], y=ori_parameters[1], z=ori_parameters[2],
                                   dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                   G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
                                   surface=form)
@@ -277,7 +278,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
             assert form.shape[0] is 1, 'The interface points must belong to the same surface'
             form = form[0]
             ori_parameters = geo_model.create_orientation_from_surface_points(indices)
-            geo_model.add_orientation(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+            geo_model.add_orientation(x=ori_parameters[0], y=ori_parameters[1], z=ori_parameters[2],
                                       dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
                                       G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
                                       surface=form)
@@ -305,7 +306,7 @@ def rescale_data(geo_model: Model, rescaling_factor=None, centers=None):
 
 
 # region Interpolator functionality
-@_setdoc([InterpolatorModel.__doc__,
+@setdoc([InterpolatorModel.__doc__,
          InterpolatorModel.set_all_shared_parameters.__doc__])
 def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=True, output=None,
                            theano_optimizer=None, verbose:list = None):
@@ -333,7 +334,7 @@ def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=
     geo_model.surface_points.sort_table()
     geo_model.orientations.sort_table()
     geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True)
-    geo_model.interpolator.set_all_shared_parameters(reset=True)
+    geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
 
     if compile_theano is True:
         geo_model.interpolator.compile_th_fn(inplace=inplace)
@@ -385,8 +386,8 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
     """
     Computes the geological model and any extra output given in the additional data option.
 
-    Args:
-        model (:obj:`gempy.core.data.Model`)
+     Args:
+        model (:class:`gempy.core.model.Model`)
         compute_mesh (bool): If true compute polydata
 
     Returns:
@@ -412,7 +413,7 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
 
         # TODO So far I reset all shared parameters to be sure. In the future this should be optimize as interpolator
         model.interpolator_gravity.set_theano_shared_tz_kernel()
-        model.interpolator_gravity.set_all_shared_parameters(reset=True)
+        model.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
         sol = model.interpolator_gravity.theano_function(*i)
 
         set_solutions = False
@@ -570,7 +571,11 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
     else:
         geo_model.set_regular_grid(extent, resolution)
 
-    read_csv(geo_model, **kwargs)
+    if 'path_i' in kwargs or 'path_o' in kwargs:
+        read_csv(geo_model, **kwargs)
+
+    if 'surface_points_df' in kwargs:
+        geo_model.set_surface_points(kwargs['surface_points_df'], **kwargs)
 
     return geo_model
 # endregion

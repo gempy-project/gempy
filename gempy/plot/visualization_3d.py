@@ -74,7 +74,8 @@ class vtkVisualization(object):
         ren_list (list): list containing the vtk renderers
     """
 
-    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, real_time=False, bg_color=None, ve=1):
+    def __init__(self, geo_data, ren_name='GemPy 3D-Editor', verbose=0, real_time=False, bg_color=None, ve=1,
+                 **kwargs):
         if VTK_IMPORT is False:
             raise ImportError('vtk is not installed. No vtk capabilities are possible')
 
@@ -96,7 +97,7 @@ class vtkVisualization(object):
         self.surface_name = geo_data.surface_points.df['surface'].unique()
 
         # Extents
-        self.extent = self.geo_model.grid.extent
+        self.extent = self.geo_model.grid.regular_grid.extent
         self.extent[-1] = ve * self.extent[-1]
         self.extent[-2] = ve * self.extent[-2]
         _e = self.extent
@@ -143,6 +144,7 @@ class vtkVisualization(object):
 
             r.AddActor(axe)
             r.ResetCamera()
+        # TODO panel does not deal with text
         self.set_text()
 
     #
@@ -171,10 +173,14 @@ class vtkVisualization(object):
 
         if 'fullscreen' in kwargs:
             self.renwin.FullScreenOn()
+
+        silent = kwargs.get('silent', False)
+
         self.renwin.SetSize(kwargs['size'])
 
-        self.interactor.Initialize()
-        self.interactor.Start()
+        if silent is False:
+            self.interactor.Initialize()
+            self.interactor.Start()
 
     def set_text(self):
         txt = vtk.vtkTextActor()
@@ -231,30 +237,32 @@ class vtkVisualization(object):
         if key is 'q':
             print('closing vtk')
             self.close_window()
-            # create render window, settings
-            self.renwin = vtk.vtkRenderWindow()
-            self.renwin.SetWindowName(self.ren_name)
 
-            # Set 4 renderers. ie 3D, X,Y,Z projections
-            self.ren_list = self.create_ren_list()
-
-            # create interactor and set interactor style, assign render window
-            self.interactor = vtk.vtkRenderWindowInteractor()
-            self.interactor.SetRenderWindow(self.renwin)
-            self.interactor.AddObserver("KeyPressEvent", self.key_callbacks)
-
-            # 3d model camera for the 4 renders
-            self.camera_list = self._create_cameras(self.extent)
-            # Setting the camera and the background color to the renders
-            self.set_camera_backcolor()
-
-            # Creating the axis
-            for e, r in enumerate(self.ren_list):
-                # add axes actor to all renderer
-                axe = self._create_axes(self.camera_list[e])
-
-                r.AddActor(axe)
-                r.ResetCamera()
+            # TODO: Decide if this even matter
+            # # create render window, settings
+            # self.renwin = vtk.vtkRenderWindow()
+            # self.renwin.SetWindowName(self.ren_name)
+            #
+            # # Set 4 renderers. ie 3D, X,Y,Z projections
+            # self.ren_list = self.create_ren_list()
+            #
+            # # create interactor and set interactor style, assign render window
+            # self.interactor = vtk.vtkRenderWindowInteractor()
+            # self.interactor.SetRenderWindow(self.renwin)
+            # self.interactor.AddObserver("KeyPressEvent", self.key_callbacks)
+            #
+            # # 3d model camera for the 4 renders
+            # self.camera_list = self._create_cameras(self.extent)
+            # # Setting the camera and the background color to the renders
+            # self.set_camera_backcolor()
+            #
+            # # Creating the axis
+            # for e, r in enumerate(self.ren_list):
+            #     # add axes actor to all renderer
+            #     axe = self._create_axes(self.camera_list[e])
+            #
+            #     r.AddActor(axe)
+            #     r.ResetCamera()
 
         if key is 'r':
             self.real_time = self.real_time ^ True
@@ -521,7 +529,8 @@ class vtkVisualization(object):
         self.ren_list[2].AddActor(triangulatedActor)
         self.ren_list[3].AddActor(triangulatedActor)
         try:
-            self.set_geological_map()
+            if self.geo_model.solutions.geological_map is not None:
+                self.set_geological_map()
         except AttributeError as ae:
             warnings.warn(str(ae))
 
@@ -1042,7 +1051,7 @@ class vtkVisualization(object):
             # set background color for each renderer
             self.ren_list[i].SetBackground(ren_color[i][0], ren_color[i][1], ren_color[i][2])
 
-    def _create_axes(self, camera, verbose=0, tick_vis=True):
+    def _create_axes(self, camera, verbose=0, tick_vis=False):
         """
         Create the axes boxes
         """
@@ -1084,7 +1093,7 @@ class vtkVisualization(object):
             cube_axes_actor.SetGridLineLocation(cube_axes_actor.VTK_GRID_LINES_FURTHEST)
         else:  # rather use elif == "linux" ? but what about other platforms
             try:  # apparently this can also go wrong on linux, maybe depends on vtk version?
-                cube_axes_actor.SetGridLineLocation(vtk.VTK_GRID_LINES_FURTHEST)
+                cube_axes_actor.SetGridLineLocation(cube_axes_actor.VTK_GRID_LINES_FURTHEST)
             except AttributeError:
                 pass
 
@@ -1148,9 +1157,9 @@ class vtkVisualization(object):
 
         nx, ny, nz = geo_data.grid.regular_grid.resolution
 
-        lx = geo_data.grid.extent[1] - geo_data.grid.extent[0]
-        ly = geo_data.grid.extent[3] - geo_data.grid.extent[2]
-        lz = geo_data.grid.extent[5] - geo_data.grid.extent[4]
+        lx = geo_data.grid.regular_grid.extent[1] - geo_data.grid.regular_grid.extent[0]
+        ly = geo_data.grid.regular_grid.extent[3] - geo_data.grid.regular_grid.extent[2]
+        lz = geo_data.grid.regular_grid.extent[5] - geo_data.grid.regular_grid.extent[4]
 
         dx, dy, dz = lx / nx, ly / ny, lz / nz
 
@@ -1159,11 +1168,11 @@ class vtkVisualization(object):
         npoints = (nx + 1) * (ny + 1) * (nz + 1)
 
         # Coordinates
-        x = np.arange(geo_data.grid.extent[0], geo_data.grid.extent[1] + 0.1, dx, dtype='float64')
+        x = np.arange(geo_data.grid.regular_grid.extent[0], geo_data.grid.regular_grid.extent[1] + 0.1, dx, dtype='float64')
 
-        y = np.arange(geo_data.grid.extent[2], geo_data.grid.extent[3] + 0.1, dy, dtype='float64')
+        y = np.arange(geo_data.grid.regular_grid.extent[2], geo_data.grid.regular_grid.extent[3] + 0.1, dy, dtype='float64')
 
-        z = np.arange(geo_data.grid.extent[4], geo_data.grid.extent[5] + 0.1, dz, dtype='float64')
+        z = np.arange(geo_data.grid.regular_grid.extent[4], geo_data.grid.regular_grid.extent[5] + 0.1, dz, dtype='float64')
 
         lith = lith_block.reshape((nx, ny, nz))
 
@@ -1395,7 +1404,7 @@ class ipyvolumeVisualization:
         Args:
             geo_model (gempy.core.model.Model):
         """
-        if VTK_IMPORT is False:
+        if IPV_IMPORT is False:
             raise ImportError('ipyvolume package is not installed.')
 
         self.geo_model = geo_model
@@ -1413,10 +1422,11 @@ class ipyvolumeVisualization:
         f = self.geo_model.surfaces.df.surface==surface
         return self.geo_model.surfaces.df[f].color
 
-
     def plot_surfaces(self):
         """Plot gempy surface model."""
         # TODO: add plot_data option
+        if IPV_IMPORT == False:
+            raise ImportError('ipyvolume package is not installed. 3D visualization not available.')
         ipv.figure()
         meshes = []
         for surf in range(len(self.ver)):
@@ -1431,9 +1441,9 @@ class ipyvolumeVisualization:
             )
             meshes.append(mesh)
 
-        ipv.xlim(self.geo_model.grid.extent[0], self.geo_model.grid.extent[1])
-        ipv.ylim(self.geo_model.grid.extent[2], self.geo_model.grid.extent[3])
-        ipv.zlim(self.geo_model.grid.extent[4], self.geo_model.grid.extent[5])
+        ipv.xlim(self.geo_model.grid.regular_grid.extent[0], self.geo_model.grid.regular_grid.extent[1])
+        ipv.ylim(self.geo_model.grid.regular_grid.extent[2], self.geo_model.grid.regular_grid.extent[3])
+        ipv.zlim(self.geo_model.grid.regular_grid.extent[4], self.geo_model.grid.regular_grid.extent[5])
         ipv.show()
         return ipv
 
@@ -1454,9 +1464,9 @@ class ipyvolumeVisualization:
                     self.geo_model.surfaces.df.surface == surf].color.values
             )
 
-        ipv.xlim(self.geo_model.grid.extent[0], self.geo_model.grid.extent[1])
-        ipv.ylim(self.geo_model.grid.extent[2], self.geo_model.grid.extent[3])
-        ipv.zlim(self.geo_model.grid.extent[4], self.geo_model.grid.extent[5])
+        ipv.xlim(self.geo_model.grid.regular_grid.extent[0], self.geo_model.grid.regular_grid.extent[1])
+        ipv.ylim(self.geo_model.grid.regular_grid.extent[2], self.geo_model.grid.regular_grid.extent[3])
+        ipv.zlim(self.geo_model.grid.regular_grid.extent[4], self.geo_model.grid.regular_grid.extent[5])
         ipv.show()
 
 

@@ -3,5 +3,5 @@ steno3d
 vtk
 gdal
 qgrid
-pymc
 pymc3
+pyvolume

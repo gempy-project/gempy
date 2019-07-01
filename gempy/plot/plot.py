@@ -27,7 +27,7 @@ from os import path
 import sys
 
 # This is for sphenix to find the packages
-sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+#sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
 from .visualization_2d import PlotData2D
 from .visualization_3d import steno3D, GemPyvtkInteract, ipyvolumeVisualization
@@ -219,7 +219,7 @@ def plot_section(model, cell_number=13, block=None, direction="y", interpolation
         None
     """
     plot = PlotData2D(model)
-    plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
+    plot.fig = plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
                             show_data, show_faults, show_topo,  block_type, ve, **kwargs)
     # TODO saving options
     return plot
