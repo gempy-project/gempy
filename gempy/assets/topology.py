@@ -31,16 +31,16 @@ from gempy.utils.analysis import get_centroids, get_unique_regions
 from networkx import convert_node_labels_to_integers, relabel_nodes
 
 def compute_topology(geo_model,
-                     cell_number=None,
-                     direction=None,
-                     compute_areas=False,
-                     return_label_block=False,
-                     return_rprops=False,
-                     filter_rogue=False,
-                     noddy=False,
-                     filter_threshold_area=10,
-                     neighbors=8,
-                     enhanced_labels=True):
+                     cell_number:int=None,
+                     direction:str=None,
+                     compute_areas:bool=False,
+                     return_label_block:bool=False,
+                     return_rprops:bool=False,
+                     filter_rogue:bool=False,
+                     noddy:bool=False,
+                     filter_threshold_area:int=10,
+                     neighbors:int=8,
+                     enhanced_labels:bool=True) -> tuple:
     """
     Computes model topology and returns graph, centroids and look-up-tables.
 
@@ -55,8 +55,8 @@ def compute_topology(geo_model,
             np.ndarray. Default False.
         return_rprops (bool, optional): If True additionally returns region properties of the unique regions
             (see skimage.measure.regionprops).
-        filter_rogue (bool, optional): If True filters nodes with region areas below threshold (default: 1) from
-            topology graph.
+        filter_rogue (bool, optional): If True filters nodes with region areas below threshold area (default: 10) from
+            topology graph. Default: False.
         filter_threshold_area (int, optional): Specifies the threshold area value (number of pixels) for filtering
             small regions that may thow off topology analysis.
         neighbors (int, optional): Specifies the neighbor voxel connectivity taken into account for the topology
@@ -75,8 +75,7 @@ def compute_topology(geo_model,
             labels_to_lith_lot (dict): Dictionary look-up-table to go from node id to lithology id.
     """
     assert hasattr(geo_model, "solutions"), "geo_model object must contain .solutions attribute."
-    isfault = np.where(geo_model.faults.df.isFault == True)[0]
-    fault_arrays = np.round(np.atleast_2d(geo_model.solutions.block_matrix[isfault])[:, 0, :])
+    fault_arrays = np.round(np.atleast_2d(geo_model.solutions.block_matrix)[:-1, 0, :])
     iszero = np.where(fault_arrays==0)
     fault_arrays[iszero] += 1
     fault_arrays = fault_arrays * ~(fault_arrays == np.min(np.round(fault_arrays), axis=1).reshape(-1, 1))
@@ -97,7 +96,7 @@ def compute_topology(geo_model,
         lb = geo_model.solutions.lith_block.reshape(*res)[:, :, cell_number]
         fb = fault_block.reshape(*res)[:, :, cell_number]
 
-    return _topology_analyze(lb, fb, geo_model.faults.n_faults,
+    return _topology_analyze(lb, fb, geo_model.solutions.block_matrix.shape[0] - 1,
                              areas_bool=compute_areas,
                              return_block=return_label_block,
                              return_rprops=return_rprops,
@@ -169,17 +168,25 @@ def _topology_analyze(lith_block,
     # classify edges (stratigraphic, fault)
     classify_edges(G, centroids, fault_block)
 
+    for node, centroid in zip(G.nodes, centroids.values()):
+        G.nodes[node]["centroid"] = centroid
+
+
+
     # filter rogue pixel nodes from graph if wanted
     if filter_rogue:
         G, centroids = filter_region_areas(G, centroids, rprops, area_threshold=filter_threshold_area)
-        G = convert_node_labels_to_integers(G, first_label=1)
-        centroids = {i+1: coords for i, coords in enumerate(centroids.values())}
+        # G = convert_node_labels_to_integers(G, first_label=1)
+        # centroids = {i+1: coords for i, coords in enumerate(centroids.values())}
 
     # enhanced node labeling containing fault block and lith id
     if enhanced_labels:
         labels = enhanced_labeling(G, rprops, lith_block, fault_block)
         G = relabel_nodes(G, labels)  # relabel graph
-        centroids = get_centroids(rprops)  # redo centroids for updated labeling
+        # centroids = get_centroids(rprops)  # redo centroids for updated labeling
+        centroids = {node:ctr for node, ctr in zip(G.nodes, centroids.values())}
+
+
 
     # compute the adjacency areas for each edge
     if areas_bool:
@@ -238,14 +245,14 @@ def enhanced_labeling(G, rprops, lith_block, fault_block):
     return labels
 
 
-def filter_region_areas(graph, centroids, rprops, area_threshold=10):
+def filter_region_areas(graph, centroids, rprops, area_threshold=1):
     """
     Filters nodes with region areas with an area below the given threshold (default: 10) from given graph.
     Useful for filtering rogue pixels that throw off topology graph comparisons.
 
     Args:
         graph (skimage.future.graph.rag.RAG): Topology graph object to be filtered.
-        rprops (list): Region property objects (skimage.measure._regionprops._RegionProperties) for all nodes within given topology graph.
+        rprops (list): Region property objects (skimage.measure._regionprops._aRegionProperties) for all nodes within given topology graph.
     Keyword Args:
         area_threshold (int): Region areas with number of pixels below or equal of this value will be removed. Default 10
 
@@ -254,8 +261,8 @@ def filter_region_areas(graph, centroids, rprops, area_threshold=10):
     """
     from copy import deepcopy
 
-    if len(graph.nodes()) != len(rprops):   # failsafe if the function is run with mismatching rprops
-        return graph, centroids
+    # if len(graph.nodes()) != len(rprops):   # failsafe if the function is run with mismatching rprops
+    #     return graph, centroids
 
     ngraph = deepcopy(graph)
     ncentroids = deepcopy(centroids)
