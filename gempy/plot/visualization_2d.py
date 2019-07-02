@@ -270,32 +270,39 @@ class PlotData2D(object):
         plt.xlabel('X')
         plt.ylabel('Y')
 
-    def plot_block_section(self, solution:Solution, cell_number=13, block=None, direction="y", interpolation='none',
-                           show_data=False, show_faults=False, show_topo = True,  block_type=None, ve=1, **kwargs):
-        """
-        Plot a section of the block model
+    def plot_block_section(self, solution:Solution, cell_number:int, block:np.ndarray=None, direction:str="y",
+                           interpolation:str='none', show_data:bool=False, show_faults:bool=False, show_topo:bool=True,
+                           block_type=None, ve:float=1, **kwargs):
+        """Plot a section of the block model
 
         Args:
-            cell_number(int): position of the array to plot
-            direction(str): xyz. Caartesian direction to be plotted
-            interpolation(str): Type of interpolation of plt.imshow. Default 'none'.  Acceptable values are 'none'
-            ,'nearest', 'bilinear', 'bicubic',
-            'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser',
-            'quadric', 'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc',
-            'lanczos'
-            ve(float): Vertical exageration
-            **kwargs: imshow keywargs
+            solution (Solution): [description]
+            cell_number (int): Section position of the array to plot.
+            block (np.ndarray, optional): Lithology block. Defaults to None.
+            direction (str, optional): Cartesian direction to be plotted
+                ("x", "y", "z"). Defaults to "y".
+            interpolation (str, optional): Type of interpolation of plt.imshow.
+                Defaults to 'none'. Acceptable values are ('none' ,'nearest',
+                'bilinear', 'bicubic', 'spline16', 'spline36', 'hanning',
+                'hamming', 'hermite', 'kaiser', 'quadric', 'catrom', 'gaussian',
+                'bessel', 'mitchell', 'sinc', 'lanczos'.
+            show_data (bool, optional): Plots input data on-top of block
+                section. Defaults to False.
+            show_faults (bool, optional): Plot fault line on-top of block
+                section. Defaults to False.
+            show_topo (bool, optional): Plots block section with topography.
+                Defaults to True.
+            block_type ([type], optional): [description]. Defaults to None.
+            ve (float, optional): Vertical exaggeration. Defaults to 1.
 
         Returns:
-            Block plot
+            (gempy.plot.visualization_2d.PlotData2D) Block section plot.
         """
-
         if block is None:
             _block = solution.lith_block
         else:
             _block = block
             if _block.dtype == bool:
-
                 kwargs['cmap'] = 'viridis'
                 kwargs['norm'] = None
 
@@ -312,7 +319,7 @@ class PlotData2D(object):
         # TODO: plot_topo option - need fault_block for that
 
         # apply vertical exageration
-        if direction == 'x' or direction == 'y':
+        if direction in ("x", "y"):
             aspect = ve
         else:
             aspect = 1
@@ -322,13 +329,17 @@ class PlotData2D(object):
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
 
-        im = plt.imshow(plot_block[_a, _b, _c].T, origin="bottom",
+        im = plt.imshow(plot_block[_a, _b, _c].T,
+                        origin="bottom",
                         extent=extent_val,
                         interpolation=interpolation,
                         aspect=aspect,
                         **kwargs)
+
+        if extent_val[3] < 0:           # correct vertical orientation of plot
+            plt.gca().invert_yaxis()    # if maximum vertical extent negative
+
         if show_faults:
-            #raise NotImplementedError
             self.extract_fault_lines(cell_number, direction)
 
         if show_topo:
