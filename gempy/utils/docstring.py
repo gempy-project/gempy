@@ -53,3 +53,4 @@ edges = 'List of numpy arrays containing the indices of the vertices numpy array
         ' triangle. '
 geological_map = '2D array containing the lithologies at the surfaces. '
 
+recompute_rf = 'if True recompute the rescaling factor'

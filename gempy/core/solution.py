@@ -12,7 +12,6 @@ import gempy.utils.docstring as ds
              ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges, ds.geological_map])
 class Solution(object):
     """
-    TODO: update this
     This class stores the output of the interpolation and the necessary objects to visualize and manipulate this data.
     Depending on the activated grid (see :class:`Grid`) a different number of properties are returned returned:
 
@@ -20,7 +19,6 @@ class Solution(object):
         grid (Grid): [s0]
         surfaces (Surfaces): [s1]
         series (Series): [s2]
-
 
     Attributes:
         grid (Grid)

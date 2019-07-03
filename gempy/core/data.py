@@ -1309,7 +1309,6 @@ class SurfacePoints(GeometricData):
 
         Returns:
             :class:`SurfacePoints`
-
         """
         self.df = pn.DataFrame(columns=['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'surface'], dtype=float)
 
@@ -1614,7 +1613,7 @@ class Orientations(GeometricData):
             idx (Optional[int, list[int]): [s6]
 
         Returns:
-
+            Orientations
         """
         if pole_vector is None and orientation is None:
             raise AttributeError('Either pole_vector or orientation must have a value. If both are passed pole_vector'
@@ -1651,6 +1650,7 @@ class Orientations(GeometricData):
         self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
 
         self.sort_table()
+        return self
 
     @setdoc_pro([ds.idx_sp])
     def del_orientation(self, idx):
