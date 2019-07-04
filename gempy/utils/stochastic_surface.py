@@ -15,44 +15,50 @@
     along with gempy.  If not, see <http://www.gnu.org/licenses/>.
 
 
+Module with classes for convenient stochastic perturbation of gempy data points
+with flexible back-ends.
+
+    _StochasticSurfaceAbstract provides base functionality shared by all classes
+    inheriting from it. It provides a set of abstract methods that need to be
+    filled in by the subclasses.
+
+Tested on Windows 10
+
 @author: Alexander Schaaf
 """
 
 import scipy.stats as ss
 import numpy as np
 from nptyping import Array
+from typing import Any
+from gstools import Gaussian, SRF
 from copy import deepcopy
 import pandas as pd
 from abc import ABC, abstractmethod
+from gempy.core.model import Model
 
 
-class _StochasticSurfaceAbstract(ABC):
-    # TODO: Store samples
-    """Abstract StochasticSurface class that contains functionality independent
-    from individual parametrization or sampling libraries."""
+class _StochasticSurface(ABC):
+    """Abstract base class"""
     stochastic_surfaces = {}
 
-    def __init__(self, geo_model: object, surface: str):
-        # class attributes, shared across all instances to allow access to the
-        # original parametrization and the geo_model instance.
-        self.__class__.surface_points_init = deepcopy(
-            geo_model.surface_points.df)
+    def __init__(self, geo_model: Model, surface:str, grouping: str = "surface"):
+        self.__class__.surface_points_init = deepcopy(geo_model.surface_points.df)
         self.__class__.orientations_init = deepcopy(geo_model.orientations.df)
         self.__class__.geo_model = geo_model
 
-        # instance attributes
         self.surface = surface
         self.stochastic_surfaces[surface] = self
 
-        self.fsurf_bool = geo_model.surface_points.df.surface == surface
+        self.fsurf_bool = geo_model.surface_points.df[grouping] == surface
         self.isurf = geo_model.surface_points.df[self.fsurf_bool].index
-        self.forient_bool = geo_model.orientations.df.surface == surface
+        self.forient_bool = geo_model.orientations.df[grouping] == surface
         self.iorient = geo_model.orientations.df[self.forient_bool].index
 
         self.nsurf = len(self.isurf)
         self.norient = len(self.iorient)
 
-        self.stoch_param = {}
+        self.stoch_param = pd.DataFrame(columns=["i", "col", "val"])
 
     @property
     def surface_points(self) -> pd.DataFrame:
@@ -65,28 +71,16 @@ class _StochasticSurfaceAbstract(ABC):
         return self.geo_model.orientations.df.loc[self.iorient]
 
     @abstractmethod
-    def parametrize_surfpts_naive(self, factor: float = 0.01) -> None:
+    def sample(self):
         pass
 
-    @abstractmethod
-    def draw_surfpts(self) -> Array:
-        pass
-
-    @classmethod
-    def modify_surface_points_all(self) -> None:
-        for stochastic_surface in self.stochastic_surfaces.values():
-            stochastic_surface.modify_surface_points()
-
-    def modify_surface_points(self) -> None:
-        """Modify geomodel dataframe surface point Z-values."""
-        sample = self.draw_surfpts()
-        for key, value in sample.items():
+    def modify(self):
+        for col, i in self.stoch_param.groupby("col").groups.items():
             self.geo_model.modify_surface_points(
-                self.isurf,
+                self.stoch_param.loc[i, "i"],
                 **{
-                    key:
-                    self.surface_points_init.loc[self.isurf, key].values +
-                    value
+                    col:
+                        self.surface_points_init.loc[self.stoch_param.loc[i, "i"], col].values + self.stoch_param.loc[i, "val"].values
                 }
             )
 
@@ -96,73 +90,68 @@ class _StochasticSurfaceAbstract(ABC):
             self.isurf,
             **{
                 "Z":
-                deepcopy(self.surface_points_init.loc[self.isurf, "Z"].values),
+                    deepcopy(self.surface_points_init.loc[self.isurf, "Z"].values),
                 "Y":
-                deepcopy(self.surface_points_init.loc[self.isurf, "Y"].values),
+                    deepcopy(self.surface_points_init.loc[self.isurf, "Y"].values),
                 "X":
-                deepcopy(self.surface_points_init.loc[self.isurf, "X"].values)
+                    deepcopy(self.surface_points_init.loc[self.isurf, "X"].values)
             }
         )
 
 
-class StochasticSurfaceScipy(_StochasticSurfaceAbstract):
-    """StochasticSurface subclass providing stochastic parametrization via the
-    scipy.stats ecosystem."""
+class StochasticSurfaceScipy(_StochasticSurface):
+    def __init__(self, geo_model: Model,
+                 surface: str,
+                 grouping: str = "surface"):
+        super().__init__(geo_model, surface, grouping=grouping)
+        self._i = {"Z": 5, "X": 1, "Y": 3}
+        self._extent = self.geo_model.grid.regular_grid.extent
+        self.parametrization = None
 
-    def __init__(self, geo_model: object, surface: str):
-        super().__init__(geo_model, surface)
+    def sample(self):
+        if not self.parametrization:
+            raise AssertionError("No stochastic parametrization found.")
 
-    def parametrize_surfpts_naive(self,
-                                  factor: float = 0.01,
-                                  direction: str = "Z") -> None:
-        """Naive stochastic parametrization of surface point Z-values.
+        self.stoch_param = pd.DataFrame(columns=["i", "col", "val"])
 
-        Args:
-            factor (float, optional): Scaling factor for uncertainty based on
-                maximum z-extent. Defaults to 0.01.
-        """
-        direction = direction.capitalize()
-        i = {"Z": 5, "X": 1, "Y": 3}
-        extent = self.geo_model.grid.regular_grid.extent
-        scale = extent[i[direction]] * factor
+        for entry in self.parametrization:
+            val = entry[2].rvs()
+            for i in entry[0]:
+                self.stoch_param = self.stoch_param.append(
+                    {'i': i, 'col': entry[1], 'val': val},
+                    ignore_index=True
+                )
 
-        params = [
-            ss.norm(loc=0, scale=abs(scale))
-            for param in self.surface_points.loc[self.isurf, direction]
+
+    def parametrize_surfpts_single(self,
+                                   stdev: float,
+                                   direction: str = "Z") -> None:
+        dist = ss.norm(loc=0, scale=stdev)
+        self.parametrization = [(self.isurf, direction, dist)]
+
+    def parametrize_surfpts_individual(self,
+                                       factor: float = 0.01,
+                                       direction: str = "Z") -> None:
+        scale = self._extent[self._i[direction.capitalize()]] * factor
+        self.parametrization = [
+            (i, direction, ss.norm(loc=0, scale=abs(scale)))
+            for i in self.isurf
         ]
 
-        self.stoch_param.update({direction: params})
-
-    def draw_surfpts(self) -> Array:
-        """Random draw from stochastic parametrization."""
-        if not self.stoch_param:
-            raise AttributeError("No stochastic parametrization present.")
-
-        # TODO: add None possibility, for non-stochastic points
-
-        sample = {
-            key: np.array([dist.rvs() for dist in value])
-            for key, value in self.stoch_param.items()
-        }
-
-        return sample
 
 
-
-class StochasticSurfaceGRF(_StochasticSurfaceAbstract):
-    def __init__(self, geo_model: object, surface: str):
-        from gstools import Gaussian, SRF
-        super().__init__(geo_model, surface)
-
-    def parametrize_surfpts_naive(self,
-                                  factor: float = 800) -> None:
-        # create a simple GRF across domain to sample from
-        self.Gaussian = Gaussian(dim=2, var=1, len_scale=factor)
-
-
-    def draw_surfpts(self, seed=None) -> Array:
-        # draw from GRF at surface point locations
-        srf = SRF(self.Gaussian, seed=seed)
-        pos = self.surface_points[["X", "Y"]].values
-        sample = srf((pos[:, 0], pos[:, 1])) * 30
-        return {"Z": sample}
+# class StochasticSurfaceGRF(_StochasticSurface):
+#     def __init__(self, geo_model: object, surface: str):
+#         super().__init__(geo_model, surface)
+#
+#     def parametrize_surfpts_naive(self,
+#                                   factor: float = 800) -> None:
+#         # create a simple GRF across domain to sample from
+#         self.Gaussian = Gaussian(dim=2, var=1, len_scale=factor)
+#
+#     def sample(self, seed=None) -> dict:
+#         # draw from GRF at surface point locations
+#         srf = SRF(self.Gaussian, seed=seed)
+#         pos = self.surface_points[["X", "Y"]].values
+#         sample = srf((pos[:, 0], pos[:, 1])) * 30
+#         return {"Z": sample}
