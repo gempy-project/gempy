@@ -182,6 +182,17 @@ def load_model(name, path=None, recompile=False):
     geo_model.surface_points.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
     geo_model.surface_points.df['series'].cat.set_categories(cat_series, inplace=True)
 
+    # Code to add smooth columns for models saved before gempy 2.0bdev4
+    try:
+        geo_model.surface_points.df['smooth']
+    except KeyError:
+        geo_model.surface_points.df['smooth'] = 1e-7
+
+    try:
+        geo_model.orientations.df['smooth']
+    except KeyError:
+        geo_model.orientations.df['smooth'] = 0.01
+
     # update structure from loaded input
     geo_model.additional_data.structure_data.update_structure_from_input()
     geo_model.rescaling.rescale_data()
