@@ -33,7 +33,7 @@ sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from gempy.core.model import Model, DataMutation, AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
     Surfaces, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
-from gempy.utils.meta import _setdoc
+from gempy.utils.meta import setdoc
 from gempy.core.interpolator import InterpolatorGravity, InterpolatorModel
 
 
@@ -44,7 +44,7 @@ warnings.filterwarnings("ignore",
 
 
 # region Model
-@_setdoc(Model.__doc__)
+@setdoc(Model.__doc__)
 def create_model(project_name='default_project'):
     """sss
     Create Model Object
@@ -58,21 +58,21 @@ def create_model(project_name='default_project'):
     return Model(project_name)
 
 
-@_setdoc(Model.save_model_pickle.__doc__)
+@setdoc(Model.save_model_pickle.__doc__)
 def save_model_to_pickle(model: Model, path=None):
 
     model.save_model_pickle(path)
     return True
 
 
-@_setdoc(Model.save_model.__doc__)
+@setdoc(Model.save_model.__doc__)
 def save_model(model: Model, name=None, path=None):
 
     model.save_model(name, path)
     return True
 
 
-@_setdoc(Model.load_model_pickle.__doc__)
+@setdoc(Model.load_model_pickle.__doc__)
 def load_model_pickle(path):
     """
     Read InputData object from python pickle.
@@ -182,6 +182,17 @@ def load_model(name, path=None, recompile=False):
     geo_model.surface_points.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
     geo_model.surface_points.df['series'].cat.set_categories(cat_series, inplace=True)
 
+    # Code to add smooth columns for models saved before gempy 2.0bdev4
+    try:
+        geo_model.surface_points.df['smooth']
+    except KeyError:
+        geo_model.surface_points.df['smooth'] = 1e-7
+
+    try:
+        geo_model.orientations.df['smooth']
+    except KeyError:
+        geo_model.orientations.df['smooth'] = 0.01
+
     # update structure from loaded input
     geo_model.additional_data.structure_data.update_structure_from_input()
     geo_model.rescaling.rescale_data()
@@ -239,7 +250,7 @@ def map_series_to_surfaces(geo_model: Model, mapping_object: Union[dict, pn.Cate
 
 
 # region Point-Orientation functionality
-@_setdoc([Model.read_data.__doc__])
+@setdoc([Model.read_data.__doc__])
 def read_csv(geo_model: Model, path_i=None, path_o=None, **kwargs):
     if path_i is not None or path_o is not None:
         geo_model.read_data(path_i, path_o, **kwargs)
@@ -306,7 +317,7 @@ def rescale_data(geo_model: Model, rescaling_factor=None, centers=None):
 
 
 # region Interpolator functionality
-@_setdoc([InterpolatorModel.__doc__,
+@setdoc([InterpolatorModel.__doc__,
          InterpolatorModel.set_all_shared_parameters.__doc__])
 def set_interpolation_data(geo_model: Model, inplace=True, compile_theano: bool=True, output=None,
                            theano_optimizer=None, verbose:list = None):

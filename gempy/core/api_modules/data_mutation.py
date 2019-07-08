@@ -9,7 +9,7 @@ from numpy import ndarray
 from pandas import DataFrame
 from gempy.core.model import *
 from typing import Union
-from gempy.utils.meta import _setdoc
+from gempy.utils.meta import setdoc
 
 
 def add_surface_points(data: Union[Model, SurfacePoints]):

@@ -26,6 +26,7 @@ import pandas as pn
 
 def find_surface_points_from_block(block, value):
     """
+    TODO: Is this dep by find_interfaces_from_block_bottoms?
     Find the voxel at an interface. We shift left since gempy is based on bottoms
 
     Args:
@@ -49,6 +50,35 @@ def find_surface_points_from_block(block, value):
     final_bool = np.zeros_like(block, dtype=bool)
     final_bool[:-1, :-1, :-1] = x_shift[:, :-1, :-1] + y_shift[:-1, :, :-1] + z_shift[-1:, -1:, :]
 
+    return final_bool
+
+
+def find_interfaces_from_block_bottoms(block, value, shift=2):
+    """
+    Find the voxel at an interface. We shift left since gempy is based on bottoms
+
+    Args:
+        block (ndarray): matrix with the scalar values
+        value: value of which you are looking the interfaces
+        shift (int): Number of elements shifted
+
+    Returns:
+
+    """
+    A = block == value
+    final_bool = np.zeros_like(block, dtype=bool)
+
+    # Matrix shifting along axis 0
+    x_shift = A[:-shift, :, :] ^ A[shift:, :, :]
+
+    # Matrix shifting along axis 1
+    y_shift = A[:, :-shift, :] ^ A[:, shift:, :]
+
+    # Matrix shifting along axis 2
+    z_shift = A[:, :, :-shift] ^ A[:, :, shift:]
+    final_bool[shift:, shift:, shift:] = (x_shift[:, shift:, shift:] +
+                                          y_shift[shift:, :, shift:] +
+                                          z_shift[shift:, shift:, :])
     return final_bool
 
 

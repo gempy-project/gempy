@@ -8,7 +8,8 @@ from typing import Optional
 
 import pandas as pn
 class RegularGrid:
-    """Class with the methods and properties to manage 3D regular grids where the model will be interpolated.
+    """
+    Class with the methods and properties to manage 3D regular grids where the model will be interpolated.
 
     Args:
         extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]

@@ -1,13 +1,13 @@
 from gempy.core.data import SurfacePoints, Orientations, Grid, Surfaces, Series, Faults, AdditionalData
-from gempy.utils.meta import _setdoc_pro, _setdoc
+from gempy.utils.meta import setdoc_pro, setdoc
 import gempy.utils.docstring as ds
 
 import numpy as np
 import theano
 
 
-@_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Grid.__doc__, Surfaces.__doc__, Series.__doc__,
-              Faults.__doc__, AdditionalData.__doc__])
+@setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Grid.__doc__, Surfaces.__doc__, Series.__doc__,
+             Faults.__doc__, AdditionalData.__doc__])
 class Interpolator(object):
     """Class that act as:
      1) linker between the data objects and the theano graph
@@ -38,6 +38,7 @@ class Interpolator(object):
 
     """
     # TODO assert passed data is rescaled
+
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "Grid",
                  surfaces: "Surfaces", series: Series, faults: "Faults", additional_data: "AdditionalData", **kwargs):
 
@@ -53,7 +54,7 @@ class Interpolator(object):
         self.theano_graph = self.create_theano_graph(additional_data, inplace=False)
         self.theano_function = None
 
-    @_setdoc_pro([AdditionalData.__doc__, ds.inplace, ds.theano_graph_pro])
+    @setdoc_pro([AdditionalData.__doc__, ds.inplace, ds.theano_graph_pro])
     def create_theano_graph(self, additional_data: "AdditionalData" = None, inplace=True):
         """
         Create the graph accordingly to the options in the AdditionalData object
@@ -80,7 +81,7 @@ class Interpolator(object):
         else:
             return graph
 
-    @_setdoc_pro([ds.theano_graph_pro])
+    @setdoc_pro([ds.theano_graph_pro])
     def set_theano_graph(self, th_graph):
         """
         Attach an already create theano graph.
@@ -117,11 +118,22 @@ class Interpolator(object):
         # universal grades
         self.theano_graph.n_universal_eq_T.set_value(
             list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')))
+
+        self.set_theano_shared_nuggets()
+
+    def set_theano_shared_nuggets(self):
         # nugget effect
+        # len_orientations = self.additional_data.structure_data.df.loc['values', 'len series orientations']
+        # len_orientations_len = np.sum(len_orientations)
+
         self.theano_graph.nugget_effect_grad_T.set_value(
-            np.cast[self.dtype](self.additional_data.kriging_data.df.loc['values', 'nugget grad']))
+            np.cast[self.dtype](np.tile(
+                self.orientations.df['smooth'], 3)))
+
+        # len_rest_form = (self.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'])
+        # len_rest_len = np.sum(len_rest_form)
         self.theano_graph.nugget_effect_scalar_T.set_value(
-            np.cast[self.dtype](self.additional_data.kriging_data.df.loc['values', 'nugget scalar']))
+            np.cast[self.dtype](self.surface_points.df['smooth']))
         return True
 
     def set_theano_shared_structure_surfaces(self):
@@ -441,8 +453,8 @@ class InterpolatorBlock(Interpolator):
         return th_fn
 
 
-@_setdoc_pro(ds.ctrl)
-@_setdoc([Interpolator.__doc__])
+@setdoc_pro(ds.ctrl)
+@setdoc([Interpolator.__doc__])
 class InterpolatorModel(Interpolator):
     """
     Child class of :class:`Interpolator` which set the shared variables and compiles the theano
@@ -520,7 +532,7 @@ class InterpolatorModel(Interpolator):
         self.compute_block_ctrl = np.ones(n_series, dtype=bool)
         return True
 
-    @_setdoc_pro(reset_flow_control_initial_results.__doc__)
+    @setdoc_pro(reset_flow_control_initial_results.__doc__)
     def set_all_shared_parameters(self, reset_ctrl=False):
         """
         Set all theano shared parameters required for the computation of lithology
@@ -541,7 +553,7 @@ class InterpolatorModel(Interpolator):
 
         return True
 
-    @_setdoc_pro(reset_flow_control_initial_results.__doc__)
+    @setdoc_pro(reset_flow_control_initial_results.__doc__)
     def set_theano_shared_structure(self, reset_ctrl=False):
         """
         Set all theano shared variable dependent on :class:`Structure`.
@@ -602,7 +614,7 @@ class InterpolatorModel(Interpolator):
         self.theano_graph.n_universal_eq_T.set_value(
             list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')))
 
-    @_setdoc_pro(set_theano_shared_loop.__doc__)
+    @setdoc_pro(set_theano_shared_loop.__doc__)
     def set_theano_shared_weights(self):
         """Set the theano shared weights and [s0]"""
         self.set_theano_shared_loop()
@@ -844,16 +856,37 @@ class InterpolatorModel(Interpolator):
         return th_fn
 
 
+@setdoc([InterpolatorModel.__doc__], indent=False)
 class InterpolatorGravity(InterpolatorModel):
+    """
+    Child class of :class:`InterpolatorModel` which set the specific shared variables for the gravity computation and
+    compiles the theano graph to compute the geological model, i.e. lithologies and the forward gravity.
+
+    InterpolatorModel Doc
+
+    """
 
     def set_theano_shared_tz_kernel(self):
+        """Set the theano component tz to each voxel"""
+
         self.theano_graph.tz.set_value(self.grid.gravity_grid.tz.astype(self.dtype))
 
     def compile_th_fn(self, density=None, pos_density=None, inplace=False,
                       debug=False):
         """
-        foo
+        Compile and create the theano function which can be evaluated to compute the forward gravity response for
+        a given kernel.
 
+        Args:
+            density (Optional[np.array]): array of the same size as the grid.values with the correspondant value of
+             density per voxel.
+            pos_density (Optional[int]): if density is not passed, pos_density will define which values (i.e. column
+             after id in the :class:`Surface` df is the density)
+            inplace (bool): If true add the attribute theano.function to the object inplace
+            debug (bool): If true print some of the theano flags
+
+        Returns:
+            theano.function: function that computes the whole interpolation
         """
         assert density is not None or pos_density is not None, 'If you do not pass the density block you need to pass' \
                                                                'the position of surface values where density is' \
@@ -866,6 +899,8 @@ class InterpolatorGravity(InterpolatorModel):
         input_data_T = self.theano_graph.input_parameters_loop
         print('Compiling theano function...')
         if density is None:
+            assert pos_density is not None, 'If a density block is not passed, you need to specify which interpolated' \
+                                            'value is density. See :class:`Surface`'
             density = self.theano_graph.compute_series()[0][pos_density, :- 2 * self.theano_graph.len_points]
 
         else:
@@ -893,5 +928,3 @@ class InterpolatorGravity(InterpolatorModel):
         print('Compilation Done!')
 
         return th_fn
-
-
