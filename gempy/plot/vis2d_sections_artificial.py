@@ -78,7 +78,7 @@ class PlotSolution:
         else:
             l0, l1 = self.model.grid.sections.get_section_args(section_name)
             j = np.where(self.model.grid.sections.names == section_name)[0][0]
-            shape = self.model.grid.sections.resolution[j]
+            shape = [self.model.grid.sections.resolution[j][1],self.model.grid.sections.resolution[j][0]]
             a = self.model.solutions.sections_scalfield[:, l0:l1]
         for fault in faults:
             f_id = int(self.model.series.df.loc[fault, 'order_series']) - 1
