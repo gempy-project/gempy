@@ -1375,7 +1375,7 @@ class SurfacePoints(GeometricData):
                   'does not exist in the surface object either.')
             raise ValueError(error)
 
-        self.df.loc['idx', ['smooth']] = 1e-8
+        self.df.loc[idx, ['smooth']] = 1e-8
 
         self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
         self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
@@ -1658,7 +1658,7 @@ class Orientations(GeometricData):
                 raise AttributeError('At least pole_vector or orientation should have been passed to reach'
                                      'this point. Check previous condition')
 
-        self.df.loc['idx', ['smooth']] = 0.01
+        self.df.loc[idx, ['smooth']] = 0.01
         self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
         self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
         self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
