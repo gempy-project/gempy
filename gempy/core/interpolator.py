@@ -127,7 +127,7 @@ class Interpolator(object):
         # len_orientations_len = np.sum(len_orientations)
 
         self.theano_graph.nugget_effect_grad_T.set_value(
-            np.cast[self.dtype](np.repeat(
+            np.cast[self.dtype](np.tile(
                 self.orientations.df['smooth'], 3)))
 
         # len_rest_form = (self.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'])

@@ -1340,7 +1340,8 @@ class TheanoGraphPro(object):
         self.rest_layer_points = self.rest_layer_points_all[len_i_0: len_i_1, :]
 
         self.nugget_effect_scalar_T_op = self.nugget_effect_scalar_T_ref_rest[len_i_0: len_i_1]
-        self.nugget_effect_grad_T_op = self.nugget_effect_grad_T[len_i_0: len_i_1]
+        # The gradients have been tiled outside
+        self.nugget_effect_grad_T_op = self.nugget_effect_grad_T[len_f_0*3: len_f_1*3]
 
         self.n_universal_eq_T_op = u_grade_iter
 
