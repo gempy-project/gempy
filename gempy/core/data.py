@@ -48,6 +48,7 @@ class MetaData(object):
 @setdoc_pro([grid_types.RegularGrid.__doc__, grid_types.CustomGrid.__doc__])
 class Grid(object):
     """ Class to generate grids.
+
     This class is used to create points where to
     evaluate the geological model. This class serves a container which transmit the XYZ coordinates to the
     interpolator. There are several type of grids objects will feed into the Grid class
@@ -78,6 +79,7 @@ class Grid(object):
         section TODO @ Elisa
         gravity_grid (:class:`gempy.core.grid_modules.grid_types.Gravity`)
     """
+
     def __init__(self, **kwargs):
 
         self.values = np.empty((0, 3))
@@ -1289,8 +1291,11 @@ class SurfacePoints(GeometricData):
         super().__init__(surfaces)
         self._columns_i_all = ['X', 'Y', 'Z', 'surface', 'series', 'X_std', 'Y_std', 'Z_std',
                                'order_series', 'surface_number']
+
         self._columns_i_1 = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'surface', 'series', 'id',
-                             'order_series', 'isFault']
+                             'order_series', 'isFault', 'Smoothness']
+
+        self._columns_rep = ['X', 'Y', 'Z', 'surface', 'series']
         self._columns_i_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r']
 
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
@@ -1321,6 +1326,9 @@ class SurfacePoints(GeometricData):
 
         # Choose types
         self.init_dependent_properties()
+
+        # Add nugget columns
+        self.df['smooth'] = 1e-8
 
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
@@ -1367,6 +1375,8 @@ class SurfacePoints(GeometricData):
                   'does not exist in the surface object either.')
             raise ValueError(error)
 
+        self.df.loc['idx', ['smooth']] = 1e-8
+
         self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
         self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
         self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
@@ -1411,7 +1421,7 @@ class SurfacePoints(GeometricData):
         assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the dataframe to be modified.'
 
         # Check the properties are valid
-        assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'surface']).all(),\
+        assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'surface', 'smooth']).all(),\
             'Properties must be one or more of the following: \'X\', \'Y\', \'Z\', ' '\'surface\''
         # stack properties values
         values = np.array(list(kwargs.values()))
@@ -1594,6 +1604,9 @@ class Orientations(GeometricData):
         self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
 
         self.init_dependent_properties()
+
+        # Add nugget effect
+        self.df['smooth'] = 0.01
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
 
@@ -1645,6 +1658,7 @@ class Orientations(GeometricData):
                 raise AttributeError('At least pole_vector or orientation should have been passed to reach'
                                      'this point. Check previous condition')
 
+        self.df.loc['idx', ['smooth']] = 0.01
         self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
         self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
         self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
@@ -1697,7 +1711,7 @@ class Orientations(GeometricData):
 
         # Check the properties are valid
         assert np.isin(list(kwargs.keys()), ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip',
-                                             'azimuth', 'polarity', 'surface']).all(),\
+                                             'azimuth', 'polarity', 'surface', 'smooth']).all(),\
             'Properties must be one or more of the following: \'X\', \'Y\', \'Z\', \'G_x\', \'G_y\', \'G_z\', \'dip,\''\
             '\'azimuth\', \'polarity\', \'surface\''
 

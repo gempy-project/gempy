@@ -64,8 +64,8 @@ class TheanoGraphPro(object):
         # -------
         self.a_T = theano.shared(np.cast[dtype](-1.), "Range")
         self.c_o_T = theano.shared(np.cast[dtype](-1.), 'Covariance at 0')
-        self.nugget_effect_grad_T = theano.shared(np.cast[dtype](-1), 'Nugget effect of gradients')
-        self.nugget_effect_scalar_T = theano.shared(np.cast[dtype](-1), 'Nugget effect of scalar')
+
+
         self.n_universal_eq_T = theano.shared(np.zeros(5, dtype='int32'), "Grade of the universal drift")
         self.n_universal_eq_T_op = theano.shared(3)
 
@@ -85,6 +85,11 @@ class TheanoGraphPro(object):
         self.npf_op = self.npf
         self.npf.name = 'Number of points per surfaces after rest-ref. This is used for finding the different' \
                         'surface points withing a layer.'
+
+        self.nugget_effect_grad_T = theano.shared(np.cast[dtype](np.ones(4)), 'Nugget effect of gradients')
+        self.nugget_effect_scalar_T = theano.shared(np.cast[dtype](np.ones(4)), 'Nugget effect of scalar')
+
+        self.nugget_effect_grad_T_op = self.nugget_effect_grad_T
 
         # COMPUTE WEIGHTS
         # ---------
@@ -109,8 +114,12 @@ class TheanoGraphPro(object):
         self.azimuth = self.azimuth_all
         self.polarity = self.polarity_all
 
-        self.ref_layer_points_all = self.set_rest_ref_matrix(self.number_of_points_per_surface_T)[0]
-        self.rest_layer_points_all = self.set_rest_ref_matrix(self.number_of_points_per_surface_T)[1]
+        rest_ref_aux = self.set_rest_ref_matrix(self.number_of_points_per_surface_T)
+        self.ref_layer_points_all = rest_ref_aux[0]
+        self.rest_layer_points_all = rest_ref_aux[1] #self.set_rest_ref_matrix(self.number_of_points_per_surface_T)[1]
+
+        self.nugget_effect_scalar_T_ref_rest = self.set_nugget_surface_points(rest_ref_aux[2], rest_ref_aux[3],
+                                                                        self.number_of_points_per_surface_T)
 
         self.ref_layer_points = self.ref_layer_points_all
         self.rest_layer_points = self.rest_layer_points_all
@@ -285,8 +294,15 @@ class TheanoGraphPro(object):
 
         rest_mask = T.ones(T.stack([self.surface_points_all.shape[0]]), dtype='int16')
         rest_mask = T.set_subtensor(rest_mask[ref_positions], 0)
-        rest_points = self.surface_points_all[T.nonzero(rest_mask)[0]]
-        return [ref_points, rest_points, rest_mask, T.nonzero(rest_mask)[0]]
+        rest_mask = T.nonzero(rest_mask)[0]
+        rest_points = self.surface_points_all[rest_mask]
+        return [ref_points, rest_points, ref_positions, rest_mask]
+
+    def set_nugget_surface_points(self, ref_positions, rest_mask, number_of_points_per_surface):
+        ref_nugget = T.repeat(self.nugget_effect_scalar_T[ref_positions], number_of_points_per_surface)
+        rest_nugget = self.nugget_effect_scalar_T[rest_mask]
+        nugget_rest_ref = ref_nugget+rest_nugget
+        return nugget_rest_ref
 
     @staticmethod
     def squared_euclidean_distances(x_1, x_2):
@@ -377,7 +393,7 @@ class TheanoGraphPro(object):
                   7 / 2 * (sed_ref_ref / self.a_T) ** 5 +
                   3 / 4 * (sed_ref_ref / self.a_T) ** 7))))
 
-        C_I += T.eye(C_I.shape[0]) * 2 * self.nugget_effect_scalar_T
+        C_I += T.eye(C_I.shape[0]) * 2 * self.nugget_effect_scalar_T_op
         # Add name to the theano node
         C_I.name = 'Covariance SurfacePoints'
 
@@ -455,7 +471,7 @@ class TheanoGraphPro(object):
 
         # Setting nugget effect of the gradients
         # TODO: This function can be substitued by simply adding the nugget effect to the diag if I remove the condition
-        C_G += T.eye(C_G.shape[0]) * self.nugget_effect_grad_T
+        C_G += T.eye(C_G.shape[0]) * self.nugget_effect_grad_T_op
 
         # Add name to the theano node
         C_G.name = 'Covariance Gradient'
@@ -1322,6 +1338,9 @@ class TheanoGraphPro(object):
 
         self.ref_layer_points = self.ref_layer_points_all[len_i_0: len_i_1, :]
         self.rest_layer_points = self.rest_layer_points_all[len_i_0: len_i_1, :]
+
+        self.nugget_effect_scalar_T_op = self.nugget_effect_scalar_T_ref_rest[len_i_0: len_i_1]
+        self.nugget_effect_grad_T_op = self.nugget_effect_grad_T[len_i_0: len_i_1]
 
         self.n_universal_eq_T_op = u_grade_iter
 

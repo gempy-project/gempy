@@ -38,6 +38,7 @@ class Interpolator(object):
 
     """
     # TODO assert passed data is rescaled
+
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "Grid",
                  surfaces: "Surfaces", series: Series, faults: "Faults", additional_data: "AdditionalData", **kwargs):
 
@@ -117,11 +118,22 @@ class Interpolator(object):
         # universal grades
         self.theano_graph.n_universal_eq_T.set_value(
             list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')))
+
+        self.set_theano_shared_nuggets()
+
+    def set_theano_shared_nuggets(self):
         # nugget effect
+        # len_orientations = self.additional_data.structure_data.df.loc['values', 'len series orientations']
+        # len_orientations_len = np.sum(len_orientations)
+
         self.theano_graph.nugget_effect_grad_T.set_value(
-            np.cast[self.dtype](self.additional_data.kriging_data.df.loc['values', 'nugget grad']))
+            np.cast[self.dtype](np.repeat(
+                self.orientations.df['smooth'], 3)))
+
+        # len_rest_form = (self.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'])
+        # len_rest_len = np.sum(len_rest_form)
         self.theano_graph.nugget_effect_scalar_T.set_value(
-            np.cast[self.dtype](self.additional_data.kriging_data.df.loc['values', 'nugget scalar']))
+            np.cast[self.dtype](self.surface_points.df['smooth']))
         return True
 
     def set_theano_shared_structure_surfaces(self):
@@ -916,5 +928,3 @@ class InterpolatorGravity(InterpolatorModel):
         print('Compilation Done!')
 
         return th_fn
-
-

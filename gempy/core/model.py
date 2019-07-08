@@ -36,6 +36,7 @@ class DataMutation(object):
         solutions (:class:`Solutions`): [s9]
 
      """
+
     def __init__(self):
 
         self.grid = Grid()
@@ -288,7 +289,6 @@ class DataMutation(object):
         # change shared theano variable for infinite factor
         self.interpolator.set_theano_shared_is_finite()
         return s
-
 
     @setdoc([Faults.set_fault_relation.__doc__], indent=False)
     def set_fault_relation(self, rel_matrix):
@@ -543,6 +543,10 @@ class DataMutation(object):
         is_surface = np.isin('surface', keys).all()
         if is_surface == True:
             self.update_structure(update_theano='matrices')
+
+        if 'smooth' in kwargs:
+            self.interpolator.set_theano_shared_nuggets()
+
         return self.surface_points
 
     # endregion
@@ -1115,32 +1119,3 @@ class Model(DataMutation):
             self.interpolator_gravity.compile_th_fn(density_block, pos_density, inplace=inplace)
 
         return self.additional_data.options
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
