@@ -132,7 +132,7 @@ class Load_DEM_artificial():
         topo = self.fractalGrid(fd, N=self.resolution.max())
         topo = np.interp(topo, (topo.min(), topo.max()), (self.d_z))
 
-        self.dem_zval = topo[:self.resolution[0], :self.resolution[1]]  # crop fractal grid with resolution
+        self.dem_zval = topo[:self.resolution[1], :self.resolution[0]]  # crop fractal grid with resolution
 
         self.create_topo_array()
 
@@ -198,8 +198,8 @@ class Load_DEM_artificial():
 
     def create_topo_array(self):
         '''for masking the lith block'''
-        x = np.linspace(self.grid.values[:, 0].min(), self.grid.values[:, 0].max(), self.resolution[0])
-        y = np.linspace(self.grid.values[:, 1].min(), self.grid.values[:, 1].max(), self.resolution[1])
+        x = np.linspace(self.grid.values[:, 0].min(), self.grid.values[:, 0].max(), self.resolution[1])
+        y = np.linspace(self.grid.values[:, 1].min(), self.grid.values[:, 1].max(), self.resolution[0])
         xx, yy = np.meshgrid(x, y, indexing='ij')
-        self.values_3D = np.dstack([xx, yy, self.dem_zval])
+        self.values_3D = np.dstack([xx.T, yy.T, self.dem_zval.T])
 

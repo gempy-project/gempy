@@ -355,7 +355,7 @@ class Topography:
         self.topo = Load_DEM_artificial(self.regular_grid, **kwargs)
         self._create_init()
         self._fit2model()
-        self.type = 'artificial'
+        #self.type = 'artificial'
 
     def load_from_saved(self, filepath):
         #assert filepath ending is .npy
@@ -365,7 +365,7 @@ class Topography:
         self.extent = topo[1]
         self.resolution = topo[2]
         self._fit2model()
-        self.type = 'artificial'
+        #self.type = 'artificial'
 
     def _create_init(self):
         self.values_3D = self.topo.values_3D
@@ -436,16 +436,16 @@ class Topography:
 
     def interpolate_zvals_at_xy(self, xy, type = 'artificial'):
         #todo wtf
-        if type == 'artificial':
-            assert xy[:, 0][0] <= xy[:, 0][-1], 'first xvalue must be smaller than second'
-            assert xy[:, 1][0] <= xy[:, 1][-1], 'first yvalue must be smaller than second'
-            xj = self.values_3D[:, :, 0][:, 0]
-            yj = self.values_3D[:, :, 1][0, :]
-            zj = self.values_3D[:, :, 2]
-        elif type == 'real':
-            xj = self.values_3D[:, :, 0][0, :]
-            yj = self.values_3D[:, :, 1][:, 0]
-            zj = self.values_3D[:, :, 2].T
+        #if type == 'artificial':
+        #    assert xy[:, 0][0] <= xy[:, 0][-1], 'first xvalue must be smaller than second'
+        #    assert xy[:, 1][0] <= xy[:, 1][-1], 'first yvalue must be smaller than second'
+        #    xj = self.values_3D[:, :, 0][:, 0]
+        #    yj = self.values_3D[:, :, 1][0, :]
+         #   zj = self.values_3D[:, :, 2]
+        #elif type == 'real':
+        xj = self.values_3D[:, :, 0][0, :]
+        yj = self.values_3D[:, :, 1][:, 0]
+        zj = self.values_3D[:, :, 2].T
         f = interpolate.RectBivariateSpline(xj, yj, zj)
         zi = f(xy[:, 0], xy[:, 1])
         return np.diag(zi)
