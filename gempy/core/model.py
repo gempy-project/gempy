@@ -1068,7 +1068,8 @@ class Model(DataMutation):
     def get_additional_data(self):
         return self.additional_data.get_additional_data()
 
-    def set_gravity_interpolator(self, density_block= None, pos_density=None, inplace=True, compile_theano: bool = True,
+    def set_gravity_interpolator(self, density_block= None,
+                                 pos_density=None, tz=None, inplace=True, compile_theano: bool = True,
                                  theano_optimizer=None, verbose: list = None):
         """
 
@@ -1080,15 +1081,16 @@ class Model(DataMutation):
         Returns:
 
         """
-        assert self.grid.gravity_grid is not None, 'First you need to set up a gravity grid to compile the graph'
-        assert density_block is not None or pos_density is not None, 'If you do not pass the density block you need to pass' \
-                                                                     'the position of surface values where density is' \
-                                                                     ' assigned'
+
+        assert self.grid.centered_grid is not None, 'First you need to set up a gravity grid to compile the graph'
+        assert density_block is not None or pos_density is not None, 'If you do not pass the density block you need to' \
+                                                                     ' pass the position of surface values where' \
+                                                                     ' density is assigned'
 
         # TODO Possibly this is only necessary when computing gravity
-        self.grid.active_grids = np.zeros(4, dtype=bool)
-        self.grid.set_active('gravity')
-        self.interpolator.set_initial_results_matrices()
+        # self.grid.active_grids = np.zeros(4, dtype=bool)
+        # self.grid.set_active('centered')
+        # self.interpolator.set_initial_results_matrices()
 
         # TODO output is dep
         if theano_optimizer is not None:
@@ -1097,12 +1099,12 @@ class Model(DataMutation):
             self.additional_data.options.df.at['values', 'verbosity'] = verbose
 
         # TODO add kwargs
-        self.rescaling.rescale_data()
-        self.update_structure()
+        # self.rescaling.rescale_data()
+        # self.update_structure()
 
         # This two should be unnecessary now too
-        self.surface_points.sort_table()
-        self.orientations.sort_table()
+        # self.surface_points.sort_table()
+        # self.orientations.sort_table()
 
         self.interpolator_gravity = InterpolatorGravity(
             self.surface_points, self.orientations, self.grid, self.surfaces,
@@ -1112,7 +1114,7 @@ class Model(DataMutation):
         self.interpolator_gravity.create_theano_graph(self.additional_data, inplace=True)
 
         # set shared variables
-        self.interpolator_gravity.set_theano_shared_tz_kernel()
+        self.interpolator_gravity.set_theano_shared_tz_kernel(tz)
         self.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
 
         if compile_theano is True:
