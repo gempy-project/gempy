@@ -420,11 +420,17 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
     elif output == 'gravity':
         assert isinstance(model.interpolator_gravity, InterpolatorGravity), 'You need to set the gravity interpolator' \
                                                                             'first. See `Model.set_gravity_interpolator'
+
+        model.grid.deactivate_all_grids()
+        model.grid.set_active('centered')
+        model.rescaling.set_rescaled_grid()
+        model.update_structure(update_theano='matrices')
         i = model.interpolator_gravity.get_python_input_block(append_control=True, fault_drift=None)
 
         # TODO So far I reset all shared parameters to be sure. In the future this should be optimize as interpolator
+
         model.interpolator_gravity.set_theano_shared_tz_kernel()
-        model.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
+        # model.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
         sol = model.interpolator_gravity.theano_function(*i)
 
         set_solutions = False

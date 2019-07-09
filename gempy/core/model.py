@@ -145,6 +145,28 @@ class DataMutation(object):
         self.rescaling.set_rescaled_grid()
         self.interpolator.set_initial_results_matrices()
         return self.grid
+
+    @plot_set_topography
+    def set_topography(self, source='random', **kwargs):
+        """
+        Args:
+            source: 'random': random topography is generated (based on a fractal grid).
+                   'gdal': filepath must be provided to load topography from a raster file.
+            filepath: path to raster file
+            TODO @Elisa what is the filepath there
+            kwargs: only when mode is 'random', gp.utils.create_topography.Load_DEM_artificial kwargs:
+                fd: fractal dimension, defaults to 2.0
+                d_z: height difference. If none, last 20% of the model in z direction
+                extent: extent in xy direction. If none, geo_model.grid.extent
+                resolution: resolution of the topography array. If none, geo_model.grid.resoution
+
+        Returns: :class:gempy.core.data.Topography
+        """
+
+        self.grid.set_topography(source, **kwargs)
+        self.rescaling.set_rescaled_grid()
+        self.interpolator.set_initial_results_matrices()
+
     # endregion
 
     # region Series
@@ -182,8 +204,8 @@ class DataMutation(object):
         self.surfaces.df['series'].cat.remove_categories(indices, inplace=True)
         self.surface_points.df['series'].cat.remove_categories(indices, inplace=True)
         self.orientations.df['series'].cat.remove_categories(indices, inplace=True)
-        self.map_data_df(self.surface_points.df)
-        self.map_data_df(self.orientations.df)
+        self.map_geometric_data_df(self.surface_points.df)
+        self.map_geometric_data_df(self.orientations.df)
 
         self.interpolator.set_theano_shared_relations()
         self.interpolator.set_flow_control()
@@ -213,9 +235,9 @@ class DataMutation(object):
         self.surfaces.sort_surfaces()
         self.surfaces.set_basement()
 
-        self.map_data_df(self.surface_points.df)
+        self.map_geometric_data_df(self.surface_points.df)
         self.surface_points.sort_table()
-        self.map_data_df(self.orientations.df)
+        self.map_geometric_data_df(self.orientations.df)
         self.orientations.sort_table()
 
         self.interpolator.set_flow_control()
@@ -235,9 +257,9 @@ class DataMutation(object):
         self.surfaces.sort_surfaces()
         self.surfaces.set_basement()
 
-        self.map_data_df(self.surface_points.df)
+        self.map_geometric_data_df(self.surface_points.df)
         self.surface_points.sort_table()
-        self.map_data_df(self.orientations.df)
+        self.map_geometric_data_df(self.orientations.df)
         self.orientations.sort_table()
 
         self.interpolator.set_flow_control()
@@ -342,8 +364,8 @@ class DataMutation(object):
             self.update_structure(update_theano='weights')
         self.surface_points.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
         self.orientations.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
-        self.map_data_df(self.surface_points.df)
-        self.map_data_df(self.orientations.df)
+        self.map_geometric_data_df(self.surface_points.df)
+        self.map_geometric_data_df(self.orientations.df)
         return self.surfaces
 
     @setdoc(Surfaces.rename_surfaces.__doc__, indent=False)
@@ -359,9 +381,9 @@ class DataMutation(object):
         """"""
         self.surfaces.modify_order_surfaces(new_value, idx, series_name)
 
-        self.map_data_df(self.surface_points.df)
+        self.map_geometric_data_df(self.surface_points.df)
         self.surface_points.sort_table()
-        self.map_data_df(self.orientations.df)
+        self.map_geometric_data_df(self.orientations.df)
         self.orientations.sort_table()
 
         self.update_structure()
@@ -470,7 +492,7 @@ class DataMutation(object):
             if kwargs['add_basement'] is True:
                 self.surfaces.add_surface(['basement'])
                 self.map_series_to_surfaces({'Basement': 'basement'}, set_series=True)
-        self.map_data_df(self.surface_points.df)
+        self.map_geometric_data_df(self.surface_points.df)
         self.rescaling.rescale_data()
         self.additional_data.update_structure()
         self.additional_data.update_default_kriging()
@@ -694,7 +716,7 @@ class DataMutation(object):
     def update_from_series(self, rename_series: dict = None, reorder_series=True, sort_geometric_data=True,
                            update_interpolator=True):
         """
-        Update all objects dependt on series.
+        Update all objects dependent on series.
 
         This method is a bit of a legacy and has been substituted by :meth:`rename_series` and :meth:`reorder_series`,
         however is useful if you want to make sure all objects are up to date with the latest changes on series.
@@ -785,55 +807,77 @@ class DataMutation(object):
         return True
 
     # region Theano interface
+    @setdoc(InterpolatorModel.__doc__)
     def set_theano_graph(self, interpolator: InterpolatorModel):
+        """Pass a theano graph of a Interpolator instance other than the Model compose
+
+        Use this method only if you know what are you doing!
+
+        Args:
+            interpolator (:class:`InterpolatorModel`): [s0]
+
+        Returns:
+             True """
         self.interpolator.theano_graph = interpolator.theano_graph
         self.interpolator.theano_function = interpolator.theano_function
         self.update_to_interpolator()
+        return True
 
+    @setdoc(InterpolatorModel.__doc__)
     def set_theano_function(self, interpolator: InterpolatorModel):
+        """
+        Pass a theano function and its correspondent graph from an Interpolator instance other than the Model compose
+
+        Args:
+            interpolator (:class:`InterpolatorModel`): [s0]
+
+        Returns:
+             True
+        """
+
         self.interpolator.theano_graph = interpolator.theano_graph
         self.interpolator.theano_function = interpolator.theano_function
         self.interpolator.set_all_shared_parameters()
         self.update_structure(update_theano='matrices')
+        return True
 
     def update_to_interpolator(self, reset=True):
+        """Update all shared parameters from the data objects
+
+        Args:
+            reset (bool): if True reset the flow control and initialize results arrays
+
+        Returns:
+            True
+        """
         self.interpolator.set_all_shared_parameters()
         if reset is True:
             self.interpolator.reset_flow_control_initial_results()
-
+        return True
     # endregion
 
-    def map_data_df(self, d: pn.DataFrame):
+    def map_geometric_data_df(self, d: pn.DataFrame):
+        """
+        Map a geometric data dataframe from the linked objects (at 07.2019 surfaces and series)
+
+        Args:
+            d (pn.DataFrame): Geometric data dataframe to be mapped
+
+        Returns:
+            DataFrame
+        """
         d['series'] = d['surface'].map(self.surfaces.df.set_index('surface')['series'])
         d['id'] = d['surface'].map(self.surfaces.df.set_index('surface')['id'])
         d['order_series'] = d['series'].map(self.series.df['order_series'])
-
-    @plot_set_topography
-    def set_topography(self, source='random', **kwargs):
-        """
-        Args:
-            mode: 'random': random topography is generated (based on a fractal grid).
-                   'gdal': filepath must be provided to load topography from a raster file.
-            filepath: path to raster file
-            kwargs: only when mode is 'random', gp.utils.create_topography.Load_DEM_artificial kwargs:
-                fd: fractal dimension, defaults to 2.0
-                d_z: height difference. If none, last 20% of the model in z direction
-                extent: extent in xy direction. If none, geo_model.grid.extent
-                resolution: resolution of the topography array. If none, geo_model.grid.resoution
-
-        Returns: :class:gempy.core.data.Topography
-        """
-
-        self.grid.set_topography(source, **kwargs)
-        self.rescaling.set_rescaled_grid()
-        self.interpolator.set_initial_results_matrices()
+        return d
 
     def set_surface_order_from_solution(self):
         """
         Order the surfaces respect the last computation. Therefore if you call this method,
-        after sorting surface_points without recomputing you may get wrong results
-        Returns:
+        after sorting surface_points without recomputing you may get wrong results.
 
+        Returns:
+            Surfaces
         """
         # TODO time this function
         spu = self.surface_points.df['surface'].unique()
@@ -864,7 +908,7 @@ class DataMutation(object):
         return self.surfaces
 
 
-@setdoc([MetaData.__doc__, Grid.__doc__])
+@setdoc([MetaData.__doc__, DataMutation.__doc__])
 class Model(DataMutation):
     """
     Container class of all objects that constitute a GemPy model. In addition the class provides the methods that
@@ -900,7 +944,6 @@ class Model(DataMutation):
         sys.setrecursionlimit(10000)
 
         if not path:
-            # TODO: Update default to meta name
             path = './'+self.meta.project_name
         import pickle
         with open(path+'.pickle', 'wb') as f:
@@ -928,7 +971,6 @@ class Model(DataMutation):
             return model
 
     def save_model(self, name=None, path=None):
-        # TODO: UPDATE!!!!!!! TO new solution
         """
         Save model in new folder. Input data is saved as csv files. Solutions, extent and resolutions are saved as npy.
 
