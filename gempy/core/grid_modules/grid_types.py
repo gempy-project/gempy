@@ -434,7 +434,7 @@ class Topography:
         dz = (zs[-1] - zs[0]) / len(zs)
         return ((self.values_3D_res[:, :, 2] - zs[0]) / dz + 1).astype(int)
 
-    def interpolate_zvals_at_xy(self, xy, type = 'artificial'):
+    def interpolate_zvals_at_xy(self, xy):
         #todo wtf
         #if type == 'artificial':
         #    assert xy[:, 0][0] <= xy[:, 0][-1], 'first xvalue must be smaller than second'

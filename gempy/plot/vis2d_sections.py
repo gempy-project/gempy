@@ -161,7 +161,7 @@ class PlotSolution:
     def _slice_topo_4_sections(self, p1, p2):
         xy = self.model.grid.sections.calculate_line_coordinates_2points(p1,p2, self.model.grid.topography.resolution[0],
                                                                     self.model.grid.topography.resolution[1])
-        z = self.model.grid.topography.interpolate_zvals_at_xy(xy, type=self.model.grid.topography.type)
+        z = self.model.grid.topography.interpolate_zvals_at_xy(xy)
         return xy[:, 0], xy[:, 1], z
 
     def make_topography_overlay_4_sections(self, j):

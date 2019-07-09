@@ -219,6 +219,7 @@ class PlotData2D(object):
         return _slice, extent
 
     def plot_topography(self, cell_number, direction):
+        # Todo replace this function
         line = self.model.grid.topography._line_in_section(cell_number=cell_number, direction=direction)
         if direction == 'x':
             ext = self.model.grid.regular_grid.extent[[2, 3, 4, 5]]
