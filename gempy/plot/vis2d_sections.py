@@ -78,7 +78,7 @@ class PlotSolution:
         else:
             l0, l1 = self.model.grid.sections.get_section_args(section_name)
             j = np.where(self.model.grid.sections.names == section_name)[0][0]
-            shape = [self.model.grid.sections.resolution[j][1],self.model.grid.sections.resolution[j][0]]
+            shape = [self.model.grid.sections.resolution[j][0], self.model.grid.sections.resolution[j][1]]
             a = self.model.solutions.sections_scalfield[:, l0:l1]
         for fault in faults:
             f_id = int(self.model.series.df.loc[fault, 'order_series']) - 1
@@ -127,7 +127,7 @@ class PlotSolution:
                     xy = self.make_topography_overlay_4_sections(j)
                     axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
-                axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][1], shapes[j][0]),
+                axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]),
                                origin='bottom',
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                          self.model.grid.regular_grid.extent[4],
@@ -145,7 +145,7 @@ class PlotSolution:
                 if show_topo:
                     xy = self.make_topography_overlay_4_sections(j)
                     axes[i].fill(xy[:,0],xy[:,1],'k', zorder=10)
-                axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][1], shapes[j][0]),
+                axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]),
                                origin='bottom',
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                          self.model.grid.regular_grid.extent[4],

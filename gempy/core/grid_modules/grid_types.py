@@ -124,8 +124,8 @@ class Sections:
                                                          self.resolution[i][0]) #two times xy resolution is correct
             zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][1],
                                      dtype="float64")
-            X, Z = np.meshgrid(xy[:, 0], zaxis)
-            Y, _ = np.meshgrid(xy[:, 1], zaxis)
+            X, Z = np.meshgrid(xy[:, 0], zaxis, indexing='ij')
+            Y, _ = np.meshgrid(xy[:, 1], zaxis, indexing='ij')
             xyz = np.vstack((X.flatten(), Y.flatten(), Z.flatten())).T
             if i == 0:
                 self.values = xyz
