@@ -20,7 +20,7 @@ def setdoc(docstring, indent=True, position='end'):
                 func.__doc__ += ' (inserted) \n        ' + aux
             else:
                 if position == 'end':
-                    func.__doc__ += ' (inserted) - ' + docstring
+                    func.__doc__ += ' (inserted) ' + docstring
                 else:
                     func.__doc__ = ' (inserted) - ' + docstring +'\n'+ func.__doc__
         return func

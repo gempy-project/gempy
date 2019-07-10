@@ -32,6 +32,7 @@ class MetaData(object):
      Attributes:
         date (str): Time of the creations of the project
         project_name (str): Name of the project. This is use as default value for some I/O actions
+
     """
 
     def __init__(self, project_name='default_project'):
@@ -169,7 +170,7 @@ class Grid(object):
     def set_centered_grid(self, centers, radio, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
         self.centered_grid = grid_types.CenteredGrid(centers, radio, resolution)
-        self.active_grids = np.zeros(4, dtype=bool)
+       # self.active_grids = np.zeros(4, dtype=bool)
         self.set_active('centered')
 
     def deactivate_all_grids(self):

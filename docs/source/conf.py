@@ -139,9 +139,9 @@ html_theme_options = {
                         'github_repo': 'gempy',
                         'github_type': 'star',
                         'logo': './logos/gempy.png',
-                        'logo_name' : True,
+                        'logo_name': True,
                         'travis_button': True,
-                        'page_width':'1200px',
+                        'page_width': '1200px',
                         'fixed_sidebar': False,
                         }
 
