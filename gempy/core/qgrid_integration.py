@@ -6,9 +6,6 @@ class QgridModelIntegration(object):
     """
     Class that handles the changes done interactively in qgrid and updates a Model object.
 
-    NOTE: We could do a smaller version of this class with only updates de data_object by extractiong the static
-     methods to functions.
-
     """
     def __init__(self, geo_model: Model, plot_object=None):
         # TODO add on all to update from data_object and plots?
@@ -71,8 +68,7 @@ class QgridModelIntegration(object):
         else:
             raise AttributeError('data_type must be either surfaces, series, faults, faults_relations,'
                                  ' surface_points, orientations,'
-                                  'options, kriging or rescale. UPDATE message')
-        # return self.qgrid_widget
+                                 ' options, kriging or rescale. UPDATE message')
 
     def set_vtk_object(self, vtk_object):
         self._plot_object = vtk_object

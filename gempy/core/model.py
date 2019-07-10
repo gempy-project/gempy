@@ -20,10 +20,11 @@ pn.options.mode.chained_assignment = None
              Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
              Solution.__doc__])
 class DataMutation(object):
-    """This class handles all the mutation of an object belonging to model and the update of every single object depend
-     on that.
+    """
+    This class handles all the mutation of an object belonging to model and the update of every single object depend
+    on that.
 
-     Attributes:
+    Attributes:
         grid (:class:`Grid`): [s0]
         faults (:class:`Faults`): [s1]
         series (:class:`Series`): [s2]
@@ -102,7 +103,26 @@ class DataMutation(object):
 
         self.interpolator.set_theano_shared_structure()
         return self.additional_data.structure_data
+
     # region Grid
+    def update_from_grid(self):
+        self.rescaling.rescale_data()
+        self.interpolator.set_initial_results_matrices()
+
+    def set_active_grid(self, grid_name: Union[str, np.ndarray]):
+        """
+        Set active a given or several grids.
+
+        Args:
+            grid_name (str, list) {regular, custom, topography, centered}:
+
+        """
+        self.grid.deactivate_all_grids()
+        self.grid.set_active(grid_name)
+        self.update_from_grid()
+        print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
+
+        return self.grid
 
     def set_grid_object(self, grid: Grid, update_model=True):
         # TODO this should go to the api and let call all different grid types
@@ -124,8 +144,8 @@ class DataMutation(object):
         Set regular grid docs
         """
         self.grid.set_regular_grid(extent=extent, resolution=resolution)
-        self.rescaling.rescale_data()
-        self.interpolator.set_initial_results_matrices()
+
+        print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
     @setdoc(Grid.set_custom_grid.__doc__, )
@@ -142,8 +162,8 @@ class DataMutation(object):
         Set custom grid Docs
         """
         self.grid.set_custom_grid(custom_grid)
-        self.rescaling.set_rescaled_grid()
-        self.interpolator.set_initial_results_matrices()
+        self.update_from_grid()
+        print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
     @plot_set_topography
@@ -164,8 +184,16 @@ class DataMutation(object):
         """
 
         self.grid.set_topography(source, **kwargs)
-        self.rescaling.set_rescaled_grid()
-        self.interpolator.set_initial_results_matrices()
+        self.update_from_grid()
+        print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
+        return self.grid
+
+    @setdoc(Grid.set_centered_grid.__doc__, )
+    def set_centered_grid(self, centers, radio, resolution=None):
+        self.grid.set_centered_grid(centers, radio, resolution=resolution)
+        self.update_from_grid()
+        print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
+        return self.grid
 
     # endregion
 
@@ -421,6 +449,9 @@ class DataMutation(object):
             remove_unused_series (bool): if true, if an existing series is not assigned with a surface, it will get
              removed from the Series object
 
+        Returns:
+            Surfaces
+
         Surfaces.map_series Doc:
         """
         # Add New series to the series df
@@ -469,6 +500,7 @@ class DataMutation(object):
     def set_surface_points(self, table: pn.DataFrame, **kwargs):
         """
         Args:
+            table (pn.Dataframe): table with surface points data.
             **kwargs:
                 - add_basement (bool): add a basement surface to the df. foo
 
@@ -486,7 +518,6 @@ class DataMutation(object):
         surface_points_table = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
         self.surface_points.set_surface_points(surface_points_table[[coord_x_name, coord_y_name, coord_z_name]],
                                                surface=surface_points_table[surface_name])
-
 
         if 'add_basement' in kwargs:
             if kwargs['add_basement'] is True:
@@ -912,7 +943,8 @@ class DataMutation(object):
 class Model(DataMutation):
     """
     Container class of all objects that constitute a GemPy model. In addition the class provides the methods that
-    act in more than one of this class.
+     act in more than one of this class. Model is a child class of :class:`DataMutation` and :class:`MetaData`
+
     """
     def __init__(self, project_name='default_project'):
 
@@ -924,6 +956,7 @@ class Model(DataMutation):
         return self.meta.project_name + ' ' + self.meta.date
 
     def new_model(self, name_project='default_project'):
+        """Reset the model object."""
         self.__init__(name_project)
 
     def save_model_pickle(self, path=False):
@@ -1020,15 +1053,18 @@ class Model(DataMutation):
     @setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
     def read_data(self, path_i=None, path_o=None, add_basement=True, **kwargs):
         """
+        Read data from a csv
 
         Args:
-            path_i:
-            path_o:
+            path_i: Path to the data bases of surface_points. Default os.getcwd(),
+            path_o: Path to the data bases of orientations. Default os.getcwd()
+            add_basement (bool): if True add a basement surface. This wont be interpolated it just gives the values
+            for the volume below the last surface.
             **kwargs:
                 update_surfaces (bool): True
 
         Returns:
-
+            True
         """
         if 'update_surfaces' not in kwargs:
             kwargs['update_surfaces'] = True
@@ -1044,6 +1080,7 @@ class Model(DataMutation):
 
         self.additional_data.update_structure()
         self.additional_data.update_default_kriging()
+        return True
 
     def get_data(self, itype='data', numeric=False):
         """
@@ -1110,43 +1147,38 @@ class Model(DataMutation):
     def get_additional_data(self):
         return self.additional_data.get_additional_data()
 
-    def set_gravity_interpolator(self, density_block= None,
-                                 pos_density=None, tz=None, inplace=True, compile_theano: bool = True,
+    @setdoc_pro([ds.compile_theano, ds.theano_optimizer])
+    def set_gravity_interpolator(self, density_block=None,
+                                 pos_density=None, tz=None, compile_theano: bool = True,
                                  theano_optimizer=None, verbose: list = None):
         """
+        Method to create a graph and compile the theano code to compute forward gravity.
 
         Args:
-            geo_model:
-            inplace:
-            compile_theano
+            density_block (Optional[np.array]): numpy array of the size of the grid.values with the correspondent
+             density to each of the voxels. If it is not passed the density block will be also computed at run time but you will need
+             to specify with value of the Surface object is density.
+            pos_density (Optional[int]): Only necessary when density block is not passed. Location on the Surfaces().df
+             where density is located (starting on id being 0). TODO allow the user to pass the name of the column.
+            tz (Optional[np.array]): Numpy array of the size of grid.values with each component z of the vector
+             device-voxel. In None is passed it will be automatically computed on the self.grid.centered grid
+            compile_theano (bool): [s0]
+            theano_optimizer (str {'fast_run', 'fast_compile'}): [s1]
+            verbose (list):
 
         Returns:
-
+            :class:`Options`
         """
 
         assert self.grid.centered_grid is not None, 'First you need to set up a gravity grid to compile the graph'
-        assert density_block is not None or pos_density is not None, 'If you do not pass the density block you need to' \
+        assert density_block is not None or pos_density is not None, 'If you do not pass the density block you need to'\
                                                                      ' pass the position of surface values where' \
                                                                      ' density is assigned'
-
-        # TODO Possibly this is only necessary when computing gravity
-        # self.grid.active_grids = np.zeros(4, dtype=bool)
-        # self.grid.set_active('centered')
-        # self.interpolator.set_initial_results_matrices()
-
         # TODO output is dep
         if theano_optimizer is not None:
             self.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
         if verbose is not None:
             self.additional_data.options.df.at['values', 'verbosity'] = verbose
-
-        # TODO add kwargs
-        # self.rescaling.rescale_data()
-        # self.update_structure()
-
-        # This two should be unnecessary now too
-        # self.surface_points.sort_table()
-        # self.orientations.sort_table()
 
         self.interpolator_gravity = InterpolatorGravity(
             self.surface_points, self.orientations, self.grid, self.surfaces,
@@ -1160,6 +1192,6 @@ class Model(DataMutation):
         self.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
 
         if compile_theano is True:
-            self.interpolator_gravity.compile_th_fn(density_block, pos_density, inplace=inplace)
+            self.interpolator_gravity.compile_th_fn(density_block, pos_density, inplace=True)
 
         return self.additional_data.options
