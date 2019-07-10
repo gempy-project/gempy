@@ -401,30 +401,30 @@ class PlotData2D(object):
         res = geo_model.grid.regular_grid.resolution
         if direction == "y":
             c1, c2 = (0, 2)
-            e1 = geo_model.grid.extent[1] - geo_model.grid.extent[0]
-            e2 = geo_model.grid.extent[5] - geo_model.grid.extent[4]
-            d1 = geo_model.grid.extent[0]
-            d2 = geo_model.grid.extent[4]
+            e1 = geo_model.grid.regular_grid.extent[1] - geo_model.grid.regular_grid.extent[0]
+            e2 = geo_model.grid.regular_grid.extent[5] - geo_model.grid.regular_grid.extent[4]
+            d1 = geo_model.grid.regular_grid.extent[0]
+            d2 = geo_model.grid.regular_grid.extent[4]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = res[0]
             r2 = res[2]
         elif direction == "x":
             c1, c2 = (1, 2)
-            e1 = geo_model.grid.extent[3] - geo_model.grid.extent[2]
-            e2 = geo_model.grid.extent[5] - geo_model.grid.extent[4]
-            d1 = geo_model.grid.extent[2]
-            d2 = geo_model.grid.extent[4]
+            e1 = geo_model.grid.regular_grid.extent[3] - geo_model.grid.regular_grid.extent[2]
+            e2 = geo_model.grid.regular_grid.extent[5] - geo_model.grid.regular_grid.extent[4]
+            d1 = geo_model.grid.regular_grid.extent[2]
+            d2 = geo_model.grid.regular_grid.extent[4]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = res[1]
             r2 = res[2]
         elif direction == "z":
             c1, c2 = (0, 1)
-            e1 = geo_model.grid.extent[1] - geo_model.grid.extent[0]
-            e2 = geo_model.grid.extent[3] - geo_model.grid.extent[2]
-            d1 = geo_model.grid.extent[0]
-            d2 = geo_model.grid.extent[2]
+            e1 = geo_model.grid.regular_grid.extent[1] - geo_model.grid.regular_grid.extent[0]
+            e2 = geo_model.grid.regular_grid.extent[3] - geo_model.grid.regular_grid.extent[2]
+            d1 = geo_model.grid.regular_grid.extent[0]
+            d2 = geo_model.grid.regular_grid.extent[2]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = res[0]
