@@ -90,16 +90,17 @@ class PlotSolution:
                             extent=self.model.grid.topography.extent)
             else:
                 if axes is not None:
-                    axes.contour(block.reshape(shape), 0, levels=level, colors=self._cmap.colors[f_id],
-                                linestyles='solid',
+                    axes.contour(block.reshape(shape).T, 0, levels=level, colors=self._cmap.colors[f_id],
+                                linestyles='solid', origin='lower',
                                 extent=[0, self.model.grid.sections.dist[j],
                                         self.model.grid.regular_grid.extent[4],
                                         self.model.grid.regular_grid.extent[5]])
                 else:
-                    plt.contour(block.reshape(shape), 0, levels=level, colors=self._cmap.colors[f_id], linestyles='solid',
-                             extent=[0, self.model.grid.sections.dist[j],
-                                     self.model.grid.regular_grid.extent[4],
-                                     self.model.grid.regular_grid.extent[5]])
+                    plt.contour(block.reshape(shape).T, 0, levels=level, colors=self._cmap.colors[f_id],
+                                linestyles='solid', origin='lower',
+                                 extent=[0, self.model.grid.sections.dist[j],
+                                         self.model.grid.regular_grid.extent[4],
+                                         self.model.grid.regular_grid.extent[5]])
 
 
 
@@ -127,8 +128,7 @@ class PlotSolution:
                     xy = self.make_topography_overlay_4_sections(j)
                     axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
-                axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]),
-                               origin='bottom',
+                axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T, origin='lower',
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                          self.model.grid.regular_grid.extent[4],
                                                                          self.model.grid.regular_grid.extent[5]])
@@ -145,8 +145,7 @@ class PlotSolution:
                 if show_topo:
                     xy = self.make_topography_overlay_4_sections(j)
                     axes[i].fill(xy[:,0],xy[:,1],'k', zorder=10)
-                axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]),
-                               origin='bottom',
+                axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T, origin='lower',
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                          self.model.grid.regular_grid.extent[4],
                                                                          self.model.grid.regular_grid.extent[5]])
