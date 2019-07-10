@@ -40,7 +40,7 @@ def interpolator_islith_isfault():
     geo_model.set_is_fault(['Fault_Series'])
 
     gp.set_interpolation_data(geo_model,
-                              output='geology', compile_theano=True,
+                              compile_theano=True,
                               theano_optimizer='fast_compile',
                               verbose=[])
 
