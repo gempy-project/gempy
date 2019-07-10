@@ -4,7 +4,8 @@ sys.path.append("../..")
 
 # Importing GemPy
 import gempy as gp
-from gempy.assets.geophysics import GravityGrid
+from gempy.assets.geophysics import GeophysicsPreprocessing
+from gempy.core.grid_modules.grid_types import CenteredGrid
 
 # Importing auxiliary libraries
 import numpy as np
@@ -14,5 +15,5 @@ import pytest
 
 
 def test_irregular_grid():
-    g = GravityGrid()
-    g.set_irregular_grid([5, 5, 5], [100,100,100])
+    g = CenteredGrid()
+    g.set_centered_grid(np.array([0, 0, 0]), resolution=[5, 5, 5], radio = [100,100,100])

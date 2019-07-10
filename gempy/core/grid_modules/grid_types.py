@@ -4,9 +4,11 @@ import skimage
 import matplotlib.pyplot as plt
 from scipy.constants import G
 from scipy import interpolate
+from gempy.utils.meta import setdoc, setdoc_pro
+import gempy.utils.docstring as ds
 from typing import Optional
-
 import pandas as pn
+
 class RegularGrid:
     """
     Class with the methods and properties to manage 3D regular grids where the model will be interpolated.
@@ -209,21 +211,40 @@ class CustomGrid:
         return self.values
 
 
-class GravityGrid():
+class CenteredGrid:
     """
-    TODO @Miguel
+    Logarithmic spaced grid.
     """
 
-    def __init__(self):
-       # Grid.__init__(self)
-        self.grid_type = 'irregular_grid'
+    def __init__(self, centers=None, radio=None, resolution=None):
+        self.grid_type = 'centered_grid'
         self.values = np.empty((0, 3))
+        self.length = self.values.shape[0]
+        self.kernel_centers = np.empty((0, 3))
         self.kernel_dxyz_left = np.empty((0, 3))
         self.kernel_dxyz_right = np.empty((0, 3))
-        self.tz = np.empty((0))
+        self.tz = np.empty(0)
+
+        if centers is not None and radio is not None:
+            if resolution is None:
+                resolution = [10, 10, 20]
+
+            self.set_centered_grid(centers=centers, radio=radio, resolution=resolution)
 
     @staticmethod
+    @setdoc_pro(ds.resolution)
     def create_irregular_grid_kernel(resolution, radio):
+        """
+        Create an isometric grid kernel (centered at 0)
+
+        Args:
+            resolution: [s0]
+            radio (float): Maximum distance of the kernel
+
+        Returns:
+            tuple: center of the voxel, left edge of each voxel (for xyz), right edge of each voxel (for xyz).
+        """
+
         if radio is not list or radio is not np.ndarray:
             radio = np.repeat(radio, 3)
 
@@ -233,6 +254,8 @@ class GravityGrid():
         for xyz in [0, 1, 2]:
 
             if xyz == 2:
+                # Make the grid only negative for the z axis
+
                 g_.append(np.geomspace(0.01, 1, int(resolution[xyz])))
                 g_2.append((np.concatenate(([0], g_[xyz])) + 0.05) * - radio[xyz]*1.2)
             else:
@@ -246,54 +269,49 @@ class GravityGrid():
         kernel_g = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
         kernel_d_left = np.vstack(tuple(map(np.ravel, d_left))).T.astype("float64")
         kernel_d_right = np.vstack(tuple(map(np.ravel, d_right))).T.astype("float64")
-        #
-        # g_x =
-        # g_y = np.geomspace(0.01, 1, int(resolution[1] / 2))
-        # g_z = np.geomspace(0.01, 1, int(resolution[2] / 2))
-        # g_x2 = np.concatenate((-g_x[::-1], [0], g_x)) * radio[0]
-        # g_y2 = np.concatenate((-g_y[::-1], [0], g_y)) * radio[1]
-        # g_z2 = np.concatenate((-g_z[::-1], [0], g_z)) * radio[2]
-        #
-        #
-        #
-        # dx = np.gradient(g_x2, edge_order=2)
-        # dy = np.gradient(g_y2, edge_order=2)
-        # dz = np.gradient(g_z2, edge_order=2)
-        #
-        # g = np.meshgrid(g_x2, g_y2, g_z2)
-        # kernel = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
+
         return kernel_g, kernel_d_left, kernel_d_right
 
-    def set_irregular_kernel(self, resolution, radio):
+    @setdoc_pro(ds.resolution)
+    def set_centered_kernel(self, resolution, radio):
+        """
+        Set a centered
+
+        Args:
+            resolution: [s0]
+            radio (float): Maximum distance of the kernel
+
+        Returns:
+
+        """
         self.kernel_centers, self.kernel_dxyz_left, self.kernel_dxyz_right = self.create_irregular_grid_kernel(
             resolution, radio)
 
         return self.kernel_centers
-    #
-    # def set_airborne_plane(self, z, ai_resolution):
-    #
-    #     # TODO Include all in the loop. At the moment I am tiling all grids and is useless
-    #     # Rescale z
-    #     z_res = z  # (z-self.interp_data.centers[2])/self.interp_data.rescaling_factor + 0.5001
-    #     ai_extent_rescaled = (self.ai_extent - np.repeat(self.interp_data.centers, 2)) / \
-    #                          self.interp_data.rescaling_factor + 0.5001
-    #
-    #     # Create xy meshgrid
-    #     xy = np.meshgrid(np.linspace(ai_extent_rescaled.iloc[0], ai_extent_rescaled.iloc[1], self.ai_resolution[0]),
-    #                      np.linspace(ai_extent_rescaled.iloc[2], ai_extent_rescaled.iloc[3], self.ai_resolution[1]))
-    #     z = np.ones(self.ai_resolution[0] * self.ai_resolution[1]) * z_res
-    #
-    #     # Transformation
-    #     xy_ravel = np.vstack(map(np.ravel, xy))
-    #     airborne_plane = np.vstack((xy_ravel, z)).T.astype(self.interp_data.dtype)
 
+    @setdoc_pro(ds.resolution)
+    def set_centered_grid(self, centers, kernel_centers=None, **kwargs):
+        """
+        Main method of the class, set the XYZ values around centers using a kernel.
 
-    def set_irregular_grid(self, centers, kernel_centers=None, **kwargs):
-        self.values =np.empty((0, 3))
-        if kernel_centers is None:
-            kernel_centers = self.set_irregular_kernel(**kwargs)
+        Args:
+            centers (np.array): XYZ array with the centers of where we want to create a grid around
+            kernel_centers (Optional[np.array]): center of the voxels of a desired kernel.
+            **kwargs:
+                * resolution: [s0]
+                * radio (float): Maximum distance of the kernel
+        Returns:
 
+        """
+
+        self.values = np.empty((0, 3))
         centers = np.atleast_2d(centers)
+
+        if kernel_centers is None:
+            kernel_centers = self.set_centered_kernel(**kwargs)
+
+        assert centers.shape[1] == 3, 'Centers must be a numpy array that contains the coordinates XYZ'
+
         for i in centers:
             self.values = np.vstack((self.values, i + kernel_centers))
 
@@ -301,10 +319,9 @@ class GravityGrid():
 
     def set_tz_kernel(self, **kwargs):
         if self.kernel_centers.size == 0:
-            self.set_irregular_kernel(**kwargs)
+            self.set_centered_kernel(**kwargs)
 
         grid_values = self.kernel_centers
-       # dx, dy, dz = dxdydz
 
         s_gr_x = grid_values[:, 0]
         s_gr_y = grid_values[:, 1]
@@ -349,23 +366,19 @@ class Topography:
         self.topo = Load_DEM_GDAL(filepath, self.regular_grid)
         self._create_init()
         self._fit2model()
-        self.type = 'real'
 
     def load_random_hills(self, **kwargs):
         self.topo = Load_DEM_artificial(self.regular_grid, **kwargs)
         self._create_init()
         self._fit2model()
-        #self.type = 'artificial'
 
     def load_from_saved(self, filepath):
-        #assert filepath ending is .npy
         assert filepath[-4:] == '.npy', 'The file must end on .npy'
         topo = np.load(filepath, allow_pickle=True)
         self.values_3D = topo[0]
         self.extent = topo[1]
         self.resolution = topo[2]
         self._fit2model()
-        #self.type = 'artificial'
 
     def _create_init(self):
         self.values_3D = self.topo.values_3D
@@ -399,21 +412,16 @@ class Topography:
                                                       anti_aliasing=False, preserve_range=True)
 
     def show(self):
-        from mpl_toolkits.axes_grid1 import make_axes_locatable
+        from gempy.plot.helpers import add_colorbar
         fig, ax = plt.subplots()
         CS= ax.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k', linestyles='solid')
         ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
         CS2 = ax.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
         plt.axis('scaled')
-        #plt.axes().set_aspect('equal','datalim')
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.title('Model topography')
-        divider = make_axes_locatable(ax)
-        cax1 = divider.append_axes("right", size="5%", pad=0.05)
-        #fig.colorbar(i, cax=cax1)
-        cbar = plt.colorbar(CS2, cax=cax1)
-        cbar.set_label('elevation')
+        add_colorbar(axes=ax, label='elevation [m]', cs=CS2)
 
     def save(self, filepath):
         np.save(filepath, np.array([self.values_3D, self.extent, self.resolution]))
@@ -435,14 +443,10 @@ class Topography:
         return ((self.values_3D_res[:, :, 2] - zs[0]) / dz + 1).astype(int)
 
     def interpolate_zvals_at_xy(self, xy):
-        #todo wtf
-        #if type == 'artificial':
-        #    assert xy[:, 0][0] <= xy[:, 0][-1], 'first xvalue must be smaller than second'
-        #    assert xy[:, 1][0] <= xy[:, 1][-1], 'first yvalue must be smaller than second'
-        #    xj = self.values_3D[:, :, 0][:, 0]
-        #    yj = self.values_3D[:, :, 1][0, :]
-         #   zj = self.values_3D[:, :, 2]
-        #elif type == 'real':
+        assert xy[:, 0][0] <= xy[:, 0][-1], 'At the moment, the xy values of the first point must be smaller than second' \
+                                            '(fix soon)'
+        assert xy[:, 1][0] <= xy[:, 1][-1], 'At the moment, the xy values of the first point must be smaller than second' \
+                                            '(fix soon)'
         xj = self.values_3D[:, :, 0][0, :]
         yj = self.values_3D[:, :, 1][:, 0]
         zj = self.values_3D[:, :, 2].T
@@ -475,6 +479,6 @@ class Topography:
                 topoline = np.dstack((b, c)).reshape(-1, 2).astype(int)
 
             elif direction == "z":
-                print('not implemented')
+                raise NotImplementedError
 
         return topoline

@@ -85,7 +85,7 @@ class Grid(object):
         self.values = np.empty((0, 3))
         self.values_r = np.empty((0, 3))
         self.length = np.empty(0)
-        self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'gravity'])
+        self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'centered'])
         self.active_grids = np.zeros(5, dtype=bool)
         # All grid types must have values
 
@@ -94,12 +94,10 @@ class Grid(object):
         self.custom_grid_grid_active = False
         self.topography = None
         self.topography_grid_active = False
-
         self.sections = None
         self.sections_grid_active = False
-
-        self.gravity_grid = None
-        self.gravity_grid_active = False
+        self.centered_grid = None
+        self.centered_grid_active = False
 
         # Init basic grid empty
         self.regular_grid = self.set_regular_grid(**kwargs)
@@ -150,7 +148,7 @@ class Grid(object):
                 self.topography.load_from_gdal(filepath)
             else:
                 print('to load a raster file, a path to the file must be provided')
-        elif source == 'npy':
+        elif source == 'saved':
             filepath = kwargs.get('filepath', None)
             if filepath is not None:
                 self.topography.load_from_saved(filepath)
@@ -167,12 +165,12 @@ class Grid(object):
         self.set_active('sections')
         return self.sections
 
-
-    def set_gravity_grid(self):
+    @setdoc(grid_types.CenteredGrid.set_centered_grid.__doc__)
+    def set_centered_grid(self, centers, radio, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
-        self.gravity_grid = grid_types.GravityGrid()
-        self.active_grids = np.zeros(5, dtype=bool)
-        self.set_active('gravity')
+        self.centered_grid = grid_types.CenteredGrid(centers, radio, resolution)
+        self.active_grids = np.zeros(4, dtype=bool)
+        self.set_active('centered')
 
     def deactivate_all_grids(self):
         self.active_grids = np.zeros(5, dtype=bool)
@@ -193,7 +191,7 @@ class Grid(object):
 
     def set_inactive(self, grid_name: str):
         where = self.grid_types == grid_name
-        self.active_grids = self.active_grids ^ where
+        self.active_grids *= ~where
         self.update_grid_values()
         return self.active_grids
 
@@ -209,7 +207,7 @@ class Grid(object):
         self.values = np.empty((0, 3))
         lengths = [0]
         try:
-            for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.sections, self.gravity_grid]):
+            for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.sections, self.centered_grid]):
                 if self.active_grids[e]:
                     self.values = np.vstack((self.values, grid_types.values))
                     lengths.append(grid_types.values.shape[0])

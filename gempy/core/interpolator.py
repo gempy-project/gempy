@@ -866,10 +866,15 @@ class InterpolatorGravity(InterpolatorModel):
 
     """
 
-    def set_theano_shared_tz_kernel(self):
+    def set_theano_shared_tz_kernel(self, tz=None):
         """Set the theano component tz to each voxel"""
 
-        self.theano_graph.tz.set_value(self.grid.gravity_grid.tz.astype(self.dtype))
+        if tz is None:
+            try:
+                tz = self.calculate_tz()
+            except AttributeError:
+                raise AttributeError('You need to calculate or pass tz first.')
+        self.theano_graph.tz.set_value(tz.astype(self.dtype))
 
     def compile_th_fn(self, density=None, pos_density=None, inplace=False,
                       debug=False):
@@ -928,3 +933,9 @@ class InterpolatorGravity(InterpolatorModel):
         print('Compilation Done!')
 
         return th_fn
+
+    def calculate_tz(self):
+        from gempy.assets.geophysics import GeophysicsPreprocessing
+        g = GeophysicsPreprocessing(self.grid.centered_grid)
+
+        return g.set_tz_kernel()

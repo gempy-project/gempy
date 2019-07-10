@@ -36,8 +36,8 @@ class Load_DEM_GDAL():
         except AttributeError:
             print('Filepath seems to be wrong.')
             raise
+
         self._get_raster_dimensions()
-        print(self.extent, self.resolution)
 
         if grid is not None:
             self.grid = grid
@@ -49,7 +49,7 @@ class Load_DEM_GDAL():
         self.convert2xyz()
 
     def _get_raster_dimensions(self):
-        '''returns dtm.extent and dtm.resolution'''
+        '''calculates DEM extent, resolution, and max. z extent (d_z)'''
         ulx, xres, xskew, uly, yskew, yres = self.dem.GetGeoTransform()
         z = self.dem_zval
         if np.any(np.array([xskew, yskew])) != 0:
@@ -84,27 +84,20 @@ class Load_DEM_GDAL():
         '''
         Returns: array with the x,y,z coordinates of the topography  [0]: shape(a,b,3), [1]: shape(a*b,3)
         '''
-        path_dest = '_topo.xyz'
+        path_dest = 'topo.xyz'
         print('storing converted file...')
         shape = self.dem_zval.shape
         gdal.Translate(path_dest, self.dem, options=gdal.TranslateOptions(options=['format'], format="XYZ"))
 
         xyz = pn.read_csv(path_dest, header=None, sep=' ').values
-        # print(xyz.shape)
         x = np.flipud(xyz[:, 0].reshape(shape))
         y = np.flipud(xyz[:, 1].reshape(shape))
         z = np.flipud(xyz[:, 2].reshape(shape))
-
-        #x = xyz[:, 0].reshape(shape)
-        #y = xyz[:, 1].reshape(shape)
-        #z = xyz[:, 2].reshape(shape)
 
         self.values_3D = np.dstack([x, y, z])
 
     def resize(self):
         pass
-
-        # return xyz, xyz_box
 
     def _get_cornerpoints(self, extent):
         upleft = ([extent[0], extent[3]])
@@ -130,10 +123,9 @@ class Load_DEM_artificial():
             self.d_z = d_z
 
         topo = self.fractalGrid(fd, N=self.resolution.max())
-        topo = np.interp(topo, (topo.min(), topo.max()), (self.d_z))
+        topo = np.interp(topo, (topo.min(), topo.max()), self.d_z)
 
         self.dem_zval = topo[:self.resolution[1], :self.resolution[0]]  # crop fractal grid with resolution
-
         self.create_topo_array()
 
     def fractalGrid(self, fd, N=256):

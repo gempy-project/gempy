@@ -33,7 +33,9 @@ import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 from gempy.core.solution import Solution
+import gempy.plot.helpers as plothelp
 from matplotlib.ticker import FixedFormatter, FixedLocator
+
 
 class PlotSolution:
     #Todo plot data filtered for sections and map
@@ -55,14 +57,13 @@ class PlotSolution:
             self.plot_data(direction='z')
         else:
             fig, ax = plt.subplots(figsize=(6,6))
-        plt.imshow(geomap, origin = 'lower', extent=self.model.grid.topography.extent, cmap=self._cmap, norm=self._norm)
+        im = plt.imshow(geomap, origin = 'lower', extent=self.model.grid.topography.extent, cmap=self._cmap, norm=self._norm)
         if contour_lines==True and show_data==False:
             CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys', linestyles='solid',
 
                             extent=self.model.grid.topography.extent)
             ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
-            cbar = plt.colorbar(CS)
-            cbar.set_label('elevation [m]')
+            plothelp.add_colorbar(im=im, label='elevation [m]', cs=CS, aspect=35)
         if show_faults == True:
             self.extract_section_fault_lines('topography')
         plt.title("Geological map", fontsize=15)
@@ -101,8 +102,6 @@ class PlotSolution:
                                  extent=[0, self.model.grid.sections.dist[j],
                                          self.model.grid.regular_grid.extent[4],
                                          self.model.grid.regular_grid.extent[5]])
-
-
 
     def plot_sections(self, show_traces=True, show_data=False, section_names = None, show_faults = True, show_topo=True,
                       figsize=(12,12)):
@@ -220,6 +219,7 @@ class PlotSolution:
             plt.ylim(self.model.grid.regular_grid.extent[2:4])
             # ax.set_aspect(np.diff(geo_model.grid.regular_grid.extent[:2])/np.diff(geo_model.grid.regular_grid.extent[2:4]))
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
 
     def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1, **kwargs):
         """
