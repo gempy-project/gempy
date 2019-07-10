@@ -210,12 +210,13 @@ class CenteredGrid:
         """
 
         self.values = np.empty((0, 3))
+        centers = np.atleast_2d(centers)
+
         if kernel_centers is None:
             kernel_centers = self.set_centered_kernel(**kwargs)
 
         assert centers.shape[1] == 3, 'Centers must be a numpy array that contains the coordinates XYZ'
 
-        centers = np.atleast_2d(centers)
         for i in centers:
             self.values = np.vstack((self.values, i + kernel_centers))
 
