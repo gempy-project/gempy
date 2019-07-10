@@ -143,7 +143,7 @@ class PlotSolution:
                     self.extract_section_fault_lines(section, axes[i])
                 if show_topo:
                     xy = self.make_topography_overlay_4_sections(j)
-                    axes[i].fill(xy[:,0],xy[:,1],'k', zorder=10)
+                    axes[i].fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
                 axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T, origin='lower',
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                          self.model.grid.regular_grid.extent[4],
@@ -217,7 +217,7 @@ class PlotSolution:
 
             plt.xlim(self.model.grid.regular_grid.extent[:2])
             plt.ylim(self.model.grid.regular_grid.extent[2:4])
-            # ax.set_aspect(np.diff(geo_model.grid.regular_grid.extent[:2])/np.diff(geo_model.grid.regular_grid.extent[2:4]))
+            #plt.set_aspect(np.diff(geo_model.grid.regular_grid.extent[:2])/np.diff(geo_model.grid.regular_grid.extent[2:4]))
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
 
