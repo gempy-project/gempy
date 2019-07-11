@@ -39,7 +39,7 @@ from gempy.core.model import Model
 
 
 class _StochasticSurface(ABC):
-    """Abstract base class"""
+    """Abstract base class for stochastic surfaces."""
     stochastic_surfaces = {}
 
     def __init__(self, geo_model: Model, surface:str, grouping: str = "surface"):
@@ -58,7 +58,8 @@ class _StochasticSurface(ABC):
         self.nsurf = len(self.isurf)
         self.norient = len(self.iorient)
 
-        self.stoch_param = pd.DataFrame(columns=["i", "col", "val"])
+        self.surfpts_sample = pd.DataFrame(columns=["i", "col", "val"])
+        self.orients_sample = pd.DataFrame(columns=["i", "col", "val"])
 
     @property
     def surface_points(self) -> pd.DataFrame:
@@ -71,30 +72,60 @@ class _StochasticSurface(ABC):
         return self.geo_model.orientations.df.loc[self.iorient]
 
     @abstractmethod
-    def sample(self):
+    def sample(self, random_state=None):
         pass
 
-    def modify(self):
-        for col, i in self.stoch_param.groupby("col").groups.items():
+    def modify_surfpts(self):
+        "Inplace modification of interface dataframe."
+        for col, i in self.surfpts_sample.groupby("col").groups.items():
+            i_init = self.surfpts_sample.loc[i, "i"]
             self.geo_model.modify_surface_points(
-                self.stoch_param.loc[i, "i"],
+                i_init,
                 **{
-                    col:
-                        self.surface_points_init.loc[self.stoch_param.loc[i, "i"], col].values + self.stoch_param.loc[i, "val"].values
+                    col: self.surface_points_init.loc[i_init, col].values + self.surfpts_sample.loc[i, "val"].values
                 }
             )
+
+    def modifiy_orient(self):
+        """Inplace modification of orientation dataframe."""
+        for col, i in self.orients_sample.groupby("col").groups.items():
+            i_init = self.orients_sample.loc[i, "i"]
+            self.geo_model.modify_orientations(
+                i_init,
+                **{
+                    col: self.orientations_init.loc[i_init, col].values + self.orients_sample[i, "val"].values
+                }
+            )
+
+    def modify(self):
+        """Modify geomodel parameters based on sample."""
+        self.modify_surfpts()
+        self.modifiy_orient()
+
 
     def reset(self) -> None:
         """Reset geomodel parameters."""
         self.geo_model.modify_surface_points(
             self.isurf,
             **{
-                "Z":
-                    deepcopy(self.surface_points_init.loc[self.isurf, "Z"].values),
-                "Y":
-                    deepcopy(self.surface_points_init.loc[self.isurf, "Y"].values),
-                "X":
-                    deepcopy(self.surface_points_init.loc[self.isurf, "X"].values)
+                "Z": deepcopy(self.surface_points_init.loc[self.isurf, "Z"].values),
+                "Y": deepcopy(self.surface_points_init.loc[self.isurf, "Y"].values),
+                "X": deepcopy(self.surface_points_init.loc[self.isurf, "X"].values)
+            }
+        )
+
+        self.geo_model.modify_orientations(
+            self.iorient,
+            **{
+                "X": deepcopy(self.orientations_init.loc[self.isurf, "X"].values),
+                "Y": deepcopy(self.orientations_init.loc[self.isurf, "Y"].values),
+                "Z": deepcopy(self.orientations_init.loc[self.isurf, "Z"].values),
+                "G_x": deepcopy(self.orientations_init.loc[self.isurf, "G_x"].values),
+                "G_y": deepcopy(self.orientations_init.loc[self.isurf, "G_y"].values),
+                "G_z": deepcopy(self.orientations_init.loc[self.isurf, "G_z"].values),
+                "dip": deepcopy(self.orientations_init.loc[self.isurf, "dip"].values),
+                "azimuth": deepcopy(self.orientations_init.loc[self.isurf, "azimuth"].values),
+                "polarity": deepcopy(self.orientations_init.loc[self.isurf, "polarity"].values),
             }
         )
 
@@ -106,35 +137,44 @@ class StochasticSurfaceScipy(_StochasticSurface):
         super().__init__(geo_model, surface, grouping=grouping)
         self._i = {"Z": 5, "X": 1, "Y": 3}
         self._extent = self.geo_model.grid.regular_grid.extent
-        self.parametrization = None
+        self.surfpts_parametrization = None
+        self.orients_parametrization = None
 
-    def sample(self):
-        if not self.parametrization:
-            raise AssertionError("No stochastic parametrization found.")
+    def sample(self, random_state=None):
+        if not self.surfpts_parametrization and not self.orients_parametrization:
+            raise AssertionError("No parametrization for either surface points or orientations found.")
 
-        self.stoch_param = pd.DataFrame(columns=["i", "col", "val"])
-
-        for entry in self.parametrization:
-            val = entry[2].rvs()
-            for i in entry[0]:
-                self.stoch_param = self.stoch_param.append(
-                    {'i': i, 'col': entry[1], 'val': val},
-                    ignore_index=True
-                )
-
+        if self.surfpts_parametrization:
+            self.surfpts_sample = pd.DataFrame(columns=["i", "col", "val"])
+            for entry in self.surfpts_parametrization:
+                val = entry[2].rvs(random_state=random_state)
+                for i in entry[0]:
+                    self.surfpts_sample = self.surfpts_sample.append(
+                        {'i': i, 'col': entry[1], 'val': val},
+                        ignore_index=True
+                    )
+        if self.orients_parametrization:
+            self.orients_sample = pd.DataFrame(columns=["i", "col", "val"])
+            for entry in self.orients_parametrization:
+                val = entry[2].rvs(random_state=random_state)
+                for i in entry[0]:
+                    self.orients_sample = self.orients_sample.append(
+                        {'i': i, 'col': entry[1], 'val': val},
+                        ignore_index=True
+                    )
 
     def parametrize_surfpts_single(self,
                                    stdev: float,
                                    direction: str = "Z") -> None:
         dist = ss.norm(loc=0, scale=stdev)
-        self.parametrization = [(self.isurf, direction, dist)]
+        self.surfpts_parametrization = [(self.isurf, direction, dist)]
 
     def parametrize_surfpts_individual(self,
                                        factor: float = 0.01,
                                        direction: str = "Z") -> None:
         scale = self._extent[self._i[direction.capitalize()]] * factor
-        self.parametrization = [
-            (i, direction, ss.norm(loc=0, scale=abs(scale)))
+        self.surfpts_parametrization = [
+            ([i], direction, ss.norm(loc=0, scale=abs(scale)))
             for i in self.isurf
         ]
 
