@@ -29,9 +29,8 @@ import sys
 # This is for sphenix to find the packages
 #sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
-from .visualization_2d import PlotData2D
+from .visualization_2d import PlotData2D, PlotSolution
 from .visualization_3d import steno3D, GemPyvtkInteract, ipyvolumeVisualization
-from .vis2d_sections import PlotSolution
 import gempy as _gempy
 
 
@@ -211,7 +210,7 @@ def plot_predef_sections(model, show_traces=True, show_data=False, section_names
 
 
 def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
-                 show_data=False, show_faults=True, show_topo = True,  block_type=None, ve=1, **kwargs):
+                 show_data=False, show_faults=True, show_topo = False,  block_type=None, ve=1, **kwargs):
     """
     Plot a section of the block model
 

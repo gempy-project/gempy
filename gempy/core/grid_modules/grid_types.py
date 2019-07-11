@@ -366,11 +366,13 @@ class Topography:
         self.topo = Load_DEM_GDAL(filepath, self.regular_grid)
         self._create_init()
         self._fit2model()
+        self.type = 'real'
 
     def load_random_hills(self, **kwargs):
         self.topo = Load_DEM_artificial(self.regular_grid, **kwargs)
         self._create_init()
         self._fit2model()
+        self.type = 'artificial'
 
     def load_from_saved(self, filepath):
         assert filepath[-4:] == '.npy', 'The file must end on .npy'
@@ -379,6 +381,7 @@ class Topography:
         self.extent = topo[1]
         self.resolution = topo[2]
         self._fit2model()
+        self.type = 'real'
 
     def _create_init(self):
         self.values_3D = self.topo.values_3D
@@ -413,15 +416,19 @@ class Topography:
 
     def show(self):
         from gempy.plot.helpers import add_colorbar
-        fig, ax = plt.subplots()
-        CS= ax.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k', linestyles='solid')
-        ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
-        CS2 = ax.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
+        if self.type == 'artificial':
+            fig, ax = plt.subplots()
+            CS= ax.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k', linestyles='solid')
+            ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
+            CS2 = ax.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
+            add_colorbar(axes=ax, label='elevation [m]', cs=CS2)
+        else:
+            im = plt.imshow(np.flipud(self.values_3D[:,:,2]), extent=(self.extent[:4]))
+            add_colorbar(im=im, label='elevation [m]')
         plt.axis('scaled')
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.title('Model topography')
-        add_colorbar(axes=ax, label='elevation [m]', cs=CS2)
 
     def save(self, filepath):
         np.save(filepath, np.array([self.values_3D, self.extent, self.resolution]))
