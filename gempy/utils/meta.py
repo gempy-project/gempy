@@ -5,7 +5,7 @@
 def setdoc(docstring, indent=True, position='end'):
     if type(docstring) is list:
         try:
-            docstring = '-'.join(docstring)
+            docstring = '----'.join(docstring)
         except TypeError:
             raise TypeError(str(docstring))
 

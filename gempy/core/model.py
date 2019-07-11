@@ -144,7 +144,7 @@ class DataMutation(object):
         Set regular grid docs
         """
         self.grid.set_regular_grid(extent=extent, resolution=resolution)
-
+        self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
@@ -939,11 +939,12 @@ class DataMutation(object):
         return self.surfaces
 
 
-@setdoc([MetaData.__doc__, DataMutation.__doc__])
+@setdoc([MetaData.__doc__, DataMutation.__doc__], indent=False)
 class Model(DataMutation):
-    """
-    Container class of all objects that constitute a GemPy model. In addition the class provides the methods that
-     act in more than one of this class. Model is a child class of :class:`DataMutation` and :class:`MetaData`
+    """Container class of all objects that constitute a GemPy model.
+
+    In addition the class provides the methods that act in more than one of this class. Model is a child class of
+    :class:`DataMutation` and :class:`MetaData`.
 
     """
     def __init__(self, project_name='default_project'):

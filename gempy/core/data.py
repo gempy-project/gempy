@@ -26,10 +26,10 @@ class MetaData(object):
 
     Set of attributes and methods that are not related directly with the geological model but more with the project
 
-     Args:
+    Args:
         project_name (str): Name of the project. This is use as default value for some I/O actions
 
-     Attributes:
+    Attributes:
         date (str): Time of the creations of the project
         project_name (str): Name of the project. This is use as default value for some I/O actions
 
