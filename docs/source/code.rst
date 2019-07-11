@@ -57,7 +57,7 @@ Front end
 .. autosummary::
     :toctree: GemPy API
 
-    activate_interactive_de
+    activate_interactive_df
     compute_model
     compute_model_at
     create_data
@@ -74,6 +74,6 @@ Front end
     save_model
     save_model_to_pickle
     set_interpolation_data
-    set_orientation_for_surface_points
+    set_orientation_from_surface_points
     set_series
     update_additional_data

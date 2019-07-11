@@ -88,15 +88,16 @@ def set_orientation_from_surface_points(geo_model, indices_array):
     """
     Create and set orientations from at least 3 points of the :attr:`gempy.data_management.InputData.surface_points`
      Dataframe
+
     Args:
         geo_model (:class:`Model`):
         indices_array (array-like): 1D or 2D array with the pandas indices of the
-          :attr:`gempy.data_management.InputData.surface_points`. If 2D every row of the 2D matrix will be used to create an
+          :attr:`surface_points`. If 2D every row of the 2D matrix will be used to create an
           orientation
 
 
     Returns:
-        :attr:`gempy.data_management.InputData.orientations`: Already updated inplace
+        :attr:`orientations`: Already updated inplace
     """
 
     if np.ndim(indices_array) is 1:
@@ -130,7 +131,8 @@ def set_orientation_from_surface_points(geo_model, indices_array):
 @setdoc([InterpolatorModel.__doc__])
 @setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
 def set_interpolation_data(geo_model: Model, compile_theano: bool = True,
-                           theano_optimizer=None, verbose: list = None):
+                           theano_optimizer=None, verbose: list = None,
+                           output=None):
     """
     Method to create a graph and compile the theano code to compute the interpolation.
 
@@ -143,6 +145,9 @@ def set_interpolation_data(geo_model: Model, compile_theano: bool = True,
     Returns:
 
     """
+    if output:
+        warnings.warn('Output is not an argument of intepolation data. Look'
+                      'compute_model', DeprecationWarning)
 
     if theano_optimizer is not None:
         geo_model.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
