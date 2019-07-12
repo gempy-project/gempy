@@ -371,11 +371,9 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
         path_o: Path to the data bases of orientations. Default os.getcwd()
 
     Returns:
-        :class:`gempy.data_management.InputData`
+        :class:`Model`
 
     """
-    warnings.warn("create_data will get deprecated in the next version of gempy. It still exist only to keep"
-                  "the behaviour equal to older version. Use init_data.", FutureWarning)
 
     geo_model = create_model(project_name)
     return init_data(geo_model, extent=extent, resolution=resolution, project_name=project_name, **kwargs)

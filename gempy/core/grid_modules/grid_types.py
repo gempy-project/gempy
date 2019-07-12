@@ -362,6 +362,14 @@ class Topography:
         self.regular_grid = regular_grid
         self.values = np.zeros((0, 3))
 
+        self.topo = None
+        # TODO @Elisa: values 3D is a 3D numpy array isnt it
+        self.values_3D = np.zeros((0, 0, 0))
+        self.extent = None
+        self.resolution = None
+
+        self.type = None
+
     def load_from_gdal(self, filepath):
         self.topo = Load_DEM_GDAL(filepath, self.regular_grid)
         self._create_init()

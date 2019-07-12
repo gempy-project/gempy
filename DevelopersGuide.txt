@@ -9,7 +9,7 @@ Before a big commit.
 - Then you can build or not the html to check offline if everything is in order
 - Push and check that readmydocs just worked fine
 
-# set version number in setup.py, both for version and in download_url
+# set version number in setup.py, both for version and in download_url, also in the config file of the documentation
 version='X.X',
 download_url='https://github.com/cgre-aachen/gempy/archive/X.X.tar.gz',
 # add new tag

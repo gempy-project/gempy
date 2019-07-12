@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='gempy',
-    version='2.0b.dev2',
+    version='2.0rc',
     packages=find_packages(exclude=('test', 'docs')),
     include_package_data=True,
     install_requires=[
@@ -18,7 +18,7 @@ setup(
         'seaborn'
     ],
     url='https://github.com/cgre-aachen/gempy',
-    download_url='https://github.com/cgre-aachen/gempy/archive/2.0b.dev1.tar.gz',
+    download_url='https://github.com/cgre-aachen/gempy/archive/2.0rctar.gz',
     license='LGPL v3',
     author='Miguel de la Varga, Elisa Heim, Alexander Schaaf, Fabian Stamm, Florian Wellmann',
     author_email='varga@aices.rwth-aachen.de',

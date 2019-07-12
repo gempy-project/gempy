@@ -2,6 +2,7 @@
 from matplotlib.cm import ScalarMappable as SM
 from gempy.plot.visualization_2d import PlotData2D
 
+
 def export_geomap2geotiff(path, geo_model, geo_map=None, geotiff_filepath=None):
     """
 
@@ -20,10 +21,10 @@ def export_geomap2geotiff(path, geo_model, geo_map=None, geotiff_filepath=None):
     cmap = plot._cmap
     norm = plot._norm
 
-    if geo_map == None:
+    if geo_map is None:
         geo_map = geo_model.solutions.geological_map[0].reshape(geo_model.grid.topography.resolution)
 
-    if geotiff_filepath == None:
+    if geotiff_filepath is None:
         # call the other function
         print('stupid')
 

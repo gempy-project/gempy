@@ -198,13 +198,16 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     # TODO saving options
     return plot
 
+
 def plot_map(model, contour_lines=True, show_faults = True, show_data=True):
     plot = PlotSolution(model)
     plot.plot_map(contour_lines=contour_lines, show_faults=show_faults, show_data=show_data)
 
+
 def plot_section_traces(model, show_data=True, section_names=None, contour_lines=False):
     plot = PlotSolution(model)
     plot.plot_section_traces(show_data=show_data, section_names=section_names, contour_lines=contour_lines)
+
 
 def plot_predef_sections(model, show_traces=True, show_data=False, section_names=None, show_faults=True,
                          show_topo=True, figsize=(12, 12)):

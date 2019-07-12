@@ -13,9 +13,13 @@ install:
   - pip install nbval
   - pip install git+git://github.com/Leguark/scikit-image@master
   - pip install vtk
+  - pip install pyevtk
+  - pip install emg3d pyvista panel discretize
 
 script:
 
+  - pytest -v notebooks/integrations/ --nbval-lax
+  - pytest -v notebooks/examples/ --nbval-lax
   - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='ch1-6*' --ignore-glob='ch1-7*'
   - pytest
 
