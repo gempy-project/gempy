@@ -558,6 +558,7 @@ class DataMutation(object):
             # This branch only recompute the added point
             self.rescaling.set_rescaled_surface_points(idx)
         self.update_structure(update_theano='matrices')
+        self.interpolator.set_theano_shared_nuggets()
 
         return self.surface_points, idx
 
@@ -638,6 +639,7 @@ class DataMutation(object):
             # This branch only recompute the added point
             self.rescaling.set_rescaled_orientations(idx)
         self.update_structure(update_theano='weights')
+        self.interpolator.set_theano_shared_nuggets()
 
         return self.orientations, idx
 

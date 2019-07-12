@@ -156,7 +156,7 @@ class Grid(object):
             else:
                 print('path to .npy file must be provided')
         else:
-            print('source must be random, gdal or npy')
+            raise AttributeError('source must be random, gdal or saved')
 
         self.topography.show()
         self.set_active('topography')
@@ -1349,7 +1349,7 @@ class SurfacePoints(GeometricData):
 
     @setdoc_pro([ds.x, ds.y, ds.z, ds.surface_sp, ds.idx_sp])
     def add_surface_points(self, x: Union[float, np.ndarray], y: Union[float, np.ndarray], z: Union[float, np.ndarray],
-                           surface: list, idx: Union[int, list, np.ndarray] = None):
+                           surface: Union[list, np.ndarray], idx: Union[int, list, np.ndarray] = None):
         """
         Add surface points.
 
