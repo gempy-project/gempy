@@ -151,27 +151,31 @@ def plot_data_3d_ipv(geo_model: object) -> None:
     ipvv.plot_data()
 
 
-def export_to_vtk(geo_data, path=None, name=None, voxels=True, surfaces=True):
+def export_to_vtk(geo_data, path=None, name=None, voxels=True, block=None, surfaces=True):
     """
       Export data to a vtk file for posterior visualizations
 
       Args:
-          geo_data(gempy.InputData): All values of a DataManagement object
-          block(numpy.array): 3D array containing the lithology block
-          path (str): path to the location of the vtk
+          geo_data(:class:`Model`)
+          path(str): path to the location of the vtk
+          name(str): Name of the files. Default name: Default
+          voxels(bool): if True export lith_block
+          block(Optional[np.array]): One of the solutions of the regular grid. This can be used if for
+           example you want to export an scalar field or an specific series block. If None is passed, lith_block
+           will be exported.
+          surfaces(bool): If True, export the polydata surfaces.
 
       Returns:
           None
       """
 
-    _gempy.warnings.warn("gempy plot functionality will be moved in version 1.2, "
-                  "use gempy.plot module instead", FutureWarning)
     if voxels is True:
-        GemPyvtkInteract.export_vtk_lith_block(geo_data, geo_data.solutions.lith_block, path=path)
+        GemPyvtkInteract.export_vtk_lith_block(geo_data, lith_block=block, path=path)
     if surfaces is True:
         geo_data.solutions.compute_all_surfaces()
         ver, sim = _gempy.get_surfaces(geo_data)
-        GemPyvtkInteract.export_vtk_surfaces(ver, sim, path=path, name=name)
+        GemPyvtkInteract.export_vtk_surfaces(geo_data, ver, sim, path=path, name=name)
+    return True
 
 
 def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
@@ -193,6 +197,7 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
                           legend_font_size=legend_font_size, **kwargs)
     # TODO saving options
     return plot
+
 
 def plot_map(model, contour_lines=True):
     plot = PlotData2D(model)

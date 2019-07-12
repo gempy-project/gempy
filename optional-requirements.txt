@@ -5,3 +5,4 @@ gdal
 qgrid
 pymc3
 pyvolume
+pyevtk

@@ -1136,20 +1136,22 @@ class vtkVisualization(object):
         return True
 
     @staticmethod
-    def export_vtk_lith_block(geo_data, lith_block, path=None):
+    def export_vtk_lith_block(geo_data, lith_block=None, path=None):
         """
         Export data to a vtk file for posterior visualizations
 
         Args:
-            geo_data(gempy.InputData): All values of a DataManagement object
+            geo_data(:class:''): All values of a DataManagement object
             block(numpy.array): 3D array containing the lithology block
             path (str): path to the location of the vtk
 
         Returns:
             None
         """
-
-        from pyevtk.hl import gridToVTK
+        try:
+            from evtk.hl import gridToVTK
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError('pyevtk is not installed. Grid export not available.')
 
         import numpy as np
 
@@ -1174,6 +1176,8 @@ class vtkVisualization(object):
 
         z = np.arange(geo_data.grid.regular_grid.extent[4], geo_data.grid.regular_grid.extent[5] + 0.1, dz, dtype='float64')
 
+        if lith_block is None:
+            lith_block = geo_data.solutions.lith_block
         lith = lith_block.reshape((nx, ny, nz))
 
         # Variables
@@ -1184,7 +1188,7 @@ class vtkVisualization(object):
         gridToVTK(path+'_lith_block', x, y, z, cellData={"Lithology": lith})
 
     @staticmethod
-    def export_vtk_surfaces(geo_model, vertices:dict, simplices, path=None, name='_surfaces', alpha=1):
+    def export_vtk_surfaces(geo_model, vertices=None, simplices=None, path=None, name='_surfaces', alpha=1):
         """
         Export data to a vtk file for posterior visualizations
 
@@ -1198,8 +1202,12 @@ class vtkVisualization(object):
         """
         import vtk
 
+        if vertices is None or simplices is None:
+            vertices = geo_model.solutions.vertices
+            simplices = geo_model.solutions.edges
+
         s_n = 0
-        for key, values in vertices.items():
+        for e, values in enumerate(vertices):
             # setup points and vertices
             s_n += 1
             Points = vtk.vtkPoints()
@@ -1212,7 +1220,7 @@ class vtkVisualization(object):
             # The first 0 is the index of the triangle vertex which is ALWAYS 0-2.
             # The second 0 is the index into the point (geometry) array, so this can range from 0-(NumPoints-1)
             # i.e. a more general statement is triangle->GetPointIds()->SetId(0, PointId);
-            for i in simplices[key]:
+            for i in simplices[e]:
                 Triangle.GetPointIds().SetId(0, i[0])
                 Triangle.GetPointIds().SetId(1, i[1])
                 Triangle.GetPointIds().SetId(2, i[2])
@@ -1242,7 +1250,7 @@ class vtkVisualization(object):
             if not path:
                 path = "./default_"
 
-            writer.SetFileName(path+'_surfaces_'+str(key)+'.vtp')
+            writer.SetFileName(path+'_surfaces_'+str(e)+'.vtp')
             if vtk.VTK_MAJOR_VERSION <= 5:
                 writer.SetInput(polydata)
             else:
