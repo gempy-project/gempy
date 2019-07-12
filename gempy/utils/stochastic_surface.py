@@ -223,7 +223,6 @@ class StochasticSurfaceScipy(_StochasticSurface):
             direction (str): Coordinate axis along which to perturbate (X,Y,Z)
                 Default: "Z".
         """
-        scale = self._extent[self._i[direction.capitalize()]] * factor
         self.surfpts_parametrization = [
             ([i], direction, ss.norm(loc=0, scale=stdev))
             for i in self.isurf
