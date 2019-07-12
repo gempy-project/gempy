@@ -35,7 +35,7 @@ Check out the documentation either in [gempy.org](https://www.gempy.org/) (bette
 
 <a name="feat"></a>
 ## News
-### GemPy v2.0 beta release
+### GemPy v2.0 release
 
 It has been a long journey since the release of GemPy v1.0. What started as a small library to carry out research
 on uncertainty analysis for structural geology has grown to be used in multiple projects around the world. Carried
