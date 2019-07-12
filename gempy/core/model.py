@@ -208,6 +208,7 @@ class DataMutation(object):
     def set_series_object(self):
         """
         Not implemented yet. Exchange the series object of the Model object. foo
+
         Returns:
 
         """
@@ -591,7 +592,7 @@ class DataMutation(object):
 
         self.surface_points.modify_surface_points(indices, **kwargs)
 
-        if recompute_rescale_factor is True or np.atleast_1d(indices)[0] < 20:
+        if recompute_rescale_factor is True or np.atleast_1d(indices).shape[0] < 20:
             # This will rescale all data again
             self.rescaling.rescale_data()
             self.interpolator.set_theano_shared_kriging()
