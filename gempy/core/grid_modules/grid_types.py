@@ -3,10 +3,11 @@ import numpy as np
 import skimage
 import matplotlib.pyplot as plt
 from scipy.constants import G
+from scipy import interpolate
 from gempy.utils.meta import setdoc, setdoc_pro
 import gempy.utils.docstring as ds
 from typing import Optional
-
+import pandas as pn
 
 class RegularGrid:
     """
@@ -80,6 +81,100 @@ class RegularGrid:
         self.values = self.create_regular_grid_3d(extent, resolution)
         self.length = self.values.shape[0]
         return self.values
+
+
+class Sections:
+    def __init__(self, regular_grid, section_dict):
+        #todo tidy up
+        self.regular_grid = regular_grid
+        self.section_dict = section_dict
+        self.names = np.array(list(self.section_dict.keys()))
+
+        self.points = []
+        self.resolution = []
+        self.length = [0]
+        self.dist = []
+        self.get_section_params()
+        self.calculate_distance()
+        self.values = []
+        self.compute_section_coordinates()
+
+        self.extent = None
+
+    def _repr_html_(self):
+        return pn.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution']).to_html()
+
+    def show(self):
+        pass
+
+    def get_section_params(self):
+        for i, section in enumerate(self.names):
+            points = [self.section_dict[section][0], self.section_dict[section][1]]
+            assert points[0] != points[1], 'The start and end points of the section must not be identical.'
+            self.points.append(points)
+            self.resolution.append(self.section_dict[section][2])
+            self.length.append(self.section_dict[section][2][0] * self.section_dict[section][2][1])
+        self.length = np.array(self.length).cumsum()
+
+    def calculate_distance(self):
+        self.coordinates = np.array(self.points).ravel().reshape(-1, 4) #axis are x1,y1,x2,y2
+        self.dist = np.sqrt(np.diff(self.coordinates[:, [0, 2]])**2 + np.diff(self.coordinates[:, [1, 3]])**2)
+
+    def compute_section_coordinates(self):
+        for i in range(len(self.names)):
+            xy = self.calculate_line_coordinates_2points(self.points[i][0], self.points[i][1], self.resolution[i][0],
+                                                         self.resolution[i][0]) #two times xy resolution is correct
+            zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][1],
+                                     dtype="float64")
+            X, Z = np.meshgrid(xy[:, 0], zaxis, indexing='ij')
+            Y, _ = np.meshgrid(xy[:, 1], zaxis, indexing='ij')
+            xyz = np.vstack((X.flatten(), Y.flatten(), Z.flatten())).T
+            if i == 0:
+                self.values = xyz
+            else:
+                self.values = np.vstack((self.values, xyz))
+
+    def calculate_line_coordinates_2points(self, p1, p2, resx, resy):
+        x0 = p1[0]
+        x1 = p2[0]
+        y0 = p1[1]
+        y1 = p2[1]
+
+        dx = np.abs((x1 - x0) / resx)
+        dy = np.abs((y1 - y0) / resy)
+
+        if x0 == x1:  # slope is infinite
+            # for cases where phi == -np.pi/2 or phi == np.pi/2
+            xi = x0 * np.ones(resy)
+            yj = np.linspace(y0, y1, resy)
+        else:
+            # calculate support points between two points
+            phi = np.arctan2(y1 - y0, x1 - x0)  # angle of line with x-axis
+            if np.pi / 2 < phi <= np.pi: #shift all values to first or fourth quadrant
+                phi -= np.pi
+            elif -np.pi <= phi < -np.pi / 2:
+                phi += np.pi  # shift values in first or fourth quadrant so that cosine is positive
+            else:
+                pass
+            ds = np.abs(dx * np.cos(phi)) + np.abs(dy * np.sin(phi))  # support point spacing
+            # abs needed for cases where phi == -1/4 pi or 3/4 pi
+            if x0 > x1:
+                n_points = np.ceil((x0 - x1) / (ds * np.cos(phi)))
+            else:
+                n_points = np.ceil((x1 - x0) / (ds * np.cos(phi)))
+            xi = np.linspace(x0, x1, int(n_points))
+            m = (y1 - y0) / (x1 - x0)  # slope of line
+            yj = m * (xi - x0) + y0 * np.ones(xi.shape)  # calculate yvalues with line equation
+        return np.vstack((xi, yj)).T
+
+
+    def get_section_args(self, section_name: str):
+        where = np.where(self.names == section_name)[0][0]
+        return self.length[where], self.length[where+1]
+
+    def get_section_grid(self, section_name: str):
+        l0, l1 = self.get_section_args(section_name)
+        return self.values[l0:l1]
 
 
 class CustomGrid:
@@ -271,20 +366,22 @@ class Topography:
         self.topo = Load_DEM_GDAL(filepath, self.regular_grid)
         self._create_init()
         self._fit2model()
+        self.type = 'real'
 
     def load_random_hills(self, **kwargs):
         self.topo = Load_DEM_artificial(self.regular_grid, **kwargs)
         self._create_init()
         self._fit2model()
+        self.type = 'artificial'
 
     def load_from_saved(self, filepath):
-        #assert filepath ending is .npy
         assert filepath[-4:] == '.npy', 'The file must end on .npy'
         topo = np.load(filepath, allow_pickle=True)
         self.values_3D = topo[0]
         self.extent = topo[1]
         self.resolution = topo[2]
         self._fit2model()
+        self.type = 'real'
 
     def _create_init(self):
         self.values_3D = self.topo.values_3D
@@ -318,21 +415,20 @@ class Topography:
                                                       anti_aliasing=False, preserve_range=True)
 
     def show(self):
-        from mpl_toolkits.axes_grid1 import make_axes_locatable
-        fig, ax = plt.subplots()
-        CS= ax.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k', linestyles='solid')
-        ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
-        CS2 = ax.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
+        from gempy.plot.helpers import add_colorbar
+        if self.type == 'artificial':
+            fig, ax = plt.subplots()
+            CS= ax.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k', linestyles='solid')
+            ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
+            CS2 = ax.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
+            add_colorbar(axes=ax, label='elevation [m]', cs=CS2)
+        else:
+            im = plt.imshow(np.flipud(self.values_3D[:,:,2]), extent=(self.extent[:4]))
+            add_colorbar(im=im, label='elevation [m]')
         plt.axis('scaled')
-        #plt.axes().set_aspect('equal','datalim')
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.title('Model topography')
-        divider = make_axes_locatable(ax)
-        cax1 = divider.append_axes("right", size="5%", pad=0.05)
-        #fig.colorbar(i, cax=cax1)
-        cbar = plt.colorbar(CS2, cax=cax1)
-        cbar.set_label('elevation')
 
     def save(self, filepath):
         np.save(filepath, np.array([self.values_3D, self.extent, self.resolution]))
@@ -353,22 +449,21 @@ class Topography:
         dz = (zs[-1] - zs[0]) / len(zs)
         return ((self.values_3D_res[:, :, 2] - zs[0]) / dz + 1).astype(int)
 
-    def _line_in_section_DEP(self, direction='y', cell_number=0):
-        # todo use slice2D of plotting class for this
-        if np.any(self.resolution - self.regular_grid.resolution[:2]) != 0:
-            cell_number_res = (self.resolution / self.regular_grid.resolution[:2] * cell_number).astype(int)
-            cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
-        print(cell_number_res, cell_number)
-        print(self.values_3D[:,:,2].shape)
-        if direction == 'x':
-            topoline = self.values_3D[:, cell_number, :][:, [1, 2]].astype(int)
-        elif direction == 'y':
-            topoline = self.values_3D[cell_number, :, :][:, [0, 2]].astype(int)
-        else:
-            raise NotImplementedError
-        return topoline
+    def interpolate_zvals_at_xy(self, xy):
+        assert xy[:, 0][0] <= xy[:, 0][-1], 'At the moment, the xy values of the first point must be smaller than second' \
+                                            '(fix soon)'
+        assert xy[:, 1][0] <= xy[:, 1][-1], 'At the moment, the xy values of the first point must be smaller than second' \
+                                            '(fix soon)'
+        xj = self.values_3D[:, :, 0][0, :]
+        yj = self.values_3D[:, :, 1][:, 0]
+        zj = self.values_3D[:, :, 2].T
+        f = interpolate.RectBivariateSpline(xj, yj, zj)
+        zi = f(xy[:, 0], xy[:, 1])
+        return np.diag(zi)
 
     def _line_in_section(self, direction='y', cell_number=1):
+        # todo delete after replacing it with the other function
+
         x = self.values_3D_res[:, :, 0]
         y = self.values_3D_res[:, :, 1]
         z = self.values_3D_res[:, :, 2]
@@ -388,6 +483,6 @@ class Topography:
             topoline = np.dstack((b, c)).reshape(-1, 2).astype(int)
 
         elif direction == "z":
-            print('not implemented')
+            raise NotImplementedError
 
         return topoline

@@ -639,7 +639,7 @@ class TheanoGraphPro(object):
         # self.fault_drift contains the df volume of the grid and the rest and ref points. For the drift we need
         # to make it relative to the reference point
         if 'fault matrix' in self.verbose:
-            self.fault_drift = theano.printing.Print('self.fault_drift')(self.fault_drift)
+            self.fault_matrix = theano.printing.Print('self.fault_drift')(self.fault_matrix)
         # interface_loc = self.fault_drift.shape[1] - 2 * self.len_points
         #
         # fault_drift_at_surface_points_rest = self.fault_drift

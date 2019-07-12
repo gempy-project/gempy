@@ -66,8 +66,8 @@ Miguel
 - Minor changes:
     + New colormap and easy way to change the surfaces colors (even integration with widgets!)
     + The order of the formations will be given by the interpolation itself if the input was wrong
-    + The split between reference and rest surface_points happens in theano. This makes much easier the modification
-    of reference points
+    + The split between reference and rest surface_points happens in theano. This makes the modification
+    of reference points much easier
 
 
 ## Features

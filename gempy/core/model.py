@@ -170,15 +170,22 @@ class DataMutation(object):
     def set_topography(self, source='random', **kwargs):
         """
         Args:
-            source: 'random': random topography is generated (based on a fractal grid).
-                   'gdal': filepath must be provided to load topography from a raster file.
-            filepath: path to raster file
-            TODO @Elisa what is the filepath there
-            kwargs: only when mode is 'random', gp.utils.create_topography.Load_DEM_artificial kwargs:
-                fd: fractal dimension, defaults to 2.0
-                d_z: height difference. If none, last 20% of the model in z direction
-                extent: extent in xy direction. If none, geo_model.grid.extent
-                resolution: resolution of the topography array. If none, geo_model.grid.resoution
+            source:
+                'gdal':     Load topography from a raster file.
+                'random':   Generate random topography (based on a fractal grid).
+                'saved':    Load topography that was saved with the topography.save() function.
+                            This is useful after loading and saving a heavy raster file with gdal once or after saving a
+                            random topography with the save() function. This .npy file can then be set as topography.
+        Kwargs:
+            if source = 'gdal:
+                filepath:   path to raster file, e.g. '.tif', (for all file formats see https://gdal.org/drivers/raster/index.html)
+            if source = 'random':
+                fd:         fractal dimension, defaults to 2.0
+                d_z:        maximum height difference. If none, last 20% of the model in z direction
+                extent:     extent in xy direction. If none, geo_model.grid.extent
+                resolution: desired resolution of the topography array. If none, geo_model.grid.resoution
+            if source = 'saved':
+                filepath:   path to the .npy file that was created using the topography.save() function
 
         Returns: :class:gempy.core.data.Topography
         """

@@ -68,7 +68,7 @@ class Grid(object):
         values (np.ndarray): coordinates where the model is going to be evaluated. This are the coordinates
          concatenation of all active grids.
         values_r (np.ndarray): rescaled coordinates where the model is going to be evaluated
-        length (np.ndarray): array which contain the slicing index for each grid type in order. The first element will
+        length (np.ndarray):I a array which contain the slicing index for each grid type in order. The first element will
          be 0, the second the length of the regular grid; the third custom and so on. This can be used to slice the
          solutions correspondent to each of the grids
         grid_types(np.ndarray[str]): names of the current grids of GemPy
@@ -86,8 +86,8 @@ class Grid(object):
         self.values = np.empty((0, 3))
         self.values_r = np.empty((0, 3))
         self.length = np.empty(0)
-        self.grid_types = np.array(['regular', 'custom', 'topography', 'centered'])
-        self.active_grids = np.zeros(4, dtype=bool)
+        self.grid_types = np.array(['regular', 'custom', 'topography', 'sections', 'centered'])
+        self.active_grids = np.zeros(5, dtype=bool)
         # All grid types must have values
 
         # Init optional grids
@@ -95,6 +95,8 @@ class Grid(object):
         self.custom_grid_grid_active = False
         self.topography = None
         self.topography_grid_active = False
+        self.sections = None
+        self.sections_grid_active = False
         self.centered_grid = None
         self.centered_grid_active = False
 
@@ -147,7 +149,7 @@ class Grid(object):
                 self.topography.load_from_gdal(filepath)
             else:
                 print('to load a raster file, a path to the file must be provided')
-        elif source == 'npy':
+        elif source == 'saved':
             filepath = kwargs.get('filepath', None)
             if filepath is not None:
                 self.topography.load_from_saved(filepath)
@@ -159,6 +161,11 @@ class Grid(object):
         self.topography.show()
         self.set_active('topography')
 
+    def set_section_grid(self, section_dict):
+        self.sections = grid_types.Sections(self.regular_grid, section_dict)
+        self.set_active('sections')
+        return self.sections
+
     @setdoc(grid_types.CenteredGrid.set_centered_grid.__doc__)
     def set_centered_grid(self, centers, radio, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
@@ -167,7 +174,7 @@ class Grid(object):
         self.set_active('centered')
 
     def deactivate_all_grids(self):
-        self.active_grids = np.zeros(4, dtype=bool)
+        self.active_grids = np.zeros(5, dtype=bool)
         self.update_grid_values()
         return self.active_grids
 
@@ -179,7 +186,7 @@ class Grid(object):
 
         """
         where = self.grid_types == grid_name
-        self.active_grids += where
+        self.active_grids[where] = True
         self.update_grid_values()
         return self.active_grids
 
@@ -201,32 +208,35 @@ class Grid(object):
         self.values = np.empty((0, 3))
         lengths = [0]
         try:
-            for e, grid_types_ in enumerate([self.regular_grid, self.custom_grid, self.topography, self.centered_grid]):
+            for e, grid_types in enumerate([self.regular_grid, self.custom_grid, self.topography, self.sections, self.centered_grid]):
                 if self.active_grids[e]:
-                    self.values = np.vstack((self.values, grid_types_.values))
-                    lengths.append(grid_types_.values.shape[0])
+                    self.values = np.vstack((self.values, grid_types.values))
+                    lengths.append(grid_types.values.shape[0])
                 else:
                     lengths.append(0)
         except AttributeError:
-            raise AttributeError('Grid type do not exist yet. Set the grid before activate it.')
+            raise AttributeError('Grid type does not exist yet. Set the grid before activating it.')
 
         self.length = np.array(lengths).cumsum()
         return self.values
 
     def get_grid_args(self, grid_name: str):
-        """Get l_0 and l_1 for a specific grid."""
-        assert type(grid_name) is str, 'Only one grid type can be retrieve'
+        assert type(grid_name) is str, 'Only one grid type can be retrieved'
         assert grid_name in self.grid_types, 'possible grid types are ' + str(self.grid_types)
         where = np.where(self.grid_types == grid_name)[0][0]
         return self.length[where], self.length[where+1]
 
     def get_grid(self, grid_name: str):
-        """Get XYZ coordinates of a specific grid."""
-        assert type(grid_name) is str, 'Only one grid type can be retrieve'
+        assert type(grid_name) is str, 'Only one grid type can be retrieved'
 
         l_0, l_1 = self.get_grid_args(grid_name)
         return self.values[l_0:l_1]
 
+    def get_section_args(self, section_name: str):
+        #assert type(section_name) is str, 'Only one section type can be retrieved'
+        l0, l1 = self.get_grid_args('sections')
+        where = np.where(self.sections.names == section_name)[0][0]
+        return l0 + self.sections.length[where], l0 + self.sections.length[where+1]
 
 class Faults(object):
     """
