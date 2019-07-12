@@ -30,7 +30,6 @@ Tested on Windows 10
 import scipy.stats as ss
 import numpy as np
 from nptyping import Array
-from typing import Any
 from gstools import Gaussian, SRF
 from copy import deepcopy
 import pandas as pd
@@ -43,21 +42,29 @@ class _StochasticSurface(ABC):
     stochastic_surfaces = {}
 
     def __init__(self, geo_model: Model, surface:str, grouping: str = "surface"):
+        # store independant copy of initial dataframe for reference/resets
         self.__class__.surface_points_init = deepcopy(geo_model.surface_points.df)
         self.__class__.orientations_init = deepcopy(geo_model.orientations.df)
+        # store Model instance
         self.__class__.geo_model = geo_model
 
         self.surface = surface
+        # class-spanning list of all instantiated stochastic surfaces for easy
+        # access
         self.stochastic_surfaces[surface] = self
 
+        # indices and boolean arrays for easy access to relevant data in Model
+        # dataframes
         self.fsurf_bool = geo_model.surface_points.df[grouping] == surface
         self.isurf = geo_model.surface_points.df[self.fsurf_bool].index
         self.forient_bool = geo_model.orientations.df[grouping] == surface
         self.iorient = geo_model.orientations.df[self.forient_bool].index
 
+        # number of surface points and orientations associated with this surface
         self.nsurf = len(self.isurf)
         self.norient = len(self.iorient)
 
+        # sample storage dataframes
         self.surfpts_sample = pd.DataFrame(columns=["i", "col", "val"])
         self.orients_sample = pd.DataFrame(columns=["i", "col", "val"])
 
@@ -82,7 +89,8 @@ class _StochasticSurface(ABC):
             self.geo_model.modify_surface_points(
                 i_init,
                 **{
-                    col: self.surface_points_init.loc[i_init, col].values + self.surfpts_sample.loc[i, "val"].values
+                    col: self.surface_points_init.loc[i_init, col].values \
+                         + self.surfpts_sample.loc[i, "val"].values
                 }
             )
 
@@ -93,7 +101,8 @@ class _StochasticSurface(ABC):
             self.geo_model.modify_orientations(
                 i_init,
                 **{
-                    col: self.orientations_init.loc[i_init, col].values + self.orients_sample[i, "val"].values
+                    col: self.orientations_init.loc[i_init, col].values \
+                         + self.orients_sample[i, "val"].values
                 }
             )
 
@@ -103,8 +112,8 @@ class _StochasticSurface(ABC):
         self.modifiy_orient()
 
 
-    def reset(self) -> None:
-        """Reset geomodel parameters."""
+    def reset(self):
+        """Reset geomodel parameters to initial values."""
         self.geo_model.modify_surface_points(
             self.isurf,
             **{
@@ -129,20 +138,44 @@ class _StochasticSurface(ABC):
             }
         )
 
+    def recalculate_orients(self):
+        pass
+
 
 class StochasticSurfaceScipy(_StochasticSurface):
     def __init__(self, geo_model: Model,
                  surface: str,
                  grouping: str = "surface"):
+        """Easy-to-use class to sample and modify a GemPy surface using
+        SciPy-based stochastic parametrization (scipy.stats).
+
+        Args:
+            geo_model: GemPy Model object.
+            surface (str): Name of the surface.
+            grouping (str): Specifies which DataFrame column will be used to
+                identify the surface. Default: "surface".
+
+                For example, if another column is specified in the GemPy
+                DataFrames to identify subgroups of surfaces (e.g. per fault
+                block).
+        """
         super().__init__(geo_model, surface, grouping=grouping)
         self._i = {"Z": 5, "X": 1, "Y": 3}
         self._extent = self.geo_model.grid.regular_grid.extent
         self.surfpts_parametrization = None
         self.orients_parametrization = None
 
-    def sample(self, random_state=None):
+    def sample(self, random_state: int=None):
+        """Draw a sample from stochastic parametrization of the surface. Stores
+        it in self.stoch_param dataframe. Calling self.modifiy() will then
+        modifiy the actual GemPy Model dataframe values (init + sample).
+
+        Args:
+            random_state (int): Random state to be passed to the distributions.
+        """
         if not self.surfpts_parametrization and not self.orients_parametrization:
-            raise AssertionError("No parametrization for either surface points or orientations found.")
+            raise AssertionError("No parametrization for either surface "
+                                 "points or orientations found.")
 
         if self.surfpts_parametrization:
             self.surfpts_sample = pd.DataFrame(columns=["i", "col", "val"])
@@ -165,19 +198,36 @@ class StochasticSurfaceScipy(_StochasticSurface):
 
     def parametrize_surfpts_single(self,
                                    stdev: float,
-                                   direction: str = "Z") -> None:
+                                   direction: str = "Z"):
+        """Naive parametrization, associating the entirety of surface points of
+        the surface with a single Normal distribution (μ=0) with given standard
+        deviation along given coordinate axis.
+
+        Args:
+            stdev (float): Standard deviation of Normal distribution.
+            direction (str): Coordinate axis along which to perturbate (X,Y,Z)
+                Default: "Z".
+        """
         dist = ss.norm(loc=0, scale=stdev)
         self.surfpts_parametrization = [(self.isurf, direction, dist)]
 
     def parametrize_surfpts_individual(self,
-                                       factor: float = 0.01,
-                                       direction: str = "Z") -> None:
+                                       stdev: float,
+                                       direction: str = "Z"):
+        """Naive parametrization, associating an individual Normal distribution
+        (μ=0) with given standard deviation with each individual surface point
+        of the surface.
+
+        Args:
+            stdev (float): Standard deviation of Normal distributions
+            direction (str): Coordinate axis along which to perturbate (X,Y,Z)
+                Default: "Z".
+        """
         scale = self._extent[self._i[direction.capitalize()]] * factor
         self.surfpts_parametrization = [
-            ([i], direction, ss.norm(loc=0, scale=abs(scale)))
+            ([i], direction, ss.norm(loc=0, scale=stdev))
             for i in self.isurf
         ]
-
 
 
 # class StochasticSurfaceGRF(_StochasticSurface):
@@ -195,3 +245,34 @@ class StochasticSurfaceScipy(_StochasticSurface):
 #         pos = self.surface_points[["X", "Y"]].values
 #         sample = srf((pos[:, 0], pos[:, 1])) * 30
 #         return {"Z": sample}
+
+
+def _trifacenormals_from_pts(points: Array[float, ..., 3]) -> pd.DataFrame:
+    """Robust 2D Delaunay triangulation along main axes of given point cloud.
+
+    Args:
+        points(np.ndarray): x,y,z coordinates of points making up the surface.
+
+    Returns:
+        pd.DataFrame of face normals compatible with GemPy orientation
+        dataframes.
+    """
+    import pyvista as pv
+    from mplstereonet import vector2pole
+
+    pointcloud = pv.PolyData(points)
+    trisurf = pointcloud.delaunay_2d()
+
+    simplices = trisurf.faces.reshape((trisurf.n_faces, 4))[:, 1:]
+    centroids = trisurf.points[simplices].mean(axis=1)
+    normals = trisurf.face_normals
+
+    columns = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
+    orients = pd.DataFrame(columns=columns)
+
+    orients["X"], orients["Y"], orients["Z"] = centroids[:, 0], centroids[:, 1], centroids[:, 2]
+    orients["G_x"], orients["G_y"], orients["G_z"] = normals[:, 0], normals[:, 1], normals[:, 2]
+    orients["azimuth"], orients["dip"] = vector2pole(normals[:, 0], normals[:, 1], normals[:, 2])
+    orients["polarity"] = 1
+
+    return orients
