@@ -164,6 +164,8 @@ def _topology_analyze(lith_block,
     G = graph.RAG(labels_block)
     rprops = regionprops(labels_block)  # get properties of uniquely labeles regions
     centroids = get_centroids(rprops)  # unique region centroids coordinates
+    for k, v in centroids.items():
+        centroids[k] = np.array(v)
 
     # classify edges (stratigraphic, fault)
     classify_edges(G, centroids, fault_block)
