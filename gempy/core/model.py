@@ -323,7 +323,7 @@ class DataMutation(object):
         series_fault = np.atleast_1d(series_fault)
         if twofins == False:
             for fault in series_fault:
-                if len(self.surfaces.df[self.surfaces.df.series == fault]) != 1:
+                if len(self.surfaces.df[self.surfaces.df.series == fault]) > 1:
                     raise AssertionError('Having more than one fault in a series is generally rather bad. Better go back '
                                          'to the function map_series_to_surfaces and give each fault its own series. '
                                          'If you are really sure what you are doing, you can set twofins to True to '
@@ -453,7 +453,8 @@ class DataMutation(object):
 
     @setdoc([Surfaces.map_series.__doc__], indent=False)
     def map_series_to_surfaces(self, mapping_object: Union[dict, pn.Categorical] = None,
-                               set_series=True, sort_geometric_data: bool = True, remove_unused_series=True):
+                               set_series=True, sort_geometric_data: bool = True, remove_unused_series=True,
+                               twofins=False):
         """
         Map series to surfaces and update all related objects accordingly to the following arguments:
 
@@ -501,6 +502,14 @@ class DataMutation(object):
         if set_series is True and self.series.df.index.isin(['Basement']).any():
             aux = self.series.df.index.drop('Basement').get_values()
             self.reorder_series(np.append(aux, 'Basement'))
+
+        if twofins == False: #assert if every fault has its own series
+            for serie in list(self.faults.df[self.faults.df['isFault'] == True].index):
+                #print(serie)
+                if len(self.surfaces.df[self.surfaces.df['series'] == serie]) > 1:
+                    raise AssertionError('Having more than one fault in a series is generally rather bad. Better give each '
+                                         'fault its own series. If you are really sure what you are doing, you can set '
+                                         'twofins to True to suppress this error.')
 
         return self.surfaces
 

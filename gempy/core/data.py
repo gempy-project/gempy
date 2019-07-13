@@ -993,7 +993,6 @@ class Surfaces(object):
 
         # Updating surfaces['series'] categories
         self.df['series'].cat.set_categories(self.series.df.index, inplace=True)
-
         # TODO Fixing this. It is overriding the formations already mapped
         if mapping_object is not None:
             # If none is passed and series exist we will take the name of the first series as a default
