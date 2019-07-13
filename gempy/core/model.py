@@ -321,13 +321,13 @@ class DataMutation(object):
 
         """
         series_fault = np.atleast_1d(series_fault)
-        if twofins == False:
+        if twofins is False:
             for fault in series_fault:
-                if len(self.surfaces.df[self.surfaces.df.series == fault]) != 1:
-                    raise AssertionError('Having more than one fault in a series is generally rather bad. Better go back '
-                                         'to the function map_series_to_surfaces and give each fault its own series. '
-                                         'If you are really sure what you are doing, you can set twofins to True to '
-                                         'suppress this error.')
+                assert np.sum(self.surfaces.df['series'] == fault) < 2,\
+                    'Having more than one fault in a series is generally rather bad. Better go' \
+                    ' back to the function map_series_to_surfaces and give each fault its own' \
+                    ' series. If you are really sure what you are doing, you can set twofins to' \
+                    ' True to suppress this error.'
 
         self.faults.set_is_fault(series_fault, toggle=toggle)
 
