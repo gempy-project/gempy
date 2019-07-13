@@ -310,7 +310,7 @@ class DataMutation(object):
 
     @setdoc([Faults.set_is_fault.__doc__], indent=False)
     def set_is_fault(self, series_fault: Union[str, list] = None, toggle: bool = False, offset_faults=False,
-                     change_color: bool = True):
+                     change_color: bool = True, twofins = False):
         """
         Set a series to fault and update all dependet objects of the Model.
 
@@ -321,6 +321,13 @@ class DataMutation(object):
 
         """
         series_fault = np.atleast_1d(series_fault)
+        if twofins == False:
+            for fault in series_fault:
+                if len(self.surfaces.df[self.surfaces.df.series == fault]) != 1:
+                    raise AssertionError('Having more than one fault in a series is generally rather bad. Better go back '
+                                         'to the function map_series_to_surfaces and give each fault its own series. '
+                                         'If you are really sure what you are doing, you can set twofins to True to '
+                                         'suppress this error.')
 
         self.faults.set_is_fault(series_fault, toggle=toggle)
 
