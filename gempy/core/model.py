@@ -321,13 +321,13 @@ class DataMutation(object):
 
         """
         series_fault = np.atleast_1d(series_fault)
-        if twofins == False:
+        if twofins is False:
             for fault in series_fault:
-                if len(self.surfaces.df[self.surfaces.df.series == fault]) > 1:
-                    raise AssertionError('Having more than one fault in a series is generally rather bad. Better go back '
-                                         'to the function map_series_to_surfaces and give each fault its own series. '
-                                         'If you are really sure what you are doing, you can set twofins to True to '
-                                         'suppress this error.')
+                assert np.sum(self.surfaces.df['series'] == fault) < 2,\
+                    'Having more than one fault in a series is generally rather bad. Better go' \
+                    ' back to the function map_series_to_surfaces and give each fault its own' \
+                    ' series. If you are really sure what you are doing, you can set twofins to' \
+                    ' True to suppress this error.'
 
         self.faults.set_is_fault(series_fault, toggle=toggle)
 
@@ -503,13 +503,12 @@ class DataMutation(object):
             aux = self.series.df.index.drop('Basement').get_values()
             self.reorder_series(np.append(aux, 'Basement'))
 
-        if twofins == False: #assert if every fault has its own series
+        if twofins is False: #assert if every fault has its own series
             for serie in list(self.faults.df[self.faults.df['isFault'] == True].index):
-                #print(serie)
-                if len(self.surfaces.df[self.surfaces.df['series'] == serie]) > 1:
-                    raise AssertionError('Having more than one fault in a series is generally rather bad. Better give each '
-                                         'fault its own series. If you are really sure what you are doing, you can set '
-                                         'twofins to True to suppress this error.')
+                assert np.sum(self.surfaces.df['series'] == serie) < 2, \
+                'Having more than one fault in a series is generally rather bad. Better give each '\
+                'fault its own series. If you are really sure what you are doing, you can set '\
+                'twofins to True to suppress this error.'
 
         return self.surfaces
 
