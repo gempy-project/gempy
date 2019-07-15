@@ -222,6 +222,7 @@ class PlotData2D(object):
         p1, p2 = self.calculate_p1p2(direction, cell_number)
         resx = self.model.grid.topography.resolution[0]
         resy = self.model.grid.topography.resolution[1]
+        print('p1', p1, 'p2', p2)
         x,y,z = self._slice_topo_4_sections(p1, p2, resx, resy)
         if direction == 'x':
             a = np.vstack((y, z)).T
