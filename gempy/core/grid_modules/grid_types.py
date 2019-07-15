@@ -468,29 +468,3 @@ class Topography:
         f = interpolate.RectBivariateSpline(xj, yj, zj)
         zi = f(xy[:, 0], xy[:, 1])
         return np.diag(zi)
-
-    def _line_in_section(self, direction='y', cell_number=1):
-        # todo delete after replacing it with the other function
-
-        x = self.values_3D_res[:, :, 0]
-        y = self.values_3D_res[:, :, 1]
-        z = self.values_3D_res[:, :, 2]
-
-        if direction == 'y':
-            a = x[cell_number, :]
-            b = y[cell_number, :]
-            c = z[cell_number, :]
-            assert len(np.unique(b)) == 1
-            topoline = np.dstack((a, c)).reshape(-1, 2).astype(int)
-
-        elif direction == 'x':
-            a = x[:, cell_number]
-            b = y[:, cell_number]
-            c = z[:, cell_number]
-            assert len(np.unique(a)) == 1
-            topoline = np.dstack((b, c)).reshape(-1, 2).astype(int)
-
-        elif direction == "z":
-            raise NotImplementedError
-
-        return topoline

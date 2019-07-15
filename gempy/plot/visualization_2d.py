@@ -219,16 +219,44 @@ class PlotData2D(object):
         return _slice, extent
 
     def plot_topography(self, cell_number, direction):
-        # Todo replace this function
-        line = self.model.grid.topography._line_in_section(cell_number=cell_number, direction=direction)
+        p1, p2 = self.calculate_p1p2(direction, cell_number)
+        resx = self.model.grid.topography.resolution[0]
+        resy = self.model.grid.topography.resolution[1]
+        x,y,z = self._slice_topo_4_sections(p1, p2, resx, resy)
         if direction == 'x':
-            ext = self.model.grid.regular_grid.extent[[2, 3, 4, 5]]
+            a = np.vstack((y, z)).T
+            ext = self.model.grid.regular_grid.extent[[2, 3]]
         elif direction == 'y':
-            ext = self.model.grid.regular_grid.extent[[0, 1, 4, 5]]
-        # add corners
-        line = np.append(line, ([ext[1], line[0, -1]], [ext[1], ext[3]], [ext[0], ext[3]], [ext[0], line[0, 1]])).reshape(-1,2)
-        plt.fill(line[:, 0], line[:, 1], color='k')#, alpha=0.5)
+            a = np.vstack((x, z)).T
+            ext = self.model.grid.regular_grid.extent[[0, 1]]
+        a = np.append(a,
+                      ([ext[1], a[:, 1][-1]],
+                       [ext[1], self.model.grid.regular_grid.extent[5]],
+                       [ext[0], self.model.grid.regular_grid.extent[5]],
+                       [ext[0], a[:, 1][0]]))
+        #return a.reshape(-1, 2)
+        line = a.reshape(-1, 2)
+        plt.fill(line[:, 0], line[:, 1], color='k')
 
+    def _slice_topo_4_sections(self, p1, p2, resx, resy):
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, resx, resy)
+        z = self.model.grid.topography.interpolate_zvals_at_xy(xy)
+        return xy[:, 0], xy[:, 1], z
+
+    def calculate_p1p2(self, direction, cell_number):
+        if direction == 'y':
+            y = self.model.grid.regular_grid.extent[2] + self.model.grid.regular_grid.dy * cell_number
+            p1 = [self.model.grid.regular_grid.extent[0], y]
+            p2 = [self.model.grid.regular_grid.extent[1], y]
+
+        elif direction == 'x':
+            x = self.model.grid.regular_grid.extent[0] + self.model.grid.regular_grid.dx * cell_number
+            p1 = [x, self.model.grid.regular_grid.extent[2]]
+            p2 = [x, self.model.grid.regular_grid.extent[3]]
+
+        else:
+            raise NotImplementedError
+        return p1, p2
 
     def extract_fault_lines(self, cell_number=25, direction='y'):
         faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
@@ -240,22 +268,6 @@ class PlotData2D(object):
                 self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
             plt.contour(block.reshape(self.model.grid.regular_grid.resolution)[_slice].T, 0, extent=extent, levels=level,
                         colors=self._cmap.colors[f_id], linestyles='solid')
-
-    def plot_map(self, solution: Solution, contour_lines=True):
-        # maybe add contour kwargs
-        assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
-        geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:,:,2].shape)
-        fig, ax = plt.subplots()
-        plt.imshow(geomap, origin="lower", extent=self.model.grid.topography.extent, cmap=self._cmap, norm=self._norm)
-        if contour_lines == True:
-            CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2],  cmap='Greys', linestyles='solid',
-                            extent=self.model.grid.topography.extent)
-            ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
-            cbar = plt.colorbar(CS)
-            cbar.set_label('elevation [m]')
-        plt.title("Geological map", fontsize=15)
-        plt.xlabel('X')
-        plt.ylabel('Y')
 
     def plot_block_section(self, solution:Solution, cell_number:int, block:np.ndarray=None, direction:str="y",
                            interpolation:str='none', show_data:bool=False, show_faults:bool=False, show_topo:bool=False,
@@ -714,17 +726,16 @@ class PlotSolution:
                 axes[i].set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
         fig.tight_layout()
 
-    def _slice_topo_4_sections(self, p1, p2):
-        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2,
-                                                                         self.model.grid.topography.resolution[0],
-                                                                         self.model.grid.topography.resolution[1])
+    def _slice_topo_4_sections(self, p1, p2, resx, resy):
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, resx, resy)
         z = self.model.grid.topography.interpolate_zvals_at_xy(xy)
         return xy[:, 0], xy[:, 1], z
 
     def make_topography_overlay_4_sections(self, j):
         startend = list(self.model.grid.sections.section_dict.values())[j]
         p1, p2 = startend[0], startend[1]
-        x, y, z = self._slice_topo_4_sections(p1, p2)
+        x, y, z = self._slice_topo_4_sections(p1, p2, self.model.grid.topography.resolution[0],
+                                                      self.model.grid.topography.resolution[1])
         pseudo_x = np.linspace(0, self.model.grid.sections.dist[j][0], z.shape[0])
         a = np.vstack((pseudo_x, z)).T
         a = np.append(a,
