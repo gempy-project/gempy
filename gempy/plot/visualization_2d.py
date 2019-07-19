@@ -638,7 +638,7 @@ class PlotSolution:
         plt.xlabel('X')
         plt.ylabel('Y')
 
-    def extract_section_fault_lines(self, section_name=None, axes=None):
+    def extract_section_fault_lines(self, section_name=None, axes=None, zorder=2):
         # Todo merge this with extract fault lines
         faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
         if section_name == 'topography':
@@ -657,20 +657,20 @@ class PlotSolution:
             if section_name == 'topography':
                 plt.contour(block.reshape(shape), 0, levels=level, colors=self._cmap.colors[f_id],
                             linestyles='solid',
-                            extent=self.model.grid.topography.extent)
+                            extent=self.model.grid.topography.extent, zorder=zorder)
             else:
                 if axes is not None:
                     axes.contour(block.reshape(shape).T, 0, levels=level, colors=self._cmap.colors[f_id],
                                  linestyles='solid', origin='lower',
                                  extent=[0, self.model.grid.sections.dist[j],
                                          self.model.grid.regular_grid.extent[4],
-                                         self.model.grid.regular_grid.extent[5]])
+                                         self.model.grid.regular_grid.extent[5]], zorder=zorder)
                 else:
                     plt.contour(block.reshape(shape).T, 0, levels=level, colors=self._cmap.colors[f_id],
                                 linestyles='solid', origin='lower',
                                 extent=[0, self.model.grid.sections.dist[j],
                                         self.model.grid.regular_grid.extent[4],
-                                        self.model.grid.regular_grid.extent[5]])
+                                        self.model.grid.regular_grid.extent[5]], zorder=zorder)
 
     def plot_sections(self, show_traces=True, show_data=False, section_names=None, show_faults=True, show_topo=True,
                       figsize=(12, 12)):
@@ -726,6 +726,41 @@ class PlotSolution:
                 axes[i].xaxis.set_major_formatter(FixedFormatter((labels)))
                 axes[i].set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
         fig.tight_layout()
+
+    def plot_section_scalarfield(self, section_name, sn, levels=50, show_faults=True, show_topo=True, lithback=True):
+        assert self.model.solutions.sections is not None, 'no sections for plotting defined'
+        if self.model.grid.topography is None:
+            show_topo = False
+        shapes = self.model.grid.sections.resolution
+        fig = plt.figure(figsize=(16, 10))
+        axes = fig.add_subplot(1, 1, 1)
+        j = np.where(self.model.grid.sections.names == section_name)[0][0]
+        l0, l1 = self.model.grid.sections.get_section_args(section_name)
+        if show_faults:
+            self.extract_section_fault_lines(section_name, zorder=9)
+
+        if show_topo:
+            xy = self.make_topography_overlay_4_sections(j)
+            axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
+
+        axes.contour(self.model.solutions.sections_scalfield[sn][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
+                     # origin='lower',
+                     levels=levels, cmap='autumn', extent=[0, self.model.grid.sections.dist[j],
+                                                           self.model.grid.regular_grid.extent[4],
+                                                           self.model.grid.regular_grid.extent[5]], zorder=8)
+        axes.set_aspect('equal')
+        if lithback:
+            axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
+                        origin='lower',
+                        cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
+                                                                  self.model.grid.regular_grid.extent[4],
+                                                                  self.model.grid.regular_grid.extent[5]])
+
+        labels, axname = self._make_section_xylabels(section_name, len(axes.get_xticklabels()))
+        pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
+        axes.xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
+        axes.xaxis.set_major_formatter(FixedFormatter((labels)))
+        axes.set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
 
     def _slice_topo_4_sections(self, p1, p2, resx, resy):
         xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, resx, resy)

@@ -200,17 +200,53 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
 
 
 def plot_map(model, contour_lines=True, show_faults = True, show_data=True):
+    """
+
+    Args:
+        model:
+        contour_lines:
+        show_faults:
+        show_data:
+
+    Returns:
+
+    """
     plot = PlotSolution(model)
     plot.plot_map(contour_lines=contour_lines, show_faults=show_faults, show_data=show_data)
 
 
 def plot_section_traces(model, show_data=True, section_names=None, contour_lines=False):
+    """
+
+    Args:
+        model:
+        show_data:
+        section_names:
+        contour_lines:
+
+    Returns:
+
+    """
     plot = PlotSolution(model)
     plot.plot_section_traces(show_data=show_data, section_names=section_names, contour_lines=contour_lines)
 
 
 def plot_predef_sections(model, show_traces=True, show_data=False, section_names=None, show_faults=True,
                          show_topo=True, figsize=(12, 12)):
+    """
+
+    Args:
+        model:
+        show_traces:
+        show_data:
+        section_names:
+        show_faults:
+        show_topo:
+        figsize:
+
+    Returns:
+
+    """
     plot = PlotSolution(model)
     plot.plot_sections(show_traces=show_traces, show_data=show_data, section_names=section_names,
                        show_faults=show_faults, show_topo=show_topo, figsize=figsize)
@@ -262,6 +298,25 @@ def plot_scalar_field(model, cell_number, N=20,
     plot.plot_scalar_field(model.solutions, cell_number, N=N,
                            direction=direction,  plot_data=plot_data, series=series,
                            *args, **kwargs)
+
+def plot_section_scalarfield(model, section_name, sn, levels=50, show_faults=True, show_topo=True, lithback=True):
+    """
+    Plot the potential field in the predefined sections.
+    Args:
+        model:
+        section_name: name of the section
+        sn: scalar field number, order like in model.series
+        levels: number of isolines you want to plot
+        show_faults: whether or not faults should be plotted
+        show_topo: whether or not the topography should be plotted
+        lithback: lithology background
+
+    Returns:
+        None
+    """
+    plot = PlotSolution(model)
+    plot.plot_section_scalarfield(section_name=section_name, sn=sn, levels=levels, show_faults=show_faults,
+                                  show_topo=show_topo, lithback=lithback)
 
 
 def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,
