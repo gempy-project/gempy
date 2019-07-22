@@ -99,7 +99,7 @@ class PlotData2D(object):
 
         """
         if 'scatter_kws' not in kwargs:
-            kwargs['scatter_kws'] = {"marker": "D",
+            kwargs['scatter_kws'] = {"marker": "o",
                                      "s": 100,
                                      "edgecolors": "black",
                                      "linewidths": 1}
@@ -127,49 +127,55 @@ class PlotData2D(object):
             series_to_plot_i = self.model.surface_points[self.model.surface_points.df["series"] == series]
             series_to_plot_f = self.model.orientations[self.model.orientations.df["series"] == series]
 
+        self.series_to_plot_f = series_to_plot_f
+
         if data_type == 'all':
-            p = sns.lmplot(x, y,
-                           data=series_to_plot_i,
-                           fit_reg=False,
-                           aspect=aspect,
-                           hue="surface",
-                           #scatter_kws=scatter_kws,
-                           legend=False,
-                           legend_out=False,
-                           palette= self._color_lot,
-                           **kwargs)
-
-            p.axes[0, 0].set_ylim(extent[2], extent[3])
-            p.axes[0, 0].set_xlim(extent[0], extent[1])
-
-            # Plotting orientations
-            plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
-                       series_to_plot_f[Gx], series_to_plot_f[Gy],
-                       pivot="tail", scale_units=min_axis, scale=10)
+            self._plot_surface_points(x, y, series_to_plot_i, aspect, extent, kwargs)
+            self._plot_orientations(x, y, Gx, Gy, series_to_plot_f, min_axis, extent, False)
 
         if data_type == 'surface_points':
-            p = sns.lmplot(x, y,
-                           data=series_to_plot_i,
-                           fit_reg=False,
-                           aspect=aspect,
-                           hue="surface",
-                           #scatter_kws=scatter_kws,
-                           legend=False,
-                           legend_out=False,
-                           palette=self._color_lot,
-                           **kwargs)
-            p.axes[0, 0].set_ylim(extent[2], extent[3])
-            p.axes[0, 0].set_xlim(extent[0], extent[1])
+            self._plot_surface_points(x, y, series_to_plot_i, aspect, extent, kwargs)
 
         if data_type == 'orientations':
-            plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
-                       series_to_plot_f[Gx], series_to_plot_f[Gy],
-                       pivot="tail", scale_units=min_axis, scale=15)
+            self._plot_orientations(x, y, Gx, Gy, series_to_plot_f, min_axis, extent, True, aspect)
 
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
         plt.xlabel(x)
         plt.ylabel(y)
+
+    def _plot_surface_points(self, x, y, series_to_plot_i, aspect, extent, kwargs):
+        p = sns.FacetGrid(series_to_plot_i, hue="surface",
+                          palette=self._color_lot,
+                          ylim=[extent[2], extent[3]],
+                          xlim=[extent[0], extent[1]],
+                          legend_out=False,
+                          aspect=aspect)
+
+        p.map(plt.scatter, x, y,
+                       **kwargs['scatter_kws'],
+                       zorder=10)
+
+    def _plot_orientations(self, x, y, Gx, Gy, series_to_plot_f, min_axis, extent, p, aspect=None):
+        if p is False:
+            surflist = list(series_to_plot_f['surface'].unique())
+            for surface in surflist:
+                to_plot = series_to_plot_f[series_to_plot_f['surface'] == surface]
+                plt.quiver(to_plot[x], to_plot[y],
+                           to_plot[Gx], to_plot[Gy],
+                           pivot="tail", scale_units=min_axis, scale=10, color=self._color_lot[surface], alpha=0.5)
+            if aspect is not None:
+                ax = plt.gca()
+                ax.set_aspect(aspect)
+        else:
+            p = sns.FacetGrid(series_to_plot_f, hue="surface",
+                              palette=self._color_lot,
+                              ylim=[extent[2], extent[3]],
+                              xlim=[extent[0], extent[1]],
+                              legend_out=False,
+                              aspect=aspect)
+
+            p.map(plt.quiver, x, y, Gx, Gy, pivot="tail", scale_units=min_axis, scale=10, alpha=.5)
 
     def _slice(self, direction, cell_number=25):
         """
@@ -235,7 +241,6 @@ class PlotData2D(object):
                        [ext[1], self.model.grid.regular_grid.extent[5]],
                        [ext[0], self.model.grid.regular_grid.extent[5]],
                        [ext[0], a[:, 1][0]]))
-        #return a.reshape(-1, 2)
         line = a.reshape(-1, 2)
         plt.fill(line[:, 0], line[:, 1], color='k')
 
