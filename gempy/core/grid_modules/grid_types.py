@@ -468,3 +468,4 @@ class Topography:
         f = interpolate.RectBivariateSpline(xj, yj, zj)
         zi = f(xy[:, 0], xy[:, 1])
         return np.diag(zi)
+

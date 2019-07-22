@@ -409,6 +409,7 @@ class DataMutation(object):
         self.orientations.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
         self.map_geometric_data_df(self.surface_points.df)
         self.map_geometric_data_df(self.orientations.df)
+        self.surfaces.colors.delete_colors(surfaces_names)
         return self.surfaces
 
     @setdoc(Surfaces.rename_surfaces.__doc__, indent=False)

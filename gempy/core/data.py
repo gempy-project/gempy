@@ -707,6 +707,11 @@ class Colors:
             self.colordict[surfaces] = self.colordict_default[surfaces]
         self._set_colors()
 
+    def delete_colors(self, surfaces):
+        for surface in surfaces:
+            self.colordict.pop(surface, None)
+        self._set_colors()
+
     def make_faults_black(self, series_fault):
         faults_list = list(self.surfaces.df[self.surfaces.df.series.isin(series_fault)]['surface'])
         for fault in faults_list:
