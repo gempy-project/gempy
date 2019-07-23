@@ -126,8 +126,8 @@ class PlotData2D(object):
 
         else:
 
-            series_to_plot_i = self.model.surface_points[self.model.surface_points.df["series"] == series]
-            series_to_plot_f = self.model.orientations[self.model.orientations.df["series"] == series]
+            series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"] == series]
+            series_to_plot_f = self.model.orientations.df[self.model.orientations.df["series"] == series]
 
         self.series_to_plot_f = series_to_plot_f
 
@@ -628,7 +628,7 @@ class PlotSolution:
             solution = self.model.solutions
         geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:, :, 2].shape)
         if show_data:
-            self.plot_data(direction='z', at='topography')
+            self.plot_data(direction='z', at='topography', show_all_data=False)
         else:
             fig, ax = plt.subplots(figsize=(6, 6))
         im = plt.imshow(geomap, origin='lower', extent=self.model.grid.topography.extent, cmap=self._cmap,
@@ -835,7 +835,7 @@ class PlotSolution:
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
     def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1,
-                  show_all_data=False, at='topography', **kwargs):
+                  show_all_data=True, at='topography', **kwargs):
         """
         Plot the projecton of the raw data (surface_points and orientations) in 2D following a
         specific directions
@@ -879,8 +879,8 @@ class PlotSolution:
                 isin(self.model.series.df.index.values)]
 
         else:
-            series_to_plot_i = self.model.surface_points[self.model.surface_points.df["series"] == series]
-            series_to_plot_f = self.model.orientations[self.model.orientations.df["series"] == series]
+            series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"] == series]
+            series_to_plot_f = self.model.orientations.df[self.model.orientations.df["series"] == series]
 
         mask_surfpoints = np.ones(series_to_plot_i.shape[0], dtype=bool)
         mask_orient = np.ones(series_to_plot_f.shape[0], dtype=bool)
@@ -937,7 +937,7 @@ class PlotSolution:
                     to_plot = series_to_plot_f[series_to_plot_f['surface'] == surface]
                     plt.quiver(to_plot[x], to_plot[y],
                                to_plot[Gx], to_plot[Gy],
-                               pivot="tail", scale_units=min_axis, scale=10, color=self._color_lot[surface], alpha=0.5)
+                               pivot="tail", scale_units=min_axis, scale=10, color=self._color_lot[surface], alpha=0.8)
                 if aspect is not None:
                     ax = plt.gca()
                     ax.set_aspect(aspect)

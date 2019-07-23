@@ -192,7 +192,7 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     Returns:
         None
     """
-    plot = PlotData2D(geo_data)
+    plot = PlotSolution(geo_data)
     p = plot.plot_data(direction=direction, data_type=data_type, series=series,
                           legend_font_size=legend_font_size, **kwargs)
     # TODO saving options
