@@ -277,7 +277,7 @@ in the cloned or downloaded repository folder. Make sure you have installed all 
 - conda install git
 - conda install pygpu
 - pip install theano==1.0.4
-- pip install gempy==2.0b0.dev2
+- pip install gempy
 
 Note that:
 
