@@ -39,6 +39,7 @@ from gempy.core.solution import Solution
 import gempy.plot.helpers as plothelp
 sns.set_context('talk')
 plt.style.use(['seaborn-white', 'seaborn-talk'])
+from scipy.interpolate import RegularGridInterpolator
 
 
 #try:
@@ -98,6 +99,7 @@ class PlotData2D(object):
             Data plot
 
         """
+
         if 'scatter_kws' not in kwargs:
             kwargs['scatter_kws'] = {"marker": "o",
                                      "s": 100,
@@ -626,7 +628,7 @@ class PlotSolution:
             solution = self.model.solutions
         geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:, :, 2].shape)
         if show_data:
-            self.plot_data(direction='z')
+            self.plot_data(direction='z', at='topography')
         else:
             fig, ax = plt.subplots(figsize=(6, 6))
         im = plt.imshow(geomap, origin='lower', extent=self.model.grid.topography.extent, cmap=self._cmap,
@@ -832,7 +834,8 @@ class PlotSolution:
             # plt.set_aspect(np.diff(geo_model.grid.regular_grid.extent[:2])/np.diff(geo_model.grid.regular_grid.extent[2:4]))
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
-    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1, **kwargs):
+    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1,
+                  show_all_data=False, at='topography', **kwargs):
         """
         Plot the projecton of the raw data (surface_points and orientations) in 2D following a
         specific directions
@@ -842,14 +845,17 @@ class PlotSolution:
             data_type (str): type of data to plot. 'all', 'surface_points' or 'orientations'
             series(str): series to plot
             ve(float): Vertical exageration
+            show_all_data:
+            at:
             **kwargs: seaborn lmplot key arguments. (TODO: adding the link to them)
 
         Returns:
             Data plot
 
         """
+
         if 'scatter_kws' not in kwargs:
-            kwargs['scatter_kws'] = {"marker": "D",
+            kwargs['scatter_kws'] = {"marker": "o",
                                      "s": 100,
                                      "edgecolors": "black",
                                      "linewidths": 1}
@@ -873,53 +879,112 @@ class PlotSolution:
                 isin(self.model.series.df.index.values)]
 
         else:
-
             series_to_plot_i = self.model.surface_points[self.model.surface_points.df["series"] == series]
             series_to_plot_f = self.model.orientations[self.model.orientations.df["series"] == series]
 
+        mask_surfpoints = np.ones(series_to_plot_i.shape[0], dtype=bool)
+        mask_orient = np.ones(series_to_plot_f.shape[0], dtype=bool)
+
+        if show_all_data is False:
+            if at == 'topography':
+                mask_surfpoints *=False
+                mask_orient *= False
+                surf_True, orient_True = self.get_surface_data_indexes()
+                mask_surfpoints[surf_True] = True
+                mask_orient[orient_True] = True
+            elif at == 'section':
+                #mask_surfpoints, mask_orient =
+                pass
+            elif at == 'block_section':
+                #mask_surfpoints, mask_orient =
+                pass
+            else:
+                raise NotImplementedError('must be topography, section or block_section')
+
         if data_type == 'all':
-            p = sns.lmplot(x, y,
-                           data=series_to_plot_i,
-                           fit_reg=False,
-                           aspect=aspect,
-                           hue="surface",
-                           # scatter_kws=scatter_kws,
-                           legend=False,
-                           legend_out=False,
-                           palette=self._color_lot,
-                           **kwargs)
-
-            p.axes[0, 0].set_ylim(extent[2], extent[3])
-            p.axes[0, 0].set_xlim(extent[0], extent[1])
-
-            # Plotting orientations
-            plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
-                       series_to_plot_f[Gx], series_to_plot_f[Gy],
-                       pivot="tail", scale_units=min_axis, scale=10)
+            self._plot_surface_points(x, y, series_to_plot_i[mask_surfpoints], aspect, extent, kwargs)
+            self._plot_orientations(x, y, Gx, Gy, series_to_plot_f[mask_orient], min_axis, extent, False)
 
         if data_type == 'surface_points':
-            p = sns.lmplot(x, y,
-                           data=series_to_plot_i,
-                           fit_reg=False,
-                           aspect=aspect,
-                           hue="surface",
-                           # scatter_kws=scatter_kws,
-                           legend=False,
-                           legend_out=False,
-                           palette=self._color_lot,
-                           **kwargs)
-            p.axes[0, 0].set_ylim(extent[2], extent[3])
-            p.axes[0, 0].set_xlim(extent[0], extent[1])
+            self._plot_surface_points(x, y, series_to_plot_i[mask_surfpoints], aspect, extent, kwargs)
 
         if data_type == 'orientations':
-            plt.quiver(series_to_plot_f[x], series_to_plot_f[y],
-                       series_to_plot_f[Gx], series_to_plot_f[Gy],
-                       pivot="tail", scale_units=min_axis, scale=15)
+            self._plot_orientations(x, y, Gx, Gy, series_to_plot_f[mask_orient], min_axis, extent, True, aspect)
 
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
         plt.xlabel(x)
         plt.ylabel(y)
+
+    def _plot_surface_points(self, x, y, series_to_plot_i, aspect, extent, kwargs):
+        if series_to_plot_i.shape[0] != 0:
+            p = sns.FacetGrid(series_to_plot_i, hue="surface",
+                              palette=self._color_lot,
+                              ylim=[extent[2], extent[3]],
+                              xlim=[extent[0], extent[1]],
+                              legend_out=False,
+                              aspect=aspect)
+
+            p.map(plt.scatter, x, y,
+                  **kwargs['scatter_kws'],
+                  zorder=10)
+
+    def _plot_orientations(self, x, y, Gx, Gy, series_to_plot_f, min_axis, extent, p, aspect=None):
+        if series_to_plot_f.shape[0] != 0:
+            if p is False:
+                surflist = list(series_to_plot_f['surface'].unique())
+                for surface in surflist:
+                    to_plot = series_to_plot_f[series_to_plot_f['surface'] == surface]
+                    plt.quiver(to_plot[x], to_plot[y],
+                               to_plot[Gx], to_plot[Gy],
+                               pivot="tail", scale_units=min_axis, scale=10, color=self._color_lot[surface], alpha=0.5)
+                if aspect is not None:
+                    ax = plt.gca()
+                    ax.set_aspect(aspect)
+            else:
+                p = sns.FacetGrid(series_to_plot_f, hue="surface",
+                                  palette=self._color_lot,
+                                  ylim=[extent[2], extent[3]],
+                                  xlim=[extent[0], extent[1]],
+                                  legend_out=False,
+                                  aspect=aspect)
+
+                p.map(plt.quiver, x, y, Gx, Gy, pivot="tail", scale_units=min_axis, scale=10, alpha=.5)
+
+    def get_surface_data_indexes(self):
+        points_interf = np.vstack((self.model.surface_points.df['X'].values, self.model.surface_points.df['Y'].values)).T
+        points_orient = np.vstack((self.model.orientations.df['X'].values, self.model.orientations.df['Y'].values)).T
+
+        mask_interf = self.get_data_within_extent(points_interf)
+        mask_orient = self.get_data_within_extent(points_orient)
+
+        xj = self.model.grid.topography.values_3D[:, :, 0][0, :]
+        yj = self.model.grid.topography.values_3D[:, :, 1][:, 0]
+        zj = self.model.grid.topography.values_3D[:, :, 2].T
+
+        interpolating_function = RegularGridInterpolator((xj, yj), zj)
+
+        Z_interf_interp = interpolating_function(points_interf[mask_interf])
+        Z_orient_interp = interpolating_function(points_orient[mask_orient])
+
+        latitude = np.diff(zj).max()
+
+        dist_interf = np.abs(Z_interf_interp - self.model.surface_points.df['Z'].values[mask_interf])
+        dist_orient = np.abs(Z_orient_interp - self.model.orientations.df['Z'].values[mask_orient])
+
+        surfmask_interf = dist_interf < latitude
+        surfmask_orient = dist_orient < latitude
+
+        return np.flatnonzero(mask_interf)[surfmask_interf], np.flatnonzero(mask_orient)[surfmask_orient]
+
+    def get_data_within_extent(self, pts, ext=None):
+        # ext = geo_model.grid.regular_grid.extent[:4]
+        if ext is None:
+            ext = np.array([self.model.grid.topography.values_3D[:, :, 0][0, :][[0, -1]],
+                            self.model.grid.topography.values_3D[:, :, 1][:, 0][[0, -1]]]).ravel()
+        mask_x = np.logical_and(pts[:, 0] > ext[0], pts[:, 0] < ext[1])
+        mask_y = np.logical_and(pts[:, 1] > ext[2], pts[:, 1] < ext[3])
+        return np.logical_and(mask_x, mask_y)
 
     def _slice(self, direction, cell_number=25):
         """
