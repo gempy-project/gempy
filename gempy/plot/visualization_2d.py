@@ -259,7 +259,7 @@ class PlotData2D(object):
 
     def plot_block_section(self, solution:Solution, cell_number:int, block:np.ndarray=None, direction:str="y",
                            interpolation:str='none', show_data:bool=False, show_faults:bool=False, show_topo:bool=False,
-                           block_type=None, ve:float=1, **kwargs):
+                           show_legend:bool=True, block_type=None, ve:float=1, **kwargs):
         """Plot a section of the block model
 
         Args:
