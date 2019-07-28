@@ -1894,9 +1894,22 @@ class Orientations(GeometricData):
             return table
 
         else:
-            assert {coord_x_name, coord_y_name, coord_z_name, dip_name, azimuth_name,
-                    polarity_name, surface_name}.issubset(table.columns), \
-                "One or more columns do not match with the expected values " + str(table.columns)
+            assert np.logical_or({coord_x_name, coord_y_name, coord_z_name, dip_name, azimuth_name,
+                    polarity_name, surface_name}.issubset(table.columns),
+                 {coord_x_name, coord_y_name, coord_z_name, g_x_name, g_y_name, g_z_name,
+                  polarity_name, surface_name}.issubset(table.columns)), \
+                "One or more columns do not match with the expected values, which are: \n" +\
+                "- the locations of the measurement points '{}','{}' and '{}' \n".format(coord_x_name,coord_y_name,
+                                                                                         coord_z_name)+ \
+                "- EITHER '{}' (trend direction indicated by an angle between 0 and 360 with North at 0 AND " \
+                "'{}' (inclination angle, measured from horizontal plane downwards, between 0 and 90 degrees) \n".format(
+                azimuth_name, dip_name) +\
+                "- OR the pole vectors of the orientation in a cartesian system '{}','{}' and '{}' \n".format(g_x_name,
+                                                                                                              g_y_name,
+                                                                                                              g_z_name)+\
+                "- the '{}' of the orientation, can be normal (1) or reversed (-1) \n".format(polarity_name)+\
+                "- the name of the surface: '{}'\n".format(surface_name)+\
+                "Your headers are "+str(list(table.columns))
 
             if inplace:
                 # self.categories_df[table.columns] = table
