@@ -95,7 +95,8 @@ class Grid(object):
         self.custom_grid_grid_active = False
         self.topography = None
         self.topography_grid_active = False
-        self.sections = None
+        self.sections = grid_types.Sections()#todo I have to do it like that because I need
+                                              # the function calculate_line_coords_2points
         self.sections_grid_active = False
         self.centered_grid = None
         self.centered_grid_active = False

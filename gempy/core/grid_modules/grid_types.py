@@ -84,22 +84,21 @@ class RegularGrid:
 
 
 class Sections:
-    def __init__(self, regular_grid, section_dict):
+    def __init__(self, regular_grid=None, section_dict=None):
         #todo tidy up
-        self.regular_grid = regular_grid
-        self.section_dict = section_dict
-        self.names = np.array(list(self.section_dict.keys()))
-
-        self.points = []
-        self.resolution = []
-        self.length = [0]
-        self.dist = []
-        self.get_section_params()
-        self.calculate_distance()
-        self.values = []
-        self.compute_section_coordinates()
-
-        self.extent = None
+        if section_dict is not None:
+            self.regular_grid = regular_grid
+            self.section_dict = section_dict
+            self.names = np.array(list(self.section_dict.keys()))
+            self.points = []
+            self.resolution = []
+            self.length = [0]
+            self.dist = []
+            self.get_section_params()
+            self.calculate_distance()
+            self.values = []
+            self.extent = None
+            self.compute_section_coordinates()
 
     def _repr_html_(self):
         return pn.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution']).to_html()
