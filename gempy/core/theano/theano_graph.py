@@ -1866,7 +1866,7 @@ class TheanoGraph(object):
             # We return the last iteration of the fault matrix
             self.fault_matrix_f = fault_loop[0][-1]
             self.fault_matrix = self.fault_matrix_f[::2]
-          #  fault_block = self.fault_matrix[:, :-2 * self.len_points]
+            # fault_block = self.fault_matrix[:, :-2 * self.len_points]
             # For this we return every iteration since is each potential field at interface
             self.pfai_fault = fault_loop[1]
 

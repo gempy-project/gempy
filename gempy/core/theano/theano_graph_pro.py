@@ -65,7 +65,6 @@ class TheanoGraphPro(object):
         self.a_T = theano.shared(np.cast[dtype](-1.), "Range")
         self.c_o_T = theano.shared(np.cast[dtype](-1.), 'Covariance at 0')
 
-
         self.n_universal_eq_T = theano.shared(np.zeros(5, dtype='int32'), "Grade of the universal drift")
         self.n_universal_eq_T_op = theano.shared(3)
 
@@ -120,6 +119,8 @@ class TheanoGraphPro(object):
 
         self.nugget_effect_scalar_T_ref_rest = self.set_nugget_surface_points(rest_ref_aux[2], rest_ref_aux[3],
                                                                         self.number_of_points_per_surface_T)
+
+        self.nugget_effect_scalar_T_op = self.nugget_effect_scalar_T_ref_rest
 
         self.ref_layer_points = self.ref_layer_points_all
         self.rest_layer_points = self.rest_layer_points_all
@@ -288,9 +289,38 @@ class TheanoGraphPro(object):
         return [final_model, self.new_block, self.new_weights, self.new_scalar, self.new_sfai, self.new_mask]
 
     # region Geometry
+    def repeat_list(self, val, r_0, r_1, repeated_array, n_col):
+        """
+        Repeat an array
+
+        Args:
+            val: element or list that you want to repeat
+            r_0: initial slicing position on the final array
+            r_1: final slicing position on the final array
+            repeated_array: final array
+
+        Returns:
+            final array
+        """
+        repeated_array = T.set_subtensor(repeated_array[r_0: r_1], T.alloc(val, r_1-r_0, n_col))
+        return repeated_array
+
     def set_rest_ref_matrix(self, number_of_points_per_surface):
         ref_positions = T.cumsum(T.concatenate((T.stack([0]), number_of_points_per_surface[:-1] + 1)))
-        ref_points = T.repeat(self.surface_points_all[ref_positions], number_of_points_per_surface, axis=0)
+        cum_rep = T.cumsum(T.concatenate((T.stack([0]), number_of_points_per_surface)))
+
+        ref_points_init = T.zeros((cum_rep[-1], 3))
+        ref_points_loop, update_ = theano.scan(self.repeat_list,
+                                               outputs_info=[ref_points_init],
+                                               sequences=[self.surface_points_all[ref_positions],
+                                                          dict(input=cum_rep, taps=[0, 1])],
+                                               non_sequences=[T.as_tensor(3)],
+
+                                               return_list=False)
+
+        #   ref_points_loop = theano.printing.Print('loop')(ref_points_loop)
+        ref_points = ref_points_loop[-1]
+        #  ref_points = T.repeat(self.surface_points_all[ref_positions], number_of_points_per_surface, axis=0)
 
         rest_mask = T.ones(T.stack([self.surface_points_all.shape[0]]), dtype='int16')
         rest_mask = T.set_subtensor(rest_mask[ref_positions], 0)
@@ -299,10 +329,22 @@ class TheanoGraphPro(object):
         return [ref_points, rest_points, ref_positions, rest_mask]
 
     def set_nugget_surface_points(self, ref_positions, rest_mask, number_of_points_per_surface):
-        ref_nugget = T.repeat(self.nugget_effect_scalar_T[ref_positions], number_of_points_per_surface)
+        # ref_nugget = T.repeat(self.nugget_effect_scalar_T[ref_positions], number_of_points_per_surface)
+        cum_rep = T.cumsum(T.concatenate((T.stack([0]), number_of_points_per_surface)))
+        ref_nugget_init = T.zeros((cum_rep[-1], 1))
+        ref_nugget_loop, update_ = theano.scan(self.repeat_list,
+                                               outputs_info=[ref_nugget_init],
+                                               sequences=[self.nugget_effect_scalar_T[ref_positions],
+                                                          dict(input=cum_rep, taps=[0, 1])],
+                                               non_sequences=[T.as_tensor(1)],
+                                               return_list=False)
+
+        ref_nugget_loop = theano.printing.Print('loop')(ref_nugget_loop)
+        ref_nugget = ref_nugget_loop[-1]
+
         rest_nugget = self.nugget_effect_scalar_T[rest_mask]
         nugget_rest_ref = ref_nugget+rest_nugget
-        return nugget_rest_ref
+        return nugget_rest_ref.reshape((1, -1))[0]
 
     @staticmethod
     def squared_euclidean_distances(x_1, x_2):
@@ -947,7 +989,7 @@ class TheanoGraphPro(object):
                      grid_val[:, 0] * grid_val[:, 2],
                      grid_val[:, 1] * grid_val[:, 2]), axis=1)).T
 
-        i_rescale_aux = T.repeat(self.gi_reescale, 9)
+        i_rescale_aux = T.tile(self.gi_reescale, 9)
         i_rescale_aux = T.set_subtensor(i_rescale_aux[:3], 1)
         _aux_magic_term = T.tile(i_rescale_aux[:self.n_universal_eq_T_op], (grid_val.shape[0], 1)).T
 
@@ -1357,7 +1399,8 @@ class TheanoGraphPro(object):
         self.fault_drift_at_surface_points_rest = self.fault_matrix[
                                                   :, interface_loc + len_i_0: interface_loc + len_i_1]
         self.fault_drift_at_surface_points_ref = self.fault_matrix[
-                                                 :, interface_loc + self.len_points + len_i_0: interface_loc + self.len_points + len_i_1]
+                                                  :, interface_loc + self.len_points + len_i_0: interface_loc +
+                                                  self.len_points + len_i_1]
 
         weights = theano.ifelse.ifelse(compute_weight_ctr,
                                        self.compute_weights(),

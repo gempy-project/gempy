@@ -54,6 +54,30 @@ class Interpolator(object):
         self.theano_graph = self.create_theano_graph(additional_data, inplace=False)
         self.theano_function = None
 
+        self._compute_len_series()
+
+    def _compute_len_series(self):
+        self.len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
+                            self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
+        if self.len_series_i.shape[0] == 0:
+            self.len_series_i = np.zeros(1, dtype=int)
+
+        self.len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
+            'int32')
+        if self.len_series_o.shape[0] == 0:
+            self.len_series_o = np.zeros(1, dtype=int)
+
+        self.len_series_u = self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')
+        if self.len_series_u.shape[0] == 0:
+            self.len_series_u = np.zeros(1, dtype=int)
+
+        self.len_series_f = self.faults.faults_relations_df.sum(axis=0).values.astype('int32')[
+                            :self.additional_data.get_additional_data()['values']['Structure', 'number series']]
+        if self.len_series_f.shape[0] == 0:
+            self.len_series_f = np.zeros(1, dtype=int)
+
+        self.len_series_w = self.len_series_i + self.len_series_o * 3 + self.len_series_u + self.len_series_f
+
     @setdoc_pro([AdditionalData.__doc__, ds.inplace, ds.theano_graph_pro])
     def create_theano_graph(self, additional_data: "AdditionalData" = None, inplace=True):
         """
@@ -174,7 +198,9 @@ class InterpolatorWeights(Interpolator):
         polarity = self.orientations.df["polarity"].values
         surface_points_coord = self.surface_points.df[['X_r', 'Y_r', 'Z_r']].values
         if fault_drift is None:
-            fault_drift = np.zeros((0, surface_points_coord.shape[0]))
+            fault_drift = np.zeros((0, self.grid.values.shape[0] + 2 * self.len_series_i.sum()))
+
+          #  fault_drift = np.zeros((0, surface_points_coord.shape[0]))
 
         # Set all in a list casting them in the chosen dtype
         idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
@@ -235,7 +261,9 @@ class InterpolatorScalar(Interpolator):
         grid = self.grid.values_r
 
         if fault_drift is None:
-            fault_drift = np.zeros((0, grid.shape[0] + surface_points_coord.shape[0]))
+            fault_drift = np.zeros((0, grid.shape[0] + 2 * self.len_series_i.sum()))
+
+      #      fault_drift = np.zeros((0, grid.shape[0] + surface_points_coord.shape[0]))
 
         # Set all in a list casting them in the chosen dtype
         idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
@@ -318,7 +346,9 @@ class InterpolatorBlock(Interpolator):
         surface_points_coord = self.surface_points.df[['X_r', 'Y_r', 'Z_r']].values
         grid = self.grid.values_r
         if fault_drift is None:
-            fault_drift = np.zeros((0, grid.shape[0] + surface_points_coord.shape[0]))
+            fault_drift = np.zeros((0, grid.shape[0] + 2 * self.len_series_i.sum()))
+
+         #   fault_drift = np.zeros((0, grid.shape[0] + surface_points_coord.shape[0]))
 
         values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
 
