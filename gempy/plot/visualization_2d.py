@@ -609,7 +609,8 @@ class PlotSolution:
         self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors) + 0.5)
 
-    def plot_map(self, solution: Solution = None, contour_lines=True, show_faults=True, show_data=False):
+
+    def plot_map(self, solution: Solution = None, contour_lines=False, show_faults=True, show_data=True, figsize=(12,12)):
         if solution is not None:
             assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
         else:
@@ -618,9 +619,9 @@ class PlotSolution:
         if show_data:
             self.plot_data(direction='z', at='topography', show_all_data=False)
         else:
-            fig, ax = plt.subplots(figsize=(6, 6))
+            fig, ax = plt.subplots(figsize=figsize)
         im = plt.imshow(geomap, origin='lower', extent=self.model.grid.topography.extent, cmap=self._cmap,
-                        norm=self._norm)
+                        norm=self._norm, zorder=-100)
         if contour_lines == True and show_data == False:
             CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2], cmap='Greys', linestyles='solid',
 
@@ -628,14 +629,14 @@ class PlotSolution:
             ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
             plothelp.add_colorbar(im=im, label='elevation [m]', cs=CS, aspect=35)
         if show_faults == True:
-            self.extract_section_fault_lines('topography')
+            self.extract_section_lines('topography')
         plt.title("Geological map", fontsize=15)
         plt.xlabel('X')
         plt.ylabel('Y')
         #patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
         #plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
-    def extract_section_fault_lines(self, section_name=None, axes=None, zorder=2):
+    def extract_section_fault_lines_DEP(self, section_name=None, axes=None, zorder=2):
         # Todo merge this with extract fault lines
         faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
         if section_name == 'topography':
@@ -669,6 +670,51 @@ class PlotSolution:
                                         self.model.grid.regular_grid.extent[4],
                                         self.model.grid.regular_grid.extent[5]], zorder=zorder)
 
+    def extract_section_lines(self, section_name=None, axes=None, zorder=2, faults_only=False):
+        # Todo merge this with extract fault lines
+        faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
+        if section_name == 'topography':
+            shape = self.model.grid.topography.resolution
+            a = self.model.solutions.geological_map_scalfield
+            extent = self.model.grid.topography.extent
+        else:
+            l0, l1 = self.model.grid.sections.get_section_args(section_name)
+            j = np.where(self.model.grid.sections.names == section_name)[0][0]
+            shape = [self.model.grid.sections.resolution[j][0], self.model.grid.sections.resolution[j][1]]
+            a = self.model.solutions.sections_scalfield[:, l0:l1]
+            extent = [0, self.model.grid.sections.dist[j],
+                      self.model.grid.regular_grid.extent[4],
+                      self.model.grid.regular_grid.extent[5]]
+
+        if faults_only:
+            counter = len(faults)
+        else:
+            counter = a.shape[0]
+
+        c_id = 0  # color id startpoint
+        for f_id in range(counter):
+            block = a[f_id]
+            level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
+                self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
+
+            c_id2 = c_id + len(level)  # color id endpoint
+
+            if section_name == 'topography':
+                block = block.reshape(shape)
+            else:
+                block = block.reshape(shape).T
+
+            if axes is not None:
+                axes.contour(block, 0, levels=np.sort(level), colors=self._cmap.colors[c_id:c_id2][::-1],
+                             linestyles='solid', origin='lower',
+                             extent=extent, zorder=zorder - (f_id+len(level)))
+            else:
+                plt.contour(block, 0, levels=np.sort(level), colors=self._cmap.colors[c_id:c_id2][::-1],
+                            linestyles='solid', origin='lower',
+                            extent=extent, zorder=zorder - (f_id+len(level)))
+
+            c_id += len(level)
+
     def plot_sections(self, show_traces=True, show_data=False, section_names=None, show_faults=True, show_topo=True,
                       figsize=(12, 12)):
         assert self.model.solutions.sections is not None, 'no sections for plotting defined'
@@ -688,13 +734,13 @@ class PlotSolution:
             l0, l1 = self.model.grid.sections.get_section_args(section)
             if len(section_names) == 1:
                 if show_faults:
-                    self.extract_section_fault_lines(section, axes)
+                    self.extract_section_lines(section, axes)
                 if show_topo:
                     xy = self.make_topography_overlay_4_sections(j)
                     axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
                 axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
-                            origin='lower',
+                            origin='lower', zorder=-100,
                             cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                       self.model.grid.regular_grid.extent[4],
                                                                       self.model.grid.regular_grid.extent[5]])
@@ -707,12 +753,12 @@ class PlotSolution:
 
             else:
                 if show_faults:
-                    self.extract_section_fault_lines(section, axes[i])
+                    self.extract_section_lines(section, axes[i])
                 if show_topo:
                     xy = self.make_topography_overlay_4_sections(j)
                     axes[i].fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
                 axes[i].imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
-                               origin='lower',
+                               origin='lower', zorder=-100,
                                cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                          self.model.grid.regular_grid.extent[4],
                                                                          self.model.grid.regular_grid.extent[5]])
@@ -735,7 +781,7 @@ class PlotSolution:
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
         l0, l1 = self.model.grid.sections.get_section_args(section_name)
         if show_faults:
-            self.extract_section_fault_lines(section_name, zorder=9)
+            self.extract_section_lines(section_name, zorder=9)
 
         if show_topo:
             xy = self.make_topography_overlay_4_sections(j)
@@ -825,6 +871,7 @@ class PlotSolution:
             # plt.set_aspect(np.diff(geo_model.grid.regular_grid.extent[:2])/np.diff(geo_model.grid.regular_grid.extent[2:4]))
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
+
     def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1,
                   show_all_data=True, at='all', **kwargs):
         """
@@ -911,12 +958,14 @@ class PlotSolution:
 
     def _plot_surface_points(self, x, y, series_to_plot_i, aspect, extent, kwargs):
         if series_to_plot_i.shape[0] != 0:
+            #print(aspect)
             p = sns.FacetGrid(series_to_plot_i, hue="surface",
                               palette=self._color_lot,
                               ylim=[extent[2], extent[3]],
                               xlim=[extent[0], extent[1]],
                               legend_out=False,
-                              aspect=aspect)
+                              aspect=aspect,
+                              size=6)
 
             p.map(plt.scatter, x, y,
                   **kwargs['scatter_kws'],
@@ -932,19 +981,23 @@ class PlotSolution:
                                to_plot[Gx], to_plot[Gy],
                                pivot="tail", scale_units=min_axis, scale=5, color=self._color_lot[surface],
                                edgecolor='k', headwidth=8, linewidths=1)
+                fig = plt.gcf()
+                fig.set_size_inches(20,10)
                 if aspect is not None:
                     ax = plt.gca()
                     ax.set_aspect(aspect)
+
             else:
                 p = sns.FacetGrid(series_to_plot_f, hue="surface",
                                   palette=self._color_lot,
                                   ylim=[extent[2], extent[3]],
                                   xlim=[extent[0], extent[1]],
                                   legend_out=False,
-                                  aspect=aspect,)
+                                  aspect=aspect,
+                                  size=6)
 
-                p.map(plt.quiver, x, y, Gx, Gy, pivot="tail", scale_units=min_axis, scale=5, edgecolor='k',
-                      headwidth=8, linewidths=1)
+                p.map(plt.quiver, x, y, Gx, Gy, pivot="tail", scale_units=min_axis, scale=10, edgecolor='k',
+                      headwidth=4, linewidths=1)
 
     def get_surface_data_indexes(self):
         points_interf = np.vstack((self.model.surface_points.df['X'].values, self.model.surface_points.df['Y'].values)).T

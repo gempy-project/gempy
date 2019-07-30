@@ -198,8 +198,14 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     # TODO saving options
     return plot
 
+def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=False,
+                   show_density=False):
+    plot = PlotData2D(geo_data)
+    plot.plot_stereonet(litho=litho, planes=planes, poles=poles, single_plots=single_plots,
+                        show_density=show_density)
 
-def plot_map(model, contour_lines=True, show_faults = True, show_data=True):
+
+def plot_map(model, contour_lines=True, show_faults = True, show_data=True, figsize=(12,12)):
     """
 
     Args:
@@ -212,7 +218,7 @@ def plot_map(model, contour_lines=True, show_faults = True, show_data=True):
 
     """
     plot = PlotSolution(model)
-    plot.plot_map(contour_lines=contour_lines, show_faults=show_faults, show_data=show_data)
+    plot.plot_map(contour_lines=contour_lines, show_faults=show_faults, show_data=show_data, figsize=figsize)
 
 
 def plot_section_traces(model, show_data=True, section_names=None, contour_lines=False):
