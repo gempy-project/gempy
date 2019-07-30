@@ -259,7 +259,7 @@ class PlotData2D(object):
 
     def plot_block_section(self, solution:Solution, cell_number:int, block:np.ndarray=None, direction:str="y",
                            interpolation:str='none', show_data:bool=False, show_faults:bool=False, show_topo:bool=False,
-                           show_legend:bool=True, block_type=None, ve:float=1, **kwargs):
+                           show_legend:bool=False, block_type=None, ve:float=1, **kwargs):
         """Plot a section of the block model
 
         Args:
@@ -275,6 +275,7 @@ class PlotData2D(object):
                 'bessel', 'mitchell', 'sinc', 'lanczos'.
             show_data (bool, optional): Plots input data on-top of block
                 section. Defaults to False.
+            show_legend (bool, optional): Plots legend only if no data is plotted.
             show_faults (bool, optional): Plot fault line on-top of block
                 section. Defaults to False.
             show_topo (bool, optional): Plots block section with topography.
@@ -336,10 +337,11 @@ class PlotData2D(object):
                 else:
                     self.plot_topography(cell_number=cell_number, direction=direction)
 
-        if not show_data:
+        if show_data == False and show_legend == True:
             import matplotlib.patches as mpatches
             patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
 
         plt.xlabel(x)
         plt.ylabel(y)
