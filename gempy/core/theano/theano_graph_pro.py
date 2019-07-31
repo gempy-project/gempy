@@ -339,7 +339,7 @@ class TheanoGraphPro(object):
                                                non_sequences=[T.as_tensor(1)],
                                                return_list=False)
 
-        ref_nugget_loop = theano.printing.Print('loop')(ref_nugget_loop)
+        # ref_nugget_loop = theano.printing.Print('loop')(ref_nugget_loop)
         ref_nugget = ref_nugget_loop[-1]
 
         rest_nugget = self.nugget_effect_scalar_T[rest_mask]
