@@ -343,8 +343,8 @@ class TheanoGraphPro(object):
         ref_nugget = ref_nugget_loop[-1]
 
         rest_nugget = self.nugget_effect_scalar_T[rest_mask]
-        nugget_rest_ref = ref_nugget+rest_nugget
-        return nugget_rest_ref.reshape((1, -1))[0]
+        nugget_rest_ref = ref_nugget.reshape((1, -1))[0] + rest_nugget
+        return nugget_rest_ref
 
     @staticmethod
     def squared_euclidean_distances(x_1, x_2):
@@ -434,6 +434,8 @@ class TheanoGraphPro(object):
                   35 / 4 * (sed_ref_ref / self.a_T) ** 3 -
                   7 / 2 * (sed_ref_ref / self.a_T) ** 5 +
                   3 / 4 * (sed_ref_ref / self.a_T) ** 7))))
+
+        # self.nugget_effect_scalar_T_op = theano.printing.Print('nug scalar')(self.nugget_effect_scalar_T_op)
 
         C_I += T.eye(C_I.shape[0]) * 2 * self.nugget_effect_scalar_T_op
         # Add name to the theano node
