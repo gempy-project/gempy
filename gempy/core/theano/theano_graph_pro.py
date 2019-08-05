@@ -242,6 +242,7 @@ class TheanoGraphPro(object):
         # We add the axis 1 to the mask. Axis 1 is the properties values axis
         # Then we sum over the 0 axis. Axis 0 is the series
         final_model = T.sum(T.stack([mask], axis=1) * block, axis=0)
+        #final_model = T.sum(block, axis=0)
         return final_model
 
     def compute_series(self):
@@ -275,7 +276,8 @@ class TheanoGraphPro(object):
             return_list=True,
             profile=False
         )
-
+       # return series# [1][-1]
+        #
         self.new_block = series[0][-1]
         self.new_weights = series[1][-1]
         self.new_scalar = series[2][-1]
@@ -766,7 +768,7 @@ class TheanoGraphPro(object):
 
         return C_matrix
 
-    def b_vector(self):
+    def b_vector(self, dip_angles=None, azimuth=None, polarity=None):
         """
         Creation of the independent vector b to solve the kriging system
 
@@ -778,12 +780,19 @@ class TheanoGraphPro(object):
         """
 
         length_of_C = self.matrices_shapes()[-1]
+        if dip_angles is None:
+            dip_angles = self.dip_angles
+        if azimuth is None:
+            azimuth = self.azimuth
+        if polarity is None:
+            polarity = self.polarity
+
         # =====================
         # Creation of the gradients G vector
         # Calculation of the cartesian components of the dips assuming the unit module
-        G_x = T.sin(T.deg2rad(self.dip_angles)) * T.sin(T.deg2rad(self.azimuth)) * self.polarity
-        G_y = T.sin(T.deg2rad(self.dip_angles)) * T.cos(T.deg2rad(self.azimuth)) * self.polarity
-        G_z = T.cos(T.deg2rad(self.dip_angles)) * self.polarity
+        G_x = T.sin(T.deg2rad(dip_angles)) * T.sin(T.deg2rad(azimuth)) * polarity
+        G_y = T.sin(T.deg2rad(dip_angles)) * T.cos(T.deg2rad(azimuth)) * polarity
+        G_z = T.cos(T.deg2rad(dip_angles)) * polarity
 
         G = T.concatenate((G_x, G_y, G_z))
 
@@ -798,7 +807,7 @@ class TheanoGraphPro(object):
         b.name = 'b vector'
         return b
 
-    def solve_kriging(self):
+    def solve_kriging(self, b=None):
         """
         Solve the kriging system. This has to get substituted by a more efficient and stable method QR
         decomposition in all likelihood
@@ -808,11 +817,14 @@ class TheanoGraphPro(object):
 
         """
         C_matrix = self.covariance_matrix()
-        b = self.b_vector()
+        if b is None:
+            b = self.b_vector()
         # Solving the kriging system
         import theano.tensor.slinalg
-        b2 = T.tile(b, (1, 1)).T
-        DK_parameters = theano.tensor.slinalg.solve(C_matrix, b2)
+        self.b2 = T.tile(b, (1, 1)).T
+        # b = theano.printing.Print('fucking b')(b)
+
+        DK_parameters = theano.tensor.slinalg.solve(C_matrix, b)
         DK_parameters = DK_parameters.reshape((DK_parameters.shape[0],))
 
         # Add name to the theano node
@@ -1267,7 +1279,7 @@ class TheanoGraphPro(object):
 
         return fault_block
 
-    def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties_op, slope=5000):
+    def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties_op, slope=50):
         """
         Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
 
@@ -1306,7 +1318,7 @@ class TheanoGraphPro(object):
         n_surface_op_float_sigmoid = T.repeat(values_properties_op, 2, axis=1)
 
         # TODO: instead -1 at the border look for the average distance of the input!
-        n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], -1)
+        n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], 1)
         # - T.sqrt(T.square(n_surface_op_float_sigmoid[0] - n_surface_op_float_sigmoid[2])))
 
         n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, -1], -1)
@@ -1341,14 +1353,16 @@ class TheanoGraphPro(object):
 
     # region Compute model
     def compute_a_series(self,
-                         len_i_0, len_i_1,
-                         len_f_0, len_f_1,
-                         len_w_0, len_w_1,
-                         n_form_per_serie_0, n_form_per_serie_1,
-                         u_grade_iter,
-                         compute_weight_ctr, compute_scalar_ctr, compute_block_ctr, is_finite, is_erosion, is_onlap,
-                         n_series,
-                         block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix
+                         len_i_0=0, len_i_1=None,
+                         len_f_0=0, len_f_1=None,
+                         len_w_0=0, len_w_1=None,
+                         n_form_per_serie_0=0, n_form_per_serie_1=None,
+                         u_grade_iter=3,
+                         compute_weight_ctr=np.array(True), compute_scalar_ctr=np.array(True),
+                         compute_block_ctr=np.array(True),
+                         is_finite=np.array(False), is_erosion=np.array(True), is_onlap=np.array(False),
+                         n_series=0,
+                         block_matrix=None, weights_vector=None, scalar_field_matrix=None, sfai=None, mask_matrix=None
                          ):
         """
         Function that loops each fault, generating a potential field for each on them with the respective block model
@@ -1404,19 +1418,21 @@ class TheanoGraphPro(object):
                                                   :, interface_loc + self.len_points + len_i_0: interface_loc +
                                                   self.len_points + len_i_1]
 
+        b = self.b_vector(self.dip_angles, self.azimuth, self.polarity)
+
         weights = theano.ifelse.ifelse(compute_weight_ctr,
-                                       self.compute_weights(),
+                                       self.solve_kriging(b),
                                        weights_vector[len_w_0:len_w_1])
 
-        if 'weights' in self.verbose:
-            weights = theano.printing.Print('weights foo')(weights)
+        #if 'weights' in self.verbose:
+       # weights = theano.printing.Print('weights foo')(weights)
 
         Z_x = tif.ifelse(compute_scalar_ctr, self.compute_scalar_field(weights, self.grid_val_T),
                          scalar_field_matrix[n_series])
 
         scalar_field_at_surface_points = self.get_scalar_field_at_surface_points(Z_x, self.npf_op)
-
-        # TODO: add control flow for this side
+        #
+        # # TODO: add control flow for this side
         mask_e = tif.ifelse(is_erosion,
                             T.gt(Z_x, T.min(scalar_field_at_surface_points)),
                             ~ self.is_fault[n_series] * T.ones_like(Z_x, dtype='bool'))
@@ -1425,20 +1441,28 @@ class TheanoGraphPro(object):
                             T.gt(Z_x, T.max(scalar_field_at_surface_points)),
                             mask_matrix[n_series - 1, :])
 
-        block = tif.ifelse(
-            compute_block_ctr,
-            tif.ifelse(is_finite,
-                       self.compute_fault_block(
-                                     Z_x, scalar_field_at_surface_points,
-                                     self.values_properties_op[:, n_form_per_serie_0: n_form_per_serie_1 + 1],
-                                     n_series, self.grid_val_T
-                                 ),
-                       self.compute_formation_block(
-                                     Z_x, scalar_field_at_surface_points,
-                                     self.values_properties_op[:, n_form_per_serie_0: n_form_per_serie_1 + 1])),
-            block_matrix[n_series, :]
-        )
-
+        if False:
+            block = tif.ifelse(
+                compute_block_ctr,
+                tif.ifelse(is_finite,
+                           self.compute_fault_block(
+                                         Z_x, scalar_field_at_surface_points,
+                                         self.values_properties_op[:, n_form_per_serie_0: n_form_per_serie_1 + 1],
+                                         n_series, self.grid_val_T
+                                     ),
+                           self.compute_formation_block(
+                                         Z_x, scalar_field_at_surface_points,
+                                         self.values_properties_op[:, n_form_per_serie_0: n_form_per_serie_1 + 1])),
+                block_matrix[n_series, :]
+            )
+        else:
+            block = tif.ifelse(compute_block_ctr,
+                               self.compute_formation_block(
+                                   Z_x, scalar_field_at_surface_points,
+                                   self.values_properties_op[:, n_form_per_serie_0: n_form_per_serie_1 + 1]),
+                               block_matrix[n_series, :]
+                               )
+        #
         weights_vector = T.set_subtensor(weights_vector[len_w_0:len_w_1], weights)
         scalar_field_matrix = T.set_subtensor(scalar_field_matrix[n_series], Z_x)
         block_matrix = T.set_subtensor(block_matrix[n_series, :], block)

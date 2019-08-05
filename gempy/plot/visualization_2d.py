@@ -229,7 +229,6 @@ class PlotData2D(object):
         line = np.append(line, ([ext[1], line[0, -1]], [ext[1], ext[3]], [ext[0], ext[3]], [ext[0], line[0, 1]])).reshape(-1,2)
         plt.fill(line[:, 0], line[:, 1], color='k')#, alpha=0.5)
 
-
     def extract_fault_lines(self, cell_number=25, direction='y'):
         faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
         _slice, extent = self._slice2D(cell_number, direction)
@@ -296,9 +295,9 @@ class PlotData2D(object):
         if block_type is not None:
             raise NotImplementedError
 
-        plot_block = _block.reshape(self.model.grid.regular_grid.resolution[0],
-                                    self.model.grid.regular_grid.resolution[1],
-                                    self.model.grid.regular_grid.resolution[2])
+        plot_block = _block.reshape((self.model.grid.regular_grid.resolution[0],
+                                     self.model.grid.regular_grid.resolution[1],
+                                     self.model.grid.regular_grid.resolution[2]))
         _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
 
         if show_data:
@@ -316,12 +315,20 @@ class PlotData2D(object):
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
 
-        im = plt.imshow(plot_block[_a, _b, _c].T,
+        sliced_block = plot_block[_a, _b, _c].T
+
+        imshow_kwargs = kwargs.copy()
+        if 'show_grid' in imshow_kwargs:
+            imshow_kwargs.pop('show_grid')
+        if 'grid_linewidth' in imshow_kwargs:
+            imshow_kwargs.pop('grid_linewidth')
+
+        im = plt.imshow(sliced_block,
                         origin="bottom",
                         extent=extent_val,
                         interpolation=interpolation,
                         aspect=aspect,
-                        **kwargs)
+                        **imshow_kwargs)
 
         if extent_val[3] < 0:           # correct vertical orientation of plot
             plt.gca().invert_yaxis()    # if maximum vertical extent negative
@@ -340,6 +347,15 @@ class PlotData2D(object):
             import matplotlib.patches as mpatches
             patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
+        if 'show_grid' in kwargs:
+            # TODO This only works fine for the y projection
+            ax = plt.gca();
+            ax.set_xticks(np.linspace(extent_val[0], extent_val[1], sliced_block.shape[0]+1));
+            ax.set_yticks(np.linspace(extent_val[2], extent_val[3], sliced_block.shape[1]+1));
+
+            grid_linewidth = kwargs.get('grid_linewidth', 1)
+            ax.grid(color='w', linestyle='-', linewidth=grid_linewidth)
 
         plt.xlabel(x)
         plt.ylabel(y)

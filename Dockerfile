@@ -110,7 +110,7 @@ RUN git clone https://github.com/cgre-aachen/gempy.git
 #RUN chmod 755 /usr/local/bin/start-notebook.sh
 #COPY jupyter_notebook_config_secure.py /home/$NB_USER/.jupyter/jupyter_notebook_config.py
 #COPY notebook /home/$NB_USER/work/notebook
-#
+
 ## My own change
 #
 #RUN apt-get update && apt-get install -y \
