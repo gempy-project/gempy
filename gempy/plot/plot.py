@@ -283,6 +283,31 @@ def plot_section(model, cell_number=13, block=None, direction="y", interpolation
     # TODO saving options
     return plot
 
+def plot_section2(model, cell_number=13, block=None, direction="y", interpolation='none',
+                 show_data=False, show_faults=True, show_topo = False,  block_type=None, ve=1, **kwargs):
+    """
+    Plot a section of the block model
+
+    Args:
+        cell_number(int): position of the array to plot
+        direction(str): xyz. Caartesian direction to be plotted
+        interpolation(str): Type of interpolation of plt.imshow. Default 'none'.  Acceptable values are 'none'
+        ,'nearest', 'bilinear', 'bicubic',
+        'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser',
+        'quadric', 'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc',
+        'lanczos'
+        ve(float): Vertical exageration
+        **kwargs: imshow keywargs
+
+    Returns:
+        None
+    """
+    plot = PlotSolution(model)
+    plot.fig = plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
+                            show_data, show_faults, show_topo,  block_type, ve, **kwargs)
+    # TODO saving options
+    return plot
+
 
 def plot_scalar_field(model, cell_number, N=20,
                       direction="y", plot_data=True, series=0, *args, **kwargs):

@@ -872,8 +872,8 @@ class PlotSolution:
         plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
 
-    def plot_data(self, direction="y", data_type='all', series="all", legend_font_size=10, ve=1,
-                  show_all_data=True, at='all', **kwargs):
+    def plot_data(self, cell_number=2, direction="y", data_type='all', series="all", legend_font_size=10, ve=1,
+                  at='all', radius=None, **kwargs):
         """
         Plot the projecton of the raw data (surface_points and orientations) in 2D following a
         specific directions
@@ -920,26 +920,19 @@ class PlotSolution:
             series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"] == series]
             series_to_plot_f = self.model.orientations.df[self.model.orientations.df["series"] == series]
 
-        mask_surfpoints = np.ones(series_to_plot_i.shape[0], dtype=bool)
-        mask_orient = np.ones(series_to_plot_f.shape[0], dtype=bool)
-
-        if show_all_data is False:
-            if at == 'topography':
-                mask_surfpoints *=False
-                mask_orient *= False
-                surf_True, orient_True = self.get_surface_data_indexes()
-                mask_surfpoints[surf_True] = True
-                mask_orient[orient_True] = True
-            elif at == 'section':
-                #mask_surfpoints, mask_orient =
-                pass
-            elif at == 'block_section':
-                #mask_surfpoints, mask_orient =
-                pass
-            elif at == 'all':
-                pass
-            else:
-                raise NotImplementedError('must be topography, section or block_section')
+        if at == 'topography':
+            mask_surfpoints, mask_orient = self.get_mask_surface_data(radius=radius)
+        elif at == 'section':
+            #mask_surfpoints, mask_orient =
+            pass
+        elif at == 'block_section':
+            mask_surfpoints, mask_orient = self.get_mask_block_section(cell_number=cell_number, direction=direction,
+                                                                       radius=radius)
+        elif at == 'all':
+            mask_surfpoints = np.ones(series_to_plot_i.shape[0], dtype=bool)
+            mask_orient = np.ones(series_to_plot_f.shape[0], dtype=bool)
+        else:
+            raise NotImplementedError('must be topography, section or block_section')
 
         if data_type == 'all':
             self._plot_surface_points(x, y, series_to_plot_i[mask_surfpoints], aspect, extent, kwargs)
@@ -979,7 +972,7 @@ class PlotSolution:
                     to_plot = series_to_plot_f[series_to_plot_f['surface'] == surface]
                     plt.quiver(to_plot[x], to_plot[y],
                                to_plot[Gx], to_plot[Gy],
-                               pivot="tail", scale_units=min_axis, scale=5, color=self._color_lot[surface],
+                               pivot="tail", scale_units=min_axis, scale=10, color=self._color_lot[surface],
                                edgecolor='k', headwidth=8, linewidths=1)
                 fig = plt.gcf()
                 fig.set_size_inches(20,10)
@@ -999,8 +992,9 @@ class PlotSolution:
                 p.map(plt.quiver, x, y, Gx, Gy, pivot="tail", scale_units=min_axis, scale=10, edgecolor='k',
                       headwidth=4, linewidths=1)
 
-    def get_surface_data_indexes(self):
-        points_interf = np.vstack((self.model.surface_points.df['X'].values, self.model.surface_points.df['Y'].values)).T
+    def get_mask_surface_data(self, radius=None):
+        points_interf = np.vstack(
+            (self.model.surface_points.df['X'].values, self.model.surface_points.df['Y'].values)).T
         points_orient = np.vstack((self.model.orientations.df['X'].values, self.model.orientations.df['Y'].values)).T
 
         mask_interf = self.get_data_within_extent(points_interf)
@@ -1015,15 +1009,47 @@ class PlotSolution:
         Z_interf_interp = interpolating_function(points_interf[mask_interf])
         Z_orient_interp = interpolating_function(points_orient[mask_orient])
 
-        latitude = np.diff(zj).max()
+        if radius is None:
+            radius = np.diff(zj).max()
 
         dist_interf = np.abs(Z_interf_interp - self.model.surface_points.df['Z'].values[mask_interf])
         dist_orient = np.abs(Z_orient_interp - self.model.orientations.df['Z'].values[mask_orient])
 
-        surfmask_interf = dist_interf < latitude
-        surfmask_orient = dist_orient < latitude
+        surfmask_interf = dist_interf < radius
+        surfmask_orient = dist_orient < radius
+        surf_indexes = np.flatnonzero(mask_interf)[surfmask_interf]
+        orient_indexes = np.flatnonzero(mask_orient)[surfmask_orient]
 
-        return np.flatnonzero(mask_interf)[surfmask_interf], np.flatnonzero(mask_orient)[surfmask_orient]
+        mask_surfpoints = np.zeros(points_interf.shape[0], dtype=bool)
+        mask_orient = np.zeros(points_orient.shape[0], dtype=bool)
+
+        mask_surfpoints[surf_indexes] = True
+        mask_orient[orient_indexes] = True
+
+        return mask_surfpoints, mask_orient
+
+    def get_mask_block_section(self, cell_number=3, direction='y', radius=None):
+        if direction == 'x':
+            column = 'X'
+            start = self.model.grid.regular_grid.extent[0]
+            r_o_inf = self.model.grid.regular_grid.dx
+        elif direction == 'y':
+            column = 'Y'
+            start = self.model.grid.regular_grid.extent[2]
+            r_o_inf = self.model.grid.regular_grid.dy
+        elif direction == 'z':
+            column = 'Z'
+            start = self.model.grid.regular_grid.extent[4]
+            r_o_inf = self.model.grid.regular_grid.dz
+        else:
+            raise
+        if radius is None:
+            radius = r_o_inf
+        coord = start + radius * cell_number
+        mask_surfpoints = np.abs(self.model.surface_points.df[column].values - coord) < radius
+        mask_orient = np.abs(self.model.orientations.df[column].values - coord) < radius
+        return mask_surfpoints, mask_orient
+
 
     def get_data_within_extent(self, pts, ext=None):
         # ext = geo_model.grid.regular_grid.extent[:4]
@@ -1070,7 +1096,66 @@ class PlotSolution:
         return _a, _b, _c, extent_val, x, y, Gx, Gy
 
 
+    def plot_block_section(self, solution:Solution, cell_number:int, block:np.ndarray=None, direction:str="y",
+                           interpolation:str='none', show_data:bool=False, show_faults:bool=False, show_topo:bool=False,
+                           block_type=None, ve:float=1, **kwargs):
 
+        if block is None:
+            _block = solution.lith_block
+        else:
+            _block = block
+            if _block.dtype == bool:
+                kwargs['cmap'] = 'viridis'
+                kwargs['norm'] = None
+
+        if block_type is not None:
+            raise NotImplementedError
+
+        plot_block = _block.reshape(self.model.grid.regular_grid.resolution)
+        _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
+
+        if show_data:
+            self.plot_data(cell_number=cell_number, direction=direction, at='block_section')
+        # TODO: plot_topo option - need fault_block for that
+
+        # apply vertical exageration
+        if direction in ("x", "y"):
+            aspect = ve
+        else:
+            aspect = 1
+
+        if 'cmap' not in kwargs:
+            kwargs['cmap'] = self._cmap
+        if 'norm' not in kwargs:
+            kwargs['norm'] = self._norm
+
+        im = plt.imshow(plot_block[_a, _b, _c].T,
+                        origin="bottom",
+                        extent=extent_val,
+                        interpolation=interpolation,
+                        aspect=aspect,
+                        **kwargs)
+
+        if extent_val[3] < 0:           # correct vertical orientation of plot
+            plt.gca().invert_yaxis()    # if maximum vertical extent negative
+
+        if show_faults:
+            self.extract_fault_lines(cell_number, direction)
+
+        if show_topo:
+            if self.model.grid.topography is not None:
+                if direction == 'z':
+                    plt.contour(self.model.grid.topography.values_3D[:, :, 2], extent=extent_val, cmap='Greys')
+                else:
+                    self.plot_topography(cell_number=cell_number, direction=direction)
+
+        if not show_data:
+            patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
+            plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
+        plt.xlabel(x)
+        plt.ylabel(y)
+        return plt.gcf()
 
     # TODO: Incorporate to the class
     @staticmethod
