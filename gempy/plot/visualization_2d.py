@@ -275,7 +275,8 @@ class PlotData2D(object):
                 'bessel', 'mitchell', 'sinc', 'lanczos'.
             show_data (bool, optional): Plots input data on-top of block
                 section. Defaults to False.
-            show_legend (bool, optional): Plots legend only if no data is plotted.
+            show_legend (bool, optional): Plot or hide legend - only available
+                if no data is plotted.
             show_faults (bool, optional): Plot fault line on-top of block
                 section. Defaults to False.
             show_topo (bool, optional): Plots block section with topography.
