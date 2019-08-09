@@ -217,7 +217,7 @@ def plot_predef_sections(model, show_traces=True, show_data=False, section_names
 
 
 def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
-                 show_data=False, show_faults=True, show_topo=False, show_legend=False, 
+                 show_data=False, show_faults=True, show_topo=False, show_legend=True, 
                  block_type=None, ve=1, **kwargs):
     """
     Plot a section of the block model
