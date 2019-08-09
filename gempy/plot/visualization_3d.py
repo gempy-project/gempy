@@ -93,7 +93,7 @@ class vtkVisualization(object):
         self.ren_name = ren_name
         # Number of renders
         self.n_ren = 4
-        self.id = geo_data.surface_points.df['id'].unique().squeeze()
+        self.id = geo_data.surface_points.df['id'].cat.categories
         self.surface_name = geo_data.surface_points.df['surface'].unique()
 
         # Extents
