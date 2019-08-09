@@ -946,7 +946,7 @@ class DataMutation(object):
                     pn.DataFrame(sfai_order, index=surface_names)[0])
 
             except IndexError:
-                print('foo')
+                pass # print('foo')
 
         self.surfaces.sort_surfaces()
         self.surfaces.set_basement()
