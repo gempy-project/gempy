@@ -109,6 +109,10 @@ class DataMutation(object):
         self.rescaling.rescale_data()
         self.interpolator.set_initial_results_matrices()
 
+        # Check if grid is shared
+        if hasattr(self.interpolator.theano_graph.grid_val_T, 'get_value'):
+            self.interpolator.theano_graph.grid_val_T.set_value(self.grid.values_r.astype(self.interpolator.dtype))
+
     def set_active_grid(self, grid_name: Union[str, np.ndarray]):
         """
         Set active a given or several grids.

@@ -36,7 +36,7 @@ theano.config.openmp_elemwise_minsize = 10000
 theano.config.openmp = True
 
 theano.config.optimizer = 'fast_compile'
-theano.config.floatX = 'float64'
+theano.config.floatX = 'float32'
 theano.config.on_opt_error = 'ignore'
 
 theano.config.exception_verbosity = 'high'
@@ -157,6 +157,8 @@ class TheanoGraphPro(object):
         # ---------
         # VARIABLES
         # ---------
+
+        self.sig_slope = theano.shared(np.array(50, dtype=dtype), 'Sigmoid slope')
         self.values_properties_op = T.matrix('Values that the blocks are taking')
 
         self.n_surface = T.arange(1, 5000, dtype='int32')
@@ -821,6 +823,7 @@ class TheanoGraphPro(object):
             b = self.b_vector()
         # Solving the kriging system
         import theano.tensor.slinalg
+        # import theano.gpuarray.linalg
         self.b2 = T.tile(b, (1, 1)).T
         # b = theano.printing.Print('fucking b')(b)
 
@@ -1086,7 +1089,7 @@ class TheanoGraphPro(object):
             grid_shape = theano.printing.Print('grid_shape')(grid_shape)
 
        # self.steps = theano.shared(1e12, dtype='float64')
-        steps = 1e12 / self.matrices_shapes()[-1] / grid_shape
+        steps = 1e13 / self.matrices_shapes()[-1] / grid_shape
         slices = T.concatenate((T.arange(0, grid_shape[0], steps[0], dtype='int64'), grid_shape))
 
         if 'slices' in self.verbose:
@@ -1279,7 +1282,7 @@ class TheanoGraphPro(object):
 
         return fault_block
 
-    def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties_op, slope=50):
+    def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties_op, slope=None):
         """
         Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
 
@@ -1290,7 +1293,7 @@ class TheanoGraphPro(object):
 
         # if Z_x is None:
         #     Z_x = self.Z_x
-
+        slope = self.sig_slope
         max_pot = T.max(Z_x)
         # max_pot = theano.printing.Print("max_pot")(max_pot)
 

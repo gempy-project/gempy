@@ -1,3 +1,4 @@
+from typing import Union
 from gempy.core.data import SurfacePoints, Orientations, Grid, Surfaces, Series, Faults, AdditionalData
 from gempy.utils.meta import setdoc_pro, setdoc
 import gempy.utils.docstring as ds
@@ -534,7 +535,7 @@ class InterpolatorModel(Interpolator):
 
         if reset_weights is True:
             self.compute_weights_ctrl = np.ones(1000, dtype=bool)
-            self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum())))
+            self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum()), dtype=self.dtype))
 
         if reset_scalar is True:
             self.compute_scalar_ctrl = np.ones(1000, dtype=bool)
@@ -648,7 +649,7 @@ class InterpolatorModel(Interpolator):
     def set_theano_shared_weights(self):
         """Set the theano shared weights and [s0]"""
         self.set_theano_shared_loop()
-        self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum())))
+        self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum()), dtype=self.dtype))
 
     def set_theano_shared_fault_relation(self):
         """Set the theano shared variable with the fault relation"""
@@ -704,7 +705,7 @@ class InterpolatorModel(Interpolator):
         x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
         n_series = self.additional_data.structure_data.df.loc['values', 'number series']
 
-        self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum())))
+        self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum()), dtype=self.dtype))
         self.theano_graph.scalar_fields_matrix.set_value(
             np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
 
@@ -842,8 +843,7 @@ class InterpolatorModel(Interpolator):
         print('is erosion', self.theano_graph.is_erosion.get_value())
         print('is onlap', self.theano_graph.is_onlap.get_value())
 
-    def compile_th_fn(self, inplace=False,
-                      debug=False):
+    def compile_th_fn(self, inplace=False, debug=False, grid: Union[str, np.ndarray] = 'shared'):
         """
         Compile and create the theano function which can be evaluated to compute the geological models
 
@@ -851,6 +851,8 @@ class InterpolatorModel(Interpolator):
 
             inplace (bool): If true add the attribute theano.function to the object inplace
             debug (bool): If true print some of the theano flags
+            grid: If None, grid will be passed as variable. If shared or np.ndarray the grid will be treated as
+             constant (if shared the grid will be taken of grid)
 
         Returns:
             theano.function: function that computes the whole interpolation
@@ -861,6 +863,12 @@ class InterpolatorModel(Interpolator):
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.theano_graph.input_parameters_loop
         print('Compiling theano function...')
+
+        if grid == 'shared':
+            grid_sh = self.grid.values_r
+            self.theano_graph.grid_val_T = theano.shared(grid_sh.astype(self.dtype), 'Constant values to interpolate.')
+        elif grid is not None:
+            self.theano_graph.grid_val_T = theano.shared(grid.astype(self.dtype), 'Constant values to interpolate.')
 
         th_fn = theano.function(input_data_T,
                                 self.theano_graph.compute_series(),
