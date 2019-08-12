@@ -132,7 +132,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
 @setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
 def set_interpolation_data(geo_model: Model, compile_theano: bool = True,
                            theano_optimizer=None, verbose: list = None,
-                           output=None):
+                           **kwargs):
     """
     Method to create a graph and compile the theano code to compute the interpolation.
 
@@ -145,10 +145,6 @@ def set_interpolation_data(geo_model: Model, compile_theano: bool = True,
     Returns:
 
     """
-    if output:
-        warnings.warn('Output is not an argument of intepolation data. Look'
-                      'compute_model', DeprecationWarning)
-
     if theano_optimizer is not None:
         geo_model.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
     if verbose is not None:
@@ -159,7 +155,7 @@ def set_interpolation_data(geo_model: Model, compile_theano: bool = True,
     update_additional_data(geo_model)
     geo_model.surface_points.sort_table()
     geo_model.orientations.sort_table()
-    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True)
+    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
     geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
 
     if compile_theano is True:

@@ -29,7 +29,16 @@ from theano import tensor as T
 import theano.ifelse as tif
 import numpy as np
 import sys
-from .theano_graph import TheanoGeometry, TheanoOptions
+
+
+# check if skcuda is installed
+try:
+    import skcuda
+    SKCUDA_IMPORT = True
+except ImportError:
+    SKCUDA_IMPORT = False
+
+
 
 
 theano.config.openmp_elemwise_minsize = 10000
@@ -47,15 +56,33 @@ theano.config.profile = False
 
 
 class TheanoGraphPro(object):
-    def __init__(self, optimizer='fast_compile', verbose=None, dtype='float32', ):
+    def __init__(self, optimizer='fast_compile', verbose=None, dtype='float32', **kwargs):
+        """
+        Class to create the symbolic theano graph with all the interpolation-FW engine
+
+        Args:
+            optimizer ({fast_compile, fast_run}): Theano optimizer option. See theano docs
+            verbose [list]: list of many parameters. If the name of the parameter is on the list the value of the
+             parameter will be printed in run time.
+            dtype [{float64, float32}]: Type of float
+            ** kwargs:
+                - gradient[bool]: If true adapt the graph for AD
+                - max_speed[int]: As the number gets higher true graph will be adapted to return meaningful
+                 gradients with AD
+        """
+
         # OPTIONS
         # -------
         if verbose is None:
             self.verbose = [None]
         else:
             self.verbose = verbose
-        self.dot_version = False
 
+        # Trade speed for memory this will consume more memory
+        self.max_speed = kwargs.get('max_speed', 1)
+        self.dot_version = False
+        self.gradient = kwargs.get('gradient', False)
+        self.device = theano.config.device
         theano.config.floatX = dtype
         theano.config.optimizer = optimizer
 
@@ -158,7 +185,13 @@ class TheanoGraphPro(object):
         # VARIABLES
         # ---------
 
-        self.sig_slope = theano.shared(np.array(50, dtype=dtype), 'Sigmoid slope')
+        if self.gradient:
+            self.sig_slope = theano.shared(np.array(50, dtype=dtype), 'Sigmoid slope for gradient')
+        else:
+            self.sig_slope = theano.shared(np.array(50000, dtype=dtype), 'Sigmoid slope')
+            self.not_l = theano.shared(np.array(50., dtype=dtype), 'Sigmoid Outside')
+            self.ellipse_factor_exponent = theano.shared(np.array(2., dtype=dtype), 'Attenuation factor')
+
         self.values_properties_op = T.matrix('Values that the blocks are taking')
 
         self.n_surface = T.arange(1, 5000, dtype='int32')
@@ -244,7 +277,6 @@ class TheanoGraphPro(object):
         # We add the axis 1 to the mask. Axis 1 is the properties values axis
         # Then we sum over the 0 axis. Axis 0 is the series
         final_model = T.sum(T.stack([mask], axis=1) * block, axis=0)
-        #final_model = T.sum(block, axis=0)
         return final_model
 
     def compute_series(self):
@@ -821,13 +853,18 @@ class TheanoGraphPro(object):
         C_matrix = self.covariance_matrix()
         if b is None:
             b = self.b_vector()
-        # Solving the kriging system
-        import theano.tensor.slinalg
-        # import theano.gpuarray.linalg
-        self.b2 = T.tile(b, (1, 1)).T
-        # b = theano.printing.Print('fucking b')(b)
+            # b = theano.printing.Print('b')(b)
 
-        DK_parameters = theano.tensor.slinalg.solve(C_matrix, b)
+        # Solving the kriging system
+        if self.device == 'cuda' and SKCUDA_IMPORT is True:
+            import theano.gpuarray.linalg
+            b2 = T.tile(b, (1, 1)).T
+            DK_parameters = theano.gpuarray.linalg.gpu_solve(C_matrix, b2)
+
+        else:
+            import theano.tensor.slinalg
+            DK_parameters = theano.tensor.slinalg.solve(C_matrix, b)
+
         DK_parameters = DK_parameters.reshape((DK_parameters.shape[0],))
 
         # Add name to the theano node
@@ -1089,22 +1126,27 @@ class TheanoGraphPro(object):
             grid_shape = theano.printing.Print('grid_shape')(grid_shape)
 
        # self.steps = theano.shared(1e12, dtype='float64')
-        steps = 1e13 / self.matrices_shapes()[-1] / grid_shape
+        steps = 1e12 / self.matrices_shapes()[-1] / grid_shape
         slices = T.concatenate((T.arange(0, grid_shape[0], steps[0], dtype='int64'), grid_shape))
 
         if 'slices' in self.verbose:
             slices = theano.printing.Print('slices')(slices)
 
-        Z_x_loop, updates3 = theano.scan(
-            fn=self.scalar_field_loop,
-            outputs_info=[Z_x_init],
-            sequences=[dict(input=slices, taps=[0, 1])],
-            non_sequences=[grid_val, tiled_weights],
-            profile=False,
-            name='Looping grid',
-            return_list=True)
+        # Check if we loop the grid or not
+        if self.max_speed < 2:
+            Z_x_loop, updates3 = theano.scan(
+                fn=self.scalar_field_loop,
+                outputs_info=[Z_x_init],
+                sequences=[dict(input=slices, taps=[0, 1])],
+                non_sequences=[grid_val, tiled_weights],
+                profile=False,
+                name='Looping grid',
+                return_list=True)
 
-        Z_x = Z_x_loop[-1][-1]
+            Z_x = Z_x_loop[-1][-1]
+        else:
+            Z_x = self.scalar_field_loop(0, 100000000, Z_x_init, grid_val, tiled_weights)
+
         Z_x.name = 'Value of the potential field at every point'
 
         if str(sys._getframe().f_code.co_name) in self.verbose:
@@ -1209,10 +1251,10 @@ class TheanoGraphPro(object):
         # l = slope / (max_pot - min_pot)  # (max_pot - min_pot)
 
         # This is the different line with respect layers
-        l = T.switch(finite_faults_sel, offset_slope / (max_pot - min_pot), slope / (max_pot - min_pot))
+        # l = T.switch(finite_faults_sel, offset_slope / (max_pot - min_pot), slope / (max_pot - min_pot))
         #  l = theano.printing.Print("l")(l)
 
-
+        # -------------------------------
         # Alex Schaaf contribution:
         # ellipse_factor = self.select_finite_faults()
         ellipse_factor_rectified = T.switch(finite_faults_sel < 1., finite_faults_sel, 1.)
@@ -1224,15 +1266,13 @@ class TheanoGraphPro(object):
             min_pot = theano.printing.Print("min_pot")(min_pot)
             max_pot = theano.printing.Print("max_pot")(max_pot)
 
-        self.not_l = theano.shared(50.)
-        self.ellipse_factor_exponent = theano.shared(2.)
         # sigmoid_slope = (self.not_l * (1 / ellipse_factor_rectified)**3) / (max_pot - min_pot)
         sigmoid_slope = offset_slope - offset_slope * ellipse_factor_rectified ** self.ellipse_factor_exponent + self.not_l
         # l = T.switch(self.select_finite_faults(), 5000 / (max_pot - min_pot), 50 / (max_pot - min_pot))
 
         if "select_finite_faults" in self.verbose:
             sigmoid_slope = theano.printing.Print("l")(sigmoid_slope)
-
+        # --------------------------------
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
             T.stack([max_pot + boundary_pad], axis=0),
@@ -1282,35 +1322,40 @@ class TheanoGraphPro(object):
 
         return fault_block
 
-    def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties_op, slope=None):
+    def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties_op, slope=None,
+                              ):
         """
         Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
 
         Returns:
             theano.tensor.vector: Value of lithology at every interpolated point
         """
-        # TODO: IMP set soft max in the borders
+        # TODO: IMP set soft max in the borders: Test
+        # TODO: instead -1 at the border look for the average distance of the input!: Test
 
-        # if Z_x is None:
-        #     Z_x = self.Z_x
         slope = self.sig_slope
-        max_pot = T.max(Z_x)
-        # max_pot = theano.printing.Print("max_pot")(max_pot)
+        if self.max_speed < 1:
+            # max_pot = T.max(scalar_field_at_surface_points)
+            # min_pot = T.min(scalar_field_at_surface_points)
 
-        min_pot = T.min(Z_x)
-        #     min_pot = theano.printing.Print("min_pot")(min_pot)
+            max_pot = T.max(Z_x)
+            # max_pot = theano.printing.Print("max_pot")(max_pot)
+            min_pot = T.min(Z_x)
+            # min_pot = theano.printing.Print("min_pot")(min_pot)
 
-     #   max_pot_sigm = 2 * max_pot - self.scalar_field_at_surface_points_values[0]
-     #   min_pot_sigm = 2 * min_pot - self.scalar_field_at_surface_points_values[-1]
+            # max_pot_sigm = 2 * max_pot - self.scalar_field_at_surface_points_values[0]
+            # min_pot_sigm = 2 * min_pot - self.scalar_field_at_surface_points_values[-1]
 
-        boundary_pad = (max_pot - min_pot) * 0.01
-        l = slope / (max_pot - min_pot)
+            # boundary_pad = (max_pot - min_pot) * 0.01
+            l = slope / (max_pot - min_pot)
+        else:
+            l = slope
 
         # A tensor with the values to segment
         scalar_field_iter = T.concatenate((
-            T.stack([max_pot + boundary_pad], axis=0),
+            T.stack([0], axis=0),
             scalar_field_at_surface_points,
-            T.stack([min_pot - boundary_pad], axis=0)
+            T.stack([0], axis=0)
         ))
 
         if "scalar_field_iter" in self.verbose:
@@ -1320,11 +1365,10 @@ class TheanoGraphPro(object):
 
         n_surface_op_float_sigmoid = T.repeat(values_properties_op, 2, axis=1)
 
-        # TODO: instead -1 at the border look for the average distance of the input!
-        n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], 1)
+        n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], 0)
         # - T.sqrt(T.square(n_surface_op_float_sigmoid[0] - n_surface_op_float_sigmoid[2])))
 
-        n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, -1], -1)
+        n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, -1], 0)
         # - T.sqrt(T.square(n_surface_op_float_sigmoid[3] - n_surface_op_float_sigmoid[-1])))
 
         drift = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], n_surface_op_float_sigmoid[:, 1])
@@ -1345,6 +1389,16 @@ class TheanoGraphPro(object):
 
         # For every surface we get a vector so we need to sum compress them to one dimension
         formations_block = formations_block.sum(axis=0)
+
+        if self.gradient is True:
+            ReLU_up = T.switch(Z_x < scalar_field_iter[1], 0, - 0.01 * (Z_x - scalar_field_iter[1]))
+            ReLU_down = T.switch(Z_x > scalar_field_iter[-2], 0,  0.01 * T.abs_(Z_x - scalar_field_iter[-2]))
+
+            if 'relu' in self.verbose:
+                ReLU_up = theano.printing.Print('ReLU_up')(ReLU_up)
+                ReLU_down = theano.printing.Print('ReLU_down')(ReLU_down)
+
+            formations_block += ReLU_down + ReLU_up
 
         # Add name to the theano node
         formations_block.name = 'The chunk of block model of a specific series'
@@ -1427,8 +1481,8 @@ class TheanoGraphPro(object):
                                        self.solve_kriging(b),
                                        weights_vector[len_w_0:len_w_1])
 
-        #if 'weights' in self.verbose:
-       # weights = theano.printing.Print('weights foo')(weights)
+        if 'weights' in self.verbose:
+            weights = theano.printing.Print('weights foo')(weights)
 
         Z_x = tif.ifelse(compute_scalar_ctr, self.compute_scalar_field(weights, self.grid_val_T),
                          scalar_field_matrix[n_series])
@@ -1444,7 +1498,7 @@ class TheanoGraphPro(object):
                             T.gt(Z_x, T.max(scalar_field_at_surface_points)),
                             mask_matrix[n_series - 1, :])
 
-        if False:
+        if self.gradient is False:
             block = tif.ifelse(
                 compute_block_ctr,
                 tif.ifelse(is_finite,
@@ -1480,45 +1534,7 @@ class TheanoGraphPro(object):
         n_devices = T.cast((densities.shape[0] / self.tz.shape[0]), dtype='int32')
         tz_rep = T.tile(self.tz, n_devices)
 
-        # TODO: Assert outside that densities is the same size as surfaces (minus df)
-        # Compute the geological model
-       # pos_density = T.scalar('position of the density', dtype='int32')
-        #density_matrix = self.compute_series()[0][pos_density, :- 2 * self.len_points]
-
-        # if n_faults == 0:
-        #     surfaces = T.concatenate([self.n_surface[::-1], T.stack([0])])
-        # else:
-        #     surfaces = T.concatenate([self.n_surface[:n_faults-1:-1], T.stack([0])])
-        #
-        #     if False:
-        #         surfaces = theano.printing.Print('surfaces')(surfaces)
-        #
-        # # Substitue lithologies by its density
-        # density_block_loop, updates4 = theano.scan(self.switch_densities,
-        #                             outputs_info=[lith_matrix[0]],
-        #                              sequences=[surfaces, self.densities],
-        #                             return_list = True
-        # )
-
-        # if False:
-        #     density_block_loop_f = T.set_subtensor(density_block_loop[-1][-1][self.weigths_index], self.weigths_weigths)
-        #
-        # else:
-        #density_block_loop_f = lith_matrix[0]
-        #
-        # if 'density_block' in self.verbose:
-        #     density_block_loop_f = theano.printing.Print('density block')(density_block_loop_f)
-
-        # n_measurements = self.tz.shape[0]
-        # # Tiling the density block for each measurent and picking just the closer to them. This has to be possible to
-        # # optimize
-        #
-        # # densities_rep = T.tile(density_block_loop[-1][-1], n_measurements)
-        # densities_rep = T.tile(density_block_loop_f, n_measurements)
-        # densities_selected = densities_rep[T.nonzero(T.cast(self.select, "int8"))[0]]
-        # densities_selected_reshaped = densities_selected.reshape((n_measurements, -1))
-        #
-        # # density times the component z of gravity
+        # density times the component z of gravity
         grav = (densities * tz_rep).reshape((n_devices, -1)).sum(axis=1)
 
         # return [lith_matrix, self.fault_matrix, pfai, grav.sum(axis=1)]

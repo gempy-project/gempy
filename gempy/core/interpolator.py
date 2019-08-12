@@ -80,7 +80,7 @@ class Interpolator(object):
         self.len_series_w = self.len_series_i + self.len_series_o * 3 + self.len_series_u + self.len_series_f
 
     @setdoc_pro([AdditionalData.__doc__, ds.inplace, ds.theano_graph_pro])
-    def create_theano_graph(self, additional_data: "AdditionalData" = None, inplace=True):
+    def create_theano_graph(self, additional_data: "AdditionalData" = None, inplace=True, **kwargs):
         """
         Create the graph accordingly to the options in the AdditionalData object
 
@@ -100,7 +100,8 @@ class Interpolator(object):
 
         graph = tg.TheanoGraphPro(optimizer=additional_data.options.df.loc['values', 'theano_optimizer'],
                                   dtype=additional_data.options.df.loc['values', 'dtype'],
-                                  verbose=additional_data.options.df.loc['values', 'verbosity'])
+                                  verbose=additional_data.options.df.loc['values', 'verbosity'],
+                                  **kwargs)
         if inplace is True:
             self.theano_graph = graph
         else:
@@ -759,8 +760,10 @@ class InterpolatorModel(Interpolator):
                 elif i > 0:
                     self.theano_graph.scalar_fields_matrix.set_value(
                         np.insert(scalar_fields_matrix, [loc], np.zeros(i), axis=1))
-                    self.theano_graph.mask_matrix.set_value(np.insert(mask_matrix, [loc], np.zeros(i), axis=1))
-                    self.theano_graph.block_matrix.set_value(np.insert(block_matrix, [loc], np.zeros(i), axis=2))
+                    self.theano_graph.mask_matrix.set_value(np.insert(
+                        mask_matrix, [loc], np.zeros(i, dtype=self.dtype), axis=1))
+                    self.theano_graph.block_matrix.set_value(np.insert(
+                        block_matrix, [loc], np.zeros(i, dtype=self.dtype), axis=2))
 
                 else:
                     self.theano_graph.scalar_fields_matrix.set_value(
