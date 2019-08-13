@@ -846,7 +846,7 @@ class PlotSolution:
 
     def plot_section_traces(self, show_data=False, section_names=None, contour_lines=True):
         if section_names is None:
-            section_names = self.model.grid.sections.names
+            section_names = list(self.model.grid.sections.names)
 
         if self.model.solutions.geological_map is not None:
             self.plot_map(self.model.solutions, contour_lines=contour_lines, show_data=show_data)
@@ -859,7 +859,7 @@ class PlotSolution:
             # fig = plt.figure()
             # plt.title('Section traces, z direction')
             if show_data:
-                self.plot_data('z', 'all')
+                self.plot_data(direction='z', at=section_names)
         for section in section_names:
             j = np.where(self.model.grid.sections.names == section)[0][0]
             plt.plot([self.model.grid.sections.points[j][0][0], self.model.grid.sections.points[j][1][0]],
@@ -873,7 +873,7 @@ class PlotSolution:
 
 
     def plot_data(self, cell_number=2, direction="y", data_type='all', series="all", legend_font_size=10, ve=1,
-                  at='all', radius=None, **kwargs):
+                  at='everywhere', radius=None, **kwargs):
         """
         Plot the projecton of the raw data (surface_points and orientations) in 2D following a
         specific directions
@@ -920,19 +920,35 @@ class PlotSolution:
             series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"] == series]
             series_to_plot_f = self.model.orientations.df[self.model.orientations.df["series"] == series]
 
-        if at == 'topography':
-            mask_surfpoints, mask_orient = self.get_mask_surface_data(radius=radius)
-        elif at == 'section':
-            #mask_surfpoints, mask_orient =
-            pass
-        elif at == 'block_section':
-            mask_surfpoints, mask_orient = self.get_mask_block_section(cell_number=cell_number, direction=direction,
-                                                                       radius=radius)
-        elif at == 'all':
-            mask_surfpoints = np.ones(series_to_plot_i.shape[0], dtype=bool)
-            mask_orient = np.ones(series_to_plot_f.shape[0], dtype=bool)
+        if type(at) == str:
+            if at == 'topography':
+                mask_surfpoints, mask_orient = self.get_mask_surface_data(radius=radius)
+            elif at == 'block_section':
+                mask_surfpoints, mask_orient = self.get_mask_block_section(cell_number=cell_number, direction=direction,
+                                                                           radius=radius)
+            elif at == 'everywhere':
+                mask_surfpoints = np.ones(series_to_plot_i.shape[0], dtype=bool)
+                mask_orient = np.ones(series_to_plot_f.shape[0], dtype=bool)
+            else:
+                try:
+                    j = np.where(self.model.grid.sections.names == at)[0][0]
+                    mask_surfpoints, mask_orient = self.get_mask_sections(j, radius=radius)
+                except AttributeError:
+                    print('must be topography, a section name or block_section')
+
+        elif type(at) == list:
+            try:
+                mask_surfpoints = np.zeros(series_to_plot_i.shape[0], dtype=bool)
+                mask_orient = np.zeros(series_to_plot_f.shape[0], dtype=bool)
+                for i in at:
+                    j = np.where(self.model.grid.sections.names == i)[0][0]
+                    mask_surfpoints_i, mask_orient_i = self.get_mask_sections(j, radius=radius)
+                    mask_surfpoints[mask_surfpoints_i] = True
+                    mask_orient[mask_orient_i] = True
+            except AttributeError:
+                print('must be topography, a section name or block_section')
         else:
-            raise NotImplementedError('must be topography, section or block_section')
+            print('problem')
 
         if data_type == 'all':
             self._plot_surface_points(x, y, series_to_plot_i[mask_surfpoints], aspect, extent, kwargs)
@@ -1004,10 +1020,10 @@ class PlotSolution:
         yj = self.model.grid.topography.values_3D[:, :, 1][:, 0]
         zj = self.model.grid.topography.values_3D[:, :, 2].T
 
-        interpolating_function = RegularGridInterpolator((xj, yj), zj)
+        interpolate = RegularGridInterpolator((xj, yj), zj)
 
-        Z_interf_interp = interpolating_function(points_interf[mask_interf])
-        Z_orient_interp = interpolating_function(points_orient[mask_orient])
+        Z_interf_interp = interpolate(points_interf[mask_interf])
+        Z_orient_interp = interpolate(points_orient[mask_orient])
 
         if radius is None:
             radius = np.diff(zj).max()
@@ -1048,6 +1064,26 @@ class PlotSolution:
         coord = start + radius * cell_number
         mask_surfpoints = np.abs(self.model.surface_points.df[column].values - coord) < radius
         mask_orient = np.abs(self.model.orientations.df[column].values - coord) < radius
+        return mask_surfpoints, mask_orient
+
+    def get_mask_sections(self, j, radius=None):
+        # Todo the coordinate system the sections are plotted in is different.
+        # this needs to be converted.
+        points_interf = np.vstack(
+            (self.model.surface_points.df['X'].values, self.model.surface_points.df['Y'].values)).T
+        points_orient = np.vstack((self.model.orientations.df['X'].values,
+                                   self.model.orientations.df['Y'].values)).T
+        if radius is None:
+            radius = self.model.grid.sections.dist[j] / self.model.grid.sections.resolution[j][0]
+            print(radius)
+
+        p1, p2 = np.array(self.model.grid.sections.points[j][0]), np.array(self.model.grid.sections.points[j][1])
+
+        d_interf = np.abs(np.cross(p2 - p1, points_interf - p1) / np.linalg.norm(p2 - p1))
+        d_orient = np.abs(np.cross(p2 - p1, points_orient - p1) / np.linalg.norm(p2 - p1))
+
+        mask_surfpoints = d_interf < radius
+        mask_orient = d_orient < radius
         return mask_surfpoints, mask_orient
 
 
