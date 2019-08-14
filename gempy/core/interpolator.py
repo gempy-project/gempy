@@ -738,6 +738,13 @@ class InterpolatorModel(Interpolator):
             np.zeros((n_series, self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
                       x_to_interp_shape), dtype=self.dtype))
 
+    def set_theano_shared_grid(self, grid=None):
+        if grid == 'shared':
+            grid_sh = self.grid.values_r
+            self.theano_graph.grid_val_T = theano.shared(grid_sh.astype(self.dtype), 'Constant values to interpolate.')
+        elif grid is not None:
+            self.theano_graph.grid_val_T = theano.shared(grid.astype(self.dtype), 'Constant values to interpolate.')
+
     def modify_results_matrices_pro(self):
         """Modify all theano shared matrices to the right size according to the structure data. This method allows
         to change the size of the results without having the recompute all series"""
@@ -866,12 +873,8 @@ class InterpolatorModel(Interpolator):
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.theano_graph.input_parameters_loop
         print('Compiling theano function...')
-
-        if grid == 'shared':
-            grid_sh = self.grid.values_r
-            self.theano_graph.grid_val_T = theano.shared(grid_sh.astype(self.dtype), 'Constant values to interpolate.')
-        elif grid is not None:
-            self.theano_graph.grid_val_T = theano.shared(grid.astype(self.dtype), 'Constant values to interpolate.')
+        if grid == 'shared' or grid is not None:
+            self.set_theano_shared_grid(grid)
 
         th_fn = theano.function(input_data_T,
                                 self.theano_graph.compute_series(),
