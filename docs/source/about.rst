@@ -1,7 +1,7 @@
 About us
 ========
 
-Computational Geology RWTH Aachen University.
+Computational Geosciences and Reservoir Engineering RWTH Aachen University.
 #############################################
 
 The research  institute "Computational Geosciences and Reservoir Engineering", led by Prof. Florian Wellmann, is at the interface between the geosciences (including geophysics),
