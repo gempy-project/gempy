@@ -600,22 +600,22 @@ class PlotData2D(object):
             ax.grid(True, color='black', alpha=0.25)
 
 class PlotSolution:
-    # Todo plot data filtered for sections and map
     def __init__(self, model):
-
         self.model = model
-
         self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
         self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors) + 0.5)
-
 
     def plot_map(self, solution: Solution = None, contour_lines=False, show_faults=True, show_data=True, figsize=(12,12)):
         if solution is not None:
             assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
         else:
             solution = self.model.solutions
-        geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:, :, 2].shape)
+        try:
+            geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:, :, 2].shape)
+        except AttributeError:
+            warnings.warn('Geological map not computed. Activate the topography grid.')
+
         if show_data:
             self.plot_data(direction='z', at='topography', show_all_data=False)
         else:
@@ -1075,7 +1075,6 @@ class PlotSolution:
                                    self.model.orientations.df['Y'].values)).T
         if radius is None:
             radius = self.model.grid.sections.dist[j] / self.model.grid.sections.resolution[j][0]
-            print(radius)
 
         p1, p2 = np.array(self.model.grid.sections.points[j][0]), np.array(self.model.grid.sections.points[j][1])
 
