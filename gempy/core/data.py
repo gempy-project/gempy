@@ -2484,7 +2484,7 @@ class Options(object):
 
      """
     def __init__(self):
-        df_ = pn.DataFrame(np.array(['float64', 'geology', 'fast_compile', 'cpu', None]).reshape(1, -1),
+        df_ = pn.DataFrame(np.array(['float32', 'geology', 'fast_compile', 'cpu', None]).reshape(1, -1),
                            index=['values'],
                            columns=['dtype', 'output', 'theano_optimizer', 'device', 'verbosity'])
 
@@ -2527,7 +2527,7 @@ class Options(object):
         Returns:
             bool: True
         """
-        self.df['dtype'] = 'float64'
+        self.df['dtype'] = 'float32'
         self.df['output'] = 'geology'
         self.df['theano_optimizer'] = 'fast_compile'
         self.df['device'] = 'cpu'
