@@ -71,7 +71,7 @@ class Solution(object):
         self.edges = []
 
         # Topography
-        # Todo merge this in geological_map[0] and [1]
+        # Todo merge this in geological_map[0] and [1] and adjust plotting
         self.geological_map = None
         self.geological_map_scalfield = None
 

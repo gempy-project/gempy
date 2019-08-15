@@ -715,6 +715,70 @@ class PlotSolution:
 
             c_id += len(level)
 
+    def plot_section_by_name(self, section_name, show_data=True, show_faults=True, show_topo=True, **kwargs):
+        assert type(section_name) == str, 'section name must be a string of the name of the section'
+        assert self.model.solutions.sections is not None, 'no sections for plotting defined'
+
+        j = np.where(self.model.grid.sections.names == section_name)[0][0]
+        l0, l1 = self.model.grid.sections.get_section_args(section_name)
+        shape = self.model.grid.sections.resolution[j]
+
+        image = self.model.solutions.sections[0][l0:l1].reshape(shape[0], shape[1]).T
+        extent = [0, self.model.grid.sections.dist[j][0],
+                  self.model.grid.regular_grid.extent[4], self.model.grid.regular_grid.extent[5]]
+
+        if show_data:
+            self.plot_section_data(section_name, **kwargs)
+
+        axes = plt.gca()
+        axes.imshow(image, origin='lower', zorder=-100,
+                    cmap=self._cmap, norm=self._norm, extent=extent)
+        if show_faults:
+            self.extract_section_lines(section_name, axes)
+
+        if show_topo:
+            if self.model.grid.topography is not None:
+                alpha = kwargs.get('alpha', 1)
+                xy = self.make_topography_overlay_4_sections(j)
+                axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10, alpha=alpha)
+
+        labels, axname = self._make_section_xylabels(section_name, len(axes.get_xticklabels()) - 2)
+        pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
+        axes.xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
+        axes.xaxis.set_major_formatter(FixedFormatter((labels)))
+        axes.set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
+
+    def plot_section_data(self, section_name, **kwargs):
+        plot_surfpoints, plot_orient = self.get_plot_data(at=section_name)
+        j = np.where(self.model.grid.sections.names == section_name)[0][0]
+        # convert the data to the new coord system
+        # define x,y, Gx, Gy #orientations is difficult?
+        # direction is to fix plot to x and z column, but we replace x column with projected values
+        extent = [0, self.model.grid.sections.dist[j][0],
+                  self.model.grid.regular_grid.extent[4], self.model.grid.regular_grid.extent[5]]
+
+        a = self.model.grid.sections.points[j][0]  # startpoint = 0, we need distance to that point
+        bs_i = plot_surfpoints[['X', 'Y']].values
+        bs_o = plot_orient[['X', 'Y']].values
+        new_x_points_i = np.linalg.norm(bs_i - a, axis=1)
+        new_x_points_o = np.linalg.norm(bs_o - a, axis=1)
+        plot_surfpoints['X'] = new_x_points_i
+        plot_orient['X'] = new_x_points_o
+        y = 'Z'
+        x = 'X'
+        aspect = (extent[1] - extent[0]) / (extent[3] - extent[2])
+        kwargs['scatter_kws'] = {"marker": "o",
+                                 "s": 100,
+                                 "edgecolors": "black",
+                                 "linewidths": 1}
+        # print(plot_surfpoints)
+        self._plot_surface_points(x, y, plot_surfpoints, aspect, extent, kwargs)
+        Gx = 'G_x'
+        Gy = 'G_z'
+        min_axis = 'width' if aspect < 1 else 'height'
+        self._plot_orientations(x, y, Gx, Gy, plot_orient, min_axis, extent, False, aspect)
+        warnings.warn('the orientations are not converted to apparent dip.')
+
     def plot_sections(self, show_traces=True, show_data=False, section_names=None, show_faults=True, show_topo=True,
                       figsize=(12, 12)):
         assert self.model.solutions.sections is not None, 'no sections for plotting defined'
@@ -906,10 +970,27 @@ class PlotSolution:
         if direction == 'x' or direction == 'y':
             aspect /= ve
 
-        if aspect < 1:
-            min_axis = 'width'
-        else:
-            min_axis = 'height'
+        min_axis = 'width' if aspect < 1 else 'height'
+
+        plot_surfpoints, plot_orient = self.get_plot_data(series=series, at=at, direction=direction,
+                                                          radius=radius, cell_number=cell_number)
+
+        if data_type == 'all':
+            self._plot_surface_points(x, y, plot_surfpoints, aspect, extent, kwargs)
+            self._plot_orientations(x, y, Gx, Gy, plot_orient, min_axis, extent, False)
+
+        if data_type == 'surface_points':
+            self._plot_surface_points(x, y, plot_surfpoints, aspect, extent, kwargs)
+
+        if data_type == 'orientations':
+            self._plot_orientations(x, y, Gx, Gy, plot_orient, min_axis, extent, True, aspect)
+
+        #plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+
+        plt.xlabel(x)
+        plt.ylabel(y)
+
+    def get_plot_data(self, series="all", at="everywhere", direction=None, cell_number=None, radius=None):
         if series == "all":
             series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"].
                 isin(self.model.series.df.index.values)]
@@ -929,14 +1010,18 @@ class PlotSolution:
             elif at == 'everywhere':
                 mask_surfpoints = np.ones(series_to_plot_i.shape[0], dtype=bool)
                 mask_orient = np.ones(series_to_plot_f.shape[0], dtype=bool)
-            else:
+            else: #see if it is a section name
                 try:
                     j = np.where(self.model.grid.sections.names == at)[0][0]
                     mask_surfpoints, mask_orient = self.get_mask_sections(j, radius=radius)
+
+                    self.testorient = series_to_plot_f[mask_orient]
+                    self.testinterf = series_to_plot_i[mask_surfpoints]
+
                 except AttributeError:
                     print('must be topography, a section name or block_section')
 
-        elif type(at) == list:
+        elif type(at) == list: #should be a list of section names but must be asserted
             try:
                 mask_surfpoints = np.zeros(series_to_plot_i.shape[0], dtype=bool)
                 mask_orient = np.zeros(series_to_plot_f.shape[0], dtype=bool)
@@ -950,20 +1035,9 @@ class PlotSolution:
         else:
             print('problem')
 
-        if data_type == 'all':
-            self._plot_surface_points(x, y, series_to_plot_i[mask_surfpoints], aspect, extent, kwargs)
-            self._plot_orientations(x, y, Gx, Gy, series_to_plot_f[mask_orient], min_axis, extent, False)
+        return series_to_plot_i[mask_surfpoints], series_to_plot_f[mask_orient]
 
-        if data_type == 'surface_points':
-            self._plot_surface_points(x, y, series_to_plot_i[mask_surfpoints], aspect, extent, kwargs)
 
-        if data_type == 'orientations':
-            self._plot_orientations(x, y, Gx, Gy, series_to_plot_f[mask_orient], min_axis, extent, True, aspect)
-
-        #plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-
-        plt.xlabel(x)
-        plt.ylabel(y)
 
     def _plot_surface_points(self, x, y, series_to_plot_i, aspect, extent, kwargs):
         if series_to_plot_i.shape[0] != 0:
@@ -973,8 +1047,8 @@ class PlotSolution:
                               ylim=[extent[2], extent[3]],
                               xlim=[extent[0], extent[1]],
                               legend_out=False,
-                              aspect=aspect,
-                              size=6)
+                              aspect=aspect)#
+                              #size=6)
 
             p.map(plt.scatter, x, y,
                   **kwargs['scatter_kws'],
@@ -988,7 +1062,7 @@ class PlotSolution:
                     to_plot = series_to_plot_f[series_to_plot_f['surface'] == surface]
                     plt.quiver(to_plot[x], to_plot[y],
                                to_plot[Gx], to_plot[Gy],
-                               pivot="tail", scale_units=min_axis, scale=10, color=self._color_lot[surface],
+                               pivot="tail", scale_units=min_axis, scale=30, color=self._color_lot[surface],
                                edgecolor='k', headwidth=8, linewidths=1)
                 fig = plt.gcf()
                 fig.set_size_inches(20,10)
@@ -1003,7 +1077,7 @@ class PlotSolution:
                                   xlim=[extent[0], extent[1]],
                                   legend_out=False,
                                   aspect=aspect,
-                                  size=6)
+                                  size=2)
 
                 p.map(plt.quiver, x, y, Gx, Gy, pivot="tail", scale_units=min_axis, scale=10, edgecolor='k',
                       headwidth=4, linewidths=1)
