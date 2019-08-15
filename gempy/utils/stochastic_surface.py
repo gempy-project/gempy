@@ -35,6 +35,7 @@ from copy import deepcopy
 import pandas as pd
 from abc import ABC, abstractmethod
 from gempy.core.model import Model
+from typing import Any, Sequence, Iterable
 
 
 class _StochasticSurface(ABC):
@@ -43,10 +44,10 @@ class _StochasticSurface(ABC):
 
     def __init__(self, geo_model: Model, surface:str, grouping: str = "surface"):
         # store independant copy of initial dataframe for reference/resets
-        self.__class__.surface_points_init = deepcopy(geo_model.surface_points.df)
-        self.__class__.orientations_init = deepcopy(geo_model.orientations.df)
+        self.__class__.surface_points_init = deepcopy(geo_model.surface_points.df)  # TODO
+        self.__class__.orientations_init = deepcopy(geo_model.orientations.df)  # TODO
         # store Model instance
-        self.__class__.geo_model = geo_model
+        self.__class__.geo_model = geo_model  # TODO
 
         self.surface = surface
         # class-spanning list of all instantiated stochastic surfaces for easy
@@ -82,35 +83,34 @@ class _StochasticSurface(ABC):
     def sample(self, random_state=None):
         pass
 
-    def modify_surfpts(self):
-        "Inplace modification of interface dataframe."
-        for col, i in self.surfpts_sample.groupby("col").groups.items():
-            i_init = self.surfpts_sample.loc[i, "i"]
-            self.geo_model.modify_surface_points(
-                i_init,
-                **{
-                    col: self.surface_points_init.loc[i_init, col].values \
-                         + self.surfpts_sample.loc[i, "val"].values
-                }
-            )
+    # def modify_surfpts(self):
+    #     "Inplace modification of interface dataframe."
+    #     for col, i in self.surfpts_sample.groupby("col").groups.items():
+    #         i_init = self.surfpts_sample.loc[i, "i"]
+    #         self.geo_model.modify_surface_points(
+    #             i_init,
+    #             **{
+    #                 col: self.surface_points_init.loc[i_init, col].values \
+    #                      + self.surfpts_sample.loc[i, "val"].values
+    #             }
+    #         )
+    #
+    # def modifiy_orient(self):
+    #     """Inplace modification of orientation dataframe."""
+    #     for col, i in self.orients_sample.groupby("col").groups.items():
+    #         i_init = self.orients_sample.loc[i, "i"]
+    #         self.geo_model.modify_orientations(
+    #             i_init,
+    #             **{
+    #                 col: self.orientations_init.loc[i_init, col].values \
+    #                      + self.orients_sample[i, "val"].values
+    #             }
+    #         )
 
-    def modifiy_orient(self):
-        """Inplace modification of orientation dataframe."""
-        for col, i in self.orients_sample.groupby("col").groups.items():
-            i_init = self.orients_sample.loc[i, "i"]
-            self.geo_model.modify_orientations(
-                i_init,
-                **{
-                    col: self.orientations_init.loc[i_init, col].values \
-                         + self.orients_sample[i, "val"].values
-                }
-            )
-
-    def modify(self):
-        """Modify geomodel parameters based on sample."""
-        self.modify_surfpts()
-        self.modifiy_orient()
-
+    # def modify(self):
+    #     """Modify geomodel parameters based on sample."""
+    #     self.modify_surfpts()
+    #     self.modifiy_orient()
 
     def reset(self):
         """Reset geomodel parameters to initial values."""
@@ -244,6 +244,76 @@ class StochasticSurfaceScipy(_StochasticSurface):
 #         pos = self.surface_points[["X", "Y"]].values
 #         sample = srf((pos[:, 0], pos[:, 1])) * 30
 #         return {"Z": sample}
+
+
+class StochasticModel:
+    def __init__(self,
+                 geo_model: Model,
+                 surfaces: Iterable[_StochasticSurface]=None):
+
+        self.surface_points_init = deepcopy(geo_model.surface_points.df)
+        self.orientations_init = deepcopy(geo_model.orientations.df)
+        self.geo_model = geo_model
+
+        self.surfaces = {}
+        for surface in surfaces:
+            self.surfaces[surface.surface] = surface
+
+        self.surfpts_samples = []
+        self.orients_samples = []
+
+    def sample(self):
+        """Sample from all stocahstic surfaces of this StochasticModel."""
+        surfpts_samples = pd.DataFrame(columns=["i", "col", "val"])
+        orients_samples = pd.DataFrame(columns=["i", "col", "val"])
+
+        for surface in self.surfaces.values():
+            surface.sample()
+
+            surfpts_samples = surfpts_samples.append(
+                surface.surfpts_sample, ignore_index=True)
+            orients_samples = orients_samples.append(
+                surface.orients_sample, ignore_index=True)
+
+        self.surfpts_samples.append(surfpts_samples)
+        self.orients_samples.append(orients_samples)
+
+    def modify(self, n:int=-1):
+        """
+
+        Args:
+            n (int):
+        """
+        self._modify_surfpts(self.surfpts_samples[n])
+        self._modifiy_orients(self.orients_samples[n])
+
+    def _modify_surfpts(self, sample):
+        "Inplace modification of interface dataframe."
+        for col, i in sample.groupby("col").groups.items():
+            i_init = sample.loc[i, "i"]
+            self.geo_model.modify_surface_points(
+                i_init,
+                **{
+                    col: self.surface_points_init.loc[i_init, col].values \
+                         + sample.loc[i, "val"].values
+                }
+            )
+
+    def _modifiy_orients(self, sample):
+        """Inplace modification of orientation dataframe."""
+        for col, i in sample.groupby("col").groups.items():
+            i_init = sample.loc[i, "i"]
+            self.geo_model.modify_orientations(
+                i_init,
+                **{
+                    col: self.orientations_init.loc[i_init, col].values \
+                         + sample[i, "val"].values
+                }
+            )
+
+    def reset(self):
+        raise NotImplementedError
+
 
 
 def _trifacenormals_from_pts(points: Array[float, ..., 3]) -> pd.DataFrame:

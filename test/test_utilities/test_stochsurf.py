@@ -31,12 +31,22 @@ class TestScipy(object):
 
     def test_single_len(self, stochsurf_scipy):
         stochsurf_scipy.parametrize_surfpts_single(1)
-        assert all(stochsurf_scipy.parametrization[0][0] == np.arange(16))
+        assert all(stochsurf_scipy.surfpts_parametrization[0][0] == np.arange(16))
 
     def test_single_axis(self, stochsurf_scipy):
         stochsurf_scipy.parametrize_surfpts_single(1, direction="X")
-        assert stochsurf_scipy.parametrization[0][1] == "X"
+        assert stochsurf_scipy.surfpts_parametrization[0][1] == "X"
 
     def test_single_dist(self, stochsurf_scipy):
         stochsurf_scipy.parametrize_surfpts_single(1)
-        assert str(type(stochsurf_scipy.parametrization[0][2])) == "<class 'scipy.stats._distn_infrastructure.rv_frozen'>"
+        assert str(type(stochsurf_scipy.surfpts_parametrization[0][2])) == "<class 'scipy.stats._distn_infrastructure.rv_frozen'>"
+
+    def test_single_sample(self, stochsurf_scipy):
+        stochsurf_scipy.parametrize_surfpts_single(100)
+        stochsurf_scipy.sample(random_state=42)
+        assert np.average(stochsurf_scipy.surfpts_sample.val) == 49.67141530112327
+
+    # def test_individual_sample(self, stochsurf_scipy):
+    #     stochsurf_scipy.parametrize_surfpts_individual()
+    #     stochsurf_scipy.sample(random_state=42)
+    #     print(stochsurf_scipy.stoch_param.val)
