@@ -2,6 +2,7 @@
 from matplotlib.cm import ScalarMappable as SM
 from gempy.plot.visualization_2d import PlotData2D
 import numpy as np
+import os
 
 
 def export_geomap2geotiff(path, geo_model, geo_map=None, geotiff_filepath=None):
@@ -123,6 +124,9 @@ def export_moose_input(geo_model, path=None):
 """
     if not path:
         path = './'
+    if not os.path.exists(path):
+      os.makedirs(path)
+
     f = open(path+'geo_model_units_moose_input.i', 'w+')
     
     f.write(fstring)
