@@ -83,35 +83,6 @@ class _StochasticSurface(ABC):
     def sample(self, random_state=None):
         pass
 
-    # def modify_surfpts(self):
-    #     "Inplace modification of interface dataframe."
-    #     for col, i in self.surfpts_sample.groupby("col").groups.items():
-    #         i_init = self.surfpts_sample.loc[i, "i"]
-    #         self.geo_model.modify_surface_points(
-    #             i_init,
-    #             **{
-    #                 col: self.surface_points_init.loc[i_init, col].values \
-    #                      + self.surfpts_sample.loc[i, "val"].values
-    #             }
-    #         )
-    #
-    # def modifiy_orient(self):
-    #     """Inplace modification of orientation dataframe."""
-    #     for col, i in self.orients_sample.groupby("col").groups.items():
-    #         i_init = self.orients_sample.loc[i, "i"]
-    #         self.geo_model.modify_orientations(
-    #             i_init,
-    #             **{
-    #                 col: self.orientations_init.loc[i_init, col].values \
-    #                      + self.orients_sample[i, "val"].values
-    #             }
-    #         )
-
-    # def modify(self):
-    #     """Modify geomodel parameters based on sample."""
-    #     self.modify_surfpts()
-    #     self.modifiy_orient()
-
     def reset(self):
         """Reset geomodel parameters to initial values."""
         self.geo_model.modify_surface_points(
@@ -186,6 +157,7 @@ class StochasticSurfaceScipy(_StochasticSurface):
                         {'i': i, 'col': entry[1], 'val': val},
                         ignore_index=True
                     )
+
         if self.orients_parametrization:
             self.orients_sample = pd.DataFrame(columns=["i", "col", "val"])
             for entry in self.orients_parametrization:
@@ -268,26 +240,27 @@ class StochasticModel:
         orients_samples = pd.DataFrame(columns=["i", "col", "val"])
 
         for surface in self.surfaces.values():
-            surface.sample()
+            surface.sample()  # draw samples for points of each surface
 
-            surfpts_samples = surfpts_samples.append(
+            surfpts_samples = surfpts_samples.append(  # append to model sample
                 surface.surfpts_sample, ignore_index=True)
             orients_samples = orients_samples.append(
                 surface.orients_sample, ignore_index=True)
 
-        self.surfpts_samples.append(surfpts_samples)
-        self.orients_samples.append(orients_samples)
+        self.surfpts_samples.append(surfpts_samples)  # append to list of model
+        self.orients_samples.append(orients_samples)  # samples
 
     def modify(self, n:int=-1):
-        """
+        """Modify all interface and orientation values for modified values
+        sampled from StochasticSurface's.
 
         Args:
-            n (int):
+            n (int): Iteration number. Default: -1.
         """
         self._modify_surfpts(self.surfpts_samples[n])
         self._modifiy_orients(self.orients_samples[n])
 
-    def _modify_surfpts(self, sample):
+    def _modify_surfpts(self, sample:pd.DataFrame):
         "Inplace modification of interface dataframe."
         for col, i in sample.groupby("col").groups.items():
             i_init = sample.loc[i, "i"]
@@ -299,7 +272,7 @@ class StochasticModel:
                 }
             )
 
-    def _modifiy_orients(self, sample):
+    def _modifiy_orients(self, sample:pd.DataFrame):
         """Inplace modification of orientation dataframe."""
         for col, i in sample.groupby("col").groups.items():
             i_init = sample.loc[i, "i"]
@@ -312,7 +285,31 @@ class StochasticModel:
             )
 
     def reset(self):
-        raise NotImplementedError
+        i = self.surface_points_init.index
+        self.geo_model.modify_surface_points(
+            i,
+            **{
+                "X": self.surface_points_init.loc[i, "X"].values,
+                "Y": self.surface_points_init.loc[i, "Y"].values,
+                "Z": self.surface_points_init.loc[i, "Z"].values
+            }
+        )
+
+        i = self.orientations_init.index
+        self.geo_model.modify_orientations(
+            i,
+            **{
+                "X": self.orientations_init.loc[i, "X"].values,
+                "Y": self.orientations_init.loc[i, "Y"].values,
+                "Z": self.orientations_init.loc[i, "Z"].values,
+                "G_x": self.orientations_init.loc[i, "G_x"].values,
+                "G_y": self.orientations_init.loc[i, "G_y"].values,
+                "dip": self.orientations_init.loc[i, "dip"].values,
+                "G_z": self.orientations_init.loc[i, "G_z"].values,
+                "azimuth": self.orientations_init.loc[i, "azimuth"].values,
+                "polarity": self.orientations_init.loc[i, "polarity"].values,
+            }
+        )
 
 
 
