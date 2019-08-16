@@ -261,6 +261,7 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
 
     if debug is True or set_solutions is False:
         return sol
+
     elif set_solutions is True:
         if model.grid.active_grids[0] is np.True_:
             model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh)

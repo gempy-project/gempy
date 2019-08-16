@@ -1054,7 +1054,7 @@ class Surfaces(object):
 
         """
         values_array = np.atleast_2d(values_array)
-        properties_names = np.asarray(properties_names)
+        properties_names = np.atleast_1d(properties_names)
         if properties_names.shape[0] != values_array.shape[0]:
             for i in range(values_array.shape[0]):
                 properties_names = np.append(properties_names, 'value_' + str(i))

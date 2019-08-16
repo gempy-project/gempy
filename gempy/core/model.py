@@ -435,6 +435,7 @@ class DataMutation(object):
     @setdoc(Surfaces.add_surfaces_values.__doc__, indent=False)
     def add_surface_values(self,  values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
         self.surfaces.add_surfaces_values(values_array, properties_names)
+        self.update_structure(update_theano='matrices')
         return self.surfaces
 
     @setdoc(Surfaces.delete_surface_values.__doc__, indent=False)
