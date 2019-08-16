@@ -343,7 +343,6 @@ class PlotData2D(object):
             patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
-
         plt.xlabel(x)
         plt.ylabel(y)
         return plt.gcf()
@@ -614,7 +613,7 @@ class PlotSolution:
             self.plot_data(direction='z')
         else:
             fig, ax = plt.subplots(figsize=(6, 6))
-        
+
         im = plt.imshow(geomap, origin='lower', extent=self.model.grid.topography.extent, cmap=self._cmap,
                         norm=self._norm)
         if contour_lines == True and show_data == False:
