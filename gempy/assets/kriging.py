@@ -47,7 +47,7 @@ class kriging_model(object):
                                                        (either n_closest, range or all)
         '''
         #set model from a gempy solution
-        # TODO: Check if I actually need all this or if its easier to just get grif and lith of the solution
+        # TODO: Check if I actually need all this or if its easier to just get grid and lith of the solution
         self.sol = model
 
         # set kriging surfaces, basically in which lithologies to do all this, default is everything
@@ -341,7 +341,7 @@ class kriging_model(object):
         d = {'X': self.krig_grid[:, 0], 'Y': self.krig_grid[:, 1], 'Z': self.krig_grid[:, 2],
              'est_value': self.kriging_result_vals, 'est_variance': self.kriging_result_vars}
 
-        self.results_sim_df = pd.DataFrame(data=d)
+        self.results_df = pd.DataFrame(data=d)
 
     def create_gaussian_field(self):
         '''
