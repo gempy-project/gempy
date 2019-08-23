@@ -1054,7 +1054,7 @@ class Surfaces(object):
 
         """
         values_array = np.atleast_2d(values_array)
-        properties_names = np.asarray(properties_names)
+        properties_names = np.atleast_1d(properties_names)
         if properties_names.shape[0] != values_array.shape[0]:
             for i in range(values_array.shape[0]):
                 properties_names = np.append(properties_names, 'value_' + str(i))
@@ -1157,6 +1157,8 @@ class GeometricData(object):
         # series
         self.df['series'] = 'Default series'
         self.df['series'] = self.df['series'].astype('category', copy=True)
+        #self.df['order_series'] = self.df['order_series'].astype('category', copy=True)
+
         self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
 
         # id
@@ -1174,7 +1176,6 @@ class GeometricData(object):
             kwargs['sep'] = ','
 
         table = pn.read_csv(file_path, **kwargs)
-
         return table
 
     def sort_table(self):
@@ -1234,7 +1235,15 @@ class GeometricData(object):
             idx = self.df.index
 
         idx = np.atleast_1d(idx)
-        self.df.loc[idx, attribute] = self.df['series'].map(series.df[attribute])
+        if attribute in ['id', 'order_series']:
+            self.df.loc[idx, attribute] = self.df['series'].map(series.df[attribute]).astype(int)
+
+        else:
+            self.df.loc[idx, attribute] = self.df['series'].map(series.df[attribute])
+
+        if type(self.df['order_series'].dtype) is pn.CategoricalDtype:
+
+            self.df['order_series'].cat.remove_unused_categories(inplace=True)
         return self
 
     @setdoc_pro(Surfaces.__doc__)
@@ -1259,8 +1268,13 @@ class GeometricData(object):
             if surfaces.df.loc[~surfaces.df['isBasement']]['series'].isna().sum() != 0:
                 raise AttributeError('Surfaces does not have the correspondent series assigned. See'
                                      'Surfaces.map_series_from_series.')
+            self.df.loc[idx, attribute] = self.df.loc[idx, 'surface'].map(surfaces.df.set_index('surface')[attribute])
 
-        self.df.loc[idx, attribute] = self.df.loc[idx, 'surface'].map(surfaces.df.set_index('surface')[attribute])
+        elif attribute in ['id', 'order_series']:
+            self.df.loc[idx, attribute] = (self.df.loc[idx, 'surface'].map(surfaces.df.set_index('surface')[attribute])).astype(int)
+        else:
+
+            self.df.loc[idx, attribute] = self.df.loc[idx, 'surface'].map(surfaces.df.set_index('surface')[attribute])
 
     # def map_data_from_faults(self, faults, idx=None):
     #     """

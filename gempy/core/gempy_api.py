@@ -259,6 +259,7 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
 
     if debug is True or set_solutions is False:
         return sol
+
     elif set_solutions is True:
         if model.grid.active_grids[0] is np.True_:
             model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh)
@@ -401,6 +402,8 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
         path_i: Path to the data bases of surface_points. Default os.getcwd(),
         path_o: Path to the data bases of orientations. Default os.getcwd()
+        surface_points_df: A df object directly
+        orientations_df:
 
     Returns:
         :class:`gempy.data_management.InputData`
@@ -417,6 +420,9 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
     if 'surface_points_df' in kwargs:
         geo_model.set_surface_points(kwargs['surface_points_df'], **kwargs)
+
+    if 'orientations_df' in kwargs:
+        geo_model.set_orientations(kwargs['orientations_df'], **kwargs)
 
     return geo_model
 # endregion

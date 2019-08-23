@@ -47,7 +47,7 @@ RUN wget --quiet https://github.com/krallin/tini/releases/download/v0.9.0/tini &
 ENV CONDA_DIR /opt/conda
 ENV PATH $CONDA_DIR/bin:$PATH
 ENV SHELL /bin/bash
-ENV NB_USER jovyan
+ENV NB_USER gempy
 ENV NB_UID 1000
 #ENV LC_ALL en_US.UTF-8
 #ENV LANG en_US.UTF-8
@@ -56,7 +56,7 @@ ENV NB_UID 1000
 # Create jovyan user with UID=1000 and in the 'users' group
 RUN useradd -m -s /bin/bash -N -u $NB_UID $NB_USER && \
     mkdir -p /opt/conda && \
-    chown jovyan /opt/conda
+    chown gempy /opt/conda
 
 USER gempy
 

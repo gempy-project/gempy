@@ -93,7 +93,7 @@ class vtkVisualization(object):
         self.ren_name = ren_name
         # Number of renders
         self.n_ren = 4
-        self.id = geo_data.surface_points.df['id'].unique().squeeze()
+        self.id = geo_data.surface_points.df['id'].unique()
         self.surface_name = geo_data.surface_points.df['surface'].unique()
 
         # Extents
@@ -875,13 +875,11 @@ class vtkVisualization(object):
         # Modify Pandas DataFrame
         # update the gradient vector components and its location
         self.geo_model.modify_orientations(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
-                                           G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2],
-                                           recalculate_orientations=True)
+                                           G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
         # update the dip and azimuth values according to the new gradient
-        self.geo_model.calculate_orientations()
+        # self.geo_model.calculate_orientations()
 
     def planesCallback_move_changes(self, indices):
-        print(indices)
         df_changes = self.geo_model.orientations.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'id']]
         for index, new_values_df in df_changes.iterrows():
             new_center = new_values_df[['X', 'Y', 'Z']].values

@@ -249,7 +249,7 @@ class Solution(object):
                 try:
                     v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
 
-                except AttributeError as e:
+                except TypeError as e:
                     warnings.warn('Attribute error. Using non masked marching cubes' + str(e))
                     v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array,
                                                                         classic=True, **kwargs)
