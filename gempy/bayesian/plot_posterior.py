@@ -142,7 +142,7 @@ def plot_joyplot(trace_mean: pn.Series, trace_std: Union[float, pn.Series], trac
                  cmap=my_cmap_full, **kwargs):
 
     hex_c = kwargs.get('hex_c', None)
-    n_traces = kwargs.get('n_traces', 51)
+    n_traces = kwargs.get('n_traces', 21)
     thinning = kwargs.get('thinning', 1)* -1
     samples_size = kwargs.get('samples_size', 100)
 
@@ -178,22 +178,42 @@ def plot_joyplot(trace_mean: pn.Series, trace_std: Union[float, pn.Series], trac
     else:
         hex_c = pal.as_hex()[4]
 
-    iteration = [int(y) if int(y) % 10 == 0 else None for y in df.columns]
-    fig, axes = joypy.joyplot(df, bw_method=1, overlap=2, labels=iteration,  # ylabels=False,
+
+    iteration_label = [int(y) if int(y) % 10 == 0 else None for y in df.columns]
+    fig, axes = joypy.joyplot(df, bw_method=1, overlap=2, labels=iteration_label,
+                              yrot=0,# ylabels=False,
+                            #  xlabels='Thickness Obs',
                               title='Likelihood inference',
-                              range_style='own',
+                              #range_style='own',
+                              ylabels='foo',
                               color=hex_c,
                               grid='both',
                               fade=False,
                               linewidth=.1, alpha=1);
     n_axes = len(axes[:-1])
-    axes[int(n_axes/2)].axhline(0, 0, 100)
+    print(int(n_axes / 2) > trace_n)
+    if int(n_axes/2) > trace_n:
+
+        axes[-trace_n-2].axhline(0, 0, 100, c='#DA8886', linewidth=3)
+
+    else:
+        print(int(n_axes/2) > trace_n)
+        axes[int(n_axes/2)].axhline(0, 0, 100, c='#DA8886', linewidth=3)
+      #  axes[int(n_axes / 2)].scatter(0, 0, 100, c='#DA8886', linewidth=3)
 
     if obs is not None:
-        axes[-2].scatter(obs, np.zeros_like(obs), s=500, c='#DA8886')
-        plt.vlines(obs, -50000, 5, linewidth=5, linestyles='solid', color='#DA8886', alpha=.5)
+        axes[-1].scatter(obs, np.zeros_like(obs), marker='v', s=100, c='#DA8886')
+        axes[-2].scatter(120, np.zeros_like(obs)-.002, marker='^', s=300, c='#DA8886')
+        axes[-1].axvline(obs, 0, 100, c='#DA8886', linestyle='-.')
+
+ #   for a in axes:
+ #       a.set_xlim([0, 250])
+ #       axes[0].axvline(100, 0, 100, c='#DA8886')
+#        plt.vlines(obs, -50000, 5, linewidth=5, linestyles='solid', color='#DA8886', alpha=.5)
+    plt.xlabel('Thickness Obs')
 
     plt.show()
+    return fig, axes
 
 
 def plot_posterior(trace, theta1_loc, theta1_scale, theta2_loc, theta2_scale, iteration,
@@ -223,16 +243,23 @@ def plot_posterior(trace, theta1_loc, theta1_scale, theta2_loc, theta2_scale, it
 
     l_1 = trace_n - np.round(n_traces / 2)
     l_0 = trace_n + np.round(n_traces / 2)
-    like = stats.norm.pdf(120, loc=trace[model_mean_name].loc[l_0:l_1:thinning], scale=20)
-    cNorm = colors.Normalize(like.min(), like.max())
+
+    like_range = stats.norm.pdf(obs, loc=trace[model_mean_name].loc[l_0:l_1:thinning], scale=20)
+    like_point = stats.norm.pdf(obs, loc=trace[model_mean_name].loc[trace_n], scale=20)
+
+    cNorm = colors.Normalize(like_range.min(), like_range.max())
     # Continuous cmap
     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=my_cmap_full)
-    hex_c = [colors.to_hex(i) for i in scalarMap.to_rgba(like)]
-    mid_hex = hex_c[int(len(hex_c)/2)]
+    hex_c = [colors.to_hex(i) for i in scalarMap.to_rgba(like_range)]
+    hex_point = [colors.to_hex(i) for i in scalarMap.to_rgba(np.atleast_1d(like_point))]
+
+    #hex_val = np.min([int(len(hex_c)/2+1), iteration])
+    #mid_hex = hex_c[-hex_val-1]
     # ---------------------
 
-    plot_normal_likelihood(model_mean, model_std, obs, x_range, fig=fig, subplot=122, color_fill=mid_hex)
-    plot_joyplot(trace[model_mean_name], trace_std, iteration, obs=obs, cmap=my_cmap_full, hex_c=hex_c, **kwargs)
+    plot_normal_likelihood(model_mean, model_std, obs, x_range, fig=fig, subplot=122, color_fill=hex_point)
+    plot_joyplot(trace[model_mean_name], trace_std, iteration, obs=obs, cmap=my_cmap_full,
+                 hex_c=hex_c, **kwargs)
     plt.tight_layout()
 
 
