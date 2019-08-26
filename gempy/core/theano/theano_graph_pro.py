@@ -26,6 +26,8 @@ Returns:
 
 import theano
 from theano import tensor as T
+from theano import sparse
+
 import theano.ifelse as tif
 import numpy as np
 import sys
@@ -38,10 +40,7 @@ try:
 except ImportError:
     SKCUDA_IMPORT = False
 
-
-
-
-theano.config.openmp_elemwise_minsize = 10000
+theano.config.openmp_elemwise_minsize = 50000
 theano.config.openmp = True
 
 theano.config.optimizer = 'fast_compile'
@@ -54,6 +53,67 @@ theano.config.profile_memory = False
 theano.config.scan.debug = False
 theano.config.profile = False
 
+def as_sparse_variable(x, name=None):
+    """
+    Wrapper around SparseVariable constructor to construct
+    a Variable with a sparse matrix with the same dtype and
+    format.
+    Parameters
+    ----------
+    x
+        A sparse matrix.
+    Returns
+    -------
+    object
+        SparseVariable version of `x`.
+    """
+
+    # TODO
+    # Verify that sp is sufficiently sparse, and raise a
+    # warning if it is not
+
+    if isinstance(x, theano.gof.Apply):
+        if len(x.outputs) != 1:
+            raise ValueError("It is ambiguous which output of a "
+                             "multi-output Op has to be fetched.", x)
+        else:
+            x = x.outputs[0]
+    if isinstance(x, theano.gof.Variable):
+        if not isinstance(x.type, theano.sparse.type.SparseType):
+            raise TypeError("Variable type field must be a SparseType.", x,
+                            x.type)
+        return x
+    try:
+        return theano.constant(x, name=name)
+    except TypeError:
+        raise TypeError("Cannot convert %s to SparseType" % x, type(x))
+
+as_sparse = as_sparse_variable
+
+class SolveSparse(T.Op):
+    #itypes = [T.dvector]
+    #otypes = [T.dvector]
+
+    def make_node(self, x, y):
+        x, y = as_sparse_variable(x), as_sparse_variable(y)
+        assert x.format in ["csr", "csc"]
+        assert y.format in ["csr", "csc"]
+        out_dtype = theano.scalar.upcast(x.type.dtype, y.type.dtype)
+        return theano.gof.Apply(self,
+                         [x, y], [T.tensor(out_dtype, broadcastable=(False,))])
+                      #   [theano.sparse.type.SparseType(dtype=out_dtype,
+                      #               format=x.type.format)()])
+
+    def perform(self, node, inputs, outputs):
+        from scipy.sparse.linalg import spsolve
+
+        (C, b) = inputs
+        b.ndim =1
+        weights = spsolve(C, b)
+        outputs[0][0] = np.array(weights)
+
+
+solv = SolveSparse()
 
 class TheanoGraphPro(object):
     def __init__(self, optimizer='fast_compile', verbose=None, dtype='float32', **kwargs):
@@ -80,7 +140,7 @@ class TheanoGraphPro(object):
 
         # Trade speed for memory this will consume more memory
         self.max_speed = kwargs.get('max_speed', 1)
-        self.dot_version = False
+        self.sparse_version = kwargs.get('sparse_version', False)
         self.gradient = kwargs.get('gradient', False)
         self.device = theano.config.device
         theano.config.floatX = dtype
@@ -90,6 +150,7 @@ class TheanoGraphPro(object):
         # KRIGING
         # -------
         self.a_T = theano.shared(np.cast[dtype](-1.), "Range")
+
         self.c_o_T = theano.shared(np.cast[dtype](-1.), 'Covariance at 0')
 
         self.n_universal_eq_T = theano.shared(np.zeros(5, dtype='int32'), "Grade of the universal drift")
@@ -854,9 +915,16 @@ class TheanoGraphPro(object):
         if b is None:
             b = self.b_vector()
             # b = theano.printing.Print('b')(b)
+        if self.sparse_version is True:
+            b2 = T.tile(b, (1, 1)).T
+
+            C_sparse = sparse.csr_from_dense(C_matrix)
+            b_sparse = sparse.csr_from_dense(b2)
+            DK = solv(C_sparse, b_sparse)
+            return DK
 
         # Solving the kriging system
-        if self.device == 'cuda' and SKCUDA_IMPORT is True:
+        elif self.device == 'cuda' and SKCUDA_IMPORT is True:
             import theano.gpuarray.linalg
             b2 = T.tile(b, (1, 1)).T
             DK_parameters = theano.gpuarray.linalg.gpu_solve(C_matrix, b2)
@@ -913,9 +981,6 @@ class TheanoGraphPro(object):
         # TODO IMP: Change the tile by a simple dot op -> The DOT version in gpu is slower
         DK_weights = T.tile(DK_parameters, (grid_shape, 1)).T
 
-        if self.dot_version:
-            DK_weights = DK_parameters
-
         return DK_weights
     # endregion
 
@@ -943,26 +1008,30 @@ class TheanoGraphPro(object):
 
         # Euclidian distances
         sed_dips_SimPoint = self.squared_euclidean_distances(self.dips_position_tiled, grid_val)
-        # Gradient contribution
-        sigma_0_grad = T.sum(
-            (weights[:length_of_CG] *
-             self.gi_reescale *
-             (-hu_SimPoint *
-              (sed_dips_SimPoint < self.a_T) *  # first derivative
-              (- self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_SimPoint / self.a_T ** 3 -
-                               35 / 2 * sed_dips_SimPoint ** 3 / self.a_T ** 5 +
-                               21 / 4 * sed_dips_SimPoint ** 5 / self.a_T ** 7)))),
-            axis=0)
 
-        if self.dot_version:
-            sigma_0_grad = T.dot(
-                weights[:length_of_CG],
-                self.gi_reescale *
+        if self.sparse_version is True:
+            cov_aux = sparse.csr_from_dense(
+                    self.gi_reescale *
                 (-hu_SimPoint *
                  (sed_dips_SimPoint < self.a_T) *  # first derivative
                  (- self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_SimPoint / self.a_T ** 3 -
                                   35 / 2 * sed_dips_SimPoint ** 3 / self.a_T ** 5 +
                                   21 / 4 * sed_dips_SimPoint ** 5 / self.a_T ** 7))))
+
+            sliced_weights = weights[0:length_of_CG]#T.stack([weights[0, 0:length_of_CG]])#weights[0:length_of_CG]
+            sigma_0_grad = sparse.dot(sliced_weights, cov_aux)
+
+        else:
+            # Gradient contribution
+            sigma_0_grad = T.sum(
+                (weights[:length_of_CG] *
+                 self.gi_reescale *
+                 (-hu_SimPoint *
+                  (sed_dips_SimPoint < self.a_T) *  # first derivative
+                  (- self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_SimPoint / self.a_T ** 3 -
+                                   35 / 2 * sed_dips_SimPoint ** 3 / self.a_T ** 5 +
+                                   21 / 4 * sed_dips_SimPoint ** 5 / self.a_T ** 7)))),
+                axis=0)
 
         # Add name to the theano node
         sigma_0_grad.name = 'Contribution of the foliations to the potential field at every point of the grid'
@@ -989,25 +1058,8 @@ class TheanoGraphPro(object):
         sed_rest_SimPoint = self.squared_euclidean_distances(self.rest_layer_points, grid_val)
         sed_ref_SimPoint = self.squared_euclidean_distances(self.ref_layer_points, grid_val)
 
-        # Interface contribution
-        sigma_0_interf = (T.sum(
-            -weights[length_of_CG:length_of_CG + length_of_CGI, :] *
-            (self.c_o_T * self.i_reescale * (
-                    (sed_rest_SimPoint < self.a_T) *  # SimPoint - Rest Covariances Matrix
-                    (1 - 7 * (sed_rest_SimPoint / self.a_T) ** 2 +
-                     35 / 4 * (sed_rest_SimPoint / self.a_T) ** 3 -
-                     7 / 2 * (sed_rest_SimPoint / self.a_T) ** 5 +
-                     3 / 4 * (sed_rest_SimPoint / self.a_T) ** 7) -
-                    ((sed_ref_SimPoint < self.a_T) *  # SimPoint- Ref
-                     (1 - 7 * (sed_ref_SimPoint / self.a_T) ** 2 +
-                      35 / 4 * (sed_ref_SimPoint / self.a_T) ** 3 -
-                      7 / 2 * (sed_ref_SimPoint / self.a_T) ** 5 +
-                      3 / 4 * (sed_ref_SimPoint / self.a_T) ** 7)))), axis=0))
-
-        if self.dot_version:
-            sigma_0_interf = (
-                T.dot(-weights[length_of_CG:length_of_CG + length_of_CGI],
-                      (self.c_o_T * self.i_reescale * (
+        if self.sparse_version is True:
+            cov_aux =  sparse.csr_from_dense(self.c_o_T * self.i_reescale * (
                               (sed_rest_SimPoint < self.a_T) *  # SimPoint - Rest Covariances Matrix
                               (1 - 7 * (sed_rest_SimPoint / self.a_T) ** 2 +
                                35 / 4 * (sed_rest_SimPoint / self.a_T) ** 3 -
@@ -1017,8 +1069,27 @@ class TheanoGraphPro(object):
                                (1 - 7 * (sed_ref_SimPoint / self.a_T) ** 2 +
                                 35 / 4 * (sed_ref_SimPoint / self.a_T) ** 3 -
                                 7 / 2 * (sed_ref_SimPoint / self.a_T) ** 5 +
-                                3 / 4 * (sed_ref_SimPoint / self.a_T) ** 7))))))
+                                3 / 4 * (sed_ref_SimPoint / self.a_T) ** 7))))
 
+            weights_sliced = -weights[length_of_CG:length_of_CG + length_of_CGI]
+
+            sigma_0_interf = sparse.dot(weights_sliced, cov_aux)
+
+        else:
+            # Interface contribution
+            sigma_0_interf = (T.sum(
+                -weights[length_of_CG:length_of_CG + length_of_CGI, :] *
+                (self.c_o_T * self.i_reescale * (
+                        (sed_rest_SimPoint < self.a_T) *  # SimPoint - Rest Covariances Matrix
+                        (1 - 7 * (sed_rest_SimPoint / self.a_T) ** 2 +
+                         35 / 4 * (sed_rest_SimPoint / self.a_T) ** 3 -
+                         7 / 2 * (sed_rest_SimPoint / self.a_T) ** 5 +
+                         3 / 4 * (sed_rest_SimPoint / self.a_T) ** 7) -
+                        ((sed_ref_SimPoint < self.a_T) *  # SimPoint- Ref
+                         (1 - 7 * (sed_ref_SimPoint / self.a_T) ** 2 +
+                          35 / 4 * (sed_ref_SimPoint / self.a_T) ** 3 -
+                          7 / 2 * (sed_ref_SimPoint / self.a_T) ** 5 +
+                          3 / 4 * (sed_ref_SimPoint / self.a_T) ** 7)))), axis=0))
         # Add name to the theano node
         sigma_0_interf.name = 'Contribution of the surface_points to the potential field at every point of the grid'
 
@@ -1047,19 +1118,19 @@ class TheanoGraphPro(object):
         i_rescale_aux = T.set_subtensor(i_rescale_aux[:3], 1)
         _aux_magic_term = T.tile(i_rescale_aux[:self.n_universal_eq_T_op], (grid_val.shape[0], 1)).T
 
-        # Drif contribution
-        f_0 = (T.sum(
-            weights[
-            length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I] * self.gi_reescale *
-            _aux_magic_term *
-            universal_grid_surface_points_matrix[:self.n_universal_eq_T_op]
-            , axis=0))
-
-        if self.dot_version:
+        if self.sparse_version is True:# self.dot_version:
             f_0 = T.dot(
                 weights[length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I],
-                self.gi_reescale * _aux_magic_term *
-                universal_grid_surface_points_matrix[:self.n_universal_eq_T_op])
+                (self.gi_reescale * _aux_magic_term *
+                universal_grid_surface_points_matrix[:self.n_universal_eq_T_op]))
+        else:
+            # Drif contribution
+            f_0 = (T.sum(
+                weights[
+                length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I] * self.gi_reescale *
+                _aux_magic_term *
+                universal_grid_surface_points_matrix[:self.n_universal_eq_T_op]
+                , axis=0))
 
         if not type(f_0) == int:
             f_0.name = 'Contribution of the universal drift to the potential field at every point of the grid'
@@ -1083,12 +1154,13 @@ class TheanoGraphPro(object):
 
         fault_matrix_selection_non_zero = self.fault_matrix[:, a:b]
 
-        f_1 = T.sum(
-            weights[length_of_CG + length_of_CGI + length_of_U_I:, :] * fault_matrix_selection_non_zero, axis=0)
-
-        if self.dot_version:
+        if self.sparse_version is True: # self.dot_version:
             f_1 = T.dot(
-                weights[length_of_CG + length_of_CGI + length_of_U_I:], fault_matrix_selection_non_zero)
+                weights[length_of_CG + length_of_CGI + length_of_U_I:], (
+                    fault_matrix_selection_non_zero))
+        else:
+            f_1 = T.sum(
+                weights[length_of_CG + length_of_CGI + length_of_U_I:, :] * fault_matrix_selection_non_zero, axis=0)
 
         # Add name to the theano node
         f_1.name = 'Faults contribution'
@@ -1100,13 +1172,27 @@ class TheanoGraphPro(object):
 
     def scalar_field_loop(self, a, b, Z_x, grid_val, weights):
 
-        sigma_0_grad = self.contribution_gradient_interface(grid_val[a:b], weights[:, a:b])
-        sigma_0_interf = self.contribution_interface(grid_val[a:b], weights[:, a:b])
-        f_0 = self.contribution_universal_drift(grid_val[a:b], weights[:, a:b])
-        f_1 = self.contribution_faults(weights[:, a:b], a, b)
+        if self.sparse_version is True:
+            sigma_0_grad = self.contribution_gradient_interface(grid_val[a:b], weights)
+            sigma_0_interf = self.contribution_interface(grid_val[a:b], weights)
+            f_0 = self.contribution_universal_drift(grid_val[a:b], weights)
+            f_1 = self.contribution_faults(weights, a, b)
 
-        # Add an arbitrary number at the potential field to get unique values for each of them
-        partial_Z_x = (sigma_0_grad + sigma_0_interf + f_0 + f_1)
+            # Add an arbitrary number at the potential field to get unique values for each of them
+            partial_Z_x = (sigma_0_grad + sigma_0_interf + f_0 + f_1)
+
+          #  partial_Z_x = sparse.dense_from_sparse(partial_Z_x)[0]
+           # partial_Z_x = partial_Z_x[0]
+
+        else:
+            sigma_0_grad = self.contribution_gradient_interface(grid_val[a:b], weights[:, a:b])
+            sigma_0_interf = self.contribution_interface(grid_val[a:b], weights[:, a:b])
+            f_0 = self.contribution_universal_drift(grid_val[a:b], weights[:, a:b])
+            f_1 = self.contribution_faults(weights[:, a:b], a, b)
+
+            # Add an arbitrary number at the potential field to get unique values for each of them
+            partial_Z_x = (sigma_0_grad + sigma_0_interf + f_0 + f_1)
+
         Z_x = T.set_subtensor(Z_x[a:b], partial_Z_x)
 
         return Z_x
@@ -1118,7 +1204,7 @@ class TheanoGraphPro(object):
             theano.tensor.vector: Potential fields at all points
 
         """
-        tiled_weights = self.extend_dual_kriging(weights, grid_val.shape[0])
+        #
 
         grid_shape = T.stack([grid_val.shape[0]], axis=0)
         Z_x_init = T.zeros(grid_shape)
@@ -1133,7 +1219,12 @@ class TheanoGraphPro(object):
             slices = theano.printing.Print('slices')(slices)
 
         # Check if we loop the grid or not
-        if self.max_speed < 2:
+        if self.sparse_version is True:
+            self.dot_version = True
+            Z_x = self.scalar_field_loop(0, 100000000, Z_x_init, grid_val, weights)
+
+        elif self.max_speed < 2:
+            tiled_weights = self.extend_dual_kriging(weights, grid_val.shape[0])
             Z_x_loop, updates3 = theano.scan(
                 fn=self.scalar_field_loop,
                 outputs_info=[Z_x_init],
@@ -1145,6 +1236,7 @@ class TheanoGraphPro(object):
 
             Z_x = Z_x_loop[-1][-1]
         else:
+            tiled_weights = self.extend_dual_kriging(weights, grid_val.shape[0])
             Z_x = self.scalar_field_loop(0, 100000000, Z_x_init, grid_val, tiled_weights)
 
         Z_x.name = 'Value of the potential field at every point'
@@ -1477,15 +1569,23 @@ class TheanoGraphPro(object):
 
         b = self.b_vector(self.dip_angles, self.azimuth, self.polarity)
 
-        weights = theano.ifelse.ifelse(compute_weight_ctr,
-                                       self.solve_kriging(b),
-                                       weights_vector[len_w_0:len_w_1])
+        if self.sparse_version is True:
+            weights = self.solve_kriging(b)
+            Z_x = self.compute_scalar_field(weights, self.grid_val_T)
+            weights = weights[0]
+
+        else:
+            weights = theano.ifelse.ifelse(compute_weight_ctr,
+                                           self.solve_kriging(b),
+                                           weights_vector[len_w_0:len_w_1])
+
+            Z_x = tif.ifelse(compute_scalar_ctr, self.compute_scalar_field(weights, self.grid_val_T),
+                             scalar_field_matrix[n_series])
 
         if 'weights' in self.verbose:
             weights = theano.printing.Print('weights foo')(weights)
 
-        Z_x = tif.ifelse(compute_scalar_ctr, self.compute_scalar_field(weights, self.grid_val_T),
-                         scalar_field_matrix[n_series])
+
 
         scalar_field_at_surface_points = self.get_scalar_field_at_surface_points(Z_x, self.npf_op)
         #

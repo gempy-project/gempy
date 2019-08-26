@@ -131,7 +131,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
 @setdoc([InterpolatorModel.__doc__])
 @setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
 def set_interpolation_data(geo_model: Model, compile_theano: bool = True,
-                           theano_optimizer=None, verbose: list = None, grid = 'shared',
+                           theano_optimizer=None, verbose: list = None, grid='shared',
                            **kwargs):
     """
     Method to create a graph and compile the theano code to compute the interpolation.
@@ -420,7 +420,8 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
     if 'surface_points_df' in kwargs:
         geo_model.set_surface_points(kwargs['surface_points_df'], **kwargs)
-
+        # if we set the surfaces names with surfaces they cannot be set again on orientations or pandas will complain.
+        kwargs['update_surfaces'] = False
     if 'orientations_df' in kwargs:
         geo_model.set_orientations(kwargs['orientations_df'], **kwargs)
 

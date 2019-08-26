@@ -332,7 +332,7 @@ class PlotData2D(object):
                         aspect=aspect,
                         **imshow_kwargs)
 
-        if extent_val[3] < 0:           # correct vertical orientation of plot
+        if extent_val[3] < extent_val[2]: # correct vertical orientation of plot
             plt.gca().invert_yaxis()    # if maximum vertical extent negative
 
         if show_faults:
@@ -364,7 +364,7 @@ class PlotData2D(object):
         return plt.gcf()
 
     def plot_scalar_field(self, solution, cell_number, series=0, N=20,
-                          direction="y", plot_data=True, *args, **kwargs):
+                          direction="y",  block=None, plot_data=True, *args, **kwargs):
         """
         Plot a scalar field in a given direction.
 

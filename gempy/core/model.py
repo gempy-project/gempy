@@ -566,12 +566,12 @@ class DataMutation(object):
         dip_name = kwargs.get('dip_name', 'dip')
         polarity_name = kwargs.get('polarity_name', 'polarity')
         surface_name = kwargs.get('surface_name', "formation")
-        update_surfaces = kwargs.get('update_surfaces', True)
+        update_surfaces = kwargs.get('update_surfaces', False)
 
         if update_surfaces is True:
             self.add_surfaces(table[surface_name].unique())
 
-        c = np.array(self._columns_o_1)
+        c = np.array(self.orientations._columns_o_1)
         orientations_read = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
         self.orientations.set_orientations(
             coord=orientations_read[[coord_x_name, coord_y_name, coord_z_name]],

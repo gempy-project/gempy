@@ -244,7 +244,7 @@ def plot_section(model, cell_number=13, block=None, direction="y", interpolation
 
 
 def plot_scalar_field(model, cell_number, N=20,
-                      direction="y", plot_data=True, series=0, *args, **kwargs):
+                      direction="y", block=None, show_data=True, series=0, *args, **kwargs):
     """
     Plot a potential field in a given direction.
 
@@ -260,8 +260,13 @@ def plot_scalar_field(model, cell_number, N=20,
         None
     """
     plot = PlotData2D(model)
-    plot.plot_scalar_field(model.solutions, cell_number, N=N,
-                           direction=direction,  plot_data=plot_data, series=series,
+    if block is not None:
+        block = block
+    else:
+        block = model.solutions
+
+    plot.plot_scalar_field(block, cell_number, N=N,
+                           direction=direction, plot_data=show_data, series=series,
                            *args, **kwargs)
 
 
