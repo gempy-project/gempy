@@ -151,6 +151,7 @@ class TheanoGraphPro(object):
         # -------
         self.a_T = theano.shared(np.cast[dtype](-1.), "Range")
 
+        self.a_T_surface =  self.a_T #theano.shared(np.cast[dtype](0.1), "Range")
         self.c_o_T = theano.shared(np.cast[dtype](-1.), 'Covariance at 0')
 
         self.n_universal_eq_T = theano.shared(np.zeros(5, dtype='int32'), "Grade of the universal drift")
@@ -511,26 +512,26 @@ class TheanoGraphPro(object):
 
         # Covariance matrix for surface_points
         C_I = (self.c_o_T * self.i_reescale * (
-                (sed_rest_rest < self.a_T) *  # Rest - Rest Covariances Matrix
-                (1 - 7 * (sed_rest_rest / self.a_T) ** 2 +
-                 35 / 4 * (sed_rest_rest / self.a_T) ** 3 -
-                 7 / 2 * (sed_rest_rest / self.a_T) ** 5 +
-                 3 / 4 * (sed_rest_rest / self.a_T) ** 7) -
-                ((sed_ref_rest < self.a_T) *  # Reference - Rest
-                 (1 - 7 * (sed_ref_rest / self.a_T) ** 2 +
-                  35 / 4 * (sed_ref_rest / self.a_T) ** 3 -
-                  7 / 2 * (sed_ref_rest / self.a_T) ** 5 +
-                  3 / 4 * (sed_ref_rest / self.a_T) ** 7)) -
-                ((sed_rest_ref < self.a_T) *  # Rest - Reference
-                 (1 - 7 * (sed_rest_ref / self.a_T) ** 2 +
-                  35 / 4 * (sed_rest_ref / self.a_T) ** 3 -
-                  7 / 2 * (sed_rest_ref / self.a_T) ** 5 +
-                  3 / 4 * (sed_rest_ref / self.a_T) ** 7)) +
-                ((sed_ref_ref < self.a_T) *  # Reference - References
-                 (1 - 7 * (sed_ref_ref / self.a_T) ** 2 +
-                  35 / 4 * (sed_ref_ref / self.a_T) ** 3 -
-                  7 / 2 * (sed_ref_ref / self.a_T) ** 5 +
-                  3 / 4 * (sed_ref_ref / self.a_T) ** 7))))
+                (sed_rest_rest < self.a_T_surface) *  # Rest - Rest Covariances Matrix
+                (1 - 7 * (sed_rest_rest / self.a_T_surface) ** 2 +
+                 35 / 4 * (sed_rest_rest / self.a_T_surface) ** 3 -
+                 7 / 2 * (sed_rest_rest / self.a_T_surface) ** 5 +
+                 3 / 4 * (sed_rest_rest / self.a_T_surface) ** 7) -
+                ((sed_ref_rest < self.a_T_surface) *  # Reference - Rest
+                 (1 - 7 * (sed_ref_rest / self.a_T_surface) ** 2 +
+                  35 / 4 * (sed_ref_rest / self.a_T_surface) ** 3 -
+                  7 / 2 * (sed_ref_rest / self.a_T_surface) ** 5 +
+                  3 / 4 * (sed_ref_rest / self.a_T_surface) ** 7)) -
+                ((sed_rest_ref < self.a_T_surface) *  # Rest - Reference
+                 (1 - 7 * (sed_rest_ref / self.a_T_surface) ** 2 +
+                  35 / 4 * (sed_rest_ref / self.a_T_surface) ** 3 -
+                  7 / 2 * (sed_rest_ref / self.a_T_surface) ** 5 +
+                  3 / 4 * (sed_rest_ref / self.a_T_surface) ** 7)) +
+                ((sed_ref_ref < self.a_T_surface) *  # Reference - References
+                 (1 - 7 * (sed_ref_ref / self.a_T_surface) ** 2 +
+                  35 / 4 * (sed_ref_ref / self.a_T_surface) ** 3 -
+                  7 / 2 * (sed_ref_ref / self.a_T_surface) ** 5 +
+                  3 / 4 * (sed_ref_ref / self.a_T_surface) ** 7))))
 
         # self.nugget_effect_scalar_T_op = theano.printing.Print('nug scalar')(self.nugget_effect_scalar_T_op)
 
@@ -662,15 +663,15 @@ class TheanoGraphPro(object):
         # Cross-Covariance gradients-surface_points
         C_GI = self.gi_reescale * (
                 (hu_rest *
-                 (sed_dips_rest < self.a_T) *  # first derivative
-                 (- self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_rest / self.a_T ** 3 -
-                                  35 / 2 * sed_dips_rest ** 3 / self.a_T ** 5 +
-                                  21 / 4 * sed_dips_rest ** 5 / self.a_T ** 7))) -
+                 (sed_dips_rest < self.a_T_surface) *  # first derivative
+                 (- self.c_o_T * ((-14 / self.a_T_surface ** 2) + 105 / 4 * sed_dips_rest / self.a_T_surface ** 3 -
+                                  35 / 2 * sed_dips_rest ** 3 / self.a_T_surface ** 5 +
+                                  21 / 4 * sed_dips_rest ** 5 / self.a_T_surface ** 7))) -
                 (hu_ref *
-                 (sed_dips_ref < self.a_T) *  # first derivative
-                 (- self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_ref / self.a_T ** 3 -
-                                  35 / 2 * sed_dips_ref ** 3 / self.a_T ** 5 +
-                                  21 / 4 * sed_dips_ref ** 5 / self.a_T ** 7)))
+                 (sed_dips_ref < self.a_T_surface) *  # first derivative
+                 (- self.c_o_T * ((-14 / self.a_T_surface ** 2) + 105 / 4 * sed_dips_ref / self.a_T_surface ** 3 -
+                                  35 / 2 * sed_dips_ref ** 3 / self.a_T_surface ** 5 +
+                                  21 / 4 * sed_dips_ref ** 5 / self.a_T_surface ** 7)))
         ).T
 
         # Add name to the theano node
@@ -1013,10 +1014,10 @@ class TheanoGraphPro(object):
             cov_aux = sparse.csr_from_dense(
                     self.gi_reescale *
                 (-hu_SimPoint *
-                 (sed_dips_SimPoint < self.a_T) *  # first derivative
-                 (- self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_SimPoint / self.a_T ** 3 -
-                                  35 / 2 * sed_dips_SimPoint ** 3 / self.a_T ** 5 +
-                                  21 / 4 * sed_dips_SimPoint ** 5 / self.a_T ** 7))))
+                 (sed_dips_SimPoint < self.a_T_surface) *  # first derivative
+                 (- self.c_o_T * ((-14 / self.a_T_surface ** 2) + 105 / 4 * sed_dips_SimPoint / self.a_T_surface ** 3 -
+                                  35 / 2 * sed_dips_SimPoint ** 3 / self.a_T_surface ** 5 +
+                                  21 / 4 * sed_dips_SimPoint ** 5 / self.a_T_surface ** 7))))
 
             sliced_weights = weights[0:length_of_CG]#T.stack([weights[0, 0:length_of_CG]])#weights[0:length_of_CG]
             sigma_0_grad = sparse.dot(sliced_weights, cov_aux)
@@ -1027,10 +1028,10 @@ class TheanoGraphPro(object):
                 (weights[:length_of_CG] *
                  self.gi_reescale *
                  (-hu_SimPoint *
-                  (sed_dips_SimPoint < self.a_T) *  # first derivative
-                  (- self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_SimPoint / self.a_T ** 3 -
-                                   35 / 2 * sed_dips_SimPoint ** 3 / self.a_T ** 5 +
-                                   21 / 4 * sed_dips_SimPoint ** 5 / self.a_T ** 7)))),
+                  (sed_dips_SimPoint < self.a_T_surface) *  # first derivative
+                  (- self.c_o_T * ((-14 / self.a_T_surface ** 2) + 105 / 4 * sed_dips_SimPoint / self.a_T_surface ** 3 -
+                                   35 / 2 * sed_dips_SimPoint ** 3 / self.a_T_surface ** 5 +
+                                   21 / 4 * sed_dips_SimPoint ** 5 / self.a_T_surface ** 7)))),
                 axis=0)
 
         # Add name to the theano node
@@ -1060,16 +1061,16 @@ class TheanoGraphPro(object):
 
         if self.sparse_version is True:
             cov_aux =  sparse.csr_from_dense(self.c_o_T * self.i_reescale * (
-                              (sed_rest_SimPoint < self.a_T) *  # SimPoint - Rest Covariances Matrix
-                              (1 - 7 * (sed_rest_SimPoint / self.a_T) ** 2 +
-                               35 / 4 * (sed_rest_SimPoint / self.a_T) ** 3 -
-                               7 / 2 * (sed_rest_SimPoint / self.a_T) ** 5 +
-                               3 / 4 * (sed_rest_SimPoint / self.a_T) ** 7) -
-                              ((sed_ref_SimPoint < self.a_T) *  # SimPoint- Ref
-                               (1 - 7 * (sed_ref_SimPoint / self.a_T) ** 2 +
-                                35 / 4 * (sed_ref_SimPoint / self.a_T) ** 3 -
-                                7 / 2 * (sed_ref_SimPoint / self.a_T) ** 5 +
-                                3 / 4 * (sed_ref_SimPoint / self.a_T) ** 7))))
+                              (sed_rest_SimPoint < self.a_T_surface) *  # SimPoint - Rest Covariances Matrix
+                              (1 - 7 * (sed_rest_SimPoint / self.a_T_surface) ** 2 +
+                               35 / 4 * (sed_rest_SimPoint / self.a_T_surface) ** 3 -
+                               7 / 2 * (sed_rest_SimPoint / self.a_T_surface) ** 5 +
+                               3 / 4 * (sed_rest_SimPoint / self.a_T_surface) ** 7) -
+                              ((sed_ref_SimPoint < self.a_T_surface) *  # SimPoint- Ref
+                               (1 - 7 * (sed_ref_SimPoint / self.a_T_surface) ** 2 +
+                                35 / 4 * (sed_ref_SimPoint / self.a_T_surface) ** 3 -
+                                7 / 2 * (sed_ref_SimPoint / self.a_T_surface) ** 5 +
+                                3 / 4 * (sed_ref_SimPoint / self.a_T_surface) ** 7))))
 
             weights_sliced = -weights[length_of_CG:length_of_CG + length_of_CGI]
 
@@ -1080,16 +1081,16 @@ class TheanoGraphPro(object):
             sigma_0_interf = (T.sum(
                 -weights[length_of_CG:length_of_CG + length_of_CGI, :] *
                 (self.c_o_T * self.i_reescale * (
-                        (sed_rest_SimPoint < self.a_T) *  # SimPoint - Rest Covariances Matrix
-                        (1 - 7 * (sed_rest_SimPoint / self.a_T) ** 2 +
-                         35 / 4 * (sed_rest_SimPoint / self.a_T) ** 3 -
-                         7 / 2 * (sed_rest_SimPoint / self.a_T) ** 5 +
-                         3 / 4 * (sed_rest_SimPoint / self.a_T) ** 7) -
-                        ((sed_ref_SimPoint < self.a_T) *  # SimPoint- Ref
-                         (1 - 7 * (sed_ref_SimPoint / self.a_T) ** 2 +
-                          35 / 4 * (sed_ref_SimPoint / self.a_T) ** 3 -
-                          7 / 2 * (sed_ref_SimPoint / self.a_T) ** 5 +
-                          3 / 4 * (sed_ref_SimPoint / self.a_T) ** 7)))), axis=0))
+                        (sed_rest_SimPoint < self.a_T_surface) *  # SimPoint - Rest Covariances Matrix
+                        (1 - 7 * (sed_rest_SimPoint / self.a_T_surface) ** 2 +
+                         35 / 4 * (sed_rest_SimPoint / self.a_T_surface) ** 3 -
+                         7 / 2 * (sed_rest_SimPoint / self.a_T_surface) ** 5 +
+                         3 / 4 * (sed_rest_SimPoint / self.a_T_surface) ** 7) -
+                        ((sed_ref_SimPoint < self.a_T_surface) *  # SimPoint- Ref
+                         (1 - 7 * (sed_ref_SimPoint / self.a_T_surface) ** 2 +
+                          35 / 4 * (sed_ref_SimPoint / self.a_T_surface) ** 3 -
+                          7 / 2 * (sed_ref_SimPoint / self.a_T_surface) ** 5 +
+                          3 / 4 * (sed_ref_SimPoint / self.a_T_surface) ** 7)))), axis=0))
         # Add name to the theano node
         sigma_0_interf.name = 'Contribution of the surface_points to the potential field at every point of the grid'
 

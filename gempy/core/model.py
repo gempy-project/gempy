@@ -710,7 +710,8 @@ class DataMutation(object):
 
         if is_surface:
             self.update_structure(update_theano='weights')
-
+        if 'smooth' in kwargs:
+            self.interpolator.set_theano_shared_nuggets()
         return self.orientations
     # endregion
 
