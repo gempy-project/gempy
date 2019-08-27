@@ -1,7 +1,7 @@
 import numpy as np
 import pandas as pn
 import scipy.stats as stats
-import joypy
+from .joyplot import joyplot
 
 from typing import Union
 
@@ -180,7 +180,7 @@ def plot_joyplot(trace_mean: pn.Series, trace_std: Union[float, pn.Series], trac
 
 
     iteration_label = [int(y) if int(y) % 10 == 0 else None for y in df.columns]
-    fig, axes = joypy.joyplot(df, bw_method=1, overlap=2, labels=iteration_label,
+    fig, axes = joyplot(df, bw_method=1, overlap=2, labels=iteration_label,
                               yrot=0,# ylabels=False,
                             #  xlabels='Thickness Obs',
                               title='Likelihood inference',
