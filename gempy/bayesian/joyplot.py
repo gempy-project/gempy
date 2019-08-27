@@ -1,3 +1,6 @@
+"""Modified after https://github.com/sbebo/joypy"""
+
+
 import os
 import numpy as np
 from scipy.stats import gaussian_kde
@@ -15,6 +18,7 @@ from matplotlib import pyplot as plt
 from warnings import warn
 
 _DEBUG = False
+
 
 def _x_range(data, extra=0.2):
     """ Compute the x_range, i.e., the values for which the

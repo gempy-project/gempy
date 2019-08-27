@@ -18,13 +18,15 @@ import seaborn as sns
 sns.set(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
 
 # Discrete cmap
-pal = sns.cubehelix_palette(10, rot=-.25, light=.7)
-my_cmap = ListedColormap(pal)
+pal_disc = sns.cubehelix_palette(10, rot=-.25, light=.7)
+my_cmap = ListedColormap(pal_disc)
 
 # Continuous cmap
-pal = sns.cubehelix_palette(250, rot=-.25, light=.7)
-my_cmap_full = ListedColormap(pal)
+pal_cont = sns.cubehelix_palette(250, rot=-.25, light=.7)
+my_cmap_full = ListedColormap(pal_cont)
 
+default_red = '#DA8886'
+default_blue = pal_cont.as_hex()[4]
 
 def create_gempy_colors():
     pal = sns.cubehelix_palette(10, rot=-.25, light=.7)
@@ -90,8 +92,7 @@ def plot_marginal(theta1_loc, theta1_scale, theta2_loc, theta2_scale, trace=None
 def plot_normal_likelihood(model_mean: float, model_std: float, obs: Union[list, float], x_range: tuple = None,
                            fig=None, **kwargs):
 
-
-    color_fill = kwargs.get('color_fill', pal.as_hex()[4])
+    color_fill = kwargs.get('color_fill', pal_disc.as_hex()[4])
     # Plotting likelihood
     if x_range is not None:
         thick_min = x_range[0]
