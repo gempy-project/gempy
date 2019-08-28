@@ -13,7 +13,8 @@ from matplotlib.colors import ListedColormap
 import matplotlib.colors as colors
 import matplotlib.cm as cmx
 import seaborn as sns
-
+from arviz.plots.jointplot import *
+from arviz.plots.jointplot import _var_names, _scale_fig_size
 # Seaborn style
 sns.set(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
 
@@ -28,13 +29,226 @@ my_cmap_full = ListedColormap(pal_cont)
 default_red = '#DA8886'
 default_blue = pal_cont.as_hex()[4]
 
+
 def create_gempy_colors():
     pal = sns.cubehelix_palette(10, rot=-.25, light=.7)
     my_cmap = ListedColormap(pal)
 
 
-def plot_marginal(theta1_loc, theta1_scale, theta2_loc, theta2_scale, trace=None, iteration=None,
-                  cmap=my_cmap, fig=None, **kwargs):
+def plot_joint_pro(
+    data,
+    var_names=None,
+    coords=None,
+    figsize=None,
+    textsize=None,
+    kind="scatter",
+    gridsize="auto",
+    contour=True,
+    fill_last=True,
+    joint_kwargs=None,
+    marginal_kwargs=None,
+):
+    """
+    Plot a scatter or hexbin of two variables with their respective marginals distributions.
+
+    Parameters
+    ----------
+    data : obj
+        Any object that can be converted to an az.InferenceData object
+        Refer to documentation of az.convert_to_dataset for details
+    var_names : Iter of 2 e.g. (var_1, var_2)
+        Variables to be plotted, two variables are required.
+    coords : mapping, optional
+        Coordinates of var_names to be plotted. Passed to `Dataset.sel`
+    figsize : tuple
+        Figure size. If None it will be defined automatically.
+    textsize: float
+        Text size scaling factor for labels, titles and lines. If None it will be autoscaled based
+        on figsize.
+    kind : str
+        Type of plot to display (scatter, kde or hexbin)
+    gridsize : int or (int, int), optional.
+        The number of hexagons in the x-direction. Ignored when hexbin is False. See `plt.hexbin`
+        for details
+    contour : bool
+        If True plot the 2D KDE using contours, otherwise plot a smooth 2D KDE. Defaults to True.
+    fill_last : bool
+        If True fill the last contour of the 2D KDE plot. Defaults to True.
+    joint_kwargs : dicts, optional
+        Additional keywords modifying the join distribution (central subplot)
+    marginal_kwargs : dicts, optional
+        Additional keywords modifying the marginals distributions (top and right subplot)
+
+    Returns
+    -------
+    axjoin : matplotlib axes, join (central) distribution
+    ax_hist_x : matplotlib axes, x (top) distribution
+    ax_hist_y : matplotlib axes, y (right) distribution
+
+    Examples
+    --------
+    Scatter Joint plot
+
+    .. plot::
+        :context: close-figs
+
+        >>> import arviz as az
+        >>> data = az.load_arviz_data('non_centered_eight')
+        >>> az.plot_joint(data,
+        >>>             var_names=['theta'],
+        >>>             coords={'school': ['Choate', 'Phillips Andover']},
+        >>>             kind='scatter',
+        >>>             figsize=(6, 6))
+
+    Hexbin Joint plot
+
+    .. plot::
+        :context: close-figs
+
+        >>> az.plot_joint(data,
+        >>>             var_names=['theta'],
+        >>>             coords={'school': ['Choate', 'Phillips Andover']},
+        >>>             kind='hexbin',
+        >>>             figsize=(6, 6))
+
+    KDE Joint plot
+
+    .. plot::
+        :context: close-figs
+
+        >>> az.plot_joint(data,
+        >>>                 var_names=['theta'],
+        >>>                 coords={'school': ['Choate', 'Phillips Andover']},
+        >>>                 kind='kde',
+        >>>                 figsize=(6, 6))
+
+    """
+    # TODO check if data is posterior or prior
+
+
+    valid_kinds = ["scatter", "kde", "hexbin"]
+    if kind not in valid_kinds:
+        raise ValueError(
+            ("Plot type {} not recognized." "Plot type must be in {}").format(kind, valid_kinds)
+        )
+
+    data = convert_to_dataset(data, group="posterior")
+
+    if coords is None:
+        coords = {}
+
+    var_names = _var_names(var_names, data)
+
+    plotters = list(xarray_var_iter(get_coords(data, coords), var_names=var_names, combined=True))
+
+    if len(plotters) != 2:
+        raise Exception(
+            "Number of variables to be plotted must 2 (you supplied {})".format(len(plotters))
+        )
+
+    figsize, ax_labelsize, _, xt_labelsize, linewidth, _ = _scale_fig_size(figsize, textsize)
+
+    if joint_kwargs is None:
+        joint_kwargs = {}
+
+    if marginal_kwargs is None:
+        marginal_kwargs = {}
+    marginal_kwargs.setdefault("plot_kwargs", {})
+    marginal_kwargs["plot_kwargs"]["linewidth"] = linewidth
+
+    # Instantiate figure and grid
+    fig, _ = plt.subplots(0, 0, figsize=figsize, constrained_layout=True)
+    grid = plt.GridSpec(4, 4, hspace=0.1, wspace=0.1, figure=fig)
+
+    # Set up main plot
+    axjoin = fig.add_subplot(grid[1:, :-1])
+
+    # Set up top KDE
+    ax_hist_x = fig.add_subplot(grid[0, :-1], sharex=axjoin)
+    ax_hist_x.tick_params(labelleft=False, labelbottom=False)
+
+    # Set up right KDE
+    ax_hist_y = fig.add_subplot(grid[1:, -1], sharey=axjoin)
+    ax_hist_y.tick_params(labelleft=False, labelbottom=False)
+
+    # Set labels for axes
+    x_var_name = make_label(plotters[0][0], plotters[0][1])
+    y_var_name = make_label(plotters[1][0], plotters[1][1])
+
+    axjoin.set_xlabel(x_var_name, fontsize=ax_labelsize)
+    axjoin.set_ylabel(y_var_name, fontsize=ax_labelsize)
+    axjoin.tick_params(labelsize=xt_labelsize)
+
+    # Flatten data
+    x = plotters[0][2].flatten()
+    y = plotters[1][2].flatten()
+
+    if kind == "scatter":
+        axjoin.scatter(x, y, **joint_kwargs)
+    elif kind == "kde":
+        plot_kde(x, y, contour=contour, fill_last=fill_last, ax=axjoin, **joint_kwargs)
+    else:
+        if gridsize == "auto":
+            gridsize = int(len(x) ** 0.35)
+        axjoin.hexbin(x, y, mincnt=1, gridsize=gridsize, **joint_kwargs)
+        axjoin.grid(False)
+
+    for val, ax, rotate in ((x, ax_hist_x, False), (y, ax_hist_y, True)):
+        plot_dist(val, textsize=xt_labelsize, rotated=rotate, ax=ax, **marginal_kwargs)
+
+    ax_hist_x.set_xlim(axjoin.get_xlim())
+    ax_hist_y.set_ylim(axjoin.get_ylim())
+
+    if True:
+        trace = True
+        iteration = 1
+        if trace is not None:
+            iteration = 80
+            n_iterations = 20
+            i_0 = np.max(0, (iteration - n_iterations))
+
+            plotters = list(xarray_var_iter(get_coords(data, coords), var_names=var_names, combined=True))
+
+            theta1_val_trace = plotters[0][2].flatten()[i_0:iteration]
+            theta2_val_trace = plotters[1][2].flatten()[i_0:iteration]
+
+            theta1_val = theta1_val_trace[-1]
+            theta2_val = theta2_val_trace[-1]
+
+            # Plot point of the given iteration
+            plt.plot(theta1_val, theta2_val, 'bo', ms=6, color='k')
+
+            # Plot a trace of n_iterations
+            pair_x_array = np.vstack((x[:-1], x[1:])).T  # np.tile(x, (2,1)).T # np.reshape(x, (-1, 2))
+            pair_y_array = np.vstack((y[:-1], y[1:])).T
+            for i, pair_x in enumerate(pair_x_array):
+                alpha_val = i / pair_x_array.shape[0]
+                pair_y = pair_y_array[i]
+                plt.plot(pair_x, pair_y, '--', linewidth=3, alpha=alpha_val, color='k')
+
+        group = 'both'
+        if group == 'both':
+            plotters = list(xarray_var_iter(get_coords(data.prior, coords), var_names=var_names, combined=True))
+            prior_x = plotters[0][2].flatten()[:iteration]
+            prior_y = plotters[1][2].flatten()[:iteration]
+            if kind == "scatter":
+                axjoin.scatter(prior_x, prior_y, **joint_kwargs)
+            elif kind == "kde":
+                plot_kde(prior_x, prior_y, contour=contour, fill_last=fill_last, ax=axjoin, **joint_kwargs)
+            else:
+                if gridsize == "auto":
+                    gridsize = int(len(x) ** 0.35)
+                axjoin.hexbin(prior_x, prior_y, mincnt=1, gridsize=gridsize, **joint_kwargs)
+                axjoin.grid(False)
+
+            for val, ax, rotate in ((prior_x, ax_hist_x, False), (prior_y, ax_hist_y, True)):
+                plot_dist(val, textsize=xt_labelsize, rotated=rotate, ax=ax, **marginal_kwargs)
+
+    return axjoin, ax_hist_x, ax_hist_y
+
+
+def plot_normal_marginal(theta1_loc, theta1_scale, theta2_loc, theta2_scale, trace=None, iteration=None,
+                         cmap=my_cmap, fig=None, **kwargs):
 
     # Prior space
     rock2 = np.linspace(theta2_loc - theta2_scale * 3, theta2_loc + theta2_scale * 3, 500)
@@ -221,10 +435,10 @@ def plot_posterior(trace, theta1_loc, theta1_scale, theta2_loc, theta2_scale, it
                   model_mean_name: str, model_std: float, obs: Union[list, float], x_range: tuple = None,
                    **kwargs):
 
-    fig = plot_marginal(theta1_loc, theta1_scale, theta2_loc, theta2_scale, cmap=my_cmap,
-                        trace=trace, iteration=iteration,
-                        fig=None,
-                        subplot=121, **kwargs)
+    fig = plot_normal_marginal(theta1_loc, theta1_scale, theta2_loc, theta2_scale, cmap=my_cmap,
+                               trace=trace, iteration=iteration,
+                               fig=None,
+                               subplot=121, **kwargs)
 
     model_mean = trace[model_mean_name].loc[iteration]
 
