@@ -382,7 +382,7 @@ def _joyplot(data,
 
     # Each plot will have its own axis
     fig, axes = _subplots(naxes=num_axes, ax=ax, squeeze=False,
-                          sharex=True, sharey=False, figsize=figsize,
+                          sharex=False, sharey=False, figsize=figsize,
                           layout_type='vertical')
     _axes = _flatten(axes)
 
@@ -528,9 +528,8 @@ def _joyplot(data,
 
 
     # The magic overlap happens here.
-    h_pad = 5 + (- 5*(1 + overlap))
-    fig.tight_layout(h_pad=h_pad)
-
+    #h_pad = 5 + (- 5*(1 + overlap))
+    #fig.tight_layout(h_pad=h_pad)
 
     return fig, _axes
 

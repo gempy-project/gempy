@@ -48,6 +48,31 @@ class PlotPosterior:
         self.data = data
         self.iteration = 1
 
+    def create_figure(self, marginal=True, likelihood=True, joyplot=True,
+                      figsize=None, textsize=None,
+                      n_samples=11):
+
+        figsize, self.ax_labelsize, _, self.xt_labelsize, self.linewidth, _ = _scale_fig_size(figsize, textsize)
+        self.fig, axes = plt.subplots(0, 0, figsize=figsize, constrained_layout=False)
+        gs_0 = gridspect.GridSpec(3, 4, figure=self.fig, hspace=0.5)
+
+        if marginal is True:
+            # Testing
+            if likelihood is False:
+                self.marginal_axes = self._create_joint_axis(figure=self.fig, subplot_spec=gs_0[0:2, 0:4])
+            else:
+                self.marginal_axes = self._create_joint_axis(figure=self.fig, subplot_spec=gs_0[0:2, 0:2])
+
+        if likelihood is True:
+            if marginal is False:
+                self.likelihood_axes = self._create_likelihood_axis(figure=self.fig, subplot_spec=gs_0[0:2, 0:4])
+            else:
+                self.likelihood_axes = self._create_likelihood_axis(figure=self.fig, subplot_spec=gs_0[0:2, 2:4])
+
+        if joyplot is True:
+            self.n_samples = n_samples
+            self.joy = self._create_joy_axis(self.fig, gs_0[2:3, :])
+
     def _create_joint_axis(self, figure=None, subplot_spec=None, figsize=None, textsize=None):
         figsize, ax_labelsize, _, xt_labelsize, linewidth, _ = _scale_fig_size(figsize, textsize)
         # Instantiate figure and grid
@@ -80,7 +105,7 @@ class PlotPosterior:
         # Making the axes:
         if figure is None:
             figsize = kwargs.get('figsize', None)
-            fig, _ = plt.subplots(0, 0, figsize=figsize, constrained_layout=True)
+            fig, _ = plt.subplots(0, 0, figsize=figsize, constrained_layout=False)
         else:
             fig = figure
 
@@ -94,7 +119,7 @@ class PlotPosterior:
         # ax_like.spines['left'].set_position(('data', -1))
         ax_like.yaxis.tick_right()
 
-        ax_like.spines['right'].set_position(('data', 1.05))
+        ax_like.spines['right'].set_position(('axes', 1.03))
         ax_like.spines['top'].set_color('none')
         ax_like.spines['left'].set_color('none')
         ax_like.set_xlabel('Thickness Obs.')
@@ -102,25 +127,41 @@ class PlotPosterior:
         ax_like.set_title('Likelihood')
         return ax_like
 
-    def _create_joy_axis(self, figure=None, subplot_spec=None, n_samples=21, overlap=.85):
+    def _create_joy_axis(self, figure=None, subplot_spec=None, n_samples=None, overlap=.85):
+        if n_samples is None:
+            n_samples = self.n_samples
 
         grid = gridspect.GridSpecFromSubplotSpec(n_samples, 1, hspace=-overlap, subplot_spec=subplot_spec)
         ax_joy = [figure.add_subplot(grid[i, 0]) for i in range(n_samples)]
+        ax_joy[0].set_title('Foo Likelihood')
+
         return ax_joy
 
-    def create_figure(self, marginal=True, likelihood=True, joyploy=True,
-                      figsize=None, textsize=None,
-                      n_samples=21):
+    def create_color_map(self, draw_mu, draw_sigma, x_range: tuple = None,
+                     **kwargs):
 
-        figsize, self.ax_labelsize, _, self.xt_labelsize, self.linewidth, _ = _scale_fig_size(figsize, textsize)
-        self.fig, axes = plt.subplots(0, 0, figsize=figsize, constrained_layout=True)
-        gs_0 = gridspect.GridSpec(2, 2, figure=self.fig, hspace=.2)
+        if x_range is None:
+            thick_max = draw_mu + 3 * draw_sigma
+            thick_min = draw_mu - 3 * draw_sigma
+        else:
+            thick_min, thick_max = x_range
+        thick_vals = np.linspace(thick_min, thick_max, 100)
 
-        if marginal is True and likelihood is True and joyploy is True:
-            # Testing
-            self.marginal_axes = self._create_joint_axis(figure=self.fig, subplot_spec=gs_0[0, 0])
-          #  self.likelihood_axes = self._create_likelihood_axis(figure=self.fig, subplot_spec=gs_0[0, 1])
-           # self.joy = self._create_joy_axis(self.fig, gs_0[1, :])
+        thick_model = draw_mu
+        thick_std = draw_sigma
+
+        nor_l = stats.norm.pdf(thick_vals, loc=thick_model, scale=thick_std)
+      #  likelihood_at_observation = stats.norm.pdf(observation, loc=thick_model, scale=thick_std)
+        cNorm = colors.Normalize(nor_l.min(), nor_l.max())
+        scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=my_cmap_full)
+       # color_fill = [colors.to_hex(i) for i in scalarMap.to_rgba(np.atleast_1d(likelihood_at_observation))]
+
+        return scalarMap
+
+    def evaluate_cmap(self, cmap, draw_mu, draw_sigma, obs: Union[float, list] = None):
+        likelihood_at_observation = stats.norm.pdf(obs, loc=draw_mu, scale=draw_sigma)
+        color_fill = colors.to_hex(cmap.to_rgba(np.atleast_1d(likelihood_at_observation)[0]))
+        return color_fill
 
     def plot_marginal_posterior(self, plotters, iteration=-1, **marginal_kwargs):
         marginal_kwargs.setdefault("plot_kwargs", {})
@@ -157,8 +198,10 @@ class PlotPosterior:
         elif kind == "kde":
             contour = joint_kwargs.get('contour', True)
             fill_last = joint_kwargs.get('fill_last', False)
-
-            plot_kde(x, y, contour=contour, fill_last=fill_last, ax=self.axjoin, **joint_kwargs)
+            try:
+                plot_kde(x, y, contour=contour, fill_last=fill_last, ax=self.axjoin, **joint_kwargs)
+            except ValueError:
+                pass
         else:
             gridsize = joint_kwargs.get('grid_size', 'auto')
             if gridsize == "auto":
@@ -167,12 +210,14 @@ class PlotPosterior:
             self.axjoin.grid(False)
 
     def plot_trace(self, plotters, iteration, n_iterations=20):
-        if iteration < 3:
-            iteration = 3
+        # if iteration < 3:
+        #     iteration = 3
         i_0 = np.max([0, (iteration - n_iterations)])
 
-        theta1_val_trace = plotters[0][2].flatten()[i_0:iteration]
-        theta2_val_trace = plotters[1][2].flatten()[i_0:iteration]
+        theta1_val_trace = plotters[0][2].flatten()[i_0:iteration+1]
+        theta2_val_trace = plotters[1][2].flatten()[i_0:iteration+1]
+
+        print('trace', theta1_val_trace)
 
         theta1_val = theta1_val_trace[-1]
         theta2_val = theta2_val_trace[-1]
@@ -246,11 +291,10 @@ class PlotPosterior:
 
         if group == 'both' or group == 'posterior':
 
-            self.plot_joint_posterior(plotters, kind=kind, **joint_kwargs)
+            self.plot_joint_posterior(plotters, kind=kind, iteration=iteration, **joint_kwargs)
             self.plot_marginal_posterior(plotters, iteration=iteration, **marginal_kwargs)
 
-        plot_prior = True if group == 'both' or group == 'prior' else False
-        if plot_prior is True:
+        if group == 'both' or group == 'prior':
             if joint_kwargs_prior is None:
                 joint_kwargs_prior = {}
 
@@ -273,24 +317,28 @@ class PlotPosterior:
 
             marginal_kwargs_prior["plot_kwargs"].setdefault('color', default_blue)
             marginal_kwargs_prior['fill_kwargs'].setdefault('color', default_blue)
-            marginal_kwargs_prior['fill_kwargs'].setdefault('alpha', .8)
+            marginal_kwargs_prior['fill_kwargs'].setdefault('alpha', alpha_p)
 
             data_1 = convert_to_dataset(data, group="prior")
             plotters_prior = list(xarray_var_iter(get_coords(data_1, coords), var_names=var_names, combined=True))
-            prior_x = plotters_prior[0][2].flatten()
-            prior_y = plotters_prior[1][2].flatten()
+           # prior_x = plotters_prior[0][2].flatten()
+           # prior_y = plotters_prior[1][2].flatten()
 
             self.plot_joint_posterior(plotters_prior, kind=kind, **joint_kwargs_prior)
             self.plot_marginal_posterior(plotters_prior, **marginal_kwargs_prior)
 
-            x_min, x_max = hpd(prior_x, credible_interval=credible_interval)
-            y_min, y_max = hpd(prior_y, credible_interval=credible_interval)
+            x_min, x_max, y_min, y_max = self.compute_hpd(plotters_prior, credible_interval=credible_interval)
+
+            #x_min, x_max = hpd(prior_x, credible_interval=credible_interval)
+            #y_min, y_max = hpd(prior_y, credible_interval=credible_interval)
 
         else:
-            x = plotters[0][2].flatten()[:iteration]
-            y = plotters[1][2].flatten()[:iteration]
-            x_min, x_max = hpd(x, credible_interval=credible_interval)
-            y_min, y_max = hpd(y, credible_interval=credible_interval)
+            x_min, x_max, y_min, y_max = self.compute_hpd(plotters, iteration=iteration,
+                                                          credible_interval=credible_interval)
+            # x = plotters[0][2].flatten()[:iteration]
+            # y = plotters[1][2].flatten()[:iteration]
+            # x_min, x_max = hpd(x, credible_interval=credible_interval)
+            # y_min, y_max = hpd(y, credible_interval=credible_interval)
 
         if plot_trace is True:
             self.plot_trace(plotters, iteration, n_iterations)
@@ -301,6 +349,170 @@ class PlotPosterior:
         self.ax_hist_y.set_ylim(self.axjoin.get_ylim())
 
         return self.axjoin, self.ax_hist_x, self.ax_hist_y
+
+    @staticmethod
+    def compute_hpd(plotters, iteration=-1, credible_interval=.98):
+        x = plotters[0][2].flatten()[:iteration]
+        y = plotters[1][2].flatten()[:iteration]
+        x_min, x_max = hpd(x, credible_interval=credible_interval)
+        y_min, y_max = hpd(y, credible_interval=credible_interval)
+        return x_min, x_max, y_min, y_max
+
+    def plot_normal_likelihood(self, mean:Union[str, float], std:Union[str, float], obs:Union[str, float],
+                               data=None, iteration=-1, x_range=None, color='auto', **kwargs):
+        self.likelihood_axes.clear()
+
+        if data is None:
+            data = self.data
+
+        draw = data.posterior[{'chain':0, 'draw':iteration}]
+        draw_mu = draw[mean] if type(mean) is str else mean
+        print('like', draw_mu)
+        draw_sigma = draw[std] if type(std) is str else std
+        obs = data.observed_data[obs] if type(obs) is str else obs
+
+        obs = 7
+
+        if x_range is not None:
+            thick_min = x_range[0]
+            thick_max = x_range[1]
+        else:
+            thick_max = draw_mu + 3 * draw_sigma
+            thick_min = draw_mu - 3 * draw_sigma
+
+        thick_vals = np.linspace(thick_min, thick_max, 100)
+        observation = np.asarray(obs)
+
+        thick_model = draw_mu
+        thick_std = draw_sigma
+
+        nor_l = stats.norm.pdf(thick_vals, loc=thick_model, scale=thick_std)
+        likelihood_at_observation = stats.norm.pdf(observation, loc=thick_model, scale=thick_std)
+
+        if color == 'auto':
+            # # This operations are for getting the same color in the likelihood plot as in the joy plot
+            # n_traces = kwargs.get('n_traces', 51)
+            # thinning = kwargs.get('thinning', 1) * -1
+            # trace_n = iteration
+            #
+            # l_1 = trace_n - np.round(n_traces / 2)
+            # l_0 = trace_n + np.round(n_traces / 2)
+            # cNorm = colors.Normalize(nor_l.min(), nor_l.max())
+            # scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=my_cmap_full)
+            # color_fill = [colors.to_hex(i) for i in scalarMap.to_rgba(np.atleast_1d(likelihood_at_observation))]
+            cmap = self.create_color_map(draw_mu, draw_sigma)
+            color_fill = self.evaluate_cmap(cmap, draw_mu, draw_sigma, obs)
+
+        elif color is None:
+            color_fill = default_l
+        else:
+            color_fill = color
+        y_min = (nor_l.min() - nor_l.max()) * .01
+        y_max = nor_l.max() + nor_l.max() * .05
+
+        self.likelihood_axes.plot(thick_vals, nor_l, color='#7eb1bc', linewidth=.5)
+        self.likelihood_axes.fill_between(thick_vals, nor_l, 0, color=color_fill, alpha=.8)
+
+        self.likelihood_axes.vlines(observation, 0.001, likelihood_at_observation, linestyles='dashdot',
+                                    color='#DA8886', alpha=1)
+
+        self.likelihood_axes.hlines(likelihood_at_observation, observation, thick_max,#thick_min - thick_min * .1,
+                                     linestyle='dashdot', color='#DA8886', alpha=1)
+        self.likelihood_axes.scatter(7, 0, s=50, c='#DA8886')
+        self.likelihood_axes.set_ylim(y_min, y_max)
+        self.likelihood_axes.set_xlim(thick_min, thick_max)
+
+        self.likelihood_axes.spines['bottom'].set_position(('data', 0.0))
+        # ax_like.spines['left'].set_position(('data', -1))
+        self.likelihood_axes.yaxis.tick_right()
+
+        self.likelihood_axes.spines['right'].set_position(('axes', 1.03))
+        self.likelihood_axes.spines['top'].set_color('none')
+        self.likelihood_axes.spines['left'].set_color('none')
+        self.likelihood_axes.set_xlabel('Thickness Obs.')
+        # ax_like.set_ylabel('Likelihood')
+        self.likelihood_axes.set_title('Likelihood')
+
+        return self.likelihood_axes, cmap
+
+    def plot_joy(self, var_names=None, obs:Union[str, float] = None,
+                       data=None, iteration=-1, samples_size=1000, cmap=None):
+
+        [i.clear() for i in self.joy]
+        n_iterations = self.n_samples
+        iteration = np.max([iteration, int(n_iterations/2)+1])
+
+        if data is None:
+            data = self.data
+
+        data = convert_to_dataset(data, group="posterior")
+        coords = {}
+        var_names = _var_names(None, data)
+
+        plotters = list(
+            xarray_var_iter(get_coords(data, coords), var_names=var_names, combined=True))
+
+        x = plotters[0][2].flatten()[iteration-int(n_iterations/2):iteration+int(n_iterations/2)+1]
+        y = plotters[1][2].flatten()[iteration-int(n_iterations/2):iteration+int(n_iterations/2)+1]
+
+        print('joy', x)
+        df = pn.DataFrame()
+
+        color = []
+        for e in range(iteration+int(n_iterations/2)+1 - (iteration-int(n_iterations/2))):# mean_val, std_val in zip(x, y):
+            num = np.random.normal(loc=x[e], scale=y[e], size=samples_size)
+            name = e
+            df[name] = num
+            # if color == 'auto' and e == 3:
+            #     thick_max = x[e] + 3 * y[e]
+            #     thick_min = x[e] - 3 * y[e]
+            #
+            #     thick_vals = np.linspace(thick_min, thick_max, 100)
+            #     nor_l = stats.norm.pdf(thick_vals, loc=x[e], scale=y[e])
+            #     likelihood_at_observation = stats.norm.pdf(obs, loc=x[e], scale=[e])
+            #
+            #     cNorm = colors.Normalize(nor_l.min(), nor_l.max())
+            #     scalarMap = cmx.ScalarMappable(norm=cNorm, cmap=my_cmap_full)
+            if cmap is None:
+                color = default_blue
+            else:
+                #likelihood_at_observation = stats.norm.pdf(obs, loc=x[e], scale=y[e])
+                color.append(self.evaluate_cmap(cmap, x[e], y[e], obs))
+
+        iteration_label = [int(y) if int(y) % 5 == 0 else None for y in df.columns]
+        f, axes = joyplot(df, bw_method=1, labels=iteration_label, ax=self.joy,
+                           yrot=0,  # ylabels=False,
+                           #  xlabels='Thickness Obs',
+                       #    title='Likelihood inference',
+                           range_style='all',
+                           ylabels='foo',
+                           color=color,
+                           grid='y',
+                           fade=False,
+                           linewidth=.1, alpha=.8);
+
+        n_axes = len(axes[:-1])
+        if int(n_axes / 2) > iteration:
+            ax_sel = axes[-iteration - 2]
+
+            ax_sel.hlines(0, ax_sel.get_xlim()[0], ax_sel.get_xlim()[1], color='#DA8886', linewidth=3)
+
+        else:
+            ax_sel = axes[int(n_axes / 2)]
+            ax_sel.hlines(0, ax_sel.get_xlim()[0], ax_sel.get_xlim()[1], color='#DA8886', linewidth=3)
+
+        if obs is not None:
+           # self.joy[1].scatter(obs, np.zeros_like(obs), marker='v', s=100, c='#DA8886')
+           # self.joy[2].scatter(obs, np.zeros_like(obs), marker='v', s=100, c='b')
+            self.joy[0].scatter(obs, self.joy[0].get_ylim()[1], marker='v', s=200, c='#DA8886')
+            #self.joy[-1].scatter(obs, np.zeros_like(obs), marker='v', s=100, c='r')
+
+            self.joy[-1].scatter(obs, self.joy[-1].get_ylim()[0], marker='^', s=200, c='#DA8886')
+            # axes[-1].vlines(obs, 0, 1, color='#DA8886', linestyle='-.')
+
+        # axes[int(n_axes/2)].axhline(0, 0, 100, c='#DA8886', linewidth=3)
+
+        return axes
 
 def create_gempy_colors():
     pal = sns.cubehelix_palette(10, rot=-.25, light=.7)
