@@ -90,7 +90,7 @@ def joyplot(data, column=None, by=None, grid=False,
             range_style='all',
             x_range=None,
             title=None,
-            colormap=None,
+            colormap=None, last_axis=True,
             **kwds):
     """
     Draw joyplot of a DataFrame, or appropriately nested collection,
@@ -240,7 +240,7 @@ def joyplot(data, column=None, by=None, grid=False,
                     xlabels=xlabels,
                     range_style=range_style, x_range=x_range,
                     title=title,
-                    colormap=colormap,
+                    colormap=colormap, last_axis=last_axis,
                     **kwds)
 
 ###########################################
@@ -316,7 +316,7 @@ def _joyplot(data,
              range_style='all', x_range=None, tails=0.2,
              title=None,
              legend=False, loc="upper right",
-             colormap=None, color=None,
+             colormap=None, color=None, last_axis=True,
              **kwargs):
     """
     Internal method.
@@ -488,40 +488,40 @@ def _joyplot(data,
                 a.set_ylim(ylim)
         except:
             print("Warning: the value of ylim must be either 'max', 'own', or a tuple of length 2. The value you provided has no effect.")
+    if last_axis is True:
+        # Compute a final axis, used to apply global settings
+        last_axis = fig.add_subplot(1, 1, 1)
 
-    # Compute a final axis, used to apply global settings
-    last_axis = fig.add_subplot(1, 1, 1)
+        # Background color
+        if background is not None:
+            last_axis.patch.set_facecolor(background)
 
-    # Background color
-    if background is not None:
-        last_axis.patch.set_facecolor(background)
+        for side in ['top', 'bottom', 'left', 'right']:
+            last_axis.spines[side].set_visible(_DEBUG)
 
-    for side in ['top', 'bottom', 'left', 'right']:
-        last_axis.spines[side].set_visible(_DEBUG)
+        # This looks hacky, but all the axes share the x-axis,
+        # so they have the same lims and ticks
+        last_axis.set_xlim(_axes[0].get_xlim())
+        if xlabels is True:
+            last_axis.set_xticks(np.array(_axes[0].get_xticks()[1:-1]))
+            for t in last_axis.get_xticklabels():
+                t.set_visible(True)
+                t.set_fontsize(xlabelsize)
+                t.set_rotation(xrot)
 
-    # This looks hacky, but all the axes share the x-axis,
-    # so they have the same lims and ticks
-    last_axis.set_xlim(_axes[0].get_xlim())
-    if xlabels is True:
-        last_axis.set_xticks(np.array(_axes[0].get_xticks()[1:-1]))
-        for t in last_axis.get_xticklabels():
-            t.set_visible(True)
-            t.set_fontsize(xlabelsize)
-            t.set_rotation(xrot)
+            # If grid is enabled, do not allow xticks (they are ugly)
+            if xgrid:
+                last_axis.tick_params(axis='both', which='both',length=0)
+        else:
+            last_axis.xaxis.set_visible(False)
 
-        # If grid is enabled, do not allow xticks (they are ugly)
-        if xgrid:
-            last_axis.tick_params(axis='both', which='both',length=0)
-    else:
-        last_axis.xaxis.set_visible(False)
-
-    last_axis.yaxis.set_visible(False)
-    last_axis.grid(xgrid)
+        last_axis.yaxis.set_visible(False)
+        last_axis.grid(xgrid)
 
 
-    # Last axis on the back
-    last_axis.zorder = min(a.zorder for a in _axes) - 1
-    _axes = list(_axes) + [last_axis]
+        # Last axis on the back
+        last_axis.zorder = min(a.zorder for a in _axes) - 1
+        _axes = list(_axes) + [last_axis]
 
     if title is not None:
         plt.title(title)
