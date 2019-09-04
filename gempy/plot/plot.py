@@ -259,7 +259,8 @@ def plot_predef_sections(model, show_traces=True, show_data=False, section_names
 
 
 def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
-                 show_data=False, show_faults=True, show_topo = False,  block_type=None, ve=1, **kwargs):
+                 show_data=False, show_faults=True, show_topo=False, show_legend=True, 
+                 block_type=None, ve=1, **kwargs):
     """
     Plot a section of the block model
 
@@ -279,7 +280,7 @@ def plot_section(model, cell_number=13, block=None, direction="y", interpolation
     """
     plot = PlotData2D(model)
     plot.fig = plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
-                            show_data, show_faults, show_topo,  block_type, ve, **kwargs)
+                            show_data, show_faults, show_topo, show_legend, block_type, ve, **kwargs)
     # TODO saving options
     return plot
 

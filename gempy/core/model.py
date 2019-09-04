@@ -265,7 +265,7 @@ class DataMutation(object):
         """
         self.series.modify_order_series(new_value, idx)
 
-        self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+        self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.array,
                                                           ordered=False, inplace=True)
 
         self.surfaces.sort_surfaces()
@@ -287,7 +287,7 @@ class DataMutation(object):
         reset the flow control objects.
         """
         self.series.reorder_series(new_categories)
-        self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+        self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.array,
                                                           ordered=False, inplace=True)
 
         self.surfaces.sort_surfaces()
@@ -436,6 +436,7 @@ class DataMutation(object):
     @setdoc(Surfaces.add_surfaces_values.__doc__, indent=False)
     def add_surface_values(self,  values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
         self.surfaces.add_surfaces_values(values_array, properties_names)
+        self.update_structure(update_theano='matrices')
         return self.surfaces
 
     @setdoc(Surfaces.delete_surface_values.__doc__, indent=False)
@@ -501,7 +502,7 @@ class DataMutation(object):
             self.orientations.sort_table()
 
         if set_series is True and self.series.df.index.isin(['Basement']).any():
-            aux = self.series.df.index.drop('Basement').get_values()
+            aux = self.series.df.index.drop('Basement').array
             self.reorder_series(np.append(aux, 'Basement'))
 
         if twofins is False: #assert if every fault has its own series
@@ -547,6 +548,7 @@ class DataMutation(object):
             if kwargs['add_basement'] is True:
                 self.surfaces.add_surface(['basement'])
                 self.map_series_to_surfaces({'Basement': 'basement'}, set_series=True)
+
         self.map_geometric_data_df(self.surface_points.df)
         self.rescaling.rescale_data()
         self.additional_data.update_structure()
@@ -795,9 +797,9 @@ class DataMutation(object):
             self.surfaces.df['series'].cat.rename_categories(rename_series, inplace=True)
 
         if reorder_series is True:
-            self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+            self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.array,
                                                               ordered=False, inplace=True)
-            self.series.df.index = self.series.df.index.reorder_categories(self.series.df.index.get_values(),
+            self.series.df.index = self.series.df.index.reorder_categories(self.series.df.index.array,
                                                                            ordered=False)
             self.surfaces.sort_surfaces()
             self.update_from_surfaces(set_categories_from_series=False, set_categories_from_surfaces=True,
@@ -924,8 +926,8 @@ class DataMutation(object):
             DataFrame
         """
         d['series'] = d['surface'].map(self.surfaces.df.set_index('surface')['series'])
-        d['id'] = d['surface'].map(self.surfaces.df.set_index('surface')['id'])
-        d['order_series'] = d['series'].map(self.series.df['order_series'])
+        d['id'] = d['surface'].map(self.surfaces.df.set_index('surface')['id']).astype(int)
+        d['order_series'] = d['series'].map(self.series.df['order_series']).astype(int)
         return d
 
     def set_surface_order_from_solution(self):
@@ -954,12 +956,12 @@ class DataMutation(object):
                     pn.DataFrame(sfai_order, index=surface_names)[0])
 
             except IndexError:
-                pass
+                pass # print('foo')
 
         self.surfaces.sort_surfaces()
         self.surfaces.set_basement()
         self.surface_points.df['id'] = self.surface_points.df['surface'].map(
-            self.surfaces.df.set_index('surface')['id'])
+            self.surfaces.df.set_index('surface')['id']).astype(int)
         self.surface_points.sort_table()
         self.update_structure()
         return self.surfaces

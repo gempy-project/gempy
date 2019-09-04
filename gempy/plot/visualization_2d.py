@@ -270,7 +270,7 @@ class PlotData2D(object):
 
     def plot_block_section(self, solution:Solution, cell_number:int, block:np.ndarray=None, direction:str="y",
                            interpolation:str='none', show_data:bool=False, show_faults:bool=False, show_topo:bool=False,
-                           block_type=None, ve:float=1, **kwargs):
+                           show_legend:bool=True, block_type=None, ve:float=1, **kwargs):
         """Plot a section of the block model
 
         Args:
@@ -286,6 +286,8 @@ class PlotData2D(object):
                 'bessel', 'mitchell', 'sinc', 'lanczos'.
             show_data (bool, optional): Plots input data on-top of block
                 section. Defaults to False.
+            show_legend (bool, optional): Plot or hide legend - only available
+                if no data is plotted.
             show_faults (bool, optional): Plot fault line on-top of block
                 section. Defaults to False.
             show_topo (bool, optional): Plots block section with topography.
@@ -345,7 +347,8 @@ class PlotData2D(object):
                 else:
                     self.plot_topography(cell_number=cell_number, direction=direction)
 
-        if not show_data:
+        if show_data == False and show_legend == True:
+            import matplotlib.patches as mpatches
             patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
@@ -624,7 +627,6 @@ class PlotSolution:
                         norm=self._norm, zorder=-100)
         if contour_lines == True and show_data == False:
             CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2], cmap='Greys', linestyles='solid',
-
                             extent=self.model.grid.topography.extent)
             ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
             plothelp.add_colorbar(im=im, label='elevation [m]', cs=CS, aspect=35)
