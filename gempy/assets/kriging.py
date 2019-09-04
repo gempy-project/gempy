@@ -176,7 +176,6 @@ class kriging_model(object):
         if n_closest_points is not None:
             self.n_closest_points = n_closest_points
 
-    # TODO: triple check if these are really correct (nugget in covariance model?)
     # seems better now by changing psill in covariance model
     def exponential_variogram_model(self, d):
         psill = self.sill - self.nugget
@@ -198,6 +197,7 @@ class kriging_model(object):
         # Bonus: directly calcualte covariance model based on this
         return None
 
+    # TODO: check with new ordianry kriging and nugget effect
     def simple_kriging(self, a, b, prop):
         '''
         Method for simple kriging calculation.
@@ -261,6 +261,10 @@ class kriging_model(object):
         C[:, shape] = 1.0
         C[shape, shape] = 0.0
         c[shape] = 1.0
+
+        # This is if we want exact interpolator
+        # but be aware that it strictly forces estimates to go through data points
+        # c[c == self.nugget] = 0
 
         # TODO: find way to check quality of matrix and solutions for instability
         # Solve Kriging equations
