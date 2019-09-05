@@ -2541,7 +2541,7 @@ class Options(object):
         Returns:
             bool: True
         """
-        self.df['dtype'] = 'float32'
+        self.df['dtype'] = None
         self.df['output'] = 'geology'
         self.df['theano_optimizer'] = 'fast_compile'
         self.df['device'] = 'cpu'

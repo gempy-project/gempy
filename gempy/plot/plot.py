@@ -34,7 +34,7 @@ from .visualization_3d import steno3D, GemPyvtkInteract, ipyvolumeVisualization
 import gempy as _gempy
 
 
-def plot_data_3D(geo_data, **kwargs):
+def plot_data_3D(geo_data, ve=1, **kwargs):
     """
     Plot in vtk all the input data of a model
     Args:
@@ -43,7 +43,7 @@ def plot_data_3D(geo_data, **kwargs):
     Returns:
         None
     """
-    vv = GemPyvtkInteract(geo_data, **kwargs)
+    vv = GemPyvtkInteract(geo_data, ve=ve, **kwargs)
    # vv.restart()
     vv.set_surface_points()
     vv.set_orientations()

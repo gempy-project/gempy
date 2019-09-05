@@ -116,7 +116,7 @@ class SolveSparse(T.Op):
 solv = SolveSparse()
 
 class TheanoGraphPro(object):
-    def __init__(self, optimizer='fast_compile', verbose=None, dtype='float32', **kwargs):
+    def __init__(self, optimizer='fast_compile', verbose=None, dtype=None, **kwargs):
         """
         Class to create the symbolic theano graph with all the interpolation-FW engine
 
@@ -137,6 +137,9 @@ class TheanoGraphPro(object):
             self.verbose = [None]
         else:
             self.verbose = verbose
+
+        if dtype is None:
+            dtype = 'float32' if theano.config.device == 'cuda' else 'float64'
 
         # Trade speed for memory this will consume more memory
         self.max_speed = kwargs.get('max_speed', 1)

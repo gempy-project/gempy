@@ -245,17 +245,18 @@ class Solution(object):
             else:
                 mask_array = self.mask_matrix_pad[e]
 
-            for level in sfas:
+            for s_n, level in enumerate(sfas):
                 try:
                     v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
 
                 except TypeError as e:
-                    warnings.warn('Attribute error. Using non masked marching cubes' + str(e))
+                    warnings.warn('Attribute error. Using non masked marching cubes' + str(e)+'.')
                     v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array,
                                                                         classic=True, **kwargs)
 
                 except Exception as e:
-                    warnings.warn('Surfaces not computed due to: ' + str(e))
+                    warnings.warn('Surfaces not computed due to: ' + str(e)+'. The surface is: Series: '+str(e)+
+                                  '; Surface Number:' + str(s_n))
                     v = np.nan
                     s = np.nan
 
