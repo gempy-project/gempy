@@ -1819,7 +1819,7 @@ class Orientations(GeometricData):
         return True
 
     @setdoc_pro([SurfacePoints.__doc__])
-    def create_orientation_from_interface(self, surface_points: SurfacePoints, indices):
+    def create_orientation_from_surface_points(self, surface_points: SurfacePoints, indices):
         # TODO test!!!!
         """
         Create and set orientations from at least 3 points categories_df
@@ -2244,6 +2244,7 @@ class RescaledData(object):
         """
         if idx is None:
             idx = self.surface_points.df.index
+        idx = np.atleast_1d(idx)
 
         self.surface_points.df.loc[idx, ['X_r', 'Y_r', 'Z_r']] = self.rescale_surface_points(
             self.surface_points, self.df.loc['values', 'rescaling factor'], self.df.loc['values', 'centers'], idx=idx)
@@ -2300,6 +2301,7 @@ class RescaledData(object):
         """
         if idx is None:
             idx = self.orientations.df.index
+        idx = np.atleast_1d(idx)
 
         self.orientations.df.loc[idx, ['X_r', 'Y_r', 'Z_r']] = self.rescale_orientations(
             self.orientations, self.df.loc['values', 'rescaling factor'], self.df.loc['values', 'centers'], idx=idx)

@@ -678,6 +678,7 @@ class DataMutation(object):
 
         surface = np.atleast_1d(surface)
         idx = self._add_valid_idx_o(idx)
+
         self.orientations.add_orientation(X, Y, Z, surface, pole_vector=pole_vector,
                                           orientation=orientation, idx=idx)
         if recompute_rescale_factor is True or idx < 5:

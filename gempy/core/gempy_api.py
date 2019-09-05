@@ -102,27 +102,27 @@ def set_orientation_from_surface_points(geo_model, indices_array):
 
     if np.ndim(indices_array) is 1:
         indices = indices_array
-        form = geo_model.surface_points['surface'].loc[indices].unique()
+        form = geo_model.surface_points.df['surface'].loc[indices].unique()
         assert form.shape[0] is 1, 'The interface points must belong to the same surface'
         form = form[0]
-        print()
-        ori_parameters = geo_model.create_orientation_from_surface_points(indices)
-        geo_model.add_orientation(x=ori_parameters[0], y=ori_parameters[1], z=ori_parameters[2],
-                                  dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
-                                  G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
-                                  surface=form)
+
+        ori_parameters = geo_model.orientations.create_orientation_from_surface_points(
+            geo_model.surface_points, indices)
+        geo_model.add_orientations(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+                                   orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
+                                   surface=form)
     elif np.ndim(indices_array) is 2:
         for indices in indices_array:
-            form = geo_model.surface_points['surface'].loc[indices].unique()
+            form = geo_model.surface_points.df['surface'].loc[indices].unique()
             assert form.shape[0] is 1, 'The interface points must belong to the same surface'
             form = form[0]
-            ori_parameters = geo_model.create_orientation_from_surface_points(indices)
-            geo_model.add_orientation(x=ori_parameters[0], y=ori_parameters[1], z=ori_parameters[2],
-                                      dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
-                                      G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
-                                      surface=form)
+            ori_parameters = geo_model.orientations.create_orientation_from_surface_points(
+                geo_model.surface_points, indices)
+            geo_model.add_orientations(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+                                       orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
+                                       surface=form)
 
-    geo_model.update_df()
+    #geo_model.update_df()
     return geo_model.orientations
 # endregion
 
