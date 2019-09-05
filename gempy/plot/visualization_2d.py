@@ -610,10 +610,11 @@ class PlotSolution:
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors) + 0.5)
 
     def plot_map(self, solution: Solution = None, contour_lines=False, show_faults=True, show_data=True, figsize=(12,12)):
-        if solution is not None:
-            assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
-        else:
+        if solution is None:
             solution = self.model.solutions
+
+        assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
+
         try:
             geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:, :, 2].shape)
         except AttributeError:
