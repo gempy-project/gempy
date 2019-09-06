@@ -14,6 +14,9 @@ except ImportError:
 
 import numpy as np
 import pandas as pd
+from gempy.plot import visualization_2d, plot, helpers
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
 
 class kriging_model(object):
 
@@ -456,7 +459,7 @@ class kriging_model(object):
 
         self.results_sim_df = pd.DataFrame(data=d)
 
-    def plot_results():
+    def plot_results_dep():
         # probably set of functions for visualization
         # some brainstorming:
         # 1) 3D and 2D options for domain with colormaps of property
@@ -465,3 +468,69 @@ class kriging_model(object):
         # 4) options to plot variances
         # ...
         return None
+
+    def plot_results(self, geo_data, prop='val', direction='y', cell_number=0, contour=False,
+                     cmap='viridis', alpha=0, legend=False):
+        """
+        TODO WRITE DOCSTRING
+        Args:
+            geo_data:
+            prop:
+            direction:
+            cell_number:
+            contour:
+            cmap:
+            alpha:
+            legend:
+
+        Returns:
+
+        """
+        a = np.full_like(self.mask, np.nan, dtype=np.double)
+        est_vals = self.results_df['est_value'].values
+        est_var = self.results_df['est_variance'].values
+
+        if prop == 'val':
+            a[np.where(self.mask == True)] = est_vals
+        elif prop == 'var':
+            a[np.where(self.mask == True)] = est_var
+        elif prop == 'both':
+            a[np.where(self.mask == True)] = est_vals
+            b = np.full_like(self.mask, np.nan, dtype=np.double)
+            b[np.where(self.mask == True)] = est_var
+        else:
+            print('prop must be val var or both')
+
+        p = visualization_2d.PlotSolution(geo_data)
+        _a, _b, _c, extent_val, x, y = p._slice(direction, cell_number)[:-2]
+
+        cmap = cm.get_cmap(cmap)
+        cmap.set_bad(color='w', alpha=alpha)
+
+        if prop is not 'both':
+
+            plot.plot_section(geo_data, direction=direction, cell_number=cell_number)
+            if contour == True:
+                im = plt.contourf(a.reshape(self.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
+                                  origin='lower',
+                                  extent=extent_val)
+            else:
+                im = plt.imshow(a.reshape(self.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
+                                origin='lower',
+                                extent=extent_val)
+                if legend:
+                    helpers.add_colorbar(im, location='right')
+
+        else:
+            f, ax = plt.subplots(1, 2, sharex=True, sharey=True)
+            ax[0].title.set_text('Estimated value')
+            im1 = ax[0].imshow(a.reshape(self.sol.grid.regular_grid.resolution)[:, 2, :].T, cmap=cmap,
+                               origin='lower',
+                               extent=self.sol.grid.regular_grid.extent[[0, 1, 4, 5]])
+            helpers.add_colorbar(im1)
+            ax[1].title.set_text('Variance')
+            im2 = ax[1].imshow(b.reshape(self.sol.grid.regular_grid.resolution)[:, 2, :].T, cmap=cmap,
+                               origin='lower',
+                               extent=self.sol.grid.regular_grid.extent[[0, 1, 4, 5]])
+            helpers.add_colorbar(im2)
+            plt.tight_layout()
