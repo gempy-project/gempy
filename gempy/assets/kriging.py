@@ -107,11 +107,11 @@ class kriging_model(object):
         self.domain = domain
 
         # mask by array of input surfaces (by id, can be from different series)
-        mask = np.isin(self.sol.lith_block, self.domain)
+        self.mask = np.isin(self.sol.lith_block, self.domain)
 
         # Apply mask to lith_block and grid
-        self.krig_lith = self.sol.lith_block[mask]
-        self.krig_grid = self.sol.grid.values[mask]
+        self.krig_lith = self.sol.lith_block[self.mask]
+        self.krig_grid = self.sol.grid.values[self.mask]
 
     def set_data(self, data):
         """
