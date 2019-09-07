@@ -1045,13 +1045,22 @@ class PlotSolution:
     def _plot_surface_points(self, x, y, series_to_plot_i, aspect, extent, kwargs):
         if series_to_plot_i.shape[0] != 0:
             #print(aspect)
-            p = sns.FacetGrid(series_to_plot_i, hue="surface",
-                              palette=self._color_lot,
-                              ylim=[extent[2], extent[3]],
-                              xlim=[extent[0], extent[1]],
-                              legend_out=False,
-                              aspect=aspect)#
-                              #size=6)
+            try:
+                p = sns.FacetGrid(series_to_plot_i, hue="surface",
+                                  palette=self._color_lot,
+                                  ylim=[extent[2], extent[3]],
+                                  xlim=[extent[0], extent[1]],
+                                  legend_out=False,
+                                  aspect=aspect)#
+                                  #size=6)
+            except KeyError:
+                p = sns.FacetGrid(series_to_plot_i, hue=None,
+                                  palette='k',
+                                  ylim=[extent[2], extent[3]],
+                                  xlim=[extent[0], extent[1]],
+                                  legend_out=False,
+                                  aspect=aspect)#
+                                  #size=6)
 
             p.map(plt.scatter, x, y,
                   **kwargs['scatter_kws'],
@@ -1144,8 +1153,6 @@ class PlotSolution:
         return mask_surfpoints, mask_orient
 
     def get_mask_sections(self, j, radius=None):
-        # Todo the coordinate system the sections are plotted in is different.
-        # this needs to be converted.
         points_interf = np.vstack(
             (self.model.surface_points.df['X'].values, self.model.surface_points.df['Y'].values)).T
         points_orient = np.vstack((self.model.orientations.df['X'].values,

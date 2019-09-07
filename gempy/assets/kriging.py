@@ -62,7 +62,7 @@ class kriging_model(object):
         # set data, default is None
         # TODO: need to figure out a way to then set mean and variance for the SGS and SK
         if data is None:
-            data = None
+            data = None #why do you do this, data is none already if it is none?
         self.set_data(data)
 
         # basic statistics of data
@@ -470,7 +470,7 @@ class kriging_model(object):
         return None
 
     def plot_results(self, geo_data, prop='val', direction='y', cell_number=0, contour=False,
-                     cmap='viridis', alpha=0, legend=False, interpolation='nearest'):
+                     cmap='viridis', alpha=0, legend=False, interpolation='nearest', show_data=True):
         """
         TODO WRITE DOCSTRING
         Args:
@@ -512,6 +512,9 @@ class kriging_model(object):
 
         # plot
         if prop is not 'both':
+            if show_data:
+                plt.scatter(self.data_df[x].values, self.data_df[y].values, marker='*', s=9, c='k')
+
             plot.plot_section(geo_data, direction=direction, cell_number=cell_number)
             if contour == True:
                 im = plt.contourf(a.reshape(self.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
