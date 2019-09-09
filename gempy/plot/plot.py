@@ -192,7 +192,7 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     Returns:
         None
     """
-    plot = PlotSolution(geo_data)
+    plot = PlotData2D(geo_data)
     p = plot.plot_data(direction=direction, data_type=data_type, series=series,
                           legend_font_size=legend_font_size, **kwargs)
     # TODO saving options
@@ -292,7 +292,7 @@ def plot_section_by_name(model, section_name, show_faults=True, show_topo=True, 
 
 def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
                  show_data=False, show_faults=True, show_topo = False,  block_type=None, ve=1,
-                 show_all_data=False, **kwargs):
+                 show_all_data=False, show_legend=True, **kwargs):
     """
     Plot a section of the block model
 
@@ -312,13 +312,15 @@ def plot_section(model, cell_number=13, block=None, direction="y", interpolation
     """
     plot = PlotSolution(model)
     plot.fig = plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
-                            show_data, show_faults, show_topo,  block_type, ve, show_all_data=show_all_data, **kwargs)
+                            show_data, show_faults, show_topo,  block_type, ve, show_all_data=show_all_data,
+                                       show_legend=show_legend, **kwargs)
     # TODO saving options
     return plot
 
 
 def plot_scalar_field(model, cell_number, N=20,
-                      direction="y", plot_data=True, series=0, *args, **kwargs):
+                      direction="y", show_data=True,
+                      show_all_data=False, series=0, *args, **kwargs):
     """
     Plot a potential field in a given direction.
 
@@ -333,9 +335,9 @@ def plot_scalar_field(model, cell_number, N=20,
     Returns:
         None
     """
-    plot = PlotData2D(model)
+    plot = PlotSolution(model)
     plot.plot_scalar_field(model.solutions, cell_number, N=N,
-                           direction=direction,  plot_data=plot_data, series=series,
+                           direction=direction,  plot_data=plot_data, show_all_data=show_all_data, series=series,
                            *args, **kwargs)
 
 def plot_section_scalarfield(model, section_name, sn, levels=50, show_faults=True, show_topo=True, lithback=True):
@@ -378,7 +380,7 @@ def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,
         Returns:
             None
     """
-    plot = PlotData2D(geo_data)
+    plot = PlotSolution(geo_data)
     plot.plot_gradient(scalar_field, gx, gy, gz, cell_number, q_stepsize=q_stepsize,
                            direction=direction, plot_scalar=plot_scalar,
                            **kwargs)
@@ -402,6 +404,6 @@ def plot_topology(geo_data, G, centroids, direction="y", label_kwargs=None, node
     Returns:
         Nothing, it just plots.
     """
-    PlotData2D.plot_topo_g(geo_data, G, centroids, direction=direction,
+    PlotSolution.plot_topo_g(geo_data, G, centroids, direction=direction,
                            label_kwargs=label_kwargs, node_kwargs=node_kwargs, edge_kwargs=edge_kwargs)
 

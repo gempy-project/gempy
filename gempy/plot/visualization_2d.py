@@ -490,7 +490,7 @@ class PlotSolution(PlotData2D):
             ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
             plothelp.add_colorbar(im=im, label='elevation [m]', cs=CS, aspect=35)
         if show_faults == True:
-            self.extract_section_fault_lines('topography')
+            self.extract_section_fault_lines('topography', faults_only=True)
         plt.title("Geological map", fontsize=15)
         plt.xlabel('X')
         plt.ylabel('Y')
@@ -703,7 +703,7 @@ class PlotSolution(PlotData2D):
 
     def plot_block_section(self, solution:Solution, cell_number:int, block:np.ndarray=None, direction:str="y",
                            interpolation:str='none', show_data:bool=False, show_faults:bool=False, show_topo:bool=False,
-                           block_type=None, ve:float=1, show_all_data:bool=False, **kwargs):
+                           block_type=None, ve:float=1, show_legend:bool = True, show_all_data:bool=False, **kwargs):
 
         if block is None:
             _block = solution.lith_block
@@ -758,7 +758,8 @@ class PlotSolution(PlotData2D):
                 else:
                     self.make_topography_overlay_4_blockplot(cell_number=cell_number, direction=direction)
 
-        if not show_data:
+        if show_data == False and show_legend == True:
+            import matplotlib.patches as mpatches
             patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
@@ -766,3 +767,185 @@ class PlotSolution(PlotData2D):
         plt.ylabel(y)
         return plt.gcf()
 
+    def plot_scalar_field(self, solution, cell_number, series=0, N=20,
+                          direction="y", show_data=True, show_all_data=False, *args, **kwargs):
+        """
+        Plot a scalar field in a given direction.
+
+        Args:
+            cell_number(int): position of the array to plot
+            scalar_field(str): name of the scalar field (or series) to plot
+            n_pf(int): number of the  scalar field (or series) to plot
+            direction(str): xyz. Caartesian direction to be plotted
+            serie: *Deprecated*
+            **kwargs: plt.contour kwargs
+
+        Returns:
+            scalar field plot
+        """
+
+        if isinstance(solution, Solution):
+            scalar_field = solution.scalar_field_matrix[series]
+        else:
+            warnings.warn('Passing the block directly will get deprecated in the next version. Please use Solution'
+                          'and block_type instead', FutureWarning)
+            scalar_field = solution
+
+        if 'cmap' not in kwargs:
+            kwargs['cmap'] = 'magma'
+
+        if show_data:
+            if show_all_data:
+                at = 'everywhere'
+            else:
+                at = 'block_section'
+            self.plot_data(cell_number=cell_number, direction=direction, at=at)
+
+        _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
+
+        plt.contour(scalar_field.reshape(
+            self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[_a, _b, _c].T,
+                    N,
+                    extent=extent_val, *args,
+                    **kwargs)
+
+        plt.contourf(scalar_field.reshape(
+            self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[_a, _b, _c].T,
+                    N,
+                    extent=extent_val, alpha=0.6, *args,
+                    **kwargs)
+
+        if 'colorbar' in kwargs:
+            plt.colorbar()
+
+        plt.xlabel(x)
+        plt.ylabel(y)
+
+    @staticmethod
+    def plot_topo_g(geo_model, G, centroids, direction="y",
+                    label_kwargs=None, node_kwargs=None, edge_kwargs=None):
+        res = geo_model.grid.regular_grid.resolution
+        if direction == "y":
+            c1, c2 = (0, 2)
+            e1 = geo_model.grid.regular_grid.extent[1] - geo_model.grid.regular_grid.extent[0]
+            e2 = geo_model.grid.regular_grid.extent[5] - geo_model.grid.regular_grid.extent[4]
+            d1 = geo_model.grid.regular_grid.extent[0]
+            d2 = geo_model.grid.regular_grid.extent[4]
+            if len(list(centroids.items())[0][1]) == 2:
+                c1, c2 = (0, 1)
+            r1 = res[0]
+            r2 = res[2]
+        elif direction == "x":
+            c1, c2 = (1, 2)
+            e1 = geo_model.grid.regular_grid.extent[3] - geo_model.grid.regular_grid.extent[2]
+            e2 = geo_model.grid.regular_grid.extent[5] - geo_model.grid.regular_grid.extent[4]
+            d1 = geo_model.grid.regular_grid.extent[2]
+            d2 = geo_model.grid.regular_grid.extent[4]
+            if len(list(centroids.items())[0][1]) == 2:
+                c1, c2 = (0, 1)
+            r1 = res[1]
+            r2 = res[2]
+        elif direction == "z":
+            c1, c2 = (0, 1)
+            e1 = geo_model.grid.regular_grid.extent[1] - geo_model.grid.regular_grid.extent[0]
+            e2 = geo_model.grid.regular_grid.extent[3] - geo_model.grid.regular_grid.extent[2]
+            d1 = geo_model.grid.regular_grid.extent[0]
+            d2 = geo_model.grid.regular_grid.extent[2]
+            if len(list(centroids.items())[0][1]) == 2:
+                c1, c2 = (0, 1)
+            r1 = res[0]
+            r2 = res[1]
+
+        nkw = {
+            "marker": "o",
+            "color": "black",
+            "markersize": 20,
+            "alpha": 0.75
+        }
+        if node_kwargs is not None:
+            nkw.update(node_kwargs)
+
+        tkw = {
+            "color": "white",
+            "size": 10,
+            "ha": "center",
+            "va": "center",
+            "weight": "ultralight",
+            "family": "monospace"
+        }
+        if label_kwargs is not None:
+            tkw.update(label_kwargs)
+
+        lkw = {
+            "linewidth": 0.75,
+            "color": "black"
+        }
+        if edge_kwargs is not None:
+            lkw.update(edge_kwargs)
+
+        for edge in G.edges():
+            a, b = edge
+            # plot edges
+            plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
+                          np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, **lkw)
+
+            for node in G.nodes():
+                plt.plot(centroids[node][c1] * e1 / r1 + d1, centroids[node][c2] * e2 / r2 +d2,
+                         marker="o", color="black", markersize=10, alpha=0.75)
+                plt.text(centroids[node][c1] * e1 / r1 + d1,
+                         centroids[node][c2] * e2 / r2 + d2, str(node), **tkw)
+
+    def plot_gradient(self, scalar_field, gx, gy, gz, cell_number, quiver_stepsize=5, #maybe call r sth. like "stepsize"?
+                      direction="y", plot_scalar = True, *args, **kwargs): #include plot data?
+        """
+            Plot the gradient of the scalar field in a given direction.
+
+            Args:
+                geo_data (gempy.DataManagement.InputData): Input data of the model
+                scalar_field(numpy.array): scalar field to plot with the gradient
+                gx(numpy.array): gradient in x-direction
+                gy(numpy.array): gradient in y-direction
+                gz(numpy.array): gradient in z-direction
+                cell_number(int): position of the array to plot
+                quiver_stepsize(int): step size between arrows to indicate gradient
+                direction(str): xyz. Caartesian direction to be plotted
+                plot_scalar(bool): boolean to plot scalar field
+                **kwargs: plt.contour kwargs
+
+            Returns:
+                None
+        """
+        if direction == "y":
+            if plot_scalar:
+                self.plot_scalar_field(scalar_field, cell_number, direction=direction, plot_data=False)
+            U = gx.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize,
+                 cell_number, ::quiver_stepsize].T
+            V = gz.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize,
+                 cell_number, ::quiver_stepsize].T
+            plt.quiver(self.model.grid.values[:, 0].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, cell_number, ::quiver_stepsize].T,
+                   self.model.grid.values[:, 2].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, cell_number, ::quiver_stepsize].T, U, V, pivot="tail",
+                   color='blue', alpha=.6)
+        elif direction == "x":
+            if plot_scalar:
+                self.plot_scalar_field(scalar_field, cell_number, direction=direction, plot_data=False)
+            U = gy.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize, ::quiver_stepsize].T
+            V = gz.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize, ::quiver_stepsize].T
+            plt.quiver(self.model.grid.values[:, 1].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize,  ::quiver_stepsize].T,
+                       self.model.grid.values[:, 2].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[cell_number, ::quiver_stepsize,  ::quiver_stepsize].T, U, V,
+                       pivot="tail",
+                       color='blue', alpha=.6)
+        elif direction== "z":
+            if plot_scalar:
+                self.plot_scalar_field(scalar_field, cell_number, direction=direction, plot_data=False)
+            U = gx.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T
+            V = gy.reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T
+            plt.quiver(self.model.grid.values[:, 0].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T,
+                       self.model.grid.values[:, 1].reshape(self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1],
+                                                            self.model.grid.regular_grid.resolution[2])[::quiver_stepsize, ::quiver_stepsize, cell_number].T, U, V,
+                       pivot="tail",
+                       color='blue', alpha=.6)
+        else:
+            raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
