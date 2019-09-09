@@ -1220,6 +1220,9 @@ class GeometricData(object):
             idx = self.df.index
 
         idx = np.atleast_1d(idx)
+
+        if self.df[attribute].dtype != series.df[attribute].dtype:
+            self.df[attribute] = self.df[attribute].astype("int64")
         self.df.loc[idx, attribute] = self.df['series'].map(series.df[attribute])
         return self
 
