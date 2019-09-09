@@ -200,6 +200,22 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
 
 def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=False,
                    show_density=False):
+    '''
+    Plot an equal-area projection of the orientations dataframe using mplstereonet.
+
+    Args:
+        geo_model (gempy.DataManagement.InputData): Input data of the model
+        series_only: To select whether a stereonet is plotted per series or per formation
+        litho: selection of formation or series names, as list. If None, all are plotted
+        planes: If True, azimuth and dip are plotted as great circles
+        poles: If True, pole points (plane normal vectors) of azimuth and dip are plotted
+        single_plots: If True, each formation is plotted in a single stereonet
+        show_density: If True, density contour plot around the pole points is shown
+
+    Returns:
+        None
+    '''
+
     plot = PlotData2D(geo_data)
     plot.plot_stereonet(litho=litho, planes=planes, poles=poles, single_plots=single_plots,
                         show_density=show_density)
@@ -221,7 +237,7 @@ def plot_map(model, contour_lines=True, show_faults = True, show_data=True, figs
     plot.plot_map(contour_lines=contour_lines, show_faults=show_faults, show_data=show_data, figsize=figsize)
 
 
-def plot_section_traces(model, show_data=True, section_names=None, contour_lines=False):
+def plot_section_traces(model, section_names=None, contour_lines=False, show_data=True, show_all_data=False):
     """
 
     Args:
@@ -234,12 +250,19 @@ def plot_section_traces(model, show_data=True, section_names=None, contour_lines
 
     """
     plot = PlotSolution(model)
-    plot.plot_section_traces(show_data=show_data, section_names=section_names, contour_lines=contour_lines)
+    if plot.model.solutions.geological_map is not None:
+        plot.plot_map(contour_lines=contour_lines, show_data=show_data, show_all_data=show_all_data)
+    #else:
+        #fig = plt.figure()
+        #plt.title('Section traces, z direction')
 
+    plot.plot_section_traces(show_data=show_data, section_names=section_names, contour_lines=contour_lines,
+                             show_all_data=show_all_data)
 
+"""
 def plot_predef_sections(model, show_traces=True, show_data=False, section_names=None, show_faults=True,
                          show_topo=True, figsize=(12, 12)):
-    """
+
 
     Args:
         model:
@@ -252,47 +275,24 @@ def plot_predef_sections(model, show_traces=True, show_data=False, section_names
 
     Returns:
 
-    """
+
     plot = PlotSolution(model)
     plot.plot_sections(show_traces=show_traces, show_data=show_data, section_names=section_names,
                        show_faults=show_faults, show_topo=show_topo, figsize=figsize)
 
+"""
 
-def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
-                 show_data=False, show_faults=True, show_topo=False, show_legend=True, 
-                 block_type=None, ve=1, **kwargs):
-    """
-    Plot a section of the block model
-
-    Args:
-        cell_number(int): position of the array to plot
-        direction(str): xyz. Caartesian direction to be plotted
-        interpolation(str): Type of interpolation of plt.imshow. Default 'none'.  Acceptable values are 'none'
-        ,'nearest', 'bilinear', 'bicubic',
-        'spline16', 'spline36', 'hanning', 'hamming', 'hermite', 'kaiser',
-        'quadric', 'catrom', 'gaussian', 'bessel', 'mitchell', 'sinc',
-        'lanczos'
-        ve(float): Vertical exageration
-        **kwargs: imshow keywargs
-
-    Returns:
-        None
-    """
-    plot = PlotData2D(model)
-    plot.fig = plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
-                            show_data, show_faults, show_topo, show_legend, block_type, ve, **kwargs)
-    # TODO saving options
-    return plot
-
-def plot_section_by_name(model, section_name, show_faults=True, show_topo=True, show_data=True):
+def plot_section_by_name(model, section_name, show_faults=True, show_topo=True, show_data=True,
+                         show_all_data=False):
     # Todo needs more keywords:
     ### if show_data: radius, data_type
     plot = PlotSolution(model)
     plot.plot_section_by_name(section_name=section_name, show_topo=show_topo, show_faults=show_faults,
-                              show_data=show_data)
+                              show_data=show_data, show_all_data=show_all_data)
 
-def plot_section2(model, cell_number=13, block=None, direction="y", interpolation='none',
-                 show_data=False, show_faults=True, show_topo = False,  block_type=None, ve=1, **kwargs):
+def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
+                 show_data=False, show_faults=True, show_topo = False,  block_type=None, ve=1,
+                 show_all_data=False, **kwargs):
     """
     Plot a section of the block model
 
@@ -312,7 +312,7 @@ def plot_section2(model, cell_number=13, block=None, direction="y", interpolatio
     """
     plot = PlotSolution(model)
     plot.fig = plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
-                            show_data, show_faults, show_topo,  block_type, ve, **kwargs)
+                            show_data, show_faults, show_topo,  block_type, ve, show_all_data=show_all_data, **kwargs)
     # TODO saving options
     return plot
 
