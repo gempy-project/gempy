@@ -95,7 +95,8 @@ class Grid(object):
         self.custom_grid_grid_active = False
         self.topography = None
         self.topography_grid_active = False
-        self.sections = None
+        self.sections = grid_types.Sections()#todo I have to do it like that because I need
+                                              # the function calculate_line_coords_2points
         self.sections_grid_active = False
         self.centered_grid = None
         self.centered_grid_active = False
@@ -707,6 +708,11 @@ class Colors:
             self.colordict[surfaces] = self.colordict_default[surfaces]
         self._set_colors()
 
+    def delete_colors(self, surfaces):
+        for surface in surfaces:
+            self.colordict.pop(surface, None)
+        self._set_colors()
+
     def make_faults_black(self, series_fault):
         faults_list = list(self.surfaces.df[self.surfaces.df.series.isin(series_fault)]['surface'])
         for fault in faults_list:
@@ -993,7 +999,6 @@ class Surfaces(object):
 
         # Updating surfaces['series'] categories
         self.df['series'].cat.set_categories(self.series.df.index, inplace=True)
-
         # TODO Fixing this. It is overriding the formations already mapped
         if mapping_object is not None:
             # If none is passed and series exist we will take the name of the first series as a default
@@ -1904,9 +1909,22 @@ class Orientations(GeometricData):
             return table
 
         else:
-            assert {coord_x_name, coord_y_name, coord_z_name, dip_name, azimuth_name,
-                    polarity_name, surface_name}.issubset(table.columns), \
-                "One or more columns do not match with the expected values " + str(table.columns)
+            assert np.logical_or({coord_x_name, coord_y_name, coord_z_name, dip_name, azimuth_name,
+                    polarity_name, surface_name}.issubset(table.columns),
+                 {coord_x_name, coord_y_name, coord_z_name, g_x_name, g_y_name, g_z_name,
+                  polarity_name, surface_name}.issubset(table.columns)), \
+                "One or more columns do not match with the expected values, which are: \n" +\
+                "- the locations of the measurement points '{}','{}' and '{}' \n".format(coord_x_name,coord_y_name,
+                                                                                         coord_z_name)+ \
+                "- EITHER '{}' (trend direction indicated by an angle between 0 and 360 with North at 0 AND " \
+                "'{}' (inclination angle, measured from horizontal plane downwards, between 0 and 90 degrees) \n".format(
+                azimuth_name, dip_name) +\
+                "- OR the pole vectors of the orientation in a cartesian system '{}','{}' and '{}' \n".format(g_x_name,
+                                                                                                              g_y_name,
+                                                                                                              g_z_name)+\
+                "- the '{}' of the orientation, can be normal (1) or reversed (-1) \n".format(polarity_name)+\
+                "- the name of the surface: '{}'\n".format(surface_name)+\
+                "Your headers are "+str(list(table.columns))
 
             if inplace:
                 # self.categories_df[table.columns] = table

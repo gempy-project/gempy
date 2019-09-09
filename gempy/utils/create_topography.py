@@ -17,6 +17,8 @@ try:
     GDAL_IMPORT = True
 except ImportError:
     GDAL_IMPORT = False
+import skimage
+import matplotlib.pyplot as plt
 
 
 class Load_DEM_GDAL():
@@ -45,7 +47,6 @@ class Load_DEM_GDAL():
         else:
             print('pass geo_model to directly crop the DEM to the grid extent')
             print('depending on the size of the raster, this can take forever')
-        print(self.extent, self.resolution)
         self.convert2xyz()
 
     def _get_raster_dimensions(self):
@@ -59,6 +60,14 @@ class Load_DEM_GDAL():
         self.resolution = np.array([(uly - lry) / (-yres), (lrx - ulx) / xres]).astype(int)
         self.extent = np.array([ulx, lrx, lry, uly]).astype(int)
         self.d_z = np.array([z.min(), z.max()])
+
+    def info(self):
+        ulx, xres, xskew, uly, yskew, yres = self.dem.GetGeoTransform()
+        print('raster extent: ', self.extent)
+        print('raster resolution: ', self.resolution)
+        print('Pixel X Size: ', xres, 'Pixel Y Size:', yres)
+        plt.imshow(self.dem_zval, extent=self.extent)  # plot raster as image
+        plt.colorbar()
 
     def crop2grid(self):
         '''
@@ -96,8 +105,33 @@ class Load_DEM_GDAL():
 
         self.values_3D = np.dstack([x, y, z])
 
-    def resize(self):
+    def _resize(self, resx, resy):
+
+        #self.values_3D_res = skimage.transform.resize(self.values_3D,
+        #                                              (resx, resy),
+         #                                             mode='constant',
+         #                                             anti_aliasing=False, preserve_range=True)
+        #self.resolution_res = np.array([resx, resy])
         pass
+
+    def resample(self, new_xres, new_yres, save_path):
+        """
+        Decrease the pixel size of the raster.
+        Args:
+            new_resx: desired resolution in x-direction
+            new_resy: desired resolution in y-direction
+            save_path: filepath to where the resampled file should be stored
+
+        Returns: Nothing, it writes a raster file with decreased resolution.
+
+        """
+        props = self.dem.GetGeoTransform()
+        print('current pixel xsize:', props[1], 'current pixel ysize:', -props[-1])
+        options = gdal.WarpOptions(options=['tr'], xRes=new_xres, yRes=new_yres)
+        newfile = gdal.Warp(save_path, self.dem, options=options)
+        newprops = newfile.GetGeoTransform()
+        print('new pixel xsize:', newprops[1], 'new pixel ysize:', -newprops[-1])
+        print('file saved in ' + save_path)
 
     def _get_cornerpoints(self, extent):
         upleft = ([extent[0], extent[3]])

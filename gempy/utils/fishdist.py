@@ -12,7 +12,7 @@ except ImportError:
 try:
     from spherecluster import VonMisesFisherMixture
 except ImportError:
-    print('for some purposes spherecluster package would be good (or I copy the respective file?!')
+    print('for some purposes spherecluster package would be good')
 
 """
     This file is part of gempy.
