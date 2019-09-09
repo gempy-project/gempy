@@ -144,6 +144,8 @@ class TheanoGraphPro(object):
         # Trade speed for memory this will consume more memory
         self.max_speed = kwargs.get('max_speed', 1)
         self.sparse_version = kwargs.get('sparse_version', False)
+        self.loop_i = theano.shared(np.array(1, dtype=int))
+
         self.gradient = kwargs.get('gradient', False)
         self.device = theano.config.device
         theano.config.floatX = dtype
@@ -1177,25 +1179,26 @@ class TheanoGraphPro(object):
     def scalar_field_loop(self, a, b, Z_x, grid_val, weights):
 
         if self.sparse_version is True:
-            sigma_0_grad = self.contribution_gradient_interface(grid_val[a:b], weights)
-            sigma_0_interf = self.contribution_interface(grid_val[a:b], weights)
-            f_0 = self.contribution_universal_drift(grid_val[a:b], weights)
-            f_1 = self.contribution_faults(weights, a, b)
+            rang = 5
+            tiled_weights = self.extend_dual_kriging(weights, rang)
+            sigma_0_grad = self.contribution_gradient_interface(grid_val[a:b], tiled_weights)
+            sigma_0_interf = self.contribution_interface(grid_val[a:b], tiled_weights)
+            f_0 = self.contribution_universal_drift(grid_val[a:b], tiled_weights)
+            f_1 = self.contribution_faults(tiled_weights, a, b)
 
             # Add an arbitrary number at the potential field to get unique values for each of them
-            partial_Z_x = (sigma_0_grad + sigma_0_interf + f_0 + f_1)
-
-          #  partial_Z_x = sparse.dense_from_sparse(partial_Z_x)[0]
-           # partial_Z_x = partial_Z_x[0]
+            partial_Z_x = (sigma_0_grad + sigma_0_interf + f_0 + f_1)[0]
 
         else:
-            sigma_0_grad = self.contribution_gradient_interface(grid_val[a:b], weights[:, a:b])
-            sigma_0_interf = self.contribution_interface(grid_val[a:b], weights[:, a:b])
-            f_0 = self.contribution_universal_drift(grid_val[a:b], weights[:, a:b])
-            f_1 = self.contribution_faults(weights[:, a:b], a, b)
+            rang = b - a
+            tiled_weights = self.extend_dual_kriging(weights, rang)
+            sigma_0_grad = self.contribution_gradient_interface(grid_val[a:b], tiled_weights[:, :])
+            sigma_0_interf = self.contribution_interface(grid_val[a:b], tiled_weights[:, :])
+            f_0 = self.contribution_universal_drift(grid_val[a:b], tiled_weights[:, :])
+            f_1 = self.contribution_faults(tiled_weights[:, :], a, b)
 
             # Add an arbitrary number at the potential field to get unique values for each of them
-            partial_Z_x = (sigma_0_grad + sigma_0_interf + f_0 + f_1)
+            partial_Z_x = (sigma_0_grad + sigma_0_interf + f_0+ f_1)
 
         Z_x = T.set_subtensor(Z_x[a:b], partial_Z_x)
 
@@ -1215,9 +1218,12 @@ class TheanoGraphPro(object):
         if 'grid_shape' in self.verbose:
             grid_shape = theano.printing.Print('grid_shape')(grid_shape)
 
-       # self.steps = theano.shared(1e12, dtype='float64')
-        steps = 1e12 / self.matrices_shapes()[-1] / grid_shape
-        slices = T.concatenate((T.arange(0, grid_shape[0], steps[0], dtype='int64'), grid_shape))
+        # If memory errors reduce this to 11
+        steps = 5e6 / self.matrices_shapes()[-1] #/ grid_shape
+        if 'steps' in self.verbose:
+            steps = theano.printing.Print('steps')(steps)
+
+        slices = T.concatenate((T.arange(0, grid_shape[0], steps, dtype='int64'), grid_shape))
 
         if 'slices' in self.verbose:
             slices = theano.printing.Print('slices')(slices)
@@ -1228,12 +1234,12 @@ class TheanoGraphPro(object):
             Z_x = self.scalar_field_loop(0, 100000000, Z_x_init, grid_val, weights)
 
         elif self.max_speed < 2:
-            tiled_weights = self.extend_dual_kriging(weights, grid_val.shape[0])
+            # tiled_weights = self.extend_dual_kriging(weights, grid_val.shape[0])
             Z_x_loop, updates3 = theano.scan(
                 fn=self.scalar_field_loop,
                 outputs_info=[Z_x_init],
                 sequences=[dict(input=slices, taps=[0, 1])],
-                non_sequences=[grid_val, tiled_weights],
+                non_sequences=[grid_val, weights],
                 profile=False,
                 name='Looping grid',
                 return_list=True)
@@ -1623,7 +1629,11 @@ class TheanoGraphPro(object):
                                    self.values_properties_op[:, n_form_per_serie_0: n_form_per_serie_1 + 1]),
                                block_matrix[n_series, :]
                                )
-        #
+        #grid_shape = T.max((0, self.grid_val_T.shape[0]))
+       # grid_shape = theano.printing.Print('grid sh')(grid_shape)
+       # a = theano.printing.Print('a')(grid_shape*self.loop_i)
+        #grid_shape = T.max((T.as_tensor(0), T.stack([self.grid_val_T.shape[0]], axis=0)))
+        # TODO  grid_shape*(self.loop_i-1):a]
         weights_vector = T.set_subtensor(weights_vector[len_w_0:len_w_1], weights)
         scalar_field_matrix = T.set_subtensor(scalar_field_matrix[n_series], Z_x)
         block_matrix = T.set_subtensor(block_matrix[n_series, :], block)

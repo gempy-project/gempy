@@ -99,7 +99,7 @@ class Interpolator(object):
             additional_data = self.additional_data
 
         graph = tg.TheanoGraphPro(optimizer=additional_data.options.df.loc['values', 'theano_optimizer'],
-                                  dtype=additional_data.options.df.loc['values', 'dtype'],
+                                  #dtype=additional_data.options.df.loc['values', 'dtype'],
                                   verbose=additional_data.options.df.loc['values', 'verbosity'],
                                   **kwargs)
         if inplace is True:
@@ -313,7 +313,7 @@ class InterpolatorScalar(Interpolator):
         if debug is True:
             print('Level of Optimization: ', theano.config.optimizer)
             print('Device: ', theano.config.device)
-            print('Precision: ', self.dtype)
+            print('Precision: ', theano.config.floatX)
             print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
         print('Compilation Done!')
         return th_fn
@@ -853,7 +853,7 @@ class InterpolatorModel(Interpolator):
         print('is erosion', self.theano_graph.is_erosion.get_value())
         print('is onlap', self.theano_graph.is_onlap.get_value())
 
-    def compile_th_fn(self, inplace=False, debug=False, grid: Union[str, np.ndarray] = 'shared'):
+    def compile_th_fn(self, inplace=False, debug=True, grid: Union[str, np.ndarray] = 'shared'):
         """
         Compile and create the theano function which can be evaluated to compute the geological models
 
@@ -893,7 +893,7 @@ class InterpolatorModel(Interpolator):
         if debug is True:
             print('Level of Optimization: ', theano.config.optimizer)
             print('Device: ', theano.config.device)
-            print('Precision: ', self.dtype)
+            print('Precision: ', theano.config.floatX)
             print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
         print('Compilation Done!')
 

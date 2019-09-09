@@ -237,6 +237,7 @@ class PlotData2D(object):
             block = self.model.solutions.scalar_field_matrix[f_id]
             level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
                 self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
+            level.sort()
             plt.contour(block.reshape(self.model.grid.regular_grid.resolution)[_slice].T, 0, extent=extent, levels=level,
                         colors=self._cmap.colors[f_id], linestyles='solid')
 

@@ -27,7 +27,7 @@ import pandas as pn
 from numpy import ndarray
 from typing import Union
 import warnings
-
+import copy
 # This is for sphenix to find the packages
 # sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from gempy.core.model import Model, DataMutation, AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
@@ -248,7 +248,6 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
         i = model.interpolator_gravity.get_python_input_block(append_control=True, fault_drift=None)
 
         # TODO So far I reset all shared parameters to be sure. In the future this should be optimize as interpolator
-
         model.interpolator_gravity.set_theano_shared_tz_kernel()
         # model.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
         sol = model.interpolator_gravity.theano_function(*i)

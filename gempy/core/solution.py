@@ -245,7 +245,7 @@ class Solution(object):
             else:
                 mask_array = self.mask_matrix_pad[e]
 
-            for s_n, level in enumerate(sfas):
+            for level in sfas:
                 try:
                     v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
 
