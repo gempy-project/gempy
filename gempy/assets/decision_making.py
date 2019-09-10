@@ -22,6 +22,22 @@ import numpy as np
 import scipy.optimize as sop
 from matplotlib import pyplot as plt
 
+import copy
+import matplotlib.pyplot as plt
+from matplotlib import cm
+
+import matplotlib.gridspec as gridspect
+
+# Create cmap
+from matplotlib.colors import ListedColormap
+import matplotlib.colors as colors
+import matplotlib.cm as cmx
+
+import numpy as np
+import pandas as pn
+import scipy.stats as stats
+import seaborn as sns
+
 def loss_abs(estimate_s, true_s, u=1,o=1,u_f=1,o_f=1, r=1):
     """Absolute-error loss function.
 
@@ -324,3 +340,236 @@ def loss_plot(estimate_range, true_s, risk_range=1, function='absolute', u=1,o=1
     plt.ylim(0, 1.1 * np.max(loss_i))
     plt.grid()
     plt.show()
+
+
+def plot_multiple_loss():
+
+    def plot_axis(xvals, nor_l, loss, subplot_spec, e, depth=False):
+        grid = gridspect.GridSpecFromSubplotSpec(1, 1, subplot_spec=subplot_spec)
+        ax = fig.add_subplot(grid[:, :])
+        # ax0.yaxis.set_visible(False)
+        axr = ax.twinx()
+
+        labels = 'Thickness Score' if depth is True else None
+        c = default_red if depth is True else default_blue
+
+        ax.plot(xvals, nor_l, color=c, linewidth=.5, label=labels)
+        ax.fill_between(xvals, nor_l, 0, color=c, alpha=.8)
+        ax.set_ylabel('Likelihood')
+        ax.set_ylim(0, .16)
+        ax.set_xlim(-25+6, 6+25)
+
+        axr.set_ylim(0, 40)
+        axr.set_ylabel('Expected Loss')
+
+        ax.spines['top'].set_color('none')
+        ax.spines['left'].set_color('none')
+        if e == 0:
+            axr.plot(xvals, loss, linewidth=3, color='white')
+            axr.plot(xvals, loss, linewidth=2, color='#496155', label='Loss')
+            axr.legend()
+        else:
+            axr.plot(xvals, loss, linewidth=3, color='white')
+            axr.plot(xvals, loss, linewidth=2, color='#496155')
+        if e%2 == 0:
+
+            axr.yaxis.set_visible(False)
+           # axr.yaxis.label.set_visible(False)
+
+        else:
+
+            for tick in axr.get_yticklines():
+                tick.set_visible(False)
+           # axr.yaxis.label.set_visible(False)
+            ax.yaxis.set_visible(False)
+        ax.xaxis.set_visible(False)
+        axr.xaxis.set_visible(False)
+        if e>3:
+            ax.xaxis.set_visible(True)
+            axr.xaxis.set_visible(True)
+            ax.set_xlabel('Score')
+        return ax, axr
+
+    def res_score_loss(estimate_s, true_s, ov=1.25, uv_b=2, ov_b=1.5, risk_s=1):
+
+        underest = (estimate_s < true_s)
+        # loss_s = np.zeros((estimate_s.shape[0], true_s.shape[0]))
+        underest_bad = (estimate_s <= 0) & (true_s > 0)
+        overest = (estimate_s > true_s)
+        overest_bad = (estimate_s > 0) & (true_s <= 0)
+        a = underest * (true_s - estimate_s) * (risk_s ** -0.5)
+        b = underest_bad * (true_s - estimate_s) * (uv_b * (risk_s ** -0.5))
+        c = overest * (estimate_s - true_s) * (ov * risk_s)
+        d = overest_bad * (estimate_s - true_s) * (ov_b * risk_s)
+        loss_s = (a + b + c + d).mean(axis=1)
+        return loss_s, (a,b,c,d)
+
+    def abs_loss(estimate_s, true_s, ov=1, uv=1, risk_s=1, uv_b=1):
+
+        underest = (estimate_s < true_s)
+        # loss_s = np.zeros((estimate_s.shape[0], true_s.shape[0]))
+        underest_bad = 1# (estimate_s <= 0) & (true_s > 0)
+        overest = (estimate_s > true_s)
+        overest_bad = (estimate_s > 0) & (true_s <= 0)
+        b = 0
+        d = 0
+        a = underest * (true_s - estimate_s) * (uv * risk_s)
+      #  b = underest_bad * (true_s - estimate_s) * (uv_b * (risk_s))
+        c = overest * (estimate_s - true_s) * (ov * risk_s)
+        #d = overest_bad * (estimate_s - true_s) * (ov_b * risk_s)
+        loss_s = (a + b + c + d).mean(axis=1)
+        return loss_s, (a,b,c,d)
+
+    def compute_values(mu, sigma, loss_type, x_range=(-24+6, 6+24), risk=1, depth=False):
+        samples_size = 100000
+
+        if x_range is None:
+            x_max = mu + 5 * sigma
+            x_min = mu - 5 * sigma
+        else:
+            x_min, x_max = x_range
+       # xvals = np.linspace(-23+6, 6+23, 100)
+
+        xvals = np.linspace(x_min, x_max, 100)
+        nor_l = stats.norm.pdf(xvals, loc=mu, scale=sigma)
+        samples = np.random.normal(loc=mu, scale=sigma, size=samples_size)
+
+        if depth is True:
+            #xvals = np.linspace(0, 60, 100)
+            # nor_d = stats.norm.pdf(xvals, loc=30, scale=5)
+            samples_depth = np.random.normal(loc=30, scale=5, size=samples_size)
+            depth_score = samples_depth
+
+            # Transformation to cost
+            d_cost = - ((depth_score-depth_score.min()) / 8) ** 2.6
+            samples = samples + d_cost
+        elif depth is False:
+            pass
+
+        else:
+            samples = depth
+
+        if loss_type == 'abs':
+            loss, partial = abs_loss(samples, xvals.reshape(-1, 1), 1, 1, risk_s=risk)
+            #return xvals, nor_l, loss, partial
+        elif loss_type == 'custom':
+            loss, partial = res_score_loss(samples, xvals.reshape(-1, 1), risk_s=risk)
+
+        if depth is True:
+            return xvals, nor_l, loss, partial, samples, d_cost
+        else:
+            return xvals, nor_l, loss, partial
+
+    sns.set(style="white")  # , rc={"axes.facecolor": (0, 0, 0, 0)})
+    # Discrete cmap
+    pal_disc = sns.cubehelix_palette(10, rot=-.25, light=.7)
+    pal_disc_l = sns.cubehelix_palette(10)
+    my_cmap = ListedColormap(pal_disc)
+    my_cmap_l = ListedColormap(pal_disc_l)
+
+    # Continuous cmap
+    pal_cont = sns.cubehelix_palette(250, rot=-.25, light=.7)
+    pal_cont_l = sns.cubehelix_palette(250)
+
+    my_cmap_full = ListedColormap(pal_cont)
+    my_cmap_full_l = ListedColormap(pal_cont_l)
+
+    default_red = '#DA8886'
+    default_blue = pal_cont.as_hex()[4]
+    default_l = pal_disc_l.as_hex()[4]
+
+    # %matplotlib notebook
+    figsize = (12, 12)
+    fig, axes = plt.subplots(0, 0, figsize=figsize, constrained_layout=False)
+    sns.despine(left=True, bottom=True)
+
+    gs_0 = gridspect.GridSpec(3, 2, figure=fig, hspace=0.1, wspace=0.009)
+
+    axis = []
+
+    mu = [12]*6
+    sigma = [2.3, 2.3 ,4,4, 4, 4]
+    type = ['abs', 'custom', 'abs', 'custom', 'abs', 'custom']
+    for e, ax in enumerate(gs_0):
+
+        if e==0:
+            x, n, l, partial = compute_values(mu[e], sigma[e], type[e])
+            ax_, axr_ = plot_axis(x, n, l, ax, e)
+            ax_.vlines(mu[e], 0, 40, linestyles='--', alpha=.5)
+            ax_.vlines(0, 0, 40, linestyles='--', alpha=.5)
+            axr_.hlines(l.min(), -25, x[l.argmin()],
+                       linestyles='--', alpha=.5)
+
+        if e==1:
+            x, n, l, partial = compute_values(mu[e], sigma[e], type[e])
+            ax_, axr_ = plot_axis(x, n, l, ax, e)
+            ax_.vlines(mu[e], 0, 40, linestyles='--', alpha=.5)
+            ax_.vlines(0, 0, 40, linestyles='--', alpha=.5)
+            labels = ['Underes.', 'Crit. Underest.', 'Overest.', 'Crit. Overest']
+            for i in range(4):
+                axr_.plot(x, partial[i].mean(axis=1), '--', linewidth=1, label=labels[i])
+
+            axr_.legend(loc=2)
+
+        if e==2 or e==3:
+            x, n, l, partial = compute_values(mu[e], sigma[e], type[e])
+            ax_, axr_ = plot_axis(x, n, l, ax, e)
+            axr_.plot(x[l.argmin()], 0, 'o',  color='#496155', markersize=12)
+            if e == 2:
+                axr_.hlines(l.min(), -25, x[l.argmin()],
+                            linestyles='--', alpha=.5)
+
+            x, n, l, partial = compute_values(mu[e], sigma[e], type[e], risk=.2)
+            axr_.plot(x, l, linewidth=3, color='white')
+            axr_.plot(x, l, linewidth=2, label='Risk Adverse')
+            axr_.plot(x[l.argmin()], 0, 'o',  color='b', markersize=12)
+
+            x, n, l, partial = compute_values(mu[e], sigma[e], type[e], risk=5)
+            axr_.plot(x, l, linewidth=3, color='white')
+            axr_.plot(x, l, linewidth=2, label='Risk Friendly')
+            axr_.plot(x[l.argmin()], 0, 'o',  color='orange', markersize=12)
+
+            ax_.vlines(mu[e], 0, 40, linestyles='--', alpha=.5)
+            ax_.vlines(0, 0, 40, linestyles='--', alpha=.5)
+
+            axr_.legend()
+
+        if e > 3:
+            x, n, l, partial, ss, d_cost = compute_values(mu[e], sigma[e], type[e],
+                                                          x_range=(-24+6, 6+24),
+                                                          risk=1, depth=True)
+            ax_, axr_ = plot_axis(x, n, l, ax, e, depth=True)
+            axr_.plot(x[l.argmin()], 0, 'o',  color='#496155', markersize=12)
+
+            x_max = ss.mean() + 6 * ss.std()
+            x_min = ss.mean() - 6 * ss.std()
+            print(x_max, x_min, 'foo')
+            print(ss.mean(), d_cost.mean())
+            x, n, l, partial = compute_values(mu[e], sigma[e], type[e],
+                                                      x_range=(-24 + 6, 6 + 24),
+                                                      risk=.2, depth=ss)
+            #print(_1.mean(),  d_cost.mean())
+            axr_.plot(x, l, linewidth=3, color='white')
+            axr_.plot(x, l, linewidth=2, label='Risk Adverse')
+            axr_.plot(x[l.argmin()], 0, 'o',  color='b', markersize=12)
+
+            x, n, l, partial= compute_values(mu[e], sigma[e], type[e],
+                                                      x_range=(-24 + 6, 6 + 24),
+                                                      risk=5, depth=ss)
+          #  print(_1.mean(),  d_cost.mean())
+            axr_.plot(x, l, linewidth=3, color='white')
+            axr_.plot(x, l, linewidth=2, label='Risk Friendly')
+            axr_.plot(x[l.argmin()], 0, 'o',  color='orange', markersize=12)
+
+            sns.kdeplot(d_cost, ax=ax_, shade=True, label='Depth Score', color=default_red,
+                        alpha=.8,linewidth=.5)
+            sns.kdeplot(ss, ax=ax_, label='Final Score', shade=True, color=default_blue,
+                        alpha=1, linewidth=.5)
+
+            # ax_.vlines(mu[e], 0, 40, linestyles='--', alpha=.5)
+            ax_.vlines(np.median(ss), 0, 40, linestyles='--', alpha=.5)
+            ax_.vlines(0, 0, 40, linestyles='--', alpha=.5)
+            ax_.legend(loc=2)
+
+        axis.append((ax_, axr_))
+

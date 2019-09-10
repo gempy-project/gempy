@@ -95,7 +95,8 @@ class Grid(object):
         self.custom_grid_grid_active = False
         self.topography = None
         self.topography_grid_active = False
-        self.sections = None
+        self.sections = grid_types.Sections()#todo I have to do it like that because I need
+                                              # the function calculate_line_coords_2points
         self.sections_grid_active = False
         self.centered_grid = None
         self.centered_grid_active = False
@@ -707,6 +708,11 @@ class Colors:
             self.colordict[surfaces] = self.colordict_default[surfaces]
         self._set_colors()
 
+    def delete_colors(self, surfaces):
+        for surface in surfaces:
+            self.colordict.pop(surface, None)
+        self._set_colors()
+
     def make_faults_black(self, series_fault):
         faults_list = list(self.surfaces.df[self.surfaces.df.series.isin(series_fault)]['surface'])
         for fault in faults_list:
@@ -993,7 +999,6 @@ class Surfaces(object):
 
         # Updating surfaces['series'] categories
         self.df['series'].cat.set_categories(self.series.df.index, inplace=True)
-
         # TODO Fixing this. It is overriding the formations already mapped
         if mapping_object is not None:
             # If none is passed and series exist we will take the name of the first series as a default
@@ -1054,7 +1059,7 @@ class Surfaces(object):
 
         """
         values_array = np.atleast_2d(values_array)
-        properties_names = np.asarray(properties_names)
+        properties_names = np.atleast_1d(properties_names)
         if properties_names.shape[0] != values_array.shape[0]:
             for i in range(values_array.shape[0]):
                 properties_names = np.append(properties_names, 'value_' + str(i))
@@ -1157,6 +1162,8 @@ class GeometricData(object):
         # series
         self.df['series'] = 'Default series'
         self.df['series'] = self.df['series'].astype('category', copy=True)
+        #self.df['order_series'] = self.df['order_series'].astype('category', copy=True)
+
         self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
 
         # id
@@ -1174,7 +1181,6 @@ class GeometricData(object):
             kwargs['sep'] = ','
 
         table = pn.read_csv(file_path, **kwargs)
-
         return table
 
     def sort_table(self):
@@ -1234,7 +1240,15 @@ class GeometricData(object):
             idx = self.df.index
 
         idx = np.atleast_1d(idx)
-        self.df.loc[idx, attribute] = self.df['series'].map(series.df[attribute])
+        if attribute in ['id', 'order_series']:
+            self.df.loc[idx, attribute] = self.df['series'].map(series.df[attribute]).astype(int)
+
+        else:
+            self.df.loc[idx, attribute] = self.df['series'].map(series.df[attribute])
+
+        if type(self.df['order_series'].dtype) is pn.CategoricalDtype:
+
+            self.df['order_series'].cat.remove_unused_categories(inplace=True)
         return self
 
     @setdoc_pro(Surfaces.__doc__)
@@ -1259,8 +1273,13 @@ class GeometricData(object):
             if surfaces.df.loc[~surfaces.df['isBasement']]['series'].isna().sum() != 0:
                 raise AttributeError('Surfaces does not have the correspondent series assigned. See'
                                      'Surfaces.map_series_from_series.')
+            self.df.loc[idx, attribute] = self.df.loc[idx, 'surface'].map(surfaces.df.set_index('surface')[attribute])
 
-        self.df.loc[idx, attribute] = self.df.loc[idx, 'surface'].map(surfaces.df.set_index('surface')[attribute])
+        elif attribute in ['id', 'order_series']:
+            self.df.loc[idx, attribute] = (self.df.loc[idx, 'surface'].map(surfaces.df.set_index('surface')[attribute])).astype(int)
+        else:
+
+            self.df.loc[idx, attribute] = self.df.loc[idx, 'surface'].map(surfaces.df.set_index('surface')[attribute])
 
     # def map_data_from_faults(self, faults, idx=None):
     #     """
@@ -1805,7 +1824,7 @@ class Orientations(GeometricData):
         return True
 
     @setdoc_pro([SurfacePoints.__doc__])
-    def create_orientation_from_interface(self, surface_points: SurfacePoints, indices):
+    def create_orientation_from_surface_points(self, surface_points: SurfacePoints, indices):
         # TODO test!!!!
         """
         Create and set orientations from at least 3 points categories_df
@@ -1890,9 +1909,22 @@ class Orientations(GeometricData):
             return table
 
         else:
-            assert {coord_x_name, coord_y_name, coord_z_name, dip_name, azimuth_name,
-                    polarity_name, surface_name}.issubset(table.columns), \
-                "One or more columns do not match with the expected values " + str(table.columns)
+            assert np.logical_or({coord_x_name, coord_y_name, coord_z_name, dip_name, azimuth_name,
+                    polarity_name, surface_name}.issubset(table.columns),
+                 {coord_x_name, coord_y_name, coord_z_name, g_x_name, g_y_name, g_z_name,
+                  polarity_name, surface_name}.issubset(table.columns)), \
+                "One or more columns do not match with the expected values, which are: \n" +\
+                "- the locations of the measurement points '{}','{}' and '{}' \n".format(coord_x_name,coord_y_name,
+                                                                                         coord_z_name)+ \
+                "- EITHER '{}' (trend direction indicated by an angle between 0 and 360 with North at 0 AND " \
+                "'{}' (inclination angle, measured from horizontal plane downwards, between 0 and 90 degrees) \n".format(
+                azimuth_name, dip_name) +\
+                "- OR the pole vectors of the orientation in a cartesian system '{}','{}' and '{}' \n".format(g_x_name,
+                                                                                                              g_y_name,
+                                                                                                              g_z_name)+\
+                "- the '{}' of the orientation, can be normal (1) or reversed (-1) \n".format(polarity_name)+\
+                "- the name of the surface: '{}'\n".format(surface_name)+\
+                "Your headers are "+str(list(table.columns))
 
             if inplace:
                 # self.categories_df[table.columns] = table
@@ -2230,6 +2262,7 @@ class RescaledData(object):
         """
         if idx is None:
             idx = self.surface_points.df.index
+        idx = np.atleast_1d(idx)
 
         self.surface_points.df.loc[idx, ['X_r', 'Y_r', 'Z_r']] = self.rescale_surface_points(
             self.surface_points, self.df.loc['values', 'rescaling factor'], self.df.loc['values', 'centers'], idx=idx)
@@ -2286,6 +2319,7 @@ class RescaledData(object):
         """
         if idx is None:
             idx = self.orientations.df.index
+        idx = np.atleast_1d(idx)
 
         self.orientations.df.loc[idx, ['X_r', 'Y_r', 'Z_r']] = self.rescale_orientations(
             self.orientations, self.df.loc['values', 'rescaling factor'], self.df.loc['values', 'centers'], idx=idx)
@@ -2484,7 +2518,7 @@ class Options(object):
 
      """
     def __init__(self):
-        df_ = pn.DataFrame(np.array(['float64', 'geology', 'fast_compile', 'cpu', None]).reshape(1, -1),
+        df_ = pn.DataFrame(np.array(['float32', 'geology', 'fast_compile', 'cpu', None]).reshape(1, -1),
                            index=['values'],
                            columns=['dtype', 'output', 'theano_optimizer', 'device', 'verbosity'])
 
@@ -2527,7 +2561,7 @@ class Options(object):
         Returns:
             bool: True
         """
-        self.df['dtype'] = 'float64'
+        self.df['dtype'] = None
         self.df['output'] = 'geology'
         self.df['theano_optimizer'] = 'fast_compile'
         self.df['device'] = 'cpu'

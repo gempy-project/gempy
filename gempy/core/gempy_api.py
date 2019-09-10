@@ -27,7 +27,7 @@ import pandas as pn
 from numpy import ndarray
 from typing import Union
 import warnings
-
+import copy
 # This is for sphenix to find the packages
 # sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from gempy.core.model import Model, DataMutation, AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
@@ -102,27 +102,27 @@ def set_orientation_from_surface_points(geo_model, indices_array):
 
     if np.ndim(indices_array) is 1:
         indices = indices_array
-        form = geo_model.surface_points['surface'].loc[indices].unique()
+        form = geo_model.surface_points.df['surface'].loc[indices].unique()
         assert form.shape[0] is 1, 'The interface points must belong to the same surface'
         form = form[0]
-        print()
-        ori_parameters = geo_model.create_orientation_from_surface_points(indices)
-        geo_model.add_orientation(x=ori_parameters[0], y=ori_parameters[1], z=ori_parameters[2],
-                                  dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
-                                  G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
-                                  surface=form)
+
+        ori_parameters = geo_model.orientations.create_orientation_from_surface_points(
+            geo_model.surface_points, indices)
+        geo_model.add_orientations(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+                                   orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
+                                   surface=form)
     elif np.ndim(indices_array) is 2:
         for indices in indices_array:
-            form = geo_model.surface_points['surface'].loc[indices].unique()
+            form = geo_model.surface_points.df['surface'].loc[indices].unique()
             assert form.shape[0] is 1, 'The interface points must belong to the same surface'
             form = form[0]
-            ori_parameters = geo_model.create_orientation_from_surface_points(indices)
-            geo_model.add_orientation(x=ori_parameters[0], y=ori_parameters[1], z=ori_parameters[2],
-                                      dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
-                                      G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
-                                      surface=form)
+            ori_parameters = geo_model.orientations.create_orientation_from_surface_points(
+                geo_model.surface_points, indices)
+            geo_model.add_orientations(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+                                       orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
+                                       surface=form)
 
-    geo_model.update_df()
+    #geo_model.update_df()
     return geo_model.orientations
 # endregion
 
@@ -131,8 +131,8 @@ def set_orientation_from_surface_points(geo_model, indices_array):
 @setdoc([InterpolatorModel.__doc__])
 @setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
 def set_interpolation_data(geo_model: Model, compile_theano: bool = True,
-                           theano_optimizer=None, verbose: list = None,
-                           output=None):
+                           theano_optimizer=None, verbose: list = None, grid='shared',
+                           **kwargs):
     """
     Method to create a graph and compile the theano code to compute the interpolation.
 
@@ -145,10 +145,6 @@ def set_interpolation_data(geo_model: Model, compile_theano: bool = True,
     Returns:
 
     """
-    if output:
-        warnings.warn('Output is not an argument of intepolation data. Look'
-                      'compute_model', DeprecationWarning)
-
     if theano_optimizer is not None:
         geo_model.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
     if verbose is not None:
@@ -159,11 +155,13 @@ def set_interpolation_data(geo_model: Model, compile_theano: bool = True,
     update_additional_data(geo_model)
     geo_model.surface_points.sort_table()
     geo_model.orientations.sort_table()
-    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True)
+    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
     geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
 
     if compile_theano is True:
-        geo_model.interpolator.compile_th_fn(inplace=True)
+        geo_model.interpolator.compile_th_fn(inplace=True, grid=grid)
+    else:
+        geo_model.interpolator.set_theano_shared_grid(grid)
 
     return geo_model.interpolator
 
@@ -250,7 +248,6 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
         i = model.interpolator_gravity.get_python_input_block(append_control=True, fault_drift=None)
 
         # TODO So far I reset all shared parameters to be sure. In the future this should be optimize as interpolator
-
         model.interpolator_gravity.set_theano_shared_tz_kernel()
         # model.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
         sol = model.interpolator_gravity.theano_function(*i)
@@ -261,6 +258,7 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
 
     if debug is True or set_solutions is False:
         return sol
+
     elif set_solutions is True:
         if model.grid.active_grids[0] is np.True_:
             model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh)
@@ -403,6 +401,8 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
         path_i: Path to the data bases of surface_points. Default os.getcwd(),
         path_o: Path to the data bases of orientations. Default os.getcwd()
+        surface_points_df: A df object directly
+        orientations_df:
 
     Returns:
         :class:`gempy.data_management.InputData`
@@ -419,6 +419,10 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
     if 'surface_points_df' in kwargs:
         geo_model.set_surface_points(kwargs['surface_points_df'], **kwargs)
+        # if we set the surfaces names with surfaces they cannot be set again on orientations or pandas will complain.
+        kwargs['update_surfaces'] = False
+    if 'orientations_df' in kwargs:
+        geo_model.set_orientations(kwargs['orientations_df'], **kwargs)
 
     return geo_model
 # endregion

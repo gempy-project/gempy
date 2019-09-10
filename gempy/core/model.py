@@ -109,6 +109,10 @@ class DataMutation(object):
         self.rescaling.rescale_data()
         self.interpolator.set_initial_results_matrices()
 
+        # Check if grid is shared
+        if hasattr(self.interpolator.theano_graph.grid_val_T, 'get_value'):
+            self.interpolator.theano_graph.grid_val_T.set_value(self.grid.values_r.astype(self.interpolator.dtype))
+
     def set_active_grid(self, grid_name: Union[str, np.ndarray]):
         """
         Set active a given or several grids.
@@ -265,7 +269,7 @@ class DataMutation(object):
         """
         self.series.modify_order_series(new_value, idx)
 
-        self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+        self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.array,
                                                           ordered=False, inplace=True)
 
         self.surfaces.sort_surfaces()
@@ -287,7 +291,7 @@ class DataMutation(object):
         reset the flow control objects.
         """
         self.series.reorder_series(new_categories)
-        self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+        self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.array,
                                                           ordered=False, inplace=True)
 
         self.surfaces.sort_surfaces()
@@ -409,6 +413,7 @@ class DataMutation(object):
         self.orientations.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
         self.map_geometric_data_df(self.surface_points.df)
         self.map_geometric_data_df(self.orientations.df)
+        self.surfaces.colors.delete_colors(surfaces_names)
         return self.surfaces
 
     @setdoc(Surfaces.rename_surfaces.__doc__, indent=False)
@@ -435,6 +440,7 @@ class DataMutation(object):
     @setdoc(Surfaces.add_surfaces_values.__doc__, indent=False)
     def add_surface_values(self,  values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
         self.surfaces.add_surfaces_values(values_array, properties_names)
+        self.update_structure(update_theano='matrices')
         return self.surfaces
 
     @setdoc(Surfaces.delete_surface_values.__doc__, indent=False)
@@ -453,7 +459,8 @@ class DataMutation(object):
 
     @setdoc([Surfaces.map_series.__doc__], indent=False)
     def map_series_to_surfaces(self, mapping_object: Union[dict, pn.Categorical] = None,
-                               set_series=True, sort_geometric_data: bool = True, remove_unused_series=True):
+                               set_series=True, sort_geometric_data: bool = True, remove_unused_series=True,
+                               twofins=False):
         """
         Map series to surfaces and update all related objects accordingly to the following arguments:
 
@@ -499,8 +506,15 @@ class DataMutation(object):
             self.orientations.sort_table()
 
         if set_series is True and self.series.df.index.isin(['Basement']).any():
-            aux = self.series.df.index.drop('Basement').get_values()
+            aux = self.series.df.index.drop('Basement').array
             self.reorder_series(np.append(aux, 'Basement'))
+
+        if twofins is False: #assert if every fault has its own series
+            for serie in list(self.faults.df[self.faults.df['isFault'] == True].index):
+                assert np.sum(self.surfaces.df['series'] == serie) < 2, \
+                'Having more than one fault in a series is generally rather bad. Better give each '\
+                'fault its own series. If you are really sure what you are doing, you can set '\
+                'twofins to True to suppress this error.'
 
         return self.surfaces
 
@@ -538,7 +552,43 @@ class DataMutation(object):
             if kwargs['add_basement'] is True:
                 self.surfaces.add_surface(['basement'])
                 self.map_series_to_surfaces({'Basement': 'basement'}, set_series=True)
+
         self.map_geometric_data_df(self.surface_points.df)
+        self.rescaling.rescale_data()
+        self.additional_data.update_structure()
+        self.additional_data.update_default_kriging()
+
+    @setdoc(Orientations.set_orientations.__doc__, indent=False, position='beg')
+    def set_orientations(self, table: pn.DataFrame, **kwargs):
+        """
+        Args:
+            table (pn.Dataframe): table with surface points data.
+
+        """
+        coord_x_name = kwargs.get('coord_x_name', "X")
+        coord_y_name = kwargs.get('coord_y_name', "Y")
+        coord_z_name = kwargs.get('coord_z_name', "Z")
+        g_x_name = kwargs.get('G_x_name', 'G_x')
+        g_y_name = kwargs.get('G_y_name', 'G_y')
+        g_z_name = kwargs.get('G_z_name', 'G_z')
+        azimuth_name = kwargs.get('azimuth_name', 'azimuth')
+        dip_name = kwargs.get('dip_name', 'dip')
+        polarity_name = kwargs.get('polarity_name', 'polarity')
+        surface_name = kwargs.get('surface_name', "formation")
+        update_surfaces = kwargs.get('update_surfaces', False)
+
+        if update_surfaces is True:
+            self.add_surfaces(table[surface_name].unique())
+
+        c = np.array(self.orientations._columns_o_1)
+        orientations_read = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
+        self.orientations.set_orientations(
+            coord=orientations_read[[coord_x_name, coord_y_name, coord_z_name]],
+            pole_vector=orientations_read[[g_x_name, g_y_name, g_z_name]].values,
+            orientation=orientations_read[[azimuth_name, dip_name, polarity_name]].values,
+            surface=orientations_read[surface_name])
+
+        self.map_geometric_data_df(self.orientations.df)
         self.rescaling.rescale_data()
         self.additional_data.update_structure()
         self.additional_data.update_default_kriging()
@@ -637,6 +687,7 @@ class DataMutation(object):
 
         surface = np.atleast_1d(surface)
         idx = self._add_valid_idx_o(idx)
+
         self.orientations.add_orientation(X, Y, Z, surface, pole_vector=pole_vector,
                                           orientation=orientation, idx=idx)
         if recompute_rescale_factor is True or idx < 5:
@@ -669,7 +720,8 @@ class DataMutation(object):
 
         if is_surface:
             self.update_structure(update_theano='weights')
-
+        if 'smooth' in kwargs:
+            self.interpolator.set_theano_shared_nuggets()
         return self.orientations
     # endregion
 
@@ -786,9 +838,9 @@ class DataMutation(object):
             self.surfaces.df['series'].cat.rename_categories(rename_series, inplace=True)
 
         if reorder_series is True:
-            self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.get_values(),
+            self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.array,
                                                               ordered=False, inplace=True)
-            self.series.df.index = self.series.df.index.reorder_categories(self.series.df.index.get_values(),
+            self.series.df.index = self.series.df.index.reorder_categories(self.series.df.index.array,
                                                                            ordered=False)
             self.surfaces.sort_surfaces()
             self.update_from_surfaces(set_categories_from_series=False, set_categories_from_surfaces=True,
@@ -915,8 +967,8 @@ class DataMutation(object):
             DataFrame
         """
         d['series'] = d['surface'].map(self.surfaces.df.set_index('surface')['series'])
-        d['id'] = d['surface'].map(self.surfaces.df.set_index('surface')['id'])
-        d['order_series'] = d['series'].map(self.series.df['order_series'])
+        d['id'] = d['surface'].map(self.surfaces.df.set_index('surface')['id']).astype(int)
+        d['order_series'] = d['series'].map(self.series.df['order_series']).astype(int)
         return d
 
     def set_surface_order_from_solution(self):
@@ -945,12 +997,12 @@ class DataMutation(object):
                     pn.DataFrame(sfai_order, index=surface_names)[0])
 
             except IndexError:
-                pass
+                pass # print('foo')
 
         self.surfaces.sort_surfaces()
         self.surfaces.set_basement()
         self.surface_points.df['id'] = self.surface_points.df['surface'].map(
-            self.surfaces.df.set_index('surface')['id'])
+            self.surfaces.df.set_index('surface')['id']).astype(int)
         self.surface_points.sort_table()
         self.update_structure()
         return self.surfaces

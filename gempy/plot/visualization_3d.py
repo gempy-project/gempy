@@ -93,11 +93,11 @@ class vtkVisualization(object):
         self.ren_name = ren_name
         # Number of renders
         self.n_ren = 4
-        self.id = geo_data.surface_points.df['id'].unique().squeeze()
+        self.id = geo_data.surface_points.df['id'].unique()
         self.surface_name = geo_data.surface_points.df['surface'].unique()
 
         # Extents
-        self.extent = self.geo_model.grid.regular_grid.extent
+        self.extent = copy.copy(self.geo_model.grid.regular_grid.extent)
         self.extent[-1] = ve * self.extent[-1]
         self.extent[-2] = ve * self.extent[-2]
         _e = self.extent
@@ -278,7 +278,8 @@ class vtkVisualization(object):
         """
         Points = vtk.vtkPoints()
         if self.ve != 1:
-            raise NotImplementedError('Vertical exageration for surfaces not implemented yet.')
+            vertices[:, 2] = vertices[:, 2] * self.ve
+        #     raise NotImplementedError('Vertical exageration for surfaces not implemented yet.')
         # for v in vertices:
         #     v[-1] = self.ve * v[-1]
         #     Points.InsertNextPoint(v)
@@ -484,12 +485,14 @@ class vtkVisualization(object):
 
     def set_topography(self):
         # Create points on an XY grid with random Z coordinate
-        vertices = self.geo_model.grid.topography.values
+        vertices = copy.copy(self.geo_model.grid.topography.values)
 
         points = vtk.vtkPoints()
         # for v in vertices:
         #     v[-1] = v[-1]
         #     points.InsertNextPoint(v)
+        if self.ve !=1:
+            vertices[:, 2]= vertices[:, 2]*self.ve
         points.SetData(numpy_to_vtk(vertices))
 
         # Add the grid points to a polydata object
@@ -875,13 +878,11 @@ class vtkVisualization(object):
         # Modify Pandas DataFrame
         # update the gradient vector components and its location
         self.geo_model.modify_orientations(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
-                                           G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2],
-                                           recalculate_orientations=True)
+                                           G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
         # update the dip and azimuth values according to the new gradient
-        self.geo_model.calculate_orientations()
+        # self.geo_model.calculate_orientations()
 
     def planesCallback_move_changes(self, indices):
-        print(indices)
         df_changes = self.geo_model.orientations.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'id']]
         for index, new_values_df in df_changes.iterrows():
             new_center = new_values_df[['X', 'Y', 'Z']].values

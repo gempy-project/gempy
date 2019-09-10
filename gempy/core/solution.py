@@ -71,7 +71,7 @@ class Solution(object):
         self.edges = []
 
         # Topography
-        # Todo merge this in geological_map[0] and [1]
+        # Todo merge this in geological_map[0] and [1] and adjust plotting
         self.geological_map = None
         self.geological_map_scalfield = None
 
@@ -249,13 +249,14 @@ class Solution(object):
                 try:
                     v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
 
-                except AttributeError as e:
-                    warnings.warn('Attribute error. Using non masked marching cubes' + str(e))
+                except TypeError as e:
+                    warnings.warn('Attribute error. Using non masked marching cubes' + str(e)+'.')
                     v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array,
                                                                         classic=True, **kwargs)
 
                 except Exception as e:
-                    warnings.warn('Surfaces not computed due to: ' + str(e))
+                    warnings.warn('Surfaces not computed due to: ' + str(e)+'. The surface is: Series: '+str(e)+
+                                  '; Surface Number:' + str(s_n))
                     v = np.nan
                     s = np.nan
 

@@ -1,3 +1,4 @@
+from typing import Union
 from gempy.core.data import SurfacePoints, Orientations, Grid, Surfaces, Series, Faults, AdditionalData
 from gempy.utils.meta import setdoc_pro, setdoc
 import gempy.utils.docstring as ds
@@ -79,7 +80,7 @@ class Interpolator(object):
         self.len_series_w = self.len_series_i + self.len_series_o * 3 + self.len_series_u + self.len_series_f
 
     @setdoc_pro([AdditionalData.__doc__, ds.inplace, ds.theano_graph_pro])
-    def create_theano_graph(self, additional_data: "AdditionalData" = None, inplace=True):
+    def create_theano_graph(self, additional_data: "AdditionalData" = None, inplace=True, **kwargs):
         """
         Create the graph accordingly to the options in the AdditionalData object
 
@@ -98,8 +99,9 @@ class Interpolator(object):
             additional_data = self.additional_data
 
         graph = tg.TheanoGraphPro(optimizer=additional_data.options.df.loc['values', 'theano_optimizer'],
-                                  dtype=additional_data.options.df.loc['values', 'dtype'],
-                                  verbose=additional_data.options.df.loc['values', 'verbosity'])
+                                  #dtype=additional_data.options.df.loc['values', 'dtype'],
+                                  verbose=additional_data.options.df.loc['values', 'verbosity'],
+                                  **kwargs)
         if inplace is True:
             self.theano_graph = graph
         else:
@@ -311,7 +313,7 @@ class InterpolatorScalar(Interpolator):
         if debug is True:
             print('Level of Optimization: ', theano.config.optimizer)
             print('Device: ', theano.config.device)
-            print('Precision: ', self.dtype)
+            print('Precision: ', theano.config.floatX)
             print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
         print('Compilation Done!')
         return th_fn
@@ -534,7 +536,7 @@ class InterpolatorModel(Interpolator):
 
         if reset_weights is True:
             self.compute_weights_ctrl = np.ones(1000, dtype=bool)
-            self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum())))
+            self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum()), dtype=self.dtype))
 
         if reset_scalar is True:
             self.compute_scalar_ctrl = np.ones(1000, dtype=bool)
@@ -648,7 +650,7 @@ class InterpolatorModel(Interpolator):
     def set_theano_shared_weights(self):
         """Set the theano shared weights and [s0]"""
         self.set_theano_shared_loop()
-        self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum())))
+        self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum()), dtype=self.dtype))
 
     def set_theano_shared_fault_relation(self):
         """Set the theano shared variable with the fault relation"""
@@ -704,7 +706,7 @@ class InterpolatorModel(Interpolator):
         x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
         n_series = self.additional_data.structure_data.df.loc['values', 'number series']
 
-        self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum())))
+        self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum()), dtype=self.dtype))
         self.theano_graph.scalar_fields_matrix.set_value(
             np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
 
@@ -736,6 +738,13 @@ class InterpolatorModel(Interpolator):
             np.zeros((n_series, self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.shape[1],
                       x_to_interp_shape), dtype=self.dtype))
 
+    def set_theano_shared_grid(self, grid=None):
+        if grid == 'shared':
+            grid_sh = self.grid.values_r
+            self.theano_graph.grid_val_T = theano.shared(grid_sh.astype(self.dtype), 'Constant values to interpolate.')
+        elif grid is not None:
+            self.theano_graph.grid_val_T = theano.shared(grid.astype(self.dtype), 'Constant values to interpolate.')
+
     def modify_results_matrices_pro(self):
         """Modify all theano shared matrices to the right size according to the structure data. This method allows
         to change the size of the results without having the recompute all series"""
@@ -758,8 +767,10 @@ class InterpolatorModel(Interpolator):
                 elif i > 0:
                     self.theano_graph.scalar_fields_matrix.set_value(
                         np.insert(scalar_fields_matrix, [loc], np.zeros(i), axis=1))
-                    self.theano_graph.mask_matrix.set_value(np.insert(mask_matrix, [loc], np.zeros(i), axis=1))
-                    self.theano_graph.block_matrix.set_value(np.insert(block_matrix, [loc], np.zeros(i), axis=2))
+                    self.theano_graph.mask_matrix.set_value(np.insert(
+                        mask_matrix, [loc], np.zeros(i, dtype=self.dtype), axis=1))
+                    self.theano_graph.block_matrix.set_value(np.insert(
+                        block_matrix, [loc], np.zeros(i, dtype=self.dtype), axis=2))
 
                 else:
                     self.theano_graph.scalar_fields_matrix.set_value(
@@ -842,8 +853,7 @@ class InterpolatorModel(Interpolator):
         print('is erosion', self.theano_graph.is_erosion.get_value())
         print('is onlap', self.theano_graph.is_onlap.get_value())
 
-    def compile_th_fn(self, inplace=False,
-                      debug=False):
+    def compile_th_fn(self, inplace=False, debug=True, grid: Union[str, np.ndarray] = 'shared'):
         """
         Compile and create the theano function which can be evaluated to compute the geological models
 
@@ -851,6 +861,8 @@ class InterpolatorModel(Interpolator):
 
             inplace (bool): If true add the attribute theano.function to the object inplace
             debug (bool): If true print some of the theano flags
+            grid: If None, grid will be passed as variable. If shared or np.ndarray the grid will be treated as
+             constant (if shared the grid will be taken of grid)
 
         Returns:
             theano.function: function that computes the whole interpolation
@@ -861,6 +873,8 @@ class InterpolatorModel(Interpolator):
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.theano_graph.input_parameters_loop
         print('Compiling theano function...')
+        if grid == 'shared' or grid is not None:
+            self.set_theano_shared_grid(grid)
 
         th_fn = theano.function(input_data_T,
                                 self.theano_graph.compute_series(),
@@ -879,7 +893,7 @@ class InterpolatorModel(Interpolator):
         if debug is True:
             print('Level of Optimization: ', theano.config.optimizer)
             print('Device: ', theano.config.device)
-            print('Precision: ', self.dtype)
+            print('Precision: ', theano.config.floatX)
             print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
         print('Compilation Done!')
 
