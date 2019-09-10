@@ -34,7 +34,7 @@ from .visualization_3d import steno3D, GemPyvtkInteract, ipyvolumeVisualization
 import gempy as _gempy
 
 
-def plot_data_3D(geo_data, **kwargs):
+def plot_data_3D(geo_data, ve=1, **kwargs):
     """
     Plot in vtk all the input data of a model
     Args:
@@ -43,7 +43,7 @@ def plot_data_3D(geo_data, **kwargs):
     Returns:
         None
     """
-    vv = GemPyvtkInteract(geo_data, **kwargs)
+    vv = GemPyvtkInteract(geo_data, ve=ve, **kwargs)
    # vv.restart()
     vv.set_surface_points()
     vv.set_orientations()
@@ -319,7 +319,7 @@ def plot_section(model, cell_number=13, block=None, direction="y", interpolation
 
 
 def plot_scalar_field(model, cell_number, N=20,
-                      direction="y", show_data=True,
+                      direction="y", block=None, show_data=True,
                       show_all_data=False, series=0, *args, **kwargs):
     """
     Plot a potential field in a given direction.
@@ -336,8 +336,14 @@ def plot_scalar_field(model, cell_number, N=20,
         None
     """
     plot = PlotSolution(model)
-    plot.plot_scalar_field(model.solutions, cell_number, N=N,
-                           direction=direction,  plot_data=plot_data, show_all_data=show_all_data, series=series,
+    if block is not None:
+        block = block
+    else:
+        block = model.solutions
+
+    plot.plot_scalar_field(block, cell_number, N=N,
+                           direction=direction, plot_data=show_data,
+                           series=series, show_all_data=show_all_data,
                            *args, **kwargs)
 
 def plot_section_scalarfield(model, section_name, sn, levels=50, show_faults=True, show_topo=True, lithback=True):

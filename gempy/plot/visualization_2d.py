@@ -260,15 +260,12 @@ class PlotData2D:
                       slice(0, self.model.grid.regular_grid.resolution[2]))
         if direction == "x":
             _a, x, y, Gx, Gy = cell_number, "Y", "Z", "G_y", "G_z"
-            #x = "Y"y = "Z"Gx = "G_y"Gy = "G_z"
             extent_val = self.model.grid.regular_grid.extent[[2, 3, 4, 5]]
         elif direction == "y":
             _b, x, y, Gx, Gy = cell_number, "X", "Z", "G_x", "G_z"
-            #_b = cell_numbery = "Z"Gx = "G_x"Gy = "G_z"
             extent_val = self.model.grid.regular_grid.extent[[0, 1, 4, 5]]
         elif direction == "z":
             _c, x, y, Gx, Gy = cell_number, "X", "Y", "G_x", "G_y"
-            #x = "X"y = "Y"Gx = "G_x"Gy = "G_y"
             extent_val = self.model.grid.regular_grid.extent[[0, 1, 2, 3]]
         else:
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
@@ -560,6 +557,7 @@ class PlotSolution(PlotData2D):
                 block = self.model.solutions.scalar_field_matrix[f_id]
                 level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
                     self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
+                level.sort()
                 plt.contour(block.reshape(self.model.grid.regular_grid.resolution)[_slice].T, 0, extent=extent, levels=level,
                             colors=self._cmap.colors[f_id], linestyles='solid')
 
@@ -711,7 +709,33 @@ class PlotSolution(PlotData2D):
     def plot_block_section(self, solution:Solution, cell_number:int, block:np.ndarray=None, direction:str="y",
                            interpolation:str='none', show_data:bool=False, show_faults:bool=False, show_topo:bool=False,
                            block_type=None, ve:float=1, show_legend:bool = True, show_all_data:bool=False, **kwargs):
+        """Plot a section of the block model
 
+        Args:
+            solution (Solution): [description]
+            cell_number (int): Section position of the array to plot.
+            block (np.ndarray, optional): Lithology block. Defaults to None.
+            direction (str, optional): Cartesian direction to be plotted
+                ("x", "y", "z"). Defaults to "y".
+            interpolation (str, optional): Type of interpolation of plt.imshow.
+                Defaults to 'none'. Acceptable values are ('none' ,'nearest',
+                'bilinear', 'bicubic', 'spline16', 'spline36', 'hanning',
+                'hamming', 'hermite', 'kaiser', 'quadric', 'catrom', 'gaussian',
+                'bessel', 'mitchell', 'sinc', 'lanczos'.
+            show_data (bool, optional): Plots input data on-top of block
+                section. Defaults to False.
+            show_legend (bool, optional): Plot or hide legend - only available
+                if no data is plotted.
+            show_faults (bool, optional): Plot fault line on-top of block
+                section. Defaults to False.
+            show_topo (bool, optional): Plots block section with topography.
+                Defaults to True.
+            block_type ([type], optional): [description]. Defaults to None.
+            ve (float, optional): Vertical exaggeration. Defaults to 1.
+
+        Returns:
+            (gempy.plot.visualization_2d.PlotData2D) Block section plot.
+        """
         if block is None:
             _block = solution.lith_block
         else:
@@ -745,14 +769,22 @@ class PlotSolution(PlotData2D):
         if 'norm' not in kwargs:
             kwargs['norm'] = self._norm
 
-        im = plt.imshow(plot_block[_a, _b, _c].T,
+        sliced_block = plot_block[_a, _b, _c].T
+
+        imshow_kwargs = kwargs.copy()
+        if 'show_grid' in imshow_kwargs:
+            imshow_kwargs.pop('show_grid')
+        if 'grid_linewidth' in imshow_kwargs:
+            imshow_kwargs.pop('grid_linewidth')
+
+        im = plt.imshow(sliced_block,
                         origin="bottom",
                         extent=extent_val,
                         interpolation=interpolation,
                         aspect=aspect,
-                        **kwargs)
+                        **imshow_kwargs)
 
-        if extent_val[3] < extent_val[2]:# correct vertical orientation of plot
+        if extent_val[3] < extent_val[2]: # correct vertical orientation of plot
             plt.gca().invert_yaxis()    # if maximum vertical extent negative
 
         if show_faults:
@@ -770,12 +802,22 @@ class PlotSolution(PlotData2D):
             patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
+        if 'show_grid' in kwargs:
+            # TODO This only works fine for the y projection
+            ax = plt.gca();
+            ax.set_xticks(np.linspace(extent_val[0], extent_val[1], sliced_block.shape[0]+1));
+            ax.set_yticks(np.linspace(extent_val[2], extent_val[3], sliced_block.shape[1]+1));
+
+            grid_linewidth = kwargs.get('grid_linewidth', 1)
+            ax.grid(color='w', linestyle='-', linewidth=grid_linewidth)
+
         plt.xlabel(x)
         plt.ylabel(y)
         return plt.gcf()
 
-    def plot_scalar_field(self, solution, cell_number, series=0, N=20,
-                          direction="y", show_data=True, show_all_data=False, *args, **kwargs):
+    def plot_scalar_field(self, solution, cell_number, series=0, N=20, block=None,
+                          direction="y", show_data=True, show_all_data=False,
+                          *args, **kwargs):
         """
         Plot a scalar field in a given direction.
 

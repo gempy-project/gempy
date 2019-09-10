@@ -109,6 +109,10 @@ class DataMutation(object):
         self.rescaling.rescale_data()
         self.interpolator.set_initial_results_matrices()
 
+        # Check if grid is shared
+        if hasattr(self.interpolator.theano_graph.grid_val_T, 'get_value'):
+            self.interpolator.theano_graph.grid_val_T.set_value(self.grid.values_r.astype(self.interpolator.dtype))
+
     def set_active_grid(self, grid_name: Union[str, np.ndarray]):
         """
         Set active a given or several grids.
@@ -554,6 +558,41 @@ class DataMutation(object):
         self.additional_data.update_structure()
         self.additional_data.update_default_kriging()
 
+    @setdoc(Orientations.set_orientations.__doc__, indent=False, position='beg')
+    def set_orientations(self, table: pn.DataFrame, **kwargs):
+        """
+        Args:
+            table (pn.Dataframe): table with surface points data.
+
+        """
+        coord_x_name = kwargs.get('coord_x_name', "X")
+        coord_y_name = kwargs.get('coord_y_name', "Y")
+        coord_z_name = kwargs.get('coord_z_name', "Z")
+        g_x_name = kwargs.get('G_x_name', 'G_x')
+        g_y_name = kwargs.get('G_y_name', 'G_y')
+        g_z_name = kwargs.get('G_z_name', 'G_z')
+        azimuth_name = kwargs.get('azimuth_name', 'azimuth')
+        dip_name = kwargs.get('dip_name', 'dip')
+        polarity_name = kwargs.get('polarity_name', 'polarity')
+        surface_name = kwargs.get('surface_name', "formation")
+        update_surfaces = kwargs.get('update_surfaces', False)
+
+        if update_surfaces is True:
+            self.add_surfaces(table[surface_name].unique())
+
+        c = np.array(self.orientations._columns_o_1)
+        orientations_read = table.assign(**dict.fromkeys(c[~np.in1d(c, table.columns)], np.nan))
+        self.orientations.set_orientations(
+            coord=orientations_read[[coord_x_name, coord_y_name, coord_z_name]],
+            pole_vector=orientations_read[[g_x_name, g_y_name, g_z_name]].values,
+            orientation=orientations_read[[azimuth_name, dip_name, polarity_name]].values,
+            surface=orientations_read[surface_name])
+
+        self.map_geometric_data_df(self.orientations.df)
+        self.rescaling.rescale_data()
+        self.additional_data.update_structure()
+        self.additional_data.update_default_kriging()
+
     @setdoc_pro(ds.recompute_rf)
     @setdoc(SurfacePoints.add_surface_points.__doc__, indent=False, position='beg')
     @plot_add_surface_points
@@ -648,6 +687,7 @@ class DataMutation(object):
 
         surface = np.atleast_1d(surface)
         idx = self._add_valid_idx_o(idx)
+
         self.orientations.add_orientation(X, Y, Z, surface, pole_vector=pole_vector,
                                           orientation=orientation, idx=idx)
         if recompute_rescale_factor is True or idx < 5:
@@ -680,7 +720,8 @@ class DataMutation(object):
 
         if is_surface:
             self.update_structure(update_theano='weights')
-
+        if 'smooth' in kwargs:
+            self.interpolator.set_theano_shared_nuggets()
         return self.orientations
     # endregion
 

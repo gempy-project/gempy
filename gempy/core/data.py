@@ -1824,7 +1824,7 @@ class Orientations(GeometricData):
         return True
 
     @setdoc_pro([SurfacePoints.__doc__])
-    def create_orientation_from_interface(self, surface_points: SurfacePoints, indices):
+    def create_orientation_from_surface_points(self, surface_points: SurfacePoints, indices):
         # TODO test!!!!
         """
         Create and set orientations from at least 3 points categories_df
@@ -2262,6 +2262,7 @@ class RescaledData(object):
         """
         if idx is None:
             idx = self.surface_points.df.index
+        idx = np.atleast_1d(idx)
 
         self.surface_points.df.loc[idx, ['X_r', 'Y_r', 'Z_r']] = self.rescale_surface_points(
             self.surface_points, self.df.loc['values', 'rescaling factor'], self.df.loc['values', 'centers'], idx=idx)
@@ -2318,6 +2319,7 @@ class RescaledData(object):
         """
         if idx is None:
             idx = self.orientations.df.index
+        idx = np.atleast_1d(idx)
 
         self.orientations.df.loc[idx, ['X_r', 'Y_r', 'Z_r']] = self.rescale_orientations(
             self.orientations, self.df.loc['values', 'rescaling factor'], self.df.loc['values', 'centers'], idx=idx)
@@ -2516,7 +2518,7 @@ class Options(object):
 
      """
     def __init__(self):
-        df_ = pn.DataFrame(np.array(['float64', 'geology', 'fast_compile', 'cpu', None]).reshape(1, -1),
+        df_ = pn.DataFrame(np.array(['float32', 'geology', 'fast_compile', 'cpu', None]).reshape(1, -1),
                            index=['values'],
                            columns=['dtype', 'output', 'theano_optimizer', 'device', 'verbosity'])
 
@@ -2559,7 +2561,7 @@ class Options(object):
         Returns:
             bool: True
         """
-        self.df['dtype'] = 'float64'
+        self.df['dtype'] = None
         self.df['output'] = 'geology'
         self.df['theano_optimizer'] = 'fast_compile'
         self.df['device'] = 'cpu'
