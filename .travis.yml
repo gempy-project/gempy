@@ -20,7 +20,6 @@ install:
 script:
 
   - pytest -v notebooks/integrations/ --nbval-lax
-  - pytest -v notebooks/examples/ --nbval-lax
   - pytest -v notebooks/examples/ --nbval-lax --current-env --ignore-glob='Topography*' --ignore-glob='Alesmodel*'
   - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='ch1-6*' --ignore-glob='ch1-7*'
   - pytest
