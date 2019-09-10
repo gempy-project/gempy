@@ -291,7 +291,7 @@ def plot_section_by_name(model, section_name, show_faults=True, show_topo=True, 
                               show_data=show_data, show_all_data=show_all_data)
 
 def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
-                 show_data=False, show_faults=True, show_topo = False,  block_type=None, ve=1,
+                 show_data=True, show_faults=True, show_topo = False,  block_type=None, ve=1,
                  show_all_data=False, show_legend=True, **kwargs):
     """
     Plot a section of the block model
