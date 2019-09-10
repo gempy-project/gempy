@@ -328,17 +328,24 @@ class PlotData2D:
         if direction == 'x':
             column = 'X'
             start = self.model.grid.regular_grid.extent[0]
+            end = self.model.grid.regular_grid.extent[1]
             r_o_inf = self.model.grid.regular_grid.dx
         elif direction == 'y':
             column = 'Y'
             start = self.model.grid.regular_grid.extent[2]
+            end = self.model.grid.regular_grid.extent[3]
             r_o_inf = self.model.grid.regular_grid.dy
         elif direction == 'z':
             column = 'Z'
             start = self.model.grid.regular_grid.extent[4]
+            end = self.model.grid.regular_grid.extent[5]
             r_o_inf = self.model.grid.regular_grid.dz
         else:
             raise
+
+        if cell_number < 0:
+            cell_number = end + cell_number + 1
+
         if radius is None:
             radius = r_o_inf
         coord = start + radius * cell_number
