@@ -319,7 +319,7 @@ def plot_section(model, cell_number=13, block=None, direction="y", interpolation
 
 
 def plot_scalar_field(model, cell_number, N=20,
-                      direction="y", block=None, show_data=True,
+                      direction="y", block=None, alpha=0.6, show_data=True,
                       show_all_data=False, series=0, *args, **kwargs):
     """
     Plot a potential field in a given direction.
@@ -343,7 +343,7 @@ def plot_scalar_field(model, cell_number, N=20,
 
     plot.plot_scalar_field(block, cell_number, N=N,
                            direction=direction, show_data=show_data,
-                           series=series, show_all_data=show_all_data,
+                           series=series, alpha=alpha, show_all_data=show_all_data,
                            *args, **kwargs)
 
 def plot_section_scalarfield(model, section_name, sn, levels=50, show_faults=True, show_topo=True, lithback=True):

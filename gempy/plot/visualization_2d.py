@@ -816,7 +816,7 @@ class PlotSolution(PlotData2D):
         return plt.gcf()
 
     def plot_scalar_field(self, solution, cell_number, series=0, N=20, block=None,
-                          direction="y", show_data=True, show_all_data=False,
+                          direction="y", alpha=0.6, show_data=True, show_all_data=False,
                           *args, **kwargs):
         """
         Plot a scalar field in a given direction.
@@ -861,7 +861,7 @@ class PlotSolution(PlotData2D):
         plt.contourf(scalar_field.reshape(
             self.model.grid.regular_grid.resolution[0], self.model.grid.regular_grid.resolution[1], self.model.grid.regular_grid.resolution[2])[_a, _b, _c].T,
                     N,
-                    extent=extent_val, alpha=0.6, *args,
+                    extent=extent_val, alpha=alpha, *args,
                     **kwargs)
 
         if 'colorbar' in kwargs:
