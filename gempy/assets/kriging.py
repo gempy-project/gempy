@@ -14,6 +14,9 @@ except ImportError:
 
 import numpy as np
 import pandas as pd
+from gempy.plot import visualization_2d, plot, helpers
+import matplotlib.cm as cm
+import matplotlib.pyplot as plt
 
 class kriging_model(object):
 
@@ -59,7 +62,7 @@ class kriging_model(object):
         # set data, default is None
         # TODO: need to figure out a way to then set mean and variance for the SGS and SK
         if data is None:
-            data = None
+            data = None #why do you do this, data is none already if it is none?
         self.set_data(data)
 
         # basic statistics of data
@@ -107,11 +110,11 @@ class kriging_model(object):
         self.domain = domain
 
         # mask by array of input surfaces (by id, can be from different series)
-        mask = np.isin(self.sol.lith_block, self.domain)
+        self.mask = np.isin(self.sol.lith_block, self.domain)
 
         # Apply mask to lith_block and grid
-        self.krig_lith = self.sol.lith_block[mask]
-        self.krig_grid = self.sol.grid.values[mask]
+        self.krig_lith = self.sol.lith_block[self.mask]
+        self.krig_grid = self.sol.grid.values[self.mask]
 
     def set_data(self, data):
         """
@@ -456,7 +459,7 @@ class kriging_model(object):
 
         self.results_sim_df = pd.DataFrame(data=d)
 
-    def plot_results():
+    def plot_results_dep():
         # probably set of functions for visualization
         # some brainstorming:
         # 1) 3D and 2D options for domain with colormaps of property
@@ -465,3 +468,78 @@ class kriging_model(object):
         # 4) options to plot variances
         # ...
         return None
+
+    def plot_results(self, geo_data, prop='val', direction='y', cell_number=0, contour=False,
+                     cmap='viridis', alpha=0, legend=False, interpolation='nearest', show_data=True):
+        """
+        TODO WRITE DOCSTRING
+        Args:
+            geo_data:
+            prop: property that should be plotted - "val", "var" or "both"
+            direction: x, y or z
+            cell_number:
+            contour:
+            cmap:
+            alpha:
+            legend:
+
+        Returns:
+
+        """
+        a = np.full_like(self.mask, np.nan, dtype=np.double) #array like lith_block but with nan if outside domain
+        est_vals = self.results_df['est_value'].values
+        est_var = self.results_df['est_variance'].values
+
+        # set values
+        if prop == 'val':
+            a[np.where(self.mask == True)] = est_vals
+        elif prop == 'var':
+            a[np.where(self.mask == True)] = est_var
+        elif prop == 'both':
+            a[np.where(self.mask == True)] = est_vals
+            b = np.full_like(self.mask, np.nan, dtype=np.double)
+            b[np.where(self.mask == True)] = est_var
+        else:
+            print('prop must be val var or both')
+
+        #create plot object
+        p = visualization_2d.PlotSolution(geo_data)
+        _a, _b, _c, extent_val, x, y = p._slice(direction, cell_number)[:-2]
+
+        #colors
+        cmap = cm.get_cmap(cmap)
+        cmap.set_bad(color='w', alpha=alpha) #define color and alpha for nan values
+
+        # plot
+        if prop is not 'both':
+            if show_data:
+                plt.scatter(self.data_df[x].values, self.data_df[y].values, marker='*', s=9, c='k')
+
+            plot.plot_section(geo_data, direction=direction, cell_number=cell_number)
+            if contour == True:
+                im = plt.contourf(a.reshape(self.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
+                                  origin='lower', levels=25,
+                                  extent=extent_val, interpolation=interpolation)
+                if legend:
+                    ax = plt.gca()
+                    helpers.add_colorbar(axes=ax, label='prop', cs=im)
+            else:
+                im = plt.imshow(a.reshape(self.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
+                                origin='lower',
+                                extent=extent_val, interpolation=interpolation)
+                if legend:
+                    helpers.add_colorbar(im, label='pups', location='right')
+
+        else:
+            f, ax = plt.subplots(1, 2, sharex=True, sharey=True)
+            ax[0].title.set_text('Estimated value')
+            im1 = ax[0].imshow(a.reshape(self.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
+                               origin='lower', interpolation=interpolation,
+                               extent=self.sol.grid.regular_grid.extent[[0, 1, 4, 5]])
+            helpers.add_colorbar(im1, label='unit')
+            ax[1].title.set_text('Variance')
+            im2 = ax[1].imshow(b.reshape(self.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
+                               origin='lower', interpolation=interpolation,
+                               extent=self.sol.grid.regular_grid.extent[[0, 1, 4, 5]])
+            helpers.add_colorbar(im2, label='unit')
+            plt.tight_layout()
