@@ -223,8 +223,6 @@ class PlotPosterior:
         theta1_val_trace = plotters[0][2].flatten()[i_0:iteration+1]
         theta2_val_trace = plotters[1][2].flatten()[i_0:iteration+1]
 
-   #     print('trace', theta1_val_trace)
-
         theta1_val = theta1_val_trace[-1]
         theta2_val = theta2_val_trace[-1]
 
@@ -559,8 +557,10 @@ class PlotPosterior:
 
         if obs is not None:
             if self.likelihood_axes is None:
-                self.joy[0].scatter(obs, self.joy[0].get_ylim()[1], marker='v', s=200, c='#DA8886')
-            self.joy[-1].scatter(obs, self.joy[-1].get_ylim()[0], marker='^', s=200, c='#DA8886')
+                self.joy[0].scatter(obs, np.ones_like(obs) * self.joy[0].get_ylim()[1],
+                                    marker='v', s=200, c='#DA8886')
+            self.joy[-1].scatter(obs, np.ones_like(obs) * self.joy[-1].get_ylim()[0],
+                                 marker='^', s=200, c='#DA8886')
 
         return axes
 

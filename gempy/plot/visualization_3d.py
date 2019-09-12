@@ -1150,7 +1150,10 @@ class vtkVisualization(object):
             None
         """
         try:
-            from evtk.hl import gridToVTK
+            try:
+                from evtk.hl import gridToVTK
+            except ModuleNotFoundError:
+                from pyevtk.hl import gridToVTK
         except ModuleNotFoundError:
             raise ModuleNotFoundError('pyevtk is not installed. Grid export not available.')
 
