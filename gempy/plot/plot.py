@@ -205,7 +205,7 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
 
     Args:
         geo_model (gempy.DataManagement.InputData): Input data of the model
-        series_only: To select whether a stereonet is plotted per series or per formation
+        series_only: To select whether a stereonet is plotted perries or per formation
         litho: selection of formation or series names, as list. If None, all are plotted
         planes: If True, azimuth and dip are plotted as great circles
         poles: If True, pole points (plane normal vectors) of azimuth and dip are plotted
@@ -342,7 +342,7 @@ def plot_scalar_field(model, cell_number, N=20,
         block = model.solutions
 
     plot.plot_scalar_field(block, cell_number, N=N,
-                           direction=direction, plot_data=show_data,
+                           direction=direction, show_data=show_data,
                            series=series, alpha=alpha, show_all_data=show_all_data,
                            *args, **kwargs)
 
