@@ -178,7 +178,7 @@ def export_to_vtk(geo_data, path=None, name=None, voxels=True, block=None, surfa
     return True
 
 
-def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
+def plot_data(geo_data, direction="y", data_type = 'all', series="all", show_legend=True, **kwargs):
     """
     Plot the projection of the raw data (surface_points and orientations) in 2D following a
     specific directions
@@ -194,7 +194,7 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     """
     plot = PlotData2D(geo_data)
     p = plot.plot_data(direction=direction, data_type=data_type, series=series,
-                          legend_font_size=legend_font_size, **kwargs)
+                          show_legend=show_legend, **kwargs)
     # TODO saving options
     return plot
 

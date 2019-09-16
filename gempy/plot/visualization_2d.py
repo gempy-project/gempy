@@ -42,7 +42,6 @@ plt.style.use(['seaborn-white', 'seaborn-talk'])
 from scipy.interpolate import RegularGridInterpolator
 import matplotlib.patches as mpatches
 
-
 #try:
     #import mplstereonet
     #MPLST_IMPORT = True
@@ -108,7 +107,7 @@ class PlotData2D:
 
         return series_to_plot_i[mask_surfpoints], series_to_plot_f[mask_orient]
 
-    def plot_data(self, cell_number=2, direction="y", data_type='all', series="all", legend_font_size=10, ve=1,
+    def plot_data(self, cell_number=2, direction="y", data_type='all', series="all", show_legend=True, ve=1,
                   at='everywhere', radius=None, show_all_data=False, **kwargs):
         """
         Plot the projecton of the raw data (surface_points and orientations) in 2D following a
@@ -149,8 +148,9 @@ class PlotData2D:
                                                           show_all_data=show_all_data)
 
         if data_type == 'all':
-            self._plot_surface_points(x, y, plot_surfpoints, aspect, extent, kwargs)
             self._plot_orientations(x, y, Gx, Gy, plot_orient, min_axis, extent, False)
+            self._plot_surface_points(x, y, plot_surfpoints, aspect, extent, kwargs)
+
 
         if data_type == 'surface_points':
             self._plot_surface_points(x, y, plot_surfpoints, aspect, extent, kwargs)
@@ -158,7 +158,8 @@ class PlotData2D:
         if data_type == 'orientations':
             self._plot_orientations(x, y, Gx, Gy, plot_orient, min_axis, extent, True, aspect)
 
-        #plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+        if show_legend:
+            plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
         plt.xlabel(x)
         plt.ylabel(y)
@@ -200,6 +201,9 @@ class PlotData2D:
 
     def _plot_surface_points(self, x, y, series_to_plot_i, aspect, extent, kwargs):
         if series_to_plot_i.shape[0] != 0:
+            fig = plt.gcf()
+            size = fig.get_size_inches() * fig.dpi
+            print(size)
             #print(aspect)
             try:
                 p = sns.FacetGrid(series_to_plot_i, hue="surface",
@@ -207,24 +211,33 @@ class PlotData2D:
                                   ylim=[extent[2], extent[3]],
                                   xlim=[extent[0], extent[1]],
                                   legend_out=False,
-                                  aspect=aspect)#
-                                  #size=6)
-            except KeyError:
+                                  aspect=aspect,
+                                  height=6)
+            except KeyError: #for kriging dataframes
                 p = sns.FacetGrid(series_to_plot_i, hue=None,
                                   palette='k',
                                   ylim=[extent[2], extent[3]],
                                   xlim=[extent[0], extent[1]],
                                   legend_out=False,
-                                  aspect=aspect)#
-                                  #size=6)
+                                  aspect=aspect,
+                                  height=6)
 
             p.map(plt.scatter, x, y,
                   **kwargs['scatter_kws'],
                   zorder=10)
+        else:
+            self._show_legend = True
 
-    def _plot_orientations(self, x, y, Gx, Gy, series_to_plot_f, min_axis, extent, p, aspect=None):
+    def _plot_orientations(self, x, y, Gx, Gy, series_to_plot_f, min_axis, extent, p, aspect=None, ax=None):
         if series_to_plot_f.shape[0] != 0:
+            print('hello')
             if p is False:
+
+                #ax = plt.gca()
+                #print(ax)
+                fig = plt.gcf()
+                size = fig.get_size_inches() * fig.dpi
+                print('before plot orient', size)
                 surflist = list(series_to_plot_f['surface'].unique())
                 for surface in surflist:
                     to_plot = series_to_plot_f[series_to_plot_f['surface'] == surface]
@@ -232,11 +245,13 @@ class PlotData2D:
                                to_plot[Gx], to_plot[Gy],
                                pivot="tail", scale_units=min_axis, scale=30, color=self._color_lot[surface],
                                edgecolor='k', headwidth=8, linewidths=1)
-                fig = plt.gcf()
-                fig.set_size_inches(20,10)
-                if aspect is not None:
-                    ax = plt.gca()
-                    ax.set_aspect(aspect)
+                    #ax.Axes.set_ylim([extent[2], extent[3]])
+                    #ax.Axes.set_xlim([extent[0], extent[1]])
+                #fig = plt.gcf()
+                #fig.set_size_inches(20,10)
+                #if aspect is not None:
+                    #ax = plt.gca()
+                    #ax.set_aspect(aspect)
 
             else:
                 p = sns.FacetGrid(series_to_plot_f, hue="surface",
@@ -245,10 +260,16 @@ class PlotData2D:
                                   xlim=[extent[0], extent[1]],
                                   legend_out=False,
                                   aspect=aspect,
-                                  size=2)
-
+                                  height=6)
                 p.map(plt.quiver, x, y, Gx, Gy, pivot="tail", scale_units=min_axis, scale=10, edgecolor='k',
                       headwidth=4, linewidths=1)
+        else:
+            print('no orient')
+            pass
+
+        fig = plt.gcf()
+        size = fig.get_size_inches() * fig.dpi
+        print('after plot_orientations', size)
 
     def _slice(self, direction, cell_number=25):
         """
@@ -469,6 +490,7 @@ class PlotSolution(PlotData2D):
         self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
         self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors) + 0.5)
+        self._show_legend = False
 
     def plot_map(self, solution: Solution = None, contour_lines=False, show_faults=True, show_data=True,
                  show_all_data=False, figsize=(12,12)):
@@ -755,7 +777,8 @@ class PlotSolution(PlotData2D):
                 at = 'everywhere'
             else:
                 at = 'block_section'
-            self.plot_data(cell_number=cell_number, direction=direction, at=at)
+            self.plot_data(cell_number=cell_number, direction=direction, at=at, show_legend=show_legend)
+
         # TODO: plot_topo option - need fault_block for that
 
         # apply vertical exageration
@@ -797,8 +820,9 @@ class PlotSolution(PlotData2D):
                 else:
                     self.make_topography_overlay_4_blockplot(cell_number=cell_number, direction=direction)
 
+        if self._show_legend == True and show_legend == True:
+            show_data = False   # to plot legend even when there are no data points in the section
         if show_data == False and show_legend == True:
-            import matplotlib.patches as mpatches
             patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
