@@ -451,13 +451,14 @@ class kriging_model(object):
             active_data += 1
 
         # delete original input data from results
-        simulated_prop = sgs_prop_updating[len(self.data[:,3]):] # check if this works like intented
+        simulated_prop = sgs_prop_updating[len(self.data[:,3]):] # check if this works like intended
 
         # create dataframe of results data for calling
         d = {'X': shuffled_grid[:, 0], 'Y': shuffled_grid[:, 1], 'Z': shuffled_grid[:, 2],
              'sim_value': simulated_prop, 'est_variance': estimation_var}
 
-        self.results_sim_df = pd.DataFrame(data=d)
+        results_sim_df = pd.DataFrame(data=d)
+        self.results_sim_df = results_sim_df.sort_values(['X','Y','Z'])
 
     def plot_results_dep():
         # probably set of functions for visualization
@@ -469,7 +470,7 @@ class kriging_model(object):
         # ...
         return None
 
-    def plot_results(self, geo_data, prop='val', direction='y', cell_number=0, contour=False,
+    def plot_results(self, geo_data, prop='val', direction='y', result='interpolation', cell_number=0, contour=False,
                      cmap='viridis', alpha=0, legend=False, interpolation='nearest', show_data=True):
         """
         TODO WRITE DOCSTRING
@@ -487,8 +488,15 @@ class kriging_model(object):
 
         """
         a = np.full_like(self.mask, np.nan, dtype=np.double) #array like lith_block but with nan if outside domain
-        est_vals = self.results_df['est_value'].values
-        est_var = self.results_df['est_variance'].values
+
+        if result=='interpolation':
+            est_vals = self.results_df['est_value'].values
+            est_var = self.results_df['est_variance'].values
+        elif result=='simulation':
+            est_vals = self.results_sim_df['sim_value'].values
+            est_var = self.results_sim_df['est_variance'].values
+        else:
+            print('result must be interpolation or simulation')
 
         # set values
         if prop == 'val':
@@ -528,7 +536,7 @@ class kriging_model(object):
                                 origin='lower',
                                 extent=extent_val, interpolation=interpolation)
                 if legend:
-                    helpers.add_colorbar(im, label='pups', location='right')
+                    helpers.add_colorbar(im, label='property value', location='right')
 
         else:
             f, ax = plt.subplots(1, 2, sharex=True, sharey=True)
@@ -536,10 +544,10 @@ class kriging_model(object):
             im1 = ax[0].imshow(a.reshape(self.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
                                origin='lower', interpolation=interpolation,
                                extent=self.sol.grid.regular_grid.extent[[0, 1, 4, 5]])
-            helpers.add_colorbar(im1, label='unit')
+            helpers.add_colorbar(im1, label='property value')
             ax[1].title.set_text('Variance')
             im2 = ax[1].imshow(b.reshape(self.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
                                origin='lower', interpolation=interpolation,
                                extent=self.sol.grid.regular_grid.extent[[0, 1, 4, 5]])
-            helpers.add_colorbar(im2, label='unit')
+            helpers.add_colorbar(im2, label='variance[]')
             plt.tight_layout()
