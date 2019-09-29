@@ -33,6 +33,10 @@ class Load_DEM_GDAL():
         if GDAL_IMPORT == False:
             raise ImportError('Gdal package is not installed. No support for raster formats.')
         self.dem = gdal.Open(path_dem)
+
+        assert type(self.dem) is not None, 'Raster file could not be opened. Check if the filepath is correct. If yes,' \
+                                           'check if your file fits the requirements of GDALs raster file formats.'
+
         try:
             self.dem_zval = self.dem.ReadAsArray()
         except AttributeError:

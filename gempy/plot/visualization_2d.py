@@ -500,7 +500,7 @@ class PlotSolution(PlotData2D):
         assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
 
         try:
-            geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:, :, 2].shape)
+            geomap = solution.geological_map[0].reshape(self.model.grid.topography.values_3D[:, :, 2].shape)
         except AttributeError:
             warnings.warn('Geological map not computed. Activate the topography grid.')
 
@@ -528,13 +528,13 @@ class PlotSolution(PlotData2D):
         faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
         if section_name == 'topography':
             shape = self.model.grid.topography.resolution
-            a = self.model.solutions.geological_map_scalfield
+            a = self.model.solutions.geological_map[1]
             extent = self.model.grid.topography.extent
         else:
             l0, l1 = self.model.grid.sections.get_section_args(section_name)
             j = np.where(self.model.grid.sections.names == section_name)[0][0]
             shape = [self.model.grid.sections.resolution[j][0], self.model.grid.sections.resolution[j][1]]
-            a = self.model.solutions.sections_scalfield[:, l0:l1]
+            a = self.model.solutions.sections[1][:, l0:l1]
             extent = [0, self.model.grid.sections.dist[j],
                       self.model.grid.regular_grid.extent[4],
                       self.model.grid.regular_grid.extent[5]]
@@ -593,7 +593,7 @@ class PlotSolution(PlotData2D):
         l0, l1 = self.model.grid.sections.get_section_args(section_name)
         shape = self.model.grid.sections.resolution[j]
 
-        image = self.model.solutions.sections[0][l0:l1].reshape(shape[0], shape[1]).T
+        image = self.model.solutions.sections[0][0][l0:l1].reshape(shape[0], shape[1]).T
         extent = [0, self.model.grid.sections.dist[j][0],
                   self.model.grid.regular_grid.extent[4], self.model.grid.regular_grid.extent[5]]
 
@@ -635,14 +635,14 @@ class PlotSolution(PlotData2D):
             xy = self.make_topography_overlay_4_sections(j)
             axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
-        axes.contour(self.model.solutions.sections_scalfield[sn][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
+        axes.contour(self.model.solutions.sections[1][sn][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
                      # origin='lower',
                      levels=levels, cmap='autumn', extent=[0, self.model.grid.sections.dist[j],
                                                            self.model.grid.regular_grid.extent[4],
                                                            self.model.grid.regular_grid.extent[5]], zorder=8)
         axes.set_aspect('equal')
         if lithback:
-            axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
+            axes.imshow(self.model.solutions.sections[0][0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
                         origin='lower',
                         cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                   self.model.grid.regular_grid.extent[4],
