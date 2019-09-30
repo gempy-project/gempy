@@ -21,7 +21,7 @@ from copy import deepcopy
 
 class domain(object):
 
-    def __init__(self, model, domain=None, data=None):
+    def __init__(self, model, domain=None, data=None, set_mean=None):
 
         # set model from a gempy solution
         # TODO: Check if I actually need all this or if its easier to just get grid and lith of the solution
@@ -41,7 +41,10 @@ class domain(object):
 
         # basic statistics of data
         # TODO: allow to set this  for SK ???
-        self.inp_mean = np.mean(data[:, 3])
+        if set_mean is None:
+            set_mean = np.mean(data[:, 3])
+        self.inp_mean = set_mean
+
         self.inp_var = np.var(data[:, 3])
         self.inp_std = np.sqrt(self.inp_var)
 
@@ -97,10 +100,22 @@ class variogram_model(object):
         self.sill = sill
         self.nugget = nugget
 
-    def calculate(self, d):
+    def calculate_semivariance(self, d):
 
         if self.theoretical_model == 'exponential':
             gamma = self.exponential_variogram_model(d)
+        elif self.theoretical_model == 'gaussian':
+            gamma = self.gaussian_variogram_model(d)
+        else:
+            print('theoretical varigoram model not understood')
+        return gamma
+
+    def calculate_covariance(self, d):
+
+        if self.theoretical_model == 'exponential':
+            gamma = self.exponential_covariance_model(d)
+        elif self.theoretical_model == 'gaussian':
+            gamma = self.gaussian_covariance_model(d)
         else:
             print('theoretical varigoram model not understood')
         return gamma
@@ -117,14 +132,36 @@ class variogram_model(object):
         cov = psill * (np.exp(-(np.absolute(d) / (self.range_))))
         return cov
 
+    def gaussian_variogram_model(self, d):
+        psill = self.sill - self.nugget
+        gamma = psill * (1. - np.exp(-d ** 2. / (self.range_) ** 2.)) + self.nugget
+        return gamma
+
+    def gaussian_covariance_model(self, d):
+        psill = self.sill - self.nugget
+        gamma = psill * (np.exp(-d ** 2. / (self.range_) ** 2.))
+        return gamma
+
     # TODO: Make this better and nicer and everything
     # option for covariance
     # display range, sill, nugget, practical range etc.
-    def plot(self):
+    def plot(self, type_='variogram'):
 
-        d = np.arange(0, self.range_*4, self.range_/1000)
-        plt.plot(d, self.calculate(d), label=self.theoretical_model)
-        plt.legend()
+        if type_ == 'variogram':
+            d = np.arange(0, self.range_*4, self.range_/1000)
+            plt.plot(d, self.calculate_semivariance(d), label=self.theoretical_model)
+            plt.legend()
+
+        if type_ == 'covariance':
+            d = np.arange(0, self.range_*4, self.range_/1000)
+            plt.plot(d, self.calculate_covariance(d), label=self.theoretical_model)
+            plt.legend()
+
+        if type_ == 'both':
+            d = np.arange(0, self.range_*4, self.range_/1000)
+            plt.plot(d, self.calculate_semivariance(d), label=self.theoretical_model)
+            plt.plot(d, self.calculate_covariance(d), label=self.theoretical_model)
+            plt.legend()
 
 
 class field_solution(object):
@@ -213,7 +250,7 @@ class field_solution(object):
             plt.tight_layout()
 
 # TODO: check with new ordianry kriging and nugget effect
-def simple_kriging(a, b, prop, var_mod):
+def simple_kriging(a, b, prop, var_mod, inp_mean):
     '''
     Method for simple kriging calculation.
     Args:
@@ -233,8 +270,8 @@ def simple_kriging(a, b, prop, var_mod):
     w = np.zeros((shape))
 
     # Filling matrices with covariances based on calculated distances
-    C[:shape, :shape] = var_mod.calculate(b)
-    c[:shape] = var_mod.calculate(a)
+    C[:shape, :shape] = var_mod.calculate_covariance(b) #? cov or semiv
+    c[:shape] = var_mod.calculate_covariance(a) #? cov or semiv
 
     # nugget effect for simple kriging - dont remember why i set this actively, should be the same
     #np.fill_diagonal(C, self.sill)
@@ -246,7 +283,7 @@ def simple_kriging(a, b, prop, var_mod):
     # calculating estimate and variance for kriging
     pred_var = var_mod.sill - np.sum(w * c)
     # TODO: Define where this comes from
-    result = domain.inp_mean + np.sum(w * (prop - domain.inp_mean))
+    result = inp_mean + np.sum(w * (prop - inp_mean))
 
     return result, pred_var
 
@@ -270,8 +307,8 @@ def ordinary_kriging(a, b, prop, var_mod):
     w = np.zeros((shape + 1))
 
     # filling matirces based on model for spatial correlation
-    C[:shape, :shape] = var_mod.calculate(b)
-    c[:shape] = var_mod.calculate(a)
+    C[:shape, :shape] = var_mod.calculate_semivariance(b)
+    c[:shape] = var_mod.calculate_semivariance(a)
 
     # matrix setup - compare pykrige, special for OK
     np.fill_diagonal(C, 0)  # this needs to be done as semivariance for distance 0 is 0 by definition
@@ -350,7 +387,7 @@ def create_kriged_field(domain, variogram_model, distance_type='euclidian',
         if kriging_type == 'OK':
             val, var = ordinary_kriging(a, b, prop, variogram_model)
         elif kriging_type == 'SK':
-            val, var = simple_kriging(a, b, prop, variogram_model)
+            val, var = simple_kriging(a, b, prop, variogram_model, domain.inp_mean)
         elif kriging_type == 'UK':
             print("Universal Kriging not implemented")
         else:
@@ -453,7 +490,7 @@ def create_gaussian_field(domain, variogram_model, distance_type='euclidian',
         if kriging_type == 'OK':
             val, var = ordinary_kriging(a, b, prop, variogram_model)
         elif kriging_type == 'SK':
-            val, var = simple_kriging(a, b, prop, variogram_model)
+            val, var = simple_kriging(a, b, prop, variogram_model, domain.inp_mean)
         elif kriging_type == 'UK':
             print("Universal Kriging not implemented")
         else:
