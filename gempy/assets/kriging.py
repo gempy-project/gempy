@@ -106,6 +106,8 @@ class variogram_model(object):
             gamma = self.exponential_variogram_model(d)
         elif self.theoretical_model == 'gaussian':
             gamma = self.gaussian_variogram_model(d)
+        elif self.theoretical_model == 'spherical':
+            gamma = self.spherical_variogram_model(d)
         else:
             print('theoretical varigoram model not understood')
         return gamma
@@ -116,6 +118,8 @@ class variogram_model(object):
             gamma = self.exponential_covariance_model(d)
         elif self.theoretical_model == 'gaussian':
             gamma = self.gaussian_covariance_model(d)
+        elif self.theoretical_model == 'spherical':
+            gamma = self.spherical_covariance_model(d)
         else:
             print('theoretical varigoram model not understood')
         return gamma
@@ -123,45 +127,90 @@ class variogram_model(object):
     # TODO: Add more options
     # seems better now by changing psill in covariance model
     def exponential_variogram_model(self, d):
+        '''Exponential variogram model, effective range approximately 3r, valid in R3'''
         psill = self.sill - self.nugget
         gamma = psill * (1. - np.exp(-(np.absolute(d) / (self.range_)))) + self.nugget
         return gamma
 
     def exponential_covariance_model(self, d):
+        '''Exponential covariance model, effective range approximately 3r, valid in R3'''
         psill = self.sill - self.nugget
         cov = psill * (np.exp(-(np.absolute(d) / (self.range_))))
         return cov
 
     def gaussian_variogram_model(self, d):
+        '''Gaussian variogram model, effective range approximately sqrt(3r),
+        deprecated due to reverse curvature near orgin, valid in R3'''
         psill = self.sill - self.nugget
         gamma = psill * (1. - np.exp(-d ** 2. / (self.range_) ** 2.)) + self.nugget
         return gamma
 
     def gaussian_covariance_model(self, d):
+        '''Gaussian covariance model, effective range approximately sqrt(3r),
+        deprecated due to reverse curvature near orgin, valid in R3'''
         psill = self.sill - self.nugget
         gamma = psill * (np.exp(-d ** 2. / (self.range_) ** 2.))
+        return gamma
+
+    def spherical_variogram_model(self, d):
+        '''Spherical variogram model, effective range equals range parameter, valid in R3'''
+        psill = self.sill - self.nugget
+        d = d.astype(float)
+        gamma = np.piecewise(d, [d <= self.range_, d > self.range_],
+                             [lambda d:
+                              psill * ((3. * d) / (2. * self.range_)
+                                       - (d ** 3.) / (2. * self.range_ ** 3.)) + self.nugget,
+                              lambda d: self.sill])
+        return gamma
+
+    def spherical_covariance_model(self, d):
+        '''Spherical covariance model, effective range equals range parameter, valid in R3'''
+        psill = self.sill - self.nugget
+        d = d.astype(float)
+        gamma = np.piecewise(d, [d <= self.range_, d > self.range_],
+                             [lambda d:
+                              psill * (1 - ((3. * d) / (2. * self.range_)
+                                            - (d ** 3.) / (2. * self.range_ ** 3.))),
+                              lambda d: 0])
         return gamma
 
     # TODO: Make this better and nicer and everything
     # option for covariance
     # display range, sill, nugget, practical range etc.
-    def plot(self, type_='variogram'):
+    def plot(self, type_='variogram', show_parameters=True):
+
+        if show_parameters == True:
+            plt.axhline(self.sill, color='black', lw=1)
+            plt.text(self.range_*2, self.sill, 'sill', fontsize=12, va='center', ha='center', backgroundcolor='w')
+            plt.axvline(self.range_, color='black', lw=1)
+            plt.text(self.range_, self.sill/2, 'range', fontsize=12, va='center', ha='center', backgroundcolor='w')
 
         if type_ == 'variogram':
             d = np.arange(0, self.range_*4, self.range_/1000)
-            plt.plot(d, self.calculate_semivariance(d), label=self.theoretical_model)
+            plt.plot(d, self.calculate_semivariance(d), label=self.theoretical_model + " variogram model")
+            plt.ylabel('semivariance')
+            plt.title('Variogram model')
             plt.legend()
 
         if type_ == 'covariance':
             d = np.arange(0, self.range_*4, self.range_/1000)
-            plt.plot(d, self.calculate_covariance(d), label=self.theoretical_model)
+            plt.plot(d, self.calculate_covariance(d), label=self.theoretical_model + " covariance model")
+            plt.ylabel('covariance')
+            plt.title('Covariance model')
             plt.legend()
 
         if type_ == 'both':
             d = np.arange(0, self.range_*4, self.range_/1000)
-            plt.plot(d, self.calculate_semivariance(d), label=self.theoretical_model)
-            plt.plot(d, self.calculate_covariance(d), label=self.theoretical_model)
+            plt.plot(d, self.calculate_semivariance(d), label=self.theoretical_model + " variogram model")
+            plt.plot(d, self.calculate_covariance(d), label=self.theoretical_model + " covariance model")
+            plt.ylabel('semivariance/covariance')
+            plt.title('Models of spatial correlation')
             plt.legend()
+
+        plt.xlabel('lag distance')
+        plt.ylim(0-self.sill/20, self.sill+self.sill/20)
+        plt.xlim(0, self.range_*4)
+
 
 
 class field_solution(object):
@@ -282,7 +331,7 @@ def simple_kriging(a, b, prop, var_mod, inp_mean):
 
     # calculating estimate and variance for kriging
     pred_var = var_mod.sill - np.sum(w * c)
-    # TODO: Define where this comes from
+    # Note that here the input mean is required, if kriged mean equivalent to OK
     result = inp_mean + np.sum(w * (prop - inp_mean))
 
     return result, pred_var
