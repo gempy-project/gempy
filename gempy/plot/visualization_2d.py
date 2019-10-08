@@ -564,8 +564,9 @@ class PlotSolution(PlotData2D):
 
     def plot_section_by_name(self, section_name, show_data=True, show_faults=True, show_topo=True,
                              show_all_data=False, **kwargs):
-        assert type(section_name) == str, 'section name must be a string of the name of the section'
         assert self.model.solutions.sections is not None, 'no sections for plotting defined'
+        assert section_name in self.model.grid.sections.names, 'Section "{}" is not defined. Available sections for ' \
+                                                    'plotting: {}'.format(section_name, self.model.grid.sections.names)
 
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
         l0, l1 = self.model.grid.sections.get_section_args(section_name)
