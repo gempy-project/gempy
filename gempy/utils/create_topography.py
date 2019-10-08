@@ -96,10 +96,10 @@ class Load_DEM_GDAL():
         print('Cropped raster to geo_model.grid.extent.')
 
     def check(self):
-        test = np.logical_and.reduce((self.grid.regular_grid.extent[0] <= self.extent[0],
-                                      self.grid.regular_grid.extent[1] >= self.extent[1],
-                                      self.grid.regular_grid.extent[2] <= self.extent[2],
-                                      self.grid.regular_grid.extent[3] >= self.extent[3]))
+        test = np.logical_and.reduce((self.grid.extent[0] <= self.extent[0],
+                                      self.grid.extent[1] >= self.extent[1],
+                                      self.grid.extent[2] <= self.extent[2],
+                                      self.grid.extent[3] >= self.extent[3]))
         if test == True:
             cornerpoints_geo = self._get_cornerpoints(self.grid.extent)
             cornerpoints_dtm = self._get_cornerpoints(self.extent)
