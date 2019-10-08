@@ -199,6 +199,12 @@ class DataMutation(object):
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
+    def set_section_grid(self, section_dict):
+        self.grid.set_section_grid(section_dict=section_dict)
+        self.update_from_grid()
+        print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
+        return self.grid.sections
+
     @setdoc(Grid.set_centered_grid.__doc__, )
     def set_centered_grid(self, centers, radio, resolution=None):
         self.grid.set_centered_grid(centers, radio, resolution=resolution)
