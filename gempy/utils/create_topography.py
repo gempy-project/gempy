@@ -82,7 +82,7 @@ class Load_DEM_GDAL():
         cornerpoints_geo = self._get_cornerpoints(self.grid.extent)
         cornerpoints_dtm = self._get_cornerpoints(self.extent)
 
-        self.check()
+        #self.check()
 
         if np.any(cornerpoints_geo[:2] - cornerpoints_dtm[:2]) != 0:
             path_dest = '_cropped_DEM.tif'
@@ -96,11 +96,12 @@ class Load_DEM_GDAL():
         print('Cropped raster to geo_model.grid.extent.')
 
     def check(self):
+        #todo make this usable
         test = np.logical_and.reduce((self.grid.extent[0] <= self.extent[0],
                                       self.grid.extent[1] >= self.extent[1],
                                       self.grid.extent[2] <= self.extent[2],
                                       self.grid.extent[3] >= self.extent[3]))
-        if test == False:
+        if test == True:
             cornerpoints_geo = self._get_cornerpoints(self.grid.extent)
             cornerpoints_dtm = self._get_cornerpoints(self.extent)
             plt.scatter(cornerpoints_geo[:, 0], cornerpoints_geo[:, 1], label='grid extent')
