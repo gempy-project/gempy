@@ -82,6 +82,8 @@ class Load_DEM_GDAL():
         cornerpoints_geo = self._get_cornerpoints(self.grid.extent)
         cornerpoints_dtm = self._get_cornerpoints(self.extent)
 
+        self.check()
+
         if np.any(cornerpoints_geo[:2] - cornerpoints_dtm[:2]) != 0:
             path_dest = '_cropped_DEM.tif'
             new_bounds = (self.grid.extent[[0, 2, 1, 3]])
@@ -92,6 +94,19 @@ class Load_DEM_GDAL():
             self.dem_zval = self.dem.ReadAsArray()
             self._get_raster_dimensions()
         print('Cropped raster to geo_model.grid.extent.')
+
+    def check(self):
+        test = np.logical_and.reduce((self.grid.regular_grid.extent[0] <= self.extent[0],
+                                      self.grid.regular_grid.extent[1] >= self.extent[1],
+                                      self.grid.regular_grid.extent[2] <= self.extent[2],
+                                      self.grid.regular_grid.extent[3] >= self.extent[3]))
+        if test == True:
+            cornerpoints_geo = self._get_cornerpoints(self.grid.extent)
+            cornerpoints_dtm = self._get_cornerpoints(self.extent)
+            plt.scatter(cornerpoints_geo[:, 0], cornerpoints_geo[:, 1], label='grid extent')
+            plt.scatter(cornerpoints_dtm[:, 0], cornerpoints_dtm[:, 1], label='raster extent')
+            plt.legend(frameon=True, loc='upper left')
+            raise AssertionError('The model extent is too different from the raster extent.')
 
     def convert2xyz(self):
         '''
