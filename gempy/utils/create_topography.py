@@ -100,7 +100,7 @@ class Load_DEM_GDAL():
                                       self.grid.extent[1] >= self.extent[1],
                                       self.grid.extent[2] <= self.extent[2],
                                       self.grid.extent[3] >= self.extent[3]))
-        if test == True:
+        if test == False:
             cornerpoints_geo = self._get_cornerpoints(self.grid.extent)
             cornerpoints_dtm = self._get_cornerpoints(self.extent)
             plt.scatter(cornerpoints_geo[:, 0], cornerpoints_geo[:, 1], label='grid extent')
