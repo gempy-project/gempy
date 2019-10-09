@@ -56,8 +56,15 @@ class PlotData2D:
         self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors) + 0.5)
 
-    def get_plot_data(self, series="all", at="everywhere", direction=None, cell_number=None, radius=None,
+    def get_plot_data(self, series="all", at="everywhere", direction=None, cell_number=None, radius='default',
                       show_all_data=False):
+
+        if radius == 'default':
+            radius = None
+        else:
+            assert type(radius) != str, 'You need to pass a number (in model extent) for the radius to take more' \
+                                        'or less data into account.'
+
         if series == "all":
             series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"].
                 isin(self.model.series.df.index.values)]
@@ -85,8 +92,8 @@ class PlotData2D:
                     j = np.where(self.model.grid.sections.names == at)[0][0]
                     mask_surfpoints, mask_orient = self.get_mask_sections(j, radius=radius)
 
-                    self.testorient = series_to_plot_f[mask_orient]
-                    self.testinterf = series_to_plot_i[mask_surfpoints]
+                    #self.testorient = series_to_plot_f[mask_orient]
+                    #self.testinterf = series_to_plot_i[mask_surfpoints]
 
                 except AttributeError:
                     print('must be topography, a section name or block_section')
@@ -164,12 +171,12 @@ class PlotData2D:
         plt.xlabel(x)
         plt.ylabel(y)
 
-    def plot_section_data(self, section_name, show_all_data=False, **kwargs):
+    def plot_section_data(self, section_name, show_all_data=False, radius=None, **kwargs):
         if show_all_data:
             at = 'everywhere'
         else:
             at = section_name
-        plot_surfpoints, plot_orient = self.get_plot_data(at=at)
+        plot_surfpoints, plot_orient = self.get_plot_data(at=at, radius=radius)
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
         # convert the data to the new coord system
         # define x,y, Gx, Gy #orientations is difficult?
@@ -585,7 +592,7 @@ class PlotSolution(PlotData2D):
 
 
     def plot_section_by_name(self, section_name, show_data=True, show_faults=True, show_topo=True,
-                             show_all_data=False, **kwargs):
+                             show_all_data=False, radius='default', **kwargs):
         assert self.model.solutions.sections is not None, 'no sections for plotting defined'
         assert section_name in self.model.grid.sections.names, 'Section "{}" is not defined. Available sections for ' \
                                                     'plotting: {}'.format(section_name, self.model.grid.sections.names)
@@ -599,7 +606,7 @@ class PlotSolution(PlotData2D):
                   self.model.grid.regular_grid.extent[4], self.model.grid.regular_grid.extent[5]]
 
         if show_data:
-            self.plot_section_data(section_name=section_name, show_all_data=show_all_data, **kwargs)
+            self.plot_section_data(section_name=section_name, show_all_data=show_all_data, radius=radius)
 
         axes = plt.gca()
         axes.imshow(image, origin='lower', zorder=-100,

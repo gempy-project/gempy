@@ -283,12 +283,12 @@ def plot_predef_sections(model, show_traces=True, show_data=False, section_names
 """
 
 def plot_section_by_name(model, section_name, show_faults=True, show_topo=True, show_data=True,
-                         show_all_data=False):
+                         show_all_data=False, radius='default'):
     # Todo needs more keywords:
     ### if show_data: radius, data_type
     plot = PlotSolution(model)
     plot.plot_section_by_name(section_name=section_name, show_topo=show_topo, show_faults=show_faults,
-                              show_data=show_data, show_all_data=show_all_data)
+                              show_data=show_data, show_all_data=show_all_data, radius=radius)
 
 def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
                  show_data=True, show_faults=True, show_topo = False,  block_type=None, ve=1,
