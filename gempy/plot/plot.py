@@ -205,7 +205,7 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
 
     Args:
         geo_model (gempy.DataManagement.InputData): Input data of the model
-        series_only: To select whether a stereonet is plotted per series or per formation
+        series_only: To select whether a stereonet is plotted perries or per formation
         litho: selection of formation or series names, as list. If None, all are plotted
         planes: If True, azimuth and dip are plotted as great circles
         poles: If True, pole points (plane normal vectors) of azimuth and dip are plotted
