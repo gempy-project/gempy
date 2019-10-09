@@ -553,6 +553,9 @@ def load_model(name, path=None, recompile=False):
                                  'color': 'str'})
     c_ = surf_df.columns[~(surf_df.columns.isin(geo_model.surfaces._columns_vis_drop))]
     geo_model.surfaces.df[c_] = surf_df[c_]
+    geo_model.surfaces.df['series'].cat.reorder_categories(np.asarray(geo_model.series.df.index),
+                                                           ordered=False, inplace=True)
+    geo_model.surfaces.sort_surfaces()
 
     geo_model.surfaces.colors.generate_colordict()
     geo_model.surfaces.df['series'].cat.set_categories(cat_series, inplace=True)

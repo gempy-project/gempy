@@ -269,7 +269,7 @@ class DataMutation(object):
         """
         self.series.modify_order_series(new_value, idx)
 
-        self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.array,
+        self.surfaces.df['series'].cat.reorder_categories(np.asarray(self.series.df.index),
                                                           ordered=False, inplace=True)
 
         self.surfaces.sort_surfaces()
@@ -291,7 +291,7 @@ class DataMutation(object):
         reset the flow control objects.
         """
         self.series.reorder_series(new_categories)
-        self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.array,
+        self.surfaces.df['series'].cat.reorder_categories(np.asarray(self.series.df.index),
                                                           ordered=False, inplace=True)
 
         self.surfaces.sort_surfaces()
@@ -838,7 +838,7 @@ class DataMutation(object):
             self.surfaces.df['series'].cat.rename_categories(rename_series, inplace=True)
 
         if reorder_series is True:
-            self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.array,
+            self.surfaces.df['series'].cat.reorder_categories(np.asarray(self.series.df.index),
                                                               ordered=False, inplace=True)
             self.series.df.index = self.series.df.index.reorder_categories(self.series.df.index.array,
                                                                            ordered=False)
