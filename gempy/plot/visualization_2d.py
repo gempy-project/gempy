@@ -155,8 +155,9 @@ class PlotData2D:
                                                           show_all_data=show_all_data)
 
         if data_type == 'all':
-            self._plot_orientations(x, y, Gx, Gy, plot_orient, min_axis, extent, False)
             self._plot_surface_points(x, y, plot_surfpoints, aspect, extent, kwargs)
+            self._plot_orientations(x, y, Gx, Gy, plot_orient, min_axis, extent, False)
+
 
 
         if data_type == 'surface_points':
@@ -210,7 +211,7 @@ class PlotData2D:
         if series_to_plot_i.shape[0] != 0:
             fig = plt.gcf()
             size = fig.get_size_inches() * fig.dpi
-            print(size)
+            #print(size)
             #print(aspect)
             try:
                 p = sns.FacetGrid(series_to_plot_i, hue="surface",
@@ -237,14 +238,14 @@ class PlotData2D:
 
     def _plot_orientations(self, x, y, Gx, Gy, series_to_plot_f, min_axis, extent, p, aspect=None, ax=None):
         if series_to_plot_f.shape[0] != 0:
-            print('hello')
+            #print('hello')
             if p is False:
 
                 #ax = plt.gca()
                 #print(ax)
                 fig = plt.gcf()
                 size = fig.get_size_inches() * fig.dpi
-                print('before plot orient', size)
+                #print('before plot orient', size)
                 surflist = list(series_to_plot_f['surface'].unique())
                 for surface in surflist:
                     to_plot = series_to_plot_f[series_to_plot_f['surface'] == surface]
@@ -271,12 +272,12 @@ class PlotData2D:
                 p.map(plt.quiver, x, y, Gx, Gy, pivot="tail", scale_units=min_axis, scale=10, edgecolor='k',
                       headwidth=4, linewidths=1)
         else:
-            print('no orient')
+            #print('no orient')
             pass
 
         fig = plt.gcf()
         size = fig.get_size_inches() * fig.dpi
-        print('after plot_orientations', size)
+        #print('after plot_orientations', size)
 
     def _slice(self, direction, cell_number=25):
         """
