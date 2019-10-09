@@ -206,6 +206,12 @@ class DataMutation(object):
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
+    def set_section_grid(self, section_dict):
+        self.grid.set_section_grid(section_dict)
+        self.update_from_grid()
+        print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
+        return self.grid
+
     # endregion
 
     # region Series
@@ -1220,7 +1226,7 @@ class Model(DataMutation):
     @setdoc_pro([ds.compile_theano, ds.theano_optimizer])
     def set_gravity_interpolator(self, density_block=None,
                                  pos_density=None, tz=None, compile_theano: bool = True,
-                                 theano_optimizer=None, verbose: list = None):
+                                 theano_optimizer=None, verbose: list = None, **kwargs):
         """
         Method to create a graph and compile the theano code to compute forward gravity.
 
@@ -1252,7 +1258,7 @@ class Model(DataMutation):
 
         self.interpolator_gravity = InterpolatorGravity(
             self.surface_points, self.orientations, self.grid, self.surfaces,
-            self.series, self.faults, self.additional_data)
+            self.series, self.faults, self.additional_data, **kwargs)
 
         # geo_model.interpolator.set_theano_graph(geo_model.interpolator.create_theano_graph())
         self.interpolator_gravity.create_theano_graph(self.additional_data, inplace=True)

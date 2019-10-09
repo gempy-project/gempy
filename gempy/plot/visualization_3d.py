@@ -506,6 +506,7 @@ class vtkVisualization(object):
         # # Create a mapper and actor
         # pointsMapper = vtk.vtkPolyDataMapper()
         # pointsMapper.SetInputConnection(glyphFilter.GetOutputPort())
+
         #
         # pointsActor = vtk.vtkActor()
         # pointsActor.SetMapper(pointsMapper)

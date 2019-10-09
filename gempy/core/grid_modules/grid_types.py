@@ -96,12 +96,14 @@ class Sections:
             self.dist = []
             self.get_section_params()
             self.calculate_distance()
+            self.df = pn.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution'])
+            self.df['dist'] = self.dist
             self.values = []
             self.extent = None
             self.compute_section_coordinates()
 
     def _repr_html_(self):
-        return pn.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution']).to_html()
+        return self.df.to_html()
 
     def show(self):
         pass
@@ -165,7 +167,6 @@ class Sections:
             m = (y1 - y0) / (x1 - x0)  # slope of line
             yj = m * (xi - x0) + y0 * np.ones(xi.shape)  # calculate yvalues with line equation
         return np.vstack((xi, yj)).T
-
 
     def get_section_args(self, section_name: str):
         where = np.where(self.names == section_name)[0][0]

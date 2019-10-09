@@ -290,6 +290,7 @@ def plot_section_by_name(model, section_name, show_faults=True, show_topo=True, 
     plot.plot_section_by_name(section_name=section_name, show_topo=show_topo, show_faults=show_faults,
                               show_data=show_data, show_all_data=show_all_data)
 
+
 def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
                  show_data=True, show_faults=True, show_topo = False,  block_type=None, ve=1,
                  show_all_data=False, show_legend=True, **kwargs):
@@ -312,9 +313,8 @@ def plot_section(model, cell_number=13, block=None, direction="y", interpolation
     """
     plot = PlotSolution(model)
     plot.fig = plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
-                            show_data, show_faults, show_topo,  block_type, ve, show_all_data=show_all_data,
-                                       show_legend=show_legend, **kwargs)
-    # TODO saving options
+                                       show_data, show_faults, show_topo,  block_type, ve,
+                                       show_all_data=show_all_data, show_legend=show_legend, **kwargs)
     return plot
 
 

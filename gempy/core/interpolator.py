@@ -963,7 +963,7 @@ class InterpolatorGravity(InterpolatorModel):
                                          (self.theano_graph.mask_matrix, self.theano_graph.new_mask)],
                              #   mode=NanGuardMode(nan_is_error=True),
                                 on_unused_input='ignore',
-                                allow_input_downcast=False,
+                                allow_input_downcast=True,
                                 profile=False)
 
         if inplace is True:

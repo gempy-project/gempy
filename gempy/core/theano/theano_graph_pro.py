@@ -115,6 +115,7 @@ class SolveSparse(T.Op):
 
 solv = SolveSparse()
 
+
 class TheanoGraphPro(object):
     def __init__(self, optimizer='fast_compile', verbose=None, dtype=None, **kwargs):
         """
@@ -1644,8 +1645,11 @@ class TheanoGraphPro(object):
         return block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix
 
     def compute_forward_gravity(self, densities):  # densities, tz, select,
+        densities = theano.printing.Print('density')(densities)
 
         n_devices = T.cast((densities.shape[0] / self.tz.shape[0]), dtype='int32')
+        n_devices = theano.printing.Print('n_devices')(n_devices)
+
         tz_rep = T.tile(self.tz, n_devices)
 
         # density times the component z of gravity

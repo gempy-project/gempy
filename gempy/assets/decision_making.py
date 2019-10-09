@@ -367,10 +367,11 @@ def plot_multiple_loss():
         if e == 0:
             axr.plot(xvals, loss, linewidth=3, color='white')
             axr.plot(xvals, loss, linewidth=2, color='#496155', label='Loss')
-            axr.legend()
+            axr.legend(frameon=True, facecolor='white', framealpha=1)
+
         else:
             axr.plot(xvals, loss, linewidth=3, color='white')
-            axr.plot(xvals, loss, linewidth=2, color='#496155')
+            axr.plot(xvals, loss, linewidth=2, color='#496155', label='Risk Neutral')
         if e%2 == 0:
 
             axr.yaxis.set_visible(False)
@@ -390,22 +391,22 @@ def plot_multiple_loss():
             ax.set_xlabel('Score')
         return ax, axr
 
-    def res_score_loss(estimate_s, true_s, ov=1.25, uv_b=2, ov_b=1.5, risk_s=1):
+    def res_score_loss(true_s, estimate_s, ov=1.25, uv_b=1.5, ov_b=2, risk_s=1):
 
         underest = (estimate_s < true_s)
         # loss_s = np.zeros((estimate_s.shape[0], true_s.shape[0]))
         underest_bad = (estimate_s <= 0) & (true_s > 0)
         overest = (estimate_s > true_s)
         overest_bad = (estimate_s > 0) & (true_s <= 0)
-        a = underest * (true_s - estimate_s) * (risk_s ** -0.5)
-        b = underest_bad * (true_s - estimate_s) * (uv_b * (risk_s ** -0.5))
-        c = overest * (estimate_s - true_s) * (ov * risk_s)
-        d = overest_bad * (estimate_s - true_s) * (ov_b * risk_s)
+        a = underest * abs(true_s - estimate_s) * (risk_s ** -0.5)
+        b = underest_bad * abs(true_s - estimate_s) * (uv_b * (risk_s ** -0.5))
+        c = overest * abs(estimate_s - true_s) * (ov * risk_s)
+        d = overest_bad * abs(estimate_s - true_s) * (ov_b * risk_s)
         loss_s = (a + b + c + d).mean(axis=1)
         return loss_s, (a,b,c,d)
 
-    def abs_loss(estimate_s, true_s, ov=1, uv=1, risk_s=1, uv_b=1):
-
+    def abs_loss(true_s, estimate_s, ov=1, uv=1, risk_s=1, uv_b=1):
+        print('foooooo')
         underest = (estimate_s < true_s)
         # loss_s = np.zeros((estimate_s.shape[0], true_s.shape[0]))
         underest_bad = 1# (estimate_s <= 0) & (true_s > 0)
@@ -413,9 +414,9 @@ def plot_multiple_loss():
         overest_bad = (estimate_s > 0) & (true_s <= 0)
         b = 0
         d = 0
-        a = underest * (true_s - estimate_s) * (uv * risk_s)
+        a = underest * abs(true_s - estimate_s) * (uv * risk_s)
       #  b = underest_bad * (true_s - estimate_s) * (uv_b * (risk_s))
-        c = overest * (estimate_s - true_s) * (ov * risk_s)
+        c = overest * abs(estimate_s - true_s) * (ov * risk_s)
         #d = overest_bad * (estimate_s - true_s) * (ov_b * risk_s)
         loss_s = (a + b + c + d).mean(axis=1)
         return loss_s, (a,b,c,d)
@@ -505,11 +506,11 @@ def plot_multiple_loss():
             ax_, axr_ = plot_axis(x, n, l, ax, e)
             ax_.vlines(mu[e], 0, 40, linestyles='--', alpha=.5)
             ax_.vlines(0, 0, 40, linestyles='--', alpha=.5)
-            labels = ['Underes.', 'Crit. Underest.', 'Overest.', 'Crit. Overest']
+            labels = ['Underes.', 'Crit. Underest.', 'Overest.', 'Crit. Overest.']
             for i in range(4):
                 axr_.plot(x, partial[i].mean(axis=1), '--', linewidth=1, label=labels[i])
 
-            axr_.legend(loc=2)
+            axr_.legend(loc=2, frameon=True, facecolor='white', framealpha=1)
 
         if e==2 or e==3:
             x, n, l, partial = compute_values(mu[e], sigma[e], type[e])
@@ -521,18 +522,18 @@ def plot_multiple_loss():
 
             x, n, l, partial = compute_values(mu[e], sigma[e], type[e], risk=.2)
             axr_.plot(x, l, linewidth=3, color='white')
-            axr_.plot(x, l, linewidth=2, label='Risk Adverse')
+            axr_.plot(x, l, linewidth=2, label='Risk Friendly')
             axr_.plot(x[l.argmin()], 0, 'o',  color='b', markersize=12)
 
             x, n, l, partial = compute_values(mu[e], sigma[e], type[e], risk=5)
             axr_.plot(x, l, linewidth=3, color='white')
-            axr_.plot(x, l, linewidth=2, label='Risk Friendly')
+            axr_.plot(x, l, linewidth=2, label='Risk Averse')
             axr_.plot(x[l.argmin()], 0, 'o',  color='orange', markersize=12)
 
             ax_.vlines(mu[e], 0, 40, linestyles='--', alpha=.5)
             ax_.vlines(0, 0, 40, linestyles='--', alpha=.5)
-
-            axr_.legend()
+            if e==2:
+                axr_.legend(frameon=True, facecolor='white', framealpha=1)
 
         if e > 3:
             x, n, l, partial, ss, d_cost = compute_values(mu[e], sigma[e], type[e],
@@ -550,26 +551,31 @@ def plot_multiple_loss():
                                                       risk=.2, depth=ss)
             #print(_1.mean(),  d_cost.mean())
             axr_.plot(x, l, linewidth=3, color='white')
-            axr_.plot(x, l, linewidth=2, label='Risk Adverse')
+            axr_.plot(x, l, linewidth=2, label='Risk Friendly')
             axr_.plot(x[l.argmin()], 0, 'o',  color='b', markersize=12)
 
-            x, n, l, partial= compute_values(mu[e], sigma[e], type[e],
+            x, n, l, partial = compute_values(mu[e], sigma[e], type[e],
                                                       x_range=(-24 + 6, 6 + 24),
                                                       risk=5, depth=ss)
           #  print(_1.mean(),  d_cost.mean())
             axr_.plot(x, l, linewidth=3, color='white')
-            axr_.plot(x, l, linewidth=2, label='Risk Friendly')
+            axr_.plot(x, l, linewidth=2, label='Risk Adverse')
             axr_.plot(x[l.argmin()], 0, 'o',  color='orange', markersize=12)
 
-            sns.kdeplot(d_cost, ax=ax_, shade=True, label='Depth Score', color=default_red,
+            k = sns.kdeplot(d_cost, ax=ax_, shade=True, label='Depth Score', color=default_red,
                         alpha=.8,linewidth=.5)
+            #k.legend_.set_frame_on(True)
             sns.kdeplot(ss, ax=ax_, label='Final Score', shade=True, color=default_blue,
                         alpha=1, linewidth=.5)
+            k.legend_.set_frame_on(True)
+            k.legend_.set_alpha(1)
 
+            if e == 4:
+                k.legend_.set_visible(False)
             # ax_.vlines(mu[e], 0, 40, linestyles='--', alpha=.5)
             ax_.vlines(np.median(ss), 0, 40, linestyles='--', alpha=.5)
             ax_.vlines(0, 0, 40, linestyles='--', alpha=.5)
-            ax_.legend(loc=2)
+          #  ax_.legend(loc=2)
 
         axis.append((ax_, axr_))
-
+    return k
