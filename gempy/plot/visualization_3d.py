@@ -547,7 +547,7 @@ class vtkVisualization(object):
             rgb = (255 * np.array(mcolors.hex2color(val)))
             arr_ = np.vstack((arr_, rgb))
 
-        sel = np.round(self.geo_model.solutions.geological_map).astype(int)[0]
+        sel = np.round(self.geo_model.solutions.geological_map[0]).astype(int)[0]
         nv = numpy_to_vtk(arr_[sel - 1], array_type=3)
         self._topography_delauny.GetOutput().GetPointData().SetScalars(nv)
 
