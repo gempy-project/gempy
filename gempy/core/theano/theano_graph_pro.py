@@ -145,7 +145,7 @@ class TheanoGraphPro(object):
         # Trade speed for memory this will consume more memory
         self.max_speed = kwargs.get('max_speed', 1)
         self.sparse_version = kwargs.get('sparse_version', False)
-        self.loop_i = theano.shared(np.array(1, dtype=int))
+       # self.loop_i = theano.shared(np.array(1, dtype=int))
 
         self.gradient = kwargs.get('gradient', False)
         self.device = theano.config.device
@@ -938,6 +938,7 @@ class TheanoGraphPro(object):
 
         else:
             import theano.tensor.slinalg
+
             DK_parameters = theano.tensor.slinalg.solve(C_matrix, b)
 
         DK_parameters = DK_parameters.reshape((DK_parameters.shape[0],))
