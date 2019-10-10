@@ -853,7 +853,7 @@ class InterpolatorModel(Interpolator):
         print('is erosion', self.theano_graph.is_erosion.get_value())
         print('is onlap', self.theano_graph.is_onlap.get_value())
 
-    def compile_th_fn(self, inplace=False, debug=True, grid: Union[str, np.ndarray] = 'shared'):
+    def compile_th_fn(self, inplace=False, debug=True, grid: Union[str, np.ndarray] = None):
         """
         Compile and create the theano function which can be evaluated to compute the geological models
 

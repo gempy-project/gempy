@@ -118,7 +118,7 @@ class Plot2D:
     def create_figure(self, figsize=None, textsize=None):
 
         figsize, self.ax_labelsize, _, self.xt_labelsize, self.linewidth, _ = _scale_fig_size(figsize, textsize)
-        self.fig, self.axes = plt.subplots(0, 0, figsize=figsize, constrained_layout=False)
+        self.fig, self.axes = plt.subplots(0, 0, figsize=figsize, constrained_layout=True)
 
         # TODO make grid variable
         self.gs_0 = gridspect.GridSpec(3, 2, figure=self.fig, hspace=.1)
@@ -126,13 +126,6 @@ class Plot2D:
         return self.fig, self.axes, self.gs_0
 
     def set_section(self, section_name=None, cell_number=None, direction='y', ax=None, ax_pos=111, ve=1):
-        # TODO add vertical exageration
-
-        # apply vertical exageration
-        if direction in ("x", "y"):
-            aspect = ve
-        else:
-            aspect = 1
 
         if ax is None:
             # TODO
@@ -143,7 +136,7 @@ class Plot2D:
                 ax.set_title('Geological map')
                 ax.set_xlabel('X')
                 ax.set_ylabel('Y')
-
+                extent_val = self.model.grid.topography.extent
             else:
 
                 dist = self.model.grid.sections.df.loc[section_name, 'dist']
@@ -151,13 +144,11 @@ class Plot2D:
                 extent_val = [0, dist,
                           self.model.grid.regular_grid.extent[4], self.model.grid.regular_grid.extent[5]]
 
-
                 labels, axname = self._make_section_xylabels(section_name, len(ax.get_xticklabels()) - 2)
                 pos_list = np.linspace(0, dist, len(labels))
                 ax.xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
                 ax.xaxis.set_major_formatter(FixedFormatter((labels)))
                 ax.set(title=section_name, xlabel=axname, ylabel='Z')
-                #aspect = (extent_val[1] - extent_val[0]) / (extent_val[3] - extent_val[2])
 
         elif cell_number is not None:
             _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
@@ -170,9 +161,9 @@ class Plot2D:
             ax.gca().invert_yaxis()
         aspect = (extent_val[3] - extent_val[2]) / (extent_val[1] - extent_val[0])/ve
         print(aspect)
-        ax.set_xlim(extent_val[0], extent_val[1], auto=True)
-        ax.set_ylim(extent_val[2], extent_val[3], auto=True)
-        #ax.set_aspect(aspect)
+        ax.set_xlim(extent_val[0], extent_val[1])
+        ax.set_ylim(extent_val[2], extent_val[3])
+        ax.set_aspect('equal')
 
         return ax
 
@@ -192,8 +183,6 @@ class Plot2D:
 
         """
         # # TODO force passing axis
-        # if extent_val is None:
-        #     extent_val = self.set_section(section_name, cell_number, direction, ax=ax)
         extent_val = [*ax.get_xlim(), *ax.get_ylim()]
 
         if section_name is not None:
@@ -251,7 +240,7 @@ class Plot2D:
 
         ax.contour(image, cmap='autumn', extent=extent_val, zorder=8, **kwargs)
 
-    def plot_data(self, ax, section_name=None, cell_number=None, direction='y',):
+    def plot_data(self, ax, section_name=None, cell_number=None, direction='y', projection_distance=1e10):
 
         points = self.model.surface_points.df.copy()
         orientations = self.model.orientations.df.copy()
@@ -262,25 +251,116 @@ class Plot2D:
             end_point = np.atleast_2d(np.asarray(self.model.grid.sections.df.loc[section_name, 'stop']) - shift)
             A_rotate = np.dot(end_point.T, end_point)/self.model.grid.sections.df.loc[section_name, 'dist']**2
 
+            cartesian_point_dist = np.sqrt(((np.dot(A_rotate, (points[['X', 'Y']]).T).T - points[['X', 'Y']])**2).sum(axis=1))
+            cartesian_ori_dist = np.sqrt(((np.dot(A_rotate, (orientations[['X', 'Y']]).T).T - orientations[['X', 'Y']])**2).sum(axis=1))
+
+            # This are the coordinates of the data projected on the section
             cartesian_point = np.dot(A_rotate, (points[['X', 'Y']] - shift).T).T
             cartesian_ori = np.dot(A_rotate, (orientations[['X', 'Y']] - shift).T).T
-            points[['X']] = np.linalg.norm(cartesian_point, axis=1)
 
+            # Since we plot only the section we want the norm of those coordinates
+            points[['X']] = np.linalg.norm(cartesian_point, axis=1)
             orientations[['X']] = np.linalg.norm(cartesian_ori, axis=1)
 
-        sns.scatterplot(data=points, x='X', y='Z', hue='id', ax=ax)
-        ax.quiver(orientations['X'], orientations['Y'], orientations['G_x'], [orientations['G_z']],
+        else:
+
+            if cell_number is None:
+                cell_number = int(self.model.grid.regular_grid.resolution[0]/2)
+
+            if direction == 'x' or direction == 'X':
+                arg_ = 0
+                dx = self.model.grid.regular_grid.dx
+                dir = 'X'
+            elif direction == 'y' or direction == 'Y':
+                arg_ = 2
+                dx = self.model.grid.regular_grid.dy
+                dir = 'Y'
+            elif direction == 'z' or direction == 'Z':
+                arg_ = 4
+                dx = self.model.grid.regular_grid.dz
+                dir = 'Z'
+            else:
+                raise AttributeError('Direction must be x, y, z')
+
+            _loc = self.model.grid.regular_grid.extent[arg_] + dx * cell_number
+            cartesian_point_dist = points[dir] - _loc
+            cartesian_ori_dist = orientations[dir] - _loc
+
+        select_projected_p = cartesian_point_dist < projection_distance
+        select_projected_o = cartesian_ori_dist < projection_distance
+
+        sns.scatterplot(data=points[select_projected_p], x='X', y='Z', hue='id', ax=ax, )
+
+        sel_ori = orientations[select_projected_o]
+        ax.quiver(sel_ori['X'], sel_ori['Y'], sel_ori['G_x'], [sel_ori['G_z']],
                   pivot="tail",
                   scale=10, edgecolor='k',
                   headwidth=4, linewidths=1)
+        try:
+            ax.legend_.set_frame_on(True)
+        except AttributeError:
+            pass
 
-        ax.legend_.set_frame_on(True)
-        return np.linalg.norm(cartesian_point, axis=0)
+    def calculate_p1p2(self, direction, cell_number):
+        if direction == 'y':
+            y = self.model.grid.regular_grid.extent[2] + self.model.grid.regular_grid.dy * cell_number
+            p1 = [self.model.grid.regular_grid.extent[0], y]
+            p2 = [self.model.grid.regular_grid.extent[1], y]
 
+        elif direction == 'x':
+            x = self.model.grid.regular_grid.extent[0] + self.model.grid.regular_grid.dx * cell_number
+            p1 = [x, self.model.grid.regular_grid.extent[2]]
+            p2 = [x, self.model.grid.regular_grid.extent[3]]
 
+        else:
+            raise NotImplementedError
+        return p1, p2
 
+    def _slice_topo_4_sections(self, p1, p2, resx, resy):
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, resx, resy)
+        z = self.model.grid.topography.interpolate_zvals_at_xy(xy)
+        return xy[:, 0], xy[:, 1], z
 
+    def plot_topography(self, ax, section_name=None, cell_number=None, direction='y', block=None):
 
+        if section_name is not None:
+
+            p1 = self.model.grid.sections.df.loc[section_name, 'start']
+            p2 = self.model.grid.sections.df.loc[section_name, 'stop']
+            x, y, z = self._slice_topo_4_sections(p1, p2, self.model.grid.topography.resolution[0],
+                                                  self.model.grid.topography.resolution[1])
+
+            pseudo_x = np.linspace(0, self.model.grid.sections.df.loc[section_name, 'dist'], z.shape[0])
+            a = np.vstack((pseudo_x, z)).T
+            xy = np.append(a,
+                          ([self.model.grid.sections.df.loc[section_name, 'dist'], a[:, 1][-1]],
+                           [self.model.grid.sections.df.loc[section_name, 'dist'], self.model.grid.regular_grid.extent[5]],
+                           [0, self.model.grid.regular_grid.extent[5]],
+                           [0, a[:, 1][0]])).reshape(-1, 2)
+
+            ax.fill(xy[:,0], xy[:, 1], 'k', zorder=10)
+
+        elif cell_number is not None or block is not None:
+            p1, p2 = self.calculate_p1p2(direction, cell_number)
+            resx = self.model.grid.topography.resolution[0]
+            resy = self.model.grid.topography.resolution[1]
+            print('p1', p1, 'p2', p2)
+            x, y, z = self._slice_topo_4_sections(p1, p2, resx, resy)
+            if direction == 'x':
+                a = np.vstack((y, z)).T
+                ext = self.model.grid.regular_grid.extent[[2, 3]]
+            elif direction == 'y':
+                a = np.vstack((x, z)).T
+                ext = self.model.grid.regular_grid.extent[[0, 1]]
+            else:
+                raise NotImplementedError
+            a = np.append(a,
+                          ([ext[1], a[:, 1][-1]],
+                           [ext[1], self.model.grid.regular_grid.extent[5]],
+                           [ext[0], self.model.grid.regular_grid.extent[5]],
+                           [ext[0], a[:, 1][0]]))
+            line = a.reshape(-1, 2)
+            ax.fill(line[:, 0], line[:, 1], color='k')
 
 
 

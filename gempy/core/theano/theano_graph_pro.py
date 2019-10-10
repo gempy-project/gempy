@@ -1630,11 +1630,6 @@ class TheanoGraphPro(object):
                                    self.values_properties_op[:, n_form_per_serie_0: n_form_per_serie_1 + 1]),
                                block_matrix[n_series, :]
                                )
-        #grid_shape = T.max((0, self.grid_val_T.shape[0]))
-       # grid_shape = theano.printing.Print('grid sh')(grid_shape)
-       # a = theano.printing.Print('a')(grid_shape*self.loop_i)
-        #grid_shape = T.max((T.as_tensor(0), T.stack([self.grid_val_T.shape[0]], axis=0)))
-        # TODO  grid_shape*(self.loop_i-1):a]
         weights_vector = T.set_subtensor(weights_vector[len_w_0:len_w_1], weights)
         scalar_field_matrix = T.set_subtensor(scalar_field_matrix[n_series], Z_x)
         block_matrix = T.set_subtensor(block_matrix[n_series, :], block)

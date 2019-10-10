@@ -256,10 +256,10 @@ class CenteredGrid:
             if xyz == 2:
                 # Make the grid only negative for the z axis
 
-                g_.append(np.geomspace(0.01, 1, int(resolution[xyz])))
+                g_.append(np.geomspace(0.000001, 1, int(resolution[xyz])))
                 g_2.append((np.concatenate(([0], g_[xyz])) + 0.05) * - radio[xyz]*1.2)
             else:
-                g_.append(np.geomspace(0.01, 1, int(resolution[xyz] / 2)))
+                g_.append(np.geomspace(0.000001, 1, int(resolution[xyz] / 2)))
                 g_2.append(np.concatenate((-g_[xyz][::-1], [0], g_[xyz])) * radio[xyz])
             d_.append(np.diff(np.pad(g_2[xyz], 1, 'reflect', reflect_type='odd')))
 

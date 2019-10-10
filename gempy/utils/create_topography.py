@@ -147,12 +147,16 @@ class Load_DEM_artificial():
         self.grid = grid
 
         self.resolution = grid.resolution[:2] if resolution is None else resolution
+
+        assert all(np.asarray(self.resolution) > 2), 'The regular grid needs to be at least of size 2 on all ' \
+                                                     'directions.'
         self.extent = self.grid.extent[:4] if extent is None else extent
 
         if d_z is None:
             self.d_z = np.array(
                 [self.grid.extent[5] - (self.grid.extent[5] - self.grid.extent[4]) * 1 / 5,
                  self.grid.extent[5]])
+            print(self.d_z)
         else:
             self.d_z = d_z
 
