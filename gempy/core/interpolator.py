@@ -628,8 +628,6 @@ class InterpolatorModel(Interpolator):
         if self.len_series_f.shape[0] == 0:
             self.len_series_f = np.zeros(1, dtype=int)
 
-        assert len(self.len_series_i) == len(self.len_series_o), 'Every Series/Fault need at least 1 orientation and' \
-                                                                 '2 surfaces points.'
         self.len_series_w = self.len_series_i + self.len_series_o * 3 + self.len_series_u + self.len_series_f
 
     def set_theano_shared_loop(self):

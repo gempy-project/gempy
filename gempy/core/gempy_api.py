@@ -231,6 +231,8 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
 
     assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1, \
         'To compute the model is necessary at least 2 interface points per layer'
+    assert len(model.interpolator.len_series_i) == len(model.interpolator.len_series_o),\
+        'Every Series/Fault need at least 1 orientation and 2 surfaces points.'
 
     if output == 'geology':
         assert model.interpolator.theano_function is not None, 'You need to compile the theano function first'
