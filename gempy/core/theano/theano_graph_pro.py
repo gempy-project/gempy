@@ -1640,7 +1640,18 @@ class TheanoGraphPro(object):
 
         return block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix
 
-    def compute_forward_gravity(self, densities):  # densities, tz, select,
+    def compute_forward_gravity(self, densities=None, pos_density=None):  # densities, tz, select,
+
+        assert pos_density is not None or densities is not None, 'If a density block is not passed, you need to' \
+                                                                 ' specify which interpolated value is density.' \
+                                                                 ' See :class:`Surface`'
+
+        if densities is None:
+            model_sol = self.compute_series()
+            densities = model_sol[0][pos_density, :- 2 * self.len_points]
+        else:
+            model_sol = []
+
         densities = theano.printing.Print('density')(densities)
 
         n_devices = T.cast((densities.shape[0] / self.tz.shape[0]), dtype='int32')
@@ -1652,4 +1663,4 @@ class TheanoGraphPro(object):
         grav = (densities * tz_rep).reshape((n_devices, -1)).sum(axis=1)
 
         # return [lith_matrix, self.fault_matrix, pfai, grav.sum(axis=1)]
-        return grav
+        return T.concatenate(model_sol, grav)

@@ -122,7 +122,6 @@ def set_orientation_from_surface_points(geo_model, indices_array):
                                        orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
                                        surface=form)
 
-    #geo_model.update_df()
     return geo_model.orientations
 # endregion
 
@@ -130,17 +129,29 @@ def set_orientation_from_surface_points(geo_model, indices_array):
 # region Interpolator functionality
 @setdoc([InterpolatorModel.__doc__])
 @setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
-def set_interpolation_data(geo_model: Model, compile_theano: bool = True,
-                           theano_optimizer=None, verbose: list = None, grid='shared',
-                           **kwargs):
+def set_interpolation_data(*args, **kwargs):
+    warnings.warn('set_interpolation_data will be deprecrated in GemPy 2.2. Use '
+                  'set_interpolator instead.', DeprecationWarning)
+    set_interpolator(*args, **kwargs)
+
+
+@setdoc([InterpolatorModel.__doc__])
+@setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
+def set_interpolator(geo_model: Model, type='geo', compile_theano: bool = True,
+                     theano_optimizer=None, verbose: list = None, grid='shared',
+                     **kwargs):
     """
     Method to create a graph and compile the theano code to compute the interpolation.
 
     Args:
         geo_model (:class:`Model`): [s0]
+        type (str:{geo, grav}): type of interpolation.
         compile_theano (bool): [s1]
         theano_optimizer (str {'fast_run', 'fast_compile'}): [s2]
         verbose:
+        kwargs:
+            -  pos_density (Optional[int]): Only necessary when type='grav'. Location on the Surfaces().df
+             where density is located (starting on id being 0).
 
     Returns:
 
@@ -155,13 +166,42 @@ def set_interpolation_data(geo_model: Model, compile_theano: bool = True,
     update_additional_data(geo_model)
     geo_model.surface_points.sort_table()
     geo_model.orientations.sort_table()
-    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
-    geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
 
-    if compile_theano is True:
-        geo_model.interpolator.compile_th_fn(inplace=True, grid=grid)
-    else:
-        geo_model.interpolator.set_theano_shared_grid(grid)
+    # The graph object contains all theano methods. Therefore is independent to which side
+    # of the graph we compile:
+    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
+
+    if type == 'geo':
+        if compile_theano is True:
+            geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
+
+            geo_model.interpolator.compile_th_fn_geo(inplace=True, grid=grid)
+        else:
+            if grid == 'shared':
+                geo_model.interpolator.set_theano_shared_grid(grid)
+
+    elif type == 'grav':
+        pos_density = kwargs.get('pos_density', 1)
+        tz = kwargs.get('tz', 'auto')
+
+        # First we need to upgrade the interpolator object:
+        warnings.warn('Interpolator object upgraded from InterpolatorModel to InterpolatorGravity.')
+        geo_model.interpolator = InterpolatorGravity(
+            geo_model.surface_points, geo_model.orientations, geo_model.grid, geo_model.surfaces,
+            geo_model.series, geo_model.faults, geo_model.additional_data, **kwargs)
+
+        if tz is 'auto' and geo_model.grid.centered_grid is not None:
+            print('Calculating the tz components for the centered grid...')
+            geo_model.interpolator.calculate_tz()
+            print('Done')
+
+        # Set the shared parameters for this piece of tree
+        geo_model.interpolator.set_theano_shared_tz_kernel(tz)
+        geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
+
+        if compile_theano is True:
+            geo_model.interpolator.compile_th_fn_grav(density=None, pos_density=pos_density,
+                                                      inplace=True)
 
     return geo_model.interpolator
 
@@ -433,7 +473,7 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 @setdoc_pro([Model.__doc__],)
 def activate_interactive_df(geo_model: Model, plot_object=None):
     """
-    Experimenteal: Activate the use of the QgridModelIntegration:
+    Experimental: Activate the use of the QgridModelIntegration:
     TODO evaluate the use of this functionality
 
     Notes: Since this feature is for advance levels we will keep only object oriented functionality. Should we
@@ -597,18 +637,6 @@ def load_model(name, path=None, recompile=False):
     # update structure from loaded input
     geo_model.additional_data.structure_data.update_structure_from_input()
     geo_model.rescaling.rescale_data()
-    # # load solutions in npy files
-    # geo_model.solutions.lith_block = np.load(f'{path}/{name}_lith_block.npy')
-    # geo_model.solutions.scalar_field_lith = np.load(f"{path}/{name}_scalar_field_lith.npy")
-    # geo_model.solutions.fault_blocks = np.load(f'{path}/{name}_fault_blocks.npy')
-    # geo_model.solutions.scalar_field_faults = np.load(f'{path}/{name}_scalar_field_faults.npy')
-    # geo_model.solutions.gradient = np.load(f'{path}/{name}_gradient.npy')
-    # geo_model.solutions.values_block = np.load(f'{path}/{name}_values_block.npy')
-    #
-    # geo_model.solutions.additional_data.kriging_data.df = geo_model.additional_data.kriging_data.df
-    # geo_model.solutions.additional_data.options.df = geo_model.additional_data.options.df
-    # geo_model.solutions.additional_data.rescaling_data.df = geo_model.additional_data.rescaling_data.df
-
     geo_model.update_from_series()
     geo_model.update_from_surfaces()
     geo_model.update_structure()

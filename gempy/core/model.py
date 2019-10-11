@@ -1246,6 +1246,9 @@ class Model(DataMutation):
             :class:`Options`
         """
 
+        warnings.warn('set_gravity_interpolator will be deprecated in GemPy 2.2.'
+                      ' Use gempy.set_interpolator(geo_model, type=\'grav\') instead')
+
         assert self.grid.centered_grid is not None, 'First you need to set up a gravity grid to compile the graph'
         assert density_block is not None or pos_density is not None, 'If you do not pass the density block you need to'\
                                                                      ' pass the position of surface values where' \
@@ -1268,6 +1271,6 @@ class Model(DataMutation):
         self.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
 
         if compile_theano is True:
-            self.interpolator_gravity.compile_th_fn(density_block, pos_density, inplace=True)
+            self.interpolator_gravity.compile_th_fn_grav(density_block, pos_density, inplace=True)
 
         return self.additional_data.options

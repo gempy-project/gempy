@@ -99,7 +99,6 @@ class Interpolator(object):
             additional_data = self.additional_data
 
         graph = tg.TheanoGraphPro(optimizer=additional_data.options.df.loc['values', 'theano_optimizer'],
-                                  #dtype=additional_data.options.df.loc['values', 'dtype'],
                                   verbose=additional_data.options.df.loc['values', 'verbosity'],
                                   **kwargs)
         if inplace is True:
@@ -350,8 +349,6 @@ class InterpolatorBlock(Interpolator):
         if fault_drift is None:
             fault_drift = np.zeros((0, grid.shape[0] + 2 * self.len_series_i.sum()))
 
-         #   fault_drift = np.zeros((0, grid.shape[0] + surface_points_coord.shape[0]))
-
         values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
 
         # Set all in a list casting them in the chosen dtype
@@ -404,7 +401,6 @@ class InterpolatorBlock(Interpolator):
                                     self.theano_graph.get_scalar_field_at_surface_points(Z_x),
                                     values_properties
                                 ),
-                                # mode=NanGuardMode(nan_is_error=True),
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
                                 profile=False)
@@ -436,6 +432,7 @@ class InterpolatorBlock(Interpolator):
         """
         self.set_theano_shared_kriging()
         self.set_theano_shared_structure_surfaces()
+
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
         input_data_T = self.theano_graph.input_parameters_block
         print('Compiling theano function...')
@@ -748,6 +745,7 @@ class InterpolatorModel(Interpolator):
     def modify_results_matrices_pro(self):
         """Modify all theano shared matrices to the right size according to the structure data. This method allows
         to change the size of the results without having the recompute all series"""
+
         old_len_i = self.len_series_i
         new_len_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
             self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
@@ -853,7 +851,7 @@ class InterpolatorModel(Interpolator):
         print('is erosion', self.theano_graph.is_erosion.get_value())
         print('is onlap', self.theano_graph.is_onlap.get_value())
 
-    def compile_th_fn(self, inplace=False, debug=True, grid: Union[str, np.ndarray] = None):
+    def compile_th_fn_geo(self, inplace=False, debug=True, grid: Union[str, np.ndarray] = None):
         """
         Compile and create the theano function which can be evaluated to compute the geological models
 
@@ -867,7 +865,6 @@ class InterpolatorModel(Interpolator):
         Returns:
             theano.function: function that computes the whole interpolation
         """
-        from theano.compile.nanguardmode import NanGuardMode
 
         self.set_all_shared_parameters(reset_ctrl=False)
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
@@ -882,7 +879,6 @@ class InterpolatorModel(Interpolator):
                                          (self.theano_graph.weights_vector, self.theano_graph.new_weights),
                                          (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
                                          (self.theano_graph.mask_matrix, self.theano_graph.new_mask)],
-                             #   mode=NanGuardMode(nan_is_error=True),
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
                                 profile=False)
@@ -920,8 +916,8 @@ class InterpolatorGravity(InterpolatorModel):
                 raise AttributeError('You need to calculate or pass tz first.')
         self.theano_graph.tz.set_value(tz.astype(self.dtype))
 
-    def compile_th_fn(self, density=None, pos_density=None, inplace=False,
-                      debug=False):
+    def compile_th_fn_grav(self, density=None, pos_density=None, inplace=False,
+                           debug=False):
         """
         Compile and create the theano function which can be evaluated to compute the forward gravity response for
         a given kernel.
@@ -961,7 +957,6 @@ class InterpolatorGravity(InterpolatorModel):
                                          (self.theano_graph.weights_vector, self.theano_graph.new_weights),
                                          (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
                                          (self.theano_graph.mask_matrix, self.theano_graph.new_mask)],
-                             #   mode=NanGuardMode(nan_is_error=True),
                                 on_unused_input='ignore',
                                 allow_input_downcast=True,
                                 profile=False)
