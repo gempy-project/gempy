@@ -479,6 +479,7 @@ class PlotSolution(PlotData2D):
             fig, ax = plt.subplots(figsize=figsize)
         im = plt.imshow(geomap, origin='lower', extent=self.model.grid.topography.extent, cmap=self._cmap,
                         norm=self._norm, zorder=-100)
+
         if contour_lines == True and show_data == False:
             CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2], cmap='Greys', linestyles='solid',
                             extent=self.model.grid.topography.extent)

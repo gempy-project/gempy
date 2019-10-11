@@ -44,6 +44,7 @@ sns.set_context('talk')
 plt.style.use(['seaborn-white', 'seaborn-talk'])
 from scipy.interpolate import RegularGridInterpolator
 from arviz.plots.jointplot import _var_names, _scale_fig_size
+import scipy.spatial.distance as dd
 
 
 class Plot2D:
@@ -188,7 +189,7 @@ class Plot2D:
         if section_name is not None:
             if section_name == 'topography':
                 try:
-                    image = self.model.solution.geological_map.reshape(
+                    image = self.model.solutions.geological_map.reshape(
                         self.model.grid.topography.values_3D[:, :, 2].shape)
                 except AttributeError:
                     raise AttributeError('Geological map not computed. Activate the topography grid.')
@@ -222,9 +223,16 @@ class Plot2D:
         extent_val = [*ax.get_xlim(), *ax.get_ylim()]
 
         if section_name is not None:
-            l0, l1 = self.model.grid.sections.get_section_args(section_name)
-            shape = self.model.grid.sections.df.loc[section_name, 'resolution']
-            image = self.model.solutions.sections_scalfield[sn][l0:l1].reshape(shape).T
+            if section_name == 'topography':
+                try:
+                    image = self.model.solutions.geological_map_scalfield[sn].reshape(
+                        self.model.grid.topography.values_3D[:, :, 2].shape)
+                except AttributeError:
+                    raise AttributeError('Geological map not computed. Activate the topography grid.')
+            else:
+                l0, l1 = self.model.grid.sections.get_section_args(section_name)
+                shape = self.model.grid.sections.df.loc[section_name, 'resolution']
+                image = self.model.solutions.sections_scalfield[sn][l0:l1].reshape(shape).T
 
         elif cell_number is not None or block is not None:
             _a, _b, _c, _, x, y = self._slice(direction, cell_number)[:-2]
@@ -240,27 +248,43 @@ class Plot2D:
 
         ax.contour(image, cmap='autumn', extent=extent_val, zorder=8, **kwargs)
 
-    def plot_data(self, ax, section_name=None, cell_number=None, direction='y', projection_distance=1e10):
+    def plot_data(self, ax, section_name=None, cell_number=None, direction='y', projection_distance=1e10, **kwargs):
 
         points = self.model.surface_points.df.copy()
         orientations = self.model.orientations.df.copy()
 
         if section_name is not None:
-            # Project points:
-            shift = np.asarray(self.model.grid.sections.df.loc[section_name, 'start'])
-            end_point = np.atleast_2d(np.asarray(self.model.grid.sections.df.loc[section_name, 'stop']) - shift)
-            A_rotate = np.dot(end_point.T, end_point)/self.model.grid.sections.df.loc[section_name, 'dist']**2
+            if section_name == 'topography':
 
-            cartesian_point_dist = np.sqrt(((np.dot(A_rotate, (points[['X', 'Y']]).T).T - points[['X', 'Y']])**2).sum(axis=1))
-            cartesian_ori_dist = np.sqrt(((np.dot(A_rotate, (orientations[['X', 'Y']]).T).T - orientations[['X', 'Y']])**2).sum(axis=1))
+                topo_comp = kwargs.get('topo_comp', 5000)
+                decimation_aux = int(self.model.grid.topography.values.shape[0] /topo_comp)
+                tpp = self.model.grid.topography.values[::decimation_aux + 1, :]
+                cartesian_point_dist = (dd.cdist(tpp, self.model.surface_points.df[['X', 'Y', 'Z']])
+                                        < projection_distance).sum(axis=0).astype(bool)
+                cartesian_ori_dist = (dd.cdist(tpp, self.model.orientations.df[['X', 'Y', 'Z']])
+                                      < projection_distance).sum(axis=0).astype(bool)
+                x, y, Gx, Gy = 'X', 'Y', 'G_x', 'G_y'
 
-            # This are the coordinates of the data projected on the section
-            cartesian_point = np.dot(A_rotate, (points[['X', 'Y']] - shift).T).T
-            cartesian_ori = np.dot(A_rotate, (orientations[['X', 'Y']] - shift).T).T
+            else:
+                # Project points:
+                shift = np.asarray(self.model.grid.sections.df.loc[section_name, 'start'])
+                end_point = np.atleast_2d(np.asarray(self.model.grid.sections.df.loc[section_name, 'stop']) - shift)
+                A_rotate = np.dot(end_point.T, end_point)/self.model.grid.sections.df.loc[section_name, 'dist']**2
 
-            # Since we plot only the section we want the norm of those coordinates
-            points[['X']] = np.linalg.norm(cartesian_point, axis=1)
-            orientations[['X']] = np.linalg.norm(cartesian_ori, axis=1)
+                cartesian_point_dist = np.sqrt(((np.dot(
+                    A_rotate, (points[['X', 'Y']]).T).T - points[['X', 'Y']])**2).sum(axis=1))
+
+                cartesian_ori_dist = np.sqrt(((np.dot(
+                    A_rotate, (orientations[['X', 'Y']]).T).T - orientations[['X', 'Y']])**2).sum(axis=1))
+
+                # This are the coordinates of the data projected on the section
+                cartesian_point = np.dot(A_rotate, (points[['X', 'Y']] - shift).T).T
+                cartesian_ori = np.dot(A_rotate, (orientations[['X', 'Y']] - shift).T).T
+
+                # Since we plot only the section we want the norm of those coordinates
+                points[['X']] = np.linalg.norm(cartesian_point, axis=1)
+                orientations[['X']] = np.linalg.norm(cartesian_ori, axis=1)
+                x, y, Gx, Gy = 'X', 'Z', 'G_x', 'G_z'
 
         else:
 
@@ -286,13 +310,15 @@ class Plot2D:
             cartesian_point_dist = points[dir] - _loc
             cartesian_ori_dist = orientations[dir] - _loc
 
+            x, y, Gx, Gy = self._slice(direction)[4:]
+
         select_projected_p = cartesian_point_dist < projection_distance
         select_projected_o = cartesian_ori_dist < projection_distance
 
-        sns.scatterplot(data=points[select_projected_p], x='X', y='Z', hue='id', ax=ax, )
+        sns.scatterplot(data=points[select_projected_p], x=x, y=y, hue='id', ax=ax, )
 
         sel_ori = orientations[select_projected_o]
-        ax.quiver(sel_ori['X'], sel_ori['Y'], sel_ori['G_x'], [sel_ori['G_z']],
+        ax.quiver(sel_ori[x], sel_ori[y], sel_ori[Gx], sel_ori[Gy],
                   pivot="tail",
                   scale=10, edgecolor='k',
                   headwidth=4, linewidths=1)
@@ -371,13 +397,26 @@ class Plot2D:
         if section_name is not None:
             if section_name == 'topography':
                 shape = self.model.grid.topography.resolution
-                a = self.model.solutions.geological_map_scalfield
-                extent = self.model.grid.topography.extent
+            #    a = self.model.solutions.geological_map_scalfield
+            #    extent = self.model.grid.topography.extent
+                faults_scalar = self.model.solutions.geological_map_scalfield
+                c_id = 0  # color id startpoint
+
+                for e, block in enumerate(faults_scalar):
+                    level = self.model.solutions.scalar_field_at_surface_points[e][np.where(
+                        self.model.solutions.scalar_field_at_surface_points[e] != 0)]
+
+                    c_id2 = c_id + len(level)  # color id endpoint
+                    ax.contour(block.reshape(shape), 0, levels=np.sort(level),
+                               colors=self.cmap.colors[c_id:c_id2],
+                               linestyles='solid', origin='lower',
+                               extent=extent_val, zorder=zorder - (e + len(level))
+                               )
 
             else:
                 l0, l1 = self.model.grid.sections.get_section_args(section_name)
                 shape = self.model.grid.sections.df.loc[section_name, 'resolution']
-                faults_scalar = self.model.solutions.sections_scalfield[:, l0:l1]#.reshape(shape).T
+                faults_scalar = self.model.solutions.sections_scalfield[:, l0:l1]
 
                 c_id = 0  # color id startpoint
 

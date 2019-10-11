@@ -320,7 +320,6 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
             model.solutions.sections_scalfield = sol[3][:, l0: l1].astype(float)
         if output == 'gravity':
             model.solutions.fw_gravity = sol[6]
-
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions
