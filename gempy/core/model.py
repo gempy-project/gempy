@@ -113,15 +113,20 @@ class DataMutation(object):
         if hasattr(self.interpolator.theano_graph.grid_val_T, 'get_value'):
             self.interpolator.theano_graph.grid_val_T.set_value(self.grid.values_r.astype(self.interpolator.dtype))
 
-    def set_active_grid(self, grid_name: Union[str, np.ndarray]):
+    def set_active_grid(self, grid_name: Union[str, np.ndarray], reset=False):
         """
         Set active a given or several grids.
 
         Args:
             grid_name (str, list) {regular, custom, topography, centered}:
+            reset (bool): If true set inactive all grids not in grid_name
+
+        Returns:
+            Grid
 
         """
-        self.grid.deactivate_all_grids()
+        if reset is True:
+            self.grid.deactivate_all_grids()
         self.grid.set_active(grid_name)
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')

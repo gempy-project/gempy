@@ -909,7 +909,7 @@ class InterpolatorGravity(InterpolatorModel):
     def set_theano_shared_tz_kernel(self, tz=None):
         """Set the theano component tz to each voxel"""
 
-        if tz is None:
+        if tz is None or tz is 'auto':
             try:
                 tz = self.calculate_tz()
             except AttributeError:
@@ -941,18 +941,18 @@ class InterpolatorGravity(InterpolatorModel):
 
         self.set_all_shared_parameters(reset_ctrl=False)
         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
-        input_data_T = self.theano_graph.input_parameters_loop
+        input_data_T = self.theano_graph.input_parameters_grav
         print('Compiling theano function...')
-        if density is None:
-            assert pos_density is not None, 'If a density block is not passed, you need to specify which interpolated' \
-                                            'value is density. See :class:`Surface`'
-            density = self.theano_graph.compute_series()[0][pos_density, :- 2 * self.theano_graph.len_points]
-
-        else:
-            density = theano.shared(density)
+        # if density is None:
+        #     assert pos_density is not None, 'If a density block is not passed, you need to specify which interpolated' \
+        #                                     'value is density. See :class:`Surface`'
+        #     density = self.theano_graph.compute_series()[0][pos_density, :- 2 * self.theano_graph.len_points]
+        #
+        # else:
+        #     density = theano.shared(density)
 
         th_fn = theano.function(input_data_T,
-                                self.theano_graph.compute_forward_gravity(density),
+                                self.theano_graph.compute_forward_gravity(density, pos_density),
                                 updates=[(self.theano_graph.block_matrix, self.theano_graph.new_block),
                                          (self.theano_graph.weights_vector, self.theano_graph.new_weights),
                                          (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
@@ -978,3 +978,43 @@ class InterpolatorGravity(InterpolatorModel):
         g = GeophysicsPreprocessing(self.grid.centered_grid)
 
         return g.set_tz_kernel()
+
+    def get_python_input_grav(self, append_control=True, fault_drift=None):
+        """
+        Get values from the data objects used during the interpolation:
+             - dip positions XYZ
+             - dip angles
+             - azimuth
+             - polarity
+             - surface_points coordinates XYZ
+
+        Args:
+            append_control (bool): If true append the ctrl vectors to the input list
+            fault_drift (Optional[np.array]): matrix with per computed faults to drift the model
+
+        Returns:
+            list: list of arrays with all the input parameters to the theano function
+        """
+        # orientations, this ones I tile them inside theano. PYTHON VAR
+        dips_position = self.orientations.df[['X_r', 'Y_r', 'Z_r']].values
+        dip_angles = self.orientations.df["dip"].values
+        azimuth = self.orientations.df["azimuth"].values
+        polarity = self.orientations.df["polarity"].values
+        surface_points_coord = self.surface_points.df[['X_r', 'Y_r', 'Z_r']].values
+        grid = self.grid.values_r
+        if fault_drift is None:
+            fault_drift = np.zeros((0, grid.shape[0] + 2 * self.len_series_i.sum()))
+
+        values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
+
+        # Set all in a list casting them in the chosen dtype
+        idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
+                                                  fault_drift, grid, values_properties)]
+        if append_control is True:
+            idl.append(self.compute_weights_ctrl)
+            idl.append(self.compute_scalar_ctrl)
+            idl.append(self.compute_block_ctrl)
+
+        idl.append(self.grid.get_grid_args('centered')[0])
+        idl.append(self.grid.get_grid_args('centered')[1])
+        return idl

@@ -185,14 +185,14 @@ def set_interpolator(geo_model: Model, type='geo', compile_theano: bool = True,
         tz = kwargs.get('tz', 'auto')
 
         # First we need to upgrade the interpolator object:
-        warnings.warn('Interpolator object upgraded from InterpolatorModel to InterpolatorGravity.')
+        print('Interpolator object upgraded from InterpolatorModel to InterpolatorGravity.')
         geo_model.interpolator = InterpolatorGravity(
             geo_model.surface_points, geo_model.orientations, geo_model.grid, geo_model.surfaces,
             geo_model.series, geo_model.faults, geo_model.additional_data, **kwargs)
 
         if tz is 'auto' and geo_model.grid.centered_grid is not None:
             print('Calculating the tz components for the centered grid...')
-            geo_model.interpolator.calculate_tz()
+            tz = geo_model.interpolator.calculate_tz()
             print('Done')
 
         # Set the shared parameters for this piece of tree
@@ -281,20 +281,23 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
 
         sol = model.interpolator.theano_function(*i)
     elif output == 'gravity':
-        assert isinstance(model.interpolator_gravity, InterpolatorGravity), 'You need to set the gravity interpolator' \
-                                                                            'first. See `Model.set_gravity_interpolator'
+        model.set_active_grid('centered', reset=False)
+        i = model.interpolator.get_python_input_grav(append_control=True, fault_drift=None)
+        sol = model.interpolator.theano_function(*i)
 
-        model.set_active_grid('centered')
-        model.interpolator_gravity.modify_results_matrices_pro()
-        model.interpolator_gravity.set_theano_shared_structure()
-        i = model.interpolator_gravity.get_python_input_block(append_control=True, fault_drift=None)
+        # assert isinstance(model.interpolator_gravity, InterpolatorGravity), 'You need to set the gravity interpolator' \
+        #                                                                     'first. See `Model.set_gravity_interpolator'
+        #
+        # model.set_active_grid('centered')
+        # model.interpolator_gravity.modify_results_matrices_pro()
+        # model.interpolator_gravity.set_theano_shared_structure()
+        #
+        # # TODO So far I reset all shared parameters to be sure. In the future this should be optimize as interpolator
+        # model.interpolator_gravity.set_theano_shared_tz_kernel()
+        # # model.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
+        # sol = model.interpolator_gravity.theano_function(*i)
 
-        # TODO So far I reset all shared parameters to be sure. In the future this should be optimize as interpolator
-        model.interpolator_gravity.set_theano_shared_tz_kernel()
-        # model.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
-        sol = model.interpolator_gravity.theano_function(*i)
-
-        set_solutions = False
+        #set_solutions = False
     else:
         raise NotImplementedError('Only geology and gravity are implemented so far')
 
@@ -307,7 +310,6 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
         if model.grid.active_grids[1] is np.True_:
             l0, l1 = model.grid.get_grid_args('custom')
             model.solutions.custom = sol[0][:, l0: l1]
-        # TODO @elisa elaborate this
         if model.grid.active_grids[2] is np.True_:
             l0, l1 = model.grid.get_grid_args('topography')
             model.solutions.geological_map = sol[0][:, l0: l1]
@@ -316,6 +318,9 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
             l0, l1 = model.grid.get_grid_args('sections')
             model.solutions.sections = sol[0][:, l0: l1]
             model.solutions.sections_scalfield = sol[3][:, l0: l1].astype(float)
+        if output == 'gravity':
+            model.solutions.fw_gravity = sol[6]
+
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions

@@ -311,6 +311,15 @@ class TheanoGraphPro(object):
         # Gravity
         self.tz = theano.shared(np.empty(0, dtype=dtype), 'tz component')
         self.density_matrix = T.vector('density vector')
+        self.lg0 = T.iscalar('arg_0 of the centered grid')
+        self.lg1 = T.iscalar('arg_1 of the centered grid')
+
+        self.input_parameters_grav = [self.dips_position_all, self.dip_angles_all, self.azimuth_all,
+                                      self.polarity_all, self.surface_points_all,
+                                      self.fault_matrix, self.grid_val_T,
+                                      self.values_properties_op,
+                                      self.compute_weights_ctrl, self.compute_scalar_ctrl, self.compute_block_ctrl,
+                                      self.lg0, self.lg1]
 
         # Results matrix
         self.weights_vector = theano.shared(np.cast[dtype](np.zeros(10000)), 'Weights vector')
@@ -1647,10 +1656,10 @@ class TheanoGraphPro(object):
                                                                  ' See :class:`Surface`'
 
         if densities is None:
-            model_sol = self.compute_series()
-            densities = model_sol[0][pos_density, :- 2 * self.len_points]
+            final_model, new_block, new_weights, new_scalar, new_sfai, new_mask = self.compute_series()
+            densities = final_model[pos_density, self.lg0:self.lg1] #- 2 * self.len_points]
         else:
-            model_sol = []
+            final_model, new_block, new_weights, new_scalar, new_sfai, new_mask = None, None, None, None, None, None
 
         densities = theano.printing.Print('density')(densities)
 
@@ -1662,5 +1671,4 @@ class TheanoGraphPro(object):
         # density times the component z of gravity
         grav = (densities * tz_rep).reshape((n_devices, -1)).sum(axis=1)
 
-        # return [lith_matrix, self.fault_matrix, pfai, grav.sum(axis=1)]
-        return T.concatenate(model_sol, grav)
+        return final_model, new_block, new_weights, new_scalar, new_sfai, new_mask,  grav  # , model_sol.append(grav)
