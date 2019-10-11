@@ -362,9 +362,11 @@ class Plot2D:
             line = a.reshape(-1, 2)
             ax.fill(line[:, 0], line[:, 1], color='k')
 
-    def plot_faults(self, ax, section_name=None, cell_number=None, direction='y', block=None):
+    def plot_contacts(self, ax, section_name=None, cell_number=None, direction='y', block=None, **kwargs):
 
         faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
+        extent_val = [*ax.get_xlim(), *ax.get_ylim()]
+        zorder = kwargs.get('zorder', 100)
 
         if section_name is not None:
             if section_name == 'topography':
@@ -375,17 +377,19 @@ class Plot2D:
             else:
                 l0, l1 = self.model.grid.sections.get_section_args(section_name)
                 shape = self.model.grid.sections.df.loc[section_name, 'resolution']
-                faults_scalar = self.model.solutions.sections_scalfield[:][l0:l1]#.reshape(shape).T
+                faults_scalar = self.model.solutions.sections_scalfield[:, l0:l1]#.reshape(shape).T
 
                 c_id = 0  # color id startpoint
+
                 for e, block in enumerate(faults_scalar):
                     level = self.model.solutions.scalar_field_at_surface_points[e][np.where(
                         self.model.solutions.scalar_field_at_surface_points[e] != 0)]
 
                     c_id2 = c_id + len(level)  # color id endpoint
-                    ax.contour(block.reshape(shape).T, 0, levels=np.sort(level), colors=self._cmap.colors[c_id:c_id2][::-1],
+                    ax.contour(block.reshape(shape).T, 0, levels=np.sort(level),
+                               colors=self.cmap.colors[c_id:c_id2],
                                  linestyles='solid', origin='lower',
-                               #  extent=extent
+                                 extent=extent_val, zorder=zorder - (e+len(level))
                                )
 
         elif cell_number is not None or block is not None:
@@ -393,7 +397,8 @@ class Plot2D:
             if len(faults) == 0:
                 pass
             else:
-               # _slice, extent = self._slice2D(cell_number, direction)
+                _slice = self._slice(direction, cell_number)[:3]
+
                 for fault in faults:
                     f_id = int(self.model.series.df.loc[fault, 'order_series']) - 1
                     block = self.model.solutions.scalar_field_matrix[f_id]
@@ -402,7 +407,7 @@ class Plot2D:
                     level.sort()
                     block = block.reshape(self.model.grid.regular_grid.resolution)[_slice].T
 
-                    ax.contour(block, 0,# extent=extent,
+                    ax.contour(block, 0, extent=extent_val,
                                levels=level,
                                colors=self.cmap.colors[f_id], linestyles='solid')
 
