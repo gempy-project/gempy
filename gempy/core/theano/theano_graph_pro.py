@@ -311,8 +311,8 @@ class TheanoGraphPro(object):
         # Gravity
         self.tz = theano.shared(np.empty(0, dtype=dtype), 'tz component')
         self.density_matrix = T.vector('density vector')
-        self.lg0 = T.iscalar('arg_0 of the centered grid')
-        self.lg1 = T.iscalar('arg_1 of the centered grid')
+        self.lg0 = T.lscalar('arg_0 of the centered grid')
+        self.lg1 = T.lscalar('arg_1 of the centered grid')
 
         self.input_parameters_grav = [self.dips_position_all, self.dip_angles_all, self.azimuth_all,
                                       self.polarity_all, self.surface_points_all,
@@ -1661,10 +1661,13 @@ class TheanoGraphPro(object):
         else:
             final_model, new_block, new_weights, new_scalar, new_sfai, new_mask = None, None, None, None, None, None
 
-        densities = theano.printing.Print('density')(densities)
+        if 'densities' in self.verbose:
+            densities = theano.printing.Print('density')(densities)
 
         n_devices = T.cast((densities.shape[0] / self.tz.shape[0]), dtype='int32')
-        n_devices = theano.printing.Print('n_devices')(n_devices)
+
+        if 'grav_devices' in self.verbose:
+            n_devices = theano.printing.Print('n_devices')(n_devices)
 
         tz_rep = T.tile(self.tz, n_devices)
 

@@ -132,7 +132,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
 def set_interpolation_data(*args, **kwargs):
     warnings.warn('set_interpolation_data will be deprecrated in GemPy 2.2. Use '
                   'set_interpolator instead.', DeprecationWarning)
-    set_interpolator(*args, **kwargs)
+    return set_interpolator(*args, **kwargs)
 
 
 @setdoc([InterpolatorModel.__doc__])
@@ -169,9 +169,10 @@ def set_interpolator(geo_model: Model, type='geo', compile_theano: bool = True,
 
     # The graph object contains all theano methods. Therefore is independent to which side
     # of the graph we compile:
-    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
 
     if type == 'geo':
+        geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
+
         if compile_theano is True:
             geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
 
@@ -189,6 +190,8 @@ def set_interpolator(geo_model: Model, type='geo', compile_theano: bool = True,
         geo_model.interpolator = InterpolatorGravity(
             geo_model.surface_points, geo_model.orientations, geo_model.grid, geo_model.surfaces,
             geo_model.series, geo_model.faults, geo_model.additional_data, **kwargs)
+
+        geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
 
         if tz is 'auto' and geo_model.grid.centered_grid is not None:
             print('Calculating the tz components for the centered grid...')

@@ -33,7 +33,7 @@ class GeophysicsPreprocessing(CenteredGrid):
             self.kernel_dxyz_left = centered_grid.kernel_dxyz_left
         self.tz = np.empty(0)
 
-    def set_tz_kernel(self, **kwargs):
+    def set_tz_kernel(self, scale=True, **kwargs):
         if self.kernel_centers.size == 0:
             self.set_centered_kernel(**kwargs)
 
@@ -58,6 +58,8 @@ class GeophysicsPreprocessing(CenteredGrid):
         # This is the vector that determines the sign of the corner of the voxel
         mu = np.array([1, -1, -1, 1, -1, 1, 1, -1])
 
+        if scale is True:
+            G = 6.67408e-2
         self.tz = (
             np.sum(- 1 *
                    G *
