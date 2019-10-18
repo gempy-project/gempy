@@ -2531,6 +2531,7 @@ class Options(object):
         self.df['device'].cat.set_categories(['cpu', 'cuda'], inplace=True)
         self.df['output'].cat.set_categories(['geology', 'gradients'], inplace=True)
         self.df.at['values', 'verbosity'] = []
+        self.default_options()
 
     def __repr__(self):
         return self.df.T.to_string()
@@ -2561,10 +2562,16 @@ class Options(object):
         Returns:
             bool: True
         """
-        self.df['dtype'] = None
+        import theano
+        self.df['device'] = theano.config.device
+
+        if theano.config.device == 'cpu':
+            self.df['dtype'] = 'float64'
+        else:
+            self.df['dtype'] = 'float32'
+
         self.df['output'] = 'geology'
         self.df['theano_optimizer'] = 'fast_compile'
-        self.df['device'] = 'cpu'
         return True
 
 

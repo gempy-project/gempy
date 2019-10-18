@@ -405,7 +405,7 @@ class PlotPosterior:
         self.likelihood_axes.plot(thick_vals, nor_l, color='#7eb1bc', linewidth=.5)
         self.likelihood_axes.fill_between(thick_vals, nor_l, 0, color=color_fill, alpha=.8)
 
-        self.likelihood_axes.vlines(observation, 0.001, likelihood_at_observation, linestyles='dashdot',
+        self.likelihood_axes.vlines(observation, 0.000000000001, likelihood_at_observation, linestyles='dashdot',
                                     color='#DA8886', alpha=1)
 
         self.likelihood_axes.hlines(likelihood_at_observation, observation, thick_max,
