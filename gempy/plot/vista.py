@@ -96,7 +96,7 @@ class Vista:
 
     def call_back_sphere(self, *args):
 
-       # print(args[0],args[-1], args[-1].WIDGET_INDEX)
+      #  print(args, args[0],args[-1], args[-1].WIDGET_INDEX)
         new_center = args[0]
         obj = args[-1]
         # Get which sphere we are moving
@@ -168,17 +168,27 @@ class Vista:
         if surface_points is None:
             surface_points = self.model.surface_points
 
-        for e, val in surface_points.df.iterrows():
-            c = self.lith_c[val['id']]
+        # This is Bane way. It gives me some error with index slicing
+        if True:
+            centers = surface_points.df[['X', 'Y', 'Z']]
+            colors = self.lith_c[surface_points.df['id']].values
             s = self.p.add_sphere_widget(self.call_back_sphere,
-                                         center=val[['X', 'Y', 'Z']], color=c,
+                                         center=centers, color=colors,
+                                         indices=surface_points.df.index.values,
                                          radius=radio, **kwargs)
-            # Add index
-            s.WIDGET_INDEX = e
-            # Add radio
-            # s.radio = radio * 2
+            self.s_widget = pn.DataFrame(data=s, index=surface_points.df.index, columns=['val'])
 
-            self.s_widget.at[e] = s
+        # for e, val in surface_points.df.iterrows():
+        #     c = self.lith_c[val['id']]
+        #     s = self.p.add_sphere_widget(self.call_back_sphere,
+        #                                  center=val[['X', 'Y', 'Z']], color=c,
+        #                                  radius=radio, **kwargs)
+        #     # Add index
+        #     s.WIDGET_INDEX = e
+        #     # Add radio
+        #     # s.radio = radio * 2
+        #
+        #     self.s_widget.at[e] = s
         return self.s_widget
 
     def call_back_plane(self, obj, event):
@@ -264,7 +274,40 @@ class Vista:
 
         return self.surf_polydata
 
+    def update_surfaces(self):
+        surfaces = self.model.surfaces
+        # TODO add the option of update specific surfaces
+        for idx, val in surfaces.df[['vertices', 'edges', 'color']].dropna().iterrows():
+            self.surf_polydata.loc[idx, 'val'].points = val['vertices']
+            self.surf_polydata.loc[idx, 'val'].faces = np.insert(val['edges'], 0, 3, axis=1).ravel()
 
+        return True
+
+    def add_surface(self):
+        raise NotImplementedError
+
+    def delete_surface(self, id):
+        raise NotImplementedError
+
+    def update_surfaces_real_time(self, delete=True):
+
+        try:
+            gp.compute_model(self.model, sort_surfaces=False, compute_mesh=True)
+        except IndexError:
+            print('IndexError: Model not computed. Laking data in some surface')
+        except AssertionError:
+            print('AssertionError: Model not computed. Laking data in some surface')
+        try:
+            self.update_surfaces()
+        except KeyError:
+            self.set_surfaces()
+
+        # if self.geo_model.solutions.geological_map is not None:
+        #     try:
+        #         self.set_geological_map()
+        #     except AttributeError:
+        #         pass
+        return True
 
 
 
