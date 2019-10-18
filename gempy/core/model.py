@@ -1014,7 +1014,10 @@ class DataMutation(object):
         self.surfaces.set_basement()
         self.surface_points.df['id'] = self.surface_points.df['surface'].map(
             self.surfaces.df.set_index('surface')['id']).astype(int)
+        self.orientations.df['id'] = self.orientations.df['surface'].map(
+            self.surfaces.df.set_index('surface')['id']).astype(int)
         self.surface_points.sort_table()
+        self.orientations.sort_table()
         self.update_structure()
         return self.surfaces
 
