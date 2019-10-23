@@ -57,6 +57,10 @@ class Vista:
 
     def __init__(self, model, extent=None, lith_c: pn.DataFrame = None, real_time=False,
                  plotter_type='basic', **kwargs):
+
+        # Override default notebook value
+        kwargs['notebook'] = kwargs.get('notebook', True)
+
         self.model = model
         self.extent = model.grid.regular_grid.extent if extent is None else extent
         self.lith_c = model.surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
@@ -71,7 +75,16 @@ class Vista:
 
         if plotter_type == 'basic':
             self.p = pv.Plotter(**kwargs)
-        self.p.bound = self.extent
+        elif plotter_type == 'background':
+            self.p = pv.BackgroundPlotter(**kwargs)
+
+        self.set_bounds()
+        self.p.view_isometric(negative=False)
+
+    def set_bounds(self, extent=None, grid=False, location='furthest', **kwargs):
+        if extent is None:
+            extent = self.extent
+        self.p.show_bounds(bounds=extent,  location=location, grid=grid, **kwargs)
 
     def create_structured_grid(self, regular_grid=None):
 
@@ -96,7 +109,6 @@ class Vista:
 
     def call_back_sphere(self, *args):
 
-      #  print(args, args[0],args[-1], args[-1].WIDGET_INDEX)
         new_center = args[0]
         obj = args[-1]
         # Get which sphere we are moving
@@ -156,6 +168,8 @@ class Vista:
         self.set_orientations(orientations, **kwargs)
 
     def set_surface_points(self, surface_points=None, radio=None, **kwargs):
+
+        self.p.clear_sphere_widgets()
         # Calculate default surface_points radio
         if radio is None:
             _e = self.extent
@@ -169,40 +183,27 @@ class Vista:
             surface_points = self.model.surface_points
 
         # This is Bane way. It gives me some error with index slicing
-        if True:
-            centers = surface_points.df[['X', 'Y', 'Z']]
-            colors = self.lith_c[surface_points.df['id']].values
-            s = self.p.add_sphere_widget(self.call_back_sphere,
-                                         center=centers, color=colors,
-                                         indices=surface_points.df.index.values,
-                                         radius=radio, **kwargs)
-            self.s_widget = pn.DataFrame(data=s, index=surface_points.df.index, columns=['val'])
+        centers = surface_points.df[['X', 'Y', 'Z']]
+        colors = self.lith_c[surface_points.df['id']].values
+        s = self.p.add_sphere_widget(self.call_back_sphere,
+                                     center=centers, color=colors, pass_widget=True,
+                                     indices=surface_points.df.index.values,
+                                     radius=radio, **kwargs)
+        self.s_widget = pn.DataFrame(data=s, index=surface_points.df.index, columns=['val'])
 
-        # for e, val in surface_points.df.iterrows():
-        #     c = self.lith_c[val['id']]
-        #     s = self.p.add_sphere_widget(self.call_back_sphere,
-        #                                  center=val[['X', 'Y', 'Z']], color=c,
-        #                                  radius=radio, **kwargs)
-        #     # Add index
-        #     s.WIDGET_INDEX = e
-        #     # Add radio
-        #     # s.radio = radio * 2
-        #
-        #     self.s_widget.at[e] = s
         return self.s_widget
 
-    def call_back_plane(self, obj, event):
+    def call_back_plane(self, normal, origin, obj):
         """
               Function that rules what happens when we move a plane. At the moment we update the other 3 renderers and
               update the pandas data frame
               """
-
         # Get new position of the plane and GxGyGz
-        new_center = obj.GetCenter()
-        new_normal = obj.GetNormal()
+        new_center = origin
+        new_normal = normal
 
         # Get which plane we are moving
-        index = obj.index
+        index = obj.WIDGET_INDEX
 
         self.call_back_plane_change_df(index, new_center, new_normal)
         # TODO: rethink why I am calling this. Technically this happens outside. It is for sanity check?
@@ -249,17 +250,21 @@ class Vista:
 
     def set_orientations(self, orientations=None, **kwargs):
 
+        self.p.clear_plane_widgets()
         factor = kwargs.get('factor', 0.1)
 
         if orientations is None:
             orientations = self.model.orientations
         for e, val in orientations.df.iterrows():
             c = self.lith_c[val['id']]
-            p = self.p.add_plane_widget_simple(self.call_back_plane,
-                                               normal=val[['G_x', 'G_y', 'G_z']],
-                                               origin=val[['X', 'Y', 'Z']], color=c,
-                                               bounds=self.model.grid.regular_grid.extent,
-                                               factor=factor, **kwargs)
+            p = self.p.add_plane_widget(self.call_back_plane,
+                                        implicit=False, pass_widget=True, test_callback=False,
+                                        normal=val[['G_x', 'G_y', 'G_z']],
+                                        origin=val[['X', 'Y', 'Z']], color=c,
+                                        bounds=self.model.grid.regular_grid.extent,
+                                        factor=factor, **kwargs)
+            p.WIDGET_INDEX = e
+
             self.p_widget.at[e] = p
         return self.p_widget
 
@@ -297,16 +302,8 @@ class Vista:
             print('IndexError: Model not computed. Laking data in some surface')
         except AssertionError:
             print('AssertionError: Model not computed. Laking data in some surface')
-        try:
-            self.update_surfaces()
-        except KeyError:
-            self.set_surfaces()
 
-        # if self.geo_model.solutions.geological_map is not None:
-        #     try:
-        #         self.set_geological_map()
-        #     except AttributeError:
-        #         pass
+        self.update_surfaces()
         return True
 
 
