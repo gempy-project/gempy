@@ -627,6 +627,45 @@ class PlotSolution(PlotData2D):
         axes.xaxis.set_major_formatter(FixedFormatter((labels)))
         axes.set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
 
+    def plot_all_sections(self, show_data=False, section_names=None, show_topo=True,
+                      figsize=(12, 12)):
+        assert self.model.solutions.sections is not None, 'no sections for plotting defined'
+        if self.model.grid.topography is None:
+            show_topo = False
+        if section_names is not None:
+            if type(section_names) == list:
+                section_names = np.array(section_names)
+        else:
+            section_names = self.model.grid.sections.names
+
+        shapes = self.model.grid.sections.resolution
+        fig, axes = plt.subplots(nrows=len(section_names), ncols=1, figsize=figsize)
+        for i, section in enumerate(section_names):
+            j = np.where(self.model.grid.sections.names == section)[0][0]
+            l0, l1 = self.model.grid.sections.get_section_args(section)
+            self.extract_section_fault_lines(section, axes[i])
+
+            if show_topo:
+                xy = self.make_topography_overlay_4_sections(j)
+                axes[i].fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
+
+            if show_data:
+                self.plot_section_data(section_name=section)
+
+            axes[i].imshow(self.model.solutions.sections[0][0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
+                           origin='lower', zorder=-100,
+                           cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
+                                                                     self.model.grid.regular_grid.extent[4],
+                                                                     self.model.grid.regular_grid.extent[5]])
+
+            labels, axname = self._make_section_xylabels(section, len(axes[i].get_xticklabels()) - 2)
+            pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
+            axes[i].xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
+            axes[i].xaxis.set_major_formatter(FixedFormatter((labels)))
+            axes[i].set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
+
+        fig.tight_layout()
+
 
     def plot_section_scalarfield(self, section_name, sn, levels=50, show_faults=True, show_topo=True, lithback=True):
         assert self.model.solutions.sections is not None, 'no sections for plotting defined'

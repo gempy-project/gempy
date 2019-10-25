@@ -290,6 +290,12 @@ def plot_section_by_name(model, section_name, show_faults=True, show_topo=True, 
     plot.plot_section_by_name(section_name=section_name, show_topo=show_topo, show_faults=show_faults,
                               show_data=show_data, show_all_data=show_all_data, radius=radius)
 
+
+def plot_all_sections(model, show_data=False, section_names=None, show_topo=True, figsize=(12, 12)):
+    plot = PlotSolution(model)
+    plot.plot_all_sections(show_data=show_data, section_names=section_names, show_topo=show_topo,
+                           figsize=figsize)
+
 def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
                  show_data=True, show_faults=True, show_topo = False,  block_type=None, ve=1,
                  show_all_data=False, show_legend=True, **kwargs):
