@@ -500,7 +500,7 @@ class PlotSolution(PlotData2D):
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors) + 0.5)
         self._show_legend = False
 
-    def plot_map(self, solution: Solution = None, contour_lines=False, show_faults=True, show_data=True,
+    def plot_map(self, solution: Solution = None, contour_lines=False, show_data=True,
                  show_all_data=False, figsize=(12,12)):
         if solution is None:
             solution = self.model.solutions
@@ -523,15 +523,14 @@ class PlotSolution(PlotData2D):
                             extent=self.model.grid.topography.extent)
             ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
             plothelp.add_colorbar(im=im, label='elevation [m]', cs=CS, aspect=35)
-        if show_faults == True:
-            self.extract_section_fault_lines('topography', faults_only=True)
+
+        self.extract_section_lines('topography')
+
         plt.title("Geological map", fontsize=15)
         plt.xlabel('X')
         plt.ylabel('Y')
-        #patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
-        #plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
-    def extract_section_fault_lines(self, section_name=None, axes=None, zorder=2, faults_only=False):
+    def extract_section_lines(self, section_name=None, axes=None, zorder=2, faults_only=False):
         # Todo merge this with extract fault lines
         faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
         if section_name == 'topography':
@@ -547,33 +546,40 @@ class PlotSolution(PlotData2D):
                       self.model.grid.regular_grid.extent[4],
                       self.model.grid.regular_grid.extent[5]]
 
+        counter = a.shape[0]
         if faults_only:
-            counter = len(faults)
+            counters = np.arange(0, len(faults), 1)
         else:
-            counter = a.shape[0]
+            counters = np.arange(0, counter, 1)
 
         c_id = 0  # color id startpoint
-        for f_id in range(counter):
+        for f_id in counters:
             block = a[f_id]
             level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
                 self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
 
-            c_id2 = c_id + len(level)  # color id endpoint
-
+            levels = np.insert(level, 0, block.max())
+            c_id2 = c_id + len(level)
+            if f_id == counters.max():
+                levels = np.insert(levels, level.shape[0], block.min())
+                c_id2 = c_id + len(levels)  # color id endpoint
             if section_name == 'topography':
                 block = block.reshape(shape)
             else:
                 block = block.reshape(shape).T
 
-            if axes is not None:
-                axes.contour(block, 0, levels=np.sort(level), colors=self._cmap.colors[c_id:c_id2][::-1],
-                             linestyles='solid', origin='lower',
-                             extent=extent, zorder=zorder - (f_id+len(level)))
-            else:
-                plt.contour(block, 0, levels=np.sort(level), colors=self._cmap.colors[c_id:c_id2][::-1],
-                            linestyles='solid', origin='lower',
-                            extent=extent, zorder=zorder - (f_id+len(level)))
+            zorder = zorder - (f_id + len(level))
+            if axes is None:
+                axes = plt.gca()
 
+            if f_id >= len(faults):
+                axes.contourf(block, 0, levels=np.sort(levels), colors=self._cmap.colors[c_id:c_id2][::-1],
+                              linestyles='solid', origin='lower',
+                              extent=extent, zorder=zorder)
+            else:
+                axes.contour(block, 0, levels=np.sort(levels), colors=self._cmap.colors[c_id:c_id2][0],
+                             linestyles='solid', origin='lower',
+                             extent=extent, zorder=zorder)
             c_id += len(level)
 
     def extract_fault_lines(self, cell_number=25, direction='y'):
@@ -593,7 +599,7 @@ class PlotSolution(PlotData2D):
 
 
     def plot_section_by_name(self, section_name, show_data=True, show_faults=True, show_topo=True,
-                             show_all_data=False, radius='default', **kwargs):
+                             show_all_data=False, contourplot=True, radius='default', **kwargs):
         assert self.model.solutions.sections is not None, 'no sections for plotting defined'
         assert section_name in self.model.grid.sections.names, 'Section "{}" is not defined. Available sections for ' \
                                                     'plotting: {}'.format(section_name, self.model.grid.sections.names)
@@ -612,9 +618,10 @@ class PlotSolution(PlotData2D):
         axes = plt.gca()
         axes.imshow(image, origin='lower', zorder=-100,
                     cmap=self._cmap, norm=self._norm, extent=extent)
-        if show_faults:
-            self.extract_section_fault_lines(section_name, axes)
-
+        if show_faults == True and contourplot == False:
+            self.extract_section_lines(section_name, axes, faults_only=True)
+        else:
+            self.extract_section_lines(section_name, axes, faults_only=False)
         if show_topo:
             if self.model.grid.topography is not None:
                 alpha = kwargs.get('alpha', 1)
@@ -643,7 +650,8 @@ class PlotSolution(PlotData2D):
         for i, section in enumerate(section_names):
             j = np.where(self.model.grid.sections.names == section)[0][0]
             l0, l1 = self.model.grid.sections.get_section_args(section)
-            self.extract_section_fault_lines(section, axes[i])
+
+            self.extract_section_lines(section, axes[i], faults_only=False)
 
             if show_topo:
                 xy = self.make_topography_overlay_4_sections(j)
@@ -657,6 +665,7 @@ class PlotSolution(PlotData2D):
                            cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                      self.model.grid.regular_grid.extent[4],
                                                                      self.model.grid.regular_grid.extent[5]])
+
 
             labels, axname = self._make_section_xylabels(section, len(axes[i].get_xticklabels()) - 2)
             pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
