@@ -69,7 +69,9 @@ class Vista:
         self.p_widget = pn.DataFrame(columns=['val'])
         self.surf_polydata = pn.DataFrame(columns=['val'])
 
-        self.vista_rgrid = None
+        self.vista_rgrids_mesh = {}
+        self.vista_rgrids_actors = {}
+        self.vista_topo_actors = {}
 
         self.real_time =real_time
 
@@ -86,26 +88,59 @@ class Vista:
             extent = self.extent
         self.p.show_bounds(bounds=extent,  location=location, grid=grid, **kwargs)
 
-    def create_structured_grid(self, regular_grid=None):
+    def set_structured_grid(self, regular_grid=None, data: Union[dict, gp.Solution, str] = 'Default',
+                            name='lith',
+                            **kwargs):
 
         if regular_grid is None:
             regular_grid = self.model.grid.regular_grid
 
         g_values = regular_grid.values
         g_3D = g_values.reshape(*regular_grid.resolution, 3).T
+        rg = pv.StructuredGrid(*g_3D)
 
-        self.vista_rgrid = pv.StructuredGrid(*g_3D)
-        self.p.add_mesh(self.vista_rgrid)
+        self.set_scalar_data(rg, data, name)
+        if name == 'lith':
+            n_faults = self.model.faults.df['isFault'].sum()
+            cmap = mcolors.ListedColormap(list(self.lith_c[n_faults:]))
 
-    def set_structured_grid_data(self, data: Union[dict, gp.Solution, str] = 'Default'):
+            kwargs['cmap'] = kwargs.get('cmap', cmap)
+
+        self.vista_rgrids_mesh[name] = rg
+
+        actor = self.p.add_mesh(rg,  **kwargs)
+        self.vista_rgrids_actors[name] = actor
+        return actor
+
+    def set_scalar_data(self, regular_grid, data: Union[dict, gp.Solution, str] = 'Default', name='lith'):
+        """
+
+        Args:
+            regular_grid:
+            data: dictionary or solution
+            name: if data is a gp.Solutions object, name of the grid that you want to plot.
+
+        Returns:
+
+        """
         if data == 'Default':
             data = self.model.solutions
 
         if isinstance(data, gp.Solution):
-            data = {'lith': data.lith_block}
+            if name == 'lith':
+                data = {'lith': data.lith_block}
 
-        for key in data:
-            self.vista_rgrid.point_arrays[key] = data[key]
+            elif name == 'scalar':
+                data = {name: data.scalar_field_matrix.T}
+
+            elif name == 'values':
+                data = {name: data.values_matrix.T}
+
+        if type(data) == dict:
+            for key in data:
+                regular_grid.point_arrays[key] = data[key]
+
+        return regular_grid
 
     def call_back_sphere(self, *args):
 
@@ -306,9 +341,55 @@ class Vista:
         self.update_surfaces()
         return True
 
+    def set_topography(self, topography = None, scalars='geo_map', **kwargs):
+        """
 
+        Args:
+            topography: gp Topography object, np.array or None
+            scalars:
+            **kwargs:
 
+        Returns:
 
+        """
+        if topography is None:
+            topography = self.model.grid.topography.values
+        rgb = False
+
+        # Create vtk object
+        cloud = pv.PolyData(topography)
+
+        # Set scalar values
+        if scalars == 'geo_map':
+            arr_ = np.empty((0, 3), dtype='int')
+
+            # Convert hex colors to rgb
+            for val in list(self.lith_c):
+                rgb = (255 * np.array(mcolors.hex2color(val)))
+                arr_ = np.vstack((arr_, rgb))
+
+            sel = np.round(self.model.solutions.geological_map).astype(int)[0]
+            print(arr_)
+            print(sel)
+
+            scalars_val = numpy_to_vtk(arr_[sel-1], array_type=3)
+            cm = None
+            rgb = True
+
+        elif scalars == 'topography':
+            scalars_val = topography[:, 2]
+            cm = 'terrain'
+
+        elif type(scalars) is np.ndarray:
+            scalars_val = scalars
+            scalars = 'custom'
+            cm = 'terrain'
+        else:
+            raise AttributeError()
+
+        topo_actor = self.p.add_mesh(cloud.delaunay_2d(), scalars=scalars_val, cmap=cm, rgb=rgb, **kwargs)
+        self.vista_topo_actors[scalars] = topo_actor
+        return topo_actor
 
 
 
