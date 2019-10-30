@@ -202,9 +202,11 @@ class Vista:
         self.set_surface_points(surface_points, **kwargs)
         self.set_orientations(orientations, **kwargs)
 
-    def set_surface_points(self, surface_points=None, radio=None, **kwargs):
+    def set_surface_points(self, surface_points=None, radio=None, clear=True, **kwargs):
 
-        self.p.clear_sphere_widgets()
+        if clear is True:
+            self.p.clear_sphere_widgets()
+
         # Calculate default surface_points radio
         if radio is None:
             _e = self.extent
@@ -215,16 +217,17 @@ class Vista:
             radio = _e_d_avrg * .01
 
         if surface_points is None:
-            surface_points = self.model.surface_points
+            surface_points = self.model.surface_points.df
 
         # This is Bane way. It gives me some error with index slicing
-        centers = surface_points.df[['X', 'Y', 'Z']]
-        colors = self.lith_c[surface_points.df['id']].values
+        centers = surface_points[['X', 'Y', 'Z']]
+        colors = self.lith_c[surface_points['id']].values
         s = self.p.add_sphere_widget(self.call_back_sphere,
                                      center=centers, color=colors, pass_widget=True,
-                                     indices=surface_points.df.index.values,
+                                     indices=surface_points.index.values,
                                      radius=radio, **kwargs)
-        self.s_widget = pn.DataFrame(data=s, index=surface_points.df.index, columns=['val'])
+
+        self.s_widget.append(pn.DataFrame(data=s, index=surface_points.index, columns=['val']))
 
         return self.s_widget
 
@@ -283,14 +286,15 @@ class Vista:
                 parse_color(self.model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
         return True
 
-    def set_orientations(self, orientations=None, **kwargs):
+    def set_orientations(self, orientations=None, clear=True, **kwargs):
 
-        self.p.clear_plane_widgets()
+        if clear is True:
+            self.p.clear_plane_widgets()
         factor = kwargs.get('factor', 0.1)
 
         if orientations is None:
-            orientations = self.model.orientations
-        for e, val in orientations.df.iterrows():
+            orientations = self.model.orientations.df
+        for e, val in orientations.iterrows():
             c = self.lith_c[val['id']]
             p = self.p.add_plane_widget(self.call_back_plane,
                                         implicit=False, pass_widget=True, test_callback=False,
@@ -299,7 +303,6 @@ class Vista:
                                         bounds=self.model.grid.regular_grid.extent,
                                         factor=factor, **kwargs)
             p.WIDGET_INDEX = e
-
             self.p_widget.at[e] = p
         return self.p_widget
 

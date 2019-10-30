@@ -2435,8 +2435,12 @@ class Structure(object):
             :class:`pn.DataFrame`: df where Structural data is stored
 
         """
+        len_series = self.surfaces.series.df.shape[0]
+
         # Array containing the size of every series. SurfacePoints.
-        len_series_i = self.surface_points.df['order_series'].value_counts(sort=False).values
+        points_count = self.surface_points.df['order_series'].value_counts(sort=False)
+        len_series_i = np.zeros(len_series, dtype=int)
+        len_series_i[points_count.index-1] = points_count.values
 
         if len_series_i.shape[0] is 0:
             len_series_i = np.insert(len_series_i, 0, 0)
@@ -2454,8 +2458,13 @@ class Structure(object):
 
         """
         # Array containing the size of every series. orientations.
-        self.df.at['values', 'len series orientations'] = self.orientations.df['order_series'].value_counts(
-            sort=False).values
+
+        len_series_o = np.zeros(self.surfaces.series.df.shape[0],dtype=int)
+        ori_count = self.orientations.df['order_series'].value_counts(sort=False)
+        len_series_o[ori_count.index-1] = ori_count.values
+
+        self.df.at['values', 'len series orientations'] = len_series_o
+
         return self.df
 
     def set_number_of_surfaces_per_series(self):
@@ -2466,8 +2475,13 @@ class Structure(object):
             :class:`pn.DataFrame`: df where Structural data is stored
 
         """
-        self.df.at['values', 'number surfaces per series'] = self.surface_points.df.groupby('order_series').\
-            surface.nunique().values
+        len_sps = np.zeros(self.surfaces.series.df.shape[0],dtype=int)
+        surf_count = self.surface_points.df.groupby('order_series').\
+            surface.nunique()
+
+        len_sps[surf_count.index-1] = surf_count.values
+
+        self.df.at['values', 'number surfaces per series'] = len_sps
         return self.df
 
     def set_number_of_faults(self):

@@ -608,22 +608,32 @@ class InterpolatorModel(Interpolator):
     def _compute_len_series(self):
         self.len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
                             self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
-        if self.len_series_i.shape[0] == 0:
-            self.len_series_i = np.zeros(1, dtype=int)
+       # if self.len_series_i.shape[0] == 0:
+       #     self.len_series_i = np.zeros(1, dtype=int)
 
         self.len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
             'int32')
-        if self.len_series_o.shape[0] == 0:
-            self.len_series_o = np.zeros(1, dtype=int)
+       # if self.len_series_o.shape[0] == 0:
+       #     self.len_series_o = np.zeros(1, dtype=int)
 
         self.len_series_u = self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')
-        if self.len_series_u.shape[0] == 0:
-            self.len_series_u = np.zeros(1, dtype=int)
+       # if self.len_series_u.shape[0] == 0:
+       #     self.len_series_u = np.zeros(1, dtype=int)
 
         self.len_series_f = self.faults.faults_relations_df.sum(axis=0).values.astype('int32')[
                             :self.additional_data.get_additional_data()['values']['Structure', 'number series']]
         if self.len_series_f.shape[0] == 0:
             self.len_series_f = np.zeros(1, dtype=int)
+
+        # Remove series without data
+        non_zero_i = self.len_series_i.nonzero()[0]
+        non_zero_o = self.len_series_o.nonzero()[0]
+        non_zero = np.intersect1d(non_zero_i, non_zero_o)
+
+        self.len_series_i = self.len_series_i[non_zero]
+        self.len_series_o = self.len_series_o[non_zero]
+        self.len_series_f = self.len_series_f[non_zero]
+        self.len_series_u = self.len_series_u[non_zero]
 
         self.len_series_w = self.len_series_i + self.len_series_o * 3 + self.len_series_u + self.len_series_f
 
