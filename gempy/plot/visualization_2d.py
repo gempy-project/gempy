@@ -287,6 +287,7 @@ class PlotData2D:
         _a, _b, _c = (slice(0, self.model.grid.regular_grid.resolution[0]),
                       slice(0, self.model.grid.regular_grid.resolution[1]),
                       slice(0, self.model.grid.regular_grid.resolution[2]))
+
         if direction == "x":
             _a, x, y, Gx, Gy = cell_number, "Y", "Z", "G_y", "G_z"
             extent_val = self.model.grid.regular_grid.extent[[2, 3, 4, 5]]
@@ -411,16 +412,6 @@ class PlotData2D:
         if section_names is None:
             section_names = list(self.model.grid.sections.names)
 
-        #if self.model.solutions.geological_map is not None:
-        #    self.plot_map(self.model.solutions, contour_lines=contour_lines, show_data=show_data, show_all_data=show_all_data)
-        #elif self.model.solutions.lith_block.shape[0] != 0:
-         #   pass
-            # self.plot_block_section(self.model.solutions, cell_number=self.model.grid.regular_grid.resolution[2] - 1,
-            # direction='z', show_faults=False, show_topo=False, show_data=show_data)
-            # plt.title('Section traces, z direction')
-        #else:
-            # fig = plt.figure()
-            # plt.title('Section traces, z direction')
         if show_data:
             if not show_all_data:
                 self.plot_data(direction='z', at=section_names)
@@ -518,6 +509,7 @@ class PlotSolution(PlotData2D):
             fig, ax = plt.subplots(figsize=figsize)
         im = plt.imshow(geomap, origin='lower', extent=self.model.grid.topography.extent, cmap=self._cmap,
                         norm=self._norm, zorder=-100)
+
         if contour_lines == True and show_data == False:
             CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2], cmap='Greys', linestyles='solid',
                             extent=self.model.grid.topography.extent)
@@ -595,8 +587,7 @@ class PlotSolution(PlotData2D):
                     self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
                 level.sort()
                 plt.contour(block.reshape(self.model.grid.regular_grid.resolution)[_slice].T, 0, extent=extent, levels=level,
-                            colors=self._cmap.colors[f_id], linestyles='solid')
-
+                         colors=self._cmap.colors[f_id], linestyles='solid')
 
     def plot_section_by_name(self, section_name, show_data=True, show_faults=True, show_topo=True,
                              show_all_data=False, contourplot=True, radius='default', **kwargs):
@@ -674,8 +665,6 @@ class PlotSolution(PlotData2D):
             axes[i].set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
 
         fig.tight_layout()
-
-
     def plot_section_scalarfield(self, section_name, sn, levels=50, show_faults=True, show_topo=True, lithback=True):
         assert self.model.solutions.sections is not None, 'no sections for plotting defined'
         if self.model.grid.topography is None:
@@ -784,10 +773,11 @@ class PlotSolution(PlotData2D):
             axname = 'X,Y'
         return labels, axname
 
-
     def plot_block_section(self, solution:Solution, cell_number:int, block:np.ndarray=None, direction:str="y",
                            interpolation:str='none', show_data:bool=False, show_faults:bool=False, show_topo:bool=False,
-                           block_type=None, ve:float=1, show_legend:bool = True, show_all_data:bool=False, **kwargs):
+                           block_type=None, ve:float=1, show_legend:bool = True, show_all_data:bool=False,
+                           ax=None,
+                           **kwargs):
         """Plot a section of the block model
 
         Args:

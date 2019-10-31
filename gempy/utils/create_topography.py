@@ -10,8 +10,6 @@ Created on 16.04.2019
 import numpy as np
 from scipy import fftpack
 import pandas as pn
-
-# you can not import libraries inside a class?!
 try:
     import gdal
     GDAL_IMPORT = True
@@ -49,8 +47,8 @@ class Load_DEM_GDAL():
             self.grid = grid
             self.crop2grid()
         else:
-            print('pass geo_model to directly crop the DEM to the grid extent')
-            print('depending on the size of the raster, this can take forever')
+            print('pass geo_model to automatically crop the DEM to the grid extent')
+        print('depending on the size of the raster, this can take a while...')
         self.convert2xyz()
 
     def _get_raster_dimensions(self):
@@ -58,7 +56,7 @@ class Load_DEM_GDAL():
         ulx, xres, xskew, uly, yskew, yres = self.dem.GetGeoTransform()
         z = self.dem_zval
         if np.any(np.array([xskew, yskew])) != 0:
-            print('Obacht! DEM is not north-oriented.')
+            print('DEM is not north-oriented.')
         lrx = ulx + (self.dem.RasterXSize * xres)
         lry = uly + (self.dem.RasterYSize * yres)
         self.resolution = np.array([(uly - lry) / (-yres), (lrx - ulx) / xres]).astype(int)
@@ -67,17 +65,14 @@ class Load_DEM_GDAL():
 
     def info(self):
         ulx, xres, xskew, uly, yskew, yres = self.dem.GetGeoTransform()
-        print('raster extent: ', self.extent)
-        print('raster resolution: ', self.resolution)
-        print('Pixel X Size: ', xres, 'Pixel Y Size:', yres)
+        print('raster extent:  {}\n raster resolution: {}\n Pixel X size {}, Pixel Y size {}'.format(
+            self.extent, self.resolution, xres, yres))
         plt.imshow(self.dem_zval, extent=self.extent)  # plot raster as image
         plt.colorbar()
 
     def crop2grid(self):
         '''
-        evtl in anderer Klasse weil xyz kann gecroppt werden
-            output_path:
-        Returns:
+        Crops raster to extent of the geomodel grid.
         '''
         cornerpoints_geo = self._get_cornerpoints(self.grid.extent)
         cornerpoints_dtm = self._get_cornerpoints(self.extent)
@@ -111,7 +106,7 @@ class Load_DEM_GDAL():
 
     def convert2xyz(self):
         '''
-        Returns: array with the x,y,z coordinates of the topography  [0]: shape(a,b,3), [1]: shape(a*b,3)
+        Translates the gdal raster object to a numpy array of xyz coordinates.
         '''
         path_dest = 'topo.xyz'
         print('storing converted file...')
@@ -138,9 +133,9 @@ class Load_DEM_GDAL():
         """
         Decrease the pixel size of the raster.
         Args:
-            new_resx: desired resolution in x-direction
-            new_resy: desired resolution in y-direction
-            save_path: filepath to where the resampled file should be stored
+            new_xres (int): desired resolution in x-direction
+            new_yres (int): desired resolution in y-direction
+            save_path (str): filepath to where the output file should be stored
 
         Returns: Nothing, it writes a raster file with decreased resolution.
 
@@ -154,6 +149,14 @@ class Load_DEM_GDAL():
         print('file saved in ' + save_path)
 
     def _get_cornerpoints(self, extent):
+        """
+        Get the coordinates of the bounding box.
+        Args:
+            extent: np.array([xmin, xmax, ymin, ymax)]
+
+        Returns: np.ndarray with corner coordinates
+
+        """
         upleft = ([extent[0], extent[3]])
         lowleft = ([extent[0], extent[2]])
         upright = ([extent[1], extent[3]])
@@ -162,17 +165,29 @@ class Load_DEM_GDAL():
 
 
 class Load_DEM_artificial():
+
     def __init__(self, grid, fd=2.0, extent=None, resolution=None, d_z=None):
-        """resolution:np 2D array with extent in X and Y direction"""
+        """
+        Class to create a random topography based on a fractal grid algorithm.
+        Args:
+            fd:         fractal dimension, defaults to 2.0
+            d_z:        maximum height difference. If none, last 20% of the model in z direction
+            extent:     extent in xy direction. If none, geo_model.grid.extent
+            resolution: desired resolution of the topography array. If none, geo_model.grid.resolution
+        """
         self.grid = grid
 
         self.resolution = grid.resolution[:2] if resolution is None else resolution
+
+        assert all(np.asarray(self.resolution) > 2), 'The regular grid needs to be at least of size 2 on all ' \
+                                                     'directions.'
         self.extent = self.grid.extent[:4] if extent is None else extent
 
         if d_z is None:
             self.d_z = np.array(
                 [self.grid.extent[5] - (self.grid.extent[5] - self.grid.extent[4]) * 1 / 5,
                  self.grid.extent[5]])
+            print(self.d_z)
         else:
             self.d_z = d_z
 
@@ -184,7 +199,7 @@ class Load_DEM_artificial():
 
     def fractalGrid(self, fd, N=256):
         '''
-        Copied of https://github.com/samthiele/pycompass/blob/master/examples/3_Synthetic%20Examples.ipynb
+        Modified after https://github.com/samthiele/pycompass/blob/master/examples/3_Synthetic%20Examples.ipynb
 
         Generate isotropic fractal surface image using
         spectral synthesis method [1, p.]

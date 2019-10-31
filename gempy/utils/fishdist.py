@@ -12,7 +12,7 @@ except ImportError:
 try:
     from spherecluster import VonMisesFisherMixture
 except ImportError:
-    print('for some purposes spherecluster package would be good')
+    print('To fit a spherical distribution to the orientation measurements, spherecluster must be installed.')
 
 """
     This file is part of gempy.
@@ -42,14 +42,15 @@ except ImportError:
 
 class vMF():
 
-    def __init__(self, name = None, mean=None, kappa=None):
+    def __init__(self, name=None, mean=None, kappa=None):
         # TODO: Add log likelihood to vMF
         """
         Class to generate and/or load orientation data (azimuth and dip or pole vectors) based on the von-Mises-Fisher
         distribution. Contains methods for visualization and parameter estimation.
         Args:
-            mean:
-            kappa:
+            name (str): Name of the distribution
+            mean (list): mean direction of the distribution in cartesian coordinates
+            kappa (list): Concentration parameter
         """
 
         if kappa is not None:
@@ -65,20 +66,15 @@ class vMF():
 
     def __repr__(self):
         info_string = "Von Mises Fisher distribution\n"
-        if self.name:
+        if hasattr(self, 'name'):
             info_string += "Formation:{0!r}\n".format(self.name)
-
-        #if self.samples_xyz is not None:
-        try:
+        if hasattr(self, 'samples_xyz'):
             info_string += "n = %.d\n" % len(self.samples_xyz)
-        except AttributeError:
-            #pass
-            print('I, Elisa Heim, promise to fix this method.')
-        if self.mean is not None:
+        if hasattr(self, 'mean'):
             mean = self._cartesian2spherical(self.mean)
             info_string += "Mean orientation = (%.d, %.d)\n" % (mean[0],mean[1])
-        #if self.kappa:
-        info_string += "Kappa = %.d\n" % self.kappa
+        if hasattr(self, 'kappa'):
+            info_string += "Kappa = %.d\n" % self.kappa
         return info_string
 
     def sample(self, mean=None, kappa=None, num_samples=100, direct_output = False):
@@ -167,11 +163,10 @@ class vMF():
 
     def plot_samples_3D(self):
         """
-
-        Returns:
-
+        Plots the orientations in a sphere.
+        Returns: Nothing, it just plots.
         """
-        # this code is partially from somewhere (stackoverflow)
+        # (this code is partially from stackoverflow)
         fig = plt.figure(figsize=[5, 5])
         ax = fig.gca(projection='3d')
         ax.set_aspect("equal")
@@ -223,9 +218,10 @@ class vMF():
 
     def plot_stereonet(self, poles=True, samples=None):
         """
-
+        Plots the orientations in a stereonet.
         Args:
-            poles:
+            poles: If True, the pole points are plotted
+            samples (np.ndarray): orientations in cartesian coordinates that should be plotted.
 
         Returns:
 
@@ -257,6 +253,11 @@ class vMF():
     #def info(self):
 
     def _generate_samples(self):
+        """
+        Generates samples around the mean.
+        Returns: np.ndarray with dimensions (3, self.n_samples)
+
+        """
 
         dim = len(self.mean)
         result = np.zeros((self.num_samples, dim))
@@ -304,11 +305,11 @@ class vMF():
 
     def _cartesian2spherical(self, xyz):
         """
-
+        Converts cartesian to spherical coordinates.
         Args:
-            xyz:
+            xyz (np.ndarray): input orientations in cartesian coordinates.
 
-        Returns:
+        Returns: np.ndarray with azimuth and dip values
 
         """
         if xyz.ndim == 1:
@@ -344,13 +345,12 @@ class vMF():
 
     def _spherical2cartesian(self, orient):
         """
+          Converts spherical to cartesian coordinates.
+          Args:
+              orient (np.ndarray): np.ndarray with azimuth and dip values
 
-        Args:
-            orient:
-
-        Returns:
-
-        """
+          Returns: np.ndarray with cartesian coordinates
+          """
         azimuth = orient[:, 0]
         dip = orient[:, 1]
         xyz = np.empty((orient.shape[0], 3))

@@ -113,15 +113,20 @@ class DataMutation(object):
         if hasattr(self.interpolator.theano_graph.grid_val_T, 'get_value'):
             self.interpolator.theano_graph.grid_val_T.set_value(self.grid.values_r.astype(self.interpolator.dtype))
 
-    def set_active_grid(self, grid_name: Union[str, np.ndarray]):
+    def set_active_grid(self, grid_name: Union[str, np.ndarray], reset=False):
         """
         Set active a given or several grids.
 
         Args:
             grid_name (str, list) {regular, custom, topography, centered}:
+            reset (bool): If true set inactive all grids not in grid_name
+
+        Returns:
+            Grid
 
         """
-        self.grid.deactivate_all_grids()
+        if reset is True:
+            self.grid.deactivate_all_grids()
         self.grid.set_active(grid_name)
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
@@ -171,27 +176,10 @@ class DataMutation(object):
         return self.grid
 
     @plot_set_topography
+    @setdoc(Grid.set_topography.__doc__)
     def set_topography(self, source='random', **kwargs):
         """
-        Args:
-            source:
-                'gdal':     Load topography from a raster file.
-                'random':   Generate random topography (based on a fractal grid).
-                'saved':    Load topography that was saved with the topography.save() function.
-                            This is useful after loading and saving a heavy raster file with gdal once or after saving a
-                            random topography with the save() function. This .npy file can then be set as topography.
-        Kwargs:
-            if source = 'gdal:
-                filepath:   path to raster file, e.g. '.tif', (for all file formats see https://gdal.org/drivers/raster/index.html)
-            if source = 'random':
-                fd:         fractal dimension, defaults to 2.0
-                d_z:        maximum height difference. If none, last 20% of the model in z direction
-                extent:     extent in xy direction. If none, geo_model.grid.extent
-                resolution: desired resolution of the topography array. If none, geo_model.grid.resoution
-            if source = 'saved':
-                filepath:   path to the .npy file that was created using the topography.save() function
-
-        Returns: :class:gempy.core.data.Topography
+        Create a topography grid and activate it.
         """
 
         self.grid.set_topography(source, **kwargs)
@@ -199,18 +187,19 @@ class DataMutation(object):
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
-    def set_section_grid(self, section_dict):
-        self.grid.set_section_grid(section_dict=section_dict)
-        self.update_from_grid()
-        print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
-        return self.grid.sections
-
-    @setdoc(Grid.set_centered_grid.__doc__, )
+    @setdoc(Grid.set_centered_grid.__doc__)
     def set_centered_grid(self, centers, radio, resolution=None):
         self.grid.set_centered_grid(centers, radio, resolution=resolution)
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
+
+    @setdoc(Grid.set_section_grid.__doc__)
+    def set_section_grid(self, section_dict):
+        self.grid.set_section_grid(section_dict=section_dict)
+        self.update_from_grid()
+        print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
+        return self.grid.sections
 
     # endregion
 
@@ -275,7 +264,7 @@ class DataMutation(object):
         """
         self.series.modify_order_series(new_value, idx)
 
-        self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.array,
+        self.surfaces.df['series'].cat.reorder_categories(np.asarray(self.series.df.index),
                                                           ordered=False, inplace=True)
 
         self.surfaces.sort_surfaces()
@@ -297,7 +286,7 @@ class DataMutation(object):
         reset the flow control objects.
         """
         self.series.reorder_series(new_categories)
-        self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.array,
+        self.surfaces.df['series'].cat.reorder_categories(np.asarray(self.series.df.index),
                                                           ordered=False, inplace=True)
 
         self.surfaces.sort_surfaces()
@@ -844,7 +833,7 @@ class DataMutation(object):
             self.surfaces.df['series'].cat.rename_categories(rename_series, inplace=True)
 
         if reorder_series is True:
-            self.surfaces.df['series'].cat.reorder_categories(self.series.df.index.array,
+            self.surfaces.df['series'].cat.reorder_categories(np.asarray(self.series.df.index),
                                                               ordered=False, inplace=True)
             self.series.df.index = self.series.df.index.reorder_categories(self.series.df.index.array,
                                                                            ordered=False)
@@ -1009,7 +998,10 @@ class DataMutation(object):
         self.surfaces.set_basement()
         self.surface_points.df['id'] = self.surface_points.df['surface'].map(
             self.surfaces.df.set_index('surface')['id']).astype(int)
+        self.orientations.df['id'] = self.orientations.df['surface'].map(
+            self.surfaces.df.set_index('surface')['id']).astype(int)
         self.surface_points.sort_table()
+        self.orientations.sort_table()
         self.update_structure()
         return self.surfaces
 
@@ -1226,7 +1218,7 @@ class Model(DataMutation):
     @setdoc_pro([ds.compile_theano, ds.theano_optimizer])
     def set_gravity_interpolator(self, density_block=None,
                                  pos_density=None, tz=None, compile_theano: bool = True,
-                                 theano_optimizer=None, verbose: list = None):
+                                 theano_optimizer=None, verbose: list = None, **kwargs):
         """
         Method to create a graph and compile the theano code to compute forward gravity.
 
@@ -1246,6 +1238,9 @@ class Model(DataMutation):
             :class:`Options`
         """
 
+        warnings.warn('set_gravity_interpolator will be deprecated in GemPy 2.2.'
+                      ' Use gempy.set_interpolator(geo_model, type=\'grav\') instead')
+
         assert self.grid.centered_grid is not None, 'First you need to set up a gravity grid to compile the graph'
         assert density_block is not None or pos_density is not None, 'If you do not pass the density block you need to'\
                                                                      ' pass the position of surface values where' \
@@ -1258,7 +1253,7 @@ class Model(DataMutation):
 
         self.interpolator_gravity = InterpolatorGravity(
             self.surface_points, self.orientations, self.grid, self.surfaces,
-            self.series, self.faults, self.additional_data)
+            self.series, self.faults, self.additional_data, **kwargs)
 
         # geo_model.interpolator.set_theano_graph(geo_model.interpolator.create_theano_graph())
         self.interpolator_gravity.create_theano_graph(self.additional_data, inplace=True)
@@ -1268,6 +1263,6 @@ class Model(DataMutation):
         self.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
 
         if compile_theano is True:
-            self.interpolator_gravity.compile_th_fn(density_block, pos_density, inplace=True)
+            self.interpolator_gravity.compile_th_fn_grav(density_block, pos_density, inplace=True)
 
         return self.additional_data.options

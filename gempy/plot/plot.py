@@ -205,7 +205,7 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
 
     Args:
         geo_model (gempy.DataManagement.InputData): Input data of the model
-        series_only: To select whether a stereonet is plotted per series or per formation
+        series_only: To select whether a stereonet is plotted perries or per formation
         litho: selection of formation or series names, as list. If None, all are plotted
         planes: If True, azimuth and dip are plotted as great circles
         poles: If True, pole points (plane normal vectors) of azimuth and dip are plotted
@@ -296,6 +296,7 @@ def plot_all_sections(model, show_data=False, section_names=None, show_topo=True
     plot.plot_all_sections(show_data=show_data, section_names=section_names, show_topo=show_topo,
                            figsize=figsize)
 
+
 def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
                  show_data=True, show_faults=True, show_topo = False,  block_type=None, ve=1,
                  show_all_data=False, show_legend=True, **kwargs):
@@ -318,9 +319,8 @@ def plot_section(model, cell_number=13, block=None, direction="y", interpolation
     """
     plot = PlotSolution(model)
     plot.fig = plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
-                            show_data, show_faults, show_topo,  block_type, ve, show_all_data=show_all_data,
-                                       show_legend=show_legend, **kwargs)
-    # TODO saving options
+                                       show_data, show_faults, show_topo,  block_type, ve,
+                                       show_all_data=show_all_data, show_legend=show_legend, **kwargs)
     return plot
 
 

@@ -115,6 +115,7 @@ class SolveSparse(T.Op):
 
 solv = SolveSparse()
 
+
 class TheanoGraphPro(object):
     def __init__(self, optimizer='fast_compile', verbose=None, dtype=None, **kwargs):
         """
@@ -144,7 +145,7 @@ class TheanoGraphPro(object):
         # Trade speed for memory this will consume more memory
         self.max_speed = kwargs.get('max_speed', 1)
         self.sparse_version = kwargs.get('sparse_version', False)
-        self.loop_i = theano.shared(np.array(1, dtype=int))
+       # self.loop_i = theano.shared(np.array(1, dtype=int))
 
         self.gradient = kwargs.get('gradient', False)
         self.device = theano.config.device
@@ -310,6 +311,15 @@ class TheanoGraphPro(object):
         # Gravity
         self.tz = theano.shared(np.empty(0, dtype=dtype), 'tz component')
         self.density_matrix = T.vector('density vector')
+        self.lg0 = T.lscalar('arg_0 of the centered grid')
+        self.lg1 = T.lscalar('arg_1 of the centered grid')
+
+        self.input_parameters_grav = [self.dips_position_all, self.dip_angles_all, self.azimuth_all,
+                                      self.polarity_all, self.surface_points_all,
+                                      self.fault_matrix, self.grid_val_T,
+                                      self.values_properties_op,
+                                      self.compute_weights_ctrl, self.compute_scalar_ctrl, self.compute_block_ctrl,
+                                      self.lg0, self.lg1]
 
         # Results matrix
         self.weights_vector = theano.shared(np.cast[dtype](np.zeros(10000)), 'Weights vector')
@@ -937,6 +947,7 @@ class TheanoGraphPro(object):
 
         else:
             import theano.tensor.slinalg
+
             DK_parameters = theano.tensor.slinalg.solve(C_matrix, b)
 
         DK_parameters = DK_parameters.reshape((DK_parameters.shape[0],))
@@ -1629,11 +1640,6 @@ class TheanoGraphPro(object):
                                    self.values_properties_op[:, n_form_per_serie_0: n_form_per_serie_1 + 1]),
                                block_matrix[n_series, :]
                                )
-        #grid_shape = T.max((0, self.grid_val_T.shape[0]))
-       # grid_shape = theano.printing.Print('grid sh')(grid_shape)
-       # a = theano.printing.Print('a')(grid_shape*self.loop_i)
-        #grid_shape = T.max((T.as_tensor(0), T.stack([self.grid_val_T.shape[0]], axis=0)))
-        # TODO  grid_shape*(self.loop_i-1):a]
         weights_vector = T.set_subtensor(weights_vector[len_w_0:len_w_1], weights)
         scalar_field_matrix = T.set_subtensor(scalar_field_matrix[n_series], Z_x)
         block_matrix = T.set_subtensor(block_matrix[n_series, :], block)
@@ -1643,13 +1649,29 @@ class TheanoGraphPro(object):
 
         return block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix
 
-    def compute_forward_gravity(self, densities):  # densities, tz, select,
+    def compute_forward_gravity(self, densities=None, pos_density=None):  # densities, tz, select,
+
+        assert pos_density is not None or densities is not None, 'If a density block is not passed, you need to' \
+                                                                 ' specify which interpolated value is density.' \
+                                                                 ' See :class:`Surface`'
+
+        if densities is None:
+            final_model, new_block, new_weights, new_scalar, new_sfai, new_mask = self.compute_series()
+            densities = final_model[pos_density, self.lg0:self.lg1] #- 2 * self.len_points]
+        else:
+            final_model, new_block, new_weights, new_scalar, new_sfai, new_mask = None, None, None, None, None, None
+
+        if 'densities' in self.verbose:
+            densities = theano.printing.Print('density')(densities)
 
         n_devices = T.cast((densities.shape[0] / self.tz.shape[0]), dtype='int32')
+
+        if 'grav_devices' in self.verbose:
+            n_devices = theano.printing.Print('n_devices')(n_devices)
+
         tz_rep = T.tile(self.tz, n_devices)
 
         # density times the component z of gravity
         grav = (densities * tz_rep).reshape((n_devices, -1)).sum(axis=1)
 
-        # return [lith_matrix, self.fault_matrix, pfai, grav.sum(axis=1)]
-        return grav
+        return final_model, new_block, new_weights, new_scalar, new_sfai, new_mask,  grav  # , model_sol.append(grav)
