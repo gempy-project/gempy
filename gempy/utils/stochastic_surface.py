@@ -42,8 +42,9 @@ class _StochasticSurface(ABC):
     """Abstract base class for stochastic surfaces."""
     stochastic_surfaces = {}
 
-    def __init__(self, geo_model: Model, surface:str, grouping: str = "surface"):
-        # store independant copy of initial dataframe for reference/resets
+    def __init__(self, geo_model: Model, surface:str, 
+                 grouping: str = "surface"):
+        # store independent copy of initial dataframe for reference/resets
         self.__class__.surface_points_init = deepcopy(geo_model.surface_points.df)  # TODO
         self.__class__.orientations_init = deepcopy(geo_model.orientations.df)  # TODO
         # store Model instance
@@ -222,7 +223,19 @@ class StochasticModel:
     def __init__(self,
                  geo_model: Model,
                  surfaces: Iterable[_StochasticSurface]=None):
+        """Serves as a container for all stochastic objects of a stochastic 
+        geomodel.
 
+        A StochasticModel can be initialized with or without 
+        StochasticSurface's. Additional surfaces can be added to the .surfaces
+        dictionary, but is not recommended after sampling.
+        
+        Args:
+            geo_model (Model): The GemPy geomodel.
+            surfaces (Iterable[_StochasticSurface], optional): Sequence 
+                containing _StochasticSurface subclass instances. Defaults to
+                None.
+        """
         self.surface_points_init = deepcopy(geo_model.surface_points.df)
         self.orientations_init = deepcopy(geo_model.orientations.df)
         self.geo_model = geo_model
@@ -234,8 +247,20 @@ class StochasticModel:
         self.surfpts_samples = []
         self.orients_samples = []
 
-    def sample(self):
-        """Sample from all stocahstic surfaces of this StochasticModel."""
+        self.storage = {
+            "surfpts": [],
+            "orients": [],
+            "block_matrix": [],
+            "vertices": [],
+            "simplices": [],
+            "topo_graphs": [],
+            "topo_centroids": []
+        }
+
+    def sample(self) -> None:
+        """Sample from all stochastic surfaces associated with this
+        StochasticModel. Appends both interface and orientation samples to 
+        the .surfpts_samples and .orients_samples attributes."""
         surfpts_samples = pd.DataFrame(columns=["i", "col", "val"])
         orients_samples = pd.DataFrame(columns=["i", "col", "val"])
 
@@ -250,9 +275,9 @@ class StochasticModel:
         self.surfpts_samples.append(surfpts_samples)  # append to list of model
         self.orients_samples.append(orients_samples)  # samples
 
-    def modify(self, n:int=-1):
+    def modify(self, n:int=-1) -> None:
         """Modify all interface and orientation values for modified values
-        sampled from StochasticSurface's.
+        sampled from StochasticSurface's inside the associated GemPy Model.
 
         Args:
             n (int): Iteration number. Default: -1.
@@ -260,10 +285,14 @@ class StochasticModel:
         self._modify_surfpts(self.surfpts_samples[n])
         self._modifiy_orients(self.orients_samples[n])
 
-    def _modify_surfpts(self, sample:pd.DataFrame):
-        "Inplace modification of interface dataframe."
+    def _modify_surfpts(self, sample:pd.DataFrame) -> None:
+        """In-place modification of interface dataframe.
+
+        Args:
+            sample (pd.DataFrame): Samples
+        """
         for col, i in sample.groupby("col").groups.items():
-            i_init = sample.loc[i, "i"]
+            i_init = sample.loc[i, "i"]  # get initial indices
             self.geo_model.modify_surface_points(
                 i_init,
                 **{
@@ -272,8 +301,12 @@ class StochasticModel:
                 }
             )
 
-    def _modifiy_orients(self, sample:pd.DataFrame):
-        """Inplace modification of orientation dataframe."""
+    def _modifiy_orients(self, sample:pd.DataFrame) -> None:
+        """In-place modification of orientation dataframe.
+
+        Args:
+            sample (pd.DataFrame): Samples
+        """
         for col, i in sample.groupby("col").groups.items():
             i_init = sample.loc[i, "i"]
             self.geo_model.modify_orientations(
@@ -285,6 +318,7 @@ class StochasticModel:
             )
 
     def reset(self):
+        """Reset geomodel parameters to initial values."""
         i = self.surface_points_init.index
         self.geo_model.modify_surface_points(
             i,
@@ -311,6 +345,16 @@ class StochasticModel:
             }
         )
 
+    def save(self, fp:str):
+        """Save the storage attribute as a pickle. Depending on simulation 
+        settings this can not only store the surface points and orientations,
+        but also the block matrix, vertices and simplices as well as topology
+        graphs and centroids."""
+        import pickle
+        if not fp.endswith(".pickle") and not fp.endswith(".p"):
+            fp = fp + ".pickle"
+        with open(fp, "wb") as f:
+            pickle.dump(self.storage, f, pickle.HIGHEST_PROTOCOL)
 
 
 def _trifacenormals_from_pts(points: Array[float, ..., 3]) -> pd.DataFrame:
