@@ -1,6 +1,6 @@
 from gempy.utils.create_topography import Load_DEM_artificial, Load_DEM_GDAL
 import numpy as np
-import skimage
+import skimage.transform
 import matplotlib.pyplot as plt
 from scipy.constants import G
 from scipy import interpolate

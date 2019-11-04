@@ -17,7 +17,6 @@ try:
     GDAL_IMPORT = True
 except ImportError:
     GDAL_IMPORT = False
-import skimage
 import matplotlib.pyplot as plt
 
 

@@ -1402,8 +1402,8 @@ class SurfacePoints(GeometricData):
             else:
                 idx += 1
 
-        if max_idx is not np.nan:
-            self.df.loc[idx] = self.df.loc[max_idx]
+        #if max_idx is not np.nan:
+        self.df.loc[idx] = self.df.loc[max_idx]
 
         coord_array = np.array([x, y, z])
         assert coord_array.ndim == 1, 'Adding an interface only works one by one.'
@@ -1420,6 +1420,12 @@ class SurfacePoints(GeometricData):
             raise ValueError(error)
 
         self.df.loc[idx, ['smooth']] = 1e-6
+
+        self.df['surface'] = self.df['surface'].astype('category', copy=True)
+        self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
+
+        self.df['series'] = self.df['series'].astype('category', copy=True)
+        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
 
         self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
         self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
@@ -1685,8 +1691,8 @@ class Orientations(GeometricData):
             else:
                 idx += 1
 
-        if max_idx is not np.nan:
-            self.df.loc[idx] = self.df.loc[max_idx]
+        #if max_idx is not np.nan:
+        self.df.loc[idx] = self.df.loc[max_idx]
 
         if pole_vector is not None:
             self.df.loc[idx, ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']] = np.array([x, y, z, *pole_vector])
@@ -1706,8 +1712,14 @@ class Orientations(GeometricData):
             else:
                 raise AttributeError('At least pole_vector or orientation should have been passed to reach'
                                      'this point. Check previous condition')
-
+        print(self.df.dtypes)
         self.df.loc[idx, ['smooth']] = 0.01
+        self.df['surface'] = self.df['surface'].astype('category', copy=True)
+        self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
+
+        self.df['series'] = self.df['series'].astype('category', copy=True)
+        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
+
         self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
         self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
         self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
