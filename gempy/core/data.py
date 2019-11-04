@@ -1386,15 +1386,28 @@ class SurfacePoints(GeometricData):
 
         # TODO: Add the option to pass the surface number
 
+        # if idx is None:
+        #     idx = self.df.index.max()
+        #     if idx is np.nan:
+        #         idx = 0
+        #     else:
+        #         idx += 1
+
+        max_idx = self.df.index.max()
+
         if idx is None:
-            idx = self.df.index.max()
+            idx = max_idx
             if idx is np.nan:
                 idx = 0
             else:
                 idx += 1
 
+        if max_idx is not np.nan:
+            self.df.loc[idx] = self.df.loc[max_idx]
+
         coord_array = np.array([x, y, z])
         assert coord_array.ndim == 1, 'Adding an interface only works one by one.'
+        # self.df.loc[idx] = self.df.loc[idx-1]
         self.df.loc[idx, ['X', 'Y', 'Z']] = coord_array
 
         try:
@@ -1406,7 +1419,7 @@ class SurfacePoints(GeometricData):
                   'does not exist in the surface object either.')
             raise ValueError(error)
 
-        self.df.loc[idx, ['smooth']] = 1e-8
+        self.df.loc[idx, ['smooth']] = 1e-6
 
         self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
         self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
@@ -1663,12 +1676,17 @@ class Orientations(GeometricData):
             raise AttributeError('Either pole_vector or orientation must have a value. If both are passed pole_vector'
                                  'has preference')
 
+        max_idx = self.df.index.max()
+
         if idx is None:
-            idx = self.df.index.max()
+            idx = max_idx
             if idx is np.nan:
                 idx = 0
             else:
                 idx += 1
+
+        if max_idx is not np.nan:
+            self.df.loc[idx] = self.df.loc[max_idx]
 
         if pole_vector is not None:
             self.df.loc[idx, ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']] = np.array([x, y, z, *pole_vector])
@@ -2577,15 +2595,15 @@ class Options(object):
             bool: True
         """
         import theano
-        self.df['device'] = theano.config.device
+        self.df.loc['values', 'device'] = theano.config.device
 
         if theano.config.device == 'cpu':
-            self.df['dtype'] = 'float64'
+            self.df.loc['values', 'dtype'] = 'float64'
         else:
-            self.df['dtype'] = 'float32'
+            self.df.loc['values', 'dtype'] = 'float32'
 
-        self.df['output'] = 'geology'
-        self.df['theano_optimizer'] = 'fast_compile'
+        self.df.loc['values', 'output'] = 'geology'
+        self.df.loc['values', 'theano_optimizer'] = 'fast_compile'
         return True
 
 

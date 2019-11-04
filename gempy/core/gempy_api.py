@@ -285,8 +285,13 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
         sol = model.interpolator.theano_function(*i)
     elif output == 'gravity':
         model.set_active_grid('centered', reset=False)
-        i = model.interpolator.get_python_input_grav(append_control=True, fault_drift=None)
-        sol = model.interpolator.theano_function(*i)
+        try:
+            i = model.interpolator.get_python_input_grav(append_control=True, fault_drift=None)
+            sol = model.interpolator.theano_function(*i)
+
+        except AttributeError:
+            i = model.interpolator_gravity.get_python_input_grav()
+            sol = model.interpolator_gravity.theano_function(*i)
 
         # assert isinstance(model.interpolator_gravity, InterpolatorGravity), 'You need to set the gravity interpolator' \
         #                                                                     'first. See `Model.set_gravity_interpolator'

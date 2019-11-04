@@ -72,6 +72,7 @@ class Vista:
         self.vista_rgrids_mesh = {}
         self.vista_rgrids_actors = {}
         self.vista_topo_actors = {}
+        self.vista_surf_actor = {}
 
         self.real_time =real_time
 
@@ -152,8 +153,8 @@ class Vista:
             self.call_back_sphere_change_df(index, new_center)
             self.call_back_sphere_move_changes(index)
 
-        except:
-            pass
+        except KeyError as e:
+            print(e)
 
         if self.real_time:
             try:
@@ -291,13 +292,14 @@ class Vista:
         if clear is True:
             self.p.clear_plane_widgets()
         factor = kwargs.get('factor', 0.1)
+        kwargs['test_callback'] = kwargs.get('test_callback', False)
 
         if orientations is None:
             orientations = self.model.orientations.df
         for e, val in orientations.iterrows():
             c = self.lith_c[val['id']]
             p = self.p.add_plane_widget(self.call_back_plane,
-                                        implicit=False, pass_widget=True, test_callback=False,
+                                        implicit=False, pass_widget=True,
                                         normal=val[['G_x', 'G_y', 'G_z']],
                                         origin=val[['X', 'Y', 'Z']], color=c,
                                         bounds=self.model.grid.regular_grid.extent,
@@ -306,14 +308,19 @@ class Vista:
             self.p_widget.at[e] = p
         return self.p_widget
 
-    def set_surfaces(self, surfaces=None, **kwargs):
-        if surfaces is None:
-            surfaces = self.model.surfaces
-            for idx, val in surfaces.df[['vertices', 'edges', 'color']].dropna().iterrows():
+    def set_surfaces(self, surfaces=None, delete_surfaces=True, **kwargs):
 
-                surf = pv.PolyData(val['vertices'], np.insert(val['edges'], 0, 3, axis=1).ravel())
-                self.surf_polydata.at[idx] = surf
-                self.p.add_mesh(surf, parse_color(val['color']), **kwargs)
+        if delete_surfaces is True:
+            for actor in self.vista_surf_actor.values():
+                self.delete_surface(actor)
+
+        if surfaces is None:
+            surfaces = self.model.surfaces.df
+        for idx, val in surfaces[['vertices', 'edges', 'color']].dropna().iterrows():
+
+            surf = pv.PolyData(val['vertices'], np.insert(val['edges'], 0, 3, axis=1).ravel())
+            self.surf_polydata.at[idx] = surf
+            self.vista_surf_actor[idx] = self.p.add_mesh(surf, parse_color(val['color']), **kwargs)
 
         return self.surf_polydata
 
@@ -329,8 +336,9 @@ class Vista:
     def add_surface(self):
         raise NotImplementedError
 
-    def delete_surface(self, id):
-        raise NotImplementedError
+    def delete_surface(self, actor):
+        self.p.remove_actor(actor)
+        return True
 
     def update_surfaces_real_time(self, delete=True):
 
