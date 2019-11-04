@@ -1402,8 +1402,8 @@ class SurfacePoints(GeometricData):
             else:
                 idx += 1
 
-        #if max_idx is not np.nan:
-        self.df.loc[idx] = self.df.loc[max_idx]
+        if max_idx is not np.nan:
+            self.df.loc[idx] = self.df.loc[max_idx]
 
         coord_array = np.array([x, y, z])
         assert coord_array.ndim == 1, 'Adding an interface only works one by one.'
@@ -1691,8 +1691,8 @@ class Orientations(GeometricData):
             else:
                 idx += 1
 
-        #if max_idx is not np.nan:
-        self.df.loc[idx] = self.df.loc[max_idx]
+        if max_idx is not np.nan:
+            self.df.loc[idx] = self.df.loc[max_idx]
 
         if pole_vector is not None:
             self.df.loc[idx, ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']] = np.array([x, y, z, *pole_vector])
