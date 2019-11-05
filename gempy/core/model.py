@@ -176,27 +176,10 @@ class DataMutation(object):
         return self.grid
 
     @plot_set_topography
+    @setdoc(Grid.set_topography.__doc__)
     def set_topography(self, source='random', **kwargs):
         """
-        Args:
-            source:
-                'gdal':     Load topography from a raster file.
-                'random':   Generate random topography (based on a fractal grid).
-                'saved':    Load topography that was saved with the topography.save() function.
-                            This is useful after loading and saving a heavy raster file with gdal once or after saving a
-                            random topography with the save() function. This .npy file can then be set as topography.
-        Kwargs:
-            if source = 'gdal:
-                filepath:   path to raster file, e.g. '.tif', (for all file formats see https://gdal.org/drivers/raster/index.html)
-            if source = 'random':
-                fd:         fractal dimension, defaults to 2.0
-                d_z:        maximum height difference. If none, last 20% of the model in z direction
-                extent:     extent in xy direction. If none, geo_model.grid.extent
-                resolution: desired resolution of the topography array. If none, geo_model.grid.resoution
-            if source = 'saved':
-                filepath:   path to the .npy file that was created using the topography.save() function
-
-        Returns: :class:gempy.core.data.Topography
+        Create a topography grid and activate it.
         """
 
         self.grid.set_topography(source, **kwargs)
@@ -204,13 +187,14 @@ class DataMutation(object):
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
-    @setdoc(Grid.set_centered_grid.__doc__, )
+    @setdoc(Grid.set_centered_grid.__doc__)
     def set_centered_grid(self, centers, radio, resolution=None):
         self.grid.set_centered_grid(centers, radio, resolution=resolution)
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
+    @setdoc(Grid.set_section_grid.__doc__)
     def set_section_grid(self, section_dict):
         self.grid.set_section_grid(section_dict)
         self.update_from_grid()

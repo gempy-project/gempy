@@ -21,7 +21,7 @@ class RegularGrid:
         extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]
         resolution (np.ndarray): [nx, ny, nz]
         values (np.ndarray): XYZ coordinates
-        mask_topo (np.ndarray): TODO @elisa fill
+        mask_topo (np.ndarray, dtype=bool): same shape as values. Values above the topography are False
         dx (float): size of the cells on x
         dy (float): size of the cells on y
         dz (float): size of the cells on z
@@ -84,8 +84,13 @@ class RegularGrid:
 
 
 class Sections:
+    """
+    Object that creates a grid of cross sections between two points.
+    Args:
+        regular_grid: Model.grid.regular_grid
+        section_dict: {'section name': ([p1_x, p1_y], [p2_x, p2_y], [xyres, zres])}
+    """
     def __init__(self, regular_grid=None, section_dict=None):
-        #todo tidy up
         if section_dict is not None:
             self.regular_grid = regular_grid
             self.section_dict = section_dict
@@ -356,14 +361,13 @@ class CenteredGrid:
 
 class Topography:
     """
-    TODO @Elisa
+    Object to include topography in the model.
     """
     def __init__(self, regular_grid):
         self.regular_grid = regular_grid
         self.values = np.zeros((0, 3))
 
         self.topo = None
-        # TODO @Elisa: values 3D is a 3D numpy array isnt it
         self.values_3D = np.zeros((0, 0, 0))
         self.extent = None
         self.resolution = None
@@ -439,6 +443,14 @@ class Topography:
         plt.title('Model topography')
 
     def save(self, filepath):
+        """
+        Save the topography file in a numpy array which can be loaded later, to avoid the gdal process.
+        Args:
+            filepath (str): path where the array should be stored.
+
+        Returns:
+
+        """
         np.save(filepath, np.array([self.values_3D, self.extent, self.resolution]))
         print('saved')
 

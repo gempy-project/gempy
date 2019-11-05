@@ -61,7 +61,7 @@ class Grid(object):
          regular (:class:`gempy.core.grid_modules.grid_types.RegularGrid`): [s0]
          custom (:class:`gempy.core.grid_modules.grid_types.CustomGrid`): [s1]
          topography (:class:`gempy.core.grid_modules.grid_types.Topography`): [s2]
-         section TODO @ Elisa
+         sections (:class:`gempy.core.grid_modules.grid_types.Sections`): [s3]
          gravity (:class:`gempy.core.grid_modules.grid_types.Gravity`):
 
     Attributes:
@@ -77,7 +77,7 @@ class Grid(object):
         regular_grid (:class:`gempy.core.grid_modules.grid_types.RegularGrid`)
         custom_grid (:class:`gempy.core.grid_modules.grid_types.CustomGrid`)
         topography (:class:`gempy.core.grid_modules.grid_types.Topography`)
-        section TODO @ Elisa
+        sections (:class:`gempy.core.grid_modules.grid_types.Sections`)
         gravity_grid (:class:`gempy.core.grid_modules.grid_types.Gravity`)
     """
 
@@ -95,8 +95,7 @@ class Grid(object):
         self.custom_grid_grid_active = False
         self.topography = None
         self.topography_grid_active = False
-        self.sections = grid_types.Sections()#todo I have to do it like that because I need
-                                              # the function calculate_line_coords_2points
+        self.sections = grid_types.Sections()
         self.sections_grid_active = False
         self.centered_grid = None
         self.centered_grid_active = False
@@ -139,7 +138,28 @@ class Grid(object):
         self.set_active('custom')
 
     def set_topography(self, source='random', **kwargs):
-        """Set a topography grid and activate it. TODO @Elisa"""
+        """
+        Create a topography grid and activate it.
+        Args:
+            source:
+                'gdal':     Load topography from a raster file.
+                'random':   Generate random topography (based on a fractal grid).
+                'saved':    Load topography that was saved with the topography.save() function.
+                            This is useful after loading and saving a heavy raster file with gdal once or after saving a
+                            random topography with the save() function. This .npy file can then be set as topography.
+        Kwargs:
+            if source = 'gdal:
+                filepath:   path to raster file, e.g. '.tif', (for all file formats see https://gdal.org/drivers/raster/index.html)
+            if source = 'random':
+                fd:         fractal dimension, defaults to 2.0
+                d_z:        maximum height difference. If none, last 20% of the model in z direction
+                extent:     extent in xy direction. If none, geo_model.grid.extent
+                resolution: desired resolution of the topography array. If none, geo_model.grid.resoution
+            if source = 'saved':
+                filepath:   path to the .npy file that was created using the topography.save() function
+
+        Returns: :class:gempy.core.data.Topography
+        """
         self.topography = grid_types.Topography(self.regular_grid)
 
         if source == 'random':
@@ -162,6 +182,7 @@ class Grid(object):
         self.topography.show()
         self.set_active('topography')
 
+    @setdoc(grid_types.Sections.__doc__)
     def set_section_grid(self, section_dict):
         self.sections = grid_types.Sections(self.regular_grid, section_dict)
         self.set_active('sections')
@@ -617,7 +638,9 @@ class Series(object):
 
 
 class Colors:
-    # TODO @elisa
+    """
+    Object that handles the color management in the model.
+    """
     def __init__(self, surfaces):
         self.surfaces = surfaces
 
@@ -638,7 +661,7 @@ class Colors:
             self.colordict = colordict
 
     def change_colors(self, cdict = None):
-        ''' Updates the colors in self.colordict and in surfaces_df.
+        ''' Updates the colors of the model.
         Args:
             cdict: dict with surface names mapped to hex color codes, e.g. {'layer1':'#6b0318'}
             if None: opens jupyter widget to change colors interactively.
