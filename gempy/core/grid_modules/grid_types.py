@@ -9,6 +9,7 @@ import gempy.utils.docstring as ds
 from typing import Optional
 import pandas as pn
 
+
 class RegularGrid:
     """
     Class with the methods and properties to manage 3D regular grids where the model will be interpolated.
