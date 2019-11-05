@@ -77,7 +77,7 @@ class PlotData2D:
 
         if show_all_data:
             at = 'everywhere'
-
+        print(type(at))
         if type(at) == str:
             if at == 'topography':
                 mask_surfpoints, mask_orient = self.get_mask_surface_data(radius=radius)
@@ -95,8 +95,8 @@ class PlotData2D:
                     #self.testorient = series_to_plot_f[mask_orient]
                     #self.testinterf = series_to_plot_i[mask_surfpoints]
 
-                except AttributeError:
-                    print('must be topography, a section name or block_section')
+                except:
+                    raise AttributeError #'must be topography, a section name or block_section'
 
         elif type(at) == list: #should be a list of section names but must be asserted
             try:
@@ -512,7 +512,7 @@ class PlotSolution(PlotData2D):
 
         if contour_lines == True and show_data == False:
             CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2], cmap='Greys', linestyles='solid',
-                            extent=self.model.grid.topography.extent)
+                            extent=self.model.grid.topography.extent, zlevel=200)
             ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
             plothelp.add_colorbar(im=im, label='elevation [m]', cs=CS, aspect=35)
 
@@ -521,6 +521,7 @@ class PlotSolution(PlotData2D):
         plt.title("Geological map", fontsize=15)
         plt.xlabel('X')
         plt.ylabel('Y')
+
 
     def extract_section_lines(self, section_name=None, axes=None, zorder=2, faults_only=False):
         # Todo merge this with extract fault lines
@@ -619,7 +620,7 @@ class PlotSolution(PlotData2D):
                 xy = self.make_topography_overlay_4_sections(j)
                 axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10, alpha=alpha)
 
-        labels, axname = self._make_section_xylabels(section_name, len(axes.get_xticklabels()) - 2)
+        labels, axname = self._make_section_xylabels(section_name, len(axes.get_xticklabels()) - 1)
         pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
         axes.xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
         axes.xaxis.set_major_formatter(FixedFormatter((labels)))
@@ -648,8 +649,10 @@ class PlotSolution(PlotData2D):
                 xy = self.make_topography_overlay_4_sections(j)
                 axes[i].fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
-            if show_data:
-                self.plot_section_data(section_name=section)
+            #if show_data:
+            #    section = str(section)
+            #    print(section)
+            #    self.plot_section_data(section_name=section)
 
             axes[i].imshow(self.model.solutions.sections[0][0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
                            origin='lower', zorder=-100,
@@ -658,7 +661,7 @@ class PlotSolution(PlotData2D):
                                                                      self.model.grid.regular_grid.extent[5]])
 
 
-            labels, axname = self._make_section_xylabels(section, len(axes[i].get_xticklabels()) - 2)
+            labels, axname = self._make_section_xylabels(section, len(axes[i].get_xticklabels()) - 1)
             pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
             axes[i].xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
             axes[i].xaxis.set_major_formatter(FixedFormatter((labels)))

@@ -260,6 +260,21 @@ class Grid(object):
         where = np.where(self.sections.names == section_name)[0][0]
         return l0 + self.sections.length[where], l0 + self.sections.length[where+1]
 
+    def update_values_sandbox(self, new_values):
+        """
+        Replaces the values of the topography to recompute the geological map. Necessary for the sandbox.
+        Args:
+            new_values (np.ndarray): same shape as self.values, but can have differenz zvals
+
+        Returns:
+
+        """
+        self.topography.values = new_values
+        self.topography.values_3D[:, :, 2] = new_values[:, 2].reshape(self.topography.resolution) #todo maybe flip
+        # todo fit2model functions if anything else than only geological map is needed
+        self.update_grid_values()
+
+
 class Faults(object):
     """
     Class that encapsulate faulting related content. Mainly, which surfaces/surfaces are faults. The fault network
