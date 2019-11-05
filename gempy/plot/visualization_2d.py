@@ -77,7 +77,6 @@ class PlotData2D:
 
         if show_all_data:
             at = 'everywhere'
-        print(type(at))
         if type(at) == str:
             if at == 'topography':
                 mask_surfpoints, mask_orient = self.get_mask_surface_data(radius=radius)
