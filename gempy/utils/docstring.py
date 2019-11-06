@@ -53,3 +53,10 @@ edges = 'List of numpy arrays containing the indices of the vertices numpy array
         ' triangle. '
 geological_map = '2D array containing the lithologies at the surfaces. '
 
+recompute_rf = 'if True recompute the rescaling factor'
+
+compile_theano = 'Default true. Either if the theano graph must be compiled or not'
+theano_optimizer = 'Type of theano compilation. This rules the number ' \
+                   'optimizations theano performs at compilation time: fast_run will take longer \
+             to compile but at run time will be faster and will consume significantly less memory. fast_compile will \
+             compile faster.'

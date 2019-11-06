@@ -18,84 +18,26 @@
 import numpy as np
 import theano
 import theano.tensor as T
-from gempy.core.data import Grid
+from gempy.core.grid_modules.grid_types import CenteredGrid
 from scipy.constants import G
 
 
-class GravityGrid(Grid):
-    def __init__(self):
-        Grid.__init__(self)
-        self.grid_type = 'irregular_grid'
-        self.kernel_values = np.empty((0, 3))
-        self.kernel_dxyz_left = np.empty((0, 3))
-        self.kernel_dxyz_right = np.empty((0, 3))
-        self.tz = np.empty((0))
+class GeophysicsPreprocessing(CenteredGrid):
+    def __init__(self, centered_grid: CenteredGrid = None):
 
-    @staticmethod
-    def create_irregular_grid_kernel(resolution, radio):
-        if radio is not list or radio is not np.ndarray:
-            radio = np.repeat(radio, 3)
+        if centered_grid is None:
+            super().__init__()
+        elif isinstance(centered_grid, CenteredGrid):
+            self.kernel_centers = centered_grid.kernel_centers
+            self.kernel_dxyz_right = centered_grid.kernel_dxyz_right
+            self.kernel_dxyz_left = centered_grid.kernel_dxyz_left
+        self.tz = np.empty(0)
 
-        g_ = []
-        g_2 = []
-        d_ = []
-        for xyz in [0, 1, 2]:
+    def set_tz_kernel(self, scale=True, **kwargs):
+        if self.kernel_centers.size == 0:
+            self.set_centered_kernel(**kwargs)
 
-            if xyz == 2:
-                g_.append(np.geomspace(0.01, 1, int(resolution[xyz])))
-                g_2.append((np.concatenate(([0], g_[xyz])) + 0.05) * - radio[xyz]*1.2)
-            else:
-                g_.append(np.geomspace(0.01, 1, int(resolution[xyz] / 2)))
-                g_2.append(np.concatenate((-g_[xyz][::-1], [0], g_[xyz])) * radio[xyz])
-            d_.append(np.diff(np.pad(g_2[xyz], 1, 'reflect', reflect_type='odd')))
-
-        g = np.meshgrid(*g_2)
-        d_left = np.meshgrid(d_[0][:-1]/2, d_[1][:-1]/2, d_[2][:-1]/2)
-        d_right = np.meshgrid(d_[0][1:]/2, d_[1][1:]/2, d_[2][1:]/2)
-        kernel_g = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
-        kernel_d_left = np.vstack(tuple(map(np.ravel, d_left))).T.astype("float64")
-        kernel_d_right = np.vstack(tuple(map(np.ravel, d_right))).T.astype("float64")
-        #
-        # g_x =
-        # g_y = np.geomspace(0.01, 1, int(resolution[1] / 2))
-        # g_z = np.geomspace(0.01, 1, int(resolution[2] / 2))
-        # g_x2 = np.concatenate((-g_x[::-1], [0], g_x)) * radio[0]
-        # g_y2 = np.concatenate((-g_y[::-1], [0], g_y)) * radio[1]
-        # g_z2 = np.concatenate((-g_z[::-1], [0], g_z)) * radio[2]
-        #
-        #
-        #
-        # dx = np.gradient(g_x2, edge_order=2)
-        # dy = np.gradient(g_y2, edge_order=2)
-        # dz = np.gradient(g_z2, edge_order=2)
-        #
-        # g = np.meshgrid(g_x2, g_y2, g_z2)
-        # kernel = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
-        return kernel_g, kernel_d_left, kernel_d_right
-
-    def set_irregular_kernel(self, resolution, radio):
-        self.kernel_values, self.kernel_dxyz_left, self.kernel_dxyz_right = self.create_irregular_grid_kernel(
-            resolution, radio)
-
-        return self.kernel_values
-
-    def set_irregular_grid(self, centers, kernel_centers=None, **kwargs):
-        self.values =np.empty((0, 3))
-        if kernel_centers is None:
-            kernel_centers, _, _ = self.create_irregular_grid_kernel(**kwargs)
-
-        centers = np.atleast_2d(centers)
-        for i in centers:
-            self.values = np.vstack((self.values, i + kernel_centers))
-
-        self.length = self.values.shape[0]
-
-    def set_tz_kernel(self, **kwargs):
-        if self.kernel_values.size == 0:
-            self.set_irregular_kernel(**kwargs)
-
-        grid_values = self.kernel_values
-       # dx, dy, dz = dxdydz
+        grid_values = self.kernel_centers
 
         s_gr_x = grid_values[:, 0]
         s_gr_y = grid_values[:, 1]
@@ -116,6 +58,8 @@ class GravityGrid(Grid):
         # This is the vector that determines the sign of the corner of the voxel
         mu = np.array([1, -1, -1, 1, -1, 1, 1, -1])
 
+        if scale is True:
+            G = 6.67408e-2
         self.tz = (
             np.sum(- 1 *
                    G *
@@ -129,6 +73,12 @@ class GravityGrid(Grid):
 
 
 class GravityPreprocessing(object):
+    """
+    --This class is DEPRECATED--
+
+    This class was to compute tz for regular grids. Right now in GemPy v2 we only allow centered
+    grids. This workflow makes a lot of sense if the number of devices is very large.
+    """
     def __init__(self, interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
 
         self.interp_data = interp_data
@@ -297,7 +247,10 @@ class GravityPreprocessing(object):
         vox_size = np.array([x_extent, y_extent, z_extent]) / self.interp_data.geo_data_res.resolution
         return vox_size
 
+
 def precomputations_gravity(interp_data, n_chunck=25, densities=None):
+    """DEP"""
+
     try:
         getattr(interp_data, 'geophy')
     except:
@@ -310,18 +263,21 @@ def precomputations_gravity(interp_data, n_chunck=25, densities=None):
         set_densities(interp_data, densities)
     return tz, select
 
-def set_densities(interp_data, densities):
 
+def set_densities(interp_data, densities):
+    """DEP"""
     interp_data.interpolator.set_densities(densities)
 
-def set_geophysics_obj(interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
 
+def set_geophysics_obj(interp_data, ai_extent, ai_resolution, ai_z=None, range_max=None):
+    """DEP"""
     assert isinstance(interp_data, InterpolatorData), 'The object has to be instance of the InterpolatorInput'
     interp_data.create_geophysics_obj(ai_extent, ai_resolution, ai_z=ai_z, range_max=range_max)
     return interp_data.geophy
 
 
 class GeoPhysiscs(object):
+    """ This class intends to contain all common functionality among all geophysical engines """
     def __init__(self):
         self.gravity = None
         self.magnetics = None

@@ -29,7 +29,7 @@ including stratigraphic and structural features such as:
 Contents:
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 2
 
    self
    code

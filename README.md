@@ -35,7 +35,7 @@ Check out the documentation either in [gempy.org](https://www.gempy.org/) (bette
 
 <a name="feat"></a>
 ## News
-### GemPy v2.0 beta release
+### GemPy v2.0 release
 
 It has been a long journey since the release of GemPy v1.0. What started as a small library to carry out research
 on uncertainty analysis for structural geology has grown to be used in multiple projects around the world. Carried
@@ -66,8 +66,8 @@ Miguel
 - Minor changes:
     + New colormap and easy way to change the surfaces colors (even integration with widgets!)
     + The order of the formations will be given by the interpolation itself if the input was wrong
-    + The split between reference and rest surface_points happens in theano. This makes much easier the modification
-    of reference points
+    + The split between reference and rest surface_points happens in theano. This makes the modification
+    of reference points much easier
 
 
 ## Features
@@ -277,7 +277,7 @@ in the cloned or downloaded repository folder. Make sure you have installed all 
 - conda install git
 - conda install pygpu
 - pip install theano==1.0.4
-- pip install gempy==2.0b0.dev2
+- pip install gempy
 
 Note that:
 

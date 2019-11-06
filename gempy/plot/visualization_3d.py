@@ -93,11 +93,11 @@ class vtkVisualization(object):
         self.ren_name = ren_name
         # Number of renders
         self.n_ren = 4
-        self.id = geo_data.surface_points.df['id'].unique().squeeze()
+        self.id = geo_data.surface_points.df['id'].unique()
         self.surface_name = geo_data.surface_points.df['surface'].unique()
 
         # Extents
-        self.extent = self.geo_model.grid.regular_grid.extent
+        self.extent = copy.copy(self.geo_model.grid.regular_grid.extent)
         self.extent[-1] = ve * self.extent[-1]
         self.extent[-2] = ve * self.extent[-2]
         _e = self.extent
@@ -278,7 +278,8 @@ class vtkVisualization(object):
         """
         Points = vtk.vtkPoints()
         if self.ve != 1:
-            raise NotImplementedError('Vertical exageration for surfaces not implemented yet.')
+            vertices[:, 2] = vertices[:, 2] * self.ve
+        #     raise NotImplementedError('Vertical exageration for surfaces not implemented yet.')
         # for v in vertices:
         #     v[-1] = self.ve * v[-1]
         #     Points.InsertNextPoint(v)
@@ -484,12 +485,14 @@ class vtkVisualization(object):
 
     def set_topography(self):
         # Create points on an XY grid with random Z coordinate
-        vertices = self.geo_model.grid.topography.values
+        vertices = copy.copy(self.geo_model.grid.topography.values)
 
         points = vtk.vtkPoints()
         # for v in vertices:
         #     v[-1] = v[-1]
         #     points.InsertNextPoint(v)
+        if self.ve !=1:
+            vertices[:, 2]= vertices[:, 2]*self.ve
         points.SetData(numpy_to_vtk(vertices))
 
         # Add the grid points to a polydata object
@@ -503,6 +506,7 @@ class vtkVisualization(object):
         # # Create a mapper and actor
         # pointsMapper = vtk.vtkPolyDataMapper()
         # pointsMapper.SetInputConnection(glyphFilter.GetOutputPort())
+
         #
         # pointsActor = vtk.vtkActor()
         # pointsActor.SetMapper(pointsMapper)
@@ -875,13 +879,11 @@ class vtkVisualization(object):
         # Modify Pandas DataFrame
         # update the gradient vector components and its location
         self.geo_model.modify_orientations(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
-                                           G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2],
-                                           recalculate_orientations=True)
+                                           G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
         # update the dip and azimuth values according to the new gradient
-        self.geo_model.calculate_orientations()
+        # self.geo_model.calculate_orientations()
 
     def planesCallback_move_changes(self, indices):
-        print(indices)
         df_changes = self.geo_model.orientations.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'id']]
         for index, new_values_df in df_changes.iterrows():
             new_center = new_values_df[['X', 'Y', 'Z']].values
@@ -1136,20 +1138,25 @@ class vtkVisualization(object):
         return True
 
     @staticmethod
-    def export_vtk_lith_block(geo_data, lith_block, path=None):
+    def export_vtk_lith_block(geo_data, lith_block=None, path=None):
         """
         Export data to a vtk file for posterior visualizations
 
         Args:
-            geo_data(gempy.InputData): All values of a DataManagement object
+            geo_data(:class:''): All values of a DataManagement object
             block(numpy.array): 3D array containing the lithology block
             path (str): path to the location of the vtk
 
         Returns:
             None
         """
-
-        from pyevtk.hl import gridToVTK
+        try:
+            try:
+                from evtk.hl import gridToVTK
+            except ModuleNotFoundError:
+                from pyevtk.hl import gridToVTK
+        except ModuleNotFoundError:
+            raise ModuleNotFoundError('pyevtk is not installed. Grid export not available.')
 
         import numpy as np
 
@@ -1174,6 +1181,8 @@ class vtkVisualization(object):
 
         z = np.arange(geo_data.grid.regular_grid.extent[4], geo_data.grid.regular_grid.extent[5] + 0.1, dz, dtype='float64')
 
+        if lith_block is None:
+            lith_block = geo_data.solutions.lith_block
         lith = lith_block.reshape((nx, ny, nz))
 
         # Variables
@@ -1184,7 +1193,7 @@ class vtkVisualization(object):
         gridToVTK(path+'_lith_block', x, y, z, cellData={"Lithology": lith})
 
     @staticmethod
-    def export_vtk_surfaces(geo_model, vertices:dict, simplices, path=None, name='_surfaces', alpha=1):
+    def export_vtk_surfaces(geo_model, vertices=None, simplices=None, path=None, name='_surfaces', alpha=1):
         """
         Export data to a vtk file for posterior visualizations
 
@@ -1198,8 +1207,12 @@ class vtkVisualization(object):
         """
         import vtk
 
+        if vertices is None or simplices is None:
+            vertices = geo_model.solutions.vertices
+            simplices = geo_model.solutions.edges
+
         s_n = 0
-        for key, values in vertices.items():
+        for e, values in enumerate(vertices):
             # setup points and vertices
             s_n += 1
             Points = vtk.vtkPoints()
@@ -1212,7 +1225,7 @@ class vtkVisualization(object):
             # The first 0 is the index of the triangle vertex which is ALWAYS 0-2.
             # The second 0 is the index into the point (geometry) array, so this can range from 0-(NumPoints-1)
             # i.e. a more general statement is triangle->GetPointIds()->SetId(0, PointId);
-            for i in simplices[key]:
+            for i in simplices[e]:
                 Triangle.GetPointIds().SetId(0, i[0])
                 Triangle.GetPointIds().SetId(1, i[1])
                 Triangle.GetPointIds().SetId(2, i[2])
@@ -1242,7 +1255,7 @@ class vtkVisualization(object):
             if not path:
                 path = "./default_"
 
-            writer.SetFileName(path+'_surfaces_'+str(key)+'.vtp')
+            writer.SetFileName(path+'_surfaces_'+str(e)+'.vtp')
             if vtk.VTK_MAJOR_VERSION <= 5:
                 writer.SetInput(polydata)
             else:

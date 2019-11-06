@@ -3,7 +3,7 @@ language: python
 dist: xenial
 
 python:
-  - '3.6'
+  - '3.7'
 
 install:
   - pip install --upgrade setuptools pip
@@ -13,9 +13,14 @@ install:
   - pip install nbval
   - pip install git+git://github.com/Leguark/scikit-image@master
   - pip install vtk
+  - pip install pyevtk
+  - pip install dataclasses emg3d pyvista panel discretize
+
 
 script:
 
+  - pytest -v notebooks/integrations/ --nbval-lax --ignore-glob='*discret*'
+  - pytest -v notebooks/examples/ --nbval-lax --current-env --ignore-glob='*pography*' --ignore-glob='*lesmodel*'
   - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='ch1-6*' --ignore-glob='ch1-7*'
   - pytest
 

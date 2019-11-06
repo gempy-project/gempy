@@ -1,9 +1,13 @@
 from gempy.utils.create_topography import Load_DEM_artificial, Load_DEM_GDAL
 import numpy as np
-import skimage
+import skimage.transform
 import matplotlib.pyplot as plt
 from scipy.constants import G
+from scipy import interpolate
+from gempy.utils.meta import setdoc, setdoc_pro
+import gempy.utils.docstring as ds
 from typing import Optional
+import pandas as pn
 
 
 class RegularGrid:
@@ -18,7 +22,7 @@ class RegularGrid:
         extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]
         resolution (np.ndarray): [nx, ny, nz]
         values (np.ndarray): XYZ coordinates
-        mask_topo (np.ndarray): TODO @elisa fill
+        mask_topo (np.ndarray, dtype=bool): same shape as values. Values above the topography are False
         dx (float): size of the cells on x
         dy (float): size of the cells on y
         dz (float): size of the cells on z
@@ -80,6 +84,105 @@ class RegularGrid:
         return self.values
 
 
+class Sections:
+    """
+    Object that creates a grid of cross sections between two points.
+    Args:
+        regular_grid: Model.grid.regular_grid
+        section_dict: {'section name': ([p1_x, p1_y], [p2_x, p2_y], [xyres, zres])}
+    """
+    def __init__(self, regular_grid=None, section_dict=None):
+        if section_dict is not None:
+            self.regular_grid = regular_grid
+            self.section_dict = section_dict
+            self.names = np.array(list(self.section_dict.keys()))
+            self.points = []
+            self.resolution = []
+            self.length = [0]
+            self.dist = []
+            self.get_section_params()
+            self.calculate_distance()
+            self.df = pn.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution'])
+            self.df['dist'] = self.dist
+            self.values = []
+            self.extent = None
+            self.compute_section_coordinates()
+
+    def _repr_html_(self):
+        return self.df.to_html()
+
+    def show(self):
+        pass
+
+    def get_section_params(self):
+        for i, section in enumerate(self.names):
+            points = [self.section_dict[section][0], self.section_dict[section][1]]
+            assert points[0] != points[1], 'The start and end points of the section must not be identical.'
+            self.points.append(points)
+            self.resolution.append(self.section_dict[section][2])
+            self.length.append(self.section_dict[section][2][0] * self.section_dict[section][2][1])
+        self.length = np.array(self.length).cumsum()
+
+    def calculate_distance(self):
+        self.coordinates = np.array(self.points).ravel().reshape(-1, 4) #axis are x1,y1,x2,y2
+        self.dist = np.sqrt(np.diff(self.coordinates[:, [0, 2]])**2 + np.diff(self.coordinates[:, [1, 3]])**2)
+
+    def compute_section_coordinates(self):
+        for i in range(len(self.names)):
+            xy = self.calculate_line_coordinates_2points(self.points[i][0], self.points[i][1], self.resolution[i][0],
+                                                         self.resolution[i][0]) #two times xy resolution is correct
+            zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][1],
+                                     dtype="float64")
+            X, Z = np.meshgrid(xy[:, 0], zaxis, indexing='ij')
+            Y, _ = np.meshgrid(xy[:, 1], zaxis, indexing='ij')
+            xyz = np.vstack((X.flatten(), Y.flatten(), Z.flatten())).T
+            if i == 0:
+                self.values = xyz
+            else:
+                self.values = np.vstack((self.values, xyz))
+
+    def calculate_line_coordinates_2points(self, p1, p2, resx, resy):
+        x0 = p1[0]
+        x1 = p2[0]
+        y0 = p1[1]
+        y1 = p2[1]
+
+        dx = np.abs((x1 - x0) / resx)
+        dy = np.abs((y1 - y0) / resy)
+
+        if x0 == x1:  # slope is infinite
+            # for cases where phi == -np.pi/2 or phi == np.pi/2
+            xi = x0 * np.ones(resy)
+            yj = np.linspace(y0, y1, resy)
+        else:
+            # calculate support points between two points
+            phi = np.arctan2(y1 - y0, x1 - x0)  # angle of line with x-axis
+            if np.pi / 2 < phi <= np.pi: #shift all values to first or fourth quadrant
+                phi -= np.pi
+            elif -np.pi <= phi < -np.pi / 2:
+                phi += np.pi  # shift values in first or fourth quadrant so that cosine is positive
+            else:
+                pass
+            ds = np.abs(dx * np.cos(phi)) + np.abs(dy * np.sin(phi))  # support point spacing
+            # abs needed for cases where phi == -1/4 pi or 3/4 pi
+            if x0 > x1:
+                n_points = np.ceil((x0 - x1) / (ds * np.cos(phi)))
+            else:
+                n_points = np.ceil((x1 - x0) / (ds * np.cos(phi)))
+            xi = np.linspace(x0, x1, int(n_points))
+            m = (y1 - y0) / (x1 - x0)  # slope of line
+            yj = m * (xi - x0) + y0 * np.ones(xi.shape)  # calculate yvalues with line equation
+        return np.vstack((xi, yj)).T
+
+    def get_section_args(self, section_name: str):
+        where = np.where(self.names == section_name)[0][0]
+        return self.length[where], self.length[where+1]
+
+    def get_section_grid(self, section_name: str):
+        l0, l1 = self.get_section_args(section_name)
+        return self.values[l0:l1]
+
+
 class CustomGrid:
     """Object that contains arbitrary XYZ coordinates.
 
@@ -114,21 +217,40 @@ class CustomGrid:
         return self.values
 
 
-class GravityGrid():
+class CenteredGrid:
     """
-    TODO @Miguel
+    Logarithmic spaced grid.
     """
 
-    def __init__(self):
-       # Grid.__init__(self)
-        self.grid_type = 'irregular_grid'
+    def __init__(self, centers=None, radio=None, resolution=None):
+        self.grid_type = 'centered_grid'
         self.values = np.empty((0, 3))
+        self.length = self.values.shape[0]
+        self.kernel_centers = np.empty((0, 3))
         self.kernel_dxyz_left = np.empty((0, 3))
         self.kernel_dxyz_right = np.empty((0, 3))
-        self.tz = np.empty((0))
+        self.tz = np.empty(0)
+
+        if centers is not None and radio is not None:
+            if resolution is None:
+                resolution = [10, 10, 20]
+
+            self.set_centered_grid(centers=centers, radio=radio, resolution=resolution)
 
     @staticmethod
+    @setdoc_pro(ds.resolution)
     def create_irregular_grid_kernel(resolution, radio):
+        """
+        Create an isometric grid kernel (centered at 0)
+
+        Args:
+            resolution: [s0]
+            radio (float): Maximum distance of the kernel
+
+        Returns:
+            tuple: center of the voxel, left edge of each voxel (for xyz), right edge of each voxel (for xyz).
+        """
+
         if radio is not list or radio is not np.ndarray:
             radio = np.repeat(radio, 3)
 
@@ -138,6 +260,8 @@ class GravityGrid():
         for xyz in [0, 1, 2]:
 
             if xyz == 2:
+                # Make the grid only negative for the z axis
+
                 g_.append(np.geomspace(0.01, 1, int(resolution[xyz])))
                 g_2.append((np.concatenate(([0], g_[xyz])) + 0.05) * - radio[xyz]*1.2)
             else:
@@ -151,54 +275,49 @@ class GravityGrid():
         kernel_g = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
         kernel_d_left = np.vstack(tuple(map(np.ravel, d_left))).T.astype("float64")
         kernel_d_right = np.vstack(tuple(map(np.ravel, d_right))).T.astype("float64")
-        #
-        # g_x =
-        # g_y = np.geomspace(0.01, 1, int(resolution[1] / 2))
-        # g_z = np.geomspace(0.01, 1, int(resolution[2] / 2))
-        # g_x2 = np.concatenate((-g_x[::-1], [0], g_x)) * radio[0]
-        # g_y2 = np.concatenate((-g_y[::-1], [0], g_y)) * radio[1]
-        # g_z2 = np.concatenate((-g_z[::-1], [0], g_z)) * radio[2]
-        #
-        #
-        #
-        # dx = np.gradient(g_x2, edge_order=2)
-        # dy = np.gradient(g_y2, edge_order=2)
-        # dz = np.gradient(g_z2, edge_order=2)
-        #
-        # g = np.meshgrid(g_x2, g_y2, g_z2)
-        # kernel = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
+
         return kernel_g, kernel_d_left, kernel_d_right
 
-    def set_irregular_kernel(self, resolution, radio):
+    @setdoc_pro(ds.resolution)
+    def set_centered_kernel(self, resolution, radio):
+        """
+        Set a centered
+
+        Args:
+            resolution: [s0]
+            radio (float): Maximum distance of the kernel
+
+        Returns:
+
+        """
         self.kernel_centers, self.kernel_dxyz_left, self.kernel_dxyz_right = self.create_irregular_grid_kernel(
             resolution, radio)
 
         return self.kernel_centers
-    #
-    # def set_airborne_plane(self, z, ai_resolution):
-    #
-    #     # TODO Include all in the loop. At the moment I am tiling all grids and is useless
-    #     # Rescale z
-    #     z_res = z  # (z-self.interp_data.centers[2])/self.interp_data.rescaling_factor + 0.5001
-    #     ai_extent_rescaled = (self.ai_extent - np.repeat(self.interp_data.centers, 2)) / \
-    #                          self.interp_data.rescaling_factor + 0.5001
-    #
-    #     # Create xy meshgrid
-    #     xy = np.meshgrid(np.linspace(ai_extent_rescaled.iloc[0], ai_extent_rescaled.iloc[1], self.ai_resolution[0]),
-    #                      np.linspace(ai_extent_rescaled.iloc[2], ai_extent_rescaled.iloc[3], self.ai_resolution[1]))
-    #     z = np.ones(self.ai_resolution[0] * self.ai_resolution[1]) * z_res
-    #
-    #     # Transformation
-    #     xy_ravel = np.vstack(map(np.ravel, xy))
-    #     airborne_plane = np.vstack((xy_ravel, z)).T.astype(self.interp_data.dtype)
 
+    @setdoc_pro(ds.resolution)
+    def set_centered_grid(self, centers, kernel_centers=None, **kwargs):
+        """
+        Main method of the class, set the XYZ values around centers using a kernel.
 
-    def set_irregular_grid(self, centers, kernel_centers=None, **kwargs):
-        self.values =np.empty((0, 3))
-        if kernel_centers is None:
-            kernel_centers = self.set_irregular_kernel(**kwargs)
+        Args:
+            centers (np.array): XYZ array with the centers of where we want to create a grid around
+            kernel_centers (Optional[np.array]): center of the voxels of a desired kernel.
+            **kwargs:
+                * resolution: [s0]
+                * radio (float): Maximum distance of the kernel
+        Returns:
 
+        """
+
+        self.values = np.empty((0, 3))
         centers = np.atleast_2d(centers)
+
+        if kernel_centers is None:
+            kernel_centers = self.set_centered_kernel(**kwargs)
+
+        assert centers.shape[1] == 3, 'Centers must be a numpy array that contains the coordinates XYZ'
+
         for i in centers:
             self.values = np.vstack((self.values, i + kernel_centers))
 
@@ -206,10 +325,9 @@ class GravityGrid():
 
     def set_tz_kernel(self, **kwargs):
         if self.kernel_centers.size == 0:
-            self.set_irregular_kernel(**kwargs)
+            self.set_centered_kernel(**kwargs)
 
         grid_values = self.kernel_centers
-       # dx, dy, dz = dxdydz
 
         s_gr_x = grid_values[:, 0]
         s_gr_y = grid_values[:, 1]
@@ -244,30 +362,39 @@ class GravityGrid():
 
 class Topography:
     """
-    TODO @Elisa
+    Object to include topography in the model.
     """
     def __init__(self, regular_grid):
         self.regular_grid = regular_grid
         self.values = np.zeros((0, 3))
 
+        self.topo = None
+        self.values_3D = np.zeros((0, 0, 0))
+        self.extent = None
+        self.resolution = None
+
+        self.type = None
+
     def load_from_gdal(self, filepath):
         self.topo = Load_DEM_GDAL(filepath, self.regular_grid)
         self._create_init()
         self._fit2model()
+        self.type = 'real'
 
     def load_random_hills(self, **kwargs):
         self.topo = Load_DEM_artificial(self.regular_grid, **kwargs)
         self._create_init()
         self._fit2model()
+        self.type = 'artificial'
 
     def load_from_saved(self, filepath):
-        #assert filepath ending is .npy
         assert filepath[-4:] == '.npy', 'The file must end on .npy'
         topo = np.load(filepath, allow_pickle=True)
         self.values_3D = topo[0]
         self.extent = topo[1]
         self.resolution = topo[2]
         self._fit2model()
+        self.type = 'real'
 
     def _create_init(self):
         self.values_3D = self.topo.values_3D
@@ -301,23 +428,30 @@ class Topography:
                                                       anti_aliasing=False, preserve_range=True)
 
     def show(self):
-        from mpl_toolkits.axes_grid1 import make_axes_locatable
-        fig, ax = plt.subplots()
-        CS= ax.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k', linestyles='solid')
-        ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
-        CS2 = ax.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
+        from gempy.plot.helpers import add_colorbar
+        if self.type == 'artificial':
+            fig, ax = plt.subplots()
+            CS= ax.contour(self.values_3D[:, :, 2], extent=(self.extent[:4]), colors='k', linestyles='solid')
+            ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
+            CS2 = ax.contourf(self.values_3D[:, :, 2], extent=(self.extent[:4]), cmap='terrain')
+            add_colorbar(axes=ax, label='elevation [m]', cs=CS2)
+        else:
+            im = plt.imshow(np.flipud(self.values_3D[:,:,2]), extent=(self.extent[:4]))
+            add_colorbar(im=im, label='elevation [m]')
         plt.axis('scaled')
-        #plt.axes().set_aspect('equal','datalim')
         plt.xlabel('X')
         plt.ylabel('Y')
         plt.title('Model topography')
-        divider = make_axes_locatable(ax)
-        cax1 = divider.append_axes("right", size="5%", pad=0.05)
-        #fig.colorbar(i, cax=cax1)
-        cbar = plt.colorbar(CS2, cax=cax1)
-        cbar.set_label('elevation')
 
     def save(self, filepath):
+        """
+        Save the topography file in a numpy array which can be loaded later, to avoid the gdal process.
+        Args:
+            filepath (str): path where the array should be stored.
+
+        Returns:
+
+        """
         np.save(filepath, np.array([self.values_3D, self.extent, self.resolution]))
         print('saved')
 
@@ -336,41 +470,15 @@ class Topography:
         dz = (zs[-1] - zs[0]) / len(zs)
         return ((self.values_3D_res[:, :, 2] - zs[0]) / dz + 1).astype(int)
 
-    def _line_in_section_DEP(self, direction='y', cell_number=0):
-        # todo use slice2D of plotting class for this
-        if np.any(self.resolution - self.regular_grid.resolution[:2]) != 0:
-            cell_number_res = (self.resolution / self.regular_grid.resolution[:2] * cell_number).astype(int)
-            cell_number = cell_number_res[0] if direction == 'x' else cell_number_res[1]
-        print(cell_number_res, cell_number)
-        print(self.values_3D[:,:,2].shape)
-        if direction == 'x':
-            topoline = self.values_3D[:, cell_number, :][:, [1, 2]].astype(int)
-        elif direction == 'y':
-            topoline = self.values_3D[cell_number, :, :][:, [0, 2]].astype(int)
-        else:
-            raise NotImplementedError
-        return topoline
+    def interpolate_zvals_at_xy(self, xy):
+        assert xy[:, 0][0] <= xy[:, 0][-1], 'At the moment, the xy values of the first point must be smaller than second' \
+                                            '(fix soon)'
+        assert xy[:, 1][0] <= xy[:, 1][-1], 'At the moment, the xy values of the first point must be smaller than second' \
+                                            '(fix soon)'
+        xj = self.values_3D[:, :, 0][0, :]
+        yj = self.values_3D[:, :, 1][:, 0]
+        zj = self.values_3D[:, :, 2].T
+        f = interpolate.RectBivariateSpline(xj, yj, zj)
+        zi = f(xy[:, 0], xy[:, 1])
+        return np.diag(zi)
 
-    def _line_in_section(self, direction='y', cell_number=1):
-        x = self.values_3D_res[:, :, 0]
-        y = self.values_3D_res[:, :, 1]
-        z = self.values_3D_res[:, :, 2]
-
-        if direction == 'y':
-            a = x[cell_number, :]
-            b = y[cell_number, :]
-            c = z[cell_number, :]
-            assert len(np.unique(b)) == 1
-            topoline = np.dstack((a, c)).reshape(-1, 2).astype(int)
-
-        elif direction == 'x':
-            a = x[:, cell_number]
-            b = y[:, cell_number]
-            c = z[:, cell_number]
-            assert len(np.unique(a)) == 1
-            topoline = np.dstack((b, c)).reshape(-1, 2).astype(int)
-
-        elif direction == "z":
-            print('not implemented')
-
-        return topoline

@@ -12,7 +12,6 @@ import gempy.utils.docstring as ds
              ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges, ds.geological_map])
 class Solution(object):
     """
-    TODO: update this
     This class stores the output of the interpolation and the necessary objects to visualize and manipulate this data.
     Depending on the activated grid (see :class:`Grid`) a different number of properties are returned returned:
 
@@ -20,7 +19,6 @@ class Solution(object):
         grid (Grid): [s0]
         surfaces (Surfaces): [s1]
         series (Series): [s2]
-
 
     Attributes:
         grid (Grid)
@@ -73,7 +71,14 @@ class Solution(object):
         self.edges = []
 
         # Topography
+        # Todo merge this in geological_map[0] and [1] and adjust plotting
         self.geological_map = None
+        self.geological_map_scalfield = None
+
+        self.sections = None
+        self.sections_scalfield = None
+
+        self.custom = None
 
     def __repr__(self):
         return '\nLithology ids \n  %s \n' \
@@ -244,13 +249,14 @@ class Solution(object):
                 try:
                     v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
 
-                except AttributeError as e:
-                    warnings.warn('Attribute error. Using non masked marching cubes' + str(e))
+                except TypeError as e:
+                    warnings.warn('Attribute error. Using non masked marching cubes' + str(e)+'.')
                     v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array,
                                                                         classic=True, **kwargs)
 
                 except Exception as e:
-                    warnings.warn('Surfaces not computed due to: ' + str(e))
+                    warnings.warn('Surfaces not computed due to: ' + str(e)+'. The surface is: Series: '+str(e)+
+                                  '; Surface Number:' + str(s_n))
                     v = np.nan
                     s = np.nan
 
