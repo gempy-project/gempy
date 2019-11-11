@@ -1,6 +1,7 @@
 from itertools import combinations
-import logging
+from logging import debug
 import numpy as np
+from nptyping import Array
 
 
 def lithblock_to_lb_fb(geo_model) -> tuple:
@@ -9,8 +10,7 @@ def lithblock_to_lb_fb(geo_model) -> tuple:
     rounded integer arrays).
     
     Args:
-        geo_model (gp.core.model.Model): GemPy Model instance with 
-            solutions.
+        geo_model (): GemPy Model instance with solutions.
     
     Returns:
         (tuple) of np.ndarray's containing the lithilogy id block
@@ -29,97 +29,95 @@ def get_fault_ids(geo_model) -> np.array:
         
     Returns:
         (np.array) of int surface id's.
-    
     """
     isfault = np.isin(
         geo_model.surfaces.df.series, 
         geo_model.faults.df.index[geo_model.faults.df.isFault]
     )
     return geo_model.surfaces.df.id[isfault].values
-    
-    
-def get_labels_block(geo_model) -> tuple:
-    """Uniquely label geobodies in geomodel for topology analysis.
+
+
+def get_labels_block(
+        lb:Array[int, ...], 
+        fb:Array[int, ..., ...]) -> Array[int, ...]:
+    """Uniquely binary labeled geobodies in geomodel for topology analysis.
     
     Args:
-        geo_model ():
+        lb (Array[int, ...]): Lithology id matrix.
+        fb (Array[int, n_faults, ...]): Fault id matrix.
     
     Returns:
-        (tuple) [0] uniquely labeled geobody block (nx, ny, nz)
-                [1] olabels: list of original labels before summation
-                [2] ulabels: list of labels after summation
+        Array[int, ...]: Uniquely labeled matrix.
     """
-    # get data
-    lb, fb = lithblock_to_lb_fb(geo_model)
-    fault_ids = get_fault_ids(geo_model)
-    logging.debug(f"fault id's: {fault_ids}")
+    # faults
+    n_faults = fb.shape[0]
+    fb -= 1  # shift fb's to start at 0
+    fb += np.arange(n_faults)[None, :].T  # add fault numbers vector to 
+    # consecutively label fb's uniquely
     
-    # label lithologies
-    lb_labels = lb # - lb.min()
-    logging.debug(f"lb labels: {np.unique(lb_labels)}")
+    debug(f"fb shp: {fb.shape}; fb unique: {np.unique(fb)}")
+    for i, block in enumerate(fb):
+        debug(f"fb {i}: {np.unique(block)}")
     
-    # label faults
-    fb_labels = fb - fb.min(axis=1)[:, None]
-    logging.debug(f"fb_labels shp: {fb_labels.shape}")
-    fb_labels = fb_labels * fault_ids[:, None]
-    # fb_labels += len(np.unique(lb_labels)) - 1
-    
-    logging.debug(f"fb labels: {np.unique(fb_labels)}")
-    for i, fblock in enumerate(fb_labels):
-        logging.debug(f"fb {i}: {np.unique(fblock)}")
-        
-    # combine labels
-    # concatenate lith labels with fault labels array into (n, ...)
-    labels = 2**np.concatenate((lb_labels[None, :], fb_labels), axis=0)
-    
-    # store original labels for lith and all faults for late ruse
-    
-    olabels = [np.unique(label) for label in labels]
+    # lithologies
+    debug(f"lb shp: {lb.shape}; lb unique: {np.unique(lb)}")
+    # shift lb id's to 0, then shift to number of faults + 2 to create a
+    # consecutive labeling of lithologies starting after the highest fault 
+    # block id
+    lb = lb - lb.min() + n_faults + 2
+    debug(f"lb shift unique: {np.unique(lb)}")
+    # concatenate lb and fb's, then raise labels to the power of 2 for 
+    # binary labeling
+    labels = 2**np.concatenate((lb[None, :], fb), axis=0)
 
-    for block in labels:
-        logging.debug(f"olabels (pre-sum): {np.unique(block)}")
-        
-    # sum along axis 0 to combine into unique geobody labels
-    # for each fault block
+    debug(f"labels shp: {labels.shape}")
+    debug(f"\nunique labels:")
+    for label in np.unique(labels):
+        debug(np.binary_repr(label).zfill(9) + " <-> " + str(label))
+    # sum along concatenation axis to create uniquely labeled geobodies
+    # with unique id's within each fault block
     labels = labels.sum(axis=0)
-    
-    logging.debug(f"ulabels: {np.unique(labels)}")
-#     logging.debug(f"labels binary: {[np.binary_repr(label) for label in np.unique(labels)]}")
-    logging.debug(f"n labels: {len(np.unique(labels))}")
-    
-    return labels.reshape(*geo_model.grid.regular_grid.resolution), olabels
+
+    debug(f"\nsummed labels:\nsum unique: {np.unique(labels)}")
+    for label in np.unique(labels):
+        debug(np.binary_repr(label).zfill(9) + " <-> " + str(label))
+
+    return labels
 
 
-def get_topo_block(labels:np.ndarray, n_shift:int=1) -> np.ndarray:
+def get_topo_block(
+        labels:Array[int, ..., ..., ...], 
+        n_shift:int=1) -> Array[int, 3, ..., ..., ...]:
     """Create topology block by shifting along x, y, z axes and
     summing up.
     
     Args:
-        labels (np.ndarray):
-        n_shift (int):
+        labels (Array[int, ..., ..., ...]): Labels block shaped (nx, ny, nz).
+        n_shift (int, optional): Number of voxels to shift. Defaults to 1.
     
     Returns:
-        (np.ndarray) (3, nx, ny, nz)
+        Array[int, 3, ..., ..., ...]: Shifted and summed labels block used to
+            analyze the geobody topology of the geomodel.
     """
     sum_x = np.abs(labels[n_shift:, :, :] + labels[:-n_shift, :, :])
-    logging.debug(f"sum_x shp: {sum_x.shape}")
+    debug(f"sum_x shp: {sum_x.shape}")
     sum_y = np.abs(labels[:, n_shift:, :] + labels[:, :-n_shift, :])
-    logging.debug(f"sum_y shp: {sum_y.shape}")
+    debug(f"sum_y shp: {sum_y.shape}")
     sum_z = np.abs(labels[:, :, n_shift:] + labels[:, :, :-n_shift])
-    logging.debug(f"sum_z shp: {sum_z.shape}")
+    debug(f"sum_z shp: {sum_z.shape}")
     
     slx, sly, slz = (slice(n_shift // 2, -n_shift//2) for i in range(3))
-    logging.debug(f"slx {slx}; sly {sly}; slz {slz}")
+    debug(f"slx {slx}; sly {sly}; slz {slz}")
     
-    sums_xyz = np.concatenate(
+    topo_block = np.concatenate(
         (
          sum_x[None, :, sly, slz], 
          sum_y[None, slx, :, slz], 
          sum_z[None, slx, sly, :]
         ), axis=0
     )
-    logging.debug(f"{sums_xyz.shape}")
-    return sums_xyz
+    debug(f"{topo_block.shape}")
+    return topo_block
 
 
 def get_node_label_sum_lot(ulabels:np.array) -> dict:
@@ -134,33 +132,12 @@ def get_node_label_sum_lot(ulabels:np.array) -> dict:
         (dict)
     """
     possible_edges = list(combinations(ulabels, 2))
-    logging.debug(f"possible node combinations: {possible_edges}")
+    debug(f"possible node combinations: {possible_edges}")
     ulabel_LOT = {sum(comb):comb for comb in possible_edges}
     for k, v in ulabel_LOT.items():
-        logging.debug(f"{k} = {v[0]} + {v[1]}")
+        debug(f"{k} = {v[0]} + {v[1]}")
     return ulabel_LOT
 
-
-# def get_edges(topo_block:np.ndarray, labels_LOT:dict) -> list:
-#     """Look up edges from topology block (shifted block) in the
-#     labels-sum LOT and return list of edges.
-    
-#     Args:
-#         topo_block (np.ndarray):
-#         labels_LOT (dict):
-    
-#     Return:
-#         (list):
-#     """
-#     edges = []
-#     for blob in np.unique(topo_block):
-#         edge = labels_LOT.get(blob)
-#         if edge:
-#             logging.debug(f"Valid edge: {edge}")
-#             edges.append(edge)
-#         else:
-#             logging.debug(f"Invalid node: {blob}")
-#     return edges
 
 def get_edges(
         topo_block_f:np.ndarray, 
@@ -179,7 +156,6 @@ def get_edges(
     edges = set()
     slice_fit = slice(n_shift - 1, -(n_shift))
     
-
     slicers = (
         (
             (slice(n_shift, None), slice_fit, slice_fit), 
@@ -211,21 +187,22 @@ def get_edges(
     return edges
 
 
-def get_centroids(labels:np.ndarray, ulabels:np.array) -> dict:
+def get_centroids(labels:Array[int, ..., ..., ...]) -> dict:
     """Get geobody node centroids in array coordinates.
     
     Args:
-        labels (np.ndarray): [description]
-        ulabels (np.array): [description]
+        labels (Array[int, ..., ..., ...]): Uniquely labeled block.
     
     Returns:
-        dict: [description]
+        dict: Geobody node keys yield centroid coordinate tuples in array
+            coordinates.
     """
     node_locs = []
+    ulabels = np.unique(labels)
     for node in ulabels:
         node_pos = np.argwhere(labels==node)
         node_locs.append(node_pos.mean(axis=0))
     centroids = {n:loc for n, loc in zip(ulabels, node_locs)}
     for k, v in centroids.items():
-        logging.debug(f"{k}: {v}")
+        debug(f"{k}: {v}")
     return centroids
