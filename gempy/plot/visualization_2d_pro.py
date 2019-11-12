@@ -62,13 +62,27 @@ class Plot2D:
 
         if cmap is None:
             self.cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
+            self._custom_colormap = False
         else:
-            self.cmap=cmap
+            self.cmap = cmap
+            self._custom_colormap = True
 
         if norm is None:
             self.norm = mcolors.Normalize(vmin=0.5, vmax=len(self.cmap.colors) + 0.5)
         else:
             self.norm = norm
+
+    def update_colot_lot(self, color_dir=None):
+        if color_dir is None:
+            color_dir = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
+        self._color_lot = color_dir
+        if self._custom_colormap is False:
+            self.cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
+            self.norm = mcolors.Normalize(vmin=0.5, vmax=len(self.cmap.colors) + 0.5)
+
+    def remove(self, ax):
+        while len(ax.collections) != 0:
+            list(map(lambda x: x.remove(), ax.collections))
 
     def _make_section_xylabels(self, section_name, n=5):
         """
@@ -148,8 +162,13 @@ class Plot2D:
 
         return self.fig, self.axes#, self.gs_0
 
-    def add_section(self, section_name=None, cell_number=None, direction='y', ax=None, ax_pos=111, ve=1):
-      #  ax.section_name = section_name
+    def add_section(self, section_name=None, cell_number=None, direction='y', ax=None, ax_pos=111,
+                    ve=1., **kwargs):
+
+        extent_val = kwargs.get('extent', None)
+
+        self.update_colot_lot()
+
         if ax is None:
             # TODO
             ax = self.fig.add_subplot(ax_pos)
@@ -177,18 +196,18 @@ class Plot2D:
             _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
             ax.set_xlabel(x)
             ax.set_ylabel(y)
-        else:
-            raise AttributeError
 
-        if extent_val[3] < extent_val[2]:  # correct vertical orientation of plot
-            ax.gca().invert_yaxis()
-        self._aspect = (extent_val[3] - extent_val[2]) / (extent_val[1] - extent_val[0])/ve
-        print(self._aspect)
-        ax.set_xlim(extent_val[0], extent_val[1])
-        ax.set_ylim(extent_val[2], extent_val[3])
+        if extent_val is not None:
+            if extent_val[3] < extent_val[2]:  # correct vertical orientation of plot
+                ax.invert_yaxis()
+            self._aspect = (extent_val[3] - extent_val[2]) / (extent_val[1] - extent_val[0])/ve
+            print(self._aspect)
+            ax.set_xlim(extent_val[0], extent_val[1])
+            ax.set_ylim(extent_val[2], extent_val[3])
         ax.set_aspect('equal')
         self.axes = np.append(self.axes, ax)
         self.fig.tight_layout()
+
         return ax
 
     def plot_lith(self, ax, section_name=None, cell_number=None, direction='y',
@@ -206,6 +225,7 @@ class Plot2D:
         Returns:
 
         """
+        self.update_colot_lot()
         extent_val = [*ax.get_xlim(), *ax.get_ylim()]
 
         if section_name is not None:
@@ -257,6 +277,7 @@ class Plot2D:
         Returns:
 
         """
+
         extent_val = [*ax.get_xlim(), *ax.get_ylim()]
 
         if section_name is not None:
@@ -303,6 +324,8 @@ class Plot2D:
         Returns:
 
         """
+        self.update_colot_lot()
+
         points = self.model.surface_points.df.copy()
         orientations = self.model.orientations.df.copy()
 
@@ -421,7 +444,7 @@ class Plot2D:
         return xy[:, 0], xy[:, 1], z
 
     def plot_topography(self, ax, section_name=None, cell_number=None, direction='y', block=None):
-
+        self.update_colot_lot()
         if section_name is not None:
 
             p1 = self.model.grid.sections.df.loc[section_name, 'start']
@@ -461,9 +484,13 @@ class Plot2D:
             line = a.reshape(-1, 2)
             ax.fill(line[:, 0], line[:, 1], color='k')
 
-    def plot_contacts(self, ax, section_name=None, cell_number=None, direction='y', block=None, **kwargs):
-
-        faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
+    def plot_contacts(self, ax, section_name=None, cell_number=None, direction='y', block=None,
+                      only_faults=False, **kwargs):
+        self.update_colot_lot()
+        if only_faults:
+            contour_idx = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
+        else:
+            contour_idx = list(self.model.surfaces.df.index)
         extent_val = [*ax.get_xlim(), *ax.get_ylim()]
         zorder = kwargs.get('zorder', 100)
 
@@ -506,23 +533,38 @@ class Plot2D:
                                )
 
         elif cell_number is not None or block is not None:
+            _slice = self._slice(direction, cell_number)[:3]
+            shape = self.model.grid.regular_grid.resolution
+            c_id = 0# color id startpoint
 
-            if len(faults) == 0:
-                pass
-            else:
-                _slice = self._slice(direction, cell_number)[:3]
+            for e, block in enumerate(self.model.solutions.scalar_field_matrix):
+                level = self.model.solutions.scalar_field_at_surface_points[e][np.where(
+                    self.model.solutions.scalar_field_at_surface_points[e] != 0)]
+                c_id = e
+                c_id2 = c_id + len(level)
+                print(c_id, c_id2)
+                ax.contour(block.reshape(shape)[_slice].T, 0, levels=np.sort(level),
+                           colors=self.cmap.colors[c_id:c_id2][::-1],
+                           linestyles='solid', origin='lower',
+                           extent=extent_val, zorder=zorder - (e + len(level))
+                           )
 
-                for fault in faults:
-                    f_id = int(self.model.series.df.loc[fault, 'order_series']) - 1
-                    block = self.model.solutions.scalar_field_matrix[f_id]
-                    level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
-                        self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
-                    level.sort()
-                    block = block.reshape(self.model.grid.regular_grid.resolution)[_slice].T
-
-                    ax.contour(block, 0, extent=extent_val,
-                               levels=level,
-                               colors=self.cmap.colors[f_id], linestyles='solid')
+            # if len(contour_idx) == 0:
+            #     pass
+            # else:
+            #     _slice = self._slice(direction, cell_number)[:3]
+            #
+            #     for fault in contour_idx:
+            #         f_id = fault-1# - 1
+            #         block = self.model.solutions.scalar_field_matrix[f_id]
+            #         level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
+            #             self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
+            #         level.sort()
+            #         block = block.reshape(self.model.grid.regular_grid.resolution)[_slice].T
+            #
+            #         ax.contour(block, 0, extent=extent_val,
+            #                    levels=level,
+            #                    colors=self.cmap.colors[f_id], linestyles='solid')
 
     def plot_section_traces(self, ax, section_names=None,  show_data=True, **kwargs):
 

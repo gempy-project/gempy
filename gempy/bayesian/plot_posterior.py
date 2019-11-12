@@ -447,7 +447,6 @@ class PlotPosterior:
         n_iterations = self.n_samples
         iteration_label = [None for i in range(self.n_samples)]
 
-
         if data is None:
             data = self.data
 

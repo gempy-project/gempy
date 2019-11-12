@@ -623,7 +623,7 @@ class Series(object):
 
     def sort_series(self):
         self.df.sort_values(by='order_series', inplace=True)
-        self.df.index = self.df.index.reorder_categories(self.df.index.get_values())
+        self.df.index = self.df.index.reorder_categories(self.df.index.to_numpy())
 
     def update_faults_index(self):
         idx = self.df.index
@@ -1735,7 +1735,6 @@ class Orientations(GeometricData):
             else:
                 raise AttributeError('At least pole_vector or orientation should have been passed to reach'
                                      'this point. Check previous condition')
-        print(self.df.dtypes)
         self.df.loc[idx, ['smooth']] = 0.01
         self.df['surface'] = self.df['surface'].astype('category', copy=True)
         self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
