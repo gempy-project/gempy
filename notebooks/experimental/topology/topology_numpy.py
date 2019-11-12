@@ -206,3 +206,38 @@ def get_centroids(labels:Array[int, ..., ..., ...]) -> dict:
     for k, v in centroids.items():
         debug(f"{k}: {v}")
     return centroids
+
+
+def get_lith_lot(
+        labels:Array[int, ..., ..., ...], 
+        n_faults:int, 
+        n_layers:int
+    ) -> dict:
+    """Create look-up table to go from combined geobody node id to 
+    lithology id.
+    
+    Args:
+        labels (Array[int, ..., ..., ...]): Uniquely labeled block matrix.
+        n_faults (int): Number of faults in the model.
+    
+    Returns:
+        dict: Mapping node id's to lithology id's 
+    """
+    ulabels = np.unique(labels)
+    layer_ids = {
+        np.binary_repr(2**i).zfill(n_faults * 2 + n_layers):i 
+        for i in range(n_faults * 2, n_faults * 2 + n_layers)
+    }  
+
+    node_to_layer_LOT = {}
+    for node in ulabels:
+        node_bin = np.binary_repr(node).zfill(n_faults * 2 + n_layers)
+
+        node_bin_nofault = node_bin[:-n_faults * 2]
+        node_bin_nofault += "0" * n_faults * 2
+
+        for k, v in layer_ids.items():
+            if node_bin_nofault in k:
+                node_to_layer_LOT[node] = v
+                
+    return node_to_layer_LOT
