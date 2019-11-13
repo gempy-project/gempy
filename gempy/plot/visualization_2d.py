@@ -159,7 +159,8 @@ class PlotData2D:
             self._plot_orientations(x, y, Gx, Gy, plot_orient, min_axis, extent, True, aspect)
 
         #plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
-
+        plt.xlim(extent[0], extent[1])
+        plt.ylim(extent[2], extent[3])
         plt.xlabel(x)
         plt.ylabel(y)
 

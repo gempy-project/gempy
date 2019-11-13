@@ -137,15 +137,15 @@ def set_interpolation_data(*args, **kwargs):
 
 @setdoc([InterpolatorModel.__doc__])
 @setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
-def set_interpolator(geo_model: Model, type='geo', compile_theano: bool = True,
-                     theano_optimizer=None, verbose: list = None, grid='shared',
+def set_interpolator(geo_model: Model, output='geology', compile_theano: bool = True,
+                     theano_optimizer=None, verbose: list = None, grid=None, type=None,
                      **kwargs):
     """
     Method to create a graph and compile the theano code to compute the interpolation.
 
     Args:
         geo_model (:class:`Model`): [s0]
-        type (str:{geo, grav}): type of interpolation.
+        output (str:{geo, grav}): type of interpolation.
         compile_theano (bool): [s1]
         theano_optimizer (str {'fast_run', 'fast_compile'}): [s2]
         verbose:
@@ -156,6 +156,10 @@ def set_interpolator(geo_model: Model, type='geo', compile_theano: bool = True,
     Returns:
 
     """
+    if type is not None:
+        warnings.warn('type warn is going to be deprecated. Use output insted', FutureWarning)
+        output = type
+
     if theano_optimizer is not None:
         geo_model.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
     if verbose is not None:
@@ -170,7 +174,8 @@ def set_interpolator(geo_model: Model, type='geo', compile_theano: bool = True,
     # The graph object contains all theano methods. Therefore is independent to which side
     # of the graph we compile:
 
-    if type == 'geo':
+    if output == 'geology':
+        geo_model.interpolator._type = 'geology'
         geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
 
         if compile_theano is True:
@@ -181,7 +186,7 @@ def set_interpolator(geo_model: Model, type='geo', compile_theano: bool = True,
             if grid == 'shared':
                 geo_model.interpolator.set_theano_shared_grid(grid)
 
-    elif type == 'grav':
+    elif output == 'gravity':
         pos_density = kwargs.get('pos_density', 1)
         tz = kwargs.get('tz', 'auto')
 
@@ -190,6 +195,8 @@ def set_interpolator(geo_model: Model, type='geo', compile_theano: bool = True,
         geo_model.interpolator = InterpolatorGravity(
             geo_model.surface_points, geo_model.orientations, geo_model.grid, geo_model.surfaces,
             geo_model.series, geo_model.faults, geo_model.additional_data, **kwargs)
+
+        geo_model.interpolator._type = 'gravity'
 
         geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
 
@@ -205,6 +212,8 @@ def set_interpolator(geo_model: Model, type='geo', compile_theano: bool = True,
         if compile_theano is True:
             geo_model.interpolator.compile_th_fn_grav(density=None, pos_density=pos_density,
                                                       inplace=True)
+    else:
+        raise AttributeError('type must be either geology or grav')
 
     return geo_model.interpolator
 
@@ -250,7 +259,7 @@ def get_additional_data(model: Model):
 # region Computing the model
 @setdoc_pro([Model.__doc__, Solution.compute_surface_regular_grid.__doc__,
              Model.set_surface_order_from_solution.__doc__])
-def compute_model(model: Model, output='geology', compute_mesh=True, reset_weights=False, reset_scalar=False,
+def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=False, reset_scalar=False,
                   reset_block=False, sort_surfaces=True, debug=False, set_solutions=True) -> Solution:
     """
     Computes the geological model and any extra output given in the additional data option.
@@ -276,6 +285,14 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
         'To compute the model is necessary at least 2 interface points per layer'
     assert len(model.interpolator.len_series_i) == len(model.interpolator.len_series_o),\
         'Every Series/Fault need at least 1 orientation and 2 surfaces points.'
+
+    if output is None:
+        # If output is not passed we check for the type of interpolator. If that also fail
+        # we try simply geology
+        try:
+            output = model.interpolator._type
+        except AttributeError:
+            output = 'geology'
 
     if output == 'geology':
         assert model.interpolator.theano_function is not None, 'You need to compile the theano function first'

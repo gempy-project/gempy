@@ -1606,8 +1606,6 @@ class TheanoGraphPro(object):
         if 'weights' in self.verbose:
             weights = theano.printing.Print('weights foo')(weights)
 
-
-
         scalar_field_at_surface_points = self.get_scalar_field_at_surface_points(Z_x, self.npf_op)
         #
         # # TODO: add control flow for this side
