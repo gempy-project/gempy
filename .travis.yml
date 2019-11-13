@@ -20,7 +20,7 @@ install:
 script:
 
   - pytest -v notebooks/integrations/ --nbval-lax --ignore-glob='*discret*'
-  - pytest -v notebooks/examples/ --nbval-lax --current-env --ignore-glob='*pography*' --ignore-glob='*lesmodel*'
+  - pytest -v notebooks/examples/ --nbval-lax --current-env --ignore-glob='*pography*' --ignore-glob='*lesmodel*' --ignore-glob=*Course*
   - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='ch1-6*' --ignore-glob='ch1-7*'
   - pytest
 
