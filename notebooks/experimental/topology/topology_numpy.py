@@ -2,6 +2,7 @@ from itertools import combinations
 from logging import debug
 import numpy as np
 from nptyping import Array
+from typing import Iterable, List
 
 
 def lithblock_to_lb_fb(geo_model) -> tuple:
@@ -171,8 +172,8 @@ def get_edges(
         )
     )
 
-    for i, topo_block_dir in enumerate(topo_block_f):
-        for edge_sum in np.unique(topo_block_dir):
+    for i, topo_block_dir in enumerate(topo_block_f):  # for each shift block (x, y, z)
+        for edge_sum in np.unique(topo_block_dir):  # for each unique edge sum
             if edge_sum == 0:
                 continue
 
@@ -241,3 +242,110 @@ def get_lith_lot(
                 node_to_layer_LOT[node] = v
                 
     return node_to_layer_LOT
+
+
+def get_adj_matrix(
+        edges:Iterable, 
+        adj_matrix_labels:Iterable, 
+        labels:Array[int, ..., ..., ...]
+    ) -> Array[bool, ..., ...]:
+    """Generate adjacency matrix from given list of edges, all possible unique
+    geo- model nodes and actual unique geobody labels.
+    
+    Args:
+        edges (Iterable): [(n, m), ...]
+        adj_matrix_labels (Iterable): ["000010101", ...]
+        labels (Array[int, ..., ..., ...]): Uniquely labeled block matrix.
+    
+    Returns:
+        Array[bool, ..., ...]: Boolean adjacency matrix encoding the geomodel
+            topology.
+    """
+    n = len(adj_matrix_labels)
+    adj_matrix = np.zeros((n, n)).astype(bool)
+
+    n_entities = len(adj_matrix_labels[0])
+
+    for n1, n2 in edges:
+        i = adj_matrix_labels.index(np.binary_repr(n1).zfill(n_entities))
+        j = adj_matrix_labels.index(np.binary_repr(n2).zfill(n_entities))
+        adj_matrix[i, j] = True
+        adj_matrix[j, i] = True
+
+    for bin_label in [np.binary_repr(l).zfill(9) for l in np.unique(labels)]:
+        i = adj_matrix_labels.index(bin_label)
+        adj_matrix[i, i] = True  
+
+    return adj_matrix
+
+
+def get_fault_labels(n_faults:int) -> Array[int, ..., 2]:
+    """Get unique fault label id pairs for each fault block. For two faults
+    this looks like: [[0 1]
+                      [2 3]]
+    
+    Args:
+        n_faults (int): Number of faults.
+    
+    Returns:
+        Array[int, ..., 2]: Unique consecutive fault label id pairs.
+    """
+    flabels = np.stack(
+        (
+            np.arange(n_faults), 
+            np.arange(1, n_faults + 1)
+        )
+    ).T + np.arange(n_faults)[None, :].T
+    return flabels
+
+
+def get_fault_label_comb_bin(fault_labels:Array[int, ..., 2]) -> List[str]:
+    """Get unique binary fault label combinations. E.g. for two faults the 
+    output looks like: ['0101', '1001', '0110', '1010'].
+    
+    Args:
+        fault_labels (Array[int, ..., 2]): Unique base-10 fault label array.
+    
+    Returns:
+        List[str]: List of binary fault label combinations.
+    """
+    n_faults = fault_labels.shape[0]
+    fault_labels_bin = []
+    for comb in combinations(fault_labels.flatten(), n_faults):
+        if sum(comb) in np.sum(fault_labels, axis=1):
+            continue  # skip combinations within the same fault block
+        fault_labels_bin.append(
+            np.binary_repr(sum(2**np.array(comb))).zfill(n_faults * 2)
+        )
+
+    return fault_labels_bin
+
+
+def get_lith_labels_bin(n_layers:int) -> List[str]:
+    """Get unique binary lith labels list. For five layers this looks like:
+    ['00001', '00010', '00100', '01000', '10000'].
+
+    Args:
+        n_layers (int): Number of layers.
+    
+    Returns:
+        List[str]: Unique binary lith labels.
+    """
+    return [np.binary_repr(2**i).zfill(n_layers) for i in range(n_layers)]
+
+
+def get_adj_matrix_labels(
+        lith_labels_bin:List[str], 
+        fault_labels_bin:List[str]
+    ) -> List[str]:
+    """Get all possible valid combinations between lithology id's and fault
+    blocks in binary.
+    
+    Args:
+        lith_labels_bin (List[str]): Unique binary lithology labels.
+        fault_labels_bin (List[str]): Unique binary fault combination labels. 
+    
+    Returns:
+        List[str]: ['000010101', '000011001', '000010110', ...]
+    """
+    return [l+f for l in lith_labels_bin for f in fault_labels_bin]
