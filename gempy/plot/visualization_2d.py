@@ -459,7 +459,7 @@ class PlotData2D:
             df_sub = self.model.orientations.df[self.model.orientations.df['surface'] == formation]
 
             if poles:
-                ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=7,
+                ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=10,
                         markerfacecolor=self._color_lot[formation],
                         markeredgewidth=1.1, markeredgecolor='gray', label=formation + ': ' + 'pole point')
             if planes:
