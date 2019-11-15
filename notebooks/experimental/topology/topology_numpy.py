@@ -1,3 +1,19 @@
+"""
+*******************************************************************************
+Prototyping functionality for new improved implementation of GemPy geomodel 
+topology analysis that is mainly numpy-based for taking advantage of vectorized 
+computation and serves as a prototype for the future theano/tensorflow 
+implementation for GemPy. 
+
+*******************************************************************************
+@author: Alexander Schaaf
+
+*******************************************************************************
+GemPy is licensed under the GNU Lesser General Public License v3.0
+
+*******************************************************************************
+"""
+
 from itertools import combinations
 from logging import debug
 import numpy as np
@@ -11,7 +27,7 @@ def lithblock_to_lb_fb(geo_model) -> tuple:
     rounded integer arrays).
     
     Args:
-        geo_model (): GemPy Model instance with solutions.
+        geo_model (gempy.core.model.Model): GemPy Model instance with solutions.
     
     Returns:
         (tuple) of np.ndarray's containing the lithilogy id block
@@ -26,7 +42,7 @@ def get_fault_ids(geo_model) -> np.array:
     """Get surface id's for all faults in given geomodel.
     
     Args:
-        geo_model ():
+        geo_model (gempy.core.model.Model): GemPy Model instance with solutions.
         
     Returns:
         (np.array) of int surface id's.
@@ -84,6 +100,32 @@ def get_labels_block(
         debug(np.binary_repr(label).zfill(9) + " <-> " + str(label))
 
     return labels
+
+
+def get_topology_labels(
+        lb:Array[int, ...], 
+        fb:Array[int, ..., ...],
+        n_lith:int
+    ) -> Array[bool, ..., ...]:
+    """Get unique topology labels block.
+    
+    Args:
+        lb (Array[int, ...]): Flattened lithology block from GemPy model.
+        fb (Array[int, ..., ...]): Flattened fault block stack from GemPy 
+            model.
+        n_lith (int): Number of lithologies.
+    
+    Returns:
+        Array[bool, ..., ...]: Boolean topology label array, with first
+            dimension representing the topology id's and the second axis
+            representing the flattened voxel array.
+    """
+    fb -= np.arange(1, fb.shape[0] + 1)[None, :].T
+    fb = np.repeat(fb, 2, axis=0).astype(bool)  # 2 digits for each fb
+    fb[::2] = ~fb[::2]  # invert bool for every duplicate fb
+    lb = lb - lb.min()
+    lb_labels = np.tile(lb, (n_lith,1)) == np.arange(n_lith).reshape(-1,1)
+    return np.concatenate((lb_labels, fb), axis=0).astype(bool)
 
 
 def get_topo_block(
