@@ -90,9 +90,12 @@ class Sections:
         regular_grid: Model.grid.regular_grid
         section_dict: {'section name': ([p1_x, p1_y], [p2_x, p2_y], [xyres, zres])}
     """
-    def __init__(self, regular_grid=None, section_dict=None):
+    def __init__(self, regular_grid=None, z_ext=None, section_dict=None):
+        if regular_grid is not None:
+            self.z_ext = regular_grid.extent[4:]
+        else:
+            self.z_ext = z_ext
         if section_dict is not None:
-            self.regular_grid = regular_grid
             self.section_dict = section_dict
             self.names = np.array(list(self.section_dict.keys()))
             self.points = []
@@ -130,7 +133,7 @@ class Sections:
         for i in range(len(self.names)):
             xy = self.calculate_line_coordinates_2points(self.points[i][0], self.points[i][1], self.resolution[i][0],
                                                          self.resolution[i][0]) #two times xy resolution is correct
-            zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][1],
+            zaxis = np.linspace(self.z_ext[0], self.z_ext[1], self.resolution[i][1],
                                      dtype="float64")
             X, Z = np.meshgrid(xy[:, 0], zaxis, indexing='ij')
             Y, _ = np.meshgrid(xy[:, 1], zaxis, indexing='ij')
