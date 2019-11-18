@@ -184,7 +184,7 @@ class Grid(object):
 
     @setdoc(grid_types.Sections.__doc__)
     def set_section_grid(self, section_dict):
-        self.sections = grid_types.Sections(self.regular_grid, section_dict)
+        self.sections = grid_types.Sections(regular_grid=self.regular_grid, section_dict=section_dict)
         self.set_active('sections')
         return self.sections
 
