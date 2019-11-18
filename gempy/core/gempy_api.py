@@ -333,8 +333,7 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
         if model.grid.active_grids[0] is np.True_:
             model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh)
         if model.grid.active_grids[1] is np.True_:
-            l0, l1 = model.grid.get_grid_args('custom')
-            model.solutions.custom = sol[0][:, l0: l1]
+            model.solutions.set_solution_to_custom(sol)
         if model.grid.active_grids[2] is np.True_:
             model.solutions.set_solution_to_topography(sol)
         if model.grid.active_grids[3] is np.True_:

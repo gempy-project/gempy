@@ -71,12 +71,12 @@ class Solution(object):
         self.edges = []
 
         # Topography
-        # Todo merge this in geological_map[0] and [1] and adjust plotting
-        self.geological_map = None
+        # Todo this is merged in geological_map[0] and [1]
+        #self.geological_map = None
         self.geological_map_scalfield = None
 
         self.sections = None
-        self.sections_scalfield = None
+        #self.sections_scalfield = None
 
         self.custom = None
 
@@ -107,6 +107,10 @@ class Solution(object):
             self.compute_all_surfaces()
 
         return self
+
+    def set_solution_to_custom(self, values: Union[list, np.ndarray]):
+        l0, l1 = self.grid.get_grid_args('custom')
+        self.custom = np.array([values[0][:, l0: l1], values[3][:, l0: l1].astype(float)])
 
     def set_solution_to_topography(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('topography')
