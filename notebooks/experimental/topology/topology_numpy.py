@@ -128,6 +128,58 @@ def get_topology_labels(
     return np.concatenate((lb_labels, fb), axis=0).astype(bool)
 
 
+def bitstack_topology_labels(
+        topology_labels:Array[bool, ..., ...]
+    ) -> Array[int, ...]:
+    n = topology_labels.shape[0]
+    return np.sum(topology_labels * 2**np.arange(n)[None, ::-1].T, axis=0)
+
+
+def topology_shift(
+        topology_labels:Array[bool, ..., ...],
+        res:Iterable[int],
+        n_shift:int=1
+    ) -> Array[int, 3, ...]:
+    n_digits = topology_labels.shape[0]
+    topology_block = topology_labels.reshape(n_digits, *res)
+
+    x = np.logical_or(
+        topology_block[:, n_shift:, :, :],
+        topology_block[:, :-n_shift, :, :]
+    )
+    debug(f"x shift shp: {x.shape}")
+
+    y = np.logical_or(
+        topology_block[:, :, n_shift:, :],
+        topology_block[:, :, :-n_shift, :]
+    )
+    debug(f"y shift shp: {y.shape}")
+
+    z = np.logical_or(
+        topology_block[:, :, :, n_shift:],
+        topology_block[:, :, :, :-n_shift]
+    )
+    debug(f"z shift shp: {z.shape}")
+
+    x_flat = x.reshape(
+        n_digits, (res[0] - n_shift) * res[1] * res[2]
+    ).astype(int)
+
+    y_flat = y.reshape(
+        n_digits, (res[1] - n_shift) * res[0] * res[2]
+    ).astype(int)
+
+    z_flat = z.reshape(
+        n_digits, (res[2] - n_shift) * res[1] * res[0]
+    ).astype(int)
+
+    xyz_flat = np.stack((x_flat, y_flat, z_flat))
+    debug(f"xys shape: {xyz_flat.shape}")
+    xyz_bin = np.sum(xyz_flat * 2**np.arange(n_digits)[None, ::-1].T, axis=1)
+    debug(f"xyz bin shape: {xyz_bin.shape}")
+    return xyz_bin#, np.stack((x_flat[None, :], y_flat[None, :], z_flat[None, :]))[:, 0, :, :]
+
+
 def get_topo_block(
         labels:Array[int, ..., ..., ...], 
         n_shift:int=1) -> Array[int, 3, ..., ..., ...]:
@@ -183,50 +235,66 @@ def get_node_label_sum_lot(ulabels:np.array) -> dict:
 
 
 def get_edges(
-        topo_block_f:np.ndarray, 
-        labels_block:np.ndarray, 
-        n_shift:int) -> list:
-    """Evaluate the actual edge nodes from the labels block.
+        shift_xyz_block:Array[int, 3, ...], 
+        labels:Array[int, ..., ..., ...],
+        res:tuple, 
+        n_shift:int,
+    ) -> set:
+    """Extract binary topology edges from given labels and shift blocks.
     
     Args:
-        topo_block_f (np.ndarray): [description]
-        labels_block (np.ndarray): [description]
-        n_shift (n): [description]
+        topology_labels (Array[bool, ..., ...]): [description]
+        shift_xyz_block (Array[int, 3, ...]): [description]
+        res (tuple): [description]
+        n_shift (int): [description]
     
     Returns:
-        list: List of edge tuples (node_a, node_b)
+        set: Set of topology edges as node tuples (n1, n2).
     """
     edges = set()
-    slice_fit = slice(n_shift - 1, -(n_shift))
+    slicers = get_slicers(n_shift)
+    reshaper = get_reshapers(res, n_shift)
     
-    slicers = (
-        (
-            (slice(n_shift, None), slice_fit, slice_fit), 
-            (slice(-n_shift), slice_fit, slice_fit)
-        ),
-        (
-            (slice_fit, slice(n_shift, None), slice_fit), 
-            (slice_fit, slice(-n_shift), slice_fit)
-        ),
-        (
-            (slice_fit, slice_fit, slice(n_shift, None)), 
-            (slice_fit, slice_fit, slice(-n_shift))
-        )
-    )
+    # labels = bitstack_topology_labels(topology_labels).reshape(*res)
 
-    for i, topo_block_dir in enumerate(topo_block_f):  # for each shift block (x, y, z)
-        for edge_sum in np.unique(topo_block_dir):  # for each unique edge sum
-            if edge_sum == 0:
+    for i, shift_block, shape in zip(range(3), shift_xyz_block, reshaper):
+        # for every binary shift block with the correct
+        # reshaper for depending on n_shift
+        shift_block = shift_block.reshape(*shape)
+
+        b1 = labels[slicers[i][0]]  # get correctly shifted labels block 1
+        b2 = labels[slicers[i][1]]  # get correctly shifted labels block 2
+
+        
+        for edge_sum_bin in np.unique(shift_block, return_counts=False):
+            # for every unique binary edge sum in the
+            # xyz shift block
+
+            # select only voxels where they equal
+            # the unique binary edge sum in the 
+            # shift block
+            filter_ = shift_block == edge_sum_bin
+            # select the real binary pre-comparison
+            # labels for each edge
+            e1 = b1[filter_]
+            e2 = b2[filter_]
+
+            # some edges do not exist in the labels
+            # block, skip those
+            if len(e1) == 0 or len(e2) == 0:
                 continue
 
-            shift_1 = labels_block[slicers[i][0]]
-            shift_2 = labels_block[slicers[i][1]]
-            filter_ = topo_block_dir == edge_sum
-            edges.add(
-                (np.unique(shift_1[filter_])[0], 
-                 np.unique(shift_2[filter_])[0])
-            )
+            # skip self topology
+            if e1[0] == e2[0]:
+                continue
 
+            debug(f"({e1[0]}, {e2[0]})")
+
+            edges.add(
+                (e1[0],
+                 e2[0])
+            )
+    
     return edges
 
 
@@ -391,3 +459,76 @@ def get_adj_matrix_labels(
         List[str]: ['000010101', '000011001', '000010110', ...]
     """
     return [l+f for l in lith_labels_bin for f in fault_labels_bin]
+
+
+def get_slicers(n_shift:int) -> tuple:
+    """Get slice instances for given shift.
+    
+    Args:
+        n_shift (int): Shift in number of voxels.
+    
+    Returns:
+        tuple: Containing tuple of two slice instances for x, y and z
+            direction.
+    """
+    slice_fit = slice(None, None)
+    
+    slicers = (
+        (
+            (slice(n_shift, None), slice_fit, slice_fit), 
+            (slice(-n_shift), slice_fit, slice_fit)
+        ),
+        (
+            (slice_fit, slice(n_shift, None), slice_fit), 
+            (slice_fit, slice(-n_shift), slice_fit)
+        ),
+        (
+            (slice_fit, slice_fit, slice(n_shift, None)), 
+            (slice_fit, slice_fit, slice(-n_shift))
+        )
+    )
+    return slicers
+
+
+def get_reshapers(res:tuple, n_shift:int) -> tuple:
+    """Get reshaping tuples based on given geomodel
+    voxel resolution and voxel shift.
+    
+    Args:
+        res (tuple): Geomodel resolution (nx, ny, nz)
+        n_shift (int): Shift in number of voxels
+    
+    Returns:
+        tuple: Contains three reshaper tuples for x, y and z 
+            direction considering the given shift. 
+    """
+    reshaper = (
+        (res[0] - 1, res[1], res[2]),
+        (res[0], res[1] - 1, res[2]),
+        (res[0], res[1], res[2] - 1)
+    )
+    return reshaper
+
+
+def compute_topology(geo_model, n_shift:int=1) -> tuple:
+    """Compute geomodel topology.
+    
+    Args:
+        geo_model ([type]): Computed GemPy geomodel instance. 
+        n_shift (int, optional): Number of voxels to shift. Defaults to 1.
+    
+    Returns:
+        tuple: set of edges, centroid dictionary
+    """
+    lb, fb = lithblock_to_lb_fb(geo_model)
+    n_faults = np.count_nonzero(geo_model.faults.df.isFault)
+    n_liths = len(geo_model.surfaces.df) - n_faults
+    res = geo_model.grid.regular_grid.resolution
+
+    topology_labels = get_topology_labels(lb, fb, n_liths)
+    shift_xyz_block = topology_shift(topology_labels, res, n_shift=n_shift)
+    labels = bitstack_topology_labels(topology_labels).reshape(*res)
+    edges = get_edges(shift_xyz_block, labels, res, n_shift)
+    centroids = get_centroids(labels)
+
+    return edges, centroids
