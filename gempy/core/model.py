@@ -790,6 +790,7 @@ class DataMutation(object):
          """
         if self.surfaces.df.shape[0] == 0:
             self.add_surfaces(['surface1', 'surface2'])
+        self.update_from_surfaces()
         return self.surfaces
 
     @setdoc_pro(ds.extent)
@@ -1018,7 +1019,7 @@ class Model(DataMutation):
 
         self.meta = MetaData(project_name=project_name)
         super().__init__()
-        self.interpolator_gravity = None
+        #self.interpolator_gravity = None
 
     def __repr__(self):
         return self.meta.project_name + ' ' + self.meta.date

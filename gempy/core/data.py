@@ -623,7 +623,7 @@ class Series(object):
 
     def sort_series(self):
         self.df.sort_values(by='order_series', inplace=True)
-        self.df.index = self.df.index.reorder_categories(self.df.index.get_values())
+        self.df.index = self.df.index.reorder_categories(self.df.index.to_numpy())
 
     def update_faults_index(self):
         idx = self.df.index
@@ -1409,15 +1409,28 @@ class SurfacePoints(GeometricData):
 
         # TODO: Add the option to pass the surface number
 
+        # if idx is None:
+        #     idx = self.df.index.max()
+        #     if idx is np.nan:
+        #         idx = 0
+        #     else:
+        #         idx += 1
+
+        max_idx = self.df.index.max()
+
         if idx is None:
-            idx = self.df.index.max()
+            idx = max_idx
             if idx is np.nan:
                 idx = 0
             else:
                 idx += 1
 
+        if max_idx is not np.nan:
+            self.df.loc[idx] = self.df.loc[max_idx]
+
         coord_array = np.array([x, y, z])
         assert coord_array.ndim == 1, 'Adding an interface only works one by one.'
+        # self.df.loc[idx] = self.df.loc[idx-1]
         self.df.loc[idx, ['X', 'Y', 'Z']] = coord_array
 
         try:
@@ -1429,7 +1442,13 @@ class SurfacePoints(GeometricData):
                   'does not exist in the surface object either.')
             raise ValueError(error)
 
-        self.df.loc[idx, ['smooth']] = 1e-8
+        self.df.loc[idx, ['smooth']] = 1e-6
+
+        self.df['surface'] = self.df['surface'].astype('category', copy=True)
+        self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
+
+        self.df['series'] = self.df['series'].astype('category', copy=True)
+        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
 
         self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
         self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
@@ -1686,12 +1705,17 @@ class Orientations(GeometricData):
             raise AttributeError('Either pole_vector or orientation must have a value. If both are passed pole_vector'
                                  'has preference')
 
+        max_idx = self.df.index.max()
+
         if idx is None:
-            idx = self.df.index.max()
+            idx = max_idx
             if idx is np.nan:
                 idx = 0
             else:
                 idx += 1
+
+        if max_idx is not np.nan:
+            self.df.loc[idx] = self.df.loc[max_idx]
 
         if pole_vector is not None:
             self.df.loc[idx, ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']] = np.array([x, y, z, *pole_vector])
@@ -1711,8 +1735,13 @@ class Orientations(GeometricData):
             else:
                 raise AttributeError('At least pole_vector or orientation should have been passed to reach'
                                      'this point. Check previous condition')
-
         self.df.loc[idx, ['smooth']] = 0.01
+        self.df['surface'] = self.df['surface'].astype('category', copy=True)
+        self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
+
+        self.df['series'] = self.df['series'].astype('category', copy=True)
+        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
+
         self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
         self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
         self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
@@ -2458,8 +2487,12 @@ class Structure(object):
             :class:`pn.DataFrame`: df where Structural data is stored
 
         """
+        len_series = self.surfaces.series.df.shape[0]
+
         # Array containing the size of every series. SurfacePoints.
-        len_series_i = self.surface_points.df['order_series'].value_counts(sort=False).values
+        points_count = self.surface_points.df['order_series'].value_counts(sort=False)
+        len_series_i = np.zeros(len_series, dtype=int)
+        len_series_i[points_count.index-1] = points_count.values
 
         if len_series_i.shape[0] is 0:
             len_series_i = np.insert(len_series_i, 0, 0)
@@ -2477,8 +2510,13 @@ class Structure(object):
 
         """
         # Array containing the size of every series. orientations.
-        self.df.at['values', 'len series orientations'] = self.orientations.df['order_series'].value_counts(
-            sort=False).values
+
+        len_series_o = np.zeros(self.surfaces.series.df.shape[0],dtype=int)
+        ori_count = self.orientations.df['order_series'].value_counts(sort=False)
+        len_series_o[ori_count.index-1] = ori_count.values
+
+        self.df.at['values', 'len series orientations'] = len_series_o
+
         return self.df
 
     def set_number_of_surfaces_per_series(self):
@@ -2489,8 +2527,13 @@ class Structure(object):
             :class:`pn.DataFrame`: df where Structural data is stored
 
         """
-        self.df.at['values', 'number surfaces per series'] = self.surface_points.df.groupby('order_series').\
-            surface.nunique().values
+        len_sps = np.zeros(self.surfaces.series.df.shape[0],dtype=int)
+        surf_count = self.surface_points.df.groupby('order_series').\
+            surface.nunique()
+
+        len_sps[surf_count.index-1] = surf_count.values
+
+        self.df.at['values', 'number surfaces per series'] = len_sps
         return self.df
 
     def set_number_of_faults(self):
@@ -2586,15 +2629,15 @@ class Options(object):
             bool: True
         """
         import theano
-        self.df['device'] = theano.config.device
+        self.df.loc['values', 'device'] = theano.config.device
 
         if theano.config.device == 'cpu':
-            self.df['dtype'] = 'float64'
+            self.df.loc['values', 'dtype'] = 'float64'
         else:
-            self.df['dtype'] = 'float32'
+            self.df.loc['values', 'dtype'] = 'float32'
 
-        self.df['output'] = 'geology'
-        self.df['theano_optimizer'] = 'fast_compile'
+        self.df.loc['values', 'output'] = 'geology'
+        self.df.loc['values', 'theano_optimizer'] = 'fast_compile'
         return True
 
 

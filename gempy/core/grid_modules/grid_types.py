@@ -1,6 +1,6 @@
 from gempy.utils.create_topography import Load_DEM_artificial, Load_DEM_GDAL
 import numpy as np
-import skimage
+import skimage.transform
 import matplotlib.pyplot as plt
 from scipy.constants import G
 from scipy import interpolate
@@ -8,6 +8,7 @@ from gempy.utils.meta import setdoc, setdoc_pro
 import gempy.utils.docstring as ds
 from typing import Optional
 import pandas as pn
+
 
 class RegularGrid:
     """
@@ -466,7 +467,7 @@ class Topography:
                 z = ind[x, y]
                 gridz[x, y, z:] = 99999
         mask = (gridz == 99999)
-        return mask.swapaxes(0, 1)# np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
+        return mask# np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
 
     def _find_indices(self):
         zs = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.regular_grid.resolution[2])

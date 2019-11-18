@@ -63,7 +63,7 @@ class Vista:
 
         self.model = model
         self.extent = model.grid.regular_grid.extent if extent is None else extent
-        self.lith_c = model.surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
+        self._color_lot = model.surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
 
         self.s_widget = pn.DataFrame(columns=['val'])
         self.p_widget = pn.DataFrame(columns=['val'])
@@ -72,6 +72,7 @@ class Vista:
         self.vista_rgrids_mesh = {}
         self.vista_rgrids_actors = {}
         self.vista_topo_actors = {}
+        self.vista_surf_actor = {}
 
         self.real_time =real_time
 
@@ -83,15 +84,31 @@ class Vista:
         self.set_bounds()
         self.p.view_isometric(negative=False)
 
+    def update_colot_lot(self, lith_c=None):
+        if lith_c is None:
+            lith_c = self.model.surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
+            # Hopefully this removes the colors that exist in surfaces but not in data
+            idx_uniq = self.model.surface_points.df['id'].unique()
+            # + basement
+            idx = np.append(idx_uniq, idx_uniq.max()+1)
+            lith_c = lith_c[idx]
+        self._color_lot = lith_c
+
     def set_bounds(self, extent=None, grid=False, location='furthest', **kwargs):
         if extent is None:
             extent = self.extent
         self.p.show_bounds(bounds=extent,  location=location, grid=grid, **kwargs)
 
-    def set_structured_grid(self, regular_grid=None, data: Union[dict, gp.Solution, str] = 'Default',
-                            name='lith',
-                            **kwargs):
+    def plot_structured_grid(self, regular_grid=None, data: Union[dict, gp.Solution, str] = 'Default',
+                             name='lith',
+                             **kwargs):
+        # Remove previous actor with the same name:
+        try:
+            self.p.remove_actor(self.vista_rgrids_actors[name])
+        except KeyError:
+            pass
 
+        self.update_colot_lot()
         if regular_grid is None:
             regular_grid = self.model.grid.regular_grid
 
@@ -99,10 +116,10 @@ class Vista:
         g_3D = g_values.reshape(*regular_grid.resolution, 3).T
         rg = pv.StructuredGrid(*g_3D)
 
-        self.set_scalar_data(rg, data, name)
+        self.plot_scalar_data(rg, data, name)
         if name == 'lith':
             n_faults = self.model.faults.df['isFault'].sum()
-            cmap = mcolors.ListedColormap(list(self.lith_c[n_faults:]))
+            cmap = mcolors.ListedColormap(list(self._color_lot[n_faults:]))
 
             kwargs['cmap'] = kwargs.get('cmap', cmap)
 
@@ -112,7 +129,7 @@ class Vista:
         self.vista_rgrids_actors[name] = actor
         return actor
 
-    def set_scalar_data(self, regular_grid, data: Union[dict, gp.Solution, str] = 'Default', name='lith'):
+    def plot_scalar_data(self, regular_grid, data: Union[dict, gp.Solution, str] = 'Default', name='lith'):
         """
 
         Args:
@@ -152,8 +169,8 @@ class Vista:
             self.call_back_sphere_change_df(index, new_center)
             self.call_back_sphere_move_changes(index)
 
-        except:
-            pass
+        except KeyError as e:
+            print('call_back_sphere error:', e)
 
         if self.real_time:
             try:
@@ -180,7 +197,7 @@ class Vista:
                            new_center[1] - r_f, new_center[1] + r_f,
                            new_center[2] - r_f, new_center[2] + r_f)
 
-            s1.GetSphereProperty().SetColor(mcolors.hex2color(self.lith_c[df_row['id']]))
+            s1.GetSphereProperty().SetColor(mcolors.hex2color(self._color_lot[df_row['id']]))
                 #self.geo_model.surfaces.df.set_index('id')['color'][df_row['id']]))#self.C_LOT[df_row['id']])
 
     def call_back_sphere_delete_point(self, ind_i):
@@ -197,14 +214,16 @@ class Vista:
 
     # endregion
 
-    def set_interactive_data(self, surface_points=None, orientations=None, **kwargs):
+    def plot_data(self, surface_points=None, orientations=None, **kwargs):
         # TODO: When we call this method we need to set the plotter.notebook to False!
-        self.set_surface_points(surface_points, **kwargs)
-        self.set_orientations(orientations, **kwargs)
+        self.plot_surface_points(surface_points, **kwargs)
+        self.plot_orientations(orientations, **kwargs)
 
-    def set_surface_points(self, surface_points=None, radio=None, **kwargs):
+    def plot_surface_points(self, surface_points=None, radio=None, clear=True, **kwargs):
+        self.update_colot_lot()
+        if clear is True:
+            self.p.clear_sphere_widgets()
 
-        self.p.clear_sphere_widgets()
         # Calculate default surface_points radio
         if radio is None:
             _e = self.extent
@@ -215,16 +234,20 @@ class Vista:
             radio = _e_d_avrg * .01
 
         if surface_points is None:
-            surface_points = self.model.surface_points
+            surface_points = self.model.surface_points.df
+
+        test_callback = True if self.real_time is True else False
 
         # This is Bane way. It gives me some error with index slicing
-        centers = surface_points.df[['X', 'Y', 'Z']]
-        colors = self.lith_c[surface_points.df['id']].values
+        centers = surface_points[['X', 'Y', 'Z']]
+        colors = self._color_lot[surface_points['id']].values
         s = self.p.add_sphere_widget(self.call_back_sphere,
                                      center=centers, color=colors, pass_widget=True,
-                                     indices=surface_points.df.index.values,
+                                     test_callback=test_callback,
+                                     indices=surface_points.index.values,
                                      radius=radio, **kwargs)
-        self.s_widget = pn.DataFrame(data=s, index=surface_points.df.index, columns=['val'])
+
+        self.s_widget.append(pn.DataFrame(data=s, index=surface_points.index, columns=['val']))
 
         return self.s_widget
 
@@ -283,35 +306,42 @@ class Vista:
                 parse_color(self.model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
         return True
 
-    def set_orientations(self, orientations=None, **kwargs):
-
-        self.p.clear_plane_widgets()
+    def plot_orientations(self, orientations=None, clear=True, **kwargs):
+        self.update_colot_lot()
+        if clear is True:
+            self.p.clear_plane_widgets()
         factor = kwargs.get('factor', 0.1)
+        kwargs['test_callback'] = kwargs.get('test_callback', False)
 
         if orientations is None:
-            orientations = self.model.orientations
-        for e, val in orientations.df.iterrows():
-            c = self.lith_c[val['id']]
+            orientations = self.model.orientations.df
+        for e, val in orientations.iterrows():
+            c = self._color_lot[val['id']]
             p = self.p.add_plane_widget(self.call_back_plane,
-                                        implicit=False, pass_widget=True, test_callback=False,
+                                        implicit=False, pass_widget=True,
                                         normal=val[['G_x', 'G_y', 'G_z']],
                                         origin=val[['X', 'Y', 'Z']], color=c,
                                         bounds=self.model.grid.regular_grid.extent,
                                         factor=factor, **kwargs)
             p.WIDGET_INDEX = e
-
             self.p_widget.at[e] = p
         return self.p_widget
 
-    def set_surfaces(self, surfaces=None, **kwargs):
+    def plot_surfaces(self, surfaces=None, delete_surfaces=True, **kwargs):
+        self.update_colot_lot()
+        if delete_surfaces is True:
+            for actor in self.vista_surf_actor.values():
+                self.delete_surface(actor)
+
         if surfaces is None:
-            surfaces = self.model.surfaces
-            for idx, val in surfaces.df[['vertices', 'edges', 'color']].dropna().iterrows():
+            surfaces = self.model.surfaces.df
+        for idx, val in surfaces[['vertices', 'edges', 'color']].dropna().iterrows():
 
-                surf = pv.PolyData(val['vertices'], np.insert(val['edges'], 0, 3, axis=1).ravel())
-                self.surf_polydata.at[idx] = surf
-                self.p.add_mesh(surf, parse_color(val['color']), **kwargs)
+            surf = pv.PolyData(val['vertices'], np.insert(val['edges'], 0, 3, axis=1).ravel())
+            self.surf_polydata.at[idx] = surf
+            self.vista_surf_actor[idx] = self.p.add_mesh(surf, parse_color(val['color']), **kwargs)
 
+        self.set_bounds()
         return self.surf_polydata
 
     def update_surfaces(self):
@@ -326,8 +356,9 @@ class Vista:
     def add_surface(self):
         raise NotImplementedError
 
-    def delete_surface(self, id):
-        raise NotImplementedError
+    def delete_surface(self, actor):
+        self.p.remove_actor(actor)
+        return True
 
     def update_surfaces_real_time(self, delete=True):
 
@@ -341,7 +372,7 @@ class Vista:
         self.update_surfaces()
         return True
 
-    def set_topography(self, topography = None, scalars='geo_map', **kwargs):
+    def plot_topography(self, topography = None, scalars='geo_map', **kwargs):
         """
 
         Args:
@@ -364,13 +395,13 @@ class Vista:
             arr_ = np.empty((0, 3), dtype='int')
 
             # Convert hex colors to rgb
-            for val in list(self.lith_c):
+            for val in list(self._color_lot):
                 rgb = (255 * np.array(mcolors.hex2color(val)))
                 arr_ = np.vstack((arr_, rgb))
 
             sel = np.round(self.model.solutions.geological_map).astype(int)[0]
-            print(arr_)
-            print(sel)
+          #  print(arr_)
+          #  print(sel)
 
             scalars_val = numpy_to_vtk(arr_[sel-1], array_type=3)
             cm = None

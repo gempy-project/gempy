@@ -528,7 +528,7 @@ class InterpolatorModel(Interpolator):
         Returns:
             True
         """
-        n_series = self.additional_data.get_additional_data()['values']['Structure', 'number series']
+        n_series = self.len_series_i.shape[0]#self.additional_data.get_additional_data()['values']['Structure', 'number series']
         x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
 
         if reset_weights is True:
@@ -608,20 +608,34 @@ class InterpolatorModel(Interpolator):
     def _compute_len_series(self):
         self.len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
                             self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
-        if self.len_series_i.shape[0] == 0:
-            self.len_series_i = np.zeros(1, dtype=int)
 
         self.len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
             'int32')
-        if self.len_series_o.shape[0] == 0:
-            self.len_series_o = np.zeros(1, dtype=int)
 
         self.len_series_u = self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')
-        if self.len_series_u.shape[0] == 0:
-            self.len_series_u = np.zeros(1, dtype=int)
-
         self.len_series_f = self.faults.faults_relations_df.sum(axis=0).values.astype('int32')[
                             :self.additional_data.get_additional_data()['values']['Structure', 'number series']]
+
+        self._old_len_series = self.len_series_i
+
+        # Remove series without data
+        non_zero_i = self.len_series_i.nonzero()[0]
+        non_zero_o = self.len_series_o.nonzero()[0]
+        non_zero = np.intersect1d(non_zero_i, non_zero_o)
+
+        self.len_series_i = self.len_series_i[non_zero]
+        self.len_series_o = self.len_series_o[non_zero]
+        self.len_series_f = self.len_series_f[non_zero]
+        self.len_series_u = self.len_series_u[non_zero]
+
+        if self.len_series_i.shape[0] == 0:
+            self.len_series_i = np.zeros(1, dtype=int)
+            self._old_len_series = self.len_series_i
+
+        if self.len_series_o.shape[0] == 0:
+            self.len_series_o = np.zeros(1, dtype=int)
+        if self.len_series_u.shape[0] == 0:
+            self.len_series_u = np.zeros(1, dtype=int)
         if self.len_series_f.shape[0] == 0:
             self.len_series_f = np.zeros(1, dtype=int)
 
@@ -663,7 +677,7 @@ class InterpolatorModel(Interpolator):
 
     def set_theano_shared_onlap_erode(self):
         """Set the theano variables which control the masking patterns according to the uncomformity relation"""
-        n_series = self.additional_data.structure_data.df.loc['values', 'number series']
+        n_series = len(self.len_series_i)#self.additional_data.structure_data.df.loc['values', 'number series']
 
         is_erosion = self.series.df['BottomRelation'].values[:n_series] == 'Erosion'
         is_onlap = np.roll(self.series.df['BottomRelation'].values[:n_series] == 'Onlap', 1)
@@ -701,7 +715,7 @@ class InterpolatorModel(Interpolator):
         self._compute_len_series()
 
         x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
-        n_series = self.additional_data.structure_data.df.loc['values', 'number series']
+        n_series = self.len_series_i.shape[0]#self.additional_data.structure_data.df.loc['values', 'number series']
 
         self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum()), dtype=self.dtype))
         self.theano_graph.scalar_fields_matrix.set_value(
@@ -725,7 +739,7 @@ class InterpolatorModel(Interpolator):
         self._compute_len_series()
 
         x_to_interp_shape = self.grid.values_r.shape[0] + 2 * self.len_series_i.sum()
-        n_series = self.additional_data.structure_data.df.loc['values', 'number series']
+        n_series = self.len_series_i.shape[0]#self.additional_data.structure_data.df.loc['values', 'number series']
 
         self.theano_graph.scalar_fields_matrix.set_value(
             np.zeros((n_series, x_to_interp_shape), dtype=self.dtype))
@@ -746,7 +760,7 @@ class InterpolatorModel(Interpolator):
         """Modify all theano shared matrices to the right size according to the structure data. This method allows
         to change the size of the results without having the recompute all series"""
 
-        old_len_i = self.len_series_i
+        old_len_i = self._old_len_series
         new_len_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
             self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
         if new_len_i.shape[0] != old_len_i[0]:
