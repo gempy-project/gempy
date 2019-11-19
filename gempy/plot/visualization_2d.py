@@ -703,7 +703,9 @@ class PlotSolution(PlotData2D):
         axes.set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
 
     def _slice_topo_4_sections(self, p1, p2, resx, resy):
-        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, resx, resy)
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(np.array(p1),
+                                                                         np.array(p2),
+                                                                         resx)
         z = self.model.grid.topography.interpolate_zvals_at_xy(xy)
         return xy[:, 0], xy[:, 1], z
 
@@ -757,12 +759,14 @@ class PlotSolution(PlotData2D):
         return p1, p2
 
     def _make_section_xylabels(self, section_name, n=5):
-        if n > 5:
-            n = 3  # todo I don't know why but sometimes it wants to make a lot of xticks
+        if n > 10:
+            n = n-2  # todo I don't know why but sometimes it wants to make a lot of xticks
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
         startend = list(self.model.grid.sections.section_dict.values())[j]
         p1, p2 = startend[0], startend[1]
-        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, n, n)
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(np.array(p1),
+                                                                         np.array(p2),
+                                                                         n)
         if len(np.unique(xy[:, 0])) == 1:
             labels = xy[:, 1].astype(int)
             axname = 'Y'
