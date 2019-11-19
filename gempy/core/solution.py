@@ -70,14 +70,8 @@ class Solution(object):
         self.vertices = []
         self.edges = []
 
-        # Topography
-        # Todo this is merged in geological_map[0] and [1]
-        #self.geological_map = None
-        self.geological_map_scalfield = None
-
+        self.geological_map = None
         self.sections = None
-        #self.sections_scalfield = None
-
         self.custom = None
 
     def __repr__(self):
