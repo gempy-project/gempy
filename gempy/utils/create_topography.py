@@ -31,7 +31,7 @@ class Load_DEM_GDAL():
             raise ImportError('Gdal package is not installed. No support for raster formats.')
         self.dem = gdal.Open(path_dem)
 
-        assert type(self.dem) is not None, 'Raster file could not be opened. Check if the filepath is correct. If yes,' \
+        assert self.dem is not None, 'Raster file could not be opened. Check if the filepath is correct. If yes,' \
                                            'check if your file fits the requirements of GDALs raster file formats.'
 
         try:
@@ -89,13 +89,13 @@ class Load_DEM_GDAL():
             self._get_raster_dimensions()
         print('Cropped raster to geo_model.grid.extent.')
 
-    def check(self):
+    def check(self, test=False):
         #todo make this usable
         test = np.logical_and.reduce((self.grid.extent[0] <= self.extent[0],
                                       self.grid.extent[1] >= self.extent[1],
                                       self.grid.extent[2] <= self.extent[2],
                                       self.grid.extent[3] >= self.extent[3]))
-        if test == True:
+        if test:
             cornerpoints_geo = self._get_cornerpoints(self.grid.extent)
             cornerpoints_dtm = self._get_cornerpoints(self.extent)
             plt.scatter(cornerpoints_geo[:, 0], cornerpoints_geo[:, 1], label='grid extent')

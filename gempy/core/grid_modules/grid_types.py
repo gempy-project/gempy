@@ -130,7 +130,8 @@ class Sections:
         self.coordinates = np.array(self.points).ravel().reshape(-1, 4) #axis are x1,y1,x2,y2
         self.dist = np.sqrt(np.diff(self.coordinates[:, [0, 2]])**2 + np.diff(self.coordinates[:, [1, 3]])**2)
 
-    def distance_2_points(self, p1, p2):
+    @staticmethod
+    def distance_2_points(p1, p2):
         return np.sqrt(np.diff((p1[0], p2[0])) ** 2 + np.diff((p1[1], p2[1])) ** 2)
 
     def compute_section_coordinates(self):

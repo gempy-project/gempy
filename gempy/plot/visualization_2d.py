@@ -609,7 +609,7 @@ class PlotSolution(PlotData2D):
         axes = plt.gca()
         axes.imshow(image, origin='lower', zorder=-100,
                     cmap=self._cmap, norm=self._norm, extent=extent)
-        if show_faults == True and contourplot == False:
+        if show_faults and not contourplot:
             self.extract_section_lines(section_name, axes, faults_only=True)
         else:
             self.extract_section_lines(section_name, axes, faults_only=False)
@@ -631,7 +631,8 @@ class PlotSolution(PlotData2D):
         if self.model.grid.topography is None:
             show_topo = False
         if section_names is not None:
-            if type(section_names) == list:
+            if isinstance(section_names, list):
+            #if type(section_names) == list:
                 section_names = np.array(section_names)
         else:
             section_names = self.model.grid.sections.names
@@ -873,9 +874,9 @@ class PlotSolution(PlotData2D):
                 else:
                     self.make_topography_overlay_4_blockplot(cell_number=cell_number, direction=direction)
 
-        if self._show_legend == True and show_legend == True:
+        if self._show_legend and show_legend:
             show_data = False   # to plot legend even when there are no data points in the section
-        if show_data == False and show_legend == True:
+        if not show_data and show_legend:
             patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
