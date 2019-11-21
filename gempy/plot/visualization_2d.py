@@ -62,7 +62,7 @@ class PlotData2D:
         if radius == 'default':
             radius = None
         else:
-            assert type(radius) != str, 'You need to pass a number (in model extent) for the radius to take more' \
+            assert isinstance(radius, str), 'You need to pass a number (in model extent) for the radius to take more' \
                                         'or less data into account.'
 
         if series == "all":
@@ -209,7 +209,7 @@ class PlotData2D:
     def _plot_surface_points(self, x, y, series_to_plot_i, aspect, extent, kwargs):
         if series_to_plot_i.shape[0] != 0:
             fig = plt.gcf()
-            size = fig.get_size_inches() * fig.dpi
+            #size = fig.get_size_inches() * fig.dpi
             #print(size)
             #print(aspect)
             try:
@@ -632,7 +632,6 @@ class PlotSolution(PlotData2D):
             show_topo = False
         if section_names is not None:
             if isinstance(section_names, list):
-            #if type(section_names) == list:
                 section_names = np.array(section_names)
         else:
             section_names = self.model.grid.sections.names
