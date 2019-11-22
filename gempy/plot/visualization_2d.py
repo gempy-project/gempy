@@ -62,8 +62,9 @@ class PlotData2D:
         if radius == 'default':
             radius = None
         else:
-            assert isinstance(radius, int), 'You need to pass a number (in model extent) for the radius to take more' \
-                                        'or less data into account.'
+            if not isinstance(radius, int):
+                raise AttributeError('You need to pass a number (in model extent) for the radius to take more '
+                                     'or less data into account.')
 
         if series == "all":
             series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"].
@@ -243,7 +244,7 @@ class PlotData2D:
                 #ax = plt.gca()
                 #print(ax)
                 fig = plt.gcf()
-                size = fig.get_size_inches() * fig.dpi
+                #size = fig.get_size_inches() * fig.dpi
                 #print('before plot orient', size)
                 surflist = list(series_to_plot_f['surface'].unique())
                 for surface in surflist:
@@ -275,7 +276,7 @@ class PlotData2D:
             pass
 
         fig = plt.gcf()
-        size = fig.get_size_inches() * fig.dpi
+        #size = fig.get_size_inches() * fig.dpi
         #print('after plot_orientations', size)
 
     def _slice(self, direction, cell_number=25):
@@ -495,7 +496,8 @@ class PlotSolution(PlotData2D):
         if solution is None:
             solution = self.model.solutions
 
-        assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
+        if solution.geological_map is None:
+            raise AttributeError('Geological map not computed. Activate the topography grid.')
 
         try:
             geomap = solution.geological_map[0].reshape(self.model.grid.topography.values_3D[:, :, 2].shape)
@@ -591,9 +593,12 @@ class PlotSolution(PlotData2D):
 
     def plot_section_by_name(self, section_name, show_data=True, show_faults=True, show_topo=True,
                              show_all_data=False, contourplot=True, radius='default', **kwargs):
-        assert self.model.solutions.sections is not None, 'no sections for plotting defined'
-        assert section_name in self.model.grid.sections.names, 'Section "{}" is not defined. Available sections for ' \
-                                                    'plotting: {}'.format(section_name, self.model.grid.sections.names)
+
+        if self.model.solutions.sections is None:
+            raise AttributeError('no sections for plotting defined')
+        if section_name not in self.model.grid.sections.names:
+            raise AttributeError(f'Section "{section_name}" is not defined. '
+                                 f'Available sections for plotting: {self.model.grid.sections.names}')
 
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
         l0, l1 = self.model.grid.sections.get_section_args(section_name)
@@ -627,7 +632,8 @@ class PlotSolution(PlotData2D):
 
     def plot_all_sections(self, show_data=False, section_names=None, show_topo=True,
                       figsize=(12, 12)):
-        assert self.model.solutions.sections is not None, 'no sections for plotting defined'
+        if self.model.solutions.sections is None:
+            raise AttributeError('no sections for plotting defined')
         if self.model.grid.topography is None:
             show_topo = False
         if section_names is not None:
@@ -668,7 +674,8 @@ class PlotSolution(PlotData2D):
 
         fig.tight_layout()
     def plot_section_scalarfield(self, section_name, sn, levels=50, show_faults=True, show_topo=True, lithback=True):
-        assert self.model.solutions.sections is not None, 'no sections for plotting defined'
+        if self.model.solutions.sections is None:
+            raise AttributeError('no sections for plotting defined')
         if self.model.grid.topography is None:
             show_topo = False
         shapes = self.model.grid.sections.resolution

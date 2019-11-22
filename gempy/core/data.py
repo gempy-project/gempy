@@ -698,7 +698,7 @@ class Colors:
         Returns: None
 
         '''
-        if not cdict:
+        if cdict is None:
             # assert if one surface does not have color
             try:
                 self._add_colors()
