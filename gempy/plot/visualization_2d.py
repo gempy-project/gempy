@@ -62,7 +62,7 @@ class PlotData2D:
         if radius == 'default':
             radius = None
         else:
-            assert isinstance(radius, str), 'You need to pass a number (in model extent) for the radius to take more' \
+            assert isinstance(radius, int), 'You need to pass a number (in model extent) for the radius to take more' \
                                         'or less data into account.'
 
         if series == "all":
@@ -114,7 +114,7 @@ class PlotData2D:
         return series_to_plot_i[mask_surfpoints], series_to_plot_f[mask_orient]
 
     def plot_data(self, cell_number=2, direction="y", data_type='all', series="all", show_legend=True, ve=1,
-                  at='everywhere', radius=None, show_all_data=False, **kwargs):
+                  at='everywhere', radius='default', show_all_data=False, **kwargs):
         """
         Plot the projecton of the raw data (surface_points and orientations) in 2D following a
         specific directions
@@ -171,7 +171,7 @@ class PlotData2D:
         plt.xlabel(x)
         plt.ylabel(y)
 
-    def plot_section_data(self, section_name, show_all_data=False, radius=None, **kwargs):
+    def plot_section_data(self, section_name, show_all_data=False, radius='default', **kwargs):
         if show_all_data:
             at = 'everywhere'
         else:
