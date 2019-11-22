@@ -328,6 +328,7 @@ class PlotData2D:
 
         if radius is None:
             radius = np.diff(zj).max()
+        print(radius)
 
         dist_interf = np.abs(Z_interf_interp - self.model.surface_points.df['Z'].values[mask_interf])
         dist_orient = np.abs(Z_orient_interp - self.model.orientations.df['Z'].values[mask_orient])
