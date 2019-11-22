@@ -271,7 +271,6 @@ class PlotData2D:
             #print('no orient')
             pass
 
-        fig = plt.gcf()
         #size = fig.get_size_inches() * fig.dpi
         #print('after plot_orientations', size)
 
