@@ -240,10 +240,6 @@ class PlotData2D:
         if series_to_plot_f.shape[0] != 0:
             #print('hello')
             if p is False:
-
-                #ax = plt.gca()
-                #print(ax)
-                fig = plt.gcf()
                 #size = fig.get_size_inches() * fig.dpi
                 #print('before plot orient', size)
                 surflist = list(series_to_plot_f['surface'].unique())
