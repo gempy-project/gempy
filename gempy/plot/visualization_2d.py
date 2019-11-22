@@ -209,7 +209,6 @@ class PlotData2D:
 
     def _plot_surface_points(self, x, y, series_to_plot_i, aspect, extent, kwargs):
         if series_to_plot_i.shape[0] != 0:
-            fig = plt.gcf()
             #size = fig.get_size_inches() * fig.dpi
             #print(size)
             #print(aspect)
