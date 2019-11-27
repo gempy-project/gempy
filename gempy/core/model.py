@@ -196,10 +196,10 @@ class DataMutation(object):
 
     @setdoc(Grid.set_section_grid.__doc__)
     def set_section_grid(self, section_dict):
-        self.grid.set_section_grid(section_dict)
+        self.grid.set_section_grid(section_dict=section_dict)
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
-        return self.grid
+        return self.grid.sections
 
     # endregion
 

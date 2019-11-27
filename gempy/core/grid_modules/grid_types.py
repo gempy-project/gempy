@@ -91,9 +91,12 @@ class Sections:
         regular_grid: Model.grid.regular_grid
         section_dict: {'section name': ([p1_x, p1_y], [p2_x, p2_y], [xyres, zres])}
     """
-    def __init__(self, regular_grid=None, section_dict=None):
+    def __init__(self, regular_grid=None, z_ext=None, section_dict=None):
+        if regular_grid is not None:
+            self.z_ext = regular_grid.extent[4:]
+        else:
+            self.z_ext = z_ext
         if section_dict is not None:
-            self.regular_grid = regular_grid
             self.section_dict = section_dict
             self.names = np.array(list(self.section_dict.keys()))
             self.points = []
@@ -101,7 +104,7 @@ class Sections:
             self.length = [0]
             self.dist = []
             self.get_section_params()
-            self.calculate_distance()
+            self.calculate_all_distances()
             self.df = pn.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution'])
             self.df['dist'] = self.dist
             self.values = []
@@ -123,15 +126,18 @@ class Sections:
             self.length.append(self.section_dict[section][2][0] * self.section_dict[section][2][1])
         self.length = np.array(self.length).cumsum()
 
-    def calculate_distance(self):
+    def calculate_all_distances(self):
         self.coordinates = np.array(self.points).ravel().reshape(-1, 4) #axis are x1,y1,x2,y2
         self.dist = np.sqrt(np.diff(self.coordinates[:, [0, 2]])**2 + np.diff(self.coordinates[:, [1, 3]])**2)
 
+    @staticmethod
+    def distance_2_points(p1, p2):
+        return np.sqrt(np.diff((p1[0], p2[0])) ** 2 + np.diff((p1[1], p2[1])) ** 2)
+
     def compute_section_coordinates(self):
         for i in range(len(self.names)):
-            xy = self.calculate_line_coordinates_2points(self.points[i][0], self.points[i][1], self.resolution[i][0],
-                                                         self.resolution[i][0]) #two times xy resolution is correct
-            zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][1],
+            xy = self.calculate_line_coordinates_2points(self.coordinates[i, :2], self.coordinates[i, 2:], self.resolution[i][0])
+            zaxis = np.linspace(self.z_ext[0], self.z_ext[1], self.resolution[i][1],
                                      dtype="float64")
             X, Z = np.meshgrid(xy[:, 0], zaxis, indexing='ij')
             Y, _ = np.meshgrid(xy[:, 1], zaxis, indexing='ij')
@@ -141,38 +147,13 @@ class Sections:
             else:
                 self.values = np.vstack((self.values, xyz))
 
-    def calculate_line_coordinates_2points(self, p1, p2, resx, resy):
-        x0 = p1[0]
-        x1 = p2[0]
-        y0 = p1[1]
-        y1 = p2[1]
-
-        dx = np.abs((x1 - x0) / resx)
-        dy = np.abs((y1 - y0) / resy)
-
-        if x0 == x1:  # slope is infinite
-            # for cases where phi == -np.pi/2 or phi == np.pi/2
-            xi = x0 * np.ones(resy)
-            yj = np.linspace(y0, y1, resy)
-        else:
-            # calculate support points between two points
-            phi = np.arctan2(y1 - y0, x1 - x0)  # angle of line with x-axis
-            if np.pi / 2 < phi <= np.pi: #shift all values to first or fourth quadrant
-                phi -= np.pi
-            elif -np.pi <= phi < -np.pi / 2:
-                phi += np.pi  # shift values in first or fourth quadrant so that cosine is positive
-            else:
-                pass
-            ds = np.abs(dx * np.cos(phi)) + np.abs(dy * np.sin(phi))  # support point spacing
-            # abs needed for cases where phi == -1/4 pi or 3/4 pi
-            if x0 > x1:
-                n_points = np.ceil((x0 - x1) / (ds * np.cos(phi)))
-            else:
-                n_points = np.ceil((x1 - x0) / (ds * np.cos(phi)))
-            xi = np.linspace(x0, x1, int(n_points))
-            m = (y1 - y0) / (x1 - x0)  # slope of line
-            yj = m * (xi - x0) + y0 * np.ones(xi.shape)  # calculate yvalues with line equation
-        return np.vstack((xi, yj)).T
+    def calculate_line_coordinates_2points(self, p1, p2, res):
+        v = p2-p1 #vector pointing from p1 to p2
+        u = v/np.linalg.norm(v) # normalize it
+        distance = self.distance_2_points(p1, p2)
+        steps = np.linspace(0, distance, res)
+        values = p1.reshape(2, 1) + u.reshape(2, 1) * steps.ravel()
+        return values.T
 
     def get_section_args(self, section_name: str):
         where = np.where(self.names == section_name)[0][0]
@@ -417,6 +398,7 @@ class Topography:
             self.values_3D_res = self.values_3D
 
         self.regular_grid.mask_topo = self._create_grid_mask()
+
 
     def _crop(self):
         pass
