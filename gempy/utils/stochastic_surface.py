@@ -89,24 +89,36 @@ class _StochasticSurface(ABC):
         self.geo_model.modify_surface_points(
             self.isurf,
             **{
-                "Z": deepcopy(self.surface_points_init.loc[self.isurf, "Z"].values),
-                "Y": deepcopy(self.surface_points_init.loc[self.isurf, "Y"].values),
-                "X": deepcopy(self.surface_points_init.loc[self.isurf, "X"].values)
+                "Z": deepcopy(
+                    self.surface_points_init.loc[self.isurf, "Z"].values),
+                "Y": deepcopy(
+                    self.surface_points_init.loc[self.isurf, "Y"].values),
+                "X": deepcopy(
+                    self.surface_points_init.loc[self.isurf, "X"].values)
             }
         )
 
         self.geo_model.modify_orientations(
             self.iorient,
             **{
-                "X": deepcopy(self.orientations_init.loc[self.isurf, "X"].values),
-                "Y": deepcopy(self.orientations_init.loc[self.isurf, "Y"].values),
-                "Z": deepcopy(self.orientations_init.loc[self.isurf, "Z"].values),
-                "G_x": deepcopy(self.orientations_init.loc[self.isurf, "G_x"].values),
-                "G_y": deepcopy(self.orientations_init.loc[self.isurf, "G_y"].values),
-                "G_z": deepcopy(self.orientations_init.loc[self.isurf, "G_z"].values),
-                "dip": deepcopy(self.orientations_init.loc[self.isurf, "dip"].values),
-                "azimuth": deepcopy(self.orientations_init.loc[self.isurf, "azimuth"].values),
-                "polarity": deepcopy(self.orientations_init.loc[self.isurf, "polarity"].values),
+                "X": deepcopy(
+                    self.orientations_init.loc[self.isurf, "X"].values),
+                "Y": deepcopy(
+                    self.orientations_init.loc[self.isurf, "Y"].values),
+                "Z": deepcopy(
+                    self.orientations_init.loc[self.isurf, "Z"].values),
+                "G_x": deepcopy(
+                    self.orientations_init.loc[self.isurf, "G_x"].values),
+                "G_y": deepcopy(
+                    self.orientations_init.loc[self.isurf, "G_y"].values),
+                "G_z": deepcopy(
+                    self.orientations_init.loc[self.isurf, "G_z"].values),
+                "dip": deepcopy(
+                    self.orientations_init.loc[self.isurf, "dip"].values),
+                "azimuth": deepcopy(
+                    self.orientations_init.loc[self.isurf, "azimuth"].values),
+                "polarity": deepcopy(
+                    self.orientations_init.loc[self.isurf, "polarity"].values),
             }
         )
 
@@ -380,9 +392,9 @@ def _trifacenormals_from_pts(points: Array[float, ..., 3]) -> pd.DataFrame:
     columns = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
     orients = pd.DataFrame(columns=columns)
 
-    orients["X"], orients["Y"], orients["Z"] = centroids[:, 0], centroids[:, 1], centroids[:, 2]
-    orients["G_x"], orients["G_y"], orients["G_z"] = normals[:, 0], normals[:, 1], normals[:, 2]
-    orients["azimuth"], orients["dip"] = vector2pole(normals[:, 0], normals[:, 1], normals[:, 2])
-    orients["polarity"] = 1
+    orients["X"], orients["Y"], orients["Z"] = tuple(centroids.T)
+    orients["G_x"], orients["G_y"], orients["G_z"] = tuple(normals.T)
+    orients["azimuth"], orients["dip"] = vector2pole(*tuple(normals.T))
+    orients["polarity"] = 1  # TODO actual polarity
 
     return orients
