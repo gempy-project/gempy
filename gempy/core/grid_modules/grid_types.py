@@ -148,6 +148,10 @@ class Sections:
                 self.values = np.vstack((self.values, xyz))
 
     def calculate_line_coordinates_2points(self, p1, p2, res):
+        if isinstance(p1, list):
+            p1 = np.array(p1)
+        if isinstance(p2, list):
+            p2 = np.array(p2)
         v = p2-p1 #vector pointing from p1 to p2
         u = v/np.linalg.norm(v) # normalize it
         distance = self.distance_2_points(p1, p2)
