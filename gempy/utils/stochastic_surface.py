@@ -1,30 +1,30 @@
 """
     This file is part of gempy.
 
-    gempy is free software: you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation, either version 3 of the License, or
-    (at your option) any later version.
+    gempy is free software: you can redistribute it and/or modify it under the
+    terms of the GNU General Public License as published by the Free Software
+    Foundation, either version 3 of the License, or (at your option) any later
+    version.
 
-    gempy is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
+    gempy is distributed in the hope that it will be useful, but WITHOUT ANY
+    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
+    FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
+    details.
 
-    You should have received a copy of the GNU General Public License
-    along with gempy.  If not, see <http://www.gnu.org/licenses/>.
+    You should have received a copy of the GNU General Public License along
+    with gempy.  If not, see <http://www.gnu.org/licenses/>.
 
 
-Module with classes for convenient stochastic perturbation of gempy data points
-with flexible back-ends.
+    Module with classes for convenient stochastic perturbation of gempy data
+    points with flexible back-ends.
 
-    _StochasticSurfaceAbstract provides base functionality shared by all classes
-    inheriting from it. It provides a set of abstract methods that need to be
-    filled in by the subclasses.
+    _StochasticSurfaceAbstract provides base functionality shared by all
+    classes inheriting from it. It provides a set of abstract methods that need
+    to be filled in by the subclasses.
 
-Tested on Windows 10
+    Tested on Windows 10
 
-@author: Alexander Schaaf
+    @author: Alexander Schaaf
 """
 
 import scipy.stats as ss
