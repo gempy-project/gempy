@@ -30,6 +30,11 @@ class Load_DEM_GDAL():
         if GDAL_IMPORT == False:
             raise ImportError('Gdal package is not installed. No support for raster formats.')
         self.dem = gdal.Open(path_dem)
+
+        if isinstance(self.dem, type(None)):
+            raise AttributeError('Raster file could not be opened. Check if the filepath is correct. If yes,'
+                                 'check if your file fits the requirements of GDALs raster file formats.')
+
         try:
             self.dem_zval = self.dem.ReadAsArray()
         except AttributeError:
@@ -72,6 +77,8 @@ class Load_DEM_GDAL():
         cornerpoints_geo = self._get_cornerpoints(self.grid.extent)
         cornerpoints_dtm = self._get_cornerpoints(self.extent)
 
+        #self.check()
+
         if np.any(cornerpoints_geo[:2] - cornerpoints_dtm[:2]) != 0:
             path_dest = '_cropped_DEM.tif'
             new_bounds = (self.grid.extent[[0, 2, 1, 3]])
@@ -82,6 +89,20 @@ class Load_DEM_GDAL():
             self.dem_zval = self.dem.ReadAsArray()
             self._get_raster_dimensions()
         print('Cropped raster to geo_model.grid.extent.')
+
+    def check(self, test=False):
+        #todo make this usable
+        test = np.logical_and.reduce((self.grid.extent[0] <= self.extent[0],
+                                      self.grid.extent[1] >= self.extent[1],
+                                      self.grid.extent[2] <= self.extent[2],
+                                      self.grid.extent[3] >= self.extent[3]))
+        if test:
+            cornerpoints_geo = self._get_cornerpoints(self.grid.extent)
+            cornerpoints_dtm = self._get_cornerpoints(self.extent)
+            plt.scatter(cornerpoints_geo[:, 0], cornerpoints_geo[:, 1], label='grid extent')
+            plt.scatter(cornerpoints_dtm[:, 0], cornerpoints_dtm[:, 1], label='raster extent')
+            plt.legend(frameon=True, loc='upper left')
+            raise AssertionError('The model extent is too different from the raster extent.')
 
     def convert2xyz(self):
         '''

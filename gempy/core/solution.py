@@ -70,14 +70,8 @@ class Solution(object):
         self.vertices = []
         self.edges = []
 
-        # Topography
-        # Todo merge this in geological_map[0] and [1] and adjust plotting
         self.geological_map = None
-        self.geological_map_scalfield = None
-
         self.sections = None
-        self.sections_scalfield = None
-
         self.custom = None
 
     def __repr__(self):
@@ -107,6 +101,18 @@ class Solution(object):
             self.compute_all_surfaces()
 
         return self
+
+    def set_solution_to_custom(self, values: Union[list, np.ndarray]):
+        l0, l1 = self.grid.get_grid_args('custom')
+        self.custom = np.array([values[0][:, l0: l1], values[3][:, l0: l1].astype(float)])
+
+    def set_solution_to_topography(self, values: Union[list, np.ndarray]):
+        l0, l1 = self.grid.get_grid_args('topography')
+        self.geological_map = np.array([values[0][:, l0: l1], values[3][:, l0: l1].astype(float)])
+
+    def set_solution_to_sections(self, values: Union[list, np.ndarray]):
+        l0, l1 = self.grid.get_grid_args('sections')
+        self.sections = np.array([values[0][:, l0: l1], values[3][:, l0: l1].astype(float)])
 
     def set_values_to_regular_grid(self, values: Union[list, np.ndarray]):
         # TODO ============ Set asserts of give flexibility 20.09.18 =============
@@ -144,6 +150,7 @@ class Solution(object):
         self.values_at_surface_points = values[0][1:, x_to_intep_length:]
         return True
         # TODO Adapt it to the gradients
+
 
     @setdoc(measure.marching_cubes_lewiner.__doc__)
     def compute_surface_regular_grid(self, level: float, scalar_field, mask_array=None, classic=False, **kwargs):

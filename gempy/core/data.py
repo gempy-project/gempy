@@ -184,7 +184,7 @@ class Grid(object):
 
     @setdoc(grid_types.Sections.__doc__)
     def set_section_grid(self, section_dict):
-        self.sections = grid_types.Sections(self.regular_grid, section_dict)
+        self.sections = grid_types.Sections(regular_grid=self.regular_grid, section_dict=section_dict)
         self.set_active('sections')
         return self.sections
 
@@ -698,7 +698,7 @@ class Colors:
         Returns: None
 
         '''
-        if cdict == None:
+        if cdict is None:
             # assert if one surface does not have color
             try:
                 self._add_colors()
@@ -821,7 +821,7 @@ class Surfaces(object):
 
     @staticmethod
     def background_color(value):
-        if type(value) == str:
+        if isinstance(value, str):
             return "background-color: %s" % value
 
 # region set formation names
@@ -836,7 +836,8 @@ class Surfaces(object):
          Returns:
              :class:`Surfaces`:
          """
-        if type(surfaces_list) is list or type(surfaces_list) is np.ndarray:
+        #if type(surfaces_list) is list or type(surfaces_list) is np.ndarray:
+        if isinstance(surfaces_list, (list, np.ndarray)):
             surfaces_list = np.asarray(surfaces_list)
 
         else:

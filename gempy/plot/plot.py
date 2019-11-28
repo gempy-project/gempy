@@ -178,7 +178,7 @@ def export_to_vtk(geo_data, path=None, name=None, voxels=True, block=None, surfa
     return True
 
 
-def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_font_size=6, **kwargs):
+def plot_data(geo_data, direction="y", data_type = 'all', series="all", show_legend=True, **kwargs):
     """
     Plot the projection of the raw data (surface_points and orientations) in 2D following a
     specific directions
@@ -194,7 +194,7 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", legend_f
     """
     plot = PlotData2D(geo_data)
     p = plot.plot_data(direction=direction, data_type=data_type, series=series,
-                          legend_font_size=legend_font_size, **kwargs)
+                          show_legend=show_legend, **kwargs)
     # TODO saving options
     return plot
 
@@ -221,7 +221,7 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
                         show_density=show_density)
 
 
-def plot_map(model, contour_lines=True, show_faults = True, show_data=True, figsize=(12,12)):
+def plot_map(model, contour_lines=True, show_data=True, figsize=(12,12)):
     """
 
     Args:
@@ -234,7 +234,7 @@ def plot_map(model, contour_lines=True, show_faults = True, show_data=True, figs
 
     """
     plot = PlotSolution(model)
-    plot.plot_map(contour_lines=contour_lines, show_faults=show_faults, show_data=show_data, figsize=figsize)
+    plot.plot_map(contour_lines=contour_lines, show_data=show_data, figsize=figsize)
 
 
 def plot_section_traces(model, section_names=None, contour_lines=False, show_data=True, show_all_data=False):
@@ -283,12 +283,18 @@ def plot_predef_sections(model, show_traces=True, show_data=False, section_names
 """
 
 def plot_section_by_name(model, section_name, show_faults=True, show_topo=True, show_data=True,
-                         show_all_data=False):
+                         show_all_data=False, radius='default', contourplot=True):
     # Todo needs more keywords:
     ### if show_data: radius, data_type
     plot = PlotSolution(model)
     plot.plot_section_by_name(section_name=section_name, show_topo=show_topo, show_faults=show_faults,
-                              show_data=show_data, show_all_data=show_all_data)
+                              show_data=show_data, show_all_data=show_all_data, radius=radius, contourplot=contourplot)
+
+
+def plot_all_sections(model, show_data=False, section_names=None, show_topo=True, figsize=(12, 12)):
+    plot = PlotSolution(model)
+    plot.plot_all_sections(show_data=show_data, section_names=section_names, show_topo=show_topo,
+                           figsize=figsize)
 
 
 def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
