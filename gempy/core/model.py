@@ -347,7 +347,7 @@ class DataMutation(object):
         return self.faults
 
     @setdoc([Faults.set_is_finite_fault.__doc__], indent=False)
-    def set_is_finite_fault(self, series_fault=None, toggle: bool = False):
+    def set_is_finite_fault(self, series_fault=None, toggle: bool = True):
         """ """
         s = self.faults.set_is_finite_fault(series_fault, toggle)  # change df in Fault obj
         # change shared theano variable for infinite factor

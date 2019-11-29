@@ -326,6 +326,7 @@ class Faults(object):
                 self.df.loc[series_fault, 'isFault'] = self.df.loc[series_fault, 'isFault'] ^ True
             else:
                 self.df.loc[series_fault, 'isFault'] = True
+
             self.df['isFinite'] = np.bitwise_and(self.df['isFault'], self.df['isFinite'])
 
             # Update default fault relations
@@ -364,7 +365,7 @@ class Faults(object):
             if toggle is True:
                 self.df.loc[series_finite, 'isFinite'] = self.df.loc[series_finite, 'isFinite'] ^ True
             else:
-                self.df.loc[series_finite, 'isFinite'] = self.df.loc[series_finite, 'isFinite']
+                self.df.loc[series_finite, 'isFinite'] = True
 
         return self
 
