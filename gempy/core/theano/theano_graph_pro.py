@@ -326,6 +326,7 @@ class TheanoGraphPro(object):
         self.scalar_fields_matrix = theano.shared(np.cast[dtype](np.zeros((3, 10000))), 'Scalar matrix')
         self.block_matrix = theano.shared(np.cast[dtype](np.zeros((3, 3, 10000))), "block matrix")
         self.mask_matrix = theano.shared(np.zeros((3, 10000), dtype='bool'), "mask matrix")
+        self.mask_matrix_f = T.zeros_like(self.mask_matrix)
         self.sfai = T.zeros([self.is_erosion.shape[0], self.n_surfaces_per_series[-1]])
 
         self.new_block = self.block_matrix
@@ -367,6 +368,7 @@ class TheanoGraphPro(object):
                 dict(initial=self.scalar_fields_matrix),
                 dict(initial=self.sfai),
                 dict(initial=self.mask_matrix),
+                dict(initial=self.mask_matrix_f)
 
             ],  # This line may be used for the df network
             sequences=[dict(input=self.len_series_i, taps=[0, 1]),
@@ -398,8 +400,74 @@ class TheanoGraphPro(object):
         mask_rev_cumprod = T.vertical_stack(mask[[-1]], T.cumprod(T.invert(mask[:-1]), axis=0))
         self.new_mask = mask * mask_rev_cumprod
 
+        fault_mask = series[5][-1]
+        fault_block = self.compute_final_block(fault_mask, self.new_block)
+
         final_model = self.compute_final_block(self.new_mask, self.new_block)
-        return [final_model, self.new_block, self.new_weights, self.new_scalar, self.new_sfai, self.new_mask]
+
+        return [final_model, self.new_block, fault_block, self.new_weights, self.new_scalar,
+                self.new_sfai, self.new_mask, fault_mask]
+
+    def theano_output(self):
+        solutions = [theano.shared(np.nan)]*15
+        self.compute_type = ['lithology']# 'topology']
+        if 'lithology' in self.compute_type:
+            solutions[:9] = self.compute_series()
+
+        if 'topology' in self.compute_type:
+            # This needs new data, resolution of the regular grid, value max
+            unique_val = solutions[0] + self.values_properties_op[0].max() * solutions[2]
+            uv_3d = T.cast(T.round(unique_val[0, :125000].reshape((50, 50, 50))), 'int32')
+
+            uv_l = T.horizontal_stack(uv_3d[1:, :, :].reshape((1, -1)),
+                                      uv_3d[:, 1:, :].reshape((1, -1)),
+                                      uv_3d[:, :, 1:].reshape((1, -1)))
+
+            uv_r = T.horizontal_stack(uv_3d[:-1, :, :].reshape((1, -1)),
+                                      uv_3d[:, :-1, :].reshape((1, -1)),
+                                      uv_3d[:, :, :-1].reshape((1, -1)))
+
+            shift = uv_l - uv_r
+            select_edges = T.neq(shift.reshape((1, -1)), 0)
+            select_edges_dir = select_edges.reshape((3, -1))
+
+            select_voxels = T.zeros_like(uv_3d)
+            select_voxels = T.inc_subtensor(select_voxels[1:, :, :],  select_edges_dir[0].reshape((49,50,50)))
+            select_voxels = T.inc_subtensor(select_voxels[:-1, :, :],  select_edges_dir[0].reshape((49,50,50)))
+
+            select_voxels = T.inc_subtensor(select_voxels[:, 1:, :],  select_edges_dir[1].reshape((50,49,50)))
+            select_voxels = T.inc_subtensor(select_voxels[:, :-1, :],  select_edges_dir[1].reshape((50,49,50)))
+
+            select_voxels = T.inc_subtensor(select_voxels[:, :, 1:],  select_edges_dir[2].reshape((50,50,49)))
+            select_voxels = T.inc_subtensor(select_voxels[:, :, :-1],  select_edges_dir[2].reshape((50,50,49)))
+
+            uv_lr = T.vertical_stack(uv_l.reshape((1, -1)), uv_r.reshape((1, -1)))
+            uv_lr_boundaries = uv_lr[T.tile(select_edges.reshape((1, -1)), (2, 1))].reshape((2, -1)).T
+
+            # a = T.bincount(uv_lr_boundaries)
+            edges_id, count_edges = T.extra_ops.Unique(return_counts=True, axis=0)(uv_lr_boundaries)
+
+            # TODO probably what I need here is to collapse the 3 directions into one
+            solutions[9] = select_voxels
+            solutions[10] = edges_id
+            solutions[11] = count_edges
+
+        if 'gravity' in self.compute_type:
+            pos_density = self.pos_density
+            densities = self.densities
+
+            assert pos_density is not None or densities is not None, 'If a density block is not passed, you need to' \
+                                                                     ' specify which interpolated value is density.' \
+                                                                     ' See :class:`Surface`'
+            if densities is None:
+                densities = solutions[0][pos_density, self.lg0:self.lg1]  # - 2 * self.len_points]
+
+            solutions[12] = self.compute_forward_gravity_pro(densities)
+
+        if 'magnetics' in self.compute_type:
+            raise NotImplementedError
+            solutions[13] = None
+        return solutions
 
     # region Geometry
     def repeat_list(self, val, r_0, r_1, repeated_array, n_col):
@@ -1532,7 +1600,8 @@ class TheanoGraphPro(object):
                          compute_block_ctr=np.array(True),
                          is_finite=np.array(False), is_erosion=np.array(True), is_onlap=np.array(False),
                          n_series=0,
-                         block_matrix=None, weights_vector=None, scalar_field_matrix=None, sfai=None, mask_matrix=None
+                         block_matrix=None, weights_vector=None, scalar_field_matrix=None, sfai=None, mask_matrix=None,
+                         mask_matrix_f=None
                          ):
         """
         Function that loops each fault, generating a potential field for each on them with the respective block model
@@ -1609,13 +1678,17 @@ class TheanoGraphPro(object):
         scalar_field_at_surface_points = self.get_scalar_field_at_surface_points(Z_x, self.npf_op)
         #
         # # TODO: add control flow for this side
-        mask_e = tif.ifelse(is_erosion,
-                            T.gt(Z_x, T.min(scalar_field_at_surface_points)),
-                            ~ self.is_fault[n_series] * T.ones_like(Z_x, dtype='bool'))
+        mask_e = tif.ifelse(is_erosion, # If is erosion
+                            T.gt(Z_x, T.min(scalar_field_at_surface_points)), # It is True the values over the last surface
+                            ~ self.is_fault[n_series] * T.ones_like(Z_x, dtype='bool')) # else: all False if is Fault else all ones
 
         mask_o = tif.ifelse(is_onlap,
                             T.gt(Z_x, T.max(scalar_field_at_surface_points)),
                             mask_matrix[n_series - 1, :])
+
+        mask_f = tif.ifelse(self.is_fault[n_series],
+                            T.gt(Z_x, T.min(scalar_field_at_surface_points)),
+                            T.zeros_like(Z_x, dtype='bool'))
 
         if self.gradient is False:
             block = tif.ifelse(
@@ -1638,14 +1711,27 @@ class TheanoGraphPro(object):
                                    self.values_properties_op[:, n_form_per_serie_0: n_form_per_serie_1 + 1]),
                                block_matrix[n_series, :]
                                )
+
         weights_vector = T.set_subtensor(weights_vector[len_w_0:len_w_1], weights)
         scalar_field_matrix = T.set_subtensor(scalar_field_matrix[n_series], Z_x)
         block_matrix = T.set_subtensor(block_matrix[n_series, :], block)
         mask_matrix = T.set_subtensor(mask_matrix[n_series - 1, :], mask_o)
         mask_matrix = T.set_subtensor(mask_matrix[n_series, :], mask_e)
+
+        # This creates a matrix with Trues in the positive side of the faults. When is not faults is 0
+
+        # This select the indices where is fault but are not offsetting
+        # TODO having a better way to control the number of series than is_erosion
+        idx_e = (self.is_fault * ~T.cast(faults_relation_op, 'bool'))[:self.is_erosion.shape[0]]
+        idx_o = (self.is_fault * ~T.cast(self.fault_relation[:, T.cast(n_series-1, 'int8')], 'bool'))[:self.is_erosion.shape[0]]
+
+        mask_matrix_f = T.set_subtensor(mask_matrix_f[idx_e, :], mask_e + mask_f)
+        # mask_matrix_f = T.set_subtensor(mask_matrix_f[idx_o, :], mask_o + mask_matrix_f[n_series-1])
+
+        # Scalar field at interfaces
         sfai = T.set_subtensor(sfai[n_series, n_surface_op-1], scalar_field_at_surface_points)
 
-        return block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix
+        return block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix, mask_matrix_f
 
     def compute_forward_gravity(self, densities=None, pos_density=None):  # densities, tz, select,
 
@@ -1673,3 +1759,20 @@ class TheanoGraphPro(object):
         grav = (densities * tz_rep).reshape((n_devices, -1)).sum(axis=1)
 
         return final_model, new_block, new_weights, new_scalar, new_sfai, new_mask,  grav  # , model_sol.append(grav)
+
+    def compute_forward_gravity_pro(self, densities=None):  # densities, tz, select,
+
+        if 'densities' in self.verbose:
+            densities = theano.printing.Print('density')(densities)
+
+        n_devices = T.cast((densities.shape[0] / self.tz.shape[0]), dtype='int32')
+
+        if 'grav_devices' in self.verbose:
+            n_devices = theano.printing.Print('n_devices')(n_devices)
+
+        tz_rep = T.tile(self.tz, n_devices)
+
+        # density times the component z of gravity
+        grav = (densities * tz_rep).reshape((n_devices, -1)).sum(axis=1)
+
+        return grav

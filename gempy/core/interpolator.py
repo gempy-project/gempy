@@ -888,6 +888,50 @@ class InterpolatorModel(Interpolator):
             self.set_theano_shared_grid(grid)
 
         th_fn = theano.function(input_data_T,
+                                self.theano_graph.theano_output(),
+                                updates=[(self.theano_graph.block_matrix, self.theano_graph.new_block),
+                                         (self.theano_graph.weights_vector, self.theano_graph.new_weights),
+                                         (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
+                                         (self.theano_graph.mask_matrix, self.theano_graph.new_mask)],
+                                on_unused_input='ignore',
+                                allow_input_downcast=False,
+                                profile=False)
+
+        if inplace is True:
+            self.theano_function = th_fn
+
+        if debug is True:
+            print('Level of Optimization: ', theano.config.optimizer)
+            print('Device: ', theano.config.device)
+            print('Precision: ', theano.config.floatX)
+            print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
+        print('Compilation Done!')
+
+        return th_fn
+
+    def compile_th_fn_geo_DEP(self, inplace=False, debug=True, grid: Union[str, np.ndarray] = None):
+        """
+        Compile and create the theano function which can be evaluated to compute the geological models
+
+        Args:
+
+            inplace (bool): If true add the attribute theano.function to the object inplace
+            debug (bool): If true print some of the theano flags
+            grid: If None, grid will be passed as variable. If shared or np.ndarray the grid will be treated as
+             constant (if shared the grid will be taken of grid)
+
+        Returns:
+            theano.function: function that computes the whole interpolation
+        """
+
+        self.set_all_shared_parameters(reset_ctrl=False)
+        # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
+        input_data_T = self.theano_graph.input_parameters_loop
+        print('Compiling theano function...')
+        if grid == 'shared' or grid is not None:
+            self.set_theano_shared_grid(grid)
+
+        th_fn = theano.function(input_data_T,
                                 self.theano_graph.compute_series(),
                                 updates=[(self.theano_graph.block_matrix, self.theano_graph.new_block),
                                          (self.theano_graph.weights_vector, self.theano_graph.new_weights),
