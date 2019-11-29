@@ -117,7 +117,7 @@ solv = SolveSparse()
 
 
 class TheanoGraphPro(object):
-    def __init__(self, optimizer='fast_compile', verbose=None, dtype=None, **kwargs):
+    def __init__(self, optimizer='fast_compile', verbose=None, dtype=None, output=['geology'], **kwargs):
         """
         Class to create the symbolic theano graph with all the interpolation-FW engine
 
@@ -139,13 +139,14 @@ class TheanoGraphPro(object):
         else:
             self.verbose = verbose
 
+        self.compute_type = output
+
         if dtype is None:
             dtype = 'float32' if theano.config.device == 'cuda' else 'float64'
 
         # Trade speed for memory this will consume more memory
         self.max_speed = kwargs.get('max_speed', 1)
         self.sparse_version = kwargs.get('sparse_version', False)
-       # self.loop_i = theano.shared(np.array(1, dtype=int))
 
         self.gradient = kwargs.get('gradient', False)
         self.device = theano.config.device
@@ -210,7 +211,7 @@ class TheanoGraphPro(object):
 
         rest_ref_aux = self.set_rest_ref_matrix(self.number_of_points_per_surface_T)
         self.ref_layer_points_all = rest_ref_aux[0]
-        self.rest_layer_points_all = rest_ref_aux[1] #self.set_rest_ref_matrix(self.number_of_points_per_surface_T)[1]
+        self.rest_layer_points_all = rest_ref_aux[1]
 
         self.nugget_effect_scalar_T_ref_rest = self.set_nugget_surface_points(rest_ref_aux[2], rest_ref_aux[3],
                                                                         self.number_of_points_per_surface_T)
@@ -308,18 +309,23 @@ class TheanoGraphPro(object):
 
         self.offset = theano.shared(10.)
 
-        # Gravity
-        self.tz = theano.shared(np.empty(0, dtype=dtype), 'tz component')
-        self.density_matrix = T.vector('density vector')
-        self.lg0 = T.lscalar('arg_0 of the centered grid')
-        self.lg1 = T.lscalar('arg_1 of the centered grid')
+        # # Gravity
+        # self.tz = theano.shared(np.empty(0, dtype=dtype), 'tz component')
+        # self.density_matrix = T.vector('density vector')
+        # self.lg0 = T.lscalar('arg_0 of the centered grid')
+        # self.lg1 = T.lscalar('arg_1 of the centered grid')
+        #
+        # self.input_parameters_grav = [self.dips_position_all, self.dip_angles_all, self.azimuth_all,
+        #                               self.polarity_all, self.surface_points_all,
+        #                               self.fault_matrix, self.grid_val_T,
+        #                               self.values_properties_op,
+        #                               self.compute_weights_ctrl, self.compute_scalar_ctrl, self.compute_block_ctrl,
+        #                               self.lg0, self.lg1]
 
-        self.input_parameters_grav = [self.dips_position_all, self.dip_angles_all, self.azimuth_all,
-                                      self.polarity_all, self.surface_points_all,
-                                      self.fault_matrix, self.grid_val_T,
-                                      self.values_properties_op,
-                                      self.compute_weights_ctrl, self.compute_scalar_ctrl, self.compute_block_ctrl,
-                                      self.lg0, self.lg1]
+        # Topology
+        self.max_lith = theano.shared(np.array(10, dtype='int'), 'Max id of the lithologies')
+        self.regular_grid_res = theano.shared(np.ones(3, dtype='int'), 'Resolution of the regular grid')
+        self.dxdydz = theano.shared(np.ones(3, dtype='int'), 'Size of the voxels in each direction.')
 
         # Results matrix
         self.weights_vector = theano.shared(np.cast[dtype](np.zeros(10000)), 'Weights vector')
@@ -410,7 +416,7 @@ class TheanoGraphPro(object):
 
     def theano_output(self):
         solutions = [theano.shared(np.nan)]*15
-        self.compute_type = ['lithology']# 'topology']
+        self.compute_type = ['lithology', 'topology']
         if 'lithology' in self.compute_type:
             solutions[:9] = self.compute_series()
 
@@ -453,14 +459,11 @@ class TheanoGraphPro(object):
             solutions[11] = count_edges
 
         if 'gravity' in self.compute_type:
-            pos_density = self.pos_density
-            densities = self.densities
+            self.pos_density = theano.shared(np.array(1, dtype='int64'), 'position of the density on the values matrix')
+            self.lg0 = theano.shared(np.array(0, dtype='int64'), 'arg_0 of the centered grid')
+            self.lg1 = theano.shared(np.array(1, dtype='int64'), 'arg_1 of the centered grid')
 
-            assert pos_density is not None or densities is not None, 'If a density block is not passed, you need to' \
-                                                                     ' specify which interpolated value is density.' \
-                                                                     ' See :class:`Surface`'
-            if densities is None:
-                densities = solutions[0][pos_density, self.lg0:self.lg1]  # - 2 * self.len_points]
+            densities = solutions[0][self.pos_density, self.lg0:self.lg1]
 
             solutions[12] = self.compute_forward_gravity_pro(densities)
 

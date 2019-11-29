@@ -100,6 +100,7 @@ class Interpolator(object):
 
         graph = tg.TheanoGraphPro(optimizer=additional_data.options.df.loc['values', 'theano_optimizer'],
                                   verbose=additional_data.options.df.loc['values', 'verbosity'],
+                                  output=['geology'],
                                   **kwargs)
         if inplace is True:
             self.theano_graph = graph
@@ -582,6 +583,11 @@ class InterpolatorModel(Interpolator):
 
         return True
 
+    def set_theano_shared_topology(self):
+        self.theano_graph.max_lith.set_value(self.surfaces.df.groupby('isFault')['id'].count()[False])
+        self.theano_graph.regular_grid_res.set_value(self.grid.regular_grid.resolution)
+        self.theano_graph.dxdydz.set_value(self.grid.regular_grid.get_dx_dy_dz())
+
     @setdoc_pro(reset_flow_control_initial_results.__doc__)
     def set_theano_shared_structure(self, reset_ctrl=False):
         """
@@ -845,7 +851,8 @@ class InterpolatorModel(Interpolator):
         values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
 
         # Set all in a list casting them in the chosen dtype
-        idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
+        idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity,
+                                                  surface_points_coord,
                                                   fault_drift, grid, values_properties)]
         if append_control is True:
             idl.append(self.compute_weights_ctrl)

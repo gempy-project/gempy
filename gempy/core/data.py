@@ -773,8 +773,9 @@ class Surfaces(object):
 
     def __init__(self, series: Series, surface_names=None, values_array=None, properties_names=None):
 
-        self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'color', 'vertices', 'edges', 'id']
-        self._columns_vis_drop = ['vertices', 'edges',]
+        self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'isFault', 'color', 'vertices', 'edges', 'id']
+
+        self._columns_vis_drop = ['vertices', 'edges', 'isBasement', 'isFault']
         self._n_properties = len(self._columns) -1
         self.series = series
         self.colors = Colors(self)
@@ -795,7 +796,9 @@ class Surfaces(object):
             self.set_surfaces_values(values_array=values_array, properties_names=properties_names)
 
     def __repr__(self):
-        return self.df.to_string()
+        c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
+
+        return self.df[c_].to_string()
 
     def _repr_html_(self):
         c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
@@ -812,13 +815,18 @@ class Surfaces(object):
              :class:`Surfaces`:
 
         """
-
+        self.map_faults()
         if id_list is None:
-            id_list = self.df.reset_index().index + 1
+          #  id_unique = self.df.reset_index().index + 1
+            id_list = self.df.groupby('isFault').cumcount() + 1
 
         self.df['id'] = id_list
+        #self.df['id_u'] = id_list
 
         return self
+
+    def map_faults(self):
+        self.df['isFault'] = self.df['series'].map(self.series.faults.df['isFault'])
 
     @staticmethod
     def background_color(value):
@@ -2473,7 +2481,7 @@ class Structure(object):
         # Extracting lengths
         # ==================
         # Array containing the size of every surface. SurfacePoints
-        lssp = self.surface_points.df.groupby('id')['order_series'].count().values
+        lssp = self.surface_points.df.groupby('surface')['order_series'].count().values
         lssp_nonzero = lssp[np.nonzero(lssp)]
 
         self.df.at['values', 'len surfaces surface_points'] = lssp_nonzero
