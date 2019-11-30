@@ -117,7 +117,7 @@ solv = SolveSparse()
 
 
 class TheanoGraphPro(object):
-    def __init__(self, optimizer='fast_compile', verbose=None, dtype=None, output=['geology'], **kwargs):
+    def __init__(self, optimizer='fast_compile', verbose=None, dtype=None, output=None, **kwargs):
         """
         Class to create the symbolic theano graph with all the interpolation-FW engine
 
@@ -134,6 +134,9 @@ class TheanoGraphPro(object):
 
         # OPTIONS
         # -------
+        if output is None:
+            output = ['geology']
+
         if verbose is None:
             self.verbose = [None]
         else:
@@ -143,6 +146,8 @@ class TheanoGraphPro(object):
 
         if dtype is None:
             dtype = 'float32' if theano.config.device == 'cuda' else 'float64'
+
+        self.dtype= dtype
 
         # Trade speed for memory this will consume more memory
         self.max_speed = kwargs.get('max_speed', 1)
@@ -322,17 +327,22 @@ class TheanoGraphPro(object):
         #                               self.compute_weights_ctrl, self.compute_scalar_ctrl, self.compute_block_ctrl,
         #                               self.lg0, self.lg1]
 
+        if 'gravity' in self.compute_type:
+            self.tz = theano.shared(np.empty(0, dtype=self.dtype), 'tz component')
+            self.pos_density = theano.shared(np.array(1, dtype='int64'), 'position of the density on the values matrix')
+            self.lg0 = theano.shared(np.array(0, dtype='int64'), 'arg_0 of the centered grid')
+            self.lg1 = theano.shared(np.array(1, dtype='int64'), 'arg_1 of the centered grid')
+
         # Topology
         self.max_lith = theano.shared(np.array(10, dtype='int'), 'Max id of the lithologies')
         self.regular_grid_res = theano.shared(np.ones(3, dtype='int'), 'Resolution of the regular grid')
-        self.dxdydz = theano.shared(np.ones(3, dtype='int'), 'Size of the voxels in each direction.')
+        self.dxdydz = theano.shared(np.ones(3, dtype=dtype), 'Size of the voxels in each direction.')
 
         # Results matrix
         self.weights_vector = theano.shared(np.cast[dtype](np.zeros(10000)), 'Weights vector')
         self.scalar_fields_matrix = theano.shared(np.cast[dtype](np.zeros((3, 10000))), 'Scalar matrix')
         self.block_matrix = theano.shared(np.cast[dtype](np.zeros((3, 3, 10000))), "block matrix")
         self.mask_matrix = theano.shared(np.zeros((3, 10000), dtype='bool'), "mask matrix")
-        self.mask_matrix_f = T.zeros_like(self.mask_matrix)
         self.sfai = T.zeros([self.is_erosion.shape[0], self.n_surfaces_per_series[-1]])
 
         self.new_block = self.block_matrix
@@ -364,7 +374,9 @@ class TheanoGraphPro(object):
         return final_model
 
     def compute_series(self):
-        # TODO make a function to create the grid with special conditions. e.g for the sandbox
+        # TODO I have to take this function to interpolator and making the behaviour the same as mask_matrix
+        self.mask_matrix_f = T.zeros_like(self.mask_matrix)
+
         # Looping
         series, updates1 = theano.scan(
             fn=self.compute_a_series,
@@ -416,14 +428,15 @@ class TheanoGraphPro(object):
 
     def theano_output(self):
         solutions = [theano.shared(np.nan)]*15
-        self.compute_type = ['lithology', 'topology']
-        if 'lithology' in self.compute_type:
+        solutions[0] = theano.shared(np.zeros((2,2)))
+        # self.compute_type = ['lithology', 'topology']
+        if 'geology' in self.compute_type:
             solutions[:9] = self.compute_series()
 
         if 'topology' in self.compute_type:
             # This needs new data, resolution of the regular grid, value max
-            unique_val = solutions[0] + self.values_properties_op[0].max() * solutions[2]
-            uv_3d = T.cast(T.round(unique_val[0, :125000].reshape((50, 50, 50))), 'int32')
+            unique_val = solutions[0] + self.max_lith * solutions[2]
+            uv_3d = T.cast(T.round(unique_val[0, :T.prod(self.regular_grid_res)].reshape(self.regular_grid_res, ndim=3)), 'int32')
 
             uv_l = T.horizontal_stack(uv_3d[1:, :, :].reshape((1, -1)),
                                       uv_3d[:, 1:, :].reshape((1, -1)),
@@ -438,14 +451,26 @@ class TheanoGraphPro(object):
             select_edges_dir = select_edges.reshape((3, -1))
 
             select_voxels = T.zeros_like(uv_3d)
-            select_voxels = T.inc_subtensor(select_voxels[1:, :, :],  select_edges_dir[0].reshape((49,50,50)))
-            select_voxels = T.inc_subtensor(select_voxels[:-1, :, :],  select_edges_dir[0].reshape((49,50,50)))
+            select_voxels = T.inc_subtensor(select_voxels[1:, :, :],
+                                            select_edges_dir[0].reshape((self.regular_grid_res - np.array([1, 0, 0])),
+                                                                        ndim=3))
+            select_voxels = T.inc_subtensor(select_voxels[:-1, :, :],
+                                            select_edges_dir[0].reshape((self.regular_grid_res - np.array([1, 0, 0])),
+                                                                        ndim=3))
 
-            select_voxels = T.inc_subtensor(select_voxels[:, 1:, :],  select_edges_dir[1].reshape((50,49,50)))
-            select_voxels = T.inc_subtensor(select_voxels[:, :-1, :],  select_edges_dir[1].reshape((50,49,50)))
+            select_voxels = T.inc_subtensor(select_voxels[:, 1:, :],
+                                            select_edges_dir[1].reshape((self.regular_grid_res - np.array([0, 1, 0])),
+                                                                        ndim=3))
+            select_voxels = T.inc_subtensor(select_voxels[:, :-1, :],
+                                            select_edges_dir[1].reshape((self.regular_grid_res - np.array([0, 1, 0])),
+                                                                        ndim=3))
 
-            select_voxels = T.inc_subtensor(select_voxels[:, :, 1:],  select_edges_dir[2].reshape((50,50,49)))
-            select_voxels = T.inc_subtensor(select_voxels[:, :, :-1],  select_edges_dir[2].reshape((50,50,49)))
+            select_voxels = T.inc_subtensor(select_voxels[:, :, 1:],
+                                            select_edges_dir[2].reshape((self.regular_grid_res - np.array([0, 0, 1])),
+                                                                        ndim=3))
+            select_voxels = T.inc_subtensor(select_voxels[:, :, :-1],
+                                            select_edges_dir[2].reshape((self.regular_grid_res - np.array([0, 0, 1])),
+                                                                        ndim=3))
 
             uv_lr = T.vertical_stack(uv_l.reshape((1, -1)), uv_r.reshape((1, -1)))
             uv_lr_boundaries = uv_lr[T.tile(select_edges.reshape((1, -1)), (2, 1))].reshape((2, -1)).T
@@ -459,9 +484,10 @@ class TheanoGraphPro(object):
             solutions[11] = count_edges
 
         if 'gravity' in self.compute_type:
-            self.pos_density = theano.shared(np.array(1, dtype='int64'), 'position of the density on the values matrix')
-            self.lg0 = theano.shared(np.array(0, dtype='int64'), 'arg_0 of the centered grid')
-            self.lg1 = theano.shared(np.array(1, dtype='int64'), 'arg_1 of the centered grid')
+            # self.tz = theano.shared(np.empty(0, dtype=self.dtype), 'tz component')
+            # self.pos_density = theano.shared(np.array(1, dtype='int64'), 'position of the density on the values matrix')
+            # self.lg0 = theano.shared(np.array(0, dtype='int64'), 'arg_0 of the centered grid')
+            # self.lg1 = theano.shared(np.array(1, dtype='int64'), 'arg_1 of the centered grid')
 
             densities = solutions[0][self.pos_density, self.lg0:self.lg1]
 

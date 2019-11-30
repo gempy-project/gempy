@@ -80,7 +80,8 @@ class Interpolator(object):
         self.len_series_w = self.len_series_i + self.len_series_o * 3 + self.len_series_u + self.len_series_f
 
     @setdoc_pro([AdditionalData.__doc__, ds.inplace, ds.theano_graph_pro])
-    def create_theano_graph(self, additional_data: "AdditionalData" = None, inplace=True, **kwargs):
+    def create_theano_graph(self, additional_data: "AdditionalData" = None, inplace=True,
+                            output=None, **kwargs):
         """
         Create the graph accordingly to the options in the AdditionalData object
 
@@ -91,6 +92,9 @@ class Interpolator(object):
         Returns:
             TheanoGraphPro: [s2]
         """
+        if output is None:
+            output = ['geology']
+
         import gempy.core.theano.theano_graph_pro as tg
         import importlib
         importlib.reload(tg)
@@ -100,7 +104,7 @@ class Interpolator(object):
 
         graph = tg.TheanoGraphPro(optimizer=additional_data.options.df.loc['values', 'theano_optimizer'],
                                   verbose=additional_data.options.df.loc['values', 'verbosity'],
-                                  output=['geology'],
+                                  output=output,
                                   **kwargs)
         if inplace is True:
             self.theano_graph = graph
@@ -577,14 +581,19 @@ class InterpolatorModel(Interpolator):
         self.set_theano_shared_relations()
         self.set_theano_shared_kriging()
         self.set_theano_shared_structure_surfaces()
-
+        self.set_theano_shared_topology()
         if reset_ctrl is True:
             self.reset_flow_control_initial_results()
 
         return True
 
     def set_theano_shared_topology(self):
-        self.theano_graph.max_lith.set_value(self.surfaces.df.groupby('isFault')['id'].count()[False])
+
+        max_lith = self.surfaces.df.groupby('isFault')['id'].count()[False]
+        if type(max_lith) != int:
+            max_lith = 0
+
+        self.theano_graph.max_lith.set_value()
         self.theano_graph.regular_grid_res.set_value(self.grid.regular_grid.resolution)
         self.theano_graph.dxdydz.set_value(self.grid.regular_grid.get_dx_dy_dz())
 
@@ -963,6 +972,8 @@ class InterpolatorModel(Interpolator):
 
 @setdoc([InterpolatorModel.__doc__], indent=False)
 class InterpolatorGravity(InterpolatorModel):
+    # TODO: gravity_interpolator methods should be inherited by interpolator
+
     """
     Child class of :class:`InterpolatorModel` which set the specific shared variables for the gravity computation and
     compiles the theano graph to compute the geological model, i.e. lithologies and the forward gravity.

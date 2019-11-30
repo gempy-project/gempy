@@ -104,15 +104,15 @@ class Solution(object):
 
     def set_solution_to_custom(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('custom')
-        self.custom = np.array([values[0][:, l0: l1], values[3][:, l0: l1].astype(float)])
+        self.custom = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_solution_to_topography(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('topography')
-        self.geological_map = np.array([values[0][:, l0: l1], values[3][:, l0: l1].astype(float)])
+        self.geological_map = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_solution_to_sections(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('sections')
-        self.sections = np.array([values[0][:, l0: l1], values[3][:, l0: l1].astype(float)])
+        self.sections = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_values_to_regular_grid(self, values: Union[list, np.ndarray]):
         # TODO ============ Set asserts of give flexibility 20.09.18 =============

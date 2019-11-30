@@ -135,9 +135,92 @@ def set_interpolation_data(*args, **kwargs):
     return set_interpolator(*args, **kwargs)
 
 
+#@setdoc([InterpolatorModel.__doc__])
+#@setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
+# def set_interpolator_DEP(geo_model: Model, output='geology', compile_theano: bool = True,
+#                      theano_optimizer=None, verbose: list = None, grid=None, type=None,
+#                      **kwargs):
+#     """
+#     Method to create a graph and compile the theano code to compute the interpolation.
+#
+#     Args:
+#         geo_model (:class:`Model`): [s0]
+#         output (list[str:{geo, grav}]): type of interpolation.
+#         compile_theano (bool): [s1]
+#         theano_optimizer (str {'fast_run', 'fast_compile'}): [s2]
+#         verbose:
+#         kwargs:
+#             -  pos_density (Optional[int]): Only necessary when type='grav'. Location on the Surfaces().df
+#              where density is located (starting on id being 0).
+#
+#     Returns:
+#
+#     """
+#     if type is not None:
+#         warnings.warn('type warn is going to be deprecated. Use output insted', FutureWarning)
+#         output = type
+#
+#     if theano_optimizer is not None:
+#         geo_model.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
+#     if verbose is not None:
+#         geo_model.additional_data.options.df.at['values', 'verbosity'] = verbose
+#
+#     # TODO add kwargs
+#     geo_model.rescaling.rescale_data()
+#     update_additional_data(geo_model)
+#     geo_model.surface_points.sort_table()
+#     geo_model.orientations.sort_table()
+#
+#     # The graph object contains all theano methods. Therefore is independent to which side
+#     # of the graph we compile:
+#
+#     if output == 'geology':
+#         geo_model.interpolator._type = 'geology'
+#         geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
+#
+#         if compile_theano is True:
+#             geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
+#
+#             geo_model.interpolator.compile_th_fn_geo(inplace=True, grid=grid)
+#         else:
+#             if grid == 'shared':
+#                 geo_model.interpolator.set_theano_shared_grid(grid)
+#
+#     elif output == 'gravity':
+#         pos_density = kwargs.get('pos_density', 1)
+#         tz = kwargs.get('tz', 'auto')
+#
+#         # First we need to upgrade the interpolator object:
+#         print('Interpolator object upgraded from InterpolatorModel to InterpolatorGravity.')
+#         geo_model.interpolator = InterpolatorGravity(
+#             geo_model.surface_points, geo_model.orientations, geo_model.grid, geo_model.surfaces,
+#             geo_model.series, geo_model.faults, geo_model.additional_data, **kwargs)
+#
+#         geo_model.interpolator._type = 'gravity'
+#
+#         geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
+#
+#         if tz is 'auto' and geo_model.grid.centered_grid is not None:
+#             print('Calculating the tz components for the centered grid...')
+#             tz = geo_model.interpolator.calculate_tz()
+#             print('Done')
+#
+#         # Set the shared parameters for this piece of tree
+#         geo_model.interpolator.set_theano_shared_tz_kernel(tz)
+#         geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
+#
+#         if compile_theano is True:
+#             geo_model.interpolator.compile_th_fn_grav(density=None, pos_density=pos_density,
+#                                                       inplace=True)
+#     else:
+#         raise AttributeError('type must be either geology or grav')
+#
+#     return geo_model.interpolator
+
+
 @setdoc([InterpolatorModel.__doc__])
 @setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
-def set_interpolator_DEP(geo_model: Model, output='geology', compile_theano: bool = True,
+def set_interpolator(geo_model: Model, output=None, compile_theano: bool = True,
                      theano_optimizer=None, verbose: list = None, grid=None, type=None,
                      **kwargs):
     """
@@ -156,6 +239,12 @@ def set_interpolator_DEP(geo_model: Model, output='geology', compile_theano: boo
     Returns:
 
     """
+    if output is None:
+        output = ['geology']
+
+    if 'gravity' in output and 'geology' not in output:
+        output.append('geology')
+
     if type is not None:
         warnings.warn('type warn is going to be deprecated. Use output insted', FutureWarning)
         output = type
@@ -165,90 +254,8 @@ def set_interpolator_DEP(geo_model: Model, output='geology', compile_theano: boo
     if verbose is not None:
         geo_model.additional_data.options.df.at['values', 'verbosity'] = verbose
 
-    # TODO add kwargs
-    geo_model.rescaling.rescale_data()
-    update_additional_data(geo_model)
-    geo_model.surface_points.sort_table()
-    geo_model.orientations.sort_table()
-
-    # The graph object contains all theano methods. Therefore is independent to which side
-    # of the graph we compile:
-
-    if output == 'geology':
-        geo_model.interpolator._type = 'geology'
-        geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
-
-        if compile_theano is True:
-            geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
-
-            geo_model.interpolator.compile_th_fn_geo(inplace=True, grid=grid)
-        else:
-            if grid == 'shared':
-                geo_model.interpolator.set_theano_shared_grid(grid)
-
-    elif output == 'gravity':
-        pos_density = kwargs.get('pos_density', 1)
-        tz = kwargs.get('tz', 'auto')
-
-        # First we need to upgrade the interpolator object:
-        print('Interpolator object upgraded from InterpolatorModel to InterpolatorGravity.')
-        geo_model.interpolator = InterpolatorGravity(
-            geo_model.surface_points, geo_model.orientations, geo_model.grid, geo_model.surfaces,
-            geo_model.series, geo_model.faults, geo_model.additional_data, **kwargs)
-
-        geo_model.interpolator._type = 'gravity'
-
-        geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
-
-        if tz is 'auto' and geo_model.grid.centered_grid is not None:
-            print('Calculating the tz components for the centered grid...')
-            tz = geo_model.interpolator.calculate_tz()
-            print('Done')
-
-        # Set the shared parameters for this piece of tree
-        geo_model.interpolator.set_theano_shared_tz_kernel(tz)
-        geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
-
-        if compile_theano is True:
-            geo_model.interpolator.compile_th_fn_grav(density=None, pos_density=pos_density,
-                                                      inplace=True)
-    else:
-        raise AttributeError('type must be either geology or grav')
-
-    return geo_model.interpolator
-
-
-@setdoc([InterpolatorModel.__doc__])
-@setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
-def set_interpolator(geo_model: Model, output=['geology'], compile_theano: bool = True,
-                     theano_optimizer=None, verbose: list = None, grid=None, type=None,
-                     **kwargs):
-    """
-    Method to create a graph and compile the theano code to compute the interpolation.
-
-    Args:
-        geo_model (:class:`Model`): [s0]
-        output (list[str:{geo, grav}]): type of interpolation.
-        compile_theano (bool): [s1]
-        theano_optimizer (str {'fast_run', 'fast_compile'}): [s2]
-        verbose:
-        kwargs:
-            -  pos_density (Optional[int]): Only necessary when type='grav'. Location on the Surfaces().df
-             where density is located (starting on id being 0).
-
-    Returns:
-
-    """
-    if type is not None:
-        warnings.warn('type warn is going to be deprecated. Use output insted', FutureWarning)
-        output = type
-
-    if theano_optimizer is not None:
-        geo_model.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
-    if verbose is not None:
-        geo_model.additional_data.options.df.at['values', 'verbosity'] = verbose
-
-    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
+    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True,
+                                               output=output, **kwargs)
 
     # TODO add kwargs
     geo_model.rescaling.rescale_data()
@@ -262,11 +269,16 @@ def set_interpolator(geo_model: Model, output=['geology'], compile_theano: bool 
 
         if tz is 'auto' and geo_model.grid.centered_grid is not None:
             print('Calculating the tz components for the centered grid...')
-            tz = geo_model.interpolator.calculate_tz()
+            #tz = geo_model.interpolator.calculate_tz()
+            from gempy.assets.geophysics import GeophysicsPreprocessing
+            g = GeophysicsPreprocessing(geo_model.grid.centered_grid)
+            tz = g.set_tz_kernel()
             print('Done')
 
         # Set the shared parameters for this piece of tree
-        geo_model.interpolator.set_theano_shared_tz_kernel(tz)
+        # TODO: gravity_interpolator methods should be inherited by interpolator
+       # geo_model.interpolator.set_theano_shared_tz_kernel(tz)
+        geo_model.interpolator.theano_graph.tz.set_value(tz.astype(geo_model.interpolator.dtype))
         geo_model.interpolator.theano_graph.pos_density.set_value(pos_density)
         geo_model.interpolator.theano_graph.lg0.set_value(geo_model.grid.get_grid_args('centered')[0])
         geo_model.interpolator.theano_graph.lg1.set_value(geo_model.grid.get_grid_args('centered')[1])
@@ -394,6 +406,8 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
         return sol
 
     elif set_solutions is True:
+
+        # Set geology:
         if model.grid.active_grids[0] is np.True_:
             model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh)
         if model.grid.active_grids[1] is np.True_:
@@ -402,8 +416,11 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
             model.solutions.set_solution_to_topography(sol)
         if model.grid.active_grids[3] is np.True_:
             model.solutions.set_solution_to_sections(sol)
-        if output == 'gravity':
-            model.solutions.fw_gravity = sol[6]
+       # if output == 'gravity':
+        # Set gravity
+        model.solutions.fw_gravity = sol[12]
+
+        # TODO: Set magnetcs and set topology
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions
