@@ -1,7 +1,18 @@
 from gempy.plot import visualization_2d_pro as vv
 import numpy as np
 
-def extract_boundaries(self, axes, section_name='topography'):
+
+def _extract_boundaries(self, axes, section_name='topography'):
+    """
+    Should be part of viz 2d.
+    Args:
+        self:
+        axes:
+        section_name:
+
+    Returns:
+
+    """
     cs = []
 
     faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
@@ -65,11 +76,23 @@ def extract_boundaries(self, axes, section_name='topography'):
 
 
 def get_polygon_dictionary(geo_model, section_name):
+    """
+
+    Args:
+        geo_model: the geological model
+        section_name: the section from which the polygons should be retrieved. Must be 'topography' or a predefined
+        section of model.grid.sections
+
+    Returns: [0]: pathdict. A dictionary of every surface with its corresponding polygon xy values.
+             [1]: color dictionary
+             [2]: extent of the section
+
+    """
     p = vv.Plot2D(geo_model)
     p.create_figure((13, 13))
     t = p.add_section(section_name, ax_pos=224)
 
-    cs, colors, extent = extract_boundaries(p, p.axes[0], section_name)
+    cs, colors, extent = _extract_boundaries(p, p.axes[0], section_name)
 
     all_paths = []
     for i in range(len(cs)):
@@ -96,3 +119,4 @@ def get_polygon_dictionary(geo_model, section_name):
     cdict = dict(zip(surflist, colors))
 
     return pathdict, cdict, extent
+
