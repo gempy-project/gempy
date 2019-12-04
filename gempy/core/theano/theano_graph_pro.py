@@ -407,8 +407,7 @@ class TheanoGraphPro(object):
             return_list=True,
             profile=False
         )
-       # return series# [1][-1]
-        #
+
         self.new_block = series[0][-1]
         self.new_weights = series[1][-1]
         self.new_scalar = series[2][-1]
@@ -426,62 +425,94 @@ class TheanoGraphPro(object):
         return [final_model, self.new_block, fault_block, self.new_weights, self.new_scalar,
                 self.new_sfai, self.new_mask, fault_mask]
 
+    def compute_series_oct(self, n_levels=3):
+        self.shift = 0
+        solutions = self.compute_series()
+        unique_val = solutions[0] + self.max_lith * solutions[2]
+        # boundary_voxels = self.get_boundary_voxels(unique_val)
+        # original_regular_grid_boundaries = self.grid_val_T[:T.prod(self.regular_grid_res)][boundary_voxels]
+        #
+        # x_ = T.repeat(T.stack((original_regular_grid_boundaries[:, 0] - self.dxdydz[0] / 4,
+        #                          original_regular_grid_boundaries[:, 0] + self.dxdydz[0] / 4), axis=1), 4, axis=1)
+        # y_ = T.tile(T.repeat(T.stack((original_regular_grid_boundaries[:, 1] - self.dxdydz[1] / 4,
+        #                                  original_regular_grid_boundaries[:, 1] + self.dxdydz[1] / 4), axis=1),
+        #                        2, axis=1), (1, 2))
+        # z_ = T.tile(T.stack((original_regular_grid_boundaries[:, 2] - self.dxdydz[2] / 4,
+        #                        original_regular_grid_boundaries[:, 2] + self.dxdydz[2] / 4), axis=1), (1, 4))
+
+        self.shift = self.grid_val_T.shape[0]
+        self.grid_val_T = self.create_oct_level(unique_val)
+
+
+        #self.grid_val_T = T.stack((x_.ravel(), y_.ravel(), z_.ravel())).T
+
+       # n_series = self.block_matrix.shape[1]
+       # n_properties = self.block_matrix.shape[1]
+       # x_to_interp_shape = self.grid_val_T.shape[0] + self.len_series_i[-1]
+
+#        self.scalar_fields_matrix = T.zeros((n_series, x_to_interp_shape), dtype=self.dtype)
+#        self.mask_matrix = T.zeros((n_series, x_to_interp_shape), dtype=self.dtype)
+#        self.block_matrix = T.zeros((n_series, n_properties, x_to_interp_shape), dtype=self.dtype)
+
+        # I need to init the solution matrices
+        oct_sol = self.compute_series()
+
+        solutions.append(oct_sol[0])
+      #  solutions.append(boundary_voxels)
+        return solutions
+
+    def create_oct_level(self, unique_val):
+
+        uv_3d = T.cast(T.round(unique_val[0, :T.prod(self.regular_grid_res)].reshape(self.regular_grid_res, ndim=3)),
+                       'int32')
+
+        xyz = self.grid_val_T[:T.prod(self.regular_grid_res)].reshape(
+            T.concatenate([self.regular_grid_res, T.stack([3])]), ndim=4)
+
+        shift_x = uv_3d[1:, :, :] - uv_3d[:-1, :, :]
+        shift_x_select = T.neq(shift_x, 0)
+        x_edg = xyz[1:, :, :][shift_x_select] - xyz[:-1, :, :][shift_x_select]
+
+        shift_y = uv_3d[:, 1:, :] - uv_3d[:, :-1, :]
+        shift_y_select = T.neq(shift_y, 0)
+        y_edg = xyz[:, 1:, :][shift_y_select] - xyz[:, :-1, :][shift_y_select]
+
+        shift_z = uv_3d[:, :, 1:] - uv_3d[:, :, :-1]
+        shift_z_select = T.neq(shift_z, 0)
+        z_edg = xyz[:, :, 1:][shift_z_select] - xyz[:, :, :-1][shift_z_select]
+
+        new_xyz_edg = T.stack((x_edg, y_edg, z_edg))
+
+        x_ = T.repeat(T.stack((new_xyz_edg[:, 0] - self.dxdydz[0] / 4,
+                               new_xyz_edg[:, 0] + self.dxdydz[0] / 4), axis=1), 4, axis=1)
+        y_ = T.tile(T.repeat(T.stack((new_xyz_edg[:, 1] - self.dxdydz[1] / 4,
+                                      new_xyz_edg[:, 1] + self.dxdydz[1] / 4), axis=1),
+                             2, axis=1), (1, 2))
+        z_ = T.tile(T.stack((new_xyz_edg[:, 2] - self.dxdydz[2] / 4,
+                             new_xyz_edg[:, 2] + self.dxdydz[2] / 4), axis=1), (1, 4))
+
+        # TODO now if we stack them it should yield the same as before
+        #shift = uv_l - uv_r
+        #select_edges = T.neq(shift.reshape((1, -1)), 0)
+        #select_edges_dir = select_edges.reshape((3, -1))
+        return T.stack((x_.ravel(), y_.ravel(), z_.ravel())).T
+
     def theano_output(self):
         solutions = [theano.shared(np.nan)]*15
         solutions[0] = theano.shared(np.zeros((2,2)))
         # self.compute_type = ['lithology', 'topology']
         if 'geology' in self.compute_type:
-            solutions[:9] = self.compute_series()
-
+            #solutions[:9] = self.compute_series()
+            solutions[:10] = self.compute_series_oct()
         if 'topology' in self.compute_type:
             # This needs new data, resolution of the regular grid, value max
             unique_val = solutions[0] + self.max_lith * solutions[2]
-            uv_3d = T.cast(T.round(unique_val[0, :T.prod(self.regular_grid_res)].reshape(self.regular_grid_res, ndim=3)), 'int32')
 
-            uv_l = T.horizontal_stack(uv_3d[1:, :, :].reshape((1, -1)),
-                                      uv_3d[:, 1:, :].reshape((1, -1)),
-                                      uv_3d[:, :, 1:].reshape((1, -1)))
-
-            uv_r = T.horizontal_stack(uv_3d[:-1, :, :].reshape((1, -1)),
-                                      uv_3d[:, :-1, :].reshape((1, -1)),
-                                      uv_3d[:, :, :-1].reshape((1, -1)))
-
-            shift = uv_l - uv_r
-            select_edges = T.neq(shift.reshape((1, -1)), 0)
-            select_edges_dir = select_edges.reshape((3, -1))
-
-            select_voxels = T.zeros_like(uv_3d)
-            select_voxels = T.inc_subtensor(select_voxels[1:, :, :],
-                                            select_edges_dir[0].reshape((self.regular_grid_res - np.array([1, 0, 0])),
-                                                                        ndim=3))
-            select_voxels = T.inc_subtensor(select_voxels[:-1, :, :],
-                                            select_edges_dir[0].reshape((self.regular_grid_res - np.array([1, 0, 0])),
-                                                                        ndim=3))
-
-            select_voxels = T.inc_subtensor(select_voxels[:, 1:, :],
-                                            select_edges_dir[1].reshape((self.regular_grid_res - np.array([0, 1, 0])),
-                                                                        ndim=3))
-            select_voxels = T.inc_subtensor(select_voxels[:, :-1, :],
-                                            select_edges_dir[1].reshape((self.regular_grid_res - np.array([0, 1, 0])),
-                                                                        ndim=3))
-
-            select_voxels = T.inc_subtensor(select_voxels[:, :, 1:],
-                                            select_edges_dir[2].reshape((self.regular_grid_res - np.array([0, 0, 1])),
-                                                                        ndim=3))
-            select_voxels = T.inc_subtensor(select_voxels[:, :, :-1],
-                                            select_edges_dir[2].reshape((self.regular_grid_res - np.array([0, 0, 1])),
-                                                                        ndim=3))
-
-            uv_lr = T.vertical_stack(uv_l.reshape((1, -1)), uv_r.reshape((1, -1)))
-            uv_lr_boundaries = uv_lr[T.tile(select_edges.reshape((1, -1)), (2, 1))].reshape((2, -1)).T
-
-            # a = T.bincount(uv_lr_boundaries)
-            edges_id, count_edges = T.extra_ops.Unique(return_counts=True, axis=0)(uv_lr_boundaries)
-
-            # TODO probably what I need here is to collapse the 3 directions into one
-            solutions[9] = select_voxels
-            solutions[10] = edges_id
-            solutions[11] = count_edges
+            solutions[9:12] = self.compute_topology(unique_val)
+            #
+            # solutions[9] = select_voxels
+            # solutions[10] = edges_id
+            # solutions[11] = count_edges
 
         if 'gravity' in self.compute_type:
             # self.tz = theano.shared(np.empty(0, dtype=self.dtype), 'tz component')
@@ -497,6 +528,93 @@ class TheanoGraphPro(object):
             raise NotImplementedError
             solutions[13] = None
         return solutions
+
+    def compute_topology(self, unique_val):
+        uv_3d = T.cast(T.round(unique_val[0, :T.prod(self.regular_grid_res)].reshape(self.regular_grid_res, ndim=3)),
+                       'int32')
+
+        uv_l = T.horizontal_stack(uv_3d[1:, :, :].reshape((1, -1)),
+                                  uv_3d[:, 1:, :].reshape((1, -1)),
+                                  uv_3d[:, :, 1:].reshape((1, -1)))
+
+        uv_r = T.horizontal_stack(uv_3d[:-1, :, :].reshape((1, -1)),
+                                  uv_3d[:, :-1, :].reshape((1, -1)),
+                                  uv_3d[:, :, :-1].reshape((1, -1)))
+
+        shift = uv_l - uv_r
+        select_edges = T.neq(shift.reshape((1, -1)), 0)
+        select_edges_dir = select_edges.reshape((3, -1))
+
+        select_voxels = T.zeros_like(uv_3d)
+        select_voxels = T.inc_subtensor(select_voxels[1:, :, :],
+                                        select_edges_dir[0].reshape((self.regular_grid_res - np.array([1, 0, 0])),
+                                                                    ndim=3))
+        select_voxels = T.inc_subtensor(select_voxels[:-1, :, :],
+                                        select_edges_dir[0].reshape((self.regular_grid_res - np.array([1, 0, 0])),
+                                                                    ndim=3))
+
+        select_voxels = T.inc_subtensor(select_voxels[:, 1:, :],
+                                        select_edges_dir[1].reshape((self.regular_grid_res - np.array([0, 1, 0])),
+                                                                    ndim=3))
+        select_voxels = T.inc_subtensor(select_voxels[:, :-1, :],
+                                        select_edges_dir[1].reshape((self.regular_grid_res - np.array([0, 1, 0])),
+                                                                    ndim=3))
+
+        select_voxels = T.inc_subtensor(select_voxels[:, :, 1:],
+                                        select_edges_dir[2].reshape((self.regular_grid_res - np.array([0, 0, 1])),
+                                                                    ndim=3))
+        select_voxels = T.inc_subtensor(select_voxels[:, :, :-1],
+                                        select_edges_dir[2].reshape((self.regular_grid_res - np.array([0, 0, 1])),
+                                                                    ndim=3))
+
+        uv_lr = T.vertical_stack(uv_l.reshape((1, -1)), uv_r.reshape((1, -1)))
+        uv_lr_boundaries = uv_lr[T.tile(select_edges.reshape((1, -1)), (2, 1))].reshape((2, -1)).T
+
+        # a = T.bincount(uv_lr_boundaries)
+        edges_id, count_edges = T.extra_ops.Unique(return_counts=True, axis=0)(uv_lr_boundaries)
+        return select_voxels, edges_id, count_edges
+
+    def get_boundary_voxels(self, unique_val):
+        uv_3d = T.cast(T.round(unique_val[0, :T.prod(self.regular_grid_res)].reshape(self.regular_grid_res, ndim=3)),
+                       'int32')
+
+
+
+        uv_l = T.horizontal_stack(uv_3d[1:, :, :].reshape((1, -1)),
+                                  uv_3d[:, 1:, :].reshape((1, -1)),
+                                  uv_3d[:, :, 1:].reshape((1, -1)))
+
+        uv_r = T.horizontal_stack(uv_3d[:-1, :, :].reshape((1, -1)),
+                                  uv_3d[:, :-1, :].reshape((1, -1)),
+                                  uv_3d[:, :, :-1].reshape((1, -1)))
+
+        shift = uv_l - uv_r
+        select_edges = T.neq(shift.reshape((1, -1)), 0)
+        select_edges_dir = select_edges.reshape((3, -1))
+
+        select_voxels = T.zeros_like(uv_3d)
+        select_voxels = T.inc_subtensor(select_voxels[1:, :, :],
+                                        select_edges_dir[0].reshape((self.regular_grid_res - np.array([1, 0, 0])),
+                                                                    ndim=3))
+        select_voxels = T.inc_subtensor(select_voxels[:-1, :, :],
+                                        select_edges_dir[0].reshape((self.regular_grid_res - np.array([1, 0, 0])),
+                                                                    ndim=3))
+
+        select_voxels = T.inc_subtensor(select_voxels[:, 1:, :],
+                                        select_edges_dir[1].reshape((self.regular_grid_res - np.array([0, 1, 0])),
+                                                                    ndim=3))
+        select_voxels = T.inc_subtensor(select_voxels[:, :-1, :],
+                                        select_edges_dir[1].reshape((self.regular_grid_res - np.array([0, 1, 0])),
+                                                                    ndim=3))
+
+        select_voxels = T.inc_subtensor(select_voxels[:, :, 1:],
+                                        select_edges_dir[2].reshape((self.regular_grid_res - np.array([0, 0, 1])),
+                                                                    ndim=3))
+        select_voxels = T.inc_subtensor(select_voxels[:, :, :-1],
+                                        select_edges_dir[2].reshape((self.regular_grid_res - np.array([0, 0, 1])),
+                                                                    ndim=3))
+
+        return select_voxels
 
     # region Geometry
     def repeat_list(self, val, r_0, r_1, repeated_array, n_col):
@@ -1701,6 +1819,8 @@ class TheanoGraphPro(object):
             Z_x = tif.ifelse(compute_scalar_ctr, self.compute_scalar_field(weights, self.grid_val_T),
                              scalar_field_matrix[n_series])
 
+        x_to_interpolate_shape = Z_x.shape[0]
+
         if 'weights' in self.verbose:
             weights = theano.printing.Print('weights foo')(weights)
 
@@ -1713,7 +1833,7 @@ class TheanoGraphPro(object):
 
         mask_o = tif.ifelse(is_onlap,
                             T.gt(Z_x, T.max(scalar_field_at_surface_points)),
-                            mask_matrix[n_series - 1, :])
+                            mask_matrix[n_series - 1, self.shift:x_to_interpolate_shape + self.shift])
 
         mask_f = tif.ifelse(self.is_fault[n_series],
                             T.gt(Z_x, T.min(scalar_field_at_surface_points)),
@@ -1742,10 +1862,10 @@ class TheanoGraphPro(object):
                                )
 
         weights_vector = T.set_subtensor(weights_vector[len_w_0:len_w_1], weights)
-        scalar_field_matrix = T.set_subtensor(scalar_field_matrix[n_series], Z_x)
-        block_matrix = T.set_subtensor(block_matrix[n_series, :], block)
-        mask_matrix = T.set_subtensor(mask_matrix[n_series - 1, :], mask_o)
-        mask_matrix = T.set_subtensor(mask_matrix[n_series, :], mask_e)
+        scalar_field_matrix = T.set_subtensor(scalar_field_matrix[n_series, self.shift:x_to_interpolate_shape + self.shift], Z_x)
+        block_matrix = T.set_subtensor(block_matrix[n_series, :, self.shift:x_to_interpolate_shape + self.shift], block)
+        mask_matrix = T.set_subtensor(mask_matrix[n_series - 1, self.shift:x_to_interpolate_shape + self.shift], mask_o)
+        mask_matrix = T.set_subtensor(mask_matrix[n_series, self.shift:x_to_interpolate_shape + self.shift], mask_e)
 
         # This creates a matrix with Trues in the positive side of the faults. When is not faults is 0
 
@@ -1754,7 +1874,7 @@ class TheanoGraphPro(object):
         idx_e = (self.is_fault * ~T.cast(faults_relation_op, 'bool'))[:self.is_erosion.shape[0]]
         idx_o = (self.is_fault * ~T.cast(self.fault_relation[:, T.cast(n_series-1, 'int8')], 'bool'))[:self.is_erosion.shape[0]]
 
-        mask_matrix_f = T.set_subtensor(mask_matrix_f[idx_e, :], mask_e + mask_f)
+        mask_matrix_f = T.set_subtensor(mask_matrix_f[idx_e, self.shift:x_to_interpolate_shape + self.shift], mask_e + mask_f)
         # mask_matrix_f = T.set_subtensor(mask_matrix_f[idx_o, :], mask_o + mask_matrix_f[n_series-1])
 
         # Scalar field at interfaces

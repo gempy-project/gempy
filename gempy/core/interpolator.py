@@ -593,9 +593,9 @@ class InterpolatorModel(Interpolator):
         if type(max_lith) != int:
             max_lith = 0
 
-        self.theano_graph.max_lith.set_value()
+        self.theano_graph.max_lith.set_value(max_lith)
         self.theano_graph.regular_grid_res.set_value(self.grid.regular_grid.resolution)
-        self.theano_graph.dxdydz.set_value(self.grid.regular_grid.get_dx_dy_dz())
+        self.theano_graph.dxdydz.set_value(np.array(self.grid.regular_grid.get_dx_dy_dz(), dtype=self.dtype))
 
     @setdoc_pro(reset_flow_control_initial_results.__doc__)
     def set_theano_shared_structure(self, reset_ctrl=False):
