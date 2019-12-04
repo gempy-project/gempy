@@ -42,7 +42,7 @@ class Interpolator(object):
 
     def __init__(self, surface_points: "SurfacePoints", orientations: "Orientations", grid: "Grid",
                  surfaces: "Surfaces", series: Series, faults: "Faults", additional_data: "AdditionalData", **kwargs):
-
+        # Test
         self.surface_points = surface_points
         self.orientations = orientations
         self.grid = grid
