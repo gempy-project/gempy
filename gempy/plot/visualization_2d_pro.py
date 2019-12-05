@@ -234,7 +234,7 @@ class Plot2D:
         if section_name is not None:
             if section_name == 'topography':
                 try:
-                    image = self.model.solutions.geological_map.reshape(
+                    image = self.model.solutions.geological_map[0].reshape(
                         self.model.grid.topography.values_3D[:, :, 2].shape)
                 except AttributeError:
                     raise AttributeError('Geological map not computed. Activate the topography grid.')
@@ -244,7 +244,7 @@ class Plot2D:
 
                 l0, l1 = self.model.grid.sections.get_section_args(section_name)
                 shape = self.model.grid.sections.df.loc[section_name, 'resolution']
-                image = self.model.solutions.sections[0][l0:l1].reshape(shape[0], shape[1]).T
+                image = self.model.solutions.sections[0][0][l0:l1].reshape(shape[0], shape[1]).T
 
         elif cell_number is not None or block is not None:
             _a, _b, _c, _, x, y = self._slice(direction, cell_number)[:-2]
@@ -286,14 +286,14 @@ class Plot2D:
         if section_name is not None:
             if section_name == 'topography':
                 try:
-                    image = self.model.solutions.geological_map_scalfield[sn].reshape(
+                    image = self.model.solutions.geological_map[1][sn].reshape(
                         self.model.grid.topography.values_3D[:, :, 2].shape)
                 except AttributeError:
                     raise AttributeError('Geological map not computed. Activate the topography grid.')
             else:
                 l0, l1 = self.model.grid.sections.get_section_args(section_name)
                 shape = self.model.grid.sections.df.loc[section_name, 'resolution']
-                image = self.model.solutions.sections_scalfield[sn][l0:l1].reshape(shape).T
+                image = self.model.solutions.sections[1][sn][l0:l1].reshape(shape).T
 
         elif cell_number is not None or block is not None:
             _a, _b, _c, _, x, y = self._slice(direction, cell_number)[:-2]
@@ -502,7 +502,7 @@ class Plot2D:
                 shape = self.model.grid.topography.resolution
             #    a = self.model.solutions.geological_map_scalfield
             #    extent = self.model.grid.topography.extent
-                faults_scalar = self.model.solutions.geological_map_scalfield
+                faults_scalar = self.model.solutions.geological_map[1]
                 c_id = 0  # color id startpoint
 
                 for e, block in enumerate(faults_scalar):
@@ -519,7 +519,7 @@ class Plot2D:
             else:
                 l0, l1 = self.model.grid.sections.get_section_args(section_name)
                 shape = self.model.grid.sections.df.loc[section_name, 'resolution']
-                faults_scalar = self.model.solutions.sections_scalfield[:, l0:l1]
+                faults_scalar = self.model.solutions.sections[1][:, l0:l1]
 
                 c_id = 0  # color id startpoint
 

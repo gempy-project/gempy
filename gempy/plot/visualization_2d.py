@@ -42,7 +42,6 @@ plt.style.use(['seaborn-white', 'seaborn-talk'])
 from scipy.interpolate import RegularGridInterpolator
 import matplotlib.patches as mpatches
 
-
 #try:
     #import mplstereonet
     #MPLST_IMPORT = True
@@ -57,8 +56,16 @@ class PlotData2D:
         self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors) + 0.5)
 
-    def get_plot_data(self, series="all", at="everywhere", direction=None, cell_number=None, radius=None,
+    def get_plot_data(self, series="all", at="everywhere", direction=None, cell_number=None, radius='default',
                       show_all_data=False):
+
+        if radius == 'default':
+            radius = None
+        else:
+            if not isinstance(radius, int):
+                raise AttributeError('You need to pass a number (in model extent) for the radius to take more '
+                                     'or less data into account.')
+
         if series == "all":
             series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"].
                 isin(self.model.series.df.index.values)]
@@ -71,7 +78,6 @@ class PlotData2D:
 
         if show_all_data:
             at = 'everywhere'
-
         if type(at) == str:
             if at == 'topography':
                 mask_surfpoints, mask_orient = self.get_mask_surface_data(radius=radius)
@@ -86,11 +92,11 @@ class PlotData2D:
                     j = np.where(self.model.grid.sections.names == at)[0][0]
                     mask_surfpoints, mask_orient = self.get_mask_sections(j, radius=radius)
 
-                    self.testorient = series_to_plot_f[mask_orient]
-                    self.testinterf = series_to_plot_i[mask_surfpoints]
+                    #self.testorient = series_to_plot_f[mask_orient]
+                    #self.testinterf = series_to_plot_i[mask_surfpoints]
 
-                except AttributeError:
-                    print('must be topography, a section name or block_section')
+                except:
+                    raise AttributeError #'must be topography, a section name or block_section'
 
         elif type(at) == list: #should be a list of section names but must be asserted
             try:
@@ -108,8 +114,8 @@ class PlotData2D:
 
         return series_to_plot_i[mask_surfpoints], series_to_plot_f[mask_orient]
 
-    def plot_data(self, cell_number=2, direction="y", data_type='all', series="all", legend_font_size=10, ve=1,
-                  at='everywhere', radius=None, show_all_data=False, **kwargs):
+    def plot_data(self, cell_number=2, direction="y", data_type='all', series="all", show_legend=True, ve=1,
+                  at='everywhere', radius='default', show_all_data=False, **kwargs):
         """
         Plot the projecton of the raw data (surface_points and orientations) in 2D following a
         specific directions
@@ -152,6 +158,8 @@ class PlotData2D:
             self._plot_surface_points(x, y, plot_surfpoints, aspect, extent, kwargs)
             self._plot_orientations(x, y, Gx, Gy, plot_orient, min_axis, extent, False)
 
+
+
         if data_type == 'surface_points':
             self._plot_surface_points(x, y, plot_surfpoints, aspect, extent, kwargs)
 
@@ -164,12 +172,12 @@ class PlotData2D:
         plt.xlabel(x)
         plt.ylabel(y)
 
-    def plot_section_data(self, section_name, show_all_data=False, **kwargs):
+    def plot_section_data(self, section_name, show_all_data=False, radius='default', **kwargs):
         if show_all_data:
             at = 'everywhere'
         else:
             at = section_name
-        plot_surfpoints, plot_orient = self.get_plot_data(at=at)
+        plot_surfpoints, plot_orient = self.get_plot_data(at=at, radius=radius)
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
         # convert the data to the new coord system
         # define x,y, Gx, Gy #orientations is difficult?
@@ -201,6 +209,8 @@ class PlotData2D:
 
     def _plot_surface_points(self, x, y, series_to_plot_i, aspect, extent, kwargs):
         if series_to_plot_i.shape[0] != 0:
+            #size = fig.get_size_inches() * fig.dpi
+            #print(size)
             #print(aspect)
             try:
                 p = sns.FacetGrid(series_to_plot_i, hue="surface",
@@ -208,24 +218,29 @@ class PlotData2D:
                                   ylim=[extent[2], extent[3]],
                                   xlim=[extent[0], extent[1]],
                                   legend_out=False,
-                                  aspect=aspect)#
-                                  #size=6)
-            except KeyError:
+                                  aspect=aspect,
+                                  height=6)
+            except KeyError: #for kriging dataframes
                 p = sns.FacetGrid(series_to_plot_i, hue=None,
                                   palette='k',
                                   ylim=[extent[2], extent[3]],
                                   xlim=[extent[0], extent[1]],
                                   legend_out=False,
-                                  aspect=aspect)#
-                                  #size=6)
+                                  aspect=aspect,
+                                  height=6)
 
             p.map(plt.scatter, x, y,
                   **kwargs['scatter_kws'],
                   zorder=10)
+        else:
+            self._show_legend = True
 
-    def _plot_orientations(self, x, y, Gx, Gy, series_to_plot_f, min_axis, extent, p, aspect=None):
+    def _plot_orientations(self, x, y, Gx, Gy, series_to_plot_f, min_axis, extent, p, aspect=None, ax=None):
         if series_to_plot_f.shape[0] != 0:
+            #print('hello')
             if p is False:
+                #size = fig.get_size_inches() * fig.dpi
+                #print('before plot orient', size)
                 surflist = list(series_to_plot_f['surface'].unique())
                 for surface in surflist:
                     to_plot = series_to_plot_f[series_to_plot_f['surface'] == surface]
@@ -233,11 +248,13 @@ class PlotData2D:
                                to_plot[Gx], to_plot[Gy],
                                pivot="tail", scale_units=min_axis, scale=30, color=self._color_lot[surface],
                                edgecolor='k', headwidth=8, linewidths=1)
-                fig = plt.gcf()
-                fig.set_size_inches(20,10)
-                if aspect is not None:
-                    ax = plt.gca()
-                    ax.set_aspect(aspect)
+                    #ax.Axes.set_ylim([extent[2], extent[3]])
+                    #ax.Axes.set_xlim([extent[0], extent[1]])
+                #fig = plt.gcf()
+                #fig.set_size_inches(20,10)
+                #if aspect is not None:
+                    #ax = plt.gca()
+                    #ax.set_aspect(aspect)
 
             else:
                 p = sns.FacetGrid(series_to_plot_f, hue="surface",
@@ -246,10 +263,15 @@ class PlotData2D:
                                   xlim=[extent[0], extent[1]],
                                   legend_out=False,
                                   aspect=aspect,
-                                  size=2)
-
+                                  height=6)
                 p.map(plt.quiver, x, y, Gx, Gy, pivot="tail", scale_units=min_axis, scale=10, edgecolor='k',
                       headwidth=4, linewidths=1)
+        else:
+            #print('no orient')
+            pass
+
+        #size = fig.get_size_inches() * fig.dpi
+        #print('after plot_orientations', size)
 
     def _slice(self, direction, cell_number=25):
         """
@@ -306,6 +328,7 @@ class PlotData2D:
 
         if radius is None:
             radius = np.diff(zj).max()
+        print(radius)
 
         dist_interf = np.abs(Z_interf_interp - self.model.surface_points.df['Z'].values[mask_interf])
         dist_orient = np.abs(Z_orient_interp - self.model.orientations.df['Z'].values[mask_orient])
@@ -432,7 +455,7 @@ class PlotData2D:
             df_sub = self.model.orientations.df[self.model.orientations.df['surface'] == formation]
 
             if poles:
-                ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=7,
+                ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=10,
                         markerfacecolor=self._color_lot[formation],
                         markeredgewidth=1.1, markeredgecolor='gray', label=formation + ': ' + 'pole point')
             if planes:
@@ -461,16 +484,18 @@ class PlotSolution(PlotData2D):
         self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
         self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors) + 0.5)
+        self._show_legend = False
 
-    def plot_map(self, solution: Solution = None, contour_lines=False, show_faults=True, show_data=True,
+    def plot_map(self, solution: Solution = None, contour_lines=False, show_data=True,
                  show_all_data=False, figsize=(12,12)):
         if solution is None:
             solution = self.model.solutions
 
-        assert solution.geological_map is not None, 'Geological map not computed. Activate the topography grid.'
+        if solution.geological_map is None:
+            raise AttributeError('Geological map not computed. Activate the topography grid.')
 
         try:
-            geomap = solution.geological_map.reshape(self.model.grid.topography.values_3D[:, :, 2].shape)
+            geomap = solution.geological_map[0].reshape(self.model.grid.topography.values_3D[:, :, 2].shape)
         except AttributeError:
             warnings.warn('Geological map not computed. Activate the topography grid.')
 
@@ -483,58 +508,67 @@ class PlotSolution(PlotData2D):
 
         if contour_lines == True and show_data == False:
             CS = ax.contour(self.model.grid.topography.values_3D[:, :, 2], cmap='Greys', linestyles='solid',
-                            extent=self.model.grid.topography.extent)
+                            extent=self.model.grid.topography.extent, zlevel=200)
             ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
             plothelp.add_colorbar(im=im, label='elevation [m]', cs=CS, aspect=35)
-        if show_faults == True:
-            self.extract_section_fault_lines('topography', faults_only=True)
+
+        self.extract_section_lines('topography')
+
         plt.title("Geological map", fontsize=15)
         plt.xlabel('X')
         plt.ylabel('Y')
 
-    def extract_section_fault_lines(self, section_name=None, axes=None, zorder=2, faults_only=False):
+
+    def extract_section_lines(self, section_name=None, axes=None, zorder=2, faults_only=False):
         # Todo merge this with extract fault lines
         faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
         if section_name == 'topography':
             shape = self.model.grid.topography.resolution
-            a = self.model.solutions.geological_map_scalfield
+            a = self.model.solutions.geological_map[1]
             extent = self.model.grid.topography.extent
         else:
             l0, l1 = self.model.grid.sections.get_section_args(section_name)
             j = np.where(self.model.grid.sections.names == section_name)[0][0]
             shape = [self.model.grid.sections.resolution[j][0], self.model.grid.sections.resolution[j][1]]
-            a = self.model.solutions.sections_scalfield[:, l0:l1]
+            a = self.model.solutions.sections[1][:, l0:l1]
             extent = [0, self.model.grid.sections.dist[j],
                       self.model.grid.regular_grid.extent[4],
                       self.model.grid.regular_grid.extent[5]]
 
+        counter = a.shape[0]
         if faults_only:
-            counter = len(faults)
+            counters = np.arange(0, len(faults), 1)
         else:
-            counter = a.shape[0]
+            counters = np.arange(0, counter, 1)
 
         c_id = 0  # color id startpoint
-        for f_id in range(counter):
+        for f_id in counters:
             block = a[f_id]
             level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
                 self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
 
-            c_id2 = c_id + len(level)  # color id endpoint
-
+            levels = np.insert(level, 0, block.max())
+            c_id2 = c_id + len(level)
+            if f_id == counters.max():
+                levels = np.insert(levels, level.shape[0], block.min())
+                c_id2 = c_id + len(levels)  # color id endpoint
             if section_name == 'topography':
                 block = block.reshape(shape)
             else:
                 block = block.reshape(shape).T
 
-            if axes is not None:
-                axes.contour(block, 0, levels=np.sort(level), colors=self._cmap.colors[c_id:c_id2][::-1],
-                             linestyles='solid', origin='lower',
-                             extent=extent, zorder=zorder - (f_id+len(level)))
-            else:
-                plt.contour(block, 0, levels=np.sort(level), colors=self._cmap.colors[c_id:c_id2][::-1],
-                            linestyles='solid', origin='lower',
-                            extent=extent, zorder=zorder - (f_id+len(level)))
+            zorder = zorder - (f_id + len(level))
+            if axes is None:
+                axes = plt.gca()
 
+            if f_id >= len(faults):
+                axes.contourf(block, 0, levels=np.sort(levels), colors=self._cmap.colors[c_id:c_id2][::-1],
+                              linestyles='solid', origin='lower',
+                              extent=extent, zorder=zorder)
+            else:
+                axes.contour(block, 0, levels=np.sort(levels), colors=self._cmap.colors[c_id:c_id2][0],
+                             linestyles='solid', origin='lower',
+                             extent=extent, zorder=zorder)
             c_id += len(level)
 
     def extract_fault_lines(self, cell_number=25, direction='y'):
@@ -553,41 +587,90 @@ class PlotSolution(PlotData2D):
                          colors=self._cmap.colors[f_id], linestyles='solid')
 
     def plot_section_by_name(self, section_name, show_data=True, show_faults=True, show_topo=True,
-                             show_all_data=False, **kwargs):
-        assert type(section_name) == str, 'section name must be a string of the name of the section'
-        assert self.model.solutions.sections is not None, 'no sections for plotting defined'
+                             show_all_data=False, contourplot=True, radius='default', **kwargs):
+
+        if self.model.solutions.sections is None:
+            raise AttributeError('no sections for plotting defined')
+        if section_name not in self.model.grid.sections.names:
+            raise AttributeError(f'Section "{section_name}" is not defined. '
+                                 f'Available sections for plotting: {self.model.grid.sections.names}')
 
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
         l0, l1 = self.model.grid.sections.get_section_args(section_name)
         shape = self.model.grid.sections.resolution[j]
 
-        image = self.model.solutions.sections[0][l0:l1].reshape(shape[0], shape[1]).T
+        image = self.model.solutions.sections[0][0][l0:l1].reshape(shape[0], shape[1]).T
         extent = [0, self.model.grid.sections.dist[j][0],
                   self.model.grid.regular_grid.extent[4], self.model.grid.regular_grid.extent[5]]
 
         if show_data:
-            self.plot_section_data(section_name=section_name, show_all_data=show_all_data, **kwargs)
+            self.plot_section_data(section_name=section_name, show_all_data=show_all_data, radius=radius)
 
         axes = plt.gca()
         axes.imshow(image, origin='lower', zorder=-100,
                     cmap=self._cmap, norm=self._norm, extent=extent)
-        if show_faults:
-            self.extract_section_fault_lines(section_name, axes)
-
+        if show_faults and not contourplot:
+            self.extract_section_lines(section_name, axes, faults_only=True)
+        else:
+            self.extract_section_lines(section_name, axes, faults_only=False)
         if show_topo:
             if self.model.grid.topography is not None:
                 alpha = kwargs.get('alpha', 1)
                 xy = self.make_topography_overlay_4_sections(j)
                 axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10, alpha=alpha)
 
-        labels, axname = self._make_section_xylabels(section_name, len(axes.get_xticklabels()) - 2)
+        labels, axname = self._make_section_xylabels(section_name, len(axes.get_xticklabels()) - 1)
         pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
         axes.xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
         axes.xaxis.set_major_formatter(FixedFormatter((labels)))
         axes.set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
 
+    def plot_all_sections(self, show_data=False, section_names=None, show_topo=True,
+                      figsize=(12, 12)):
+        if self.model.solutions.sections is None:
+            raise AttributeError('no sections for plotting defined')
+        if self.model.grid.topography is None:
+            show_topo = False
+        if section_names is not None:
+            if isinstance(section_names, list):
+                section_names = np.array(section_names)
+        else:
+            section_names = self.model.grid.sections.names
+
+        shapes = self.model.grid.sections.resolution
+        fig, axes = plt.subplots(nrows=len(section_names), ncols=1, figsize=figsize)
+        for i, section in enumerate(section_names):
+            j = np.where(self.model.grid.sections.names == section)[0][0]
+            l0, l1 = self.model.grid.sections.get_section_args(section)
+
+            self.extract_section_lines(section, axes[i], faults_only=False)
+
+            if show_topo:
+                xy = self.make_topography_overlay_4_sections(j)
+                axes[i].fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
+
+            #if show_data:
+            #    section = str(section)
+            #    print(section)
+            #    self.plot_section_data(section_name=section)
+
+            axes[i].imshow(self.model.solutions.sections[0][0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
+                           origin='lower', zorder=-100,
+                           cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
+                                                                     self.model.grid.regular_grid.extent[4],
+                                                                     self.model.grid.regular_grid.extent[5]])
+
+
+            labels, axname = self._make_section_xylabels(section, len(axes[i].get_xticklabels()) - 1)
+            pos_list = np.linspace(0, self.model.grid.sections.dist[j], len(labels))
+            axes[i].xaxis.set_major_locator(FixedLocator(nbins=len(labels), locs=pos_list))
+            axes[i].xaxis.set_major_formatter(FixedFormatter((labels)))
+            axes[i].set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
+
+        fig.tight_layout()
     def plot_section_scalarfield(self, section_name, sn, levels=50, show_faults=True, show_topo=True, lithback=True):
-        assert self.model.solutions.sections is not None, 'no sections for plotting defined'
+        if self.model.solutions.sections is None:
+            raise AttributeError('no sections for plotting defined')
         if self.model.grid.topography is None:
             show_topo = False
         shapes = self.model.grid.sections.resolution
@@ -602,14 +685,14 @@ class PlotSolution(PlotData2D):
             xy = self.make_topography_overlay_4_sections(j)
             axes.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
-        axes.contour(self.model.solutions.sections_scalfield[sn][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
+        axes.contour(self.model.solutions.sections[1][sn][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
                      # origin='lower',
                      levels=levels, cmap='autumn', extent=[0, self.model.grid.sections.dist[j],
                                                            self.model.grid.regular_grid.extent[4],
                                                            self.model.grid.regular_grid.extent[5]], zorder=8)
         axes.set_aspect('equal')
         if lithback:
-            axes.imshow(self.model.solutions.sections[0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
+            axes.imshow(self.model.solutions.sections[0][0][l0:l1].reshape(shapes[j][0], shapes[j][1]).T,
                         origin='lower',
                         cmap=self._cmap, norm=self._norm, extent=[0, self.model.grid.sections.dist[j],
                                                                   self.model.grid.regular_grid.extent[4],
@@ -622,7 +705,9 @@ class PlotSolution(PlotData2D):
         axes.set(title=self.model.grid.sections.names[j], xlabel=axname, ylabel='Z')
 
     def _slice_topo_4_sections(self, p1, p2, resx, resy):
-        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, resx, resy)
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(np.array(p1),
+                                                                         np.array(p2),
+                                                                         resx)
         z = self.model.grid.topography.interpolate_zvals_at_xy(xy)
         return xy[:, 0], xy[:, 1], z
 
@@ -676,12 +761,14 @@ class PlotSolution(PlotData2D):
         return p1, p2
 
     def _make_section_xylabels(self, section_name, n=5):
-        if n > 5:
-            n = 3  # todo I don't know why but sometimes it wants to make a lot of xticks
+        if n > 10:
+            n = n-2  # todo I don't know why but sometimes it wants to make a lot of xticks
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
         startend = list(self.model.grid.sections.section_dict.values())[j]
         p1, p2 = startend[0], startend[1]
-        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, n, n)
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(np.array(p1),
+                                                                         np.array(p2),
+                                                                         n)
         if len(np.unique(xy[:, 0])) == 1:
             labels = xy[:, 1].astype(int)
             axname = 'Y'
@@ -745,7 +832,8 @@ class PlotSolution(PlotData2D):
                 at = 'everywhere'
             else:
                 at = 'block_section'
-            self.plot_data(cell_number=cell_number, direction=direction, at=at)
+            self.plot_data(cell_number=cell_number, direction=direction, at=at, show_legend=show_legend)
+
         # TODO: plot_topo option - need fault_block for that
 
         # apply vertical exageration
@@ -787,8 +875,9 @@ class PlotSolution(PlotData2D):
                 else:
                     self.make_topography_overlay_4_blockplot(cell_number=cell_number, direction=direction)
 
-        if show_data == False and show_legend == True:
-            import matplotlib.patches as mpatches
+        if self._show_legend and show_legend:
+            show_data = False   # to plot legend even when there are no data points in the section
+        if not show_data and show_legend:
             patches = [mpatches.Patch(color=color, label=surface) for surface, color in self._color_lot.items()]
             plt.legend(handles=patches, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 
