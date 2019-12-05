@@ -485,7 +485,7 @@ class TheanoGraphPro(object):
         shift_z_select = T.neq(shift_z, 0)
         z_edg = xyz[:, :, 1:][shift_z_select] - xyz[:, :, :-1][shift_z_select]
 
-        new_xyz_edg = T.vertical_stack((x_edg, y_edg, z_edg))
+        new_xyz_edg = T.vertical_stack(x_edg, y_edg, z_edg)
     
 
        # x_ = T.repeat(T.stack((new_xyz_edg[:, 0] - self.dxdydz[0] / 4,
