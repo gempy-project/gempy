@@ -229,13 +229,6 @@ class TheanoGraphPro(object):
         self.fault_matrix = T.matrix('Full block matrix for faults or drift. We take 2 times len points for the fault'
                                      'drift.')
 
-        interface_loc = self.fault_matrix.shape[1] - 2 * self.len_points
-        self.fault_drift_at_surface_points_rest = self.fault_matrix[
-                                                  :, interface_loc: interface_loc + self.len_points]
-        self.fault_drift_at_surface_points_ref = self.fault_matrix[
-                                                 :,
-                                                 interface_loc + self.len_points:]
-
         self.input_parameters_kriging = [self.dips_position_all, self.dip_angles_all, self.azimuth_all,
                                          self.polarity_all, self.surface_points_all,
                                          self.fault_matrix]
@@ -253,6 +246,15 @@ class TheanoGraphPro(object):
                                                 self.polarity_all, self.surface_points_all,
                                                 self.fault_matrix, self.grid_val_T,
                                                 ]
+
+
+        # interface_loc = self.fault_matrix.shape[1] - 2 * self.len_points
+        interface_loc = self.grid_val_T.shape[0]
+        self.fault_drift_at_surface_points_rest = self.fault_matrix[
+                                                  :, interface_loc: interface_loc + self.len_points]
+        self.fault_drift_at_surface_points_ref = self.fault_matrix[
+                                                 :,
+                                                 interface_loc + self.len_points:]
 
         # COMPUTE BLOCKS
         # ---------
@@ -441,7 +443,8 @@ class TheanoGraphPro(object):
         #                        original_regular_grid_boundaries[:, 2] + self.dxdydz[2] / 4), axis=1), (1, 4))
 
         self.shift = self.grid_val_T.shape[0]
-        self.grid_val_T = self.create_oct_level(unique_val)
+        g = self.create_oct_level(unique_val)
+        self.grid_val_T
 
 
         #self.grid_val_T = T.stack((x_.ravel(), y_.ravel(), z_.ravel())).T
@@ -455,10 +458,10 @@ class TheanoGraphPro(object):
 #        self.block_matrix = T.zeros((n_series, n_properties, x_to_interp_shape), dtype=self.dtype)
 
         # I need to init the solution matrices
-        oct_sol = self.compute_series()
+        #oct_sol = self.compute_series()
 
-        solutions.append(oct_sol[0])
-      #  solutions.append(boundary_voxels)
+        solutions.append(g[0])
+        solutions.append(g[1])
         return solutions
 
     def create_oct_level(self, unique_val):
@@ -466,12 +469,13 @@ class TheanoGraphPro(object):
         uv_3d = T.cast(T.round(unique_val[0, :T.prod(self.regular_grid_res)].reshape(self.regular_grid_res, ndim=3)),
                        'int32')
 
-        xyz = self.grid_val_T[:T.prod(self.regular_grid_res)].reshape(
-            T.concatenate([self.regular_grid_res, T.stack([3])]), ndim=4)
+
+        new_shape =  T.concatenate([self.regular_grid_res, T.stack([3])])
+        xyz = self.grid_val_T[:T.prod(self.regular_grid_res)].reshape(new_shape, ndim=4)
 
         shift_x = uv_3d[1:, :, :] - uv_3d[:-1, :, :]
         shift_x_select = T.neq(shift_x, 0)
-        x_edg = xyz[1:, :, :][shift_x_select] - xyz[:-1, :, :][shift_x_select]
+        x_edg = 2 * xyz[1:, :, :][shift_x_select] - xyz[:-1, :, :][shift_x_select] 
 
         shift_y = uv_3d[:, 1:, :] - uv_3d[:, :-1, :]
         shift_y_select = T.neq(shift_y, 0)
@@ -481,21 +485,22 @@ class TheanoGraphPro(object):
         shift_z_select = T.neq(shift_z, 0)
         z_edg = xyz[:, :, 1:][shift_z_select] - xyz[:, :, :-1][shift_z_select]
 
-        new_xyz_edg = T.stack((x_edg, y_edg, z_edg))
+        new_xyz_edg = T.vertical_stack((x_edg, y_edg, z_edg))
+    
 
-        x_ = T.repeat(T.stack((new_xyz_edg[:, 0] - self.dxdydz[0] / 4,
-                               new_xyz_edg[:, 0] + self.dxdydz[0] / 4), axis=1), 4, axis=1)
-        y_ = T.tile(T.repeat(T.stack((new_xyz_edg[:, 1] - self.dxdydz[1] / 4,
-                                      new_xyz_edg[:, 1] + self.dxdydz[1] / 4), axis=1),
-                             2, axis=1), (1, 2))
-        z_ = T.tile(T.stack((new_xyz_edg[:, 2] - self.dxdydz[2] / 4,
-                             new_xyz_edg[:, 2] + self.dxdydz[2] / 4), axis=1), (1, 4))
+       # x_ = T.repeat(T.stack((new_xyz_edg[:, 0] - self.dxdydz[0] / 4,
+       #                        new_xyz_edg[:, 0] + self.dxdydz[0] / 4), axis=1), 4, axis=1)
+        # y_ = T.tile(T.repeat(T.stack((new_xyz_edg[:, 1] - self.dxdydz[1] / 4,
+        #                               new_xyz_edg[:, 1] + self.dxdydz[1] / 4), axis=1),
+        #                      2, axis=1), (1, 2))
+        # z_ = T.tile(T.stack((new_xyz_edg[:, 2] - self.dxdydz[2] / 4,
+        #                      new_xyz_edg[:, 2] + self.dxdydz[2] / 4), axis=1), (1, 4))
 
         # TODO now if we stack them it should yield the same as before
         #shift = uv_l - uv_r
         #select_edges = T.neq(shift.reshape((1, -1)), 0)
         #select_edges_dir = select_edges.reshape((3, -1))
-        return T.stack((x_.ravel(), y_.ravel(), z_.ravel())).T
+        return x_edg, new_xyz_edg#, x_#T.stack((x_.ravel(), y_.ravel(), z_.ravel())).T
 
     def theano_output(self):
         solutions = [theano.shared(np.nan)]*15
@@ -1796,7 +1801,7 @@ class TheanoGraphPro(object):
             self.fault_matrix = theano.printing.Print('self fault matrix')(self.fault_matrix)
         # TODO this is wrong
 
-        interface_loc = self.fault_matrix.shape[1] - 2 * self.len_points
+        interface_loc = self.grid_val_T.shape[0]#self.fault_matrix.shape[1] - 2 * self.len_points
 
         self.fault_drift_at_surface_points_rest = self.fault_matrix[
                                                   :, interface_loc + len_i_0: interface_loc + len_i_1]
