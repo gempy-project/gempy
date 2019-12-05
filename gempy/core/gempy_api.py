@@ -27,7 +27,7 @@ import pandas as pn
 from numpy import ndarray
 from typing import Union
 import warnings
-
+import copy
 # This is for sphenix to find the packages
 # sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from gempy.core.model import Model, DataMutation, AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
@@ -102,27 +102,26 @@ def set_orientation_from_surface_points(geo_model, indices_array):
 
     if np.ndim(indices_array) is 1:
         indices = indices_array
-        form = geo_model.surface_points['surface'].loc[indices].unique()
+        form = geo_model.surface_points.df['surface'].loc[indices].unique()
         assert form.shape[0] is 1, 'The interface points must belong to the same surface'
         form = form[0]
-        print()
-        ori_parameters = geo_model.create_orientation_from_surface_points(indices)
-        geo_model.add_orientation(x=ori_parameters[0], y=ori_parameters[1], z=ori_parameters[2],
-                                  dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
-                                  G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
-                                  surface=form)
+
+        ori_parameters = geo_model.orientations.create_orientation_from_surface_points(
+            geo_model.surface_points, indices)
+        geo_model.add_orientations(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+                                   orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
+                                   surface=form)
     elif np.ndim(indices_array) is 2:
         for indices in indices_array:
-            form = geo_model.surface_points['surface'].loc[indices].unique()
+            form = geo_model.surface_points.df['surface'].loc[indices].unique()
             assert form.shape[0] is 1, 'The interface points must belong to the same surface'
             form = form[0]
-            ori_parameters = geo_model.create_orientation_from_surface_points(indices)
-            geo_model.add_orientation(x=ori_parameters[0], y=ori_parameters[1], z=ori_parameters[2],
-                                      dip=ori_parameters[3], azimuth=ori_parameters[4], polarity=ori_parameters[5],
-                                      G_x=ori_parameters[6], G_y=ori_parameters[7], G_z=ori_parameters[8],
-                                      surface=form)
+            ori_parameters = geo_model.orientations.create_orientation_from_surface_points(
+                geo_model.surface_points, indices)
+            geo_model.add_orientations(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
+                                       orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
+                                       surface=form)
 
-    geo_model.update_df()
     return geo_model.orientations
 # endregion
 
@@ -130,24 +129,36 @@ def set_orientation_from_surface_points(geo_model, indices_array):
 # region Interpolator functionality
 @setdoc([InterpolatorModel.__doc__])
 @setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
-def set_interpolation_data(geo_model: Model, compile_theano: bool = True,
-                           theano_optimizer=None, verbose: list = None,
-                           output=None):
+def set_interpolation_data(*args, **kwargs):
+    warnings.warn('set_interpolation_data will be deprecrated in GemPy 2.2. Use '
+                  'set_interpolator instead.', DeprecationWarning)
+    return set_interpolator(*args, **kwargs)
+
+
+@setdoc([InterpolatorModel.__doc__])
+@setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
+def set_interpolator(geo_model: Model, output='geology', compile_theano: bool = True,
+                     theano_optimizer=None, verbose: list = None, grid=None, type=None,
+                     **kwargs):
     """
     Method to create a graph and compile the theano code to compute the interpolation.
 
     Args:
         geo_model (:class:`Model`): [s0]
+        output (str:{geo, grav}): type of interpolation.
         compile_theano (bool): [s1]
         theano_optimizer (str {'fast_run', 'fast_compile'}): [s2]
         verbose:
+        kwargs:
+            -  pos_density (Optional[int]): Only necessary when type='grav'. Location on the Surfaces().df
+             where density is located (starting on id being 0).
 
     Returns:
 
     """
-    if output:
-        warnings.warn('Output is not an argument of intepolation data. Look'
-                      'compute_model', DeprecationWarning)
+    if type is not None:
+        warnings.warn('type warn is going to be deprecated. Use output insted', FutureWarning)
+        output = type
 
     if theano_optimizer is not None:
         geo_model.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
@@ -159,11 +170,50 @@ def set_interpolation_data(geo_model: Model, compile_theano: bool = True,
     update_additional_data(geo_model)
     geo_model.surface_points.sort_table()
     geo_model.orientations.sort_table()
-    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True)
-    geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
 
-    if compile_theano is True:
-        geo_model.interpolator.compile_th_fn(inplace=True)
+    # The graph object contains all theano methods. Therefore is independent to which side
+    # of the graph we compile:
+
+    if output == 'geology':
+        geo_model.interpolator._type = 'geology'
+        geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
+
+        if compile_theano is True:
+            geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
+
+            geo_model.interpolator.compile_th_fn_geo(inplace=True, grid=grid)
+        else:
+            if grid == 'shared':
+                geo_model.interpolator.set_theano_shared_grid(grid)
+
+    elif output == 'gravity':
+        pos_density = kwargs.get('pos_density', 1)
+        tz = kwargs.get('tz', 'auto')
+
+        # First we need to upgrade the interpolator object:
+        print('Interpolator object upgraded from InterpolatorModel to InterpolatorGravity.')
+        geo_model.interpolator = InterpolatorGravity(
+            geo_model.surface_points, geo_model.orientations, geo_model.grid, geo_model.surfaces,
+            geo_model.series, geo_model.faults, geo_model.additional_data, **kwargs)
+
+        geo_model.interpolator._type = 'gravity'
+
+        geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True, **kwargs)
+
+        if tz is 'auto' and geo_model.grid.centered_grid is not None:
+            print('Calculating the tz components for the centered grid...')
+            tz = geo_model.interpolator.calculate_tz()
+            print('Done')
+
+        # Set the shared parameters for this piece of tree
+        geo_model.interpolator.set_theano_shared_tz_kernel(tz)
+        geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
+
+        if compile_theano is True:
+            geo_model.interpolator.compile_th_fn_grav(density=None, pos_density=pos_density,
+                                                      inplace=True)
+    else:
+        raise AttributeError('type must be either geology or grav')
 
     return geo_model.interpolator
 
@@ -209,7 +259,7 @@ def get_additional_data(model: Model):
 # region Computing the model
 @setdoc_pro([Model.__doc__, Solution.compute_surface_regular_grid.__doc__,
              Model.set_surface_order_from_solution.__doc__])
-def compute_model(model: Model, output='geology', compute_mesh=True, reset_weights=False, reset_scalar=False,
+def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=False, reset_scalar=False,
                   reset_block=False, sort_surfaces=True, debug=False, set_solutions=True) -> Solution:
     """
     Computes the geological model and any extra output given in the additional data option.
@@ -233,6 +283,16 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
 
     assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1, \
         'To compute the model is necessary at least 2 interface points per layer'
+    assert len(model.interpolator.len_series_i) == len(model.interpolator.len_series_o),\
+        'Every Series/Fault need at least 1 orientation and 2 surfaces points.'
+
+    if output is None:
+        # If output is not passed we check for the type of interpolator. If that also fail
+        # we try simply geology
+        try:
+            output = model.interpolator._type
+        except AttributeError:
+            output = 'geology'
 
     if output == 'geology':
         assert model.interpolator.theano_function is not None, 'You need to compile the theano function first'
@@ -241,21 +301,28 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
 
         sol = model.interpolator.theano_function(*i)
     elif output == 'gravity':
-        assert isinstance(model.interpolator_gravity, InterpolatorGravity), 'You need to set the gravity interpolator' \
-                                                                            'first. See `Model.set_gravity_interpolator'
+        model.set_active_grid('centered', reset=False)
+        try:
+            i = model.interpolator.get_python_input_grav(append_control=True, fault_drift=None)
+            sol = model.interpolator.theano_function(*i)
 
-        model.set_active_grid('centered')
-        model.interpolator_gravity.modify_results_matrices_pro()
-        model.interpolator_gravity.set_theano_shared_structure()
-        i = model.interpolator_gravity.get_python_input_block(append_control=True, fault_drift=None)
+        except AttributeError:
+            i = model.interpolator_gravity.get_python_input_grav()
+            sol = model.interpolator_gravity.theano_function(*i)
 
-        # TODO So far I reset all shared parameters to be sure. In the future this should be optimize as interpolator
+        # assert isinstance(model.interpolator_gravity, InterpolatorGravity), 'You need to set the gravity interpolator' \
+        #                                                                     'first. See `Model.set_gravity_interpolator'
+        #
+        # model.set_active_grid('centered')
+        # model.interpolator_gravity.modify_results_matrices_pro()
+        # model.interpolator_gravity.set_theano_shared_structure()
+        #
+        # # TODO So far I reset all shared parameters to be sure. In the future this should be optimize as interpolator
+        # model.interpolator_gravity.set_theano_shared_tz_kernel()
+        # # model.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
+        # sol = model.interpolator_gravity.theano_function(*i)
 
-        model.interpolator_gravity.set_theano_shared_tz_kernel()
-        # model.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
-        sol = model.interpolator_gravity.theano_function(*i)
-
-        set_solutions = False
+        #set_solutions = False
     else:
         raise NotImplementedError('Only geology and gravity are implemented so far')
 
@@ -266,17 +333,13 @@ def compute_model(model: Model, output='geology', compute_mesh=True, reset_weigh
         if model.grid.active_grids[0] is np.True_:
             model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh)
         if model.grid.active_grids[1] is np.True_:
-            l0, l1 = model.grid.get_grid_args('custom')
-            model.solutions.custom = sol[0][:, l0: l1]
-        # TODO @elisa elaborate this
+            model.solutions.set_solution_to_custom(sol)
         if model.grid.active_grids[2] is np.True_:
-            l0, l1 = model.grid.get_grid_args('topography')
-            model.solutions.geological_map = sol[0][:, l0: l1]
-            model.solutions.geological_map_scalfield = sol[3][:, l0: l1].astype(float)
+            model.solutions.set_solution_to_topography(sol)
         if model.grid.active_grids[3] is np.True_:
-            l0, l1 = model.grid.get_grid_args('sections')
-            model.solutions.sections = sol[0][:, l0: l1]
-            model.solutions.sections_scalfield = sol[3][:, l0: l1].astype(float)
+            model.solutions.set_solution_to_sections(sol)
+        if output == 'gravity':
+            model.solutions.fw_gravity = sol[6]
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions
@@ -404,6 +467,8 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
         path_i: Path to the data bases of surface_points. Default os.getcwd(),
         path_o: Path to the data bases of orientations. Default os.getcwd()
+        surface_points_df: A df object directly
+        orientations_df:
 
     Returns:
         :class:`gempy.data_management.InputData`
@@ -420,6 +485,10 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
     if 'surface_points_df' in kwargs:
         geo_model.set_surface_points(kwargs['surface_points_df'], **kwargs)
+        # if we set the surfaces names with surfaces they cannot be set again on orientations or pandas will complain.
+        kwargs['update_surfaces'] = False
+    if 'orientations_df' in kwargs:
+        geo_model.set_orientations(kwargs['orientations_df'], **kwargs)
 
     return geo_model
 # endregion
@@ -428,7 +497,7 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 @setdoc_pro([Model.__doc__],)
 def activate_interactive_df(geo_model: Model, plot_object=None):
     """
-    Experimenteal: Activate the use of the QgridModelIntegration:
+    Experimental: Activate the use of the QgridModelIntegration:
     TODO evaluate the use of this functionality
 
     Notes: Since this feature is for advance levels we will keep only object oriented functionality. Should we
@@ -550,6 +619,9 @@ def load_model(name, path=None, recompile=False):
                                  'color': 'str'})
     c_ = surf_df.columns[~(surf_df.columns.isin(geo_model.surfaces._columns_vis_drop))]
     geo_model.surfaces.df[c_] = surf_df[c_]
+    geo_model.surfaces.df['series'].cat.reorder_categories(np.asarray(geo_model.series.df.index),
+                                                           ordered=False, inplace=True)
+    geo_model.surfaces.sort_surfaces()
 
     geo_model.surfaces.colors.generate_colordict()
     geo_model.surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
@@ -589,18 +661,6 @@ def load_model(name, path=None, recompile=False):
     # update structure from loaded input
     geo_model.additional_data.structure_data.update_structure_from_input()
     geo_model.rescaling.rescale_data()
-    # # load solutions in npy files
-    # geo_model.solutions.lith_block = np.load(f'{path}/{name}_lith_block.npy')
-    # geo_model.solutions.scalar_field_lith = np.load(f"{path}/{name}_scalar_field_lith.npy")
-    # geo_model.solutions.fault_blocks = np.load(f'{path}/{name}_fault_blocks.npy')
-    # geo_model.solutions.scalar_field_faults = np.load(f'{path}/{name}_scalar_field_faults.npy')
-    # geo_model.solutions.gradient = np.load(f'{path}/{name}_gradient.npy')
-    # geo_model.solutions.values_block = np.load(f'{path}/{name}_values_block.npy')
-    #
-    # geo_model.solutions.additional_data.kriging_data.df = geo_model.additional_data.kriging_data.df
-    # geo_model.solutions.additional_data.options.df = geo_model.additional_data.options.df
-    # geo_model.solutions.additional_data.rescaling_data.df = geo_model.additional_data.rescaling_data.df
-
     geo_model.update_from_series()
     geo_model.update_from_surfaces()
     geo_model.update_structure()

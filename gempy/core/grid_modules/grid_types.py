@@ -1,6 +1,6 @@
 from gempy.utils.create_topography import Load_DEM_artificial, Load_DEM_GDAL
 import numpy as np
-import skimage
+import skimage.transform
 import matplotlib.pyplot as plt
 from scipy.constants import G
 from scipy import interpolate
@@ -8,6 +8,7 @@ from gempy.utils.meta import setdoc, setdoc_pro
 import gempy.utils.docstring as ds
 from typing import Optional
 import pandas as pn
+
 
 class RegularGrid:
     """
@@ -21,7 +22,7 @@ class RegularGrid:
         extent (np.ndarray):  [x_min, x_max, y_min, y_max, z_min, z_max]
         resolution (np.ndarray): [nx, ny, nz]
         values (np.ndarray): XYZ coordinates
-        mask_topo (np.ndarray): TODO @elisa fill
+        mask_topo (np.ndarray, dtype=bool): same shape as values. Values above the topography are False
         dx (float): size of the cells on x
         dy (float): size of the cells on y
         dz (float): size of the cells on z
@@ -84,25 +85,34 @@ class RegularGrid:
 
 
 class Sections:
-    def __init__(self, regular_grid, section_dict):
-        #todo tidy up
-        self.regular_grid = regular_grid
-        self.section_dict = section_dict
-        self.names = np.array(list(self.section_dict.keys()))
-
-        self.points = []
-        self.resolution = []
-        self.length = [0]
-        self.dist = []
-        self.get_section_params()
-        self.calculate_distance()
-        self.values = []
-        self.compute_section_coordinates()
-
-        self.extent = None
+    """
+    Object that creates a grid of cross sections between two points.
+    Args:
+        regular_grid: Model.grid.regular_grid
+        section_dict: {'section name': ([p1_x, p1_y], [p2_x, p2_y], [xyres, zres])}
+    """
+    def __init__(self, regular_grid=None, z_ext=None, section_dict=None):
+        if regular_grid is not None:
+            self.z_ext = regular_grid.extent[4:]
+        else:
+            self.z_ext = z_ext
+        if section_dict is not None:
+            self.section_dict = section_dict
+            self.names = np.array(list(self.section_dict.keys()))
+            self.points = []
+            self.resolution = []
+            self.length = [0]
+            self.dist = []
+            self.get_section_params()
+            self.calculate_all_distances()
+            self.df = pn.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution'])
+            self.df['dist'] = self.dist
+            self.values = []
+            self.extent = None
+            self.compute_section_coordinates()
 
     def _repr_html_(self):
-        return pn.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution']).to_html()
+        return self.df.to_html()
 
     def show(self):
         pass
@@ -116,15 +126,18 @@ class Sections:
             self.length.append(self.section_dict[section][2][0] * self.section_dict[section][2][1])
         self.length = np.array(self.length).cumsum()
 
-    def calculate_distance(self):
+    def calculate_all_distances(self):
         self.coordinates = np.array(self.points).ravel().reshape(-1, 4) #axis are x1,y1,x2,y2
         self.dist = np.sqrt(np.diff(self.coordinates[:, [0, 2]])**2 + np.diff(self.coordinates[:, [1, 3]])**2)
 
+    @staticmethod
+    def distance_2_points(p1, p2):
+        return np.sqrt(np.diff((p1[0], p2[0])) ** 2 + np.diff((p1[1], p2[1])) ** 2)
+
     def compute_section_coordinates(self):
         for i in range(len(self.names)):
-            xy = self.calculate_line_coordinates_2points(self.points[i][0], self.points[i][1], self.resolution[i][0],
-                                                         self.resolution[i][0]) #two times xy resolution is correct
-            zaxis = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.resolution[i][1],
+            xy = self.calculate_line_coordinates_2points(self.coordinates[i, :2], self.coordinates[i, 2:], self.resolution[i][0])
+            zaxis = np.linspace(self.z_ext[0], self.z_ext[1], self.resolution[i][1],
                                      dtype="float64")
             X, Z = np.meshgrid(xy[:, 0], zaxis, indexing='ij')
             Y, _ = np.meshgrid(xy[:, 1], zaxis, indexing='ij')
@@ -134,39 +147,13 @@ class Sections:
             else:
                 self.values = np.vstack((self.values, xyz))
 
-    def calculate_line_coordinates_2points(self, p1, p2, resx, resy):
-        x0 = p1[0]
-        x1 = p2[0]
-        y0 = p1[1]
-        y1 = p2[1]
-
-        dx = np.abs((x1 - x0) / resx)
-        dy = np.abs((y1 - y0) / resy)
-
-        if x0 == x1:  # slope is infinite
-            # for cases where phi == -np.pi/2 or phi == np.pi/2
-            xi = x0 * np.ones(resy)
-            yj = np.linspace(y0, y1, resy)
-        else:
-            # calculate support points between two points
-            phi = np.arctan2(y1 - y0, x1 - x0)  # angle of line with x-axis
-            if np.pi / 2 < phi <= np.pi: #shift all values to first or fourth quadrant
-                phi -= np.pi
-            elif -np.pi <= phi < -np.pi / 2:
-                phi += np.pi  # shift values in first or fourth quadrant so that cosine is positive
-            else:
-                pass
-            ds = np.abs(dx * np.cos(phi)) + np.abs(dy * np.sin(phi))  # support point spacing
-            # abs needed for cases where phi == -1/4 pi or 3/4 pi
-            if x0 > x1:
-                n_points = np.ceil((x0 - x1) / (ds * np.cos(phi)))
-            else:
-                n_points = np.ceil((x1 - x0) / (ds * np.cos(phi)))
-            xi = np.linspace(x0, x1, int(n_points))
-            m = (y1 - y0) / (x1 - x0)  # slope of line
-            yj = m * (xi - x0) + y0 * np.ones(xi.shape)  # calculate yvalues with line equation
-        return np.vstack((xi, yj)).T
-
+    def calculate_line_coordinates_2points(self, p1, p2, res):
+        v = p2-p1 #vector pointing from p1 to p2
+        u = v/np.linalg.norm(v) # normalize it
+        distance = self.distance_2_points(p1, p2)
+        steps = np.linspace(0, distance, res)
+        values = p1.reshape(2, 1) + u.reshape(2, 1) * steps.ravel()
+        return values.T
 
     def get_section_args(self, section_name: str):
         where = np.where(self.names == section_name)[0][0]
@@ -356,14 +343,13 @@ class CenteredGrid:
 
 class Topography:
     """
-    TODO @Elisa
+    Object to include topography in the model.
     """
     def __init__(self, regular_grid):
         self.regular_grid = regular_grid
         self.values = np.zeros((0, 3))
 
         self.topo = None
-        # TODO @Elisa: values 3D is a 3D numpy array isnt it
         self.values_3D = np.zeros((0, 0, 0))
         self.extent = None
         self.resolution = None
@@ -413,6 +399,7 @@ class Topography:
 
         self.regular_grid.mask_topo = self._create_grid_mask()
 
+
     def _crop(self):
         pass
 
@@ -439,6 +426,14 @@ class Topography:
         plt.title('Model topography')
 
     def save(self, filepath):
+        """
+        Save the topography file in a numpy array which can be loaded later, to avoid the gdal process.
+        Args:
+            filepath (str): path where the array should be stored.
+
+        Returns:
+
+        """
         np.save(filepath, np.array([self.values_3D, self.extent, self.resolution]))
         print('saved')
 
@@ -450,7 +445,7 @@ class Topography:
                 z = ind[x, y]
                 gridz[x, y, z:] = 99999
         mask = (gridz == 99999)
-        return mask.swapaxes(0, 1)# np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
+        return mask# np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
 
     def _find_indices(self):
         zs = np.linspace(self.regular_grid.extent[4], self.regular_grid.extent[5], self.regular_grid.resolution[2])
@@ -469,28 +464,3 @@ class Topography:
         zi = f(xy[:, 0], xy[:, 1])
         return np.diag(zi)
 
-    def _line_in_section(self, direction='y', cell_number=1):
-        # todo delete after replacing it with the other function
-
-        x = self.values_3D_res[:, :, 0]
-        y = self.values_3D_res[:, :, 1]
-        z = self.values_3D_res[:, :, 2]
-
-        if direction == 'y':
-            a = x[cell_number, :]
-            b = y[cell_number, :]
-            c = z[cell_number, :]
-            assert len(np.unique(b)) == 1
-            topoline = np.dstack((a, c)).reshape(-1, 2).astype(int)
-
-        elif direction == 'x':
-            a = x[:, cell_number]
-            b = y[:, cell_number]
-            c = z[:, cell_number]
-            assert len(np.unique(a)) == 1
-            topoline = np.dstack((b, c)).reshape(-1, 2).astype(int)
-
-        elif direction == "z":
-            raise NotImplementedError
-
-        return topoline

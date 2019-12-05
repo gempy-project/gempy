@@ -61,7 +61,7 @@ class Grid(object):
          regular (:class:`gempy.core.grid_modules.grid_types.RegularGrid`): [s0]
          custom (:class:`gempy.core.grid_modules.grid_types.CustomGrid`): [s1]
          topography (:class:`gempy.core.grid_modules.grid_types.Topography`): [s2]
-         section TODO @ Elisa
+         sections (:class:`gempy.core.grid_modules.grid_types.Sections`): [s3]
          gravity (:class:`gempy.core.grid_modules.grid_types.Gravity`):
 
     Attributes:
@@ -77,7 +77,7 @@ class Grid(object):
         regular_grid (:class:`gempy.core.grid_modules.grid_types.RegularGrid`)
         custom_grid (:class:`gempy.core.grid_modules.grid_types.CustomGrid`)
         topography (:class:`gempy.core.grid_modules.grid_types.Topography`)
-        section TODO @ Elisa
+        sections (:class:`gempy.core.grid_modules.grid_types.Sections`)
         gravity_grid (:class:`gempy.core.grid_modules.grid_types.Gravity`)
     """
 
@@ -95,7 +95,7 @@ class Grid(object):
         self.custom_grid_grid_active = False
         self.topography = None
         self.topography_grid_active = False
-        self.sections = None
+        self.sections = grid_types.Sections()
         self.sections_grid_active = False
         self.centered_grid = None
         self.centered_grid_active = False
@@ -138,7 +138,28 @@ class Grid(object):
         self.set_active('custom')
 
     def set_topography(self, source='random', **kwargs):
-        """Set a topography grid and activate it. TODO @Elisa"""
+        """
+        Create a topography grid and activate it.
+        Args:
+            source:
+                'gdal':     Load topography from a raster file.
+                'random':   Generate random topography (based on a fractal grid).
+                'saved':    Load topography that was saved with the topography.save() function.
+                            This is useful after loading and saving a heavy raster file with gdal once or after saving a
+                            random topography with the save() function. This .npy file can then be set as topography.
+        Kwargs:
+            if source = 'gdal:
+                filepath:   path to raster file, e.g. '.tif', (for all file formats see https://gdal.org/drivers/raster/index.html)
+            if source = 'random':
+                fd:         fractal dimension, defaults to 2.0
+                d_z:        maximum height difference. If none, last 20% of the model in z direction
+                extent:     extent in xy direction. If none, geo_model.grid.extent
+                resolution: desired resolution of the topography array. If none, geo_model.grid.resoution
+            if source = 'saved':
+                filepath:   path to the .npy file that was created using the topography.save() function
+
+        Returns: :class:gempy.core.data.Topography
+        """
         self.topography = grid_types.Topography(self.regular_grid)
 
         if source == 'random':
@@ -161,8 +182,9 @@ class Grid(object):
         self.topography.show()
         self.set_active('topography')
 
+    @setdoc(grid_types.Sections.__doc__)
     def set_section_grid(self, section_dict):
-        self.sections = grid_types.Sections(self.regular_grid, section_dict)
+        self.sections = grid_types.Sections(regular_grid=self.regular_grid, section_dict=section_dict)
         self.set_active('sections')
         return self.sections
 
@@ -601,7 +623,7 @@ class Series(object):
 
     def sort_series(self):
         self.df.sort_values(by='order_series', inplace=True)
-        self.df.index = self.df.index.reorder_categories(self.df.index.get_values())
+        self.df.index = self.df.index.reorder_categories(self.df.index.to_numpy())
 
     def update_faults_index(self):
         idx = self.df.index
@@ -616,7 +638,9 @@ class Series(object):
 
 
 class Colors:
-    # TODO @elisa
+    """
+    Object that handles the color management in the model.
+    """
     def __init__(self, surfaces):
         self.surfaces = surfaces
 
@@ -637,7 +661,7 @@ class Colors:
             self.colordict = colordict
 
     def change_colors(self, cdict = None):
-        ''' Updates the colors in self.colordict and in surfaces_df.
+        ''' Updates the colors of the model.
         Args:
             cdict: dict with surface names mapped to hex color codes, e.g. {'layer1':'#6b0318'}
             if None: opens jupyter widget to change colors interactively.
@@ -674,7 +698,7 @@ class Colors:
         Returns: None
 
         '''
-        if cdict == None:
+        if cdict is None:
             # assert if one surface does not have color
             try:
                 self._add_colors()
@@ -705,6 +729,11 @@ class Colors:
     def set_default_colors(self, surfaces = None):
         if surfaces is not None:
             self.colordict[surfaces] = self.colordict_default[surfaces]
+        self._set_colors()
+
+    def delete_colors(self, surfaces):
+        for surface in surfaces:
+            self.colordict.pop(surface, None)
         self._set_colors()
 
     def make_faults_black(self, series_fault):
@@ -792,7 +821,7 @@ class Surfaces(object):
 
     @staticmethod
     def background_color(value):
-        if type(value) == str:
+        if isinstance(value, str):
             return "background-color: %s" % value
 
 # region set formation names
@@ -807,7 +836,8 @@ class Surfaces(object):
          Returns:
              :class:`Surfaces`:
          """
-        if type(surfaces_list) is list or type(surfaces_list) is np.ndarray:
+        #if type(surfaces_list) is list or type(surfaces_list) is np.ndarray:
+        if isinstance(surfaces_list, (list, np.ndarray)):
             surfaces_list = np.asarray(surfaces_list)
 
         else:
@@ -993,7 +1023,6 @@ class Surfaces(object):
 
         # Updating surfaces['series'] categories
         self.df['series'].cat.set_categories(self.series.df.index, inplace=True)
-
         # TODO Fixing this. It is overriding the formations already mapped
         if mapping_object is not None:
             # If none is passed and series exist we will take the name of the first series as a default
@@ -1354,7 +1383,7 @@ class SurfacePoints(GeometricData):
         self.init_dependent_properties()
 
         # Add nugget columns
-        self.df['smooth'] = 1e-8
+        self.df['smooth'] = 1e-6
 
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
@@ -1381,15 +1410,28 @@ class SurfacePoints(GeometricData):
 
         # TODO: Add the option to pass the surface number
 
+        # if idx is None:
+        #     idx = self.df.index.max()
+        #     if idx is np.nan:
+        #         idx = 0
+        #     else:
+        #         idx += 1
+
+        max_idx = self.df.index.max()
+
         if idx is None:
-            idx = self.df.index.max()
+            idx = max_idx
             if idx is np.nan:
                 idx = 0
             else:
                 idx += 1
 
+        if max_idx is not np.nan:
+            self.df.loc[idx] = self.df.loc[max_idx]
+
         coord_array = np.array([x, y, z])
         assert coord_array.ndim == 1, 'Adding an interface only works one by one.'
+        # self.df.loc[idx] = self.df.loc[idx-1]
         self.df.loc[idx, ['X', 'Y', 'Z']] = coord_array
 
         try:
@@ -1401,7 +1443,13 @@ class SurfacePoints(GeometricData):
                   'does not exist in the surface object either.')
             raise ValueError(error)
 
-        self.df.loc[idx, ['smooth']] = 1e-8
+        self.df.loc[idx, ['smooth']] = 1e-6
+
+        self.df['surface'] = self.df['surface'].astype('category', copy=True)
+        self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
+
+        self.df['series'] = self.df['series'].astype('category', copy=True)
+        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
 
         self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
         self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
@@ -1658,12 +1706,17 @@ class Orientations(GeometricData):
             raise AttributeError('Either pole_vector or orientation must have a value. If both are passed pole_vector'
                                  'has preference')
 
+        max_idx = self.df.index.max()
+
         if idx is None:
-            idx = self.df.index.max()
+            idx = max_idx
             if idx is np.nan:
                 idx = 0
             else:
                 idx += 1
+
+        if max_idx is not np.nan:
+            self.df.loc[idx] = self.df.loc[max_idx]
 
         if pole_vector is not None:
             self.df.loc[idx, ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']] = np.array([x, y, z, *pole_vector])
@@ -1683,8 +1736,13 @@ class Orientations(GeometricData):
             else:
                 raise AttributeError('At least pole_vector or orientation should have been passed to reach'
                                      'this point. Check previous condition')
-
         self.df.loc[idx, ['smooth']] = 0.01
+        self.df['surface'] = self.df['surface'].astype('category', copy=True)
+        self.df['surface'].cat.set_categories(self.surfaces.df['surface'].values, inplace=True)
+
+        self.df['series'] = self.df['series'].astype('category', copy=True)
+        self.df['series'].cat.set_categories(self.surfaces.df['series'].cat.categories, inplace=True)
+
         self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
         self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
         self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
@@ -1819,7 +1877,7 @@ class Orientations(GeometricData):
         return True
 
     @setdoc_pro([SurfacePoints.__doc__])
-    def create_orientation_from_interface(self, surface_points: SurfacePoints, indices):
+    def create_orientation_from_surface_points(self, surface_points: SurfacePoints, indices):
         # TODO test!!!!
         """
         Create and set orientations from at least 3 points categories_df
@@ -1904,9 +1962,22 @@ class Orientations(GeometricData):
             return table
 
         else:
-            assert {coord_x_name, coord_y_name, coord_z_name, dip_name, azimuth_name,
-                    polarity_name, surface_name}.issubset(table.columns), \
-                "One or more columns do not match with the expected values " + str(table.columns)
+            assert np.logical_or({coord_x_name, coord_y_name, coord_z_name, dip_name, azimuth_name,
+                    polarity_name, surface_name}.issubset(table.columns),
+                 {coord_x_name, coord_y_name, coord_z_name, g_x_name, g_y_name, g_z_name,
+                  polarity_name, surface_name}.issubset(table.columns)), \
+                "One or more columns do not match with the expected values, which are: \n" +\
+                "- the locations of the measurement points '{}','{}' and '{}' \n".format(coord_x_name,coord_y_name,
+                                                                                         coord_z_name)+ \
+                "- EITHER '{}' (trend direction indicated by an angle between 0 and 360 with North at 0 AND " \
+                "'{}' (inclination angle, measured from horizontal plane downwards, between 0 and 90 degrees) \n".format(
+                azimuth_name, dip_name) +\
+                "- OR the pole vectors of the orientation in a cartesian system '{}','{}' and '{}' \n".format(g_x_name,
+                                                                                                              g_y_name,
+                                                                                                              g_z_name)+\
+                "- the '{}' of the orientation, can be normal (1) or reversed (-1) \n".format(polarity_name)+\
+                "- the name of the surface: '{}'\n".format(surface_name)+\
+                "Your headers are "+str(list(table.columns))
 
             if inplace:
                 # self.categories_df[table.columns] = table
@@ -2244,6 +2315,7 @@ class RescaledData(object):
         """
         if idx is None:
             idx = self.surface_points.df.index
+        idx = np.atleast_1d(idx)
 
         self.surface_points.df.loc[idx, ['X_r', 'Y_r', 'Z_r']] = self.rescale_surface_points(
             self.surface_points, self.df.loc['values', 'rescaling factor'], self.df.loc['values', 'centers'], idx=idx)
@@ -2300,6 +2372,7 @@ class RescaledData(object):
         """
         if idx is None:
             idx = self.orientations.df.index
+        idx = np.atleast_1d(idx)
 
         self.orientations.df.loc[idx, ['X_r', 'Y_r', 'Z_r']] = self.rescale_orientations(
             self.orientations, self.df.loc['values', 'rescaling factor'], self.df.loc['values', 'centers'], idx=idx)
@@ -2415,8 +2488,12 @@ class Structure(object):
             :class:`pn.DataFrame`: df where Structural data is stored
 
         """
+        len_series = self.surfaces.series.df.shape[0]
+
         # Array containing the size of every series. SurfacePoints.
-        len_series_i = self.surface_points.df['order_series'].value_counts(sort=False).values
+        points_count = self.surface_points.df['order_series'].value_counts(sort=False)
+        len_series_i = np.zeros(len_series, dtype=int)
+        len_series_i[points_count.index-1] = points_count.values
 
         if len_series_i.shape[0] is 0:
             len_series_i = np.insert(len_series_i, 0, 0)
@@ -2434,8 +2511,13 @@ class Structure(object):
 
         """
         # Array containing the size of every series. orientations.
-        self.df.at['values', 'len series orientations'] = self.orientations.df['order_series'].value_counts(
-            sort=False).values
+
+        len_series_o = np.zeros(self.surfaces.series.df.shape[0],dtype=int)
+        ori_count = self.orientations.df['order_series'].value_counts(sort=False)
+        len_series_o[ori_count.index-1] = ori_count.values
+
+        self.df.at['values', 'len series orientations'] = len_series_o
+
         return self.df
 
     def set_number_of_surfaces_per_series(self):
@@ -2446,8 +2528,13 @@ class Structure(object):
             :class:`pn.DataFrame`: df where Structural data is stored
 
         """
-        self.df.at['values', 'number surfaces per series'] = self.surface_points.df.groupby('order_series').\
-            surface.nunique().values
+        len_sps = np.zeros(self.surfaces.series.df.shape[0],dtype=int)
+        surf_count = self.surface_points.df.groupby('order_series').\
+            surface.nunique()
+
+        len_sps[surf_count.index-1] = surf_count.values
+
+        self.df.at['values', 'number surfaces per series'] = len_sps
         return self.df
 
     def set_number_of_faults(self):
@@ -2498,7 +2585,7 @@ class Options(object):
 
      """
     def __init__(self):
-        df_ = pn.DataFrame(np.array(['float64', 'geology', 'fast_compile', 'cpu', None]).reshape(1, -1),
+        df_ = pn.DataFrame(np.array(['float32', 'geology', 'fast_compile', 'cpu', None]).reshape(1, -1),
                            index=['values'],
                            columns=['dtype', 'output', 'theano_optimizer', 'device', 'verbosity'])
 
@@ -2511,6 +2598,7 @@ class Options(object):
         self.df['device'].cat.set_categories(['cpu', 'cuda'], inplace=True)
         self.df['output'].cat.set_categories(['geology', 'gradients'], inplace=True)
         self.df.at['values', 'verbosity'] = []
+        self.default_options()
 
     def __repr__(self):
         return self.df.T.to_string()
@@ -2541,10 +2629,16 @@ class Options(object):
         Returns:
             bool: True
         """
-        self.df['dtype'] = 'float64'
-        self.df['output'] = 'geology'
-        self.df['theano_optimizer'] = 'fast_compile'
-        self.df['device'] = 'cpu'
+        import theano
+        self.df.loc['values', 'device'] = theano.config.device
+
+        if theano.config.device == 'cpu':
+            self.df.loc['values', 'dtype'] = 'float64'
+        else:
+            self.df.loc['values', 'dtype'] = 'float32'
+
+        self.df.loc['values', 'output'] = 'geology'
+        self.df.loc['values', 'theano_optimizer'] = 'fast_compile'
         return True
 
 

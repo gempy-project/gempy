@@ -17,7 +17,7 @@ from .core.gempy_api import *
 import gempy.plot.plot as plot
 
 assert sys.version_info[0] >= 3, "GemPy requires Python 3.X"  # sys.version_info[1] for minor e.g. 6
-__version__ = '2.0b'
+__version__ = '2.0.1'
 
 if __name__ == '__main__':
     pass

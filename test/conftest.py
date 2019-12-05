@@ -18,7 +18,7 @@ def interpolator():
                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 
-    gempy.set_interpolation_data(geo_model,  compile_theano=True)
+    gempy.set_interpolation_data(geo_model,  grid=None, compile_theano=True)
     return geo_model.interpolator
 
 
@@ -39,7 +39,7 @@ def interpolator_islith_isfault():
 
     geo_model.set_is_fault(['Fault_Series'])
 
-    gp.set_interpolation_data(geo_model,
+    gp.set_interpolation_data(geo_model, grid=None,
                               compile_theano=True,
                               theano_optimizer='fast_compile',
                               verbose=[])
@@ -57,7 +57,7 @@ def interpolator_islith_nofault():
                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 
-    interpolator = gempy.set_interpolation_data(geo_model,  compile_theano=True)
+    interpolator = gempy.set_interpolation_data(geo_model, grid=None, compile_theano=True)
     return interpolator
 
 

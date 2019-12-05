@@ -97,7 +97,7 @@ class vtkVisualization(object):
         self.surface_name = geo_data.surface_points.df['surface'].unique()
 
         # Extents
-        self.extent = self.geo_model.grid.regular_grid.extent
+        self.extent = copy.copy(self.geo_model.grid.regular_grid.extent)
         self.extent[-1] = ve * self.extent[-1]
         self.extent[-2] = ve * self.extent[-2]
         _e = self.extent
@@ -278,7 +278,8 @@ class vtkVisualization(object):
         """
         Points = vtk.vtkPoints()
         if self.ve != 1:
-            raise NotImplementedError('Vertical exageration for surfaces not implemented yet.')
+            vertices[:, 2] = vertices[:, 2] * self.ve
+        #     raise NotImplementedError('Vertical exageration for surfaces not implemented yet.')
         # for v in vertices:
         #     v[-1] = self.ve * v[-1]
         #     Points.InsertNextPoint(v)
@@ -484,12 +485,14 @@ class vtkVisualization(object):
 
     def set_topography(self):
         # Create points on an XY grid with random Z coordinate
-        vertices = self.geo_model.grid.topography.values
+        vertices = copy.copy(self.geo_model.grid.topography.values)
 
         points = vtk.vtkPoints()
         # for v in vertices:
         #     v[-1] = v[-1]
         #     points.InsertNextPoint(v)
+        if self.ve !=1:
+            vertices[:, 2]= vertices[:, 2]*self.ve
         points.SetData(numpy_to_vtk(vertices))
 
         # Add the grid points to a polydata object
@@ -503,6 +506,7 @@ class vtkVisualization(object):
         # # Create a mapper and actor
         # pointsMapper = vtk.vtkPolyDataMapper()
         # pointsMapper.SetInputConnection(glyphFilter.GetOutputPort())
+
         #
         # pointsActor = vtk.vtkActor()
         # pointsActor.SetMapper(pointsMapper)
@@ -544,7 +548,7 @@ class vtkVisualization(object):
             rgb = (255 * np.array(mcolors.hex2color(val)))
             arr_ = np.vstack((arr_, rgb))
 
-        sel = np.round(self.geo_model.solutions.geological_map).astype(int)[0]
+        sel = np.round(self.geo_model.solutions.geological_map[0]).astype(int)[0]
         nv = numpy_to_vtk(arr_[sel - 1], array_type=3)
         self._topography_delauny.GetOutput().GetPointData().SetScalars(nv)
 
@@ -1147,7 +1151,10 @@ class vtkVisualization(object):
             None
         """
         try:
-            from evtk.hl import gridToVTK
+            try:
+                from evtk.hl import gridToVTK
+            except ModuleNotFoundError:
+                from pyevtk.hl import gridToVTK
         except ModuleNotFoundError:
             raise ModuleNotFoundError('pyevtk is not installed. Grid export not available.')
 
