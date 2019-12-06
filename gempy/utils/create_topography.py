@@ -111,6 +111,8 @@ class Load_DEM_GDAL():
         path_dest = 'topo.xyz'
         print('storing converted file...')
         shape = self.dem_zval.shape
+        if len(shape) == 3:
+            shape = shape[1:]
         gdal.Translate(path_dest, self.dem, options=gdal.TranslateOptions(options=['format'], format="XYZ"))
 
         xyz = pn.read_csv(path_dest, header=None, sep=' ').values
