@@ -443,8 +443,9 @@ class TheanoGraphPro(object):
         #                        original_regular_grid_boundaries[:, 2] + self.dxdydz[2] / 4), axis=1), (1, 4))
 
         self.shift = self.grid_val_T.shape[0]
+        self.shift  = theano.printing.Print('shift')(self.shift)
         g = self.create_oct_level(unique_val)
-        self.grid_val_T
+        self.grid_val_T = g
 
 
         #self.grid_val_T = T.stack((x_.ravel(), y_.ravel(), z_.ravel())).T
@@ -458,10 +459,11 @@ class TheanoGraphPro(object):
 #        self.block_matrix = T.zeros((n_series, n_properties, x_to_interp_shape), dtype=self.dtype)
 
         # I need to init the solution matrices
-        #oct_sol = self.compute_series()
+       # self.shift = self.grid_val_T.shape[0]
+        oct_sol = self.compute_series()
 
-        solutions.append(g[0])
-        solutions.append(g[1])
+        solutions.append(g)
+        solutions.append(oct_sol[0])
         return solutions
 
     def create_oct_level(self, unique_val):
@@ -475,32 +477,30 @@ class TheanoGraphPro(object):
 
         shift_x = uv_3d[1:, :, :] - uv_3d[:-1, :, :]
         shift_x_select = T.neq(shift_x, 0)
-        x_edg = 2 * xyz[1:, :, :][shift_x_select] - xyz[:-1, :, :][shift_x_select] 
+        x_edg = (xyz[:-1, :, :][shift_x_select] + xyz[1:, :, :][shift_x_select])/2
 
         shift_y = uv_3d[:, 1:, :] - uv_3d[:, :-1, :]
         shift_y_select = T.neq(shift_y, 0)
-        y_edg = xyz[:, 1:, :][shift_y_select] - xyz[:, :-1, :][shift_y_select]
-
+        y_edg = (xyz[:, :-1, :][shift_y_select] + xyz[:, 1:, :][shift_y_select])/2
+        
         shift_z = uv_3d[:, :, 1:] - uv_3d[:, :, :-1]
         shift_z_select = T.neq(shift_z, 0)
-        z_edg = xyz[:, :, 1:][shift_z_select] - xyz[:, :, :-1][shift_z_select]
-
+        z_edg = (xyz[:, :, :-1][shift_z_select] + xyz[:, :, 1:][shift_z_select])/2
         new_xyz_edg = T.vertical_stack(x_edg, y_edg, z_edg)
     
-
-       # x_ = T.repeat(T.stack((new_xyz_edg[:, 0] - self.dxdydz[0] / 4,
-       #                        new_xyz_edg[:, 0] + self.dxdydz[0] / 4), axis=1), 4, axis=1)
-        # y_ = T.tile(T.repeat(T.stack((new_xyz_edg[:, 1] - self.dxdydz[1] / 4,
-        #                               new_xyz_edg[:, 1] + self.dxdydz[1] / 4), axis=1),
-        #                      2, axis=1), (1, 2))
-        # z_ = T.tile(T.stack((new_xyz_edg[:, 2] - self.dxdydz[2] / 4,
-        #                      new_xyz_edg[:, 2] + self.dxdydz[2] / 4), axis=1), (1, 4))
+        x_ = T.repeat(T.stack((new_xyz_edg[:, 0] - self.dxdydz[0] / 4,
+                              new_xyz_edg[:, 0] + self.dxdydz[0] / 4), axis=1), 4, axis=1)
+        y_ = T.tile(T.repeat(T.stack((new_xyz_edg[:, 1] - self.dxdydz[1] / 4,
+                                      new_xyz_edg[:, 1] + self.dxdydz[1] / 4), axis=1),
+                             2, axis=1), (1, 2))
+        z_ = T.tile(T.stack((new_xyz_edg[:, 2] - self.dxdydz[2] / 4,
+                             new_xyz_edg[:, 2] + self.dxdydz[2] / 4), axis=1), (1, 4))
 
         # TODO now if we stack them it should yield the same as before
         #shift = uv_l - uv_r
         #select_edges = T.neq(shift.reshape((1, -1)), 0)
         #select_edges_dir = select_edges.reshape((3, -1))
-        return x_edg, new_xyz_edg#, x_#T.stack((x_.ravel(), y_.ravel(), z_.ravel())).T
+        return T.stack((x_.ravel(), y_.ravel(), z_.ravel())).T
 
     def theano_output(self):
         solutions = [theano.shared(np.nan)]*15
@@ -1794,20 +1794,31 @@ class TheanoGraphPro(object):
 
         self.n_universal_eq_T_op = u_grade_iter
 
+        x_to_interpolate_shape = self.grid_val_T.shape[0] + 2 * self.len_points
+        x_to_interpolate_shape = theano.printing.Print('x_to_interpolate_shape')(x_to_interpolate_shape)
+
         # Extracting faults matrices
         faults_relation_op = self.fault_relation[:, T.cast(n_series, 'int8')]
-        self.fault_matrix = block_matrix[T.nonzero(T.cast(faults_relation_op, "int8"))[0], 0, :] * self.offset
+        self.fault_matrix = block_matrix[T.nonzero(T.cast(faults_relation_op, "int8"))[0],
+         0, self.shift:x_to_interpolate_shape + self.shift] * self.offset
+        
         if 'fault_matrix_loop' in self.verbose:
             self.fault_matrix = theano.printing.Print('self fault matrix')(self.fault_matrix)
         # TODO this is wrong
 
-        interface_loc = self.grid_val_T.shape[0]#self.fault_matrix.shape[1] - 2 * self.len_points
+        interface_loc = self.grid_val_T.shape[0] # + self.shift#self.fault_matrix.shape[1] - 2 * self.len_points
+        interface_loc = theano.printing.Print('interface_loc')(interface_loc)
 
+        self.len_points = theano.printing.Print('len_points')(self.len_points)
+        len_i_0 = theano.printing.Print('len_i_0')(len_i_0)
+        len_i_1 = theano.printing.Print('len_i_1')(len_i_1)
+    
         self.fault_drift_at_surface_points_rest = self.fault_matrix[
-                                                  :, interface_loc + len_i_0: interface_loc + len_i_1]
+                                                  :, interface_loc + len_i_0:
+                                                     interface_loc + len_i_1]
         self.fault_drift_at_surface_points_ref = self.fault_matrix[
-                                                  :, interface_loc + self.len_points + len_i_0: interface_loc +
-                                                  self.len_points + len_i_1]
+                                                  :, interface_loc + self.len_points + len_i_0: 
+                                                     interface_loc + self.len_points + len_i_1]
 
         b = self.b_vector(self.dip_angles, self.azimuth, self.polarity)
 
