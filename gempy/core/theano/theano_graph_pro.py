@@ -249,7 +249,7 @@ class TheanoGraphPro(object):
 
 
         # interface_loc = self.fault_matrix.shape[1] - 2 * self.len_points
-        interface_loc = self.grid_val_T.shape[0]
+        interface_loc = 55#self.grid_val_T.shape[0]
         self.fault_drift_at_surface_points_rest = self.fault_matrix[
                                                   :, interface_loc: interface_loc + self.len_points]
         self.fault_drift_at_surface_points_ref = self.fault_matrix[
@@ -376,9 +376,23 @@ class TheanoGraphPro(object):
         final_model = T.sum(T.stack([mask], axis=1) * block, axis=0)
         return final_model
 
-    def compute_series(self, grid=None):
+    def compute_series(self, grid=None, shift=None):
+        if grid is None:
+            grid = self.grid_val_T
+        if shift is None:
+            shift = self.shift
+
         # TODO I have to take this function to interpolator and making the behaviour the same as mask_matrix
         self.mask_matrix_f = T.zeros_like(self.mask_matrix)
+        
+
+        # -------
+        o=T.zeros_like(self.block_matrix)
+        a=T.zeros_like(self.weights_vector)
+        b=T.zeros_like(self.scalar_fields_matrix)
+        c=T.zeros_like(self.sfai)
+        d=T.zeros_like(self.mask_matrix)
+        e=T.zeros_like(self.mask_matrix_f)    
 
         # Looping
         series, updates1 = theano.scan(
@@ -405,7 +419,7 @@ class TheanoGraphPro(object):
                        dict(input=self.is_onlap, taps=[0]),
                        dict(input=T.arange(0, 5000, dtype='int32'), taps=[0])
                        ],
-            non_sequences=[grid],
+            non_sequences=[grid, shift],
             name='Looping',
             return_list=True,
             profile=False
@@ -424,6 +438,58 @@ class TheanoGraphPro(object):
         fault_block = self.compute_final_block(fault_mask, self.new_block)
 
         final_model = self.compute_final_block(self.new_mask, self.new_block)
+# -------------------------------------------------------------------------------
+        shift += grid.shape[0]
+
+        grid = self.create_oct_level_dense(final_model, grid)
+
+        self.mask_matrix_f = T.zeros_like(self.new_mask)
+
+        # I need to init the solution matrices
+ # Looping
+        series, updates1 = theano.scan(
+            fn=self.compute_a_series,
+            outputs_info=[
+                dict(initial=o),
+                dict(initial=a),
+                dict(initial=b),
+                dict(initial=c),
+                dict(initial=d),
+                dict(initial=e),
+            ],  # This line may be used for the df network
+            sequences=[dict(input=self.len_series_i, taps=[0, 1]),
+                       dict(input=self.len_series_o, taps=[0, 1]),
+                       dict(input=self.len_series_w, taps=[0, 1]),
+                       dict(input=self.n_surfaces_per_series, taps=[0, 1]),
+                       dict(input=self.n_universal_eq_T, taps=[0]),
+                       dict(input=self.compute_weights_ctrl, taps=[0]),
+                 #      dict(input=theano.shared(np.zeros(6, dtype=bool)), taps=[0]),
+                       dict(input=self.compute_scalar_ctrl, taps=[0]),
+                       dict(input=self.compute_block_ctrl, taps=[0]),
+                       dict(input=self.is_finite_ctrl, taps=[0]),
+                       dict(input=self.is_erosion, taps=[0]),
+                       dict(input=self.is_onlap, taps=[0]),
+                       dict(input=T.arange(0, 5000, dtype='int32'), taps=[0])
+                       ],
+            non_sequences=[grid, shift],
+            name='Looping',
+            return_list=True,
+            profile=False
+        )
+
+        self.new_block = series[0][-1]
+        self.new_weights = series[1][-1]
+        self.new_scalar = series[2][-1]
+        self.new_sfai = series[3][-1]
+
+        mask = series[4][-1]
+        mask_rev_cumprod = T.vertical_stack(mask[[-1]], T.cumprod(T.invert(mask[:-1]), axis=0))
+        self.new_mask = mask * mask_rev_cumprod
+
+        fault_mask = series[5][-1]
+        fault_block = self.compute_final_block(fault_mask, self.new_block)
+
+        final_model = self.compute_final_block(self.new_mask, self.new_block)    
 
         return [final_model, self.new_block, fault_block, self.new_weights, self.new_scalar,
                 self.new_sfai, self.new_mask, fault_mask]
@@ -440,13 +506,13 @@ class TheanoGraphPro(object):
 
         return T.stack((x_.ravel(), y_.ravel(), z_.ravel())).T
 
-    def create_oct_level_dense(self, unique_val):
+    def create_oct_level_dense(self, unique_val, grid):
 
         uv_3d = T.cast(T.round(unique_val[0, :T.prod(self.regular_grid_res)].reshape(self.regular_grid_res, ndim=3)),
                         'int32')
 
         new_shape =  T.concatenate([self.regular_grid_res, T.stack([3])])
-        xyz = self.grid_val_T[:T.prod(self.regular_grid_res)].reshape(new_shape, ndim=4)
+        xyz = grid[:T.prod(self.regular_grid_res)].reshape(new_shape, ndim=4)
 
         shift_x = uv_3d[1:, :, :] - uv_3d[:-1, :, :]
         shift_x_select = T.neq(shift_x, 0)
@@ -486,17 +552,23 @@ class TheanoGraphPro(object):
 
     def compute_series_oct(self, n_levels=3):
         # self.shift = 0
-        solutions = self.compute_series()
-        unique_val = solutions[0] + self.max_lith * solutions[2]
+        solutions = self.compute_series(self.grid_val_T)
+      #  unique_val = solutions[0] + self.max_lith * solutions[2]
 
-        # # ------------------------------------------------------
-        self.shift = self.grid_val_T.shape[0] + self.shift
-     #   self.shift  = theano.printing.Print('shift')(self.shift)
-        g = self.create_oct_level_dense(unique_val)
-        self.grid_val_T = g
+    #     # # ------------------------------------------------------
+    #     shift = self.grid_val_T.shape[0] + self.shift
+    #  #   self.shift  = theano.printing.Print('shift')(self.shift)
 
-        # I need to init the solution matrices
-        oct_sol = self.compute_series()
+    #     a = np.ones((1, 64000)).reshape(40,40,40)
+    #     a[:,:,20:] += 2
+    #     a[:10] += 1
+
+    #     uv = theano.shared(a.reshape(1, 64000).astype('float32'))
+    #     g = self.create_oct_level_dense(solutions[0], self.grid_val_T)
+    #    # self.grid_val_T = g
+
+    #     # I need to init the solution matrices
+    #     oct_sol = self.compute_series(g, 0)
 
         # solutions.append(g)
         # solutions.append(oct_sol[0])
@@ -514,7 +586,7 @@ class TheanoGraphPro(object):
         
         # solutions.append(g1)
         # solutions.append(oct_sol_2[0])
-        return oct_sol[0] #solutions
+        return solutions[0] #solutions
 
 
     def theano_output(self):
@@ -1435,7 +1507,7 @@ class TheanoGraphPro(object):
             f_1 = self.contribution_faults(tiled_weights[:, :], a, b)
 
             # Add an arbitrary number at the potential field to get unique values for each of them
-            partial_Z_x = (sigma_0_grad + sigma_0_interf + f_0+ f_1)
+            partial_Z_x = (sigma_0_grad + sigma_0_interf + f_0 + f_1)
 
         Z_x = T.set_subtensor(Z_x[a:b], partial_Z_x)
 
@@ -1759,7 +1831,7 @@ class TheanoGraphPro(object):
                          is_finite=np.array(False), is_erosion=np.array(True), is_onlap=np.array(False),
                          n_series=0,
                          block_matrix=None, weights_vector=None, scalar_field_matrix=None, sfai=None, mask_matrix=None,
-                         mask_matrix_f=None, grid=None
+                         mask_matrix_f=None, grid=None, shift=None
                          ):
         """
         Function that loops each fault, generating a potential field for each on them with the respective block model
@@ -1800,19 +1872,19 @@ class TheanoGraphPro(object):
 
         self.n_universal_eq_T_op = u_grade_iter
 
-        x_to_interpolate_shape = self.grid_val_T.shape[0] + 2 * self.len_points
-       # x_to_interpolate_shape = theano.printing.Print('x_to_interpolate_shape')(x_to_interpolate_shape)
+        x_to_interpolate_shape = grid.shape[0] + 2 * self.len_points
+        x_to_interpolate_shape = theano.printing.Print('x_to_interpolate_shape')(x_to_interpolate_shape)
 
         # Extracting faults matrices
         faults_relation_op = self.fault_relation[:, T.cast(n_series, 'int8')]
         self.fault_matrix = block_matrix[T.nonzero(T.cast(faults_relation_op, "int8"))[0],
-         0, self.shift:x_to_interpolate_shape + self.shift] * self.offset
+         0, shift:x_to_interpolate_shape + shift] * self.offset
         
         if 'fault_matrix_loop' in self.verbose:
             self.fault_matrix = theano.printing.Print('self fault matrix')(self.fault_matrix)
         # TODO this is wrong
 
-        interface_loc = self.grid_val_T.shape[0] # + self.shift#self.fault_matrix.shape[1] - 2 * self.len_points
+        interface_loc = grid.shape[0] # + self.shift#self.fault_matrix.shape[1] - 2 * self.len_points
        # interface_loc = theano.printing.Print('interface_loc')(interface_loc)
 
       #  self.len_points = theano.printing.Print('len_points')(self.len_points)
@@ -1822,6 +1894,7 @@ class TheanoGraphPro(object):
         self.fault_drift_at_surface_points_rest = self.fault_matrix[
                                                   :, interface_loc + len_i_0:
                                                      interface_loc + len_i_1]
+      
         self.fault_drift_at_surface_points_ref = self.fault_matrix[
                                                   :, interface_loc + self.len_points + len_i_0: 
                                                      interface_loc + self.len_points + len_i_1]
@@ -1830,32 +1903,34 @@ class TheanoGraphPro(object):
 
         if self.sparse_version is True:
             weights = self.solve_kriging(b)
-            Z_x = self.compute_scalar_field(weights, self.grid_val_T)
+            Z_x = self.compute_scalar_field(weights, grid)
             weights = weights[0]
 
         else:
             weights = theano.ifelse.ifelse(compute_weight_ctr,
                                            self.solve_kriging(b),
                                            weights_vector[len_w_0:len_w_1])
-
-            Z_x = tif.ifelse(compute_scalar_ctr, self.compute_scalar_field(weights, self.grid_val_T),
+            if 'weights' in self.verbose:
+                    weights = theano.printing.Print('weights foo1')(weights)
+          
+            Z_x = tif.ifelse(compute_scalar_ctr, self.compute_scalar_field(weights, grid),
                              scalar_field_matrix[n_series])
 
-        x_to_interpolate_shape = Z_x.shape[0]
+        # x_to_interpolate_shape = Z_x.shape[0]
 
         if 'weights' in self.verbose:
             weights = theano.printing.Print('weights foo')(weights)
 
         scalar_field_at_surface_points = self.get_scalar_field_at_surface_points(Z_x, self.npf_op)
-        #
-        # # TODO: add control flow for this side
+        
+        # TODO: add control flow for this side
         mask_e = tif.ifelse(is_erosion, # If is erosion
                             T.gt(Z_x, T.min(scalar_field_at_surface_points)), # It is True the values over the last surface
                             ~ self.is_fault[n_series] * T.ones_like(Z_x, dtype='bool')) # else: all False if is Fault else all ones
 
         mask_o = tif.ifelse(is_onlap,
                             T.gt(Z_x, T.max(scalar_field_at_surface_points)),
-                            mask_matrix[n_series - 1, self.shift:x_to_interpolate_shape + self.shift])
+                            mask_matrix[n_series - 1, shift:x_to_interpolate_shape + shift])
 
         mask_f = tif.ifelse(self.is_fault[n_series],
                             T.gt(Z_x, T.min(scalar_field_at_surface_points)),
@@ -1868,7 +1943,7 @@ class TheanoGraphPro(object):
                            self.compute_fault_block(
                                          Z_x, scalar_field_at_surface_points,
                                          self.values_properties_op[:, n_form_per_serie_0: n_form_per_serie_1 + 1],
-                                         n_series, self.grid_val_T
+                                         n_series, grid
                                      ),
                            self.compute_formation_block(
                                          Z_x, scalar_field_at_surface_points,
@@ -1884,10 +1959,10 @@ class TheanoGraphPro(object):
                                )
 
         weights_vector = T.set_subtensor(weights_vector[len_w_0:len_w_1], weights)
-        scalar_field_matrix = T.set_subtensor(scalar_field_matrix[n_series, self.shift:x_to_interpolate_shape + self.shift], Z_x)
-        block_matrix = T.set_subtensor(block_matrix[n_series, :, self.shift:x_to_interpolate_shape + self.shift], block)
-        mask_matrix = T.set_subtensor(mask_matrix[n_series - 1, self.shift:x_to_interpolate_shape + self.shift], mask_o)
-        mask_matrix = T.set_subtensor(mask_matrix[n_series, self.shift:x_to_interpolate_shape + self.shift], mask_e)
+        scalar_field_matrix = T.set_subtensor(scalar_field_matrix[n_series, shift:x_to_interpolate_shape + shift], Z_x)
+        block_matrix = T.set_subtensor(block_matrix[n_series, :, shift:x_to_interpolate_shape + shift], block)
+        mask_matrix = T.set_subtensor(mask_matrix[n_series - 1, shift:x_to_interpolate_shape + shift], mask_o)
+        mask_matrix = T.set_subtensor(mask_matrix[n_series, shift:x_to_interpolate_shape + shift], mask_e)
 
         # This creates a matrix with Trues in the positive side of the faults. When is not faults is 0
 
@@ -1896,7 +1971,7 @@ class TheanoGraphPro(object):
         idx_e = (self.is_fault * ~T.cast(faults_relation_op, 'bool'))[:self.is_erosion.shape[0]]
         idx_o = (self.is_fault * ~T.cast(self.fault_relation[:, T.cast(n_series-1, 'int8')], 'bool'))[:self.is_erosion.shape[0]]
 
-        mask_matrix_f = T.set_subtensor(mask_matrix_f[idx_e, self.shift:x_to_interpolate_shape + self.shift], mask_e + mask_f)
+        mask_matrix_f = T.set_subtensor(mask_matrix_f[idx_e, shift:x_to_interpolate_shape + shift], mask_e + mask_f)
         # mask_matrix_f = T.set_subtensor(mask_matrix_f[idx_o, :], mask_o + mask_matrix_f[n_series-1])
 
         # Scalar field at interfaces
