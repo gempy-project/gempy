@@ -31,14 +31,14 @@ def compute_topology(
         cell_number:int=None,
         direction:str=None,
         n_shift:int=1,
-        voxel_threshold:int=1
+        voxel_threshold:int=1,
     ):
     res = geo_model.grid.regular_grid.resolution
     n_unconf = np.count_nonzero(geo_model.series.df.BottomRelation == "Erosion") - 2  # TODO -2 n other lith series
     n_faults = np.count_nonzero(geo_model.faults.df.isFault)
 
     fb = np.round(
-        geo_model.solutions.block_matrix[n_unconf:n_faults + 1, 0, :]
+        geo_model.solutions.block_matrix[n_unconf:n_faults + n_unconf, 0, :]
     ).astype(int).sum(axis=0).reshape(*res)
 
     lb = np.round(
