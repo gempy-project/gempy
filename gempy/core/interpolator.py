@@ -905,10 +905,12 @@ class InterpolatorModel(Interpolator):
 
         th_fn = theano.function(input_data_T,
                                 self.theano_graph.theano_output(),
-                                updates=[(self.theano_graph.block_matrix, self.theano_graph.new_block),
-                                         (self.theano_graph.weights_vector, self.theano_graph.new_weights),
-                                         (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
-                                         (self.theano_graph.mask_matrix, self.theano_graph.new_mask)],
+                                updates=[
+                                    #(self.theano_graph.block_matrix, self.theano_graph.new_block),
+                                    #     (self.theano_graph.weights_vector, self.theano_graph.new_weights),
+                                     #    (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
+                                      #   (self.theano_graph.mask_matrix, self.theano_graph.new_mask)
+                                       ],
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
                                 profile=False)
