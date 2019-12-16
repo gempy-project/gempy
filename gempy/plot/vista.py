@@ -313,6 +313,36 @@ class Vista:
             self._recompute()
             self._update_surface_polydata()
 
+    def _scale_topology_centroids(
+            self, 
+            centroids:Dict[int, Array[float, 3]]
+        ) -> Dict[int, Array[float, 3]]:
+        """Scale topology centroid coordinates from grid coordinates to 
+        physical coordinates.
+        
+        Args:
+            centroids (Dict[int, Array[float, 3]]): Centroid dictionary.
+        
+        Returns:
+            Dict[int, Array[float, 3]]: Rescaled centroid dictionary.
+        """
+        res = self.model.grid.regular_grid.resolution
+        scaling = np.diff(self.extent)[::2] / res
+        
+        scaled_centroids = {}
+        for n, pos in centroids.items(): 
+            pos_scaled = pos * scaling
+
+            if np.any(np.array(self.extent[:2]) < 0):
+                pos_scaled[0] += np.min(self.extent[:2])
+            if np.any(np.array(self.extent[2:4]) < 0):
+                pos_scaled[1] += np.min(self.extent[2:4])
+            if np.any(np.array(self.extent[4:]) < 0):
+                pos_scaled[2] += np.min(self.extent[4:])
+
+            scaled_centroids[n] = pos_scaled
+
+        return scaled_centroids
     
 
 class _Vista:
