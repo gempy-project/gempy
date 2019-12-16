@@ -47,8 +47,275 @@ try:
 except ImportError:
     VTK_IMPORT = False
 
+from nptyping import Array
+from logging import debug
+
 
 class Vista:
+    def __init__(
+        self, 
+        model, 
+        extent=None, 
+        color_lot: pn.DataFrame = None, 
+        real_time=False,
+        plotter_type='basic',
+        **kwargs
+        ):
+        self.model = model
+        if extent:
+            self.extent = list(extent)
+        else:
+            self.extent = list(model.grid.regular_grid.extent)
+        
+        if color_lot:
+            self._color_lot = color_lot
+        else:
+            self._color_lot = model.surfaces.df.set_index('surface')['color']
+        self._color_id_lot = model.surfaces.df.set_index('id')['color']
+
+        if plotter_type == 'basic':
+            self.p = pv.Plotter(**kwargs)
+        elif plotter_type == 'background':
+            self.p = pv.BackgroundPlotter(**kwargs)
+
+        self._surface_actors = {}
+        self._surface_points_actors = {}
+        self._orientations_actors = {}
+
+        self._actors = []
+        self._live_updating = False
+
+    def _actor_exists(self, new_actor):
+        if not hasattr(new_actor, "points"):
+            return False
+        for actor in self._actors:
+            actor_str = actor.points.tostring()
+            if new_actor.points.tostring() == actor_str:
+                debug("Actor already exists.")
+                return True
+        return False
+
+    def set_bounds(
+            self, 
+            extent:list=None, 
+            grid:bool=False,
+            location:str='furthest', 
+            **kwargs
+        ):
+        """Set and toggle display of bounds of geomodel.
+        
+        Args:
+            extent (list, optional): [description]. Defaults to None.
+            grid (bool, optional): [description]. Defaults to False.
+            location (str, optional): [description]. Defaults to 'furthest'.
+        """
+        if extent is None:
+            extent = self.extent
+        self.p.show_bounds(
+            bounds=extent, location=location, grid=grid, **kwargs
+        )
+
+    def plot_surface_points(self, fmt:str, **kwargs):
+        i = self.model.surface_points.df.groupby("surface").groups[fmt]
+        if len(i) == 0:
+            return
+
+        mesh = pv.PolyData(
+                self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
+            )
+        if self._actor_exists(mesh):
+                return
+
+        self.p.add_mesh(
+            mesh,
+            color=self._color_lot[fmt],
+            **kwargs
+        )
+        self._actors.append(mesh)
+
+    def plot_orientations(self, fmt:str, length:float=200, **kwargs):
+        i = self.model.orientations.df.groupby("surface").groups[fmt]
+        if len(i) == 0:
+            return
+
+        pts = self.model.orientations.df.loc[i][["X", "Y", "Z"]].values
+        nrms = self.model.orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
+        for pt, nrm in zip(pts, nrms):
+            mesh = pv.Line(pointa=pt, pointb=pt+length*nrm)
+            # TODO: make orientation length func of extent
+            if self._actor_exists(mesh):
+                return
+            self.p.add_mesh(
+                mesh, 
+                color=self._color_lot[fmt],
+                **kwargs
+            )
+            self._actors.append(mesh)
+
+    def plot_surface_points_all(self, **kwargs):
+        for fmt in self.model.surfaces.df.surface:
+            if fmt.lower() == "basement":
+                continue
+            self.plot_surface_points(fmt, **kwargs)
+
+    def plot_orientations_all(self, **kwargs):
+        for fmt in self.model.surfaces.df.surface:
+            if fmt.lower() == "basement":
+                continue
+            self.plot_orientations(fmt, **kwargs)
+
+    def plot_surface(self, fmt:str, **kwargs):
+        i = np.where(self.model.surfaces.df.surface == fmt)[0][0]
+        ver = self.model.solutions.vertices[i]
+        
+        sim = self._simplices_to_pv_tri_simplices(
+            self.model.solutions.edges[i]
+        )
+        mesh = pv.PolyData(ver, sim)
+        if self._actor_exists(mesh):
+            return
+
+        self.p.add_mesh(
+            mesh,
+            color=self._color_lot[fmt],
+            **kwargs
+        )
+        self._actors.append(mesh)
+        self._surface_actors[fmt] = mesh
+
+    def plot_surfaces_all(self, fmts:list=None, **kwargs):
+        if not fmts:
+            fmts = self.model.surfaces.df.surface[:-1].values
+        for fmt in fmts:
+            self.plot_surface(fmt, **kwargs)
+
+    @staticmethod
+    def _simplices_to_pv_tri_simplices(sim:Array[int, ..., 3]) -> Array[int, ..., 4]:
+        """Convert triangle simplices (n, 3) to pyvista-compatible
+        simplices (n, 4)."""
+        n_edges = np.ones(sim.shape[0]) * 3
+        return np.append(n_edges[:, None], sim, axis=1)
+
+    def plot_structured_grid(self, name:str, **kwargs):
+        """Plot a structured grid of the geomodel.
+
+        Args:
+            name (str): Can be either one of the following
+                'lith' - Lithology id block.
+                'scalar' - Scalar field block.
+                'values' - Values matrix block.
+        """
+        regular_grid = self.model.grid.regular_grid
+        grid_values = regular_grid.values
+        grid_3d = grid_values.reshape(*regular_grid.resolution, 3).T
+        mesh = pv.StructuredGrid(*grid_3d)
+
+        if name == "lith":
+            vals = self.model.solutions.lith_block
+            n_faults = self.model.faults.df['isFault'].sum()
+            cmap = mcolors.ListedColormap(list(self._color_id_lot[n_faults:]))
+            kwargs['cmap'] = kwargs.get('cmap', cmap)
+        elif name == "scalar":
+            vals = self.model.solutions.scalar_field_matrix.T
+        elif name == "values":
+            vals = self.model.solutions.values_matrix.T
+
+        mesh.point_arrays[name] = vals
+        if self._actor_exists(mesh):
+            return
+        self._actors.append(mesh)
+        self.p.add_mesh(mesh, **kwargs)
+
+    def _callback_surface_points(self, pos, index):
+        print(pos, index)
+        x, y, z = pos
+        self.model.modify_surface_points(
+            index, X=x, Y=y, Z=z
+        )
+        if self._live_updating:
+            self._recompute()
+            self._update_surface_polydata()
+
+    def _recompute(self, **kwargs):
+        gp.compute_model(self.model, compute_mesh=True, **kwargs)
+
+    def _update_surface_polydata(self):
+        surfaces = self.model.surfaces.df
+        for surf, (idx, val) in zip(
+            surfaces.surface, 
+            surfaces[['vertices', 'edges']].dropna().iterrows()
+        ):
+            polydata = self._surface_actors[surf]
+            polydata.points = val["vertices"]
+            polydata.faces = np.insert(val['edges'], 0, 3, axis=1).ravel()        
+
+    def plot_surface_points_interactive(self, fmt:str, **kwargs):
+        i = self.model.surface_points.df.groupby("surface").groups[fmt]
+        if len(i) == 0:
+            return
+
+        sphere = self.p.add_sphere_widget(
+            self._callback_surface_points,
+            center=self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values,
+            color=self._color_lot[fmt],
+            indices=i,
+            phi_resolution=6,
+            theta_resolution=6,
+            **kwargs
+        )
+    
+    def plot_surface_points_interactive_all(self, **kwargs):
+        for fmt in self.model.surfaces.df.surface:
+            if fmt.lower() == "basement":
+                continue
+            self.plot_surface_points_interactive(fmt, **kwargs)
+
+    def plot_orientations_interactive(self, fmt:str, **kwargs):
+        i = self.model.orientations.df.groupby("surface").groups[fmt]
+        if len(i) == 0:
+            return
+
+        pts = self.model.orientations.df.loc[i][["X", "Y", "Z"]].values
+        nrms = self.model.orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
+
+        for index, pt, nrm in zip(i, pts, nrms):
+            widget = self.p.add_plane_widget(
+                self._callback_orientations,
+                normal=nrm,
+                origin=pt,
+                bounds=self.extent,
+                factor=0.15,
+                implicit=False,
+                pass_widget=True,
+                color=self._color_lot[fmt]
+            )
+            widget.WIDGET_INDEX = index
+
+    
+    def plot_orientations_interactive_all(self, **kwargs):
+        for fmt in self.model.surfaces.df.surface:
+            if fmt.lower() == "basement":
+                continue
+            self.plot_orientations_interactive(fmt, **kwargs)
+
+    def _callback_orientations(self, normal, loc, widget):
+        i = widget.WIDGET_INDEX
+        x, y, z = loc
+        gx, gy, gz = normal
+
+        self.model.modify_orientations(
+            i, 
+            X=x, Y=y, Z=z,
+            G_x=gx, G_y=gy, G_z=gz
+        )
+
+        if self._live_updating:
+            self._recompute()
+            self._update_surface_polydata()
+
+    
+
+class _Vista:
     """
     Class to visualize data and results in 3D. Init will create all the render properties while the method render
     model will lunch the window. Using set_surface_points, set_orientations and set_surfaces in between can be chosen what
