@@ -33,7 +33,7 @@ import sys
 import gempy as gp
 import warnings
 # insys.path.append("../../pyvista")
-from typing import Union
+from typing import Union, Dict
 import pyvista as pv
 from pyvista.plotting.theme import parse_color
 
@@ -84,6 +84,9 @@ class Vista:
 
         self._actors = []
         self._live_updating = False
+
+        self.topo_edges = None
+        self.topo_ctrs = None
 
     def _actor_exists(self, new_actor):
         if not hasattr(new_actor, "points"):
@@ -175,13 +178,14 @@ class Vista:
         if self._actor_exists(mesh):
             return
 
-        self.p.add_mesh(
+        actor = self.p.add_mesh(
             mesh,
             color=self._color_lot[fmt],
             **kwargs
         )
         self._actors.append(mesh)
         self._surface_actors[fmt] = mesh
+        return actor
 
     def plot_surfaces_all(self, fmts:list=None, **kwargs):
         if not fmts:
@@ -238,6 +242,9 @@ class Vista:
 
     def _recompute(self, **kwargs):
         gp.compute_model(self.model, compute_mesh=True, **kwargs)
+        self.topo_edges, self.topo_ctrs = gp.assets.topology.compute_topology(
+            self.model
+        )
 
     def _update_surface_polydata(self):
         surfaces = self.model.surfaces.df
@@ -247,7 +254,7 @@ class Vista:
         ):
             polydata = self._surface_actors[surf]
             polydata.points = val["vertices"]
-            polydata.faces = np.insert(val['edges'], 0, 3, axis=1).ravel()        
+            polydata.faces = np.insert(val['edges'], 0, 3, axis=1).ravel()  
 
     def plot_surface_points_interactive(self, fmt:str, **kwargs):
         i = self.model.surface_points.df.groupby("surface").groups[fmt]
@@ -291,7 +298,6 @@ class Vista:
             )
             widget.WIDGET_INDEX = index
 
-    
     def plot_orientations_interactive_all(self, **kwargs):
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":
@@ -328,7 +334,7 @@ class Vista:
         """
         res = self.model.grid.regular_grid.resolution
         scaling = np.diff(self.extent)[::2] / res
-        
+
         scaled_centroids = {}
         for n, pos in centroids.items(): 
             pos_scaled = pos * scaling
@@ -343,7 +349,45 @@ class Vista:
             scaled_centroids[n] = pos_scaled
 
         return scaled_centroids
-    
+
+    def plot_topology_graph(
+            self,
+            node_kwargs={},
+            edge_kwargs={}
+        ):
+        if self.topo_edges is None or self.topo_ctrs is None:
+            print("No topology results stored. Compute geomodel topology first.")
+            return
+
+        centroids = self._scale_topology_centroids(self.topo_ctrs)
+
+        for node, pos in centroids.items():
+            mesh = pv.PolyData(
+                pos
+            )
+            # TODO: color nodes with lith colors
+            # * Requires topo id to lith id lot
+            self.p.add_mesh(mesh, **node_kwargs)
+
+        ekwargs = dict(
+            color="black",
+            line_width=3
+        )
+        ekwargs.update(edge_kwargs)
+
+        for e1, e2 in self.topo_edges:
+            pos1, pos2 = centroids[e1], centroids[e2]
+            mesh = pv.Line(
+                pointa=pos1,
+                pointb=pos2,
+            )
+            # TODO: color edges as 1/2 lines using lith colors
+            # * Requires topo id to lith id lot
+            self.p.add_mesh(mesh, **ekwargs)
+
+    def plot_topography(self):
+        # TODO: merge topography plotting
+        raise NotImplementedError
 
 class _Vista:
     """
