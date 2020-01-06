@@ -195,11 +195,11 @@ class Vista:
         self._surface_actors[fmt] = mesh
         return mesh
 
-    @staticmethod
     def clip_horizon_with_faults(
+            self,
             horizon:pv.PolyData, 
             faults:Iterable[pv.PolyData], 
-            value:float=50
+            value:float=None
         ) -> List[pv.PolyData]:
         """Clip given horizon surface with given list of fault surfaces. The
         given value represents the distance to clip away from the fault 
@@ -215,7 +215,10 @@ class Vista:
             List[pv.PolyData]: Individual clipped horizon surfaces.
         """
         horizons = []
-    
+        if not value:
+            value = np.mean(self.model.grid.regular_grid.get_dx_dy_dz()[:2])
+
+
         horizons.append(
             horizon.clip_surface(faults[0], invert=False, value=value)
         )
@@ -237,7 +240,14 @@ class Vista:
         )
         return horizons
 
-    def plot_surfaces_all(self, fmts:list=None, **kwargs):
+    def plot_surfaces_all(self, fmts:Iterable[str]=None, **kwargs):
+        """Plot all geomodel surfaces. If given an iterable containing surface
+        strings, it will plot all surfaces specified in it.
+        
+        Args:
+            fmts (List[str], optional): Names of surfaces to plot. 
+                Defaults to None.
+        """
         if not fmts:
             fmts = self.model.surfaces.df.surface[:-1].values
         for fmt in fmts:
