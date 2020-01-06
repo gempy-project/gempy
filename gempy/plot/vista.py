@@ -33,7 +33,7 @@ import sys
 import gempy as gp
 import warnings
 # insys.path.append("../../pyvista")
-from typing import Union, Dict, List
+from typing import Union, Dict, List, Iterable
 import pyvista as pv
 from pyvista.plotting.theme import parse_color
 
@@ -196,17 +196,45 @@ class Vista:
         return mesh
 
     @staticmethod
-    def clip_horizon_with_faults(horizon, faults, value=50):
+    def clip_horizon_with_faults(
+            horizon:pv.PolyData, 
+            faults:Iterable[pv.PolyData], 
+            value:float=50
+        ) -> List[pv.PolyData]:
+        """Clip given horizon surface with given list of fault surfaces. The
+        given value represents the distance to clip away from the fault 
+        surfaces.
+        
+        Args:
+            horizon (pv.PolyData): The horizon surface to be clipped.
+            faults (Iterable[pv.PolyData]): Fault(s) surface(s) to clip with.
+            value (float, optional): Set the clipping value of the implicit 
+                function (clipping distance from faults). Defaults to 50.
+        
+        Returns:
+            List[pv.PolyData]: Individual clipped horizon surfaces.
+        """
         horizons = []
     
-        horizons.append(horizon.clip_surface(faults[0], invert=False, value=value))
+        horizons.append(
+            horizon.clip_surface(faults[0], invert=False, value=value)
+        )
+
+        if len(faults) == 1:
+            return horizons
         
         for f1, f2 in zip(faults[:-1], faults[1:]):
             horizons.append(
-                horizon.clip_surface(f1, invert=True, value=-value).clip_surface(f2, invert=False, value=value)
+                horizon.clip_surface(
+                    f1, invert=True, value=-value
+                ).clip_surface(
+                    f2, invert=False, value=value
+                )
             )
             
-        horizons.append(horizon.clip_surface(faults[1], invert=True, value=-value))
+        horizons.append(
+            horizon.clip_surface(faults[-1], invert=True, value=-value)
+        )
         return horizons
 
     def plot_surfaces_all(self, fmts:list=None, **kwargs):
