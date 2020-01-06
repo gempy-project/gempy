@@ -53,6 +53,7 @@ theano.config.profile_memory = False
 theano.config.scan.debug = False
 theano.config.profile = False
 
+
 def as_sparse_variable(x, name=None):
     """
     Wrapper around SparseVariable constructor to construct
@@ -132,6 +133,7 @@ class TheanoGraphPro(object):
                  gradients with AD
         """
         self.lenght_of_faults = T.cast(0, 'int32')
+        self.pi = theano.shared(3.14159265359, 'pi')
 
         # OPTIONS
         # -------
@@ -336,6 +338,17 @@ class TheanoGraphPro(object):
             self.pos_density = theano.shared(np.array(1, dtype='int64'), 'position of the density on the values matrix')
             self.lg0 = theano.shared(np.array(0, dtype='int64'), 'arg_0 of the centered grid')
             self.lg1 = theano.shared(np.array(1, dtype='int64'), 'arg_1 of the centered grid')
+
+        if 'magnetics' in self.compute_type:
+            self.B_ext = theano.shared(50e-6, 'External magnetic field in [T], in magnetic surveys this is the'
+                                              ' geomagnetic field - varies temporaly.')
+            self.incl = theano.shared(np.array(1, dtype=dtype), 'Dip of the geomagnetic field in degrees- varies'
+                                                                ' spatially')
+            self.decl = theano.shared(np.array(1, dtype=dtype), 'Angle between magnetic and true North in degrees -'
+                                                                ' varies spatially')
+            self.pos_magnetics = theano.shared(np.array(2, dtype='int64'), 'position of sus. on the values matrix.')
+            self.V = theano.shared(np.empty(0, dtype=self.dtype), 'Solutions to volume integrals -'
+                                                                  ' same for each device')
 
         # Topology
         self.max_lith = theano.shared(np.array(10, dtype='int'), 'Max id of the lithologies')
@@ -1991,3 +2004,53 @@ class TheanoGraphPro(object):
         grav = (densities * tz_rep).reshape((n_devices, -1)).sum(axis=1)
 
         return grav
+
+    def compute_forward_magnetics(self, k_vals):
+        """
+        Compute magnetics
+
+        Args:
+            k_vals: Susceptibility values per voxel [-] - varies per device! GemPy
+
+        Returns:
+
+        """
+
+        def magnetic_direction(incl, decl):
+            incl_rad = incl * 3.14159265359 / 180. # np.deg2rad(incl)
+            decl_rad = decl * 3.14159265359 / 180. # np.deg2rad(decl)
+            x = T.cos(incl_rad) * T.cos(decl_rad)
+            y = T.cos(incl_rad) * T.sin(decl_rad)
+            z = T.sin(incl_rad)
+            return x, y, z
+
+        if 'magnetics' in self.verbose:
+            k_vals = theano.printing.Print('Sus. values')(k_vals)
+
+        # get induced magnetisation [T]
+        J = k_vals * self.B_ext  # k_vals contains susceptibility values of each voxel for all devices: [k1dev1,..,kndevn]
+
+        # and the components:
+        dir_x, dir_y, dir_z = magnetic_direction(self.incl, self.decl)
+        Jx = dir_x * J
+        Jy = dir_y * J
+        Jz = dir_z * J
+
+        n_devices = T.cast((k_vals.shape[0] / self.V.shape[0]), dtype='int32')
+        V = np.tile(self.V, (1, n_devices))  # repeat for each device
+
+        # directional magnetic effect on one voxel (3.19)
+        Tx = (Jx*V[0, :] + Jy*V[1, :] + Jz*V[2, :])/(4*self.pi)
+        Ty = (Jx*V[1, :] + Jy*V[3, :] + Jz*V[4, :])/(4*self.pi)
+        Tz = (Jx*V[2, :] + Jy*V[4, :] + Jz*V[5, :])/(4*self.pi)
+
+        T2nT = 1e9  # to get result in [nT] - common for geophysical applications
+
+        Tx = (np.sum(Tx.reshape(n_devices, -1), axis=1)) * T2nT
+        Ty = (np.sum(Ty.reshape(n_devices, -1), axis=1)) * T2nT
+        Tz = (np.sum(Tz.reshape(n_devices, -1), axis=1)) * T2nT
+
+        # -„Total field magnetometers can measure only that part of the anomalous field which is in the direction of
+        # the Earths main field“ (SimPEG documentation)'
+        dT = Tx * dir_x + Ty * dir_y + Tz * dir_z
+        return dT, Tx, Ty, Tz
