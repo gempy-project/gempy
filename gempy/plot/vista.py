@@ -54,13 +54,25 @@ from logging import debug
 class Vista:
     def __init__(
         self, 
-        model, 
-        extent=None, 
+        model:gp.Model, 
+        extent:List[float]=None, 
         color_lot: pn.DataFrame = None, 
-        real_time=False,
-        plotter_type='basic',
+        real_time:bool=False,
+        plotter_type:Union["basic", "background"]='basic',
         **kwargs
         ):
+        """GemPy 3-D visualization using pyVista.
+        
+        Args:
+            model (gp.Model): Geomodel instance with solutions.
+            extent (List[float], optional): Custom extent. Defaults to None.
+            color_lot (pn.DataFrame, optional): Custom color scheme in the form
+                of a look-up table. Defaults to None.
+            real_time (bool, optional): Toggles real-time updating of the plot. 
+                Defaults to False.
+            plotter_type (Union["basic", "background"], optional): Set the 
+                plotter type. Defaults to 'basic'.
+        """
         self.model = model
         if extent:
             self.extent = list(extent)
