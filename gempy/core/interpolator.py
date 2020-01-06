@@ -872,6 +872,7 @@ class InterpolatorModel(Interpolator):
 
     def print_theano_shared(self):
         """Print many of the theano shared variables"""
+
         print('len sereies i', self.theano_graph.len_series_i.get_value())
         print('len sereies o', self.theano_graph.len_series_o.get_value())
         print('len sereies w', self.theano_graph.len_series_w.get_value())
@@ -906,10 +907,10 @@ class InterpolatorModel(Interpolator):
         th_fn = theano.function(input_data_T,
                                 self.theano_graph.theano_output(),
                                 updates=[
-                                    #(self.theano_graph.block_matrix, self.theano_graph.new_block),
-                                    #     (self.theano_graph.weights_vector, self.theano_graph.new_weights),
-                                     #    (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
-                                      #   (self.theano_graph.mask_matrix, self.theano_graph.new_mask)
+                                        (self.theano_graph.block_matrix, self.theano_graph.new_block),
+                                        (self.theano_graph.weights_vector, self.theano_graph.new_weights),
+                                        (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
+                                        (self.theano_graph.mask_matrix, self.theano_graph.new_mask)
                                        ],
                                 on_unused_input='ignore',
                                 allow_input_downcast=False,
