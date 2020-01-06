@@ -33,7 +33,7 @@ import sys
 import gempy as gp
 import warnings
 # insys.path.append("../../pyvista")
-from typing import Union, Dict
+from typing import Union, Dict, List
 import pyvista as pv
 from pyvista.plotting.theme import parse_color
 
@@ -167,7 +167,7 @@ class Vista:
                 continue
             self.plot_orientations(fmt, **kwargs)
 
-    def plot_surface(self, fmt:str, **kwargs):
+    def get_surface(self, fmt:str):
         i = np.where(self.model.surfaces.df.surface == fmt)[0][0]
         ver = self.model.solutions.vertices[i]
         
@@ -175,17 +175,39 @@ class Vista:
             self.model.solutions.edges[i]
         )
         mesh = pv.PolyData(ver, sim)
+        return mesh
+
+    def plot_surface(self, fmt:str, clip:Union[bool, list]=False, **kwargs):
+        mesh = [self.get_surface(fmt)]
         if self._actor_exists(mesh):
             return
 
-        actor = self.p.add_mesh(
-            mesh,
-            color=self._color_lot[fmt],
-            **kwargs
-        )
-        self._actors.append(mesh)
+        if clip:
+            mesh = self.clip_horizon_with_faults(mesh[0], clip)
+
+        for m in mesh:
+            actor = self.p.add_mesh(
+                m,
+                color=self._color_lot[fmt],
+                **kwargs
+            )
+            self._actors.append(m)
         self._surface_actors[fmt] = mesh
-        return actor
+        return mesh
+
+    @staticmethod
+    def clip_horizon_with_faults(horizon, faults, value=50):
+        horizons = []
+    
+        horizons.append(horizon.clip_surface(faults[0], invert=False, value=value))
+        
+        for f1, f2 in zip(faults[:-1], faults[1:]):
+            horizons.append(
+                horizon.clip_surface(f1, invert=True, value=-value).clip_surface(f2, invert=False, value=value)
+            )
+            
+        horizons.append(horizon.clip_surface(faults[1], invert=True, value=-value))
+        return horizons
 
     def plot_surfaces_all(self, fmts:list=None, **kwargs):
         if not fmts:
@@ -339,12 +361,13 @@ class Vista:
         for n, pos in centroids.items(): 
             pos_scaled = pos * scaling
 
-            if np.any(np.array(self.extent[:2]) < 0):
-                pos_scaled[0] += np.min(self.extent[:2])
-            if np.any(np.array(self.extent[2:4]) < 0):
-                pos_scaled[1] += np.min(self.extent[2:4])
-            if np.any(np.array(self.extent[4:]) < 0):
-                pos_scaled[2] += np.min(self.extent[4:])
+            # if np.any(np.array(self.extent[:2]) < 0):
+            pos_scaled[0] += np.min(self.extent[:2])
+            # if np.any(np.array(self.extent[2:4]) < 0):
+            pos_scaled[1] += np.min(self.extent[2:4])
+            # if np.any(np.array(self.extent[4:]) < 0):
+            pos_scaled[2] += np.min(self.extent[4:])
+            print(pos_scaled)
 
             scaled_centroids[n] = pos_scaled
 
