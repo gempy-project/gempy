@@ -9,3 +9,4 @@ seaborn
 networkx
 ipywidgets
 scikit-image
+pyvista
