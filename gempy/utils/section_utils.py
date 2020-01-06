@@ -103,6 +103,10 @@ def get_polygon_dictionary(geo_model, section_name):
     for color in colors:
         surflist.append(geo_model.surfaces.df[geo_model.surfaces.df['color'] == color]['surface'].values[0])
 
+    # Todo remove this dirty fix (for merle)
+    if len(all_paths) != len(surflist):
+        del all_paths[0]
+
     pathdict = dict.fromkeys(surflist)
     surfi = 0
     for path in all_paths:
