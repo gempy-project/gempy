@@ -129,6 +129,29 @@ def _analyze_topology(
     return edges, centroids
 
 
+def get_node_lot(geo_model, centroids:Dict[int, Array[float, 3]]) -> Dict[int, int]:
+    """Get look-up table to translate topology node id's back into GemPy lith
+    id's.
+    
+    Args:
+        geo_model: GemPy geomodel instance with solutions.
+        centroids (Dict[int, Array[float, 3]]): Topology node centroids.
+    
+    Returns:
+        Dict[int, int]: Look-up table translating node id -> lith id.
+    """
+    lb = geo_model.solutions.lith_block.reshape(
+        geo_model.grid.regular_grid.resolution
+    ).astype(int)
+    
+    lot = {}
+    for node, pos in centroids.items():
+        p = np.round(pos).astype(int)
+        lith_id = lb[p[0], p[1], p[2]]
+        lot[node] = lith_id
+    return lot
+
+
 def _get_edges(
         l:Array[int, ..., ..., ...], 
         r:Array[int, ..., ..., ...]
