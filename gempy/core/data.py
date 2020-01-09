@@ -817,11 +817,10 @@ class Surfaces(object):
         """
         self.map_faults()
         if id_list is None:
-          #  id_unique = self.df.reset_index().index + 1
-            id_list = self.df.groupby('isFault').cumcount() + 1
+            # This id is necessary for the faults
+            id_unique = self.df.reset_index().index + 1
 
-        self.df['id'] = id_list
-        #self.df['id_u'] = id_list
+        self.df['id'] = id_unique
 
         return self
 

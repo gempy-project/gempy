@@ -321,12 +321,16 @@ class TheanoGraphPro(object):
         self.shift = 0
 
         if 'gravity' in self.compute_type:
-            self.tz = theano.shared(np.empty(0, dtype=self.dtype), 'tz component')
-            self.pos_density = theano.shared(np.array(1, dtype='int64'), 'position of the density on the values matrix')
             self.lg0 = theano.shared(np.array(0, dtype='int64'), 'arg_0 of the centered grid')
             self.lg1 = theano.shared(np.array(1, dtype='int64'), 'arg_1 of the centered grid')
 
+            self.tz = theano.shared(np.empty(0, dtype=self.dtype), 'tz component')
+            self.pos_density = theano.shared(np.array(1, dtype='int64'), 'position of the density on the values matrix')
+
         if 'magnetics' in self.compute_type:
+            self.lg0 = theano.shared(np.array(0, dtype='int64'), 'arg_0 of the centered grid')
+            self.lg1 = theano.shared(np.array(1, dtype='int64'), 'arg_1 of the centered grid')
+
             self.B_ext = theano.shared(50e-6, 'External magnetic field in [T], in magnetic surveys this is the'
                                               ' geomagnetic field - varies temporaly.')
             self.incl = theano.shared(np.array(1, dtype=dtype), 'Dip of the geomagnetic field in degrees- varies'
@@ -334,13 +338,19 @@ class TheanoGraphPro(object):
             self.decl = theano.shared(np.array(1, dtype=dtype), 'Angle between magnetic and true North in degrees -'
                                                                 ' varies spatially')
             self.pos_magnetics = theano.shared(np.array(2, dtype='int64'), 'position of sus. on the values matrix.')
-            self.V = theano.shared(np.empty(0, dtype=self.dtype), 'Solutions to volume integrals -'
-                                                                  ' same for each device')
+            self.V = theano.shared(np.ones((6, 10), dtype=self.dtype), 'Solutions to volume integrals -'
+                                                                       ' same for each device')
+        if 'topology' in self.compute_type:
+            # Topology
+            self.max_lith = theano.shared(np.array(10, dtype='int'), 'Max id of the lithologies')
 
-        # Topology
-        self.max_lith = theano.shared(np.array(10, dtype='int'), 'Max id of the lithologies')
-        self.regular_grid_res = theano.shared(np.ones(3, dtype='int'), 'Resolution of the regular grid')
-        self.dxdydz = theano.shared(np.ones(3, dtype=dtype), 'Size of the voxels in each direction.')
+            # TODO: the position of topology is not properly implemented yet
+            self.pos_topology_id = theano.shared(np.array(-1, dtype='int'), 'Position of the surface dataframe with the'
+                                                                            'right topology ids to be able to have unique'
+                                                                            'identifiers')
+
+            self.regular_grid_res = theano.shared(np.ones(3, dtype='int'), 'Resolution of the regular grid')
+            self.dxdydz = theano.shared(np.ones(3, dtype=dtype), 'Size of the voxels in each direction.')
 
         # Results matrix
         self.weights_vector = theano.shared(np.cast[dtype](np.zeros(10000)), 'Weights vector')
@@ -559,7 +569,8 @@ class TheanoGraphPro(object):
             # solutions[:12] = self.compute_series_oct()
         if 'topology' in self.compute_type:
             # This needs new data, resolution of the regular grid, value max
-            unique_val = solutions[0] + self.max_lith * solutions[2]
+            unique_val = solutions[0][self.pos_topology_id] + \
+                         self.max_lith * solutions[2][self.pos_topology_id]
 
             solutions[9:12] = self.compute_topology(unique_val)
 
@@ -569,8 +580,8 @@ class TheanoGraphPro(object):
             solutions[12] = self.compute_forward_gravity_pro(densities)
 
         if 'magnetics' in self.compute_type:
-            raise NotImplementedError
-            solutions[13] = None
+            k_vals = solutions[0][self.pos_magnetics, self.lg0:self.lg1]
+            solutions[13] = self.compute_forward_magnetics(k_vals)
         return solutions
 
     def compute_topology(self, unique_val):
@@ -1694,8 +1705,87 @@ class TheanoGraphPro(object):
 
         return fault_block
 
-    def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties_op, slope=None,
-                              ):
+    # def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties_op, slope=None,
+    #                           ):
+    #     """
+    #     Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
+    #
+    #     Returns:
+    #         theano.tensor.vector: Value of lithology at every interpolated point
+    #     """
+    #     # TODO: IMP set soft max in the borders: Test
+    #     # TODO: instead -1 at the border look for the average distance of the input!: Test
+    #
+    #     slope = self.sig_slope
+    #     if self.max_speed < 1:
+    #         # max_pot = T.max(scalar_field_at_surface_points)
+    #         # min_pot = T.min(scalar_field_at_surface_points)
+    #
+    #         max_pot = T.max(Z_x)
+    #         # max_pot = theano.printing.Print("max_pot")(max_pot)
+    #         min_pot = T.min(Z_x)
+    #         # min_pot = theano.printing.Print("min_pot")(min_pot)
+    #
+    #         # max_pot_sigm = 2 * max_pot - self.scalar_field_at_surface_points_values[0]
+    #         # min_pot_sigm = 2 * min_pot - self.scalar_field_at_surface_points_values[-1]
+    #
+    #         # boundary_pad = (max_pot - min_pot) * 0.01
+    #         l = slope / (max_pot - min_pot)
+    #     else:
+    #         l = slope
+    #
+    #     # A tensor with the values to segment
+    #     scalar_field_iter = T.concatenate((
+    #         T.stack([0], axis=0),
+    #         scalar_field_at_surface_points,
+    #         T.stack([0], axis=0)
+    #     ))
+    #
+    #     if "scalar_field_iter" in self.verbose:
+    #         scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
+    #
+    #     # Loop to segment the distinct lithologies
+    #
+    #     n_surface_op_float_sigmoid = T.repeat(values_properties_op, 2, axis=1)
+    #     n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], 0)
+    #     n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, -1], 0)
+    #     drift = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], n_surface_op_float_sigmoid[:, 1])
+    #
+    #     if 'n_surface_op_float_sigmoid' in self.verbose:
+    #         n_surface_op_float_sigmoid = theano.printing.Print("n_surface_op_float_sigmoid") \
+    #             (n_surface_op_float_sigmoid)
+    #
+    #     formations_block, updates2 = theano.scan(
+    #         fn=self.compare,
+    #         outputs_info=None,
+    #         sequences=[dict(input=scalar_field_iter, taps=[0, 1]), T.arange(0, n_surface_op_float_sigmoid.shape[1],
+    #                                                                         2, dtype='int64')],
+    #         non_sequences=[Z_x, l, n_surface_op_float_sigmoid, drift],
+    #         name='Looping compare',
+    #         profile=False,
+    #         return_list=False)
+    #
+    #     # For every surface we get a vector so we need to sum compress them to one dimension
+    #     formations_block = formations_block.sum(axis=0)
+    #
+    #     if self.gradient is True:
+    #         ReLU_up = T.switch(Z_x < scalar_field_iter[1], 0, - 0.01 * (Z_x - scalar_field_iter[1]))
+    #         ReLU_down = T.switch(Z_x > scalar_field_iter[-2], 0,  0.01 * T.abs_(Z_x - scalar_field_iter[-2]))
+    #
+    #         if 'relu' in self.verbose:
+    #             ReLU_up = theano.printing.Print('ReLU_up')(ReLU_up)
+    #             ReLU_down = theano.printing.Print('ReLU_down')(ReLU_down)
+    #
+    #         formations_block += ReLU_down + ReLU_up
+    #
+    #     # Add name to the theano node
+    #     formations_block.name = 'The chunk of block model of a specific series'
+    #     if str(sys._getframe().f_code.co_name) in self.verbose:
+    #         formations_block = theano.printing.Print(formations_block.name)(formations_block)
+    #
+    #     return formations_block
+
+    def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties_op):
         """
         Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
 
@@ -1736,13 +1826,8 @@ class TheanoGraphPro(object):
         # Loop to segment the distinct lithologies
 
         n_surface_op_float_sigmoid = T.repeat(values_properties_op, 2, axis=1)
-
         n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], 0)
-        # - T.sqrt(T.square(n_surface_op_float_sigmoid[0] - n_surface_op_float_sigmoid[2])))
-
         n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, -1], 0)
-        # - T.sqrt(T.square(n_surface_op_float_sigmoid[3] - n_surface_op_float_sigmoid[-1])))
-
         drift = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], n_surface_op_float_sigmoid[:, 1])
 
         if 'n_surface_op_float_sigmoid' in self.verbose:
@@ -1778,6 +1863,7 @@ class TheanoGraphPro(object):
             formations_block = theano.printing.Print(formations_block.name)(formations_block)
 
         return formations_block
+
     # endregion
 
     # region Compute model
@@ -2023,8 +2109,10 @@ class TheanoGraphPro(object):
         Jy = dir_y * J
         Jz = dir_z * J
 
-        n_devices = T.cast((k_vals.shape[0] / self.V.shape[0]), dtype='int32')
-        V = np.tile(self.V, (1, n_devices))  # repeat for each device
+        n_devices = T.cast((k_vals.shape[0] / self.V.shape[1]), dtype='int32')
+        n_devices = theano.printing.Print('n_devices')(n_devices)
+
+        V = T.tile(self.V, (1, n_devices))  # repeat for each device
 
         # directional magnetic effect on one voxel (3.19)
         Tx = (Jx*V[0, :] + Jy*V[1, :] + Jz*V[2, :])/(4*self.pi)
@@ -2033,11 +2121,11 @@ class TheanoGraphPro(object):
 
         T2nT = 1e9  # to get result in [nT] - common for geophysical applications
 
-        Tx = (np.sum(Tx.reshape(n_devices, -1), axis=1)) * T2nT
-        Ty = (np.sum(Ty.reshape(n_devices, -1), axis=1)) * T2nT
-        Tz = (np.sum(Tz.reshape(n_devices, -1), axis=1)) * T2nT
+        Tx = (T.sum(Tx.reshape((n_devices, -1)), axis=1)) * T2nT
+        Ty = (T.sum(Ty.reshape((n_devices, -1)), axis=1)) * T2nT
+        Tz = (T.sum(Tz.reshape((n_devices, -1)), axis=1)) * T2nT
 
         # -„Total field magnetometers can measure only that part of the anomalous field which is in the direction of
         # the Earths main field“ (SimPEG documentation)'
         dT = Tx * dir_x + Ty * dir_y + Tz * dir_z
-        return dT, Tx, Ty, Tz
+        return dT#, Tx, Ty, Tz
