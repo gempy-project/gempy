@@ -401,30 +401,26 @@ def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,
 
 
 def plot_topology(
-    geo_data,
+    geo_model,
     edges:Set[Tuple[int, int]], 
     centroids:Dict[int, Array[int, 3]], 
     direction:Union["x", "y", "z"]="y", 
     label_kwargs:dict=None, 
-    node_kwargs:dict=None, 
     edge_kwargs:dict=None
     ):
-    """
-    Plot the topology adjacency graph in 2-D.
-
+    """Plot the topology adjacency graph in 2-D.
+    
     Args:
-        geo_data (gempy.data_management.InputData):
-        G (skimage.future.graph.rag.RAG):
-        centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys and (x,y,z) coordinates
-                as values.
-    Keyword Args
-        direction (str): "x", "y" or "z" specifying the slice direction for 2-D topology analysis. Default None.
-        label_kwargs (dict, optional): Dictionary of keyword arguments for graph node labels (plt.text)
-        node_kwargs (dict, optional): Dictionary of keyword arguments for graph nodes (plt.plot markers)
-        edge_kwargs (dict, optional): Dictionary of keyword arguments for graph edges (plt.plot lines)
-
-    Returns:
-        Nothing, it just plots.
+        geo_model ([type]): GemPy geomodel instance.
+        edges (Set[Tuple[int, int]]): Set of topology edges.
+        centroids (Dict[int, Array[int, 3]]): Dictionary of topology id's and
+            their centroids.
+        direction (Union["x", "y", "z", optional): Section direction. 
+            Defaults to "y".
+        label_kwargs (dict, optional): Keyword arguments for topology labels. 
+            Defaults to None.
+        edge_kwargs (dict, optional): Keyword arguments for topology edges. 
+            Defaults to None.
     """
     PlotSolution.plot_topo_g(
         geo_data, 
