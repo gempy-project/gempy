@@ -423,7 +423,7 @@ def plot_topology(
             Defaults to None.
     """
     PlotSolution.plot_topo_g(
-        geo_data, 
+        geo_model, 
         edges, 
         centroids,
         direction=direction,
