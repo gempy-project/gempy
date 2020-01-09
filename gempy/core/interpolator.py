@@ -581,7 +581,7 @@ class InterpolatorModel(Interpolator):
         self.set_theano_shared_relations()
         self.set_theano_shared_kriging()
         self.set_theano_shared_structure_surfaces()
-        self.set_theano_shared_topology()
+        # self.set_theano_shared_topology()
         if reset_ctrl is True:
             self.reset_flow_control_initial_results()
 
