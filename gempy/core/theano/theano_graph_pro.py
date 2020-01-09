@@ -320,19 +320,6 @@ class TheanoGraphPro(object):
         self.offset = theano.shared(10.)
         self.shift = 0
 
-        # # Gravity
-        # self.tz = theano.shared(np.empty(0, dtype=dtype), 'tz component')
-        # self.density_matrix = T.vector('density vector')
-        # self.lg0 = T.lscalar('arg_0 of the centered grid')
-        # self.lg1 = T.lscalar('arg_1 of the centered grid')
-        #
-        # self.input_parameters_grav = [self.dips_position_all, self.dip_angles_all, self.azimuth_all,
-        #                               self.polarity_all, self.surface_points_all,
-        #                               self.fault_matrix, self.grid_val_T,
-        #                               self.values_properties_op,
-        #                               self.compute_weights_ctrl, self.compute_scalar_ctrl, self.compute_block_ctrl,
-        #                               self.lg0, self.lg1]
-
         if 'gravity' in self.compute_type:
             self.tz = theano.shared(np.empty(0, dtype=self.dtype), 'tz component')
             self.pos_density = theano.shared(np.array(1, dtype='int64'), 'position of the density on the values matrix')
