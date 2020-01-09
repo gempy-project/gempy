@@ -22,7 +22,7 @@ from itertools import combinations
 from logging import debug
 import numpy as np
 from nptyping import Array
-from typing import Iterable, List, Set, Tuple, Dict
+from typing import Iterable, List, Set, Tuple, Dict, Union
 import matplotlib.pyplot as plt
 
 
@@ -31,7 +31,7 @@ def compute_topology(
         cell_number:int=None,
         direction:str=None,
         n_shift:int=1,
-        voxel_threshold:int=1,
+        voxel_threshold:int=1
     ):
     res = geo_model.grid.regular_grid.resolution
     n_unconf = np.count_nonzero(geo_model.series.df.BottomRelation == "Erosion") - 2  # TODO -2 n other lith series
@@ -70,9 +70,32 @@ def compute_topology(
         n_shift, 
         voxel_threshold, 
         direction
-    )    
-
+    )
+    
+    edges = set((n1, n2) for n1, n2 in edges)
+    edges = _filter_reverse_edges(edges)
     return edges, centroids
+
+
+def _filter_reverse_edges(edges:Set[Tuple[int, int]]) -> Set[Tuple[int, int]]:
+    """Filter reversed topology edge tuples to fix doubling of topology edges
+    like (1,5) (5,1).
+    
+    Source:
+        https://stackoverflow.com/a/9922322/8040299
+
+    Args:
+        edges (Set[Tuple[int, int]]): Set of topologyedge tuples.
+    
+    Returns:
+        Set[Tuple[int, int]]: Filtered set of topology edge tuples
+    """
+    
+    edges_unique=set()
+    for e in edges:
+        if not (e in edges_unique or (e[1], e[0]) in edges_unique):
+            edges_unique.add(e)
+    return edges_unique
 
 
 def _analyze_topology(
