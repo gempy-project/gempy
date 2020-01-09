@@ -32,6 +32,8 @@ import sys
 from .visualization_2d import PlotData2D, PlotSolution
 from .visualization_3d import steno3D, GemPyvtkInteract, ipyvolumeVisualization
 import gempy as _gempy
+from typing import Set, Tuple, Dict, Union
+from nptyping import Array
 
 
 def plot_data_3D(geo_data, ve=1, **kwargs):
@@ -398,7 +400,15 @@ def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,
                            **kwargs)
 
 
-def plot_topology(geo_data, G, centroids, direction="y", label_kwargs=None, node_kwargs=None, edge_kwargs=None):
+def plot_topology(
+    geo_data,
+    edges:Set[Tuple[int, int]], 
+    centroids:Dict[int, Array[int, 3]], 
+    direction:Union["x", "y", "z"]="y", 
+    label_kwargs:dict=None, 
+    node_kwargs:dict=None, 
+    edge_kwargs:dict=None
+    ):
     """
     Plot the topology adjacency graph in 2-D.
 
@@ -416,6 +426,12 @@ def plot_topology(geo_data, G, centroids, direction="y", label_kwargs=None, node
     Returns:
         Nothing, it just plots.
     """
-    PlotSolution.plot_topo_g(geo_data, G, centroids, direction=direction,
-                           label_kwargs=label_kwargs, node_kwargs=node_kwargs, edge_kwargs=edge_kwargs)
+    PlotSolution.plot_topo_g(
+        geo_data, 
+        edges, 
+        centroids,
+        direction=direction,
+        label_kwargs=label_kwargs, 
+        edge_kwargs=edge_kwargs
+    )
 

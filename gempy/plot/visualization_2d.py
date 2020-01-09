@@ -950,8 +950,8 @@ class PlotSolution(PlotData2D):
         plt.ylabel(y)
 
     @staticmethod
-    def plot_topo_g(geo_model, G, centroids, direction="y",
-                    label_kwargs=None, node_kwargs=None, edge_kwargs=None):
+    def plot_topo_g(geo_model, edges, centroids, direction="y",
+                    label_kwargs=None, edge_kwargs=None):
         res = geo_model.grid.regular_grid.resolution
         if direction == "y":
             c1, c2 = (0, 2)
@@ -959,8 +959,8 @@ class PlotSolution(PlotData2D):
             e2 = geo_model.grid.regular_grid.extent[5] - geo_model.grid.regular_grid.extent[4]
             d1 = geo_model.grid.regular_grid.extent[0]
             d2 = geo_model.grid.regular_grid.extent[4]
-            if len(list(centroids.items())[0][1]) == 2:
-                c1, c2 = (0, 1)
+            # if len(list(centroids.items())[0][1]) == 2:
+            #     c1, c2 = (0, 1)
             r1 = res[0]
             r2 = res[2]
         elif direction == "x":
@@ -969,8 +969,8 @@ class PlotSolution(PlotData2D):
             e2 = geo_model.grid.regular_grid.extent[5] - geo_model.grid.regular_grid.extent[4]
             d1 = geo_model.grid.regular_grid.extent[2]
             d2 = geo_model.grid.regular_grid.extent[4]
-            if len(list(centroids.items())[0][1]) == 2:
-                c1, c2 = (0, 1)
+            # if len(list(centroids.items())[0][1]) == 2:
+            #     c1, c2 = (0, 1)
             r1 = res[1]
             r2 = res[2]
         elif direction == "z":
@@ -979,49 +979,47 @@ class PlotSolution(PlotData2D):
             e2 = geo_model.grid.regular_grid.extent[3] - geo_model.grid.regular_grid.extent[2]
             d1 = geo_model.grid.regular_grid.extent[0]
             d2 = geo_model.grid.regular_grid.extent[2]
-            if len(list(centroids.items())[0][1]) == 2:
-                c1, c2 = (0, 1)
+            # if len(list(centroids.items())[0][1]) == 2:
+            #     c1, c2 = (0, 1)
             r1 = res[0]
             r2 = res[1]
 
-        nkw = {
-            "marker": "o",
-            "color": "black",
-            "markersize": 20,
-            "alpha": 0.75
-        }
-        if node_kwargs is not None:
-            nkw.update(node_kwargs)
-
         tkw = {
             "color": "white",
-            "size": 10,
+            "fontsize": 13,
             "ha": "center",
             "va": "center",
             "weight": "ultralight",
-            "family": "monospace"
+            "family": "monospace",
+            "verticalalignment": "center", 
+            "horizontalalignment": "center",
+            "bbox": dict(boxstyle='round', facecolor='black', alpha=1),
         }
         if label_kwargs is not None:
             tkw.update(label_kwargs)
 
         lkw = {
-            "linewidth": 0.75,
+            "linewidth": 1,
             "color": "black"
         }
         if edge_kwargs is not None:
             lkw.update(edge_kwargs)
 
-        for edge in G.edges():
-            a, b = edge
+        for a, b in edges:
             # plot edges
-            plt.plot(np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
-                          np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, **lkw)
+            plt.plot(
+                np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
+                np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, 
+                **lkw
+            )
 
-            for node in G.nodes():
-                plt.plot(centroids[node][c1] * e1 / r1 + d1, centroids[node][c2] * e2 / r2 +d2,
-                         marker="o", color="black", markersize=10, alpha=0.75)
-                plt.text(centroids[node][c1] * e1 / r1 + d1,
-                         centroids[node][c2] * e2 / r2 + d2, str(node), **tkw)
+        for node in np.unique(list(edges)):
+            plt.text(
+                centroids[node][c1] * e1 / r1 + d1,
+                centroids[node][c2] * e2 / r2 + d2, 
+                str(node),
+                **tkw
+            )
 
     def plot_gradient(self, scalar_field, gx, gy, gz, cell_number, quiver_stepsize=5, #maybe call r sth. like "stepsize"?
                       direction="y", plot_scalar = True, *args, **kwargs): #include plot data?
