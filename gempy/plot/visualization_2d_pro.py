@@ -37,13 +37,15 @@ from os import path
 import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-from gempy.core.solution import Solution
+# from gempy.core.solution import Solution
 # import gempy.plot.helpers as plothelp
 
 sns.set_context('talk')
 plt.style.use(['seaborn-white', 'seaborn-talk'])
-from scipy.interpolate import RegularGridInterpolator
-from arviz.plots.jointplot import _var_names, _scale_fig_size
+# from scipy.interpolate import RegularGridInterpolator
+# from arviz.plots.jointplot import _var_names, _scale_fig_size
+import matplotlib as mpl
+
 import scipy.spatial.distance as dd
 warnings.filterwarnings("ignore", message="No contour levels were found")
 
@@ -196,6 +198,7 @@ class Plot2D:
             _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
             ax.set_xlabel(x)
             ax.set_ylabel(y)
+            ax.set(title='Cell Number: '+str(cell_number) + ' Direction: ' + str(direction))
 
         if extent_val is not None:
             if extent_val[3] < extent_val[2]:  # correct vertical orientation of plot
@@ -236,7 +239,7 @@ class Plot2D:
                 except AttributeError:
                     raise AttributeError('Geological map not computed. Activate the topography grid.')
             else:
-                assert type(section_name) == str, 'section name must be a string of the name of the section'
+                assert type(section_name) == str or type(section_name) == np.str_, 'section name must be a string of the name of the section'
                 assert self.model.solutions.sections is not None, 'no sections for plotting defined'
 
                 l0, l1 = self.model.grid.sections.get_section_args(section_name)
@@ -676,3 +679,69 @@ class Plot2D:
 
         raise NotImplementedError
 
+
+def _scale_fig_size(figsize, textsize, rows=1, cols=1):
+    """Scale figure properties according to rows and cols.
+
+    Parameters
+    ----------
+    figsize : float or None
+        Size of figure in inches
+    textsize : float or None
+        fontsize
+    rows : int
+        Number of rows
+    cols : int
+        Number of columns
+
+    Returns
+    -------
+    figsize : float or None
+        Size of figure in inches
+    ax_labelsize : int
+        fontsize for axes label
+    titlesize : int
+        fontsize for title
+    xt_labelsize : int
+        fontsize for axes ticks
+    linewidth : int
+        linewidth
+    markersize : int
+        markersize
+    """
+    params = mpl.rcParams
+    rc_width, rc_height = tuple(params["figure.figsize"])
+    rc_ax_labelsize = params["axes.labelsize"]
+    rc_titlesize = params["axes.titlesize"]
+    rc_xt_labelsize = params["xtick.labelsize"]
+    rc_linewidth = params["lines.linewidth"]
+    rc_markersize = params["lines.markersize"]
+    if isinstance(rc_ax_labelsize, str):
+        rc_ax_labelsize = 15
+    if isinstance(rc_titlesize, str):
+        rc_titlesize = 16
+    if isinstance(rc_xt_labelsize, str):
+        rc_xt_labelsize = 14
+
+    if figsize is None:
+        width, height = rc_width, rc_height
+        sff = 1 if (rows == cols == 1) else 1.15
+        width = width * cols * sff
+        height = height * rows * sff
+    else:
+        width, height = figsize
+
+    if textsize is not None:
+        scale_factor = textsize / rc_xt_labelsize
+    elif rows == cols == 1:
+        scale_factor = ((width * height) / (rc_width * rc_height)) ** 0.5
+    else:
+        scale_factor = 1
+
+    ax_labelsize = rc_ax_labelsize * scale_factor
+    titlesize = rc_titlesize * scale_factor
+    xt_labelsize = rc_xt_labelsize * scale_factor
+    linewidth = rc_linewidth * scale_factor
+    markersize = rc_markersize * scale_factor
+
+    return (width, height), ax_labelsize, titlesize, xt_labelsize, linewidth, markersize
