@@ -129,7 +129,10 @@ def _analyze_topology(
     return edges, centroids
 
 
-def get_node_lot(geo_model, centroids:Dict[int, Array[float, 3]]) -> Dict[int, int]:
+def get_lot_node_to_lith_id(
+        geo_model, 
+        centroids:Dict[int, Array[float, 3]]
+    ) -> Dict[int, int]:
     """Get look-up table to translate topology node id's back into GemPy lith
     id's.
     
@@ -143,13 +146,35 @@ def get_node_lot(geo_model, centroids:Dict[int, Array[float, 3]]) -> Dict[int, i
     lb = geo_model.solutions.lith_block.reshape(
         geo_model.grid.regular_grid.resolution
     ).astype(int)
-    
+
     lot = {}
     for node, pos in centroids.items():
         p = np.round(pos).astype(int)
         lith_id = lb[p[0], p[1], p[2]]
         lot[node] = lith_id
     return lot
+
+
+def get_lot_lith_to_node_id(
+        lot:Dict[int, Array[float, 3]]
+    ) -> Dict[int, List[int]]:
+    """Get look-up table to translate lith id's back into topology node
+    id's.
+    
+    Args:
+        lot (Dict[int, Array[float, 3]]): Node to lith id look-up table. Can be
+        computed using the function 'get_lot_node_to_lith_id'.
+    
+    Returns:
+        Dict[int, List[int]]: Look-up table.
+    """
+    lot2 = {}
+    for k, v in lot.items():
+        if v not in lot2.keys():
+            lot2[v] = [k]
+        else:
+            lot2[v].append(k)
+    return lot2
 
 
 def _get_edges(
@@ -168,6 +193,48 @@ def _get_edges(
     shift = np.stack([l.ravel(),  r.ravel()])
     i1, i2 = np.nonzero(np.diff(shift, axis=0))
     return np.unique(shift[:, i2], axis=1, return_counts=True)
+
+
+def clean_unconformity_topology(
+        geo_model, 
+        unconf_lith_id:int, 
+        edges:Array[int, ..., 2], 
+        centroids:Dict[int, Array[int, ..., 3]]
+    ) -> Tuple[Set[Tuple[int, int]], Dict[int, Array[int, ..., 3]]]:
+    """Clean unconformity topology edges and centroids. Needs to be run for
+    each unconformity separately.
+    
+    Args:
+        geo_model ([type]): [description]
+        unconf_lith_id (int): [description]
+        edges (Array[int, ..., 2]): [description]
+        centroids (Dict[int, Array[int, ..., 3]]): [description]
+    
+    Returns:
+        Tuple[Set[Tuple[int, int]], Dict[int, Array[int, ..., 3]]]: [description]
+    """
+    lot = get_lot_node_to_lith_id(geo_model, centroids)
+    lot2 = get_lot_lith_to_node_id(lot)
+    edges_clean = []
+    
+    unconf_centroid = np.mean(
+        [centroids[i] for i in lot2[unconf_lith_id]], axis=0
+    )
+    for node_id in lot2[unconf_lith_id]:
+        centroids.pop(node_id)
+    centroids[lot2[unconf_lith_id][0]] = unconf_centroid
+    
+    for n1, n2 in edges:
+        if n1 in lot2[unconf_lith_id]:
+            n1 = lot2[unconf_lith_id][0]
+        if n2 in lot2[unconf_lith_id]:
+            n2 = lot2[unconf_lith_id][0]
+        if n1 == n2:
+            continue
+        edges_clean.append((n1, n2))
+    
+    return set(edges_clean), centroids
+
 
 
 # def compute_topology(
