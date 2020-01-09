@@ -45,7 +45,7 @@ def compute_topology(
         geo_model.solutions.lith_block
     ).astype(int).reshape(*res)
 
-    n_lith = len(np.unique(lb))  # TODO quicker looking it up in geomodel?
+    n_lith = len(np.unique(lb))  # ? quicker looking it up in geomodel?
 
     if cell_number is None or direction is None:
         direction = "None"
@@ -234,6 +234,24 @@ def clean_unconformity_topology(
         edges_clean.append((n1, n2))
     
     return set(edges_clean), centroids
+
+
+def jaccard_index(
+        edges1:Set[Tuple[int, int]], 
+        edges2:Set[Tuple[int, int]]
+    ) -> float:
+    """Jaccard index.
+    
+    Args:
+        edges1 (Set[Tuple[int, int]]): Set of topology edges.
+        edges2 (Set[Tuple[int, int]]): Set of topology edges.
+    
+    Returns:
+        float: Jaccard index.
+    """
+    intersection_cardinality = len(edges1.intersection(edges2))
+    union_cardinality = len(edges1.union(edges2))
+    return intersection_cardinality / union_cardinality
 
 
 
