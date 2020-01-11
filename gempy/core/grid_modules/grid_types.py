@@ -8,6 +8,7 @@ from gempy.utils.meta import setdoc, setdoc_pro
 import gempy.utils.docstring as ds
 from typing import Optional
 import pandas as pn
+import xarray as xr
 
 
 class RegularGrid:
@@ -469,3 +470,102 @@ class Topography:
         zi = f(xy[:, 0], xy[:, 1])
         return np.diag(zi)
 
+
+def define_subgrid_parameters(regular_grid, nx: int, ny: int, nz: int):
+    """
+    Given a gempy grid, define nx*ny*nz sub grids
+    """
+    grx, gry, grz = regular_grid.resolution
+    grid_extent = regular_grid.extent
+    minx, miny, minz = grid_extent[0::2]
+    maxx, maxy, maxz = grid_extent[1::2]
+    # make sure there are no remainders
+    if grx % nx != 0:
+        raise ValueError(
+            'number of user requested subgrids on x axis (nx: {}) does not evenly divide regular_grid x resolution of {}'.format(nx, grx))
+    if gry % ny != 0:
+        raise ValueError(
+            'number of user requested subgrids on y axis (ny: {}) does not evenly divide regular_grid y resolution of {}'.format(ny, gry))
+    if grz % nz != 0:
+        raise ValueError(
+            'number of user requested subgrids on z axis (nz: {}) does not evenly divide regular_grid z resolution of {}'.format(nz, grz))
+    newxres = grx // nx
+    newyres = gry // ny
+    newzres = grz // nz
+    x_step = (maxx-minx) // nx
+    y_step = (maxy-miny) // ny
+    z_step = (maxz-minz) // nz
+    results = []
+    for x in np.arange(minx, maxx, x_step):
+        for y in np.arange(miny, maxy, y_step):
+            for z in np.arange(minz, maxz, z_step):
+                results.append(([x, x+x_step, y, y+y_step, z, z+z_step], [newxres, newyres, newzres]))
+    return results
+
+
+def get_grid_coords(grid)-> dict:
+    """
+    Given a gempy grid, create the dict of coords for an xarray dataset
+    :param grid:
+    :return:
+    """
+    v = grid.regular_grid.values.T
+    c = {'x': np.unique(v[0]).astype(np.float32),
+         'y': np.unique(v[1]).astype(np.float32),
+         'z': np.unique(v[2]).astype(np.float32)}
+    return c
+
+
+def update_xarray_grid(target_grid, src_grid, values):
+    """
+    give a subgrid, update the target grid's values from the subgrid
+    """
+    c = get_grid_coords(src_grid)
+    target_grid.loc[c] = values.reshape(src_grid.regular_grid.resolution)
+
+
+def do_combine_grids(target_grid, solutions):
+    res = target_grid.regular_grid.resolution
+    c = get_grid_coords(target_grid)
+    v0_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
+    v1_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
+    v3_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
+    v5_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
+    # make big loop
+    vals = [[], [], [], [], [], []]
+    val_tails = [[], [], [], []]
+    for _, g, s in solutions:
+        l0, l1 = g.get_grid_args('regular')
+        x_l = g.length[-1]
+        # extract values we need
+        v0 = np.asarray(s[0][0, l0: l1])
+        v1 = np.asarray(s[1][0, 0, l0: l1])
+        v3 = np.asarray(s[3][0, l0: l1])
+        v5 = np.asarray(s[5][0, l0: l1])
+        # assign the xarray using the coordinates of the grid
+        update_xarray_grid(v0_target, g, v0)
+        update_xarray_grid(v1_target, g, v1)
+        update_xarray_grid(v3_target, g, v3)
+        update_xarray_grid(v5_target, g, v5)
+        # update vals accumulation
+        vals[2].append(s[2])
+        vals[4].append(s[4])
+        # update tails for lack of a better term
+        val_tails[0].append(s[0][:, x_l:].ravel())
+        val_tails[1].append(s[1][:, :, x_l:].ravel())
+        val_tails[2].append(s[3][:, x_l:].ravel())
+        val_tails[3].append(s[5][:, x_l:].ravel())
+    # combine tails
+    for i, tail in enumerate(val_tails):
+        dtype = tail[0].dtype
+        val_tails[i] = np.mean(tail, axis=0)
+        if dtype == np.bool:
+            val_tails[i] = np.array(val_tails[i]).astype(bool)
+
+    vals[0] = np.concatenate((v0_target.values.ravel(), val_tails[0]))[np.newaxis, :]
+    vals[1] = np.concatenate((v1_target.values.ravel(), val_tails[1]))[np.newaxis, np.newaxis, :]
+    vals[2] = np.mean(vals[2], axis=0)
+    vals[3] = np.concatenate((v3_target.values.ravel(), val_tails[2]))[np.newaxis, :]
+    vals[4] = np.mean(vals[4], axis=0)
+    vals[5] = np.concatenate((v5_target.values.ravel().astype(bool), val_tails[3]))[np.newaxis, :]
+    return vals

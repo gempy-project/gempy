@@ -36,6 +36,7 @@ from gempy.core.solution import Solution
 from gempy.utils.meta import setdoc, setdoc_pro
 import gempy.utils.docstring as ds
 from gempy.core.interpolator import InterpolatorGravity, InterpolatorModel
+from gempy.core.grid_modules import grid_types
 
 
 # This warning comes from numpy complaining about a theano optimization
@@ -397,6 +398,13 @@ def compute_model_at(new_grid: Union[ndarray], model: Model, **kwargs):
 
 
 # region Solution
+
+def set_gridded_solutions_to_regular_grid(geo_model: Model, combined_solution: Solution, target_grid: Grid, solutions):
+    vals = grid_types.do_combine_grids(target_grid, solutions)
+    combined_solution.set_solution_to_regular_grid(vals, compute_mesh=True)
+    geo_model.solutions = combined_solution
+    geo_model.grid = target_grid
+    return geo_model
 
 def get_surfaces(model_solution: Union[Model, Solution]):
     """
