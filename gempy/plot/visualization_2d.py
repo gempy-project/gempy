@@ -950,7 +950,7 @@ class PlotSolution(PlotData2D):
         plt.ylabel(y)
 
     @staticmethod
-    def plot_topo_g(geo_model, edges, centroids, direction="y",
+    def plot_topo_g(geo_model, edges, centroids, direction="y", scale=False,
                     label_kwargs=None, edge_kwargs=None):
         res = geo_model.grid.regular_grid.resolution
         if direction == "y":
@@ -1007,19 +1007,20 @@ class PlotSolution(PlotData2D):
 
         for a, b in edges:
             # plot edges
-            plt.plot(
-                np.array([centroids[a][c1], centroids[b][c1]]) * e1 / r1 + d1,
-                np.array([centroids[a][c2], centroids[b][c2]]) * e2 / r2 + d2, 
-                **lkw
-            )
+            x = np.array([centroids[a][c1], centroids[b][c1]])
+            y = np.array([centroids[a][c2], centroids[b][c2]])
+            if scale:
+                x = x * e1 / r1 + d1
+                y = y * e2 / r2 + d2
+            plt.plot(x, y, **lkw)
 
         for node in np.unique(list(edges)):
-            plt.text(
-                centroids[node][c1] * e1 / r1 + d1,
-                centroids[node][c2] * e2 / r2 + d2, 
-                str(node),
-                **tkw
-            )
+            x = centroids[node][c1]
+            y = centroids[node][c2]
+            if scale:
+                x =  x * e1 / r1 + d1
+                y =  y * e2 / r2 + d2
+            plt.text(x, y, str(node), **tkw)
 
     def plot_gradient(self, scalar_field, gx, gy, gz, cell_number, quiver_stepsize=5, #maybe call r sth. like "stepsize"?
                       direction="y", plot_scalar = True, *args, **kwargs): #include plot data?

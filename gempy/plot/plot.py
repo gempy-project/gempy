@@ -405,6 +405,7 @@ def plot_topology(
     edges:Set[Tuple[int, int]], 
     centroids:Dict[int, Array[int, 3]], 
     direction:Union["x", "y", "z"]="y", 
+    scale:bool=True,
     label_kwargs:dict=None, 
     edge_kwargs:dict=None
     ):
@@ -427,6 +428,7 @@ def plot_topology(
         edges, 
         centroids,
         direction=direction,
+        scale=scale,
         label_kwargs=label_kwargs, 
         edge_kwargs=edge_kwargs
     )
