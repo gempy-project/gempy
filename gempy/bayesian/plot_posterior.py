@@ -13,6 +13,7 @@ import matplotlib.cm as cmx
 import seaborn as sns
 from arviz.plots.jointplot import *
 from arviz.plots.jointplot import _var_names, _scale_fig_size
+from arviz.plots.kdeplot import _fast_kde_2d
 from arviz.stats import hpd
 import arviz
 
@@ -20,20 +21,32 @@ import arviz
 sns.set(style="white", rc={"axes.facecolor": (0, 0, 0, 0)})
 
 # Discrete cmap
+    # seaborn palette
 pal_disc = sns.cubehelix_palette(10, rot=-.25, light=.7)
 pal_disc_l = sns.cubehelix_palette(10)
+
+    # matplotlib cmap
 my_cmap = ListedColormap(pal_disc)
 my_cmap_l = ListedColormap(pal_disc_l)
 
 # Continuous cmap
+    # seaborn palette
+pal_cont_light = sns.cubehelix_palette(250, rot=-.25, light=1)
 pal_cont = sns.cubehelix_palette(250, rot=-.25, light=.7)
+
 pal_cont_l = sns.cubehelix_palette(250)
+pal_cont_l_light = sns.cubehelix_palette(250, light=1)
 
+    # matplotlib cmap
 my_cmap_full = ListedColormap(pal_cont)
-my_cmap_full_l = ListedColormap(pal_cont_l)
+my_cmap_full_light = ListedColormap(pal_cont_light)
 
+my_cmap_full_l = ListedColormap(pal_cont_l)
+my_cmap_full_l_light = ListedColormap(pal_cont_l_light)
+
+# Default individual colors
 default_red = '#DA8886'
-default_blue = pal_cont.as_hex()[4]
+default_blue = pal_cont[50]
 default_l = pal_disc_l.as_hex()[4]
 
 
@@ -57,18 +70,26 @@ class PlotPosterior:
             # Testing
             if likelihood is False:
                 self.marginal_axes = self._create_joint_axis(figure=self.fig, subplot_spec=gs_0[0:2, 0:4])
+            elif likelihood is False and joyplot is False:
+                self.marginal_axes = self._create_joint_axis(figure=self.fig, subplot_spec=gs_0[:, :])
+    
             else:
                 self.marginal_axes = self._create_joint_axis(figure=self.fig, subplot_spec=gs_0[0:2, 0:3])
 
         if likelihood is True:
             if marginal is False:
                 self.likelihood_axes = self._create_likelihood_axis(figure=self.fig, subplot_spec=gs_0[0:2, 0:4])
+            elif joyplot is False:
+                self.likelihood_axes = self._create_likelihood_axis(figure=self.fig, subplot_spec=gs_0[0:2, 4:])
             else:
                 self.likelihood_axes = self._create_likelihood_axis(figure=self.fig, subplot_spec=gs_0[0:1, 4:])
 
         if joyplot is True:
             self.n_samples = n_samples
-            self.joy = self._create_joy_axis(self.fig, gs_0[1:2, 4:])
+            if marginal is False and likelihood is False:
+                self.joy = self._create_joy_axis(self.fig, gs_0[:, :])
+            else:
+                self.joy = self._create_joy_axis(self.fig, gs_0[1:2, 4:])
 
     def _create_joint_axis(self, figure=None, subplot_spec=None, figsize=None, textsize=None):
         figsize, ax_labelsize, _, xt_labelsize, linewidth, _ = _scale_fig_size(figsize, textsize)
@@ -175,14 +196,24 @@ class PlotPosterior:
         if kind == "scatter":
             self.axjoin.scatter(x, y, **joint_kwargs)
         elif kind == "kde":
-            contour = joint_kwargs.get('contour', True)
-            fill_last = joint_kwargs.get('fill_last', False)
-            try:
-                plot_kde(x, y, contour=contour, fill_last=fill_last, ax=self.axjoin, **joint_kwargs)
-            except ValueError:
-                pass
-            except np.linalg.LinAlgError:
-                pass
+            if False:
+                gridsize = (128, 128)# if contour else (256, 256)
+
+                density, xmin, xmax, ymin, ymax = _fast_kde_2d(x, y, gridsize=gridsize)
+
+             #   self.axjoin.scatter(x, y, density)
+                self.axjoin.imshow(density)
+            else:
+                if 'contour' not in joint_kwargs:
+                    joint_kwargs.setdefault('contour', True) 
+                fill_last = joint_kwargs.get('fill_last', False)
+                
+                try:
+                    self.foo = plot_kde(x, y, fill_last=fill_last, ax=self.axjoin, **joint_kwargs)
+                except ValueError:
+                    pass
+                except np.linalg.LinAlgError:
+                    pass
         else:
             gridsize = joint_kwargs.get('grid_size', 'auto')
             if gridsize == "auto":
@@ -218,6 +249,7 @@ class PlotPosterior:
                       coords=None, credible_interval=.98,
                       marginal_kwargs=None, marginal_kwargs_prior=None,
                       joint_kwargs=None, joint_kwargs_prior=None):
+        
         self.axjoin.clear()
         self.ax_hist_x.clear()
         self.ax_hist_y.clear()
@@ -253,10 +285,16 @@ class PlotPosterior:
         if kind == 'kde':
             joint_kwargs.setdefault('contourf_kwargs', {})
             joint_kwargs.setdefault('contour_kwargs', {})
-            joint_kwargs['contourf_kwargs'].setdefault('cmap', my_cmap_l)
+            joint_kwargs.setdefault('pcolormesh_kwargs', {})
+
+            joint_kwargs['contourf_kwargs'].setdefault('cmap', my_cmap_full_l_light)
             joint_kwargs['contourf_kwargs'].setdefault('levels', 11)
-            joint_kwargs['contourf_kwargs'].setdefault('alpha', .8)
+            joint_kwargs['contourf_kwargs'].setdefault('alpha', 1)
             joint_kwargs['contour_kwargs'].setdefault('alpha', 0)
+
+            joint_kwargs['pcolormesh_kwargs'].setdefault('cmap', my_cmap_full_l_light)
+            joint_kwargs['pcolormesh_kwargs'].setdefault('alpha', 1)
+
 
         marginal_kwargs.setdefault('fill_kwargs', {})
         marginal_kwargs.setdefault("plot_kwargs", {})
@@ -272,25 +310,32 @@ class PlotPosterior:
             self.plot_marginal_posterior(plotters, iteration=iteration, **marginal_kwargs)
 
         if group == 'both' or group == 'prior':
+            alpha_p = .8 if group == 'prior' else .5
+
             if joint_kwargs_prior is None:
                 joint_kwargs_prior = {}
 
             if marginal_kwargs_prior is None:
                 marginal_kwargs_prior = {}
 
-            joint_kwargs_prior.setdefault('contourf_kwargs', {})
             marginal_kwargs_prior.setdefault('fill_kwargs', {})
             marginal_kwargs_prior.setdefault("plot_kwargs", {})
             marginal_kwargs_prior["plot_kwargs"]["linewidth"] = self.linewidth
 
             if kind == 'kde':
+
                 joint_kwargs_prior.setdefault('contourf_kwargs', {})
                 joint_kwargs_prior.setdefault('contour_kwargs', {})
-                joint_kwargs_prior['contourf_kwargs'].setdefault('cmap', my_cmap)
+                joint_kwargs_prior.setdefault('pcolormesh_kwargs', {})
+
+                joint_kwargs_prior['contourf_kwargs'].setdefault('cmap', my_cmap_full_light)
                 joint_kwargs_prior['contourf_kwargs'].setdefault('levels', 11)
-                alpha_p = .8 if group == 'prior' else .4
                 joint_kwargs_prior['contourf_kwargs'].setdefault('alpha', alpha_p)
                 joint_kwargs_prior['contour_kwargs'].setdefault('alpha', 0)
+
+                joint_kwargs_prior['pcolormesh_kwargs'].setdefault('cmap', my_cmap_full_light)
+                joint_kwargs_prior['pcolormesh_kwargs'].setdefault('alpha', alpha_p)
+
 
             marginal_kwargs_prior["plot_kwargs"].setdefault('color', default_blue)
             marginal_kwargs_prior['fill_kwargs'].setdefault('color', default_blue)
@@ -309,7 +354,7 @@ class PlotPosterior:
                                                           credible_interval=credible_interval)
         if plot_trace is True:
             self.plot_trace(plotters, iteration, n_iterations)
-
+        
         self.axjoin.set_xlim(x_min, x_max)
         self.axjoin.set_ylim(y_min, y_max)
         self.ax_hist_x.set_xlim(self.axjoin.get_xlim())
@@ -360,6 +405,8 @@ class PlotPosterior:
                                data=None, iteration=-1, x_range=None, color='auto', **kwargs):
         self.likelihood_axes.clear()
 
+        x_limits = kwargs.get('x_limits', 4)
+
         if data is None:
             data = self.data
 
@@ -368,8 +415,8 @@ class PlotPosterior:
         draw_sigma = draw[std] if type(std) is str else std
         obs = data.observed_data[obs] if type(obs) is str else obs
 
-        self.set_likelihood_limits(draw_mu + 4 * draw_sigma, 'x_max')
-        self.set_likelihood_limits(draw_mu - 4 * draw_sigma, 'x_min')
+        self.set_likelihood_limits(draw_mu + x_limits * draw_sigma, 'x_max')
+        self.set_likelihood_limits(draw_mu - x_limits * draw_sigma, 'x_min')
 
         if x_range is not None:
             thick_min = x_range[0]
@@ -402,18 +449,28 @@ class PlotPosterior:
         y_min = (nor_l.min() - nor_l.max()) * .01
         y_max = nor_l.max() + nor_l.max() * .05
 
-        self.likelihood_axes.plot(thick_vals, nor_l, color='#7eb1bc', linewidth=.5)
-        self.likelihood_axes.fill_between(thick_vals, nor_l, 0, color=color_fill, alpha=.8)
+        # This is the bell
 
-        self.likelihood_axes.vlines(observation, 0.000000000001, likelihood_at_observation, linestyles='dashdot',
-                                    color='#DA8886', alpha=1)
+        if not 'hide_bell' in kwargs:
+            self.likelihood_axes.plot(thick_vals, nor_l, color='#7eb1bc', linewidth=.5)
+            self.likelihood_axes.fill_between(thick_vals, nor_l, 0, color=color_fill, alpha=.8)
 
-        self.likelihood_axes.hlines(likelihood_at_observation, observation, thick_max,
-                                     linestyle='dashdot', color='#DA8886', alpha=1)
-        self.likelihood_axes.scatter(observation, np.zeros_like(observation), s=50, c='#DA8886')
+        if not 'hide_bell' in kwargs and not 'hide_lines' in kwargs:
+            # This are the lines spawning from the observations
+            self.likelihood_axes.vlines(observation, 0.000000000001, likelihood_at_observation, linestyles='dashdot',
+                                        color='#DA8886', alpha=.5)
+
+            self.likelihood_axes.hlines(likelihood_at_observation, observation, thick_max,
+                                        linestyle='dashdot', color='#DA8886', alpha=.5)
+
+        # This are the observations         
+        observation_size = self.xt_labelsize * 3
+
+        self.likelihood_axes.scatter(observation, np.zeros_like(observation), s=observation_size, c='#DA8886')
         self.likelihood_axes.set_ylim(y_min, y_max)
         self.likelihood_axes.set_xlim(thick_min, thick_max)
 
+        # Make the axis sexy
         self.likelihood_axes.spines['bottom'].set_position(('data', 0.0))
         self.likelihood_axes.yaxis.tick_right()
 
@@ -423,7 +480,10 @@ class PlotPosterior:
         self.likelihood_axes.set_xlabel('Thickness Obs.')
         self.likelihood_axes.set_title('Likelihood')
 
-        self.likelihood_axes.set_xlim(self.x_min_like, self.x_max_like)
+        # self.likelihood_axes.set_ylim(y_min, y_max)
+        self.likelihood_axes.set_xlim(thick_min, thick_max)
+
+       # self.likelihood_axes.set_xlim(self.x_min_like, self.x_max_like)
         self.likelihood_axes.set_ylim(0, self.y_max_like)
 
         return self.likelihood_axes, self.cmap_l
@@ -443,7 +503,11 @@ class PlotPosterior:
         Returns:
 
         """
-        [i.clear() for i in self.joy]
+        try:
+            [i.clear() for i in self.joy]
+        except TypeError:
+            pass
+
         n_iterations = self.n_samples
         iteration_label = [None for i in range(self.n_samples)]
 
@@ -534,11 +598,13 @@ class PlotPosterior:
             ax_sel.hlines(0, ax_sel.get_xlim()[0], ax_sel.get_xlim()[1], color='#DA8886', linewidth=3)
 
         if obs is not None:
+            triangle_size = self.xt_labelsize*5
+
             if self.likelihood_axes is None:
                 self.joy[0].scatter(obs, np.ones_like(obs) * self.joy[0].get_ylim()[1], marker='v',
-                                    s=200, c='#DA8886')
+                                    s=triangle_size, c='#DA8886')
             self.joy[-1].scatter(obs, np.ones_like(obs) * self.joy[-1].get_ylim()[0],
-                                 marker='^', s=200, c='#DA8886')
+                                 marker='^', s=triangle_size, c='#DA8886')
 
         return axes
 
