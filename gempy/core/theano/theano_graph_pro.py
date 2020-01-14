@@ -1920,7 +1920,8 @@ class TheanoGraphPro(object):
         self.n_universal_eq_T_op = u_grade_iter
 
         x_to_interpolate_shape = grid.shape[0] + 2 * self.len_points
-        x_to_interpolate_shape = theano.printing.Print('x_to_interpolate_shape')(x_to_interpolate_shape)
+        if 'x_to_interpolate_shape' in self.verbose:
+            x_to_interpolate_shape = theano.printing.Print('x_to_interpolate_shape')(x_to_interpolate_shape)
 
         # Extracting faults matrices
         faults_relation_op = self.fault_relation[:, T.cast(n_series, 'int8')]
@@ -1937,8 +1938,10 @@ class TheanoGraphPro(object):
        # interface_loc = theano.printing.Print('interface_loc')(interface_loc)
 
       #  self.len_points = theano.printing.Print('len_points')(self.len_points)
-        len_i_0 = theano.printing.Print('len_i_0')(len_i_0)
-        len_i_1 = theano.printing.Print('len_i_1')(len_i_1)
+
+        if 'len_i' in self.verbose:
+            len_i_0 = theano.printing.Print('len_i_0')(len_i_0)
+            len_i_1 = theano.printing.Print('len_i_1')(len_i_1)
 
         self.fault_drift_at_surface_points_rest = fault_matrix_op[
                                                   :, interface_loc + len_i_0:
@@ -2110,7 +2113,8 @@ class TheanoGraphPro(object):
         Jz = dir_z * J
 
         n_devices = T.cast((k_vals.shape[0] / self.V.shape[1]), dtype='int32')
-        n_devices = theano.printing.Print('n_devices')(n_devices)
+        if 'mag_devices' in self.verbose:
+            n_devices = theano.printing.Print('n_devices')(n_devices)
 
         V = T.tile(self.V, (1, n_devices))  # repeat for each device
 

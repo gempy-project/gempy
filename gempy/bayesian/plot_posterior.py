@@ -354,7 +354,7 @@ class PlotPosterior:
                                                           credible_interval=credible_interval)
         if plot_trace is True:
             self.plot_trace(plotters, iteration, n_iterations)
-
+        
         self.axjoin.set_xlim(x_min, x_max)
         self.axjoin.set_ylim(y_min, y_max)
         self.ax_hist_x.set_xlim(self.axjoin.get_xlim())
