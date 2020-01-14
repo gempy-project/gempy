@@ -51,8 +51,9 @@ class RegularGrid:
 
         """
 
-        dx, dy, dz = (extent[1] - extent[0]) / resolution[0], (extent[3] - extent[2]) / resolution[0], \
-                     (extent[5] - extent[4]) / resolution[0]
+        dx = (extent[1] - extent[0]) / resolution[0]
+        dy = (extent[3] - extent[2]) / resolution[1]
+        dz = (extent[5] - extent[4]) / resolution[2]
 
         g = np.meshgrid(
             np.linspace(extent[0] + dx / 2, extent[1] - dx / 2, resolution[0], dtype="float64"),
