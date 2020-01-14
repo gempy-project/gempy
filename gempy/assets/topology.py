@@ -73,7 +73,9 @@ def compute_topology(
     )
     
     edges = set((n1, n2) for n1, n2 in edges)
-    edges = _filter_reverse_edges(edges)
+    edges = _filter_reverse_edges(edges)  # ? still necessary? would next line
+                                          # ? not be enough?
+    edges = _sort_edge_tuple_nodes(edges)
     return edges, centroids
 
 
@@ -96,6 +98,24 @@ def _filter_reverse_edges(edges:Set[Tuple[int, int]]) -> Set[Tuple[int, int]]:
         if not (e in edges_unique or (e[1], e[0]) in edges_unique):
             edges_unique.add(e)
     return edges_unique
+
+
+def _sort_edge_tuple_nodes(edges:Set[Tuple[int, int]]) -> Set[Tuple[int, int]]:
+    """Sort nodes within edge tuples by ascending order.
+    
+    Args:
+        edges (Set[Tuple[int, int]]): Set of edge tuples.
+    
+    Returns:
+        Set[Tuple[int, int]]: Set of sorted edge tuples.
+    """
+    sorted_edges = set()
+    for n1, n2 in edges:
+        if n1 > n2:
+            sorted_edges.add((n2, n1))
+        else:
+            sorted_edges.add((n1, n2))
+    return sorted_edges
 
 
 def _analyze_topology(
