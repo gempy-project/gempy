@@ -106,7 +106,7 @@ class Plot2D:
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
         startend = list(self.model.grid.sections.section_dict.values())[j]
         p1, p2 = startend[0], startend[1]
-        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, n, n)
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, n)
         if len(np.unique(xy[:, 0])) == 1:
             labels = xy[:, 1].astype(int)
             axname = 'Y'
@@ -441,8 +441,8 @@ class Plot2D:
             raise NotImplementedError
         return p1, p2
 
-    def _slice_topo_4_sections(self, p1, p2, resx, resy):
-        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, resx, resy)
+    def _slice_topo_4_sections(self, p1, p2, resx):
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, resx)
         z = self.model.grid.topography.interpolate_zvals_at_xy(xy)
         return xy[:, 0], xy[:, 1], z
 
@@ -452,8 +452,7 @@ class Plot2D:
 
             p1 = self.model.grid.sections.df.loc[section_name, 'start']
             p2 = self.model.grid.sections.df.loc[section_name, 'stop']
-            x, y, z = self._slice_topo_4_sections(p1, p2, self.model.grid.topography.resolution[0],
-                                                  self.model.grid.topography.resolution[1])
+            x, y, z = self._slice_topo_4_sections(p1, p2, self.model.grid.topography.resolution[0])
 
             pseudo_x = np.linspace(0, self.model.grid.sections.df.loc[section_name, 'dist'], z.shape[0])
             a = np.vstack((pseudo_x, z)).T
@@ -470,7 +469,7 @@ class Plot2D:
             resx = self.model.grid.topography.resolution[0]
             resy = self.model.grid.topography.resolution[1]
             print('p1', p1, 'p2', p2)
-            x, y, z = self._slice_topo_4_sections(p1, p2, resx, resy)
+            x, y, z = self._slice_topo_4_sections(p1, p2, resx)
             if direction == 'x':
                 a = np.vstack((y, z)).T
                 ext = self.model.grid.regular_grid.extent[[2, 3]]
