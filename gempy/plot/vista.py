@@ -340,11 +340,12 @@ class Vista:
             surfaces.surface, 
             surfaces[['vertices', 'edges']].dropna().iterrows()
         ):
-            polydata = self._surface_actors[surf]
+            polydata = self._surface_actors[surf][0]
             polydata.points = val["vertices"]
             polydata.faces = np.insert(val['edges'], 0, 3, axis=1).ravel()  
 
     def plot_surface_points_interactive(self, fmt:str, **kwargs):
+        self._live_updating = True
         i = self.model.surface_points.df.groupby("surface").groups[fmt]
         if len(i) == 0:
             return
@@ -360,12 +361,14 @@ class Vista:
         )
     
     def plot_surface_points_interactive_all(self, **kwargs):
+        self._live_updating = True
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":
                 continue
             self.plot_surface_points_interactive(fmt, **kwargs)
 
     def plot_orientations_interactive(self, fmt:str, **kwargs):
+        self._live_updating = True
         i = self.model.orientations.df.groupby("surface").groups[fmt]
         if len(i) == 0:
             return
@@ -387,6 +390,7 @@ class Vista:
             widget.WIDGET_INDEX = index
 
     def plot_orientations_interactive_all(self, **kwargs):
+        self._live_updating = True
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":
                 continue
