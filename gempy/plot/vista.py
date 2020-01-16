@@ -100,6 +100,9 @@ class Vista:
         self.topo_edges = None
         self.topo_ctrs = None
 
+    def show(self):
+        self.p.show()
+
     def _actor_exists(self, new_actor):
         if not hasattr(new_actor, "points"):
             return False
@@ -458,9 +461,54 @@ class Vista:
             # * Requires topo id to lith id lot
             self.p.add_mesh(mesh, **ekwargs)
 
-    def plot_topography(self):
-        # TODO: merge topography plotting
-        raise NotImplementedError
+    def plot_topography(
+            self, 
+            topography:Union[gp.core.grid_modules.grid_types.Topography, Array]=None,
+            scalars:Union["geomap", "topography", Array]="geomap",
+            **kwargs
+        ):
+        if not topography:
+            try:
+                topography = self.model.grid.topography.values
+            except AttributeError:
+                print("Unable to plot topography: Given geomodel instance does not contain topography grid.")
+                return
+
+        polydata = pv.PolyData(topography)
+
+        rgb = False
+        if scalars == "geomap":
+            arr_ = np.empty((0, 3), dtype=int)
+            # convert hex colors to rgb
+            for val in list(self._color_lot):
+                rgb = (255 * np.array(mcolors.hex2color(val)))
+                arr_ = np.vstack((arr_, rgb))
+            
+            sel = np.round(self.model.solutions.geological_map).astype(int)[0]
+
+            scalars_val = numpy_to_vtk(arr_[sel - 1], array_type=3)
+            cm = None
+            rgb = True
+        elif scalars == "topography":
+            scalars_val = topography[:, 2]
+            cm = 'terrain'
+        elif type(scalers) is np.ndarray:
+            scalars_val = scalars
+            scalars = 'custom'
+            cm = 'terrain'
+        else:
+            raise AttributeError("Parameter scalars needs to be either \
+                'geomap', 'topography' or a np.ndarray with scalar values")
+        
+        topography_actor = self.p.add_mesh(
+            cloud.delaunay_2d(), 
+            scalars=scalars_val,
+            cmap=cm,
+            rgb=rgb,
+            **kwargs
+        )
+        self._surface_actors["topography"] = topography_actor
+        return topography_actor
 
 class _Vista:
     """
