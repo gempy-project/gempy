@@ -446,12 +446,12 @@ class TheanoGraphPro(object):
         mask = series[4][-1]
         self.mask_op2 = mask
         mask_rev_cumprod = T.vertical_stack(mask[[-1]], T.cumprod(T.invert(mask[:-1]), axis=0))
-        self.new_mask = mask * mask_rev_cumprod
+        block_mask = mask * mask_rev_cumprod
 
         fault_mask = series[5][-1]
 
         fault_block = self.compute_final_block(fault_mask, self.block_op)
-        final_model = self.compute_final_block(self.mask_op2, self.block_op)
+        final_model = self.compute_final_block(block_mask, self.block_op)
 
         return [final_model, self.block_op, fault_block, self.weights_op, self.scalar_op,
                 self.sfai_op, self.mask_op2, fault_mask]
@@ -1536,8 +1536,10 @@ class TheanoGraphPro(object):
         if npf_op is None:
             npf_op = self.npf_op
 
-        self.len_points =  theano.printing.Print('len_points')(self.len_points)
-        npf_op = theano.printing.Print('npf_op')(npf_op)
+        if 'len_pints' in self.verbose:
+            self.len_points = theano.printing.Print('len_points')(self.len_points)
+        if 'npf_op' in self.verbose:
+            npf_op = theano.printing.Print('npf_op')(npf_op)
         scalar_field_at_surface_points_values = Z_x[-2 * self.len_points: -self.len_points][npf_op]
         if 'sfai' in self.verbose:
             scalar_field_at_surface_points_values = theano.printing.Print('sfai')(scalar_field_at_surface_points_values)

@@ -621,15 +621,15 @@ class InterpolatorModel(Interpolator):
         return True
 
     def remove_series_without_data(self):
-        self.len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
+        len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
                             self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
 
-        self.len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
+        len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
             'int32')
 
         # Remove series without data
-        non_zero_i = self.len_series_i.nonzero()[0]
-        non_zero_o = self.len_series_o.nonzero()[0]
+        non_zero_i = len_series_i.nonzero()[0]
+        non_zero_o = len_series_o.nonzero()[0]
         non_zero = np.intersect1d(non_zero_i, non_zero_o)
 
         self.non_zero = non_zero
