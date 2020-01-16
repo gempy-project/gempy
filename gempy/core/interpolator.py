@@ -725,7 +725,7 @@ class InterpolatorModel(Interpolator):
         is_erosion = self.series.df['BottomRelation'].values[self.non_zero] == 'Erosion'
         is_onlap = np.roll(self.series.df['BottomRelation'].values[self.non_zero] == 'Onlap', 1)
 
-        if len(is_erosion) > 1:
+        if len(is_erosion) != 0:
             is_erosion[-1] = False
         print('is_erosion', is_erosion)
         # this comes from the series df
