@@ -429,15 +429,6 @@ class TheanoGraphPro(object):
             profile=False
         )
 
-        # self.new_block = series[0][-1]
-        # self.new_weights = series[1][-1]
-        # self.new_scalar = series[2][-1]
-        # self.new_sfai = series[3][-1]
-        #
-        # self.new_block =
-        # self.new_weights = series[1][-1]
-        # self.new_scalar = series[2][-1]
-        # self.new_sfai = series[3][-1]
         self.block_op = series[0][-1]
         self.weights_op = series[1][-1]
         self.scalar_op = series[2][-1]

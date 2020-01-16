@@ -8,7 +8,10 @@ input_path = os.path.dirname(__file__)+'/../input_data'
 
 # ## Preparing the Python environment
 #
-# For modeling with GemPy, we first need to import it. We should also import any other packages we want to utilize in our Python environment.Typically, we will also require `NumPy` and `Matplotlib` when working with GemPy. At this point, we can further customize some settings as desired, e.g. the size of figures or, as we do here, the way that `Matplotlib` figures are displayed in our notebook (`%matplotlib inline`).
+# For modeling with GemPy, we first need to import it. We should also import any other packages we want to
+# utilize in our Python environment.Typically, we will also require `NumPy` and `Matplotlib` when working
+# with GemPy. At this point, we can further customize some settings as desired, e.g. the size of figures or,
+# as we do here, the way that `Matplotlib` figures are displayed in our notebook (`%matplotlib inline`).
 
 
 # These two lines are necessary only if GemPy is not installed
@@ -56,7 +59,6 @@ def test_define_sequential_pile(map_sequential_pile):
 def test_kriging_parameters(map_sequential_pile):
     # TODO Update
     geo_model = map_sequential_pile
-    #gp.get_kriging_parameters(geo_model)
 
 
 def test_compute_model(interpolator_islith_isfault, map_sequential_pile):
