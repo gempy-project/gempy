@@ -453,13 +453,8 @@ class TheanoGraphPro(object):
         fault_block = self.compute_final_block(fault_mask, self.block_op)
         final_model = self.compute_final_block(self.mask_op2, self.block_op)
 
-   #    self.block_matrix = self.new_block
-
-        #return [final_model, self.new_block, fault_block, self.new_weights, self.new_scalar,
-        #        self.new_sfai, self.new_mask, fault_mask]
-
         return [final_model, self.block_op, fault_block, self.weights_op, self.scalar_op,
-               self.sfai_op, self.mask_op2, fault_mask]
+                self.sfai_op, self.mask_op2, fault_mask]
 
     def create_oct_voxels(self, xyz, level=1):
         x_ = T.repeat(T.stack((xyz[:, 0] - self.dxdydz[0]/level / 4,
@@ -1540,7 +1535,13 @@ class TheanoGraphPro(object):
     def get_scalar_field_at_surface_points(self, Z_x, npf_op=None):
         if npf_op is None:
             npf_op = self.npf_op
+
+        self.len_points =  theano.printing.Print('len_points')(self.len_points)
+        npf_op = theano.printing.Print('npf_op')(npf_op)
         scalar_field_at_surface_points_values = Z_x[-2 * self.len_points: -self.len_points][npf_op]
+        if 'sfai' in self.verbose:
+            scalar_field_at_surface_points_values = theano.printing.Print('sfai')(scalar_field_at_surface_points_values)
+
         return scalar_field_at_surface_points_values
     # endregion
 
@@ -1704,86 +1705,6 @@ class TheanoGraphPro(object):
             fault_block = theano.printing.Print(fault_block.name)(fault_block)
 
         return fault_block
-
-    # def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties_op, slope=None,
-    #                           ):
-    #     """
-    #     Compute the part of the block model of a given series (dictated by the bool array yet to be computed)
-    #
-    #     Returns:
-    #         theano.tensor.vector: Value of lithology at every interpolated point
-    #     """
-    #     # TODO: IMP set soft max in the borders: Test
-    #     # TODO: instead -1 at the border look for the average distance of the input!: Test
-    #
-    #     slope = self.sig_slope
-    #     if self.max_speed < 1:
-    #         # max_pot = T.max(scalar_field_at_surface_points)
-    #         # min_pot = T.min(scalar_field_at_surface_points)
-    #
-    #         max_pot = T.max(Z_x)
-    #         # max_pot = theano.printing.Print("max_pot")(max_pot)
-    #         min_pot = T.min(Z_x)
-    #         # min_pot = theano.printing.Print("min_pot")(min_pot)
-    #
-    #         # max_pot_sigm = 2 * max_pot - self.scalar_field_at_surface_points_values[0]
-    #         # min_pot_sigm = 2 * min_pot - self.scalar_field_at_surface_points_values[-1]
-    #
-    #         # boundary_pad = (max_pot - min_pot) * 0.01
-    #         l = slope / (max_pot - min_pot)
-    #     else:
-    #         l = slope
-    #
-    #     # A tensor with the values to segment
-    #     scalar_field_iter = T.concatenate((
-    #         T.stack([0], axis=0),
-    #         scalar_field_at_surface_points,
-    #         T.stack([0], axis=0)
-    #     ))
-    #
-    #     if "scalar_field_iter" in self.verbose:
-    #         scalar_field_iter = theano.printing.Print("scalar_field_iter")(scalar_field_iter)
-    #
-    #     # Loop to segment the distinct lithologies
-    #
-    #     n_surface_op_float_sigmoid = T.repeat(values_properties_op, 2, axis=1)
-    #     n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], 0)
-    #     n_surface_op_float_sigmoid = T.set_subtensor(n_surface_op_float_sigmoid[:, -1], 0)
-    #     drift = T.set_subtensor(n_surface_op_float_sigmoid[:, 0], n_surface_op_float_sigmoid[:, 1])
-    #
-    #     if 'n_surface_op_float_sigmoid' in self.verbose:
-    #         n_surface_op_float_sigmoid = theano.printing.Print("n_surface_op_float_sigmoid") \
-    #             (n_surface_op_float_sigmoid)
-    #
-    #     formations_block, updates2 = theano.scan(
-    #         fn=self.compare,
-    #         outputs_info=None,
-    #         sequences=[dict(input=scalar_field_iter, taps=[0, 1]), T.arange(0, n_surface_op_float_sigmoid.shape[1],
-    #                                                                         2, dtype='int64')],
-    #         non_sequences=[Z_x, l, n_surface_op_float_sigmoid, drift],
-    #         name='Looping compare',
-    #         profile=False,
-    #         return_list=False)
-    #
-    #     # For every surface we get a vector so we need to sum compress them to one dimension
-    #     formations_block = formations_block.sum(axis=0)
-    #
-    #     if self.gradient is True:
-    #         ReLU_up = T.switch(Z_x < scalar_field_iter[1], 0, - 0.01 * (Z_x - scalar_field_iter[1]))
-    #         ReLU_down = T.switch(Z_x > scalar_field_iter[-2], 0,  0.01 * T.abs_(Z_x - scalar_field_iter[-2]))
-    #
-    #         if 'relu' in self.verbose:
-    #             ReLU_up = theano.printing.Print('ReLU_up')(ReLU_up)
-    #             ReLU_down = theano.printing.Print('ReLU_down')(ReLU_down)
-    #
-    #         formations_block += ReLU_down + ReLU_up
-    #
-    #     # Add name to the theano node
-    #     formations_block.name = 'The chunk of block model of a specific series'
-    #     if str(sys._getframe().f_code.co_name) in self.verbose:
-    #         formations_block = theano.printing.Print(formations_block.name)(formations_block)
-    #
-    #     return formations_block
 
     def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties_op):
         """
@@ -1962,13 +1883,9 @@ class TheanoGraphPro(object):
             weights = theano.ifelse.ifelse(compute_weight_ctr,
                                            self.solve_kriging(b),
                                            weights_vector[len_w_0:len_w_1])
-            if 'weights' in self.verbose:
-                    weights = theano.printing.Print('weights foo1')(weights)
 
             Z_x = tif.ifelse(compute_scalar_ctr, self.compute_scalar_field(weights, grid, fault_matrix_op),
                              scalar_field_matrix[n_series])
-
-        # x_to_interpolate_shape = Z_x.shape[0]
 
         if 'weights' in self.verbose:
             weights = theano.printing.Print('weights foo')(weights)

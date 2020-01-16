@@ -147,7 +147,7 @@ class Interpolator(object):
         ))
         # universal grades
         self.theano_graph.n_universal_eq_T.set_value(
-            list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')))
+            list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')[self.non_zero]))
 
         self.set_theano_shared_nuggets()
 
@@ -613,34 +613,58 @@ class InterpolatorModel(Interpolator):
         self.set_theano_shared_relations()
         self.set_theano_shared_structure_surfaces()
         # universal grades
-        self.theano_graph.n_universal_eq_T.set_value(
-            list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')))
+       # self.theano_graph.n_universal_eq_T.set_value(
+       #     list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')))
 
         if reset_ctrl is True:
             self.reset_flow_control_initial_results()
         return True
 
-    def _compute_len_series(self):
+    def remove_series_without_data(self):
         self.len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
                             self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
 
         self.len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
             'int32')
 
-        self.len_series_u = self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')
-        self.len_series_f = self.faults.faults_relations_df.sum(axis=0).values.astype('int32')[
-                            :self.additional_data.get_additional_data()['values']['Structure', 'number series']]
+        # Remove series without data
+        non_zero_i = self.len_series_i.nonzero()[0]
+        non_zero_o = self.len_series_o.nonzero()[0]
+        non_zero = np.intersect1d(non_zero_i, non_zero_o)
 
-        self._old_len_series = self.len_series_i
+        self.non_zero = non_zero
+        return self.non_zero
+
+    def _compute_len_series(self):
+
+        self.len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
+                            self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
+
+        self.len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
+            'int32')
 
         # Remove series without data
         non_zero_i = self.len_series_i.nonzero()[0]
         non_zero_o = self.len_series_o.nonzero()[0]
         non_zero = np.intersect1d(non_zero_i, non_zero_o)
 
+        self.non_zero = non_zero
+
+        self.len_series_u = self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')
+        try:
+            len_series_f_ = self.faults.faults_relations_df.values[non_zero][:, non_zero].sum(axis=0)
+
+        except np.AxisError:
+            print('np.axis error')
+            len_series_f_ = self.faults.faults_relations_df.values.sum(axis=0)
+
+        self.len_series_f = np.atleast_1d(len_series_f_.astype('int32'))#[:self.additional_data.get_additional_data()['values']['Structure', 'number series']]
+
+        self._old_len_series = self.len_series_i
+
         self.len_series_i = self.len_series_i[non_zero]
         self.len_series_o = self.len_series_o[non_zero]
-        self.len_series_f = self.len_series_f[non_zero]
+       # self.len_series_f = self.len_series_f[non_zero]
         self.len_series_u = self.len_series_u[non_zero]
 
         if self.len_series_i.shape[0] == 0:
@@ -666,11 +690,11 @@ class InterpolatorModel(Interpolator):
 
         # Number of surfaces per series. The function is not pretty but the result is quite clear
         n_surfaces_per_serie = np.insert(
-            self.additional_data.structure_data.df.loc['values', 'number surfaces per series'].cumsum(), 0, 0). \
+            self.additional_data.structure_data.df.loc['values', 'number surfaces per series'][self.non_zero].cumsum(), 0, 0). \
             astype('int32')
         self.theano_graph.n_surfaces_per_series.set_value(n_surfaces_per_serie)
         self.theano_graph.n_universal_eq_T.set_value(
-            list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')))
+            list(self.additional_data.kriging_data.df.loc['values', 'drift equations'].astype('int32')[self.non_zero]))
 
     @setdoc_pro(set_theano_shared_loop.__doc__)
     def set_theano_shared_weights(self):
@@ -679,8 +703,10 @@ class InterpolatorModel(Interpolator):
         self.theano_graph.weights_vector.set_value(np.zeros((self.len_series_w.sum()), dtype=self.dtype))
 
     def set_theano_shared_fault_relation(self):
+        self.remove_series_without_data()
         """Set the theano shared variable with the fault relation"""
-        self.theano_graph.fault_relation.set_value(self.faults.faults_relations_df.values)
+        self.theano_graph.fault_relation.set_value(
+            self.faults.faults_relations_df.values[self.non_zero][:, self.non_zero])
 
     def set_theano_shared_is_fault(self):
         """Set theano shared variable which controls if a series is fault or not"""
@@ -692,13 +718,16 @@ class InterpolatorModel(Interpolator):
 
     def set_theano_shared_onlap_erode(self):
         """Set the theano variables which control the masking patterns according to the uncomformity relation"""
-        n_series = len(self.len_series_i)#self.additional_data.structure_data.df.loc['values', 'number series']
+        self.remove_series_without_data()
 
-        is_erosion = self.series.df['BottomRelation'].values[:n_series] == 'Erosion'
-        is_onlap = np.roll(self.series.df['BottomRelation'].values[:n_series] == 'Onlap', 1)
+        print(self.non_zero)
+        print(self.series.df['BottomRelation'].values[self.non_zero])
+        is_erosion = self.series.df['BottomRelation'].values[self.non_zero] == 'Erosion'
+        is_onlap = np.roll(self.series.df['BottomRelation'].values[self.non_zero] == 'Onlap', 1)
 
-        is_erosion[-1] = False
-
+        if len(is_erosion) > 1:
+            is_erosion[-1] = False
+        print('is_erosion', is_erosion)
         # this comes from the series df
         self.theano_graph.is_erosion.set_value(is_erosion)
         self.theano_graph.is_onlap.set_value(is_onlap)
