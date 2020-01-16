@@ -1890,13 +1890,24 @@ class TheanoGraphPro(object):
                             T.gt(Z_x, T.min(scalar_field_at_surface_points)), # It is True the values over the last surface
                             ~ self.is_fault[n_series] * T.ones_like(Z_x, dtype='bool')) # else: all False if is Fault else all ones
 
-     #   last_erode = T.argmax(T.nonzero(is_erosion[:n_series+1])[0])
-        # Number of series since las erode
-      #  nsle = T.max(n_series - last_erode, 1)
-        nsle = 1
+        # Number of series since last erode: This is necessary in case there are multiple consecutives onlaps
+        c= theano.printing.Print('is_erosion')(self.is_erosion)
+        b = theano.printing.Print('b')(c[:n_series + 1])
+        a = T.nonzero(T.concatenate(([1], b)))
+
+        a = theano.printing.Print('a')(a[0])
+        last_erode = T.argmax(a)
+        nsle = T.max(T.stack([n_series - last_erode, 1]))
+        #
+        # nsle = theano.printing.Print('nsle')(nsle)
+        # self.aa =  theano.shared(np.array([1,1,1], dtype='int32'))
+        # nsle = self.aa[n_series]
+        nsle = theano.printing.Print('nsle')(nsle)
+
+       # nsle = 1
         mask_o = tif.ifelse(is_onlap,
                             T.gt(Z_x, T.max(scalar_field_at_surface_points)),
-                            mask_matrix[n_series - nsle, shift:x_to_interpolate_shape + shift])
+                            mask_matrix[n_series - 1, shift:x_to_interpolate_shape + shift])
 
         mask_f = tif.ifelse(self.is_fault[n_series],
                             T.gt(Z_x, T.min(scalar_field_at_surface_points)),
@@ -1929,9 +1940,14 @@ class TheanoGraphPro(object):
         block_matrix = T.set_subtensor(block_matrix[n_series, :, shift:x_to_interpolate_shape + shift], block)
         fault_matrix = T.set_subtensor(fault_matrix[n_series, :, shift:x_to_interpolate_shape + shift], block)
 
-        mask_matrix = T.set_subtensor(mask_matrix[n_series - nsle, shift:x_to_interpolate_shape + shift], mask_o)
+        # LITH MASK
+        mask_matrix = T.set_subtensor(mask_matrix[n_series - 1: n_series, shift:x_to_interpolate_shape + shift], mask_o)
+
+        mask_matrix = T.set_subtensor(mask_matrix[n_series - nsle: n_series, shift:x_to_interpolate_shape + shift],
+                                      T.cumprod(mask_matrix[n_series - nsle: n_series, shift:x_to_interpolate_shape + shift][::-1], axis=0)[::-1])
         mask_matrix = T.set_subtensor(mask_matrix[n_series, shift:x_to_interpolate_shape + shift], mask_e)
 
+        # FAULT MASK
         # This creates a matrix with Trues in the positive side of the faults. When is not faults is 0
 
         # This select the indices where is fault but are not offsetting
