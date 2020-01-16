@@ -308,6 +308,9 @@ class Vista:
             vals = self.model.solutions.scalar_field_matrix.T
         elif name == "values":
             vals = self.model.solutions.values_matrix.T
+            if vals.shape[1] == 0:
+                print("No scalar values matrix found in given geomodel.")
+                return
 
         mesh.point_arrays[name] = vals
         if self._actor_exists(mesh):
