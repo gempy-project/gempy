@@ -151,22 +151,32 @@ class Vista:
         )
         self._actors.append(mesh)
 
-    def plot_orientations(self, fmt:str, length:float=200, **kwargs):
+    def plot_orientations(self, fmt:str, length:float=None, **kwargs):
         i = self.model.orientations.df.groupby("surface").groups[fmt]
         if len(i) == 0:
             return
+        if not length:
+            length = np.mean(self.extent) / 5
 
         pts = self.model.orientations.df.loc[i][["X", "Y", "Z"]].values
         nrms = self.model.orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
+        
+        line_kwargs = dict(
+            color=self._color_lot[fmt],
+            line_width=3,
+        )
+        line_kwargs.update(kwargs)
+        
         for pt, nrm in zip(pts, nrms):
-            mesh = pv.Line(pointa=pt, pointb=pt+length*nrm)
-            # TODO: make orientation length func of extent
+            mesh = pv.Line(
+                pointa=pt, 
+                pointb=pt+length*nrm,
+            )
             if self._actor_exists(mesh):
                 return
             self.p.add_mesh(
                 mesh, 
-                color=self._color_lot[fmt],
-                **kwargs
+                **line_kwargs
             )
             self._actors.append(mesh)
 
