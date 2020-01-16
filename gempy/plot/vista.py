@@ -33,7 +33,7 @@ import sys
 import gempy as gp
 import warnings
 # insys.path.append("../../pyvista")
-from typing import Union, Dict, List, Iterable
+from typing import Union, Dict, List, Iterable, Set, Tuple
 import pyvista as pv
 from pyvista.plotting.theme import parse_color
 
@@ -426,40 +426,65 @@ class Vista:
 
         return scaled_centroids
 
-    def plot_topology_graph(
+    def plot_topology(
             self,
-            node_kwargs={},
-            edge_kwargs={}
+            edges:Set[Tuple[int, int]],
+            centroids:Dict[int, Array[float, 3]],
+            node_kwargs:dict={},
+            edge_kwargs:dict={}
         ):
-        if self.topo_edges is None or self.topo_ctrs is None:
-            print("No topology results stored. Compute geomodel topology first.")
-            return
+        """Plot geomodel topology graph based on given set of topology edges 
+        and node centroids.
+        
+        Args:
+            edges (Set[Tuple[int, int]]): Topology edges.
+            centroids (Dict[int, Array[float, 3]]): Topology node centroids
+            node_kwargs (dict, optional): Node plotting options. Defaults to {}.
+            edge_kwargs (dict, optional): Edge plotting options. Defaults to {}.
+        """
+        lot = gp.assets.topology.get_lot_node_to_lith_id(self.model, centroids)
+        centroids_scaled = self._scale_topology_centroids(centroids)
 
-        centroids = self._scale_topology_centroids(self.topo_ctrs)
-
-        for node, pos in centroids.items():
-            mesh = pv.PolyData(
-                pos
+        for node, pos in centroids_scaled.items():
+            
+            mesh = pv.Sphere(
+                center=pos,
+                radius=np.average(self.extent) / 15
             )
-            # TODO: color nodes with lith colors
             # * Requires topo id to lith id lot
-            self.p.add_mesh(mesh, **node_kwargs)
+            self.p.add_mesh(
+                mesh, 
+                color=self._color_id_lot[lot[node]],
+                **node_kwargs
+            )
 
         ekwargs = dict(
-            color="black",
             line_width=3
         )
         ekwargs.update(edge_kwargs)
 
-        for e1, e2 in self.topo_edges:
-            pos1, pos2 = centroids[e1], centroids[e2]
+        for e1, e2 in edges:
+            pos1, pos2 = centroids_scaled[e1], centroids_scaled[e2]
+            
+            x1, y1, z1 = pos1
+            x2, y2, z2 = pos2
+            x, y, z = (x1, x2), (y1, y2), (z1, z2)
+            pos_mid = (
+                min(x) + (max(x) - min(x)) / 2, 
+                min(y) + (max(y) - min(y)) / 2, 
+                min(z) + (max(z) - min(z)) / 2
+            )
             mesh = pv.Line(
                 pointa=pos1,
+                pointb=pos_mid,
+            )
+            self.p.add_mesh(mesh, color=self._color_id_lot[lot[e1]], **ekwargs)
+
+            mesh = pv.Line(
+                pointa=pos_mid,
                 pointb=pos2,
             )
-            # TODO: color edges as 1/2 lines using lith colors
-            # * Requires topo id to lith id lot
-            self.p.add_mesh(mesh, **ekwargs)
+            self.p.add_mesh(mesh, color=self._color_id_lot[lot[e2]], **ekwargs)
 
     def plot_topography(
             self, 
