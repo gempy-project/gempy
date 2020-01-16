@@ -262,10 +262,12 @@ class StochasticModel:
         self.storage = {
             "surfpts": [],
             "orients": [],
+            "lith_block": [],
             "block_matrix": [],
             "vertices": [],
             "simplices": [],
             "topo_graphs": [],
+            "topo_edges": [],
             "topo_centroids": []
         }
 

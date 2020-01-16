@@ -32,6 +32,8 @@ import sys
 from .visualization_2d import PlotData2D, PlotSolution
 from .visualization_3d import steno3D, GemPyvtkInteract, ipyvolumeVisualization
 import gempy as _gempy
+from typing import Set, Tuple, Dict, Union
+from nptyping import Array
 
 
 def plot_data_3D(geo_data, ve=1, **kwargs):
@@ -398,24 +400,36 @@ def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,
                            **kwargs)
 
 
-def plot_topology(geo_data, G, centroids, direction="y", label_kwargs=None, node_kwargs=None, edge_kwargs=None):
-    """
-    Plot the topology adjacency graph in 2-D.
-
+def plot_topology(
+    geo_model,
+    edges:Set[Tuple[int, int]], 
+    centroids:Dict[int, Array[int, 3]], 
+    direction:Union["x", "y", "z"]="y", 
+    scale:bool=True,
+    label_kwargs:dict=None, 
+    edge_kwargs:dict=None
+    ):
+    """Plot the topology adjacency graph in 2-D.
+    
     Args:
-        geo_data (gempy.data_management.InputData):
-        G (skimage.future.graph.rag.RAG):
-        centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys and (x,y,z) coordinates
-                as values.
-    Keyword Args
-        direction (str): "x", "y" or "z" specifying the slice direction for 2-D topology analysis. Default None.
-        label_kwargs (dict, optional): Dictionary of keyword arguments for graph node labels (plt.text)
-        node_kwargs (dict, optional): Dictionary of keyword arguments for graph nodes (plt.plot markers)
-        edge_kwargs (dict, optional): Dictionary of keyword arguments for graph edges (plt.plot lines)
-
-    Returns:
-        Nothing, it just plots.
+        geo_model ([type]): GemPy geomodel instance.
+        edges (Set[Tuple[int, int]]): Set of topology edges.
+        centroids (Dict[int, Array[int, 3]]): Dictionary of topology id's and
+            their centroids.
+        direction (Union["x", "y", "z", optional): Section direction. 
+            Defaults to "y".
+        label_kwargs (dict, optional): Keyword arguments for topology labels. 
+            Defaults to None.
+        edge_kwargs (dict, optional): Keyword arguments for topology edges. 
+            Defaults to None.
     """
-    PlotSolution.plot_topo_g(geo_data, G, centroids, direction=direction,
-                           label_kwargs=label_kwargs, node_kwargs=node_kwargs, edge_kwargs=edge_kwargs)
+    PlotSolution.plot_topo_g(
+        geo_model, 
+        edges, 
+        centroids,
+        direction=direction,
+        scale=scale,
+        label_kwargs=label_kwargs, 
+        edge_kwargs=edge_kwargs
+    )
 
