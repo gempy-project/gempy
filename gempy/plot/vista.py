@@ -33,7 +33,7 @@ import sys
 import gempy as gp
 import warnings
 # insys.path.append("../../pyvista")
-from typing import Union, Dict, List, Iterable
+from typing import Union, Dict, List, Iterable, Set, Tuple
 import pyvista as pv
 from pyvista.plotting.theme import parse_color
 
@@ -54,13 +54,25 @@ from logging import debug
 class Vista:
     def __init__(
         self, 
-        model, 
-        extent=None, 
+        model:gp.Model, 
+        extent:List[float]=None, 
         color_lot: pn.DataFrame = None, 
-        real_time=False,
-        plotter_type='basic',
+        real_time:bool=False,
+        plotter_type:Union["basic", "background"]='basic',
         **kwargs
         ):
+        """GemPy 3-D visualization using pyVista.
+        
+        Args:
+            model (gp.Model): Geomodel instance with solutions.
+            extent (List[float], optional): Custom extent. Defaults to None.
+            color_lot (pn.DataFrame, optional): Custom color scheme in the form
+                of a look-up table. Defaults to None.
+            real_time (bool, optional): Toggles real-time updating of the plot. 
+                Defaults to False.
+            plotter_type (Union["basic", "background"], optional): Set the 
+                plotter type. Defaults to 'basic'.
+        """
         self.model = model
         if extent:
             self.extent = list(extent)
@@ -87,6 +99,9 @@ class Vista:
 
         self.topo_edges = None
         self.topo_ctrs = None
+
+    def show(self):
+        self.p.show()
 
     def _actor_exists(self, new_actor):
         if not hasattr(new_actor, "points"):
@@ -136,22 +151,32 @@ class Vista:
         )
         self._actors.append(mesh)
 
-    def plot_orientations(self, fmt:str, length:float=200, **kwargs):
+    def plot_orientations(self, fmt:str, length:float=None, **kwargs):
         i = self.model.orientations.df.groupby("surface").groups[fmt]
         if len(i) == 0:
             return
+        if not length:
+            length = np.mean(self.extent) / 5
 
         pts = self.model.orientations.df.loc[i][["X", "Y", "Z"]].values
         nrms = self.model.orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
+        
+        line_kwargs = dict(
+            color=self._color_lot[fmt],
+            line_width=3,
+        )
+        line_kwargs.update(kwargs)
+        
         for pt, nrm in zip(pts, nrms):
-            mesh = pv.Line(pointa=pt, pointb=pt+length*nrm)
-            # TODO: make orientation length func of extent
+            mesh = pv.Line(
+                pointa=pt, 
+                pointb=pt+length*nrm,
+            )
             if self._actor_exists(mesh):
                 return
             self.p.add_mesh(
                 mesh, 
-                color=self._color_lot[fmt],
-                **kwargs
+                **line_kwargs
             )
             self._actors.append(mesh)
 
@@ -283,6 +308,9 @@ class Vista:
             vals = self.model.solutions.scalar_field_matrix.T
         elif name == "values":
             vals = self.model.solutions.values_matrix.T
+            if vals.shape[1] == 0:
+                print("No scalar values matrix found in given geomodel.")
+                return
 
         mesh.point_arrays[name] = vals
         if self._actor_exists(mesh):
@@ -312,11 +340,12 @@ class Vista:
             surfaces.surface, 
             surfaces[['vertices', 'edges']].dropna().iterrows()
         ):
-            polydata = self._surface_actors[surf]
+            polydata = self._surface_actors[surf][0]
             polydata.points = val["vertices"]
             polydata.faces = np.insert(val['edges'], 0, 3, axis=1).ravel()  
 
     def plot_surface_points_interactive(self, fmt:str, **kwargs):
+        self._live_updating = True
         i = self.model.surface_points.df.groupby("surface").groups[fmt]
         if len(i) == 0:
             return
@@ -332,12 +361,14 @@ class Vista:
         )
     
     def plot_surface_points_interactive_all(self, **kwargs):
+        self._live_updating = True
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":
                 continue
             self.plot_surface_points_interactive(fmt, **kwargs)
 
     def plot_orientations_interactive(self, fmt:str, **kwargs):
+        self._live_updating = True
         i = self.model.orientations.df.groupby("surface").groups[fmt]
         if len(i) == 0:
             return
@@ -359,6 +390,7 @@ class Vista:
             widget.WIDGET_INDEX = index
 
     def plot_orientations_interactive_all(self, **kwargs):
+        self._live_updating = True
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":
                 continue
@@ -411,44 +443,114 @@ class Vista:
 
         return scaled_centroids
 
-    def plot_topology_graph(
+    def plot_topology(
             self,
-            node_kwargs={},
-            edge_kwargs={}
+            edges:Set[Tuple[int, int]],
+            centroids:Dict[int, Array[float, 3]],
+            node_kwargs:dict={},
+            edge_kwargs:dict={}
         ):
-        if self.topo_edges is None or self.topo_ctrs is None:
-            print("No topology results stored. Compute geomodel topology first.")
-            return
+        """Plot geomodel topology graph based on given set of topology edges 
+        and node centroids.
+        
+        Args:
+            edges (Set[Tuple[int, int]]): Topology edges.
+            centroids (Dict[int, Array[float, 3]]): Topology node centroids
+            node_kwargs (dict, optional): Node plotting options. Defaults to {}.
+            edge_kwargs (dict, optional): Edge plotting options. Defaults to {}.
+        """
+        lot = gp.assets.topology.get_lot_node_to_lith_id(self.model, centroids)
+        centroids_scaled = self._scale_topology_centroids(centroids)
 
-        centroids = self._scale_topology_centroids(self.topo_ctrs)
-
-        for node, pos in centroids.items():
-            mesh = pv.PolyData(
-                pos
+        for node, pos in centroids_scaled.items():
+            
+            mesh = pv.Sphere(
+                center=pos,
+                radius=np.average(self.extent) / 15
             )
-            # TODO: color nodes with lith colors
             # * Requires topo id to lith id lot
-            self.p.add_mesh(mesh, **node_kwargs)
+            self.p.add_mesh(
+                mesh, 
+                color=self._color_id_lot[lot[node]],
+                **node_kwargs
+            )
 
         ekwargs = dict(
-            color="black",
             line_width=3
         )
         ekwargs.update(edge_kwargs)
 
-        for e1, e2 in self.topo_edges:
-            pos1, pos2 = centroids[e1], centroids[e2]
+        for e1, e2 in edges:
+            pos1, pos2 = centroids_scaled[e1], centroids_scaled[e2]
+            
+            x1, y1, z1 = pos1
+            x2, y2, z2 = pos2
+            x, y, z = (x1, x2), (y1, y2), (z1, z2)
+            pos_mid = (
+                min(x) + (max(x) - min(x)) / 2, 
+                min(y) + (max(y) - min(y)) / 2, 
+                min(z) + (max(z) - min(z)) / 2
+            )
             mesh = pv.Line(
                 pointa=pos1,
+                pointb=pos_mid,
+            )
+            self.p.add_mesh(mesh, color=self._color_id_lot[lot[e1]], **ekwargs)
+
+            mesh = pv.Line(
+                pointa=pos_mid,
                 pointb=pos2,
             )
-            # TODO: color edges as 1/2 lines using lith colors
-            # * Requires topo id to lith id lot
-            self.p.add_mesh(mesh, **ekwargs)
+            self.p.add_mesh(mesh, color=self._color_id_lot[lot[e2]], **ekwargs)
 
-    def plot_topography(self):
-        # TODO: merge topography plotting
-        raise NotImplementedError
+    def plot_topography(
+            self, 
+            topography:Union[gp.core.grid_modules.grid_types.Topography, Array]=None,
+            scalars:Union["geomap", "topography", Array]="geomap",
+            **kwargs
+        ):
+        if not topography:
+            try:
+                topography = self.model.grid.topography.values
+            except AttributeError:
+                print("Unable to plot topography: Given geomodel instance does not contain topography grid.")
+                return
+
+        polydata = pv.PolyData(topography)
+
+        rgb = False
+        if scalars == "geomap":
+            arr_ = np.empty((0, 3), dtype=int)
+            # convert hex colors to rgb
+            for val in list(self._color_lot):
+                rgb = (255 * np.array(mcolors.hex2color(val)))
+                arr_ = np.vstack((arr_, rgb))
+            
+            sel = np.round(self.model.solutions.geological_map).astype(int)[0]
+
+            scalars_val = numpy_to_vtk(arr_[sel - 1], array_type=3)
+            cm = None
+            rgb = True
+        elif scalars == "topography":
+            scalars_val = topography[:, 2]
+            cm = 'terrain'
+        elif type(scalers) is np.ndarray:
+            scalars_val = scalars
+            scalars = 'custom'
+            cm = 'terrain'
+        else:
+            raise AttributeError("Parameter scalars needs to be either \
+                'geomap', 'topography' or a np.ndarray with scalar values")
+        
+        topography_actor = self.p.add_mesh(
+            cloud.delaunay_2d(), 
+            scalars=scalars_val,
+            cmap=cm,
+            rgb=rgb,
+            **kwargs
+        )
+        self._surface_actors["topography"] = topography_actor
+        return topography_actor
 
 class _Vista:
     """

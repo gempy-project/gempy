@@ -395,7 +395,9 @@ class TheanoGraphPro(object):
         self.new_sfai = series[3][-1]
 
         mask = series[4][-1]
-        mask_rev_cumprod = T.vertical_stack(mask[[-1]], T.cumprod(T.invert(mask[:-1]), axis=0))
+        # TODO @miguel this sucks
+        mask_rev_cumprod = T.vertical_stack(mask[[-1]],
+         T.cumprod(T.invert(mask[:-1]), axis=0))
         self.new_mask = mask * mask_rev_cumprod
 
         final_model = self.compute_final_block(self.new_mask, self.new_block)
