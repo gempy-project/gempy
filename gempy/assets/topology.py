@@ -112,9 +112,9 @@ def _sort_edge_tuple_nodes(edges:Set[Tuple[int, int]]) -> Set[Tuple[int, int]]:
     sorted_edges = set()
     for n1, n2 in edges:
         if n1 > n2:
-            sorted_edges.add((n2, n1))
+            sorted_edges.add((int(n2), int(n1)))
         else:
-            sorted_edges.add((n1, n2))
+            sorted_edges.add((int(n1), int(n2)))
     return sorted_edges
 
 
