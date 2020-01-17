@@ -794,14 +794,11 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         """Set the theano variables which control the masking patterns according to the uncomformity relation"""
         self.remove_series_without_data()
 
-        print(self.non_zero)
-        print(self.series.df['BottomRelation'].values[self.non_zero])
         is_erosion = self.series.df['BottomRelation'].values[self.non_zero] == 'Erosion'
         is_onlap = np.roll(self.series.df['BottomRelation'].values[self.non_zero] == 'Onlap', 1)
 
         if len(is_erosion) != 0:
             is_erosion[-1] = False
-        print('is_erosion', is_erosion)
         # this comes from the series df
         self.theano_graph.is_erosion.set_value(is_erosion)
         self.theano_graph.is_onlap.set_value(is_onlap)

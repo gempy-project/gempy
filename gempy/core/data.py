@@ -2705,11 +2705,16 @@ class KrigingParameters(object):
         assert np.isin(attribute, self.df.columns).all(), 'Valid properties are: ' + np.array2string(self.df.columns)
 
         if attribute == 'drift equations':
+            value = np.asarray(value)
+            print(value)
+
             if type(value) is str:
                 value = np.fromstring(value[1:-1], sep=u_grade_sep, dtype=int)
             try:
                 assert value.shape[0] is self.structure.df.loc['values', 'len series surface_points'].shape[0]
+                print(value, attribute)
                 self.df.at['values', attribute] = value
+                print(self.df)
 
             except AssertionError:
                 print('u_grade length must be the same as the number of series')
@@ -2883,4 +2888,5 @@ class AdditionalData(object):
         Update fields dependent on input data sucha as structure and universal kriging grade
         """
         self.structure_data.update_structure_from_input()
-        self.kriging_data.set_u_grade()
+        if len(self.kriging_data.df['values', 'drift equations']) != self.structure_data.df['values', 'number series']:
+            self.kriging_data.set_u_grade()

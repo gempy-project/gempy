@@ -93,6 +93,10 @@ def test_kriging_mutation(interpolator_islith_isfault, map_sequential_pile):
     plt.savefig('figs/test_kriging_mutation')
 
     geo_model.modify_kriging_parameters('range', 1)
+
+    geo_model.modify_kriging_parameters('drift equations', [0, 9])
+    print(geo_model.solutions.lith_block, geo_model.additional_data)
+
     gp.compute_model(geo_model, compute_mesh=False)
     gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
                               direction='y', show_data=True)

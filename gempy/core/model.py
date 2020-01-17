@@ -739,6 +739,7 @@ class DataMutation(object):
         self.interpolator.set_theano_shared_kriging()
         if attribute == 'drift equations':
             self.interpolator.set_initial_results()
+            self.update_structure()
 
     # endregion
 
