@@ -109,6 +109,9 @@ class DataMutation(object):
         self.rescaling.rescale_data()
         self.interpolator.set_initial_results_matrices()
 
+        if 'gravity' in self.interpolator.theano_graph.output or 'magnetics' in self.interpolator.theano_graph.output:
+            self.interpolator.set_theano_shared_l0_l1()
+
         # Check if grid is shared
         if hasattr(self.interpolator.theano_graph.grid_val_T, 'get_value'):
             self.interpolator.theano_graph.grid_val_T.set_value(self.grid.values_r.astype(self.interpolator.dtype))

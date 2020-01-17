@@ -487,9 +487,83 @@ class InterpolatorBlock(Interpolator):
         return th_fn
 
 
+class InterpolatorGravity:
+    def set_theano_shared_tz_kernel(self, tz=None):
+        """Set the theano component tz to each voxel"""
+
+        if tz is None or tz is 'auto':
+            try:
+                tz = self.calculate_tz(self.grid.centered_grid)
+            except AttributeError:
+                raise AttributeError('You need to calculate or pass tz first.')
+
+        self.theano_graph.tz.set_value(tz.astype(self.dtype))
+
+    def calculate_tz(self, centered_grid):
+        from gempy.assets.geophysics import GravityPreprocessing
+        g = GravityPreprocessing(centered_grid)
+
+        return g.set_tz_kernel()
+
+    def set_theano_shared_pos_density(self, pos_density):
+        self.theano_graph.pos_density.set_value(pos_density)
+
+    def set_theano_shared_l0_l1(self):
+        self.theano_graph.lg0.set_value(self.grid.get_grid_args('centered')[0])
+        self.theano_graph.lg1.set_value(self.grid.get_grid_args('centered')[1])
+
+    def set_theano_shared_gravity(self, tz='auto', pos_density=1):
+        self.set_theano_shared_tz_kernel(tz)
+        self.set_theano_shared_pos_density(pos_density)
+        self.set_theano_shared_l0_l1()
+
+
+class InterpolatorMagnetics:
+    def set_theano_shared_Vs_kernel(self, V=None):
+
+        if V is None or V is 'auto':
+            try:
+                V = self.calculate_V(self.grid.centered_grid)
+            except AttributeError:
+                raise AttributeError('You need to calculate or pass V first.')
+
+        self.theano_graph.V.set_value(V.astype(self.dtype))
+
+    def calculate_V(self, centered_grid):
+        from gempy.assets.geophysics import MagneticsPreprocessing
+        Vmodel = MagneticsPreprocessing(centered_grid).set_Vs_kernel()
+
+        return Vmodel
+
+    def set_theano_shared_pos_magnetics(self, pos_magnetics):
+        self.theano_graph.pos_magnetics.set_value(pos_magnetics)
+
+    def set_theano_shared_magnetic_cts(self, incl, decl, B_ext=52819.8506939139e-9):
+        """
+        Args:
+            B_ext : External magnetic field in [T], in magnetic surveys this is the geomagnetic field - varies temporaly
+            incl  : Dip of the geomagnetic field in degrees- varies spatially
+            decl  : Angle between magnetic and true North in degrees - varies spatially
+        """
+
+        self.theano_graph.incl.set_value(incl)
+        self.theano_graph.decl.set_value(decl)
+        self.theano_graph.B_ext.set_value(B_ext)
+
+    def set_theano_shared_l0_l1(self):
+        self.theano_graph.lg0.set_value(self.grid.get_grid_args('centered')[0])
+        self.theano_graph.lg1.set_value(self.grid.get_grid_args('centered')[1])
+
+    def set_theano_shared_magnetics(self, V='auto', pos_magnetics=1,
+                                    incl=None, decl=None, B_ext=52819.8506939139e-9):
+        self.set_theano_shared_Vs_kernel(V)
+        self.set_theano_shared_pos_magnetics(pos_magnetics)
+        self.set_theano_shared_magnetic_cts(incl, decl, B_ext)
+        self.set_theano_shared_l0_l1()
+
 @setdoc_pro(ds.ctrl)
 @setdoc([Interpolator.__doc__])
-class InterpolatorModel(Interpolator):
+class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics):
     """
     Child class of :class:`Interpolator` which set the shared variables and compiles the theano
     graph to compute the geological model, i.e. lithologies.
@@ -957,172 +1031,128 @@ class InterpolatorModel(Interpolator):
 
         return th_fn
 
-    def compile_th_fn_geo_DEP(self, inplace=False, debug=True, grid: Union[str, np.ndarray] = None):
-        """
-        Compile and create the theano function which can be evaluated to compute the geological models
-
-        Args:
-
-            inplace (bool): If true add the attribute theano.function to the object inplace
-            debug (bool): If true print some of the theano flags
-            grid: If None, grid will be passed as variable. If shared or np.ndarray the grid will be treated as
-             constant (if shared the grid will be taken of grid)
-
-        Returns:
-            theano.function: function that computes the whole interpolation
-        """
-
-        self.set_all_shared_parameters(reset_ctrl=False)
-        # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
-        input_data_T = self.theano_graph.input_parameters_loop
-        print('Compiling theano function...')
-        if grid == 'shared' or grid is not None:
-            self.set_theano_shared_grid(grid)
-
-        th_fn = theano.function(input_data_T,
-                                self.theano_graph.compute_series(),
-                                updates=[(self.theano_graph.block_matrix, self.theano_graph.new_block),
-                                         (self.theano_graph.weights_vector, self.theano_graph.new_weights),
-                                         (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
-                                         (self.theano_graph.mask_matrix, self.theano_graph.new_mask)],
-                                on_unused_input='ignore',
-                                allow_input_downcast=False,
-                                profile=False)
-
-        if inplace is True:
-            self.theano_function = th_fn
-
-        if debug is True:
-            print('Level of Optimization: ', theano.config.optimizer)
-            print('Device: ', theano.config.device)
-            print('Precision: ', theano.config.floatX)
-            print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
-        print('Compilation Done!')
-
-        return th_fn
-
-
-@setdoc([InterpolatorModel.__doc__], indent=False)
-class InterpolatorGravity(InterpolatorModel):
-    # TODO: gravity_interpolator methods should be inherited by interpolator
-
-    """
-    Child class of :class:`InterpolatorModel` which set the specific shared variables for the gravity computation and
-    compiles the theano graph to compute the geological model, i.e. lithologies and the forward gravity.
-
-    InterpolatorModel Doc
-
-    """
-
-    def set_theano_shared_tz_kernel(self, tz=None):
-        """Set the theano component tz to each voxel"""
-
-        if tz is None or tz is 'auto':
-            try:
-                tz = self.calculate_tz()
-            except AttributeError:
-                raise AttributeError('You need to calculate or pass tz first.')
-        self.theano_graph.tz.set_value(tz.astype(self.dtype))
-
-    def compile_th_fn_grav(self, density=None, pos_density=None, inplace=False,
-                           debug=False):
-        """
-        Compile and create the theano function which can be evaluated to compute the forward gravity response for
-        a given kernel.
-
-        Args:
-            density (Optional[np.array]): array of the same size as the grid.values with the correspondant value of
-             density per voxel.
-            pos_density (Optional[int]): if density is not passed, pos_density will define which values (i.e. column
-             after id in the :class:`Surface` df is the density)
-            inplace (bool): If true add the attribute theano.function to the object inplace
-            debug (bool): If true print some of the theano flags
-
-        Returns:
-            theano.function: function that computes the whole interpolation
-        """
-        assert density is not None or pos_density is not None, 'If you do not pass the density block you need to pass' \
-                                                               'the position of surface values where density is' \
-                                                               ' assigned'
-
-        from theano.compile.nanguardmode import NanGuardMode
-
-        self.set_all_shared_parameters(reset_ctrl=False)
-        # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
-        input_data_T = self.theano_graph.input_parameters_grav
-        print('Compiling theano function...')
-        # if density is None:
-        #     assert pos_density is not None, 'If a density block is not passed, you need to specify which interpolated' \
-        #                                     'value is density. See :class:`Surface`'
-        #     density = self.theano_graph.compute_series()[0][pos_density, :- 2 * self.theano_graph.len_points]
-        #
-        # else:
-        #     density = theano.shared(density)
-
-        th_fn = theano.function(input_data_T,
-                                self.theano_graph.compute_forward_gravity(density, pos_density),
-                                updates=[(self.theano_graph.block_matrix, self.theano_graph.new_block),
-                                         (self.theano_graph.weights_vector, self.theano_graph.new_weights),
-                                         (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
-                                         (self.theano_graph.mask_matrix, self.theano_graph.new_mask)],
-                                on_unused_input='ignore',
-                                allow_input_downcast=True,
-                                profile=False)
-
-        if inplace is True:
-            self.theano_function = th_fn
-
-        if debug is True:
-            print('Level of Optimization: ', theano.config.optimizer)
-            print('Device: ', theano.config.device)
-            print('Precision: ', self.dtype)
-            print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
-        print('Compilation Done!')
-
-        return th_fn
-
-    def calculate_tz(self):
-        from gempy.assets.geophysics import GeophysicsPreprocessing
-        g = GeophysicsPreprocessing(self.grid.centered_grid)
-
-        return g.set_tz_kernel()
-
-    def get_python_input_grav(self, append_control=True, fault_drift=None):
-        """
-        Get values from the data objects used during the interpolation:
-             - dip positions XYZ
-             - dip angles
-             - azimuth
-             - polarity
-             - surface_points coordinates XYZ
-
-        Args:
-            append_control (bool): If true append the ctrl vectors to the input list
-            fault_drift (Optional[np.array]): matrix with per computed faults to drift the model
-
-        Returns:
-            list: list of arrays with all the input parameters to the theano function
-        """
-        # orientations, this ones I tile them inside theano. PYTHON VAR
-        dips_position = self.orientations.df[['X_r', 'Y_r', 'Z_r']].values
-        dip_angles = self.orientations.df["dip"].values
-        azimuth = self.orientations.df["azimuth"].values
-        polarity = self.orientations.df["polarity"].values
-        surface_points_coord = self.surface_points.df[['X_r', 'Y_r', 'Z_r']].values
-        grid = self.grid.values_r
-        if fault_drift is None:
-            fault_drift = np.zeros((0, grid.shape[0] + 2 * self.len_series_i.sum()))
-
-        values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
-
-        # Set all in a list casting them in the chosen dtype
-        idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
-                                                  fault_drift, grid, values_properties)]
-        if append_control is True:
-            idl.append(self.compute_weights_ctrl)
-            idl.append(self.compute_scalar_ctrl)
-            idl.append(self.compute_block_ctrl)
-
-        idl.append(self.grid.get_grid_args('centered')[0])
-        idl.append(self.grid.get_grid_args('centered')[1])
-        return idl
+#
+# @setdoc([InterpolatorModel.__doc__], indent=False)
+# class InterpolatorGravity(InterpolatorModel):
+#     # TODO: gravity_interpolator methods should be inherited by interpolator
+#
+#     """
+#     Child class of :class:`InterpolatorModel` which set the specific shared variables for the gravity computation and
+#     compiles the theano graph to compute the geological model, i.e. lithologies and the forward gravity.
+#
+#     InterpolatorModel Doc
+#
+#     """
+#
+#     def set_theano_shared_tz_kernel(self, tz=None):
+#         """Set the theano component tz to each voxel"""
+#
+#         if tz is None or tz is 'auto':
+#             try:
+#                 tz = self.calculate_tz()
+#             except AttributeError:
+#                 raise AttributeError('You need to calculate or pass tz first.')
+#         self.theano_graph.tz.set_value(tz.astype(self.dtype))
+#
+#     def compile_th_fn_grav(self, density=None, pos_density=None, inplace=False,
+#                            debug=False):
+#         """
+#         Compile and create the theano function which can be evaluated to compute the forward gravity response for
+#         a given kernel.
+#
+#         Args:
+#             density (Optional[np.array]): array of the same size as the grid.values with the correspondant value of
+#              density per voxel.
+#             pos_density (Optional[int]): if density is not passed, pos_density will define which values (i.e. column
+#              after id in the :class:`Surface` df is the density)
+#             inplace (bool): If true add the attribute theano.function to the object inplace
+#             debug (bool): If true print some of the theano flags
+#
+#         Returns:
+#             theano.function: function that computes the whole interpolation
+#         """
+#         assert density is not None or pos_density is not None, 'If you do not pass the density block you need to pass' \
+#                                                                'the position of surface values where density is' \
+#                                                                ' assigned'
+#
+#         from theano.compile.nanguardmode import NanGuardMode
+#
+#         self.set_all_shared_parameters(reset_ctrl=False)
+#         # This are the shared parameters and the compilation of the function. This will be hidden as well at some point
+#         input_data_T = self.theano_graph.input_parameters_grav
+#         print('Compiling theano function...')
+#         # if density is None:
+#         #     assert pos_density is not None, 'If a density block is not passed, you need to specify which interpolated' \
+#         #                                     'value is density. See :class:`Surface`'
+#         #     density = self.theano_graph.compute_series()[0][pos_density, :- 2 * self.theano_graph.len_points]
+#         #
+#         # else:
+#         #     density = theano.shared(density)
+#
+#         th_fn = theano.function(input_data_T,
+#                                 self.theano_graph.compute_forward_gravity(density, pos_density),
+#                                 updates=[(self.theano_graph.block_matrix, self.theano_graph.new_block),
+#                                          (self.theano_graph.weights_vector, self.theano_graph.new_weights),
+#                                          (self.theano_graph.scalar_fields_matrix, self.theano_graph.new_scalar),
+#                                          (self.theano_graph.mask_matrix, self.theano_graph.new_mask)],
+#                                 on_unused_input='ignore',
+#                                 allow_input_downcast=True,
+#                                 profile=False)
+#
+#         if inplace is True:
+#             self.theano_function = th_fn
+#
+#         if debug is True:
+#             print('Level of Optimization: ', theano.config.optimizer)
+#             print('Device: ', theano.config.device)
+#             print('Precision: ', self.dtype)
+#             print('Number of faults: ', self.additional_data.structure_data.df.loc['values', 'number faults'])
+#         print('Compilation Done!')
+#
+#         return th_fn
+#
+#     def calculate_tz(self):
+#         from gempy.assets.geophysics import GravityPreprocessing
+#         g = GravityPreprocessing(self.grid.centered_grid)
+#
+#         return g.set_tz_kernel()
+#
+#     def get_python_input_grav(self, append_control=True, fault_drift=None):
+#         """
+#         Get values from the data objects used during the interpolation:
+#              - dip positions XYZ
+#              - dip angles
+#              - azimuth
+#              - polarity
+#              - surface_points coordinates XYZ
+#
+#         Args:
+#             append_control (bool): If true append the ctrl vectors to the input list
+#             fault_drift (Optional[np.array]): matrix with per computed faults to drift the model
+#
+#         Returns:
+#             list: list of arrays with all the input parameters to the theano function
+#         """
+#         # orientations, this ones I tile them inside theano. PYTHON VAR
+#         dips_position = self.orientations.df[['X_r', 'Y_r', 'Z_r']].values
+#         dip_angles = self.orientations.df["dip"].values
+#         azimuth = self.orientations.df["azimuth"].values
+#         polarity = self.orientations.df["polarity"].values
+#         surface_points_coord = self.surface_points.df[['X_r', 'Y_r', 'Z_r']].values
+#         grid = self.grid.values_r
+#         if fault_drift is None:
+#             fault_drift = np.zeros((0, grid.shape[0] + 2 * self.len_series_i.sum()))
+#
+#         values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
+#
+#         # Set all in a list casting them in the chosen dtype
+#         idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity, surface_points_coord,
+#                                                   fault_drift, grid, values_properties)]
+#         if append_control is True:
+#             idl.append(self.compute_weights_ctrl)
+#             idl.append(self.compute_scalar_ctrl)
+#             idl.append(self.compute_block_ctrl)
+#
+#         idl.append(self.grid.get_grid_args('centered')[0])
+#         idl.append(self.grid.get_grid_args('centered')[1])
+#         return idl

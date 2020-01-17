@@ -15,7 +15,8 @@ import pandas as pn
 import matplotlib.pyplot as plt
 import pytest
 
-save = True
+save = False
+
 
 @pytest.fixture(scope="module")
 def geo_model():

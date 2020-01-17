@@ -139,6 +139,8 @@ class TheanoGraphPro(object):
         # -------
         if output is None:
             output = ['geology']
+        self.output = output
+
 
         if verbose is None:
             self.verbose = [None]
@@ -252,7 +254,7 @@ class TheanoGraphPro(object):
 
 
         # interface_loc = self.fault_matrix.shape[1] - 2 * self.len_points
-        interface_loc = 55#self.grid_val_T.shape[0]
+        interface_loc = 0#self.grid_val_T.shape[0]
         self.fault_drift_at_surface_points_rest = self.fault_matrix[
                                                   :, interface_loc: interface_loc + self.len_points]
         self.fault_drift_at_surface_points_ref = self.fault_matrix[

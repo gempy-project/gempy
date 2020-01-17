@@ -152,6 +152,9 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         kwargs:
             -  pos_density (Optional[int]): Only necessary when type='grav'. Location on the Surfaces().df
              where density is located (starting on id being 0).
+            - Vs
+            - pos_magnetics
+            -
 
     Returns:
 
@@ -188,29 +191,31 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
     if 'gravity' in output:
         pos_density = kwargs.get('pos_density', 1)
         tz = kwargs.get('tz', 'auto')
+        geo_model.interpolator.set_theano_shared_gravity(tz, pos_density)
 
-        if tz is 'auto' and geo_model.grid.centered_grid is not None:
-            print('Calculating the tz components for the centered grid...')
-            #tz = geo_model.interpolator.calculate_tz()
-            from gempy.assets.geophysics import GeophysicsPreprocessing
-            g = GeophysicsPreprocessing(geo_model.grid.centered_grid)
-            tz = g.set_tz_kernel()
-            print('Done')
-
-        # Set the shared parameters for this piece of tree
-        # TODO: gravity_interpolator methods should be inherited by interpolator
-       # geo_model.interpolator.set_theano_shared_tz_kernel(tz)
-        geo_model.interpolator.theano_graph.tz.set_value(tz.astype(geo_model.interpolator.dtype))
-        geo_model.interpolator.theano_graph.pos_density.set_value(pos_density)
-        geo_model.interpolator.theano_graph.lg0.set_value(geo_model.grid.get_grid_args('centered')[0])
-        geo_model.interpolator.theano_graph.lg1.set_value(geo_model.grid.get_grid_args('centered')[1])
+        # if tz is 'auto' and geo_model.grid.centered_grid is not None:
+        #     print('Calculating the tz components for the centered grid...')
+        #     #tz = geo_model.interpolator.calculate_tz()
+        #     from gempy.assets.geophysics import GravityPreprocessing
+        #     g = GravityPreprocessing(geo_model.grid.centered_grid)
+        #     tz = g.set_tz_kernel()
+        #     print('Done')
+        #
+        # # Set the shared parameters for this piece of tree
+        # # TODO: gravity_interpolator methods should be inherited by interpolator
+        #
+        # geo_model.interpolator.theano_graph.tz.set_value(tz.astype(geo_model.interpolator.dtype))
+        # geo_model.interpolator.theano_graph.pos_density.set_value(pos_density)
+        # geo_model.interpolator.theano_graph.lg0.set_value(geo_model.grid.get_grid_args('centered')[0])
+        # geo_model.interpolator.theano_graph.lg1.set_value(geo_model.grid.get_grid_args('centered')[1])
 
     if 'magnetics' in output:
         pos_magnetics = kwargs.get('pos_magnetics', 1)
-
-        geo_model.interpolator.theano_graph.lg0.set_value(geo_model.grid.get_grid_args('centered')[0])
-        geo_model.interpolator.theano_graph.lg1.set_value(geo_model.grid.get_grid_args('centered')[1])
-        geo_model.interpolator.theano_graph.pos_magnetics.set_value(pos_magnetics)
+        Vs = kwargs.get('Vs', 'auto')
+        incl = kwargs.get('incl')
+        decl = kwargs.get('decl')
+        B_ext = kwargs.get('B_ext', 52819.8506939139e-9)
+        geo_model.interpolator.set_theano_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
 
     if 'topology' in output:
 
