@@ -233,7 +233,6 @@ def _get_edges(
     Returns:
         Array: Topology edges.
     """
-    print(l.shape, r.shape)
     shift = np.stack([l.ravel(),  r.ravel()])
     i1, i2 = np.nonzero(np.diff(shift, axis=0))
     if len(i2) == 0:  # in case not edges are found (symmetric model along axis)
