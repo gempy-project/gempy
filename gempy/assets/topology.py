@@ -22,7 +22,7 @@ from itertools import combinations
 from logging import debug
 import numpy as np
 from nptyping import Array
-from typing import Iterable, List, Set, Tuple, Dict, Union
+from typing import Iterable, List, Set, Tuple, Dict, Union, Optional
 import matplotlib.pyplot as plt
 
 
@@ -203,7 +203,7 @@ def get_lot_lith_to_node_id(
 def _get_edges(
         l:Array[int, ..., ..., ...], 
         r:Array[int, ..., ..., ...]
-    ) -> Array[int, ..., 2]:
+    ) -> Optional[Array[int, ..., 2]]:
     """Get edges from given shifted arrays.
 
     Args:
@@ -213,9 +213,13 @@ def _get_edges(
     Returns:
         Array: Topology edges.
     """
+    print(l.shape, r.shape)
     shift = np.stack([l.ravel(),  r.ravel()])
     i1, i2 = np.nonzero(np.diff(shift, axis=0))
-    return np.unique(shift[:, i2], axis=1, return_counts=True)
+    if len(i2) == 0:  # in case not edges are found (symmetric model along axis)
+        return np.array([[],[]]), np.array([])
+    else:
+        return np.unique(shift[:, i2], axis=1, return_counts=True)
 
 
 def clean_unconformity_topology(
