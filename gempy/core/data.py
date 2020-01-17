@@ -646,13 +646,16 @@ class Colors:
         self.surfaces = surfaces
 
     def generate_colordict(self, out = False):
+        import seaborn as sns
         """generate colordict that assigns black to faults and random colors to surfaces"""
-        gp_defcols = ['#015482','#9f0052','#ffbe00','#728f02','#443988','#ff3f20','#325916','#5DA629']
-        test = len(gp_defcols) >= len(self.surfaces.df)
+        gp_defcols = ['#015482','#9f0052','#ffbe00','#728f02','#443988','#ff3f20','#5DA629']
 
-        if test is False:
-            from matplotlib._color_data import XKCD_COLORS as morecolors
-            gp_defcols += list(morecolors.values())
+        # This can be the most horrible code of the whole package
+        for i in [0.6,1,0.8,0.5, 0.9]:
+            s = sns.color_palette(desat=i).as_hex()
+            gp_defcols += s
+            if len(gp_defcols) >= len(self.surfaces.df):
+                break
 
         colordict = dict(zip(list(self.surfaces.df['surface']), gp_defcols[:len(self.surfaces.df)]))
         self.colordict_default = colordict

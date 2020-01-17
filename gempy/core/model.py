@@ -1,5 +1,7 @@
 import os
 import sys
+from abc import ABC
+
 import numpy as np
 import pandas as pn
 from typing import Union
@@ -1015,8 +1017,8 @@ class DataMutation(object):
 
 
 @setdoc([MetaData.__doc__, DataMutation.__doc__], indent=False)
-class Model(DataMutation):
-    """Container class of all objects that constitute a GemPy model.
+class Model(DataMutation, ABC):
+    """ Container class of all objects that constitute a GemPy model.
 
     In addition the class provides the methods that act in more than one of this class. Model is a child class of
     :class:`DataMutation` and :class:`MetaData`.
