@@ -148,7 +148,6 @@ class Solution(object):
 
         self.scalar_field_at_surface_points = values[5]
 
-
         self.mask_matrix = values[6][:, regular_grid_length_l0: regular_grid_length_l1]
         self.mask_at_surface_points = values[6][:, x_to_intep_length:]
 

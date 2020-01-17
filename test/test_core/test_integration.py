@@ -94,7 +94,7 @@ def test_kriging_mutation(interpolator_islith_isfault, map_sequential_pile):
 
     geo_model.modify_kriging_parameters('range', 1)
 
-    geo_model.modify_kriging_parameters('drift equations', [0, 9])
+    geo_model.modify_kriging_parameters('drift equations', [0, 3])
     print(geo_model.solutions.lith_block, geo_model.additional_data)
 
     gp.compute_model(geo_model, compute_mesh=False)

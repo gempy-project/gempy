@@ -989,6 +989,8 @@ class DataMutation(object):
                 sfai_series = self.solutions.scalar_field_at_surface_points[e]
                 sfai_order_aux = np.argsort(sfai_series[np.nonzero(sfai_series)])
                 sfai_order = (sfai_order_aux - sfai_order_aux.shape[0]) * -1
+                if len(sfai_order) == 0:
+                    sfai_order = np.array([1])
                 # select surfaces which exist in surface_points
                 group = self.surfaces.df[sel].groupby('series').get_group(name_series)
                 idx = group.index

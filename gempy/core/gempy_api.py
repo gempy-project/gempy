@@ -139,6 +139,7 @@ def set_interpolation_data(*args, **kwargs):
 @setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
 def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool = True,
                      theano_optimizer=None, verbose: list = None, grid=None, type=None,
+                     update_structure=True, update_kriging=False,
                      **kwargs):
     """
     Method to create a graph and compile the theano code to compute the interpolation.
@@ -184,7 +185,7 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
 
     # TODO add kwargs
     geo_model.rescaling.rescale_data()
-    update_additional_data(geo_model)
+    update_additional_data(geo_model, update_structure=update_structure, update_kriging=update_kriging)
     geo_model.surface_points.sort_table()
     geo_model.orientations.sort_table()
 

@@ -1892,21 +1892,29 @@ class TheanoGraphPro(object):
                             T.gt(Z_x, T.min(scalar_field_at_surface_points)), # It is True the values over the last surface
                             ~ self.is_fault[n_series] * T.ones_like(Z_x, dtype='bool')) # else: all False if is Fault else all ones
 
-        # Number of series since last erode: This is necessary in case there are multiple consecutives onlaps
-        c= theano.printing.Print('is_erosion')(self.is_erosion)
-        b = theano.printing.Print('b')(c[:n_series + 1])
-        a = T.nonzero(T.concatenate(([1], b)))
+        #c= theano.printing.Print('is_erosion')(self.is_erosion)
+        # b = theano.printing.Print('b')(c[:n_series + 1])
 
-        a = theano.printing.Print('a')(a[0])
-        last_erode = T.argmax(a)
-        nsle = T.max(T.stack([n_series - last_erode, 1]))
+
+        #a = T.nonzero(T.concatenate(([1], b)))
+
+        #a = theano.printing.Print('a')(a[0])
+
+
         #
         # nsle = theano.printing.Print('nsle')(nsle)
         # self.aa =  theano.shared(np.array([1,1,1], dtype='int32'))
         # nsle = self.aa[n_series]
-        nsle = theano.printing.Print('nsle')(nsle)
+        # nsle = theano.printing.Print('nsle')(nsle)
 
        # nsle = 1
+
+        # Number of series since last erode: This is necessary in case there are multiple consecutives onlaps
+
+        is_erosion_ = self.is_erosion[:n_series + 1]
+        args_is_erosion =T.nonzero(T.concatenate(([1], is_erosion_)))
+        last_erode = T.argmax(args_is_erosion[0])
+        nsle = T.max(T.stack([n_series - last_erode, 1]))
         mask_o = tif.ifelse(is_onlap,
                             T.gt(Z_x, T.max(scalar_field_at_surface_points)),
                             mask_matrix[n_series - 1, shift:x_to_interpolate_shape + shift])
