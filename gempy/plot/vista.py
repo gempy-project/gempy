@@ -319,7 +319,6 @@ class Vista:
         self.p.add_mesh(mesh, **kwargs)
 
     def _callback_surface_points(self, pos, index):
-        print(pos, index)
         x, y, z = pos
         self.model.modify_surface_points(
             index, X=x, Y=y, Z=z
@@ -437,7 +436,6 @@ class Vista:
             pos_scaled[1] += np.min(self.extent[2:4])
             # if np.any(np.array(self.extent[4:]) < 0):
             pos_scaled[2] += np.min(self.extent[4:])
-            print(pos_scaled)
 
             scaled_centroids[n] = pos_scaled
 
