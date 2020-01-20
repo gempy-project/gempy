@@ -551,23 +551,6 @@ class Plot2D:
                            extent=extent_val, zorder=zorder - (e + len(level))
                            )
 
-            # if len(contour_idx) == 0:
-            #     pass
-            # else:
-            #     _slice = self._slice(direction, cell_number)[:3]
-            #
-            #     for fault in contour_idx:
-            #         f_id = fault-1# - 1
-            #         block = self.model.solutions.scalar_field_matrix[f_id]
-            #         level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
-            #             self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
-            #         level.sort()
-            #         block = block.reshape(self.model.grid.regular_grid.resolution)[_slice].T
-            #
-            #         ax.contour(block, 0, extent=extent_val,
-            #                    levels=level,
-            #                    colors=self.cmap.colors[f_id], linestyles='solid')
-
     def plot_section_traces(self, ax, section_names=None,  show_data=True, **kwargs):
 
         if section_names is None:

@@ -651,8 +651,8 @@ class Colors:
         gp_defcols = ['#015482','#9f0052','#ffbe00','#728f02','#443988','#ff3f20','#5DA629']
 
         # This can be the most horrible code of the whole package
-        for i in [0.6,1,0.8,0.5, 0.9]:
-            s = sns.color_palette(desat=i).as_hex()
+        for i in ['muted', 'pastel', 'deep', 'bright', 'dark', 'colorblind']:
+            s = sns.color_palette(i).as_hex()
             gp_defcols += s
             if len(gp_defcols) >= len(self.surfaces.df):
                 break

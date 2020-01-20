@@ -784,7 +784,7 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
 
     def set_theano_shared_is_fault(self):
         """Set theano shared variable which controls if a series is fault or not"""
-        self.theano_graph.is_fault.set_value(self.faults.df['isFault'].values)
+        self.theano_graph.is_fault.set_value(self.faults.df['isFault'].values[self.non_zero])
 
     def set_theano_shared_is_finite(self):
         """Set theano shared variable which controls if a fault is finite or not"""
