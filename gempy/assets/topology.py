@@ -600,3 +600,48 @@ def plot_adjacency_matrix(
         line[0].set_clip_on(False)
     # ///////////////////////////////////////////////////////
     return
+
+
+def check_adjacency(
+        edges:set, 
+        n1:Union[int, str], 
+        n2:Union[int, str]
+    ) -> bool:
+    """Check if given nodes n1 and n2 are adjacent in given topology
+    edge set.
+    
+    Args:
+        edges (set): Topology edges.
+        n1 (Union[int, str]): Node 1 label.
+        n2 (Union[int, str]): Node 2 label
+    
+    Returns:
+        bool: True if adjacent, otherwise False.
+    """
+    if (n1, n2) in edges or (n2, n1) in edges:
+        return True
+    else:
+        return False
+
+
+def get_adjacencies(
+        edges:set, 
+        node:Union[int, str]
+    ) -> set:
+    """Get node labels of all adjacent geobodies of geobody with given node
+    in given set of edges.
+    
+    Args:
+        edges (set): Topology edges.
+        node (Union[int, str]): Node label.
+    
+    Returns:
+        set: All adjacent geobody node labels.
+    """
+    adjacencies = set()
+    for n1, n2 in edges:
+        if node == n1:
+            adjacencies.add(n2)
+        elif node == n2:
+            adjacencies.add(n1)
+    return adjacencies
