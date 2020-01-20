@@ -244,8 +244,8 @@ def get_lot_node_to_fault_block(
     n_lith = len(get_lith_ids(geo_model))
     lot = {}
     for node, pos in centroids.items():
-        # ? -1 because it starts at 0 or -n_faults?
-        lot[node] = (node - 1 - (node // n_lith)) // n_lith
+        # ? - n_unconf????
+        lot[node] = (node - 0 - (node // n_lith)) // n_lith
     return lot
 
 def get_fault_ids(geo_model) -> List[int]:
@@ -265,7 +265,7 @@ def get_fault_ids(geo_model) -> List[int]:
     return fault_ids
 
 
-def get_lith_ids(geo_model) -> List[int]:
+def get_lith_ids(geo_model, basement:bool=True) -> List[int]:
     """Get lithology id's of all lithologies (except basement) in given 
     geomodel.
     
@@ -278,8 +278,9 @@ def get_lith_ids(geo_model) -> List[int]:
     fmt_series_names = geo_model.faults.df[~geo_model.faults.df.isFault].index
     lith_ids = []
     for fsn in fmt_series_names:
-        if fsn == "Basement":
-            continue
+        if not basement:
+            if fsn == "Basement":
+                continue
         lids = geo_model.surfaces.df[geo_model.surfaces.df.series == fsn].id.values
         for lid in lids:
             lith_ids.append(lid)
@@ -460,108 +461,142 @@ def plot_adj_matrix(adj_matrix:Array[bool, ..., ...], adj_labels:List[str]):
     plt.show()
 
 
-def _get_fault_labels(n_faults:int) -> Array[int, ..., 2]:
-    """Get unique fault label id pairs for each fault block. For two faults
-    this looks like: [[0 1]
-                      [2 3]]
-    
-    Args:
-        n_faults (int): Number of faults.
-    
-    Returns:
-        Array[int, ..., 2]: Unique consecutive fault label id pairs.
-    """
-    flabels = np.stack(
-        (
-            np.arange(n_faults), 
-            np.arange(1, n_faults + 1)
-        )
-    ).T + np.arange(n_faults)[None, :].T
-    return flabels
-
-
-def _get_fault_label_comb_bin(fault_labels:Array[int, ..., 2]) -> List[str]:
-    """Get unique binary fault label combinations. E.g. for two faults the 
-    output looks like: ['0101', '1001', '0110', '1010'].
-    
-    Args:
-        fault_labels (Array[int, ..., 2]): Unique base-10 fault label array.
-    
-    Returns:
-        List[str]: List of binary fault label combinations.
-    """
-    n_faults = fault_labels.shape[0]
-    fault_labels_bin = []
-    for comb in combinations(fault_labels.flatten(), n_faults):
-        if sum(comb) in np.sum(fault_labels, axis=1):
-            continue  # skip combinations within the same fault block
-        fault_labels_bin.append(
-            np.binary_repr(sum(2**np.array(comb))).zfill(n_faults * 2)
-        )
-
-    return fault_labels_bin
-
-
-def _get_lith_labels_bin(n_layers:int) -> List[str]:
-    """Get unique binary lith labels list. For five layers this looks like:
-    ['00001', '00010', '00100', '01000', '10000'].
-
-    Args:
-        n_layers (int): Number of layers.
-    
-    Returns:
-        List[str]: Unique binary lith labels.
-    """
-    return [np.binary_repr(2**i).zfill(n_layers) for i in range(n_layers)]
-
-
-def _get_adj_matrix_labels(
-        lith_labels_bin:List[str], 
-        fault_labels_bin:List[str]
-    ) -> List[str]:
-    """Get all possible valid combinations between lithology id's and fault
-    blocks in binary.
-    
-    Args:
-        lith_labels_bin (List[str]): Unique binary lithology labels.
-        fault_labels_bin (List[str]): Unique binary fault combination labels. 
-    
-    Returns:
-        List[str]: ['000010101', '000011001', '000010110', ...]
-    """
-    return [l+f for l in lith_labels_bin for f in fault_labels_bin]
-
-
-def _get_adj_matrix(
-        edges:Iterable, 
-        adj_matrix_labels:Iterable, 
-        labels:Array[int, ..., ..., ...]
+def get_adjacency_matrix(
+        geo_model, 
+        edges:Set[Tuple[int, int]],
+        centroids,
     ) -> Array[bool, ..., ...]:
-    """Generate adjacency matrix from given list of edges, all possible unique
-    geo- model nodes and actual unique geobody labels.
+    """[summary]
     
     Args:
-        edges (Iterable): [(n, m), ...]
-        adj_matrix_labels (Iterable): ["000010101", ...]
-        labels (Array[int, ..., ..., ...]): Uniquely labeled block matrix.
+        geo_model ([type]): [description]
+        edges (Set[Tuple): [description]
     
     Returns:
-        Array[bool, ..., ...]: Boolean adjacency matrix encoding the geomodel
-            topology.
-    """
+        Array[bool, ..., ...]: [description]
+    """    
+    f_ids = get_fault_ids(geo_model)
+    lith_ids = get_lith_ids(geo_model)
+    n = len([(l, f) for f in f_ids for l in lith_ids])
+
+    M = np.zeros((n,n))
+    lith_lot = get_lot_node_to_lith_id(geo_model, centroids)
+    fault_lot = get_lot_node_to_fault_block(geo_model, centroids)
+    for e1, e2 in edges:
+    #     print("nodes:", e1, e2)
+        l1, l2 = lith_lot.get(e1), lith_lot.get(e2)
+    #     print("lith: ", l1, l2)
+        f1, f2 = fault_lot.get(e1), fault_lot.get(e2)
+    #     print("fault:", f1, f2)  
+        lp1 = np.argwhere(lith_ids==l1)[0, 0]
+        lp2 = np.argwhere(lith_ids==l2)[0, 0]
+    #     print("lpos :", lp1, lp2)
+        p1 = lp1 + len(lith_ids) * f1
+        p2 = lp2 + len(lith_ids) * f2
+    #     print("pos  :", p1, p2)
+        M[p1, p2] = 1
+        M[p2, p1] = 1
+    
+    M = np.flip(np.flip(M, axis=1), axis=0)
+    return M.astype(bool)
+
+
+def _get_adj_matrix_labels(geo_model):
+    f_ids = get_fault_ids(geo_model)
+    lith_ids = get_lith_ids(geo_model)
+    adj_matrix_labels = [(l, f) for f in f_ids for l in lith_ids]
+    adj_matrix_lith_labels = [l for f in f_ids for l in lith_ids]
+    adj_matrix_fault_labels = [f for f in f_ids for l in lith_ids]
+    return adj_matrix_labels, adj_matrix_lith_labels, adj_matrix_fault_labels
+
+
+def plot_adjacency_matrix(
+        geo_model, 
+        adj_matrix:Array[bool, ..., ...]
+    ):
+
+    f_ids = get_fault_ids(geo_model)
+    n_faults = len(f_ids) // 2
+    lith_ids = get_lith_ids(geo_model)
+    n_liths = len(lith_ids)
+    adj_matrix_labels, adj_matrix_lith_labels, adj_matrix_fault_labels = _get_adj_matrix_labels(geo_model)
+    # ///////////////////////////////////////////////////////
     n = len(adj_matrix_labels)
-    adj_matrix = np.zeros((n, n)).astype(bool)
+    fig, ax = plt.subplots(figsize=(n // 2.5, n // 2.5))
 
-    n_entities = len(adj_matrix_labels[0])
+    ax.imshow(adj_matrix, cmap="Greys", alpha=1)
+    ax.set_xlim(-.5, n_liths * n_faults * 2 - 0.5)
+    ax.set_ylim(-.5, n_liths * n_faults * 2 - 0.5)
 
-    for n1, n2 in edges:
-        i = adj_matrix_labels.index(np.binary_repr(n1).zfill(n_entities))
-        j = adj_matrix_labels.index(np.binary_repr(n2).zfill(n_entities))
-        adj_matrix[i, j] = True
-        adj_matrix[j, i] = True
+    ax.set_title("Topology Adjacency Matrix")
 
-    for bin_label in [np.binary_repr(l).zfill(9) for l in np.unique(labels)]:
-        i = adj_matrix_labels.index(bin_label)
-        adj_matrix[i, i] = True  
+    # ///////////////////////////////////////////////////////
+    # lith tick labels
+    ax.set_xticks(np.arange(n))
+    ax.set_yticks(np.arange(n))
+    ax.set_xticklabels(adj_matrix_lith_labels[::1], rotation=0)
+    ax.set_yticklabels(adj_matrix_lith_labels[::1], rotation=0)
+    
+    # ///////////////////////////////////////////////////////
+    # lith tick labels colors
+    colors = list(geo_model.surfaces.colors.colordict.values())
+    bboxkwargs = dict(
+        edgecolor='none',
+    )
+    for xticklabel, yticklabel, l in zip(ax.xaxis.get_ticklabels(), 
+                                         ax.yaxis.get_ticklabels(), 
+                                         adj_matrix_labels[::1]):
+        color = colors[l[0] - 1]
 
-    return adj_matrix
+        xticklabel.set_bbox(
+            dict(facecolor=color, **bboxkwargs)
+        )
+        xticklabel.set_color("white")
+
+        yticklabel.set_bbox(
+            dict(facecolor=color, **bboxkwargs)
+        )
+        yticklabel.set_color("white")
+
+    # ///////////////////////////////////////////////////////
+    # fault block tick labeling
+    newax = fig.add_axes(ax.get_position())
+    newax.patch.set_visible(False)
+
+    newax.spines['bottom'].set_position(('outward', 29))
+    newax.set_xlim(0, n_faults * 2)
+    newax.set_xticks(np.arange(1, n_faults * 2 + 1) - 0.5)
+    newax.set_xticklabels(["FB " + str(i + 1) for i in range(4)])
+
+    newax.spines['left'].set_position(('outward', 25))
+    newax.set_ylim(0, n_faults * 2)
+    newax.set_yticks(np.arange(1, n_faults * 2 + 1) - 0.5)
+    newax.set_yticklabels(["FB "+str(i + 1) for i in range(n_faults*2)][::1])
+    
+    # ///////////////////////////////////////////////////////
+    # (dotted) lines for fb's
+    dlinekwargs = dict(
+        color="black",
+        linestyle="dashed",
+        alpha=0.75,
+        linewidth=1
+    )
+    linekwargs = dict(
+        color="black", 
+        linewidth=1
+    )
+    for i in range(0, n_faults * 2 + 1):
+        pos = i * n_liths - .5
+
+        if i != 0 and i != n_faults * 2:
+            ax.axvline(pos, **dlinekwargs)
+            ax.axhline(pos, **dlinekwargs)
+
+        # solid spines outside to separate fbs
+        line = ax.plot((-3.3, -.51), (pos, pos), **linekwargs)
+        line[0].set_clip_on(False)
+
+        line = ax.plot((pos, pos), (-3, -.51), **linekwargs)
+        line[0].set_clip_on(False)
+    # ///////////////////////////////////////////////////////
+    return
