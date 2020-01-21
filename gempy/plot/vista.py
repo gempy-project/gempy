@@ -202,7 +202,7 @@ class Vista:
         mesh = pv.PolyData(ver, sim)
         return mesh
 
-    def plot_surface(self, fmt:str, clip:Union[bool, list]=False, **kwargs):
+    def plot_surface(self, fmt:str, clip:Union[bool, Iterable[pv.PolyData]]=False, **kwargs):
         mesh = [self.get_surface(fmt)]
         if self._actor_exists(mesh):
             return
@@ -210,11 +210,13 @@ class Vista:
         if clip:
             mesh = self.clip_horizon_with_faults(mesh[0], clip)
 
+        mesh_kwargs = dict(color=self._color_lot[fmt])
+        mesh_kwargs.update(kwargs)
+        
         for m in mesh:
             actor = self.p.add_mesh(
                 m,
-                color=self._color_lot[fmt],
-                **kwargs
+                **mesh_kwargs
             )
             self._actors.append(m)
         self._surface_actors[fmt] = mesh
@@ -239,30 +241,36 @@ class Vista:
         Returns:
             List[pv.PolyData]: Individual clipped horizon surfaces.
         """
+        if type(faults[0]) == str:
+            faults = [self.get_surface(f) for f in faults]
+
         horizons = []
         if not value:
             value = np.mean(self.model.grid.regular_grid.get_dx_dy_dz()[:2])
 
 
         horizons.append(
-            horizon.clip_surface(faults[0], invert=False, value=value)
+            horizon.clip_surface(faults[0], invert=True, value=-value)
+        )
+
+        horizons.append(
+            horizon.clip_surface(faults[-1], invert=True, value=-value)
         )
 
         if len(faults) == 1:
+            print("Returning after 1")
             return horizons
         
         for f1, f2 in zip(faults[:-1], faults[1:]):
-            horizons.append(
+             horizons.append(
                 horizon.clip_surface(
-                    f1, invert=True, value=-value
+                    f1, invert=False, value=value
                 ).clip_surface(
                     f2, invert=False, value=value
                 )
             )
             
-        horizons.append(
-            horizon.clip_surface(faults[-1], invert=True, value=-value)
-        )
+        
         return horizons
 
     def plot_surfaces_all(self, fmts:Iterable[str]=None, **kwargs):
@@ -329,19 +337,22 @@ class Vista:
 
     def _recompute(self, **kwargs):
         gp.compute_model(self.model, compute_mesh=True, **kwargs)
-        self.topo_edges, self.topo_ctrs = gp.assets.topology.compute_topology(
-            self.model
-        )
+        # self.topo_edges, self.topo_ctrs = tp.topology.compute_topology(
+        #     self.model
+        # )q
 
     def _update_surface_polydata(self):
         surfaces = self.model.surfaces.df
         for surf, (idx, val) in zip(
-            surfaces.surface, 
-            surfaces[['vertices', 'edges']].dropna().iterrows()
-        ):
-            polydata = self._surface_actors[surf][0]
-            polydata.points = val["vertices"]
-            polydata.faces = np.insert(val['edges'], 0, 3, axis=1).ravel()  
+                surfaces.surface, 
+                surfaces[['vertices', 'edges']].dropna().iterrows()
+            ):
+            polydata = self._surface_actors.get(surf, False)
+            if polydata:
+                polydata[0].points = val["vertices"]
+                polydata[0].faces = np.insert(
+                    val['edges'], 0, 3, axis=1
+                ).ravel()  
 
     def plot_surface_points_interactive(self, fmt:str, **kwargs):
         self._live_updating = True
@@ -923,7 +934,6 @@ class _Vista:
         topo_actor = self.p.add_mesh(cloud.delaunay_2d(), scalars=scalars_val, cmap=cm, rgb=rgb, **kwargs)
         self.vista_topo_actors[scalars] = topo_actor
         return topo_actor
-
 
 
 
