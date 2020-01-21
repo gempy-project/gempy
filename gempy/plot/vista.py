@@ -347,10 +347,10 @@ class Vista:
                 surfaces.surface, 
                 surfaces[['vertices', 'edges']].dropna().iterrows()
             ):
-            polydata = self._surface_actors.get(surf, False)
+            polydata = self._surface_actors.get(surf, [False])[0]
             if polydata:
-                polydata[0].points = val["vertices"]
-                polydata[0].faces = np.insert(
+                polydata.points = val["vertices"]
+                polydata.faces = np.insert(
                     val['edges'], 0, 3, axis=1
                 ).ravel()  
 
