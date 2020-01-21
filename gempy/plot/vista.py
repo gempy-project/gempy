@@ -326,11 +326,27 @@ class Vista:
         self._actors.append(mesh)
         self.p.add_mesh(mesh, **kwargs)
 
-    def _callback_surface_points(self, pos, index):
+    def _callback_surface_points(self, pos, widget):
+        i = widget.WIDGET_INDEX
         x, y, z = pos
         self.model.modify_surface_points(
-            index, X=x, Y=y, Z=z
+            i, X=x, Y=y, Z=z
         )
+        if self._live_updating:
+            self._recompute()
+            self._update_surface_polydata()
+
+    def _callback_orientations(self, normal, loc, widget):
+        i = widget.WIDGET_INDEX
+        x, y, z = loc
+        gx, gy, gz = normal
+
+        self.model.modify_orientations(
+            i, 
+            X=x, Y=y, Z=z,
+            G_x=gx, G_y=gy, G_z=gz
+        )
+
         if self._live_updating:
             self._recompute()
             self._update_surface_polydata()
@@ -360,15 +376,21 @@ class Vista:
         if len(i) == 0:
             return
 
-        sphere = self.p.add_sphere_widget(
-            self._callback_surface_points,
-            center=self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values,
-            color=self._color_lot[fmt],
-            indices=i,
-            phi_resolution=6,
-            theta_resolution=6,
-            **kwargs
-        )
+        pts = self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
+
+        for index, pt in zip(i, pts):
+            widget = self.p.add_sphere_widget(
+                self._callback_surface_points,
+                center=pt,
+                radius=np.mean(self.extent) / 20,
+                color=self._color_lot[fmt],
+                indices=i,
+                phi_resolution=6,
+                theta_resolution=6,
+                pass_widget=True,
+                **kwargs
+            )
+            widget.WIDGET_INDEX = index
     
     def plot_surface_points_interactive_all(self, **kwargs):
         self._live_updating = True
@@ -406,21 +428,6 @@ class Vista:
                 continue
             self.plot_orientations_interactive(fmt, **kwargs)
 
-    def _callback_orientations(self, normal, loc, widget):
-        i = widget.WIDGET_INDEX
-        x, y, z = loc
-        gx, gy, gz = normal
-
-        self.model.modify_orientations(
-            i, 
-            X=x, Y=y, Z=z,
-            G_x=gx, G_y=gy, G_z=gz
-        )
-
-        if self._live_updating:
-            self._recompute()
-            self._update_surface_polydata()
-
     def _scale_topology_centroids(
             self, 
             centroids:Dict[int, Array[float, 3]]
@@ -440,14 +447,9 @@ class Vista:
         scaled_centroids = {}
         for n, pos in centroids.items(): 
             pos_scaled = pos * scaling
-
-            # if np.any(np.array(self.extent[:2]) < 0):
             pos_scaled[0] += np.min(self.extent[:2])
-            # if np.any(np.array(self.extent[2:4]) < 0):
             pos_scaled[1] += np.min(self.extent[2:4])
-            # if np.any(np.array(self.extent[4:]) < 0):
             pos_scaled[2] += np.min(self.extent[4:])
-
             scaled_centroids[n] = pos_scaled
 
         return scaled_centroids
