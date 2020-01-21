@@ -85,7 +85,7 @@ class DataMutation(object):
     @setdoc_pro([AdditionalData.update_structure.__doc__, InterpolatorModel.set_theano_shared_structure.__doc__,
                  InterpolatorModel.modify_results_matrices_pro.__doc__,
                  InterpolatorModel.modify_results_weights.__doc__])
-    def update_structure(self, update_theano=None):
+    def update_structure(self, update_theano=None, update_series_is_active=True, update_surface_is_active=True):
         """Update python and theano structure parameters.
 
         [s0]
@@ -98,6 +98,35 @@ class DataMutation(object):
         """
 
         self.additional_data.update_structure()
+
+        if update_series_is_active is True:
+
+            len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
+                          self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
+
+            len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
+                'int32')
+
+            # Remove series without data
+            non_zero_i = len_series_i.nonzero()[0]
+            non_zero_o = len_series_o.nonzero()[0]
+            non_zero = np.intersect1d(non_zero_i, non_zero_o)
+
+            bool_vec = np.zeros_like(self.series.df['isActive'], dtype=bool)
+            bool_vec[non_zero] = True
+            self.series.df['isActive'] = bool_vec
+
+        if update_surface_is_active is True:
+            act_series = self.surfaces.df['series'].map(self.series.df['isActive'])
+            unique_surf_points = np.unique(self.surface_points.df['id'])
+            if len(unique_surf_points) != 0:
+                bool_surf_points = np.zeros(unique_surf_points.max() + 1, dtype=bool)
+                bool_surf_points[unique_surf_points - 1] = True
+
+                # This is necessary to find the intersection between orientations (series) and
+                # surface points
+                self.surfaces.df['isActive'] = (act_series & bool_surf_points) + self.surfaces.df['isBasement']
+
         if update_theano == 'matrices':
             self.interpolator.modify_results_matrices_pro()
         elif update_theano == 'weights':
@@ -849,6 +878,9 @@ class DataMutation(object):
             self.update_from_surfaces(set_categories_from_series=False, set_categories_from_surfaces=True,
                                       map_surface_points=False, map_orientations=False, update_structural_data=False)
 
+        # Update surface is active from series does not work because you can have only a subset of surfaces of a
+        # series active
+        # self.surfaces.df['isActive'] = self.surfaces.df['series'].map(self.series.df['isActive'])
         self.surfaces.set_basement()
 
         # Add categories from series

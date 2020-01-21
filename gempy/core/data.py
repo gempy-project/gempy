@@ -260,6 +260,7 @@ class Grid(object):
         where = np.where(self.sections.names == section_name)[0][0]
         return l0 + self.sections.length[where], l0 + self.sections.length[where+1]
 
+
 class Faults(object):
     """
     Class that encapsulate faulting related content. Mainly, which surfaces/surfaces are faults. The fault network
@@ -432,6 +433,7 @@ class Series(object):
 
         self.df['order_series'] = self.df['order_series'].astype(int)
         self.df['BottomRelation'] = pn.Categorical(['Erosion'], categories=['Erosion', 'Onlap', 'Fault'])
+        self.df['isActive'] = False
 
     def __repr__(self):
         return self.df.to_string()
@@ -776,16 +778,17 @@ class Surfaces(object):
 
     def __init__(self, series: Series, surface_names=None, values_array=None, properties_names=None):
 
-        self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'isFault', 'color', 'vertices', 'edges', 'id']
+        self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'isFault', 'isActive','color',
+                         'vertices', 'edges', 'id']
 
         self._columns_vis_drop = ['vertices', 'edges', 'isBasement', 'isFault']
-        self._n_properties = len(self._columns) -1
+        self._n_properties = len(self._columns) - 1
         self.series = series
         self.colors = Colors(self)
 
         df_ = pn.DataFrame(columns=self._columns)
         self.df = df_.astype({'surface': str, 'series': 'category',
-                              'order_surfaces': int, 'isBasement': bool,
+                              'order_surfaces': int, 'isBasement': bool, 'isFault': bool, 'isActive': bool,
                               'color': bool, 'id': int, 'vertices': object, 'edges': object})
 
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():

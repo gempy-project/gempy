@@ -214,7 +214,7 @@ class Plot2D:
         return ax
 
     def plot_lith(self, ax, section_name=None, cell_number=None, direction='y',
-                  block=None, **kwargs):
+                  block=None, mask=None, **kwargs):
         """
 
         Args:
@@ -236,6 +236,8 @@ class Plot2D:
                 try:
                     image = self.model.solutions.geological_map[0].reshape(
                         self.model.grid.topography.values_3D[:, :, 2].shape)
+                    mask = self.model.solutions.geological_map[4].reshape(
+                        self.model.grid.topography.values_3D[:, :, 2].shape)
                 except AttributeError:
                     raise AttributeError('Geological map not computed. Activate the topography grid.')
             else:
@@ -245,6 +247,7 @@ class Plot2D:
                 l0, l1 = self.model.grid.sections.get_section_args(section_name)
                 shape = self.model.grid.sections.df.loc[section_name, 'resolution']
                 image = self.model.solutions.sections[0][0][l0:l1].reshape(shape[0], shape[1]).T
+                mask = self.model.solutions.sections[0].reshape(shape[0], shape[1].T)
 
         elif cell_number is not None or block is not None:
             _a, _b, _c, _, x, y = self._slice(direction, cell_number)[:-2]
@@ -253,14 +256,23 @@ class Plot2D:
             else:
                 _block = block
 
+            if mask is None:
+                _mask = self.model.solutions.mask_matrix
+            else:
+                _mask = mask
+
             plot_block = _block.reshape(self.model.grid.regular_grid.resolution)
             image = plot_block[_a, _b, _c].T
+            mask = _mask.reshape(-1, *self.model.grid.regular_grid.resolution)[:, _a, _b, _c]
         else:
             raise AttributeError
-
+        # for mask_series in mask:
+        #     image_series = np.ma.array(image, mask = ~mask_series.T)
+        #     ax.imshow(image_series, origin='lower', zorder=-100,
+        #               cmap=self.cmap, norm=self.norm, extent=extent_val)
+        #
         ax.imshow(image, origin='lower', zorder=-100,
                   cmap=self.cmap, norm=self.norm, extent=extent_val)
-
         return ax
 
     def plot_scalar_field(self, ax, section_name=None, cell_number=None, sn=0, direction='y',
@@ -404,7 +416,7 @@ class Plot2D:
             make_legend = None
 
         sns.scatterplot(data=points[select_projected_p], x=x, y=y, hue='surface', ax=ax, legend=make_legend,
-                        palette=self._color_lot)
+                        palette=self._color_lot, zorder=101)
 
         sel_ori = orientations[select_projected_o]
 
@@ -415,7 +427,7 @@ class Plot2D:
         # Eli options
         ax.quiver(sel_ori[x], sel_ori[y], sel_ori[Gx], sel_ori[Gy],
                   pivot="tail", scale_units=min_axis, scale=30, color=sel_ori['surface'].map(self._color_lot),
-                  edgecolor='k', headwidth=8, linewidths=1)
+                  edgecolor='k', headwidth=8, linewidths=1, zorder=102)
 
                 # My old values
                 #  scale=10, edgecolor='k', color=sel_ori['surface'].map(self._color_lot),
@@ -514,6 +526,7 @@ class Plot2D:
                                linestyles='solid', origin='lower',
                                extent=extent_val, zorder=zorder - (e + len(level))
                                )
+                    c_id = c_id2
 
             else:
                 l0, l1 = self.model.grid.sections.get_section_args(section_name)
@@ -529,27 +542,34 @@ class Plot2D:
                     # that an interface does not exit for a given section
                     c_id2 = c_id + len(level)  # color id endpoint
                     ax.contour(block.reshape(shape).T, 0, levels=np.sort(level),
-                               colors=self.cmap.colors[c_id:c_id2],
+                               colors=self.cmap.colors[self.model.surfaces.df['isActive']][c_id:c_id2],
                                  linestyles='solid', origin='lower',
                                  extent=extent_val, zorder=zorder - (e+len(level))
                                )
+                    c_id = c_id2
 
         elif cell_number is not None or block is not None:
             _slice = self._slice(direction, cell_number)[:3]
             shape = self.model.grid.regular_grid.resolution
-            c_id = 0# color id startpoint
+            c_id = 0 # color id startpoint
 
             for e, block in enumerate(self.model.solutions.scalar_field_matrix):
                 level = self.model.solutions.scalar_field_at_surface_points[e][np.where(
                     self.model.solutions.scalar_field_at_surface_points[e] != 0)]
-                c_id = e
+                #c_id = e
                 c_id2 = c_id + len(level)
-                print(c_id, c_id2)
+            #    print(c_id, c_id2)
+
+                color_list = self.model.surfaces.df.groupby('isActive').get_group(True)['color'][c_id:c_id2][::-1]
+            #    print(color_list)
+
                 ax.contour(block.reshape(shape)[_slice].T, 0, levels=np.sort(level),
-                           colors=self.cmap.colors[c_id:c_id2][::-1],
+                           colors = color_list,# self.cmap.colors[self.model.surfaces.df['isActive']][c_id:c_id2][::-1],
                            linestyles='solid', origin='lower',
                            extent=extent_val, zorder=zorder - (e + len(level))
                            )
+                c_id = c_id2
+
 
     def plot_section_traces(self, ax, section_names=None,  show_data=True, **kwargs):
 

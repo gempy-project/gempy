@@ -273,6 +273,7 @@ class TheanoGraphPro(object):
             self.not_l = theano.shared(np.array(50., dtype=dtype), 'Sigmoid Outside')
             self.ellipse_factor_exponent = theano.shared(np.array(2., dtype=dtype), 'Attenuation factor')
 
+        # It is a matrix because of the values: porosity, sus, etc
         self.values_properties_op = T.matrix('Values that the blocks are taking')
 
         self.n_surface = T.arange(1, 5000, dtype='int32')
@@ -409,7 +410,8 @@ class TheanoGraphPro(object):
                 dict(initial=self.sfai_op),
                 dict(initial=self.mask_op2),
                 dict(initial=self.mask_matrix_f),
-                dict(initial=self.fault_matrix)
+                dict(initial=self.fault_matrix),
+                dict(initial=T.cast(0, 'int64'))
 
             ],  # This line may be used for the df network
             sequences=[dict(input=self.len_series_i, taps=[0, 1]),
@@ -1794,7 +1796,7 @@ class TheanoGraphPro(object):
                          is_finite=np.array(False), is_erosion=np.array(True), is_onlap=np.array(False),
                          n_series=0,
                          block_matrix=None, weights_vector=None, scalar_field_matrix=None, sfai=None, mask_matrix=None,
-                         mask_matrix_f=None, fault_matrix=None, grid=None, shift=None
+                         mask_matrix_f=None, fault_matrix=None, nsle=0, grid=None, shift=None
                          ):
         """
         Function that loops each fault, generating a potential field for each on them with the respective block model
@@ -1911,10 +1913,22 @@ class TheanoGraphPro(object):
 
         # Number of series since last erode: This is necessary in case there are multiple consecutives onlaps
 
+        # Erosion version
         is_erosion_ = self.is_erosion[:n_series + 1]
-        args_is_erosion =T.nonzero(T.concatenate(([1], is_erosion_)))
+        args_is_erosion = T.nonzero(T.concatenate(([1], is_erosion_)))
         last_erode = T.argmax(args_is_erosion[0])
-        nsle = T.max(T.stack([n_series - last_erode, 1]))
+
+        # Onlap version
+        is_onlap_or_fault = self.is_onlap[n_series] + self.is_fault[n_series]
+        nsle = (nsle + is_onlap_or_fault) * is_onlap_or_fault
+        nsle_op = T.max([nsle, 1])
+
+        #args_is_onlap = T.nonzero(T.concatenate(([0], is_erosion_)))
+        #nsle = T.max(T.stack([n_series - last_erode, 1]))
+
+        if 'nsle' in self.verbose:
+            nsle = theano.printing.Print('nsle')(nsle)
+
         mask_o = tif.ifelse(is_onlap,
                             T.gt(Z_x, T.max(scalar_field_at_surface_points)),
                             mask_matrix[n_series - 1, shift:x_to_interpolate_shape + shift])
@@ -1953,8 +1967,8 @@ class TheanoGraphPro(object):
         # LITH MASK
         mask_matrix = T.set_subtensor(mask_matrix[n_series - 1: n_series, shift:x_to_interpolate_shape + shift], mask_o)
 
-        mask_matrix = T.set_subtensor(mask_matrix[n_series - nsle: n_series, shift:x_to_interpolate_shape + shift],
-                                      T.cumprod(mask_matrix[n_series - nsle: n_series, shift:x_to_interpolate_shape + shift][::-1], axis=0)[::-1])
+        mask_matrix = T.set_subtensor(mask_matrix[n_series - nsle_op: n_series, shift:x_to_interpolate_shape + shift],
+                                      T.cumprod(mask_matrix[n_series - nsle_op: n_series, shift:x_to_interpolate_shape + shift][::-1], axis=0)[::-1])
         mask_matrix = T.set_subtensor(mask_matrix[n_series, shift:x_to_interpolate_shape + shift], mask_e)
 
         # FAULT MASK
@@ -1971,7 +1985,7 @@ class TheanoGraphPro(object):
         # Scalar field at interfaces
         sfai = T.set_subtensor(sfai[n_series, n_surface_op-1], scalar_field_at_surface_points)
 
-        return block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix, mask_matrix_f, fault_matrix
+        return block_matrix, weights_vector, scalar_field_matrix, sfai, mask_matrix, mask_matrix_f, fault_matrix, nsle
 
     def compute_forward_gravity(self, densities=None, pos_density=None):  # densities, tz, select,
 

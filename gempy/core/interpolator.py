@@ -921,13 +921,13 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
             weights = self.theano_graph.weights_vector.get_value()
             len_w_diff = new_len_w - old_len_w
             for e, i in enumerate(len_w_diff):
-                print(len_w_diff, weights)
+             #   print(len_w_diff, weights)
                 if i == 0:
                     pass
                 elif i > 0:
                     self.theano_graph.weights_vector.set_value(np.insert(weights, old_len_w[e], np.zeros(i)))
                 else:
-                    print(np.delete(weights, np.arange(old_len_w[e],  old_len_w[e] + i, -1)-1))
+              #      print(np.delete(weights, np.arange(old_len_w[e],  old_len_w[e] + i, -1)-1))
                     self.theano_graph.weights_vector.set_value(
                         np.delete(weights, np.arange(old_len_w[e],  old_len_w[e] + i, -1)-1))
 
@@ -957,8 +957,17 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
         if fault_drift is None:
             fault_drift = np.zeros((0, grid.shape[0] + 2 * self.len_series_i.sum()))
 
-        values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
+        # values_properties = np.array([[]], dtype='float32')
+        # g = self.surfaces.df.groupby('series')
+        # for series_ in self.series.df.index.values[self.non_zero]:
+        #     values_properties = np.append(values_properties,
+        #                                   g.get_group(series_).iloc[:, self.surfaces._n_properties:].values.
+        #                                   astype(self.dtype).T, axis=1)
 
+      #  values_properties = self.surfaces.df.iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
+
+        values_properties = self.surfaces.df.groupby('isActive').get_group(
+            True).iloc[:, self.surfaces._n_properties:].values.astype(self.dtype).T
         # Set all in a list casting them in the chosen dtype
         idl = [np.cast[self.dtype](xs) for xs in (dips_position, dip_angles, azimuth, polarity,
                                                   surface_points_coord,

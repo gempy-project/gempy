@@ -335,7 +335,9 @@ class Vista:
 
         if surfaces is None:
             surfaces = self.model.surfaces.df
-        for idx, val in surfaces[['vertices', 'edges', 'color']].dropna().iterrows():
+
+        select_active = surfaces['isActive']
+        for idx, val in surfaces[select_active][['vertices', 'edges', 'color']].dropna().iterrows():
 
             surf = pv.PolyData(val['vertices'], np.insert(val['edges'], 0, 3, axis=1).ravel())
             self.surf_polydata.at[idx] = surf

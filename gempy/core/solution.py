@@ -244,6 +244,7 @@ class Solution(object):
         self.padding_mask_matrix()
         series_type = self.series.df['BottomRelation']
         s_n = 0
+        active_indices = self.surfaces.df.groupby('isActive').groups[True]
 
         # We loop the scalar fields
         for e, scalar_field in enumerate(self.scalar_field_matrix):
@@ -274,7 +275,8 @@ class Solution(object):
 
                 self.vertices.append(v)
                 self.edges.append(s)
-                idx = self.surfaces.df.index[s_n]
+
+                idx = active_indices[s_n]
                 self.surfaces.df.loc[idx, 'vertices'] = [v]
                 self.surfaces.df.loc[idx, 'edges'] = [s]
                 s_n += 1
