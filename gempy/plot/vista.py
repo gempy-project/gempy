@@ -368,7 +368,8 @@ class Vista:
                 polydata.points = val["vertices"]
                 polydata.faces = np.insert(
                     val['edges'], 0, 3, axis=1
-                ).ravel()  
+                ).ravel()
+                self._surface_actors[surf] = [polydata]
 
     def plot_surface_points_interactive(self, fmt:str, **kwargs):
         self._live_updating = True
