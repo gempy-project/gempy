@@ -70,6 +70,9 @@ class _StochasticSurface(ABC):
         self.surfpts_sample = pd.DataFrame(columns=["i", "col", "val"])
         self.orients_sample = pd.DataFrame(columns=["i", "col", "val"])
 
+        self.surfpts_parametrization = None
+        self.orients_parametrization = None
+
     @property
     def surface_points(self) -> pd.DataFrame:
         """Access geomodel surface points."""
@@ -125,11 +128,50 @@ class _StochasticSurface(ABC):
     def recalculate_orients(self):
         pass
 
+import elfi
+class StochasticSurfaceElfi(_StochasticSurface):
+    def __init__(self, geo_model, surface, grouping='surface'):
+        super().__init__(geo_model, surface, grouping=grouping)
+        
+
+    def parametrize_surfpts_single(self, stdev:float, direction:str="Z"):
+        dist = elfi.Prior("norm", 0, stdev, name=self.surface)
+        self.surfpts_parametrization = [(self.isurf, direction, dist)]
+
+    def sample(self, random_state:int=None):
+        if not self.surfpts_parametrization and not self.orients_parametrization:
+            raise AssertionError("No parametrization for either surface "
+                                 "points or orientations found.")
+
+        if self.surfpts_parametrization:
+            self.surfpts_sample = pd.DataFrame(columns=["i", "col", "val"])
+            for entry in self.surfpts_parametrization:
+                val = entry[2].generate()[0]
+                for i in entry[0]:
+                    self.surfpts_sample = self.surfpts_sample.append(
+                        {'i': i, 'col': entry[1], 'val': val},
+                        ignore_index=True
+                    )
+
+        
+        if self.orients_parametrization:
+            self.orients_sample = pd.DataFrame(columns=["i", "col", "val"])
+            for entry in self.orients_parametrization:
+                val = entry[2].generate()[0]
+                for i in entry[0]:
+                    self.orients_sample = self.orients_sample.append(
+                        {'i': i, 'col': entry[1], 'val': val},
+                        ignore_index=True
+                    )
+ 
 
 class StochasticSurfaceScipy(_StochasticSurface):
-    def __init__(self, geo_model: Model,
-                 surface: str,
-                 grouping: str = "surface"):
+    def __init__(
+            self, 
+            geo_model: Model,
+            surface: str,
+            grouping: str = "surface"
+        ):
         """Easy-to-use class to sample and modify a GemPy surface using
         SciPy-based stochastic parametrization (scipy.stats).
 
@@ -146,8 +188,7 @@ class StochasticSurfaceScipy(_StochasticSurface):
         super().__init__(geo_model, surface, grouping=grouping)
         self._i = {"Z": 5, "X": 1, "Y": 3}
         self._extent = self.geo_model.grid.regular_grid.extent
-        self.surfpts_parametrization = None
-        self.orients_parametrization = None
+        
 
     def sample(self, random_state: int=None):
         """Draw a sample from stochastic parametrization of the surface. Stores
@@ -214,6 +255,17 @@ class StochasticSurfaceScipy(_StochasticSurface):
         ]
 
 
+class StochasticSurfaceABC(_StochasticSurface):
+    def __init__(self, geo_model, surface, grouping='surface'):
+        super().__init__(geo_model, surface, grouping=grouping)
+
+    def parametrize_surfpts_single(self, stdev: float, direction: str = "Z"):
+        dist = ss.norm(loc=0, scale=stdev)
+        self.surfpts_parametrization = [(self.isurf, direction, dist)]
+        return dist
+    
+    def sample(self):
+        pass
 # class StochasticSurfaceGRF(_StochasticSurface):
 #     def __init__(self, geo_model: object, surface: str):
 #         super().__init__(geo_model, surface)
