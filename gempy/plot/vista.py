@@ -202,7 +202,7 @@ class Vista:
         mesh = pv.PolyData(ver, sim)
         return mesh
 
-    def plot_surface(self, fmt:str, clip:Union[bool, list]=False, **kwargs):
+    def plot_surface(self, fmt:str, clip:Union[bool, Iterable[pv.PolyData]]=False, **kwargs):
         mesh = [self.get_surface(fmt)]
         if self._actor_exists(mesh):
             return
@@ -210,11 +210,13 @@ class Vista:
         if clip:
             mesh = self.clip_horizon_with_faults(mesh[0], clip)
 
+        mesh_kwargs = dict(color=self._color_lot[fmt])
+        mesh_kwargs.update(kwargs)
+        
         for m in mesh:
             actor = self.p.add_mesh(
                 m,
-                color=self._color_lot[fmt],
-                **kwargs
+                **mesh_kwargs
             )
             self._actors.append(m)
         self._surface_actors[fmt] = mesh
@@ -239,30 +241,36 @@ class Vista:
         Returns:
             List[pv.PolyData]: Individual clipped horizon surfaces.
         """
+        if type(faults[0]) == str:
+            faults = [self.get_surface(f) for f in faults]
+
         horizons = []
         if not value:
             value = np.mean(self.model.grid.regular_grid.get_dx_dy_dz()[:2])
 
 
         horizons.append(
-            horizon.clip_surface(faults[0], invert=False, value=value)
+            horizon.clip_surface(faults[0], invert=True, value=-value)
+        )
+
+        horizons.append(
+            horizon.clip_surface(faults[-1], invert=True, value=-value)
         )
 
         if len(faults) == 1:
+            print("Returning after 1")
             return horizons
         
         for f1, f2 in zip(faults[:-1], faults[1:]):
-            horizons.append(
+             horizons.append(
                 horizon.clip_surface(
-                    f1, invert=True, value=-value
+                    f1, invert=False, value=value
                 ).clip_surface(
                     f2, invert=False, value=value
                 )
             )
             
-        horizons.append(
-            horizon.clip_surface(faults[-1], invert=True, value=-value)
-        )
+        
         return horizons
 
     def plot_surfaces_all(self, fmts:Iterable[str]=None, **kwargs):
@@ -318,31 +326,50 @@ class Vista:
         self._actors.append(mesh)
         self.p.add_mesh(mesh, **kwargs)
 
-    def _callback_surface_points(self, pos, index):
-        print(pos, index)
+    def _callback_surface_points(self, pos, widget):
+        i = widget.WIDGET_INDEX
         x, y, z = pos
         self.model.modify_surface_points(
-            index, X=x, Y=y, Z=z
+            i, X=x, Y=y, Z=z
         )
+        if self._live_updating:
+            self._recompute()
+            self._update_surface_polydata()
+
+    def _callback_orientations(self, normal, loc, widget):
+        i = widget.WIDGET_INDEX
+        x, y, z = loc
+        gx, gy, gz = normal
+
+        self.model.modify_orientations(
+            i, 
+            X=x, Y=y, Z=z,
+            G_x=gx, G_y=gy, G_z=gz
+        )
+
         if self._live_updating:
             self._recompute()
             self._update_surface_polydata()
 
     def _recompute(self, **kwargs):
         gp.compute_model(self.model, compute_mesh=True, **kwargs)
-        self.topo_edges, self.topo_ctrs = gp.assets.topology.compute_topology(
-            self.model
-        )
+        # self.topo_edges, self.topo_ctrs = tp.topology.compute_topology(
+        #     self.model
+        # )q
 
     def _update_surface_polydata(self):
         surfaces = self.model.surfaces.df
         for surf, (idx, val) in zip(
-            surfaces.surface, 
-            surfaces[['vertices', 'edges']].dropna().iterrows()
-        ):
-            polydata = self._surface_actors[surf][0]
-            polydata.points = val["vertices"]
-            polydata.faces = np.insert(val['edges'], 0, 3, axis=1).ravel()  
+                surfaces.surface, 
+                surfaces[['vertices', 'edges']].dropna().iterrows()
+            ):
+            polydata = self._surface_actors.get(surf, [False])[0]
+            if polydata:
+                polydata.points = val["vertices"]
+                polydata.faces = np.insert(
+                    val['edges'], 0, 3, axis=1
+                ).ravel()
+                self._surface_actors[surf] = [polydata]
 
     def plot_surface_points_interactive(self, fmt:str, **kwargs):
         self._live_updating = True
@@ -350,15 +377,21 @@ class Vista:
         if len(i) == 0:
             return
 
-        sphere = self.p.add_sphere_widget(
-            self._callback_surface_points,
-            center=self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values,
-            color=self._color_lot[fmt],
-            indices=i,
-            phi_resolution=6,
-            theta_resolution=6,
-            **kwargs
-        )
+        pts = self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
+
+        for index, pt in zip(i, pts):
+            widget = self.p.add_sphere_widget(
+                self._callback_surface_points,
+                center=pt,
+                radius=np.mean(self.extent) / 20,
+                color=self._color_lot[fmt],
+                indices=i,
+                phi_resolution=6,
+                theta_resolution=6,
+                pass_widget=True,
+                **kwargs
+            )
+            widget.WIDGET_INDEX = index
     
     def plot_surface_points_interactive_all(self, **kwargs):
         self._live_updating = True
@@ -396,21 +429,6 @@ class Vista:
                 continue
             self.plot_orientations_interactive(fmt, **kwargs)
 
-    def _callback_orientations(self, normal, loc, widget):
-        i = widget.WIDGET_INDEX
-        x, y, z = loc
-        gx, gy, gz = normal
-
-        self.model.modify_orientations(
-            i, 
-            X=x, Y=y, Z=z,
-            G_x=gx, G_y=gy, G_z=gz
-        )
-
-        if self._live_updating:
-            self._recompute()
-            self._update_surface_polydata()
-
     def _scale_topology_centroids(
             self, 
             centroids:Dict[int, Array[float, 3]]
@@ -430,15 +448,9 @@ class Vista:
         scaled_centroids = {}
         for n, pos in centroids.items(): 
             pos_scaled = pos * scaling
-
-            # if np.any(np.array(self.extent[:2]) < 0):
             pos_scaled[0] += np.min(self.extent[:2])
-            # if np.any(np.array(self.extent[2:4]) < 0):
             pos_scaled[1] += np.min(self.extent[2:4])
-            # if np.any(np.array(self.extent[4:]) < 0):
             pos_scaled[2] += np.min(self.extent[4:])
-            print(pos_scaled)
-
             scaled_centroids[n] = pos_scaled
 
         return scaled_centroids
@@ -925,7 +937,6 @@ class _Vista:
         topo_actor = self.p.add_mesh(cloud.delaunay_2d(), scalars=scalars_val, cmap=cm, rgb=rgb, **kwargs)
         self.vista_topo_actors[scalars] = topo_actor
         return topo_actor
-
 
 
 
