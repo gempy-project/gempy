@@ -310,8 +310,8 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
         'Every Series/Fault need at least 1 orientation and 2 surfaces points.'
 
     if output is not None:
-        warnings.warn(DeprecationWarning, 'Argument output has no effect anymore and will be deprecated in GemPy 2.2.'
-                                          'Set the output only in gempy.set_interpolator.')
+        warnings.warn('Argument output has no effect anymore and will be deprecated in GemPy 2.2.'
+                      'Set the output only in gempy.set_interpolator.', DeprecationWarning,)
 
     # if output is None:
     #     # If output is not passed we check for the type of interpolator. If that also fail
