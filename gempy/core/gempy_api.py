@@ -25,7 +25,7 @@ import sys
 import numpy as np
 import pandas as pn
 from numpy import ndarray
-from typing import Union
+from typing import Union, Iterable, Tuple, Any
 import warnings
 import copy
 # This is for sphenix to find the packages
@@ -370,9 +370,18 @@ def compute_model_at(new_grid: Union[ndarray], model: Model, **kwargs):
 
 # region Solution
 
-def set_gridded_solutions_to_regular_grid(geo_model: Model, combined_solution: Solution, target_grid: Grid, solutions):
-    vals = grid_types.do_combine_grids(target_grid, solutions)
-    combined_solution.set_solution_to_regular_grid(vals, compute_mesh=True)
+def set_sub_grid_solutions_to_regular_grid(geo_model: Model, combined_solution: Solution, target_grid: Grid, subgrids_and_solutions: Iterable[Tuple[Grid, Any]], compute_mesh=True):
+    """
+    update a model to use a new solution and target grid from a collection
+    of sub grids and grids_and_solutions
+    :param geo_model: GeoModel
+    :param combined_solution:
+    :param target_grid:
+    :param subgrids_and_solutions: Collection of compute_solutions
+    :return:
+    """
+    vals = grid_types.combine_sub_grids(target_grid, subgrids_and_solutions)
+    combined_solution.set_solution_to_regular_grid(vals, compute_mesh=compute_mesh)
     geo_model.solutions = combined_solution
     geo_model.grid = target_grid
     return geo_model
