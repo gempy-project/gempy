@@ -471,12 +471,12 @@ class Topography:
         return np.diag(zi)
 
 
-def define_subgrid_parameters(regular_grid, nx: int, ny: int, nz: int):
+def define_subgrid_parameters(grid, nx: int, ny: int, nz: int):
     """
     Given a gempy grid, define nx*ny*nz sub grids
     """
-    grx, gry, grz = regular_grid.resolution
-    grid_extent = regular_grid.extent
+    grx, gry, grz = grid.regular_grid.resolution
+    grid_extent = grid.regular_grid.extent
     minx, miny, minz = grid_extent[0::2]
     maxx, maxy, maxz = grid_extent[1::2]
     # make sure there are no remainders
@@ -524,7 +524,7 @@ def update_xarray_grid(target_grid, src_grid, values):
     target_grid.loc[c] = values.reshape(src_grid.regular_grid.resolution)
 
 
-def do_combine_grids(target_grid, solutions):
+def combine_sub_grids(target_grid, grids_and_solutions):
     res = target_grid.regular_grid.resolution
     c = get_grid_coords(target_grid)
     v0_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
@@ -534,7 +534,7 @@ def do_combine_grids(target_grid, solutions):
     # make big loop
     vals = [[], [], [], [], [], []]
     val_tails = [[], [], [], []]
-    for _, g, s in solutions:
+    for g, s in grids_and_solutions:
         l0, l1 = g.get_grid_args('regular')
         x_l = g.length[-1]
         # extract values we need
