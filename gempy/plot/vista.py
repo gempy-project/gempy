@@ -401,7 +401,7 @@ class Vista:
                 rgb = (255 * np.array(mcolors.hex2color(val)))
                 arr_ = np.vstack((arr_, rgb))
 
-            sel = np.round(self.model.solutions.geological_map).astype(int)[0]
+            sel = np.round(self.model.solutions.geological_map[0]).astype(int)[0]
           #  print(arr_)
           #  print(sel)
 

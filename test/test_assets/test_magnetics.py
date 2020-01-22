@@ -64,9 +64,9 @@ def test_magnetics_api():
     B_ext = 52819.8506939139e-9  # T
 
     geo_model.set_regular_grid(extent=[-5, 5, -5, 5, -5, 5], resolution=[5, 5, 5])
-    geo_model.set_centered_grid(np.array([0, 0, 0]), resolution=[10, 10, 15], radio=5000)
+    geo_model.set_centered_grid(np.array([[0, 0, 0]]), resolution=[10, 10, 15], radio=5000)
 
-    gp.set_interpolator(geo_model, output=['magnetics'], incl=incl, decl=decl)
+    gp.set_interpolator(geo_model, output=['magnetics'], incl=incl, decl=decl, update_kriging=True)
 
     gp.compute_model(geo_model)
     print(geo_model.interpolator.theano_graph.lg0.get_value())

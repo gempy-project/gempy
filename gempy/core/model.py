@@ -117,15 +117,15 @@ class DataMutation(object):
             self.series.df['isActive'] = bool_vec
 
         if update_surface_is_active is True:
-            act_series = self.surfaces.df['series'].map(self.series.df['isActive'])
+            act_series = self.surfaces.df['series'].map(self.series.df['isActive']).astype(bool)
             unique_surf_points = np.unique(self.surface_points.df['id'])
             if len(unique_surf_points) != 0:
-                bool_surf_points = np.zeros(unique_surf_points.max() + 1, dtype=bool)
+                bool_surf_points = np.zeros_like(act_series, dtype=bool)
                 bool_surf_points[unique_surf_points - 1] = True
 
                 # This is necessary to find the intersection between orientations (series) and
                 # surface points
-                self.surfaces.df['isActive'] = (act_series & bool_surf_points) + self.surfaces.df['isBasement']
+                self.surfaces.df['isActive'] = (act_series & bool_surf_points) | self.surfaces.df['isBasement']
 
         if update_theano == 'matrices':
             self.interpolator.modify_results_matrices_pro()
@@ -418,8 +418,10 @@ class DataMutation(object):
         return self.surfaces
 
     @setdoc(Surfaces.delete_surface.__doc__, indent=False)
-    def delete_surfaces(self, indices: Union[str, list, np.ndarray], update_id=True, remove_data=False):
-        """Delete a surface and update all related object.
+    def delete_surfaces(self, indices: Union[str, list, np.ndarray], update_id=True, remove_data=True):
+        """
+        @TODO When implemeted activate geometric data, change remove data to False by default
+        Delete a surface and update all related object.
 
         Args:
             remove_data (bool): if true delete all GeometricData labeled with the given surface.
@@ -429,6 +431,10 @@ class DataMutation(object):
         indices = np.atleast_1d(indices)
         self.surfaces.delete_surface(indices, update_id)
 
+        if remove_data is False:
+            remove_data = True
+            warnings.warn('At the moment data must be deleted. Soon will be only deactivated.')
+
         if indices.dtype == int:
             surfaces_names = self.surfaces.df.loc[indices, 'surface']
         else:
@@ -436,13 +442,17 @@ class DataMutation(object):
         if remove_data:
             self.surface_points.del_surface_points(self.surface_points.df[self.surface_points.df.surface.isin(surfaces_names)].index)
             self.orientations.del_orientation(self.orientations.df[self.orientations.df.surface.isin(surfaces_names)].index)
-            self.update_structure(update_theano='matrices')
-            self.update_structure(update_theano='weights')
+
         self.surface_points.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
         self.orientations.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
         self.map_geometric_data_df(self.surface_points.df)
         self.map_geometric_data_df(self.orientations.df)
         self.surfaces.colors.delete_colors(surfaces_names)
+
+        if remove_data:
+            self.update_structure(update_theano='matrices')
+            self.update_structure(update_theano='weights')
+
         return self.surfaces
 
     @setdoc(Surfaces.rename_surfaces.__doc__, indent=False)
