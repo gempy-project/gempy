@@ -1448,7 +1448,7 @@ class SurfacePoints(GeometricData):
         coord_array = np.array([x, y, z])
         assert coord_array.ndim == 1, 'Adding an interface only works one by one.'
         # self.df.loc[idx] = self.df.loc[idx-1]
-        self.df.loc[idx, ['X', 'Y', 'Z']] = coord_array
+        self.df.loc[idx, ['X', 'Y', 'Z']] = coord_array.astype('float64')
 
         try:
             self.df.loc[idx, 'surface'] = surface
@@ -1504,8 +1504,18 @@ class SurfacePoints(GeometricData):
             :class:`SurfacePoints`
          """
         idx = np.array(idx, ndmin=1)
-        keys = list(kwargs.keys())
-        is_surface = np.isin('surface', keys).all()
+        try:
+            surface_names = kwargs.pop('surface')
+            self.df.loc[idx, ['surface']] = surface_names
+            self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
+            self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
+            self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
+            self.sort_table()
+        except KeyError:
+            pass
+
+        # keys = list(kwargs.keys())
+    #    is_surface = np.isin('surface', keys).all()
 
         # Check idx exist in the df
         assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the dataframe to be modified.'
@@ -1523,11 +1533,11 @@ class SurfacePoints(GeometricData):
         # Selecting the properties passed to be modified
         self.df.loc[idx, list(kwargs.keys())] = values
 
-        if is_surface:
-            self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
-            self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
-            self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
-            self.sort_table()
+        # if is_surface:
+        #     self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
+        #     self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
+        #     self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
+        #     self.sort_table()
 
         return self
 
@@ -1737,7 +1747,7 @@ class Orientations(GeometricData):
             self.df.loc[idx] = self.df.loc[max_idx]
 
         if pole_vector is not None:
-            self.df.loc[idx, ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']] = np.array([x, y, z, *pole_vector])
+            self.df.loc[idx, ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z']] = np.array([x, y, z, *pole_vector], dtype=float)
             self.df.loc[idx, 'surface'] = surface
 
             self.calculate_orientations(idx)
@@ -1746,8 +1756,8 @@ class Orientations(GeometricData):
                 warnings.warn('If pole_vector and orientation are passed pole_vector is used/')
         else:
             if orientation is not None:
-                self.df.loc[idx, ['X', 'Y', 'Z', ]] = np.array([x, y, z])
-                self.df.loc[idx, ['azimuth', 'dip', 'polarity']] = orientation
+                self.df.loc[idx, ['X', 'Y', 'Z', ]] = np.array([x, y, z], dtype=float)
+                self.df.loc[idx, ['azimuth', 'dip', 'polarity']] = orientation.astype(float)
                 self.df.loc[idx, 'surface'] = surface
 
                 self.calculate_gradient(idx)
@@ -1805,8 +1815,19 @@ class Orientations(GeometricData):
          """
 
         idx = np.array(idx, ndmin=1)
+        try:
+            surface_names = kwargs.pop('surface')
+            self.df.loc[idx, ['surface']] = surface_names
+            self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
+            self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
+            self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
+            self.sort_table()
+        except KeyError:
+            pass
+
         keys = list(kwargs.keys())
-        is_surface = np.isin('surface', keys).all()
+        # is_surface_ = np.isin('surface', keys)
+        # is_surface = is_surface_.all()
 
         # Check idx exist in the df
         assert np.isin(np.atleast_1d(idx), self.df.index).all(), 'Indices must exist in the dataframe to be modified.'
@@ -1825,19 +1846,13 @@ class Orientations(GeometricData):
             values = values.T
 
         # Selecting the properties passed to be modified
-        self.df.loc[idx, list(kwargs.keys())] = values
+        self.df.loc[idx, list(kwargs.keys())] = values.astype('float64')
 
         if np.isin(list(kwargs.keys()), ['G_x', 'G_y', 'G_z']).any():
             self.calculate_orientations(idx)
         else:
             if np.isin(list(kwargs.keys()), ['azimuth', 'dip', 'polarity']).any():
                 self.calculate_gradient(idx)
-
-        if is_surface:
-            self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
-            self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
-            self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
-            self.sort_table()
         return self
 
     def calculate_gradient(self, idx=None):
