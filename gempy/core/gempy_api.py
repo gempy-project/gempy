@@ -566,7 +566,10 @@ def save_model_to_pickle(model: Model, path=None):
 
 @setdoc(Model.save_model.__doc__)
 def save_model(model: Model, name=None, path=None):
-
+    try:
+        model.grid.topography.topo = None
+    except AttributeError:
+        pass
     model.save_model(name, path)
     return True
 
