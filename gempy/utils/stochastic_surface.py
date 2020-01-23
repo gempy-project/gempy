@@ -326,7 +326,7 @@ class StochasticModel:
     def add_surfaces(
             surfaces:Union[_StochasticSurface, Iterable[_StochasticSurface]]
         ):
-        if not  surfaces.__iter__:
+        if not hasattr(surfaces, "__iter__"):
             surfaces = list(surfaces)
         for surface in surfaces:
             self.surfaces = [surface.surface for surface in surfaces]
