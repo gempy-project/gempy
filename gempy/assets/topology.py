@@ -26,16 +26,28 @@ from typing import Iterable, List, Set, Tuple, Dict, Union, Optional
 import matplotlib.pyplot as plt
 
 
-def _get_fb(geo_model):
+def _get_nunconf(geo_model) -> int:
+    return np.count_nonzero(
+        geo_model.series.df.BottomRelation == "Erosion"
+    ) - 2  # TODO -2 n other lith series
+
+
+def _get_nfaults(geo_model) -> int:
+    return np.count_nonzero(geo_model.faults.df.isFault)
+
+
+def _get_fb(geo_model) -> Array:
+    n_unconf = _get_nunconf(geo_model)
+    n_faults = _get_nfaults(geo_model)
     return np.round(
         geo_model.solutions.block_matrix[n_unconf:n_faults + n_unconf, 0, :]
-    ).astype(int).sum(axis=0).reshape(*res)
+    ).astype(int).sum(axis=0).reshape(*geo_model.grid.regular_grid.resolution)
 
 
-def _get_lb(geo_model):
+def _get_lb(geo_model) -> Array:
     return np.round(
         geo_model.solutions.lith_block
-    ).astype(int).reshape(*res)
+    ).astype(int).reshape(*geo_model.grid.regular_grid.resolution)
 
 
 def compute_topology(
@@ -46,12 +58,10 @@ def compute_topology(
         voxel_threshold:int=1
     ):
     res = geo_model.grid.regular_grid.resolution
-    n_unconf = np.count_nonzero(geo_model.series.df.BottomRelation == "Erosion") - 2  # TODO -2 n other lith series
-    n_faults = np.count_nonzero(geo_model.faults.df.isFault)
-
+    n_unconf = _get_nunconf(geo_model)
+    n_faults = _get_nfaults(geo_model)
     fb = _get_fb(geo_model)
     lb = _get_lb(geo_model)
-
     n_lith = len(np.unique(lb))  # ? quicker looking it up in geomodel?
 
     if cell_number is None or direction is None:
