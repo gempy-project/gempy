@@ -305,8 +305,8 @@ class StochasticModel:
         self.geo_model = geo_model
 
         self.surfaces = {}
-        for surface in surfaces:
-            self.surfaces[surface.surface] = surface
+        if surfaces:
+            self.surfaces = [surface.surface for surface in surfaces]
 
         self.surfpts_samples = []
         self.orients_samples = []
