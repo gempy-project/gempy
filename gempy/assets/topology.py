@@ -435,42 +435,6 @@ def _get_centroids(labels:Array[int, ..., ..., ...]) -> dict:
     return centroids
 
 
-def _adj_matrix(
-        edges:Set[tuple], 
-        labels:Array[int, ..., ..., ...],  
-        n_faults:int, 
-        n_liths:int
-    ) -> (Array[bool, ..., ...], List[str]):
-    f_labels = _get_fault_labels(n_faults)
-    fault_labels_bin = _get_fault_label_comb_bin(f_labels)
-    lith_labels_bin = _get_lith_labels_bin(n_liths)
-    adj_matrix_labels = _get_adj_matrix_labels(lith_labels_bin, fault_labels_bin)
-    return _get_adj_matrix(edges, adj_matrix_labels, labels), adj_matrix_labels
-
-
-def plot_adj_matrix(adj_matrix:Array[bool, ..., ...], adj_labels:List[str]):
-    fig, ax = plt.subplots(figsize=(10, 10))
-
-    n_labels = len(adj_labels)
-
-    ax.imshow(adj_matrix, cmap="YlOrRd")
-
-    fontdict = dict(
-        fontsize=10
-    )
-
-    ax.set_xticklabels(adj_labels, fontdict=fontdict, rotation=90)
-    ax.set_yticklabels(adj_labels, fontdict=fontdict)
-    ax.set_xticks(range(n_labels))
-    ax.set_yticks(range(n_labels))
-
-    ax.set_ylim(-.5, n_labels - .5)
-    ax.set_xlim(-.5, n_labels - .5)
-
-    ax.set_title("Adjacency Matrix")
-    plt.show()
-
-
 def get_adjacency_matrix(
         geo_model, 
         edges:Set[Tuple[int, int]],
