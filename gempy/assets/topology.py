@@ -270,7 +270,7 @@ def get_fault_ids(geo_model) -> List[int]:
     f_series_names = geo_model.faults.df[geo_model.faults.df.isFault].index
     fault_ids = [0]
     for fsn in f_series_names:
-        fid = geo_model.surfaces.df[geo_model.surfaces.df.series == fsn].id[0]
+        fid = geo_model.surfaces.df[geo_model.surfaces.df.series == fsn].id.values[0]
         fault_ids.append(fid)
     return fault_ids
 
@@ -435,7 +435,7 @@ def _get_centroids(labels:Array[int, ..., ..., ...]) -> dict:
     return centroids
 
 
-def adj_matrix(
+def _adj_matrix(
         edges:Set[tuple], 
         labels:Array[int, ..., ..., ...],  
         n_faults:int, 
@@ -655,3 +655,24 @@ def get_adjacencies(
         elif node == n2:
             adjacencies.add(n1)
     return adjacencies
+
+
+def count_unique_topologies(edges:List[Set[Tuple[int, int]]]):
+    unique_edges = [edges[0]]
+    unique_edges_count = [1]
+    unqiue_edges_idx = [0]
+    for a, topology in enumerate(edges[1:]):
+        skip = False
+        for b, utopology in enumerate(unique_edges):
+            if utopology == topology:
+                unique_edges_count[b] += 1
+                unqiue_edges_idx.append(b)
+                skip = True
+                break
+        if skip:
+            continue
+        unique_edges.append(topology)
+        unique_edges_count.append(1)
+        unqiue_edges_idx.append(len(unique_edges))
+
+    return unique_edges, unique_edges_count, unqiue_edges_idx
