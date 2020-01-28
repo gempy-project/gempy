@@ -2505,7 +2505,7 @@ class Structure(object):
         # Extracting lengths
         # ==================
         # Array containing the size of every surface. SurfacePoints
-        lssp = self.surface_points.df.groupby('surface')['order_series'].count().values
+        lssp = self.surface_points.df.groupby('id')['order_series'].count().values
         lssp_nonzero = lssp[np.nonzero(lssp)]
 
         self.df.at['values', 'len surfaces surface_points'] = lssp_nonzero
