@@ -141,7 +141,6 @@ class TheanoGraphPro(object):
             output = ['geology']
         self.output = output
 
-
         if verbose is None:
             self.verbose = [None]
         else:
@@ -168,7 +167,7 @@ class TheanoGraphPro(object):
         # -------
         self.a_T = theano.shared(np.cast[dtype](-1.), "Range")
 
-        self.a_T_surface =  self.a_T #theano.shared(np.cast[dtype](0.1), "Range")
+        self.a_T_surface = self.a_T # theano.shared(np.cast[dtype](0.1), "Range")
         self.c_o_T = theano.shared(np.cast[dtype](-1.), 'Covariance at 0')
 
         self.n_universal_eq_T = theano.shared(np.zeros(5, dtype='int32'), "Grade of the universal drift")
