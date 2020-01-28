@@ -2629,8 +2629,8 @@ class Options(object):
         self.df['dtype'].cat.set_categories(['float32', 'float64'], inplace=True)
         self.df['theano_optimizer'].cat.set_categories(['fast_run', 'fast_compile'], inplace=True)
         self.df['device'].cat.set_categories(['cpu', 'cuda'], inplace=True)
-        self.df['output'].cat.set_categories(['geology', 'gradients'], inplace=True)
-        self.df.at['values', 'verbosity'] = []
+       # self.df['output'].cat.set_categories(['geology', 'gradients'], inplace=True)
+       # self.df.at['values', 'verbosity'] = []
         self.default_options()
 
     def __repr__(self):
@@ -2670,7 +2670,7 @@ class Options(object):
         else:
             self.df.loc['values', 'dtype'] = 'float32'
 
-        self.df.loc['values', 'output'] = 'geology'
+       # self.df.loc['values', 'output'] = 'geology'
         self.df.loc['values', 'theano_optimizer'] = 'fast_compile'
         return True
 
