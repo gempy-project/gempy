@@ -31,7 +31,6 @@ from abc import ABC, abstractmethod
 from copy import deepcopy
 from typing import Any, Dict, Iterable, Sequence, Union
 
-import elfi
 import numpy as np
 import pandas as pd
 import scipy.stats as ss
@@ -132,41 +131,7 @@ class _StochasticSurface(ABC):
     def recalculate_orients(self):
         pass
 
-class StochasticSurfaceElfi(_StochasticSurface):
-    def __init__(self, geo_model, surface, grouping='surface'):
-        super().__init__(geo_model, surface, grouping=grouping)
-        
 
-    def parametrize_surfpts_single(self, stdev:float, direction:str="Z"):
-        dist = elfi.Prior("norm", 0, stdev, name=self.surface)
-        self.surfpts_parametrization = [(self.isurf, direction, dist)]
-
-    def sample(self, random_state:int=None):
-        if not self.surfpts_parametrization and not self.orients_parametrization:
-            raise AssertionError("No parametrization for either surface "
-                                 "points or orientations found.")
-
-        if self.surfpts_parametrization:
-            self.surfpts_sample = pd.DataFrame(columns=["i", "col", "val"])
-            for entry in self.surfpts_parametrization:
-                val = entry[2].generate()[0]
-                for i in entry[0]:
-                    self.surfpts_sample = self.surfpts_sample.append(
-                        {'i': i, 'col': entry[1], 'val': val},
-                        ignore_index=True
-                    )
-
-        
-        if self.orients_parametrization:
-            self.orients_sample = pd.DataFrame(columns=["i", "col", "val"])
-            for entry in self.orients_parametrization:
-                val = entry[2].generate()[0]
-                for i in entry[0]:
-                    self.orients_sample = self.orients_sample.append(
-                        {'i': i, 'col': entry[1], 'val': val},
-                        ignore_index=True
-                    )
- 
 
 class StochasticSurfaceScipy(_StochasticSurface):
     def __init__(
@@ -342,7 +307,10 @@ class _StochasticModel:
     def sample(self) -> Dict[str, float]:
         surfpts_samples, orients_samples = {}, {}
         for name, prior in self.priors.items():
-            sample = prior["dist"].rvs()
+            try:
+                sample = prior["dist"].rvs()
+            except:
+                sample = prior["dist"].resample(1)[0, 0]
             if prior["type"] == "surfpts":
                 surfpts_samples[name] = sample
             elif prior["type"] == "orient":
