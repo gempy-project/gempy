@@ -156,7 +156,13 @@ class Vista:
         if len(i) == 0:
             return
         if not length:
-            length = np.mean(self.extent) / 5
+            length = abs(
+                np.min(
+                    [np.diff(self.extent[:2]), 
+                     np.diff(self.extent[2:4]), 
+                     np.diff(self.extent[4:])]
+                )
+            ) / 10
 
         pts = self.model.orientations.df.loc[i][["X", "Y", "Z"]].values
         nrms = self.model.orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
