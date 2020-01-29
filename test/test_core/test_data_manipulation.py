@@ -170,8 +170,6 @@ def create_surface_points(create_surfaces, create_series):
     surface_points.map_data_from_series(create_series, 'order_series')
     print(surface_points)
 
-    # In[59]:
-
     surface_points.sort_table()
     print(surface_points)
     return surface_points

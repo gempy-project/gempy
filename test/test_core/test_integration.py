@@ -8,7 +8,10 @@ input_path = os.path.dirname(__file__)+'/../input_data'
 
 # ## Preparing the Python environment
 #
-# For modeling with GemPy, we first need to import it. We should also import any other packages we want to utilize in our Python environment.Typically, we will also require `NumPy` and `Matplotlib` when working with GemPy. At this point, we can further customize some settings as desired, e.g. the size of figures or, as we do here, the way that `Matplotlib` figures are displayed in our notebook (`%matplotlib inline`).
+# For modeling with GemPy, we first need to import it. We should also import any other packages we want to
+# utilize in our Python environment.Typically, we will also require `NumPy` and `Matplotlib` when working
+# with GemPy. At this point, we can further customize some settings as desired, e.g. the size of figures or,
+# as we do here, the way that `Matplotlib` figures are displayed in our notebook (`%matplotlib inline`).
 
 
 # These two lines are necessary only if GemPy is not installed
@@ -53,12 +56,6 @@ def test_define_sequential_pile(map_sequential_pile):
     print(map_sequential_pile.surfaces)
 
 
-def test_kriging_parameters(map_sequential_pile):
-    # TODO Update
-    geo_model = map_sequential_pile
-    #gp.get_kriging_parameters(geo_model)
-
-
 def test_compute_model(interpolator_islith_isfault, map_sequential_pile):
     geo_model = map_sequential_pile
     geo_model.set_theano_graph(interpolator_islith_isfault)
@@ -85,4 +82,25 @@ def test_compute_model(interpolator_islith_isfault, map_sequential_pile):
     plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_scalar')
 
 
+def test_kriging_mutation(interpolator_islith_isfault, map_sequential_pile):
+    geo_model = map_sequential_pile
+    geo_model.set_theano_graph(interpolator_islith_isfault)
+
+    gp.compute_model(geo_model, compute_mesh=False)
+    gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
+                              direction='y', show_data=True)
+    print(geo_model.solutions.lith_block, geo_model.additional_data)
+    #plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation')
+
+    geo_model.modify_kriging_parameters('range', 1)
+
+    geo_model.modify_kriging_parameters('drift equations', [0, 3])
+    print(geo_model.solutions.lith_block, geo_model.additional_data)
+
+    gp.compute_model(geo_model, compute_mesh=False)
+    gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
+                              direction='y', show_data=True)
+
+    print(geo_model.solutions.lith_block, geo_model.additional_data)
+   # plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation2')
 

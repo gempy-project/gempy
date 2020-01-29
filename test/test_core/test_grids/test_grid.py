@@ -27,7 +27,3 @@ class TestGrid:
         # the correspondant attributes
         grid = gp.Grid(extent=[0, 2000, 0, 2000, -2000, 0],
                        resolution=[50, 50, 50])
-
-
-def foo(a, b):
-    pass
