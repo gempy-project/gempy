@@ -438,16 +438,17 @@ def _get_centroids(labels:Array[int, ..., ..., ...]) -> dict:
 def get_adjacency_matrix(
         geo_model, 
         edges:Set[Tuple[int, int]],
-        centroids,
+        centroids:Dict[int, Array[float, 3]],
     ) -> Array[bool, ..., ...]:
-    """[summary]
+    """Get adjacency matrix of given geomodel topology.
     
     Args:
-        geo_model ([type]): [description]
-        edges (Set[Tuple): [description]
+        geo_model ([type]): Geomodel instance with solutions.
+        edges (Set[Tuple): Set of topology edges.
+        centroids (Dict[int, Array[float, 3]]): Topology centroids.
     
     Returns:
-        Array[bool, ..., ...]: [description]
+        Array[bool, ..., ...]: Topology adjacency matrix.
     """    
     f_ids = get_fault_ids(geo_model)
     lith_ids = get_lith_ids(geo_model)
