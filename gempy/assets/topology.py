@@ -451,28 +451,26 @@ def get_adjacency_matrix(
     """    
     f_ids = get_fault_ids(geo_model)
     lith_ids = get_lith_ids(geo_model)
-    n = len([(l, f) for f in f_ids for l in lith_ids])
+    n_labels = len([(l, f) for f in f_ids for l in lith_ids])
 
-    M = np.zeros((n,n))
+    M = np.zeros((n_labels, n_labels))
     lith_lot = get_lot_node_to_lith_id(geo_model, centroids)
     fault_lot = get_lot_node_to_fault_block(geo_model, centroids)
-    for e1, e2 in edges:
-    #     print("nodes:", e1, e2)
-        l1, l2 = lith_lot.get(e1), lith_lot.get(e2)
-    #     print("lith: ", l1, l2)
-        f1, f2 = fault_lot.get(e1), fault_lot.get(e2)
-    #     print("fault:", f1, f2)  
-        try:
-            lp1 = np.argwhere(lith_ids==l1)[0, 0]
-            lp2 = np.argwhere(lith_ids==l2)[0, 0]
-        except IndexError:
-            continue  # skip if lithology doesn't exist (vanishes in crap model)
-    #     print("lpos :", lp1, lp2)
-        p1 = lp1 + len(lith_ids) * f1
-        p2 = lp2 + len(lith_ids) * f2
-    #     print("pos  :", p1, p2)
-        M[p1, p2] = 1
-        M[p2, p1] = 1
+    for node1, node2 in edges:
+        lith_id1 = lith_lot.get(node1)
+        lith_id2 = lith_lot.get(node2)
+
+        fault_block_id1 = fault_lot.get(node1)
+        fault_block_id2 = fault_lot.get(node2)
+
+        lith_pos1 = np.nonzero(lith_ids==lith_id1)[0]
+        lith_pos2 = np.nonzero(lith_ids==lith_id2)[0]
+
+        matrix_pos1 = lith_pos1 + len(lith_ids) * fault_block_id1
+        matrix_pos2 = lith_pos2 + len(lith_ids) * fault_block_id2
+
+        M[matrix_pos1, matrix_pos2] = 1
+        M[matrix_pos2, matrix_pos1] = 1
     
     M = np.flip(np.flip(M, axis=1), axis=0)
     return M.astype(bool)
