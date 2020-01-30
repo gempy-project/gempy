@@ -462,8 +462,11 @@ def get_adjacency_matrix(
     #     print("lith: ", l1, l2)
         f1, f2 = fault_lot.get(e1), fault_lot.get(e2)
     #     print("fault:", f1, f2)  
-        lp1 = np.argwhere(lith_ids==l1)[0, 0]
-        lp2 = np.argwhere(lith_ids==l2)[0, 0]
+        try:
+            lp1 = np.argwhere(lith_ids==l1)[0, 0]
+            lp2 = np.argwhere(lith_ids==l2)[0, 0]
+        except IndexError:
+            continue  # skip if lithology doesn't exist (vanishes in crap model)
     #     print("lpos :", lp1, lp2)
         p1 = lp1 + len(lith_ids) * f1
         p2 = lp2 + len(lith_ids) * f2
