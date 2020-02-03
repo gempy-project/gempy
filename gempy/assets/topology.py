@@ -51,12 +51,12 @@ def _get_lb(geo_model) -> Array:
 
 
 def compute_topology(
-        geo_model, 
-        cell_number:int=None,
-        direction:str=None,
-        n_shift:int=1,
-        voxel_threshold:int=1
-    ):
+        geo_model,
+        cell_number: int = None,
+        direction: str = None,
+        n_shift: int = 1,
+        voxel_threshold: int = 1
+):
     res = geo_model.grid.regular_grid.resolution
     n_unconf = _get_nunconf(geo_model)
     n_faults = _get_nfaults(geo_model)
@@ -80,23 +80,23 @@ def compute_topology(
         res = (res[0], res[1], 1)
 
     edges, centroids = _analyze_topology(
-        fb.ravel(), 
-        lb.ravel(), 
-        n_lith, 
-        res, 
-        n_shift, 
-        voxel_threshold, 
+        fb.ravel(),
+        lb.ravel(),
+        n_lith,
+        res,
+        n_shift,
+        voxel_threshold,
         direction
     )
-    
+
     edges = set((n1, n2) for n1, n2 in edges)
     edges = _filter_reverse_edges(edges)  # ? still necessary? would next line
-                                          # ? not be enough?
+    # ? not be enough?
     edges = _sort_edge_tuple_nodes(edges)
     return edges, centroids
 
 
-def _filter_reverse_edges(edges:Set[Tuple[int, int]]) -> Set[Tuple[int, int]]:
+def _filter_reverse_edges(edges: Set[Tuple[int, int]]) -> Set[Tuple[int, int]]:
     """Filter reversed topology edge tuples to fix doubling of topology edges
     like (1,5) (5,1).
     
@@ -109,15 +109,15 @@ def _filter_reverse_edges(edges:Set[Tuple[int, int]]) -> Set[Tuple[int, int]]:
     Returns:
         Set[Tuple[int, int]]: Filtered set of topology edge tuples
     """
-    
-    edges_unique=set()
+
+    edges_unique = set()
     for e in edges:
         if not (e in edges_unique or (e[1], e[0]) in edges_unique):
             edges_unique.add(e)
     return edges_unique
 
 
-def _sort_edge_tuple_nodes(edges:Set[Tuple[int, int]]) -> Set[Tuple[int, int]]:
+def _sort_edge_tuple_nodes(edges: Set[Tuple[int, int]]) -> Set[Tuple[int, int]]:
     """Sort nodes within edge tuples by ascending order.
     
     Args:
@@ -136,40 +136,42 @@ def _sort_edge_tuple_nodes(edges:Set[Tuple[int, int]]) -> Set[Tuple[int, int]]:
 
 
 def _analyze_topology(
-        fault_matrix_sum, 
-        lith_matrix, 
-        n_lith, 
-        res, 
-        n_shift, 
+        fault_matrix_sum,
+        lith_matrix,
+        n_lith,
+        res,
+        n_shift,
         voxel_threshold,
         direction
-    ):
+):
     fault_shift = fault_matrix_sum.min()
     fault_matrix_sum_shift = fault_matrix_sum - fault_shift
 
-    where = np.tile(lith_matrix, (n_lith, 1)) == np.unique(lith_matrix).reshape(-1, 1)
-    lith_matrix_shift = np.sum(where * np.arange(n_lith).reshape(-1, 1), axis=0) + 1
+    where = np.tile(lith_matrix, (n_lith, 1)) == np.unique(lith_matrix).reshape(
+        -1, 1)
+    lith_matrix_shift = np.sum(where * np.arange(n_lith).reshape(-1, 1),
+                               axis=0) + 1
 
     topo_matrix = lith_matrix_shift + n_lith * fault_matrix_sum_shift
     topo_matrix_3D = topo_matrix.reshape(*res)
 
     # x direction
     if direction.capitalize() != "X":
-        x_l = topo_matrix_3D[n_shift:,:,:]
-        x_r = topo_matrix_3D[:-n_shift,:,:]
+        x_l = topo_matrix_3D[n_shift:, :, :]
+        x_r = topo_matrix_3D[:-n_shift, :, :]
         x_edges, x_count = _get_edges(x_l, x_r)
         x_edges = x_edges[:, x_count > voxel_threshold]
     else:
-        x_edges = np.array([[],[]])
-    
+        x_edges = np.array([[], []])
+
     # y direction
     if direction.capitalize() != "Y":
-        y_l = topo_matrix_3D[:, n_shift:,:]
-        y_r = topo_matrix_3D[:, :-n_shift,:]
+        y_l = topo_matrix_3D[:, n_shift:, :]
+        y_r = topo_matrix_3D[:, :-n_shift, :]
         y_edges, y_count = _get_edges(y_l, y_r)
         y_edges = y_edges[:, y_count > voxel_threshold]
     else:
-        y_edges = np.array([[],[]])
+        y_edges = np.array([[], []])
 
     # z direction
     if direction.capitalize() != "Z":
@@ -178,7 +180,7 @@ def _analyze_topology(
         z_edges, z_count = _get_edges(z_l, z_r)
         z_edges = z_edges[:, z_count > voxel_threshold]
     else:
-        z_edges = np.array([[],[]])
+        z_edges = np.array([[], []])
 
     edges = np.unique(
         np.concatenate((x_edges.T, y_edges.T, z_edges.T), axis=0), axis=0
@@ -190,9 +192,9 @@ def _analyze_topology(
 
 
 def get_lot_node_to_lith_id(
-        geo_model, 
-        centroids:Dict[int, Array[float, 3]]
-    ) -> Dict[int, int]:
+        geo_model,
+        centroids: Dict[int, Array[float, 3]]
+) -> Dict[int, int]:
     """Get look-up table to translate topology node id's back into GemPy lith
     id's.
     
@@ -216,8 +218,8 @@ def get_lot_node_to_lith_id(
 
 
 def get_lot_lith_to_node_id(
-        lot:Dict[int, Array[float, 3]]
-    ) -> Dict[int, List[int]]:
+        lot: Dict[int, Array[float, 3]]
+) -> Dict[int, List[int]]:
     """Get look-up table to translate lith id's back into topology node
     id's.
     
@@ -238,9 +240,9 @@ def get_lot_lith_to_node_id(
 
 
 def get_lot_node_to_fault_block(
-        geo_model, 
-        centroids:Dict[int, Array[float, 3]]
-    ) -> Dict[int, int]:
+        geo_model,
+        centroids: Dict[int, Array[float, 3]]
+) -> Dict[int, int]:
     """Get a look-up table to access fault block id's for each topology node
     id.
     
@@ -258,6 +260,7 @@ def get_lot_node_to_fault_block(
         lot[node] = (node - 0 - (node // n_lith)) // n_lith
     return lot
 
+
 def get_fault_ids(geo_model) -> List[int]:
     """Get fault id's of all faults in given geomodel.
     
@@ -270,12 +273,13 @@ def get_fault_ids(geo_model) -> List[int]:
     f_series_names = geo_model.faults.df[geo_model.faults.df.isFault].index
     fault_ids = [0]
     for fsn in f_series_names:
-        fid = geo_model.surfaces.df[geo_model.surfaces.df.series == fsn].id.values[0]
+        fid = \
+        geo_model.surfaces.df[geo_model.surfaces.df.series == fsn].id.values[0]
         fault_ids.append(fid)
     return fault_ids
 
 
-def get_lith_ids(geo_model, basement:bool=True) -> List[int]:
+def get_lith_ids(geo_model, basement: bool = True) -> List[int]:
     """Get lithology id's of all lithologies (except basement) in given 
     geomodel.
     
@@ -291,17 +295,18 @@ def get_lith_ids(geo_model, basement:bool=True) -> List[int]:
         if not basement:
             if fsn == "Basement":
                 continue
-        lids = geo_model.surfaces.df[geo_model.surfaces.df.series == fsn].id.values
+        lids = geo_model.surfaces.df[
+            geo_model.surfaces.df.series == fsn].id.values
         for lid in lids:
             lith_ids.append(lid)
     return lith_ids
 
 
 def get_detailed_labels(
-        geo_model, 
-        edges:Set[Tuple[int, int]],
-        centroids:Dict[int, Array[float, 3]]
-    ) -> Tuple[Set[Tuple[str, str]], Dict[str, Array[float, 3]]]:
+        geo_model,
+        edges: Set[Tuple[int, int]],
+        centroids: Dict[int, Array[float, 3]]
+) -> Tuple[Set[Tuple[str, str]], Dict[str, Array[float, 3]]]:
     """Convert given edges and centroids data into more detailed labels with
     pattern 'lithid_faultid'. 
     
@@ -335,9 +340,9 @@ def get_detailed_labels(
 
 
 def _get_edges(
-        l:Array[int, ..., ..., ...], 
-        r:Array[int, ..., ..., ...]
-    ) -> Optional[Array[int, ..., 2]]:
+        l: Array[int, ..., ..., ...],
+        r: Array[int, ..., ..., ...]
+) -> Optional[Array[int, ..., 2]]:
     """Get edges from given shifted arrays.
 
     Args:
@@ -347,20 +352,20 @@ def _get_edges(
     Returns:
         Array: Topology edges.
     """
-    shift = np.stack([l.ravel(),  r.ravel()])
+    shift = np.stack([l.ravel(), r.ravel()])
     i1, i2 = np.nonzero(np.diff(shift, axis=0))
     if len(i2) == 0:  # in case not edges are found (symmetric model along axis)
-        return np.array([[],[]]), np.array([])
+        return np.array([[], []]), np.array([])
     else:
         return np.unique(shift[:, i2], axis=1, return_counts=True)
 
 
 def clean_unconformity_topology(
-        geo_model, 
-        unconf_lith_id:int, 
-        edges:Array[int, ..., 2], 
-        centroids:Dict[int, Array[int, ..., 3]]
-    ) -> Tuple[Set[Tuple[int, int]], Dict[int, Array[int, ..., 3]]]:
+        geo_model,
+        unconf_lith_id: int,
+        edges: Array[int, ..., 2],
+        centroids: Dict[int, Array[int, ..., 3]]
+) -> Tuple[Set[Tuple[int, int]], Dict[int, Array[int, ..., 3]]]:
     """Clean unconformity topology edges and centroids. Needs to be run for
     each unconformity separately.
     
@@ -376,14 +381,14 @@ def clean_unconformity_topology(
     lot = get_lot_node_to_lith_id(geo_model, centroids)
     lot2 = get_lot_lith_to_node_id(lot)
     edges_clean = []
-    
+
     unconf_centroid = np.mean(
         [centroids[i] for i in lot2[unconf_lith_id]], axis=0
     )
     for node_id in lot2[unconf_lith_id]:
         centroids.pop(node_id)
     centroids[lot2[unconf_lith_id][0]] = unconf_centroid
-    
+
     for n1, n2 in edges:
         if n1 in lot2[unconf_lith_id]:
             n1 = lot2[unconf_lith_id][0]
@@ -392,14 +397,14 @@ def clean_unconformity_topology(
         if n1 == n2:
             continue
         edges_clean.append((n1, n2))
-    
+
     return set(edges_clean), centroids
 
 
 def jaccard_index(
-        edges1:Set[Tuple[int, int]], 
-        edges2:Set[Tuple[int, int]]
-    ) -> float:
+        edges1: Set[Tuple[int, int]],
+        edges2: Set[Tuple[int, int]]
+) -> float:
     """Jaccard index.
     
     Args:
@@ -414,7 +419,7 @@ def jaccard_index(
     return intersection_cardinality / union_cardinality
 
 
-def _get_centroids(labels:Array[int, ..., ..., ...]) -> dict:
+def _get_centroids(labels: Array[int, ..., ..., ...]) -> dict:
     """Get geobody node centroids in array coordinates.
     
     Args:
@@ -427,19 +432,19 @@ def _get_centroids(labels:Array[int, ..., ..., ...]) -> dict:
     node_locs = []
     ulabels = np.unique(labels)
     for node in ulabels:
-        node_pos = np.argwhere(labels==node)
+        node_pos = np.argwhere(labels == node)
         node_locs.append(node_pos.mean(axis=0))
-    centroids = {n:loc for n, loc in zip(ulabels, node_locs)}
+    centroids = {n: loc for n, loc in zip(ulabels, node_locs)}
     # for k, v in centroids.items():
-        # debug(f"{k}: {v}")
+    # debug(f"{k}: {v}")
     return centroids
 
 
 def get_adjacency_matrix(
-        geo_model, 
-        edges:Set[Tuple[int, int]],
+        geo_model,
+        edges: Set[Tuple[int, int]],
         centroids,
-    ) -> Array[bool, ..., ...]:
+) -> Array[bool, ..., ...]:
     """[summary]
     
     Args:
@@ -448,29 +453,29 @@ def get_adjacency_matrix(
     
     Returns:
         Array[bool, ..., ...]: [description]
-    """    
+    """
     f_ids = get_fault_ids(geo_model)
     lith_ids = get_lith_ids(geo_model)
     n = len([(l, f) for f in f_ids for l in lith_ids])
 
-    M = np.zeros((n,n))
+    M = np.zeros((n, n))
     lith_lot = get_lot_node_to_lith_id(geo_model, centroids)
     fault_lot = get_lot_node_to_fault_block(geo_model, centroids)
     for e1, e2 in edges:
-    #     print("nodes:", e1, e2)
+        #     print("nodes:", e1, e2)
         l1, l2 = lith_lot.get(e1), lith_lot.get(e2)
-    #     print("lith: ", l1, l2)
+        #     print("lith: ", l1, l2)
         f1, f2 = fault_lot.get(e1), fault_lot.get(e2)
-    #     print("fault:", f1, f2)  
-        lp1 = np.argwhere(lith_ids==l1)[0, 0]
-        lp2 = np.argwhere(lith_ids==l2)[0, 0]
-    #     print("lpos :", lp1, lp2)
+        #     print("fault:", f1, f2)
+        lp1 = np.argwhere(lith_ids == l1)[0, 0]
+        lp2 = np.argwhere(lith_ids == l2)[0, 0]
+        #     print("lpos :", lp1, lp2)
         p1 = lp1 + len(lith_ids) * f1
         p2 = lp2 + len(lith_ids) * f2
-    #     print("pos  :", p1, p2)
+        #     print("pos  :", p1, p2)
         M[p1, p2] = 1
         M[p2, p1] = 1
-    
+
     M = np.flip(np.flip(M, axis=1), axis=0)
     return M.astype(bool)
 
@@ -485,15 +490,15 @@ def _get_adj_matrix_labels(geo_model):
 
 
 def plot_adjacency_matrix(
-        geo_model, 
-        adj_matrix:Array[bool, ..., ...]
-    ):
-
+        geo_model,
+        adj_matrix: Array[bool, ..., ...]
+):
     f_ids = get_fault_ids(geo_model)
     n_faults = len(f_ids) // 2
     lith_ids = get_lith_ids(geo_model)
     n_liths = len(lith_ids)
-    adj_matrix_labels, adj_matrix_lith_labels, adj_matrix_fault_labels = _get_adj_matrix_labels(geo_model)
+    adj_matrix_labels, adj_matrix_lith_labels, adj_matrix_fault_labels = _get_adj_matrix_labels(
+        geo_model)
     # ///////////////////////////////////////////////////////
     n = len(adj_matrix_labels)
     fig, ax = plt.subplots(figsize=(n // 2.5, n // 2.5))
@@ -510,15 +515,15 @@ def plot_adjacency_matrix(
     ax.set_yticks(np.arange(n))
     ax.set_xticklabels(adj_matrix_lith_labels[::1], rotation=0)
     ax.set_yticklabels(adj_matrix_lith_labels[::1], rotation=0)
-    
+
     # ///////////////////////////////////////////////////////
     # lith tick labels colors
     colors = list(geo_model.surfaces.colors.colordict.values())
     bboxkwargs = dict(
         edgecolor='none',
     )
-    for xticklabel, yticklabel, l in zip(ax.xaxis.get_ticklabels(), 
-                                         ax.yaxis.get_ticklabels(), 
+    for xticklabel, yticklabel, l in zip(ax.xaxis.get_ticklabels(),
+                                         ax.yaxis.get_ticklabels(),
                                          adj_matrix_labels[::1]):
         color = colors[l[0] - 1]
 
@@ -545,8 +550,9 @@ def plot_adjacency_matrix(
     newax.spines['left'].set_position(('outward', 25))
     newax.set_ylim(0, n_faults * 2)
     newax.set_yticks(np.arange(1, n_faults * 2 + 1) - 0.5)
-    newax.set_yticklabels(["FB "+str(i + 1) for i in range(n_faults*2)][::1])
-    
+    newax.set_yticklabels(
+        ["FB " + str(i + 1) for i in range(n_faults * 2)][::1])
+
     # ///////////////////////////////////////////////////////
     # (dotted) lines for fb's
     dlinekwargs = dict(
@@ -556,7 +562,7 @@ def plot_adjacency_matrix(
         linewidth=1
     )
     linekwargs = dict(
-        color="black", 
+        color="black",
         linewidth=1
     )
     for i in range(0, n_faults * 2 + 1):
@@ -577,10 +583,10 @@ def plot_adjacency_matrix(
 
 
 def check_adjacency(
-        edges:set, 
-        n1:Union[int, str], 
-        n2:Union[int, str]
-    ) -> bool:
+        edges: set,
+        n1: Union[int, str],
+        n2: Union[int, str]
+) -> bool:
     """Check if given nodes n1 and n2 are adjacent in given topology
     edge set.
     
@@ -599,9 +605,9 @@ def check_adjacency(
 
 
 def get_adjacencies(
-        edges:set, 
-        node:Union[int, str]
-    ) -> set:
+        edges: set,
+        node: Union[int, str]
+) -> set:
     """Get node labels of all adjacent geobodies of geobody with given node
     in given set of edges.
     
@@ -621,7 +627,7 @@ def get_adjacencies(
     return adjacencies
 
 
-def count_unique_topologies(edges:List[Set[Tuple[int, int]]]):
+def count_unique_topologies(edges: List[Set[Tuple[int, int]]]):
     unique_edges = [edges[0]]
     unique_edges_count = [1]
     unqiue_edges_idx = [0]
