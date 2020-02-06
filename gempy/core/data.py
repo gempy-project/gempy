@@ -600,7 +600,8 @@ class Series(object):
             Series
         """
         idx = self.df.index.reorder_categories(new_categories).sort_values()
-        self.df.index = idx
+        self.df = self.df.reindex(idx, copy=False)
+
         self.update_faults_index()
         return self
 
@@ -1757,7 +1758,7 @@ class Orientations(GeometricData):
         else:
             if orientation is not None:
                 self.df.loc[idx, ['X', 'Y', 'Z', ]] = np.array([x, y, z], dtype=float)
-                self.df.loc[idx, ['azimuth', 'dip', 'polarity']] = orientation.astype(float)
+                self.df.loc[idx, ['azimuth', 'dip', 'polarity']] = np.array(orientation, dtype=float)
                 self.df.loc[idx, 'surface'] = surface
 
                 self.calculate_gradient(idx)
