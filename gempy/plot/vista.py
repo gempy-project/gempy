@@ -200,7 +200,7 @@ class Vista:
 
     def get_surface(self, fmt:str):
         i = np.where(self.model.surfaces.df.surface == fmt)[0][0]
-        ver = self.model.solutions.vertices[i]
+        ver = self.model.solutions.vertices[i]  # TODO: BUG surfaces within series are flipped in order !!!!!!!
         
         sim = self._simplices_to_pv_tri_simplices(
             self.model.solutions.edges[i]
@@ -247,36 +247,36 @@ class Vista:
         Returns:
             List[pv.PolyData]: Individual clipped horizon surfaces.
         """
-        if type(faults[0]) == str:
-            faults = [self.get_surface(f) for f in faults]
+        if hasattr(faults, "next"):
+            if type(faults[0]) == str:
+                faults = [self.get_surface(f) for f in faults]
 
         horizons = []
         if not value:
             value = np.mean(self.model.grid.regular_grid.get_dx_dy_dz()[:2])
 
-
+        # TODO: this somehow doesn't work properly with Gullfaks model
         horizons.append(
-            horizon.clip_surface(faults[0], invert=True, value=-value)
+            horizon.clip_surface(faults[0], value=-value)
         )
 
         horizons.append(
-            horizon.clip_surface(faults[-1], invert=True, value=-value)
+            horizon.clip_surface(faults[-1], invert=False, value=-value)
         )
 
         if len(faults) == 1:
             print("Returning after 1")
             return horizons
-        
+
         for f1, f2 in zip(faults[:-1], faults[1:]):
-             horizons.append(
+            horizons.append(
                 horizon.clip_surface(
                     f1, invert=False, value=value
                 ).clip_surface(
-                    f2, invert=False, value=value
+                    f2, value=-value
                 )
             )
-            
-        
+
         return horizons
 
     def plot_surfaces_all(self, fmts:Iterable[str]=None, **kwargs):
