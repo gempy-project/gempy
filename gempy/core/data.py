@@ -290,6 +290,8 @@ class Faults(object):
         self.set_fault_relation(rel_matrix=rel_matrix)
         self.n_faults = 0
 
+        self._offset_faults = False
+
     def __repr__(self):
         return self.df.to_string()
 
@@ -330,6 +332,7 @@ class Faults(object):
 
             self.df['isFinite'] = np.bitwise_and(self.df['isFault'], self.df['isFinite'])
 
+            self.set_default_faults_relations(offset_faults)
             # Update default fault relations
             for a_series in series_fault:
                 col_pos = self.faults_relations_df.columns.get_loc(a_series)
@@ -344,6 +347,23 @@ class Faults(object):
         self.n_faults = self.df['isFault'].sum()
 
         return self
+
+    def set_default_faults_relations(self, offset_faults:bool=None):
+        if offset_faults is not None:
+            self._offset_faults = offset_faults
+
+        offset_faults = self._offset_faults
+
+        # Update default fault relations
+        for a_series in self.df.groupby('isFault').get_group(True).index:
+            col_pos = self.faults_relations_df.columns.get_loc(a_series)
+            # set the faults offset all younger
+            self.faults_relations_df.iloc[col_pos, col_pos + 1:] = True
+
+            if offset_faults is False:
+                # set the faults does not offset the younger faults
+                self.faults_relations_df.iloc[col_pos] = ~self.df['isFault'] & \
+                                                         self.faults_relations_df.iloc[col_pos]
 
     def set_is_finite_fault(self, series_finite: Union[str, list, np.ndarray] = None, toggle=False):
         """
@@ -531,7 +551,7 @@ class Series(object):
 
         idx = self.df.index.add_categories(series_list)
         self.df.index = idx
-        self.update_faults_index()
+        self.update_faults_index_rename()
 
         for c in series_list:
             self.df.loc[c, 'BottomRelation'] = 'Erosion'
@@ -562,7 +582,7 @@ class Series(object):
 
         idx = self.df.index.remove_unused_categories()
         self.df.index = idx
-        self.update_faults_index()
+        self.update_faults_index_rename()
 
         if reset_order_series is True:
             self.reset_order_series()
@@ -585,7 +605,7 @@ class Series(object):
         """
         idx = self.df.index.rename_categories(new_categories)
         self.df.index = idx
-        self.update_faults_index()
+        self.update_faults_index_rename()
 
         return self
 
@@ -600,8 +620,10 @@ class Series(object):
             Series
         """
         idx = self.df.index.reorder_categories(new_categories).sort_values()
-        self.df.index = idx
-        self.update_faults_index()
+        self.df = self.df.reindex(idx, copy=False)
+        self.reset_order_series()
+        self.update_faults_index_reorder()
+
         return self
 
     def modify_order_series(self, new_value: int, series_name: str):
@@ -620,7 +642,7 @@ class Series(object):
         old_value = group[series_name]
         self.df['order_series'] = group.replace([new_value, old_value], [old_value, new_value])
         self.sort_series()
-        self.update_faults_index()
+        self.update_faults_index_reorder()
 
         return self
 
@@ -628,7 +650,7 @@ class Series(object):
         self.df.sort_values(by='order_series', inplace=True)
         self.df.index = self.df.index.reorder_categories(self.df.index.to_numpy())
 
-    def update_faults_index(self):
+    def update_faults_index_rename(self):
         idx = self.df.index
         self.faults.df.index = idx
         self.faults.faults_relations_df.index = idx
@@ -638,6 +660,16 @@ class Series(object):
         #  We need to add the qgrid special columns to categories
         self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.add_categories(
             ['index', 'qgrid_unfiltered_index'])
+
+    def update_faults_index_reorder(self):
+        idx = self.df.index
+        self.faults.df = self.faults.df.reindex(idx, copy=False)
+        self.faults.faults_relations_df = self.faults.faults_relations_df.reindex_axis(idx, axis=0)
+        self.faults.faults_relations_df = self.faults.faults_relations_df.reindex_axis(idx, axis=1)
+
+        self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.add_categories(
+            ['index', 'qgrid_unfiltered_index'])
+        self.faults.set_default_faults_relations()
 
 
 class Colors:
@@ -1451,6 +1483,10 @@ class SurfacePoints(GeometricData):
         self.df.loc[idx, ['X', 'Y', 'Z']] = coord_array.astype('float64')
 
         try:
+            if self.surfaces.df.groupby('isBasement').get_group(True)['surface'].isin(surface).any():
+                warnings.warn('Surface Points for the basement will not be used. Maybe you are missing an extra'
+                              'layer at the bottom of the pile.')
+
             self.df.loc[idx, 'surface'] = surface
         # ToDO test this
         except ValueError as error:
@@ -1757,7 +1793,7 @@ class Orientations(GeometricData):
         else:
             if orientation is not None:
                 self.df.loc[idx, ['X', 'Y', 'Z', ]] = np.array([x, y, z], dtype=float)
-                self.df.loc[idx, ['azimuth', 'dip', 'polarity']] = orientation.astype(float)
+                self.df.loc[idx, ['azimuth', 'dip', 'polarity']] = np.array(orientation, dtype=float)
                 self.df.loc[idx, 'surface'] = surface
 
                 self.calculate_gradient(idx)

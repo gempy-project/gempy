@@ -1891,9 +1891,8 @@ class TheanoGraphPro(object):
         if 'sfai' in self.verbose:
             scalar_field_at_surface_points = theano.printing.Print('sfai')(scalar_field_at_surface_points)
 
-        is_erosion = theano.printing.Print('is_erosion')(is_erosion)
         # TODO: add control flow for this side
-        mask_e = tif.ifelse(is_erosion, # If is erosion
+        mask_e = tif.ifelse(is_erosion,# If is erosion
                             T.gt(Z_x, T.min(scalar_field_at_surface_points)), # It is True the values over the last surface
                             ~ self.is_fault[n_series] * T.ones_like(Z_x, dtype='bool')) # else: all False if is Fault else all ones
 
