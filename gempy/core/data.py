@@ -355,7 +355,11 @@ class Faults(object):
         offset_faults = self._offset_faults
 
         # Update default fault relations
-        for a_series in self.df.groupby('isFault').get_group(True).index:
+        try:
+            a_series_idx = self.df.groupby('isFault').get_group(True).index
+        except KeyError:  # no faults
+            return
+        for a_series in a_series_idx:
             col_pos = self.faults_relations_df.columns.get_loc(a_series)
             # set the faults offset all younger
             self.faults_relations_df.iloc[col_pos, col_pos + 1:] = True
@@ -664,8 +668,8 @@ class Series(object):
     def update_faults_index_reorder(self):
         idx = self.df.index
         self.faults.df = self.faults.df.reindex(idx, copy=False)
-        self.faults.faults_relations_df = self.faults.faults_relations_df.reindex_axis(idx, axis=0)
-        self.faults.faults_relations_df = self.faults.faults_relations_df.reindex_axis(idx, axis=1)
+        self.faults.faults_relations_df = self.faults.faults_relations_df.reindex(idx, axis=0)
+        self.faults.faults_relations_df = self.faults.faults_relations_df.reindex(idx, axis=1)
 
         self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.add_categories(
             ['index', 'qgrid_unfiltered_index'])
