@@ -90,7 +90,7 @@ def TEST_magnetics_no_regular_grid():
     decl = 6.8116
     B_ext = 52819.8506939139e-9  # T
 
-    geo_model.set_centered_grid(np.array([0, 0, 0]), resolution=[10, 10, 15], radio=5000)
+    geo_model.create_centered_grid(np.array([0, 0, 0]), resolution=[10, 10, 15], radio=5000)
 
     Vmodel = MagneticsPreprocessing(geo_model.grid.centered_grid).set_Vs_kernel()
     gp.set_interpolator(geo_model, output=['magnetics'])
@@ -109,7 +109,7 @@ def test_center_grid_slicing(test_magnetics):
     geo_model = test_magnetics
 
     geo_model.set_centered_grid(np.array([[0, 0, 0],
-                                          [1, 1, 1]]), resolution=[10, 10, 15], radio=5000)
+                                             [1, 1, 1]]), resolution=[10, 10, 15], radio=5000)
 
     gp.compute_model(geo_model)
     print(geo_model.interpolator.theano_graph.lg0.get_value())

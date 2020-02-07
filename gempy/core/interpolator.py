@@ -872,19 +872,26 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
             self.theano_graph.grid_val_T = theano.shared(grid.astype(self.dtype), 'Constant values to interpolate.')
 
     def modify_results_matrices_pro(self):
-        """Modify all theano shared matrices to the right size according to the structure data. This method allows
+        """
+        Modify all theano shared matrices to the right size according to the structure data. This method allows
         to change the size of the results without having the recompute all series"""
 
         old_len_i = self._old_len_series
         new_len_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
             self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
-        if new_len_i.shape[0] != old_len_i[0]:
+        if new_len_i.shape[0] < old_len_i.shape[0]:
             self.set_initial_results()
+            old_len_i = old_len_i[old_len_i != 0]
+        elif new_len_i.shape[0] > old_len_i.shape[0]:
+            self.set_initial_results()
+            new_len_i = new_len_i[new_len_i != 0]
         else:
             scalar_fields_matrix = self.theano_graph.scalar_fields_matrix.get_value()
             mask_matrix = self.theano_graph.mask_matrix.get_value()
             block_matrix = self.theano_graph.block_matrix.get_value()
 
+           # new_len_i = new_len_i[new_len_i != 0]
+       #     old_len_i = old_len_i[old_len_i != 0]
             len_i_diff = new_len_i - old_len_i
             for e, i in enumerate(len_i_diff):
                 loc = self.grid.values_r.shape[0] + old_len_i[e]

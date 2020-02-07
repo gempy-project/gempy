@@ -150,8 +150,8 @@ def test_reorder_series():
     geo_model.add_series(['Fault1'])
     geo_model.set_is_fault(['Fault1'])
     geo_model.reorder_series(['Fault1', 'Cycle1'])
-    assert geo_model.series.df['BottomRelation'] == ['Fault', 'Erosion']
-    assert geo_model.series.df.index == ['Fault1', 'Cycle1']
+    assert (geo_model.series.df['BottomRelation'] == ['Fault', 'Erosion']).all()
+    assert (geo_model.series.df.index == ['Fault1', 'Cycle1']).all()
     print(geo_model.series.df)
 
 
@@ -310,8 +310,8 @@ def test_complete_model(tmpdir):
     # ----------------
     # Second Fault
     geo_model.add_series('Fault2')
-    geo_model.add_surfaces('F2')
     geo_model.set_is_fault('Fault2')
+    geo_model.add_surfaces('F2')
 
     geo_model.reorder_series(['Cycle2', 'Fault1', 'Fault2', 'Cycle1'])
     gp.map_series_to_surfaces(geo_model, {'Fault2': 'F2'})

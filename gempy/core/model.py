@@ -171,7 +171,7 @@ class DataMutation(object):
         # TODO this should go to the api and let call all different grid types
         raise NotImplementedError
 
-    @setdoc(Grid.set_regular_grid.__doc__)
+    @setdoc(Grid.create_regular_grid.__doc__)
     @setdoc_pro([ds.extent, ds.resolution])
     def set_regular_grid(self, extent, resolution):
         """
@@ -186,12 +186,12 @@ class DataMutation(object):
 
         Set regular grid docs
         """
-        self.grid.set_regular_grid(extent=extent, resolution=resolution)
+        self.grid.create_regular_grid(extent=extent, resolution=resolution)
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
-    @setdoc(Grid.set_custom_grid.__doc__, )
+    @setdoc(Grid.create_custom_grid.__doc__, )
     @setdoc_pro(ds.coord)
     def set_custom_grid(self, custom_grid):
         """
@@ -204,33 +204,33 @@ class DataMutation(object):
 
         Set custom grid Docs
         """
-        self.grid.set_custom_grid(custom_grid)
+        self.grid.create_custom_grid(custom_grid)
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
     @plot_set_topography
-    @setdoc(Grid.set_topography.__doc__)
+    @setdoc(Grid.create_topography.__doc__)
     def set_topography(self, source='random', **kwargs):
         """
         Create a topography grid and activate it.
         """
 
-        self.grid.set_topography(source, **kwargs)
+        self.grid.create_topography(source, **kwargs)
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
-    @setdoc(Grid.set_centered_grid.__doc__)
+    @setdoc(Grid.create_centered_grid.__doc__)
     def set_centered_grid(self, centers, radio, resolution=None):
-        self.grid.set_centered_grid(centers, radio, resolution=resolution)
+        self.grid.create_centered_grid(centers, radio, resolution=resolution)
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
-    @setdoc(Grid.set_section_grid.__doc__)
+    @setdoc(Grid.create_section_grid.__doc__)
     def set_section_grid(self, section_dict):
-        self.grid.set_section_grid(section_dict=section_dict)
+        self.grid.create_section_grid(section_dict=section_dict)
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid.sections

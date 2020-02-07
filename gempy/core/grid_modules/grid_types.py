@@ -82,7 +82,20 @@ class RegularGrid:
         self.resolution = np.asarray(resolution)
         self.values = self.create_regular_grid_3d(extent, resolution)
         self.length = self.values.shape[0]
+        self.dx, self.dy, self.dz = self.get_dx_dy_dz()
         return self.values
+
+    def set_topography_mask(self, topography):
+
+        ind = topography._find_indices()
+        gridz = self.values[:, 2].reshape(*self.resolution).copy()
+        for x in range(self.resolution[0]):
+            for y in range(self.resolution[1]):
+                z = ind[x, y]
+                gridz[x, y, z:] = 99999
+        mask = (gridz == 99999)
+        self.mask_topo = mask
+        return mask  # np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
 
 
 class Sections:

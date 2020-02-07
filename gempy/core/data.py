@@ -101,7 +101,7 @@ class Grid(object):
         self.centered_grid_active = False
 
         # Init basic grid empty
-        self.regular_grid = self.set_regular_grid(**kwargs)
+        self.regular_grid = self.create_regular_grid(**kwargs)
         self.regular_grid_active = False
 
     def __str__(self):
@@ -111,7 +111,7 @@ class Grid(object):
         return 'Grid Object. Values: \n' + np.array_repr(self.values)
 
     @setdoc(grid_types.RegularGrid.__doc__)
-    def set_regular_grid(self, *args, **kwargs):
+    def create_regular_grid(self, *args, **kwargs):
         """
         Set a new regular grid and activate it.
 
@@ -126,7 +126,7 @@ class Grid(object):
         return self.regular_grid
 
     @setdoc_pro(ds.coord)
-    def set_custom_grid(self, custom_grid: np.ndarray):
+    def create_custom_grid(self, custom_grid: np.ndarray):
         """
         Set a new regular grid and activate it.
 
@@ -137,7 +137,7 @@ class Grid(object):
         self.custom_grid = grid_types.CustomGrid(custom_grid)
         self.set_active('custom')
 
-    def set_topography(self, source='random', **kwargs):
+    def create_topography(self, source='random', **kwargs):
         """
         Create a topography grid and activate it.
         Args:
@@ -183,13 +183,13 @@ class Grid(object):
         self.set_active('topography')
 
     @setdoc(grid_types.Sections.__doc__)
-    def set_section_grid(self, section_dict):
+    def create_section_grid(self, section_dict):
         self.sections = grid_types.Sections(regular_grid=self.regular_grid, section_dict=section_dict)
         self.set_active('sections')
         return self.sections
 
     @setdoc(grid_types.CenteredGrid.set_centered_grid.__doc__)
-    def set_centered_grid(self, centers, radio, resolution=None):
+    def create_centered_grid(self, centers, radio, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
         self.centered_grid = grid_types.CenteredGrid(centers, radio, resolution)
        # self.active_grids = np.zeros(4, dtype=bool)
@@ -354,16 +354,21 @@ class Faults(object):
 
         offset_faults = self._offset_faults
 
-        # Update default fault relations
-        for a_series in self.df.groupby('isFault').get_group(True).index:
-            col_pos = self.faults_relations_df.columns.get_loc(a_series)
-            # set the faults offset all younger
-            self.faults_relations_df.iloc[col_pos, col_pos + 1:] = True
+        try:
+            # Update default fault relations
+            for a_series in self.df.groupby('isFault').get_group(True).index:
+                col_pos = self.faults_relations_df.columns.get_loc(a_series)
+                # set the faults offset all younger
+                self.faults_relations_df.iloc[col_pos, col_pos + 1:] = True
 
-            if offset_faults is False:
-                # set the faults does not offset the younger faults
-                self.faults_relations_df.iloc[col_pos] = ~self.df['isFault'] & \
-                                                         self.faults_relations_df.iloc[col_pos]
+                if offset_faults is False:
+                    # set the faults does not offset the younger faults
+                    self.faults_relations_df.iloc[col_pos] = ~self.df['isFault'] & \
+                                                             self.faults_relations_df.iloc[col_pos]
+            return True
+
+        except KeyError:
+            return False
 
     def set_is_finite_fault(self, series_finite: Union[str, list, np.ndarray] = None, toggle=False):
         """
