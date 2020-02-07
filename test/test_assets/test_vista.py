@@ -7,7 +7,7 @@ from pickle import dump, load
 input_path = os.path.dirname(__file__) + '/../../notebooks/data'
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture
 def vista_obj() -> vs.Vista:
     """Return a GemPy Vista instance with basic geomodel attached."""
     geo_model = gp.create_data(
@@ -25,7 +25,7 @@ def vista_obj() -> vs.Vista:
     )
     geo_model.set_is_fault(['Fault_Series'])
 
-    with open("input_data/geomodel_sol.p", "rb") as f:
+    with open("input_data/geomodel_fabian_sol.p", "rb") as f:
         geo_model.solutions = load(f)
 
     return vs.Vista(geo_model)
