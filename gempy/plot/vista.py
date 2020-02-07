@@ -142,7 +142,7 @@ class Vista:
                 self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
             )
         if self._actor_exists(mesh):
-                return
+            return []
 
         self.p.add_mesh(
             mesh,
@@ -150,17 +150,21 @@ class Vista:
             **kwargs
         )
         self._actors.append(mesh)
+        return [mesh]
 
     def plot_orientations(self, fmt:str, length:float=None, **kwargs):
+        meshes = []
         i = self.model.orientations.df.groupby("surface").groups[fmt]
         if len(i) == 0:
-            return
+            return meshes
         if not length:
             length = abs(
                 np.min(
-                    [np.diff(self.extent[:2]), 
-                     np.diff(self.extent[2:4]), 
-                     np.diff(self.extent[4:])]
+                    [
+                        np.diff(self.extent[:2]),
+                        np.diff(self.extent[2:4]),
+                        np.diff(self.extent[4:])
+                    ]
                 )
             ) / 10
 
@@ -172,33 +176,45 @@ class Vista:
             line_width=3,
         )
         line_kwargs.update(kwargs)
-        
+
         for pt, nrm in zip(pts, nrms):
             mesh = pv.Line(
                 pointa=pt, 
                 pointb=pt+length*nrm,
             )
             if self._actor_exists(mesh):
-                return
+                continue
             self.p.add_mesh(
                 mesh, 
                 **line_kwargs
             )
             self._actors.append(mesh)
+            meshes.append(mesh)
+        return meshes
 
     def plot_surface_points_all(self, **kwargs):
+        meshes = []
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":
                 continue
-            self.plot_surface_points(fmt, **kwargs)
+            new_meshes = self.plot_surface_points(fmt, **kwargs)
+            for mesh in new_meshes:
+                if mesh is not None:
+                    meshes.append(mesh)
+        return meshes
 
     def plot_orientations_all(self, **kwargs):
+        meshes = []
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":
                 continue
-            self.plot_orientations(fmt, **kwargs)
+            orient_meshes = self.plot_orientations(fmt, **kwargs)
+            for orient_mesh in orient_meshes:
+                if orient_mesh is not None:
+                    meshes.append(orient_mesh)
+        return meshes
 
-    def get_surface(self, fmt:str):
+    def get_surface(self, fmt:str) -> pv.PolyData:
         i = np.where(self.model.surfaces.df.surface == fmt)[0][0]
         ver = self.model.solutions.vertices[i]  # TODO: BUG surfaces within series are flipped in order !!!!!!!
         
@@ -208,25 +224,18 @@ class Vista:
         mesh = pv.PolyData(ver, sim)
         return mesh
 
-    def plot_surface(self, fmt:str, clip:Union[bool, Iterable[pv.PolyData]]=False, **kwargs):
-        mesh = [self.get_surface(fmt)]
+    def plot_surface(self, fmt:str, **kwargs):
+        mesh = self.get_surface(fmt)
         if self._actor_exists(mesh):
-            return
-
-        if clip:
-            mesh = self.clip_horizon_with_faults(mesh[0], clip)
+            return []
 
         mesh_kwargs = dict(color=self._color_lot[fmt])
         mesh_kwargs.update(kwargs)
         
-        for m in mesh:
-            actor = self.p.add_mesh(
-                m,
-                **mesh_kwargs
-            )
-            self._actors.append(m)
+        self.p.add_mesh(mesh, **mesh_kwargs)
+        self._actors.append(mesh)
         self._surface_actors[fmt] = mesh
-        return mesh
+        return [mesh]
 
     def clip_horizon_with_faults(
             self,
@@ -287,10 +296,14 @@ class Vista:
             fmts (List[str], optional): Names of surfaces to plot. 
                 Defaults to None.
         """
+        meshes = []
         if not fmts:
             fmts = self.model.surfaces.df.surface[:-1].values
         for fmt in fmts:
-            self.plot_surface(fmt, **kwargs)
+            m = self.plot_surface(fmt, **kwargs)
+            for mesh in m:
+                meshes.append(mesh)
+        return meshes
 
     @staticmethod
     def _simplices_to_pv_tri_simplices(sim:Array[int, ..., 3]) -> Array[int, ..., 4]:
@@ -299,7 +312,7 @@ class Vista:
         n_edges = np.ones(sim.shape[0]) * 3
         return np.append(n_edges[:, None], sim, axis=1)
 
-    def plot_structured_grid(self, name:str, **kwargs):
+    def plot_structured_grid(self, name:str, **kwargs) -> list:
         """Plot a structured grid of the geomodel.
 
         Args:
@@ -328,9 +341,10 @@ class Vista:
 
         mesh.point_arrays[name] = vals
         if self._actor_exists(mesh):
-            return
+            return []
         self._actors.append(mesh)
         self.p.add_mesh(mesh, **kwargs)
+        return [mesh]
 
     def _callback_surface_points(self, pos, widget):
         i = widget.WIDGET_INDEX
@@ -531,7 +545,8 @@ class Vista:
             try:
                 topography = self.model.grid.topography.values
             except AttributeError:
-                print("Unable to plot topography: Given geomodel instance does not contain topography grid.")
+                print("Unable to plot topography: Given geomodel instance "
+                      "does not contain topography grid.")
                 return
 
         polydata = pv.PolyData(topography)
@@ -569,6 +584,7 @@ class Vista:
         )
         self._surface_actors["topography"] = topography_actor
         return topography_actor
+
 
 class _Vista:
     """
