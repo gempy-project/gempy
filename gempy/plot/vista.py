@@ -420,7 +420,7 @@ class Vista:
                 continue
             self.plot_surface_points_interactive(fmt, **kwargs)
 
-    def plot_orientations_interactive(self, fmt:str, **kwargs):
+    def plot_orientations_interactive(self, fmt:str):
         self._live_updating = True
         i = self.model.orientations.df.groupby("surface").groups[fmt]
         if len(i) == 0:
@@ -442,12 +442,12 @@ class Vista:
             )
             widget.WIDGET_INDEX = index
 
-    def plot_orientations_interactive_all(self, **kwargs):
+    def plot_orientations_interactive_all(self):
         self._live_updating = True
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":
                 continue
-            self.plot_orientations_interactive(fmt, **kwargs)
+            self.plot_orientations_interactive(fmt)
 
     def _scale_topology_centroids(
             self, 
