@@ -73,7 +73,7 @@ def test_magnetics_api():
     return geo_model
 
 
-def TEST_magnetics_no_regular_grid():
+def test_magnetics_no_regular_grid():
     # TODO add the check
 
     geo_model = gp.create_model('test_center_grid_slicing')
@@ -90,7 +90,7 @@ def TEST_magnetics_no_regular_grid():
     decl = 6.8116
     B_ext = 52819.8506939139e-9  # T
 
-    geo_model.create_centered_grid(np.array([0, 0, 0]), resolution=[10, 10, 15], radio=5000)
+    geo_model.set_centered_grid(np.array([0, 0, 0]), resolution=[10, 10, 15], radio=5000)
 
     Vmodel = MagneticsPreprocessing(geo_model.grid.centered_grid).set_Vs_kernel()
     gp.set_interpolator(geo_model, output=['magnetics'])

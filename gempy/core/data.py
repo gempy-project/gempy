@@ -101,7 +101,7 @@ class Grid(object):
         self.centered_grid_active = False
 
         # Init basic grid empty
-        self.regular_grid = self.create_regular_grid(**kwargs)
+        self.regular_grid = self.create_regular_grid(set_active=False, **kwargs)
         self.regular_grid_active = False
 
     def __str__(self):
@@ -111,7 +111,7 @@ class Grid(object):
         return 'Grid Object. Values: \n' + np.array_repr(self.values)
 
     @setdoc(grid_types.RegularGrid.__doc__)
-    def create_regular_grid(self, *args, **kwargs):
+    def create_regular_grid(self, set_active=True, *args, **kwargs):
         """
         Set a new regular grid and activate it.
 
@@ -122,7 +122,8 @@ class Grid(object):
         RegularGrid Docs
         """
         self.regular_grid = grid_types.RegularGrid(*args, **kwargs)
-        self.set_active('regular')
+        if set_active is True:
+            self.set_active('regular')
         return self.regular_grid
 
     @setdoc_pro(ds.coord)
@@ -2825,6 +2826,10 @@ class KrigingParameters(object):
         """
         if extent is None:
             extent = self.grid.regular_grid.extent
+            if np.sum(extent) == 0 and self.grid.values.shape[0] > 1:
+                extent = np.concatenate((np.min(self.grid.values, axis=0),
+                                         np.max(self.grid.values, axis=0)))[[0, 3, 1, 4, 2, 5]]
+
         try:
             range_var = np.sqrt(
                 (extent[0] - extent[1]) ** 2 +

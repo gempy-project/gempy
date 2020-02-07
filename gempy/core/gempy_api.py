@@ -224,7 +224,7 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
     if 'topology' in output:
 
         # This id is necessary for topology
-        id_list = geo_model.surfacesdf.groupby('isFault').cumcount() + 1
+        id_list = geo_model.surfaces.df.groupby('isFault').cumcount() + 1
         geo_model.add_surface_values(id_list, 'topology_id')
         geo_model.interpolator.set_theano_shared_topology()
 
@@ -312,46 +312,6 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
     if output is not None:
         warnings.warn('Argument output has no effect anymore and will be deprecated in GemPy 2.2.'
                       'Set the output only in gempy.set_interpolator.', DeprecationWarning,)
-
-    # if output is None:
-    #     # If output is not passed we check for the type of interpolator. If that also fail
-    #     # we try simply geology
-    #     try:
-    #         output = model.interpolator._type
-    #     except AttributeError:
-    #         output = 'geology'
-    #
-    # if output == 'geology':
-    #     assert model.interpolator.theano_function is not None, 'You need to compile the theano function first'
-    #     i = model.interpolator.get_python_input_block(append_control=True, fault_drift=None)
-    #     model.interpolator.reset_flow_control_initial_results(reset_weights, reset_scalar, reset_block)
-    #
-    #     sol = model.interpolator.theano_function(*i)
-    # elif output == 'gravity':
-    #     model.set_active_grid('centered', reset=False)
-    #     try:
-    #         i = model.interpolator.get_python_input_grav(append_control=True, fault_drift=None)
-    #         sol = model.interpolator.theano_function(*i)
-    #
-    #     except AttributeError:
-    #         i = model.interpolator_gravity.get_python_input_grav()
-    #         sol = model.interpolator_gravity.theano_function(*i)
-    #
-    #     # assert isinstance(model.interpolator_gravity, InterpolatorGravity), 'You need to set the gravity interpolator' \
-    #     #                                                                     'first. See `Model.set_gravity_interpolator'
-    #     #
-    #     # model.set_active_grid('centered')
-    #     # model.interpolator_gravity.modify_results_matrices_pro()
-    #     # model.interpolator_gravity.set_theano_shared_structure()
-    #     #
-    #     # # TODO So far I reset all shared parameters to be sure. In the future this should be optimize as interpolator
-    #     # model.interpolator_gravity.set_theano_shared_tz_kernel()
-    #     # # model.interpolator_gravity.set_all_shared_parameters(reset_ctrl=True)
-    #     # sol = model.interpolator_gravity.theano_function(*i)
-    #
-    #     #set_solutions = False
-    # else:
-    #     raise NotImplementedError('Only geology and gravity are implemented so far')
 
     i = model.interpolator.get_python_input_block(append_control=True, fault_drift=None)
     model.interpolator.reset_flow_control_initial_results(reset_weights, reset_scalar, reset_block)

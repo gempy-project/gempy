@@ -186,7 +186,15 @@ class DataMutation(object):
 
         Set regular grid docs
         """
-        self.grid.create_regular_grid(extent=extent, resolution=resolution)
+        if self.grid.regular_grid is None:
+            self.grid.create_regular_grid(extent=extent, resolution=resolution)
+        else:
+            self.grid.regular_grid.set_regular_grid(extent=extent, resolution=resolution)
+            self.grid.set_active('regular')
+
+        if self.grid.topography is not None:
+            self.grid.regular_grid.set_topography_mask(self.grid.topography)
+
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
@@ -204,7 +212,12 @@ class DataMutation(object):
 
         Set custom grid Docs
         """
-        self.grid.create_custom_grid(custom_grid)
+        if self.grid.custom_grid is None:
+            self.grid.create_custom_grid(custom_grid)
+        else:
+            self.grid.custom_grid.set_custmo_grid(custom_grid)
+            self.grid.update_grid_values()
+
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
@@ -223,14 +236,23 @@ class DataMutation(object):
 
     @setdoc(Grid.create_centered_grid.__doc__)
     def set_centered_grid(self, centers, radio, resolution=None):
-        self.grid.create_centered_grid(centers, radio, resolution=resolution)
+        if self.grid.centered_grid is None:
+            self.grid.create_centered_grid(centers, radio, resolution=resolution)
+        else:
+            self.grid.centered_grid.set_centered_grid(centers=centers, radio=radio, resolution=resolution)
+            self.grid.update_grid_values()
+
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
     @setdoc(Grid.create_section_grid.__doc__)
     def set_section_grid(self, section_dict):
-        self.grid.create_section_grid(section_dict=section_dict)
+        if self.grid.sections is None:
+            self.grid.create_section_grid(section_dict=section_dict)
+        else:
+            self.grid.sections.set_sections(section_dict)
+
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid.sections

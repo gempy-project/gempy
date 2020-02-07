@@ -890,8 +890,6 @@ class InterpolatorModel(Interpolator, InterpolatorGravity, InterpolatorMagnetics
             mask_matrix = self.theano_graph.mask_matrix.get_value()
             block_matrix = self.theano_graph.block_matrix.get_value()
 
-           # new_len_i = new_len_i[new_len_i != 0]
-       #     old_len_i = old_len_i[old_len_i != 0]
             len_i_diff = new_len_i - old_len_i
             for e, i in enumerate(len_i_diff):
                 loc = self.grid.values_r.shape[0] + old_len_i[e]
