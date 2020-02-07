@@ -155,7 +155,7 @@ def test_reorder_series():
     print(geo_model.series.df)
 
 
-def test_complete_model():
+def test_complete_model(tmpdir):
     # ### Initializing the model:
     compute = True
 
@@ -177,7 +177,7 @@ def test_complete_model():
     ax2.set_xlim(geo_model.grid.regular_grid.extent[0], geo_model.grid.regular_grid.extent[1])
     ax2.set_ylim(geo_model.grid.regular_grid.extent[4], geo_model.grid.regular_grid.extent[5])
 
-    geo_model.add_surfaces(['D', 'C', 'B'])
+    geo_model.add_surfaces(['D', 'C', 'B', 'A'])
 
     # surface B
     geo_model.add_surface_points(X=584, Y=285, Z=500, surface='B')
@@ -201,7 +201,7 @@ def test_complete_model():
     p2d.plot_data(ax, direction='z')
     p2d.plot_data(ax2, direction='y')
 
-    gp.compute_model(geo_model)
+    gp.compute_model(geo_model) if compute else None
     p2d.plot_contacts(ax, direction='z', cell_number=-10)
     p2d.plot_lith(ax, direction='z', cell_number=-10)
 
@@ -216,7 +216,6 @@ def test_complete_model():
 
     geo_model.add_series(['Fault1'])
     geo_model.set_is_fault(['Fault1'])
-    #geo_model.reorder_series(['Fault1', 'Cycle1'])
 
     geo_model.modify_order_series(1, 'Fault1')
     geo_model.add_surfaces(['F1'])
@@ -225,14 +224,61 @@ def test_complete_model():
     # Add input data of the fault
     geo_model.add_surface_points(X=1203, Y=138, Z=600, surface='F1')
     geo_model.add_surface_points(X=1250, Y=1653, Z=800, surface='F1')
-    # geo_model.add_surface_points(X=1280, Y=2525, Z=500, surface='F1')
     # Add orientation
     geo_model.add_orientations(X=1280, Y=2525, Z=500, surface='F1', orientation=[272, 90, -1])
 
+    gp.compute_model(geo_model)
 
+    p2d.remove(ax)
+    p2d.plot_data(ax, direction='z', cell_number=-10)
+    p2d.plot_contacts(ax, direction='z', cell_number=-10)
+    p2d.plot_lith(ax, direction='z', cell_number=-10)
+
+    p2d.remove(ax2)
+    # Plot
+    p2d.plot_data(ax2, cell_number=5)
+    p2d.plot_lith(ax2, cell_number=5)
+    p2d.plot_contacts(ax2, cell_number=5)
+
+    # surface B
+    geo_model.add_surface_points(X=1447, Y=2554, Z=500, surface='B')
+    geo_model.add_surface_points(X=1511, Y=2200, Z=500, surface='B')
+    geo_model.add_surface_points(X=1549, Y=629, Z=600, surface='B')
+    geo_model.add_surface_points(X=1630, Y=287, Z=600, surface='B')
+    # surface C
+    geo_model.add_surface_points(X=1891, Y=2063, Z=600, surface='C')
+    geo_model.add_surface_points(X=1605, Y=1846, Z=700, surface='C')
+    geo_model.add_surface_points(X=1306, Y=1641, Z=800, surface='C')
+    geo_model.add_surface_points(X=1476, Y=979, Z=800, surface='C')
+    geo_model.add_surface_points(X=1839, Y=962, Z=700, surface='C')
+    geo_model.add_surface_points(X=2185, Y=893, Z=600, surface='C')
+    geo_model.add_surface_points(X=2245, Y=547, Z=600, surface='C')
+    # Surface D
+    geo_model.add_surface_points(X=2809, Y=2567, Z=600, surface='D')
+    geo_model.add_surface_points(X=2843, Y=2448, Z=600, surface='D')
+    geo_model.add_surface_points(X=2873, Y=876, Z=700, surface='D')
+
+    # Compute
+    gp.compute_model(geo_model)
+
+    # Plot
+    p2d.remove(ax)
+    p2d.plot_data(ax, direction='z', cell_number=-10)
+    p2d.plot_contacts(ax, direction='z', cell_number=-10)
+    p2d.plot_lith(ax, direction='z', cell_number=-10)
+
+    p2d.remove(ax2)
+    p2d.plot_lith(ax2, cell_number=5)
+    p2d.plot_data(ax2, cell_number=5)
+
+    plt.savefig(os.path.dirname(__file__) + '/../figs/test_pile_complete')
 
     # ----------------
     # Second cycle
+    geo_model.add_series(['Cycle2'])
+    geo_model.add_surfaces(['G', 'H'])
+    gp.map_series_to_surfaces(geo_model, {'Cycle2': ['G', 'H']})
+    geo_model.reorder_series(['Cycle2', 'Fault1', 'Cycle1'])
 
     # Surface G
     geo_model.add_surface_points(X=1012, Y=1493, Z=900, surface='G')
@@ -244,4 +290,79 @@ def test_complete_model():
     # Orientation
     geo_model.add_orientations(X=1996, Y=47, Z=800, surface='G', orientation=[272, 5.54, 1])
 
+    # Compute
+    gp.compute_model(geo_model)
+
+    # Plot
+    p2d.remove(ax)
+    p2d.plot_data(ax, direction='z', cell_number=-10)
+    p2d.plot_contacts(ax, direction='z', cell_number=-10)
+    p2d.plot_lith(ax, direction='z', cell_number=-10)
+
+    p2d.remove(ax2)
+    p2d.plot_lith(ax2, cell_number=5)
+    p2d.plot_data(ax2, cell_number=5)
+    p2d.plot_contacts(ax2, cell_number=5)
+
     plt.savefig(os.path.dirname(__file__) + '/../figs/test_pile_complete')
+
+
+    # ----------------
+    # Second Fault
+    geo_model.add_series('Fault2')
+    geo_model.add_surfaces('F2')
+    geo_model.set_is_fault('Fault2')
+
+    geo_model.reorder_series(['Cycle2', 'Fault1', 'Fault2', 'Cycle1'])
+    gp.map_series_to_surfaces(geo_model, {'Fault2': 'F2'})
+
+    geo_model.add_surface_points(X=3232, Y=178, Z=1000, surface='F2')
+    geo_model.add_surface_points(X=3132, Y=951, Z=700, surface='F2')
+    # geo_model.add_surface_points(X=2962, Y=2184, Z=700, surface='F2')
+
+    geo_model.add_orientations(X=3132, Y=951, Z=700, surface='F2', orientation=[95, 90, 1])
+
+    # Compute
+    gp.compute_model(geo_model)
+
+    # Plot
+    p2d.remove(ax)
+    p2d.plot_data(ax, direction='z', cell_number=5, legend='force')
+    p2d.plot_lith(ax, direction='z', cell_number=5)
+    p2d.plot_contacts(ax, direction='z', cell_number=5)
+
+    p2d.remove(ax2)
+    p2d.plot_lith(ax2, cell_number=5)
+    p2d.plot_data(ax2, cell_number=5)
+    p2d.plot_contacts(ax2, cell_number=5)
+
+    plt.savefig(os.path.dirname(__file__) + '/../figs/test_pile_complete')
+
+    geo_model.add_surface_points(X=3135, Y=1300, Z=700, surface='D')
+    geo_model.add_surface_points(X=3190, Y=969, Z=700, surface='D')
+
+    geo_model.add_surface_points(X=3031, Y=2725, Z=800, surface='G')
+    geo_model.add_surface_points(X=3018, Y=1990, Z=800, surface='G')
+    geo_model.add_surface_points(X=3194, Y=965, Z=700, surface='G')
+
+    geo_model.add_surface_points(X=3218, Y=1818, Z=890, surface='H')
+    geo_model.add_surface_points(X=3934, Y=1207, Z=810, surface='H')
+
+    # Compute
+    gp.compute_model(geo_model)
+
+    # Plot
+    p2d.remove(ax)
+    p2d.plot_data(ax, direction='z', cell_number=5, legend='force')
+    p2d.plot_lith(ax, direction='z', cell_number=5)
+    p2d.plot_contacts(ax, direction='z',cell_number=5)
+
+    p2d.remove(ax2)
+    p2d.plot_lith(ax2, cell_number=5)
+    p2d.plot_data(ax2, cell_number=5)
+    p2d.plot_contacts(ax2, cell_number=5)
+
+    plt.savefig(os.path.dirname(__file__) + '/../figs/test_pile_complete')
+
+
+
