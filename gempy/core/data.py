@@ -103,6 +103,7 @@ class Grid(object):
         # Init basic grid empty
         self.regular_grid = self.create_regular_grid(set_active=False, **kwargs)
         self.regular_grid_active = False
+        self.update_grid_values()
 
     def __str__(self):
         return 'Grid Object. Values: \n' + np.array2string(self.values)
@@ -2878,8 +2879,8 @@ class KrigingParameters(object):
         if u_grade is None:
 
             len_series_i = self.structure.df.loc['values', 'len series surface_points']
-            u_grade = np.zeros_like(len_series_i)
-            u_grade[(len_series_i > 1)] = 1
+            u_grade = np.ones_like(len_series_i)
+            # u_grade[(len_series_i > 1)] = 1
 
         else:
             u_grade = np.array(u_grade)
