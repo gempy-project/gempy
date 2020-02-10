@@ -112,7 +112,7 @@ class Grid(object):
         return 'Grid Object. Values: \n' + np.array_repr(self.values)
 
     @setdoc(grid_types.RegularGrid.__doc__)
-    def create_regular_grid(self, set_active=True, *args, **kwargs):
+    def create_regular_grid(self, extent=None, resolution=None, set_active=True, *args, **kwargs):
         """
         Set a new regular grid and activate it.
 
@@ -122,7 +122,7 @@ class Grid(object):
 
         RegularGrid Docs
         """
-        self.regular_grid = grid_types.RegularGrid(*args, **kwargs)
+        self.regular_grid = grid_types.RegularGrid(extent, resolution, **kwargs)
         if set_active is True:
             self.set_active('regular')
         return self.regular_grid

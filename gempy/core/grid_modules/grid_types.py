@@ -28,7 +28,7 @@ class RegularGrid:
         dz (float): size of the cells on z
 
     """
-    def __init__(self, extent=None, resolution=None):
+    def __init__(self, extent=None, resolution=None, **kwargs):
         self.resolution = np.ones((0, 3), dtype='int64')
         self.extent = np.zeros(6, dtype='float64')
         self.values = np.zeros((0, 3))
