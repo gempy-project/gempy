@@ -555,47 +555,61 @@ def combine_sub_grids(target_grid, grids_and_solutions):
     # lith block
     v0_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
     v1_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
+    v2_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
     v4_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
     v6_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
+    v7_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
     # make big loop
-    vals = [[], [], [], [], [], []]
-    val_tails = [[], [], [], []]
+    vals = [[], [], [], [], [], [], [], [], []]
+    val_tails = [[], [], [], [], [], [], [], [], [], []]
     for g, s in grids_and_solutions:
         l0, l1 = g.get_grid_args('regular')
         x_l = g.length[-1]
         # extract values we need
-        v0 = np.asarray(s[0][0, l0: l1])
-        v1 = np.asarray(s[1][0, 0, l0: l1])
-        v2 = s[2]
-        v3 = s[3]
-        v4 = np.asarray(s[4][l0: l1])
-        v5 = s[5]
-        v6 = np.asarray(s[6][0, l0: l1])
+        v0 = np.asarray(s[0][0, l0: l1]) # lithology / properties
+        v0_tail = s[0][:, x_l:].ravel()
+        v1 = np.asarray(s[1][:, :, l0: l1]) # blocks
+        v1_tail = s[1][:, :, x_l:].ravel() # block at surface points
+        v2 = np.asarray(s[2][0, l0: l1]) # fault block
+        v2_tail = s[2][:, x_l:].ravel() # unknown fault tail
+        v3 = np.asarray(s[3]) # weights
+        v4 = np.asarray(s[4][0, l0: l1]) # scalar field
+        v4_tail = s[4][:, x_l:].ravel() # scalar field at surface
+        v5 = np.asarray(s[5]) # scalar field at surface points
+        v6 = np.asarray(s[6][0, l0: l1]) # mask matrix
+        v6_tail = s[6][:, x_l:].ravel() # mask at surface points
+        v7 = np.asarray(s[7][0, l0: l1]) # fault mask
+        v7_tail = s[7][:, x_l:].ravel()
         # assign the xarray using the coordinates of the grid
         update_xarray_grid(v0_target, g, v0)
         update_xarray_grid(v1_target, g, v1)
+        update_xarray_grid(v2_target, g, v2)
         update_xarray_grid(v4_target, g, v4)
         update_xarray_grid(v6_target, g, v6)
+        update_xarray_grid(v7_target, g, v7)
         # update vals accumulation
-        vals[2].append(v2)
         vals[3].append(v3)
         vals[5].append(v5)
         # update tails for lack of a better term
-        val_tails[0].append(s[0][:, x_l:].ravel())
-        val_tails[1].append(s[1][:, :, x_l:].ravel())
-        val_tails[2].append(s[3][:, x_l:].ravel())
-        val_tails[3].append(s[5][:, x_l:].ravel())
+        val_tails[0].append(v0_tail)
+        val_tails[1].append(v1_tail)
+        val_tails[2].append(v2_tail)
+        val_tails[4].append(v4_tail)
+        val_tails[6].append(v6_tail)
+        val_tails[7].append(v7_tail)
     # combine tails
     for i, tail in enumerate(val_tails):
-        dtype = tail[0].dtype
-        val_tails[i] = np.mean(tail, axis=0)
-        if dtype == np.bool:
-            val_tails[i] = np.array(val_tails[i]).astype(bool)
-
+        if len(tail) > 0:
+            dtype = tail[0].dtype
+            val_tails[i] = np.mean(tail, axis=0)
+            if dtype == np.bool:
+                val_tails[i] = np.array(val_tails[i]).astype(bool)
     vals[0] = np.concatenate((v0_target.values.ravel(), val_tails[0]))[np.newaxis, :]
     vals[1] = np.concatenate((v1_target.values.ravel(), val_tails[1]))[np.newaxis, np.newaxis, :]
-    vals[2] = np.mean(vals[2], axis=0)
-    vals[3] = np.concatenate((v3_target.values.ravel(), val_tails[2]))[np.newaxis, :]
-    vals[4] = np.mean(vals[4], axis=0)
-    vals[5] = np.concatenate((v5_target.values.ravel().astype(bool), val_tails[3]))[np.newaxis, :]
+    vals[2] = np.concatenate((v2_target.values.ravel(), val_tails[2]))[np.newaxis, :]
+    vals[3] = np.mean(vals[3], axis=0)
+    vals[4] = np.concatenate((v4_target.values.ravel(), val_tails[4]))[np.newaxis, :]
+    vals[5] = np.mean(vals[5], axis=0)
+    vals[6] = np.concatenate((v6_target.values.ravel().astype(bool), val_tails[6]))[np.newaxis, :]
+    vals[7] = np.concatenate((v7_target.values.ravel().astype(bool), val_tails[7]))[np.newaxis, :]
     return vals
