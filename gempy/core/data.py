@@ -671,8 +671,8 @@ class Series(object):
     def update_faults_index_reorder(self):
         idx = self.df.index
         self.faults.df = self.faults.df.reindex(idx, copy=False)
-        self.faults.faults_relations_df = self.faults.faults_relations_df.reindex_axis(idx, axis=0)
-        self.faults.faults_relations_df = self.faults.faults_relations_df.reindex_axis(idx, axis=1)
+        self.faults.faults_relations_df = self.faults.faults_relations_df.reindex(idx, axis=0)
+        self.faults.faults_relations_df = self.faults.faults_relations_df.reindex(idx, axis=1)
 
         self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.add_categories(
             ['index', 'qgrid_unfiltered_index'])
