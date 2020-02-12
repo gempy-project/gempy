@@ -552,10 +552,11 @@ def update_xarray_grid(target_grid, src_grid, values):
 def combine_sub_grids(target_grid, grids_and_solutions):
     res = target_grid.regular_grid.resolution
     c = get_grid_coords(target_grid)
+    # lith block
     v0_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
     v1_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
-    v3_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
-    v5_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
+    v4_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
+    v6_target = xr.DataArray(np.zeros(res), coords=c, dims=['x', 'y', 'z'])
     # make big loop
     vals = [[], [], [], [], [], []]
     val_tails = [[], [], [], []]
@@ -565,16 +566,20 @@ def combine_sub_grids(target_grid, grids_and_solutions):
         # extract values we need
         v0 = np.asarray(s[0][0, l0: l1])
         v1 = np.asarray(s[1][0, 0, l0: l1])
-        v3 = np.asarray(s[3][0, l0: l1])
-        v5 = np.asarray(s[5][0, l0: l1])
+        v2 = s[2]
+        v3 = s[3]
+        v4 = np.asarray(s[4][l0: l1])
+        v5 = s[5]
+        v6 = np.asarray(s[6][0, l0: l1])
         # assign the xarray using the coordinates of the grid
         update_xarray_grid(v0_target, g, v0)
         update_xarray_grid(v1_target, g, v1)
-        update_xarray_grid(v3_target, g, v3)
-        update_xarray_grid(v5_target, g, v5)
+        update_xarray_grid(v4_target, g, v4)
+        update_xarray_grid(v6_target, g, v6)
         # update vals accumulation
-        vals[2].append(s[2])
-        vals[4].append(s[4])
+        vals[2].append(v2)
+        vals[3].append(v3)
+        vals[5].append(v5)
         # update tails for lack of a better term
         val_tails[0].append(s[0][:, x_l:].ravel())
         val_tails[1].append(s[1][:, :, x_l:].ravel())
