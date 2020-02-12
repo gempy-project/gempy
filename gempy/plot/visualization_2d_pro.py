@@ -37,13 +37,15 @@ from os import path
 import sys
 # This is for sphenix to find the packages
 sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
-from gempy.core.solution import Solution
+# from gempy.core.solution import Solution
 # import gempy.plot.helpers as plothelp
 
 sns.set_context('talk')
 plt.style.use(['seaborn-white', 'seaborn-talk'])
-from scipy.interpolate import RegularGridInterpolator
-from arviz.plots.jointplot import _var_names, _scale_fig_size
+# from scipy.interpolate import RegularGridInterpolator
+# from arviz.plots.jointplot import _var_names, _scale_fig_size
+import matplotlib as mpl
+
 import scipy.spatial.distance as dd
 warnings.filterwarnings("ignore", message="No contour levels were found")
 
@@ -104,7 +106,7 @@ class Plot2D:
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
         startend = list(self.model.grid.sections.section_dict.values())[j]
         p1, p2 = startend[0], startend[1]
-        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, n, n)
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, n)
         if len(np.unique(xy[:, 0])) == 1:
             labels = xy[:, 1].astype(int)
             axname = 'Y'
@@ -196,6 +198,7 @@ class Plot2D:
             _a, _b, _c, extent_val, x, y = self._slice(direction, cell_number)[:-2]
             ax.set_xlabel(x)
             ax.set_ylabel(y)
+            ax.set(title='Cell Number: '+str(cell_number) + ' Direction: ' + str(direction))
 
         if extent_val is not None:
             if extent_val[3] < extent_val[2]:  # correct vertical orientation of plot
@@ -211,7 +214,7 @@ class Plot2D:
         return ax
 
     def plot_lith(self, ax, section_name=None, cell_number=None, direction='y',
-                  block=None, **kwargs):
+                  block=None, mask=None, **kwargs):
         """
 
         Args:
@@ -233,15 +236,18 @@ class Plot2D:
                 try:
                     image = self.model.solutions.geological_map[0].reshape(
                         self.model.grid.topography.values_3D[:, :, 2].shape)
+                    mask = self.model.solutions.geological_map[4].reshape(
+                        self.model.grid.topography.values_3D[:, :, 2].shape)
                 except AttributeError:
                     raise AttributeError('Geological map not computed. Activate the topography grid.')
             else:
-                assert type(section_name) == str, 'section name must be a string of the name of the section'
+                assert type(section_name) == str or type(section_name) == np.str_, 'section name must be a string of the name of the section'
                 assert self.model.solutions.sections is not None, 'no sections for plotting defined'
 
                 l0, l1 = self.model.grid.sections.get_section_args(section_name)
                 shape = self.model.grid.sections.df.loc[section_name, 'resolution']
                 image = self.model.solutions.sections[0][0][l0:l1].reshape(shape[0], shape[1]).T
+                mask = self.model.solutions.sections[0].reshape(shape[0], shape[1].T)
 
         elif cell_number is not None or block is not None:
             _a, _b, _c, _, x, y = self._slice(direction, cell_number)[:-2]
@@ -250,14 +256,23 @@ class Plot2D:
             else:
                 _block = block
 
+            if mask is None:
+                _mask = self.model.solutions.mask_matrix
+            else:
+                _mask = mask
+
             plot_block = _block.reshape(self.model.grid.regular_grid.resolution)
             image = plot_block[_a, _b, _c].T
+            mask = _mask.reshape(-1, *self.model.grid.regular_grid.resolution)[:, _a, _b, _c]
         else:
             raise AttributeError
-
+        # for mask_series in mask:
+        #     image_series = np.ma.array(image, mask = ~mask_series.T)
+        #     ax.imshow(image_series, origin='lower', zorder=-100,
+        #               cmap=self.cmap, norm=self.norm, extent=extent_val)
+        #
         ax.imshow(image, origin='lower', zorder=-100,
                   cmap=self.cmap, norm=self.norm, extent=extent_val)
-
         return ax
 
     def plot_scalar_field(self, ax, section_name=None, cell_number=None, sn=0, direction='y',
@@ -401,7 +416,7 @@ class Plot2D:
             make_legend = None
 
         sns.scatterplot(data=points[select_projected_p], x=x, y=y, hue='surface', ax=ax, legend=make_legend,
-                        palette=self._color_lot)
+                        palette=self._color_lot, zorder=101)
 
         sel_ori = orientations[select_projected_o]
 
@@ -412,7 +427,7 @@ class Plot2D:
         # Eli options
         ax.quiver(sel_ori[x], sel_ori[y], sel_ori[Gx], sel_ori[Gy],
                   pivot="tail", scale_units=min_axis, scale=30, color=sel_ori['surface'].map(self._color_lot),
-                  edgecolor='k', headwidth=8, linewidths=1)
+                  edgecolor='k', headwidth=8, linewidths=1, zorder=102)
 
                 # My old values
                 #  scale=10, edgecolor='k', color=sel_ori['surface'].map(self._color_lot),
@@ -438,8 +453,8 @@ class Plot2D:
             raise NotImplementedError
         return p1, p2
 
-    def _slice_topo_4_sections(self, p1, p2, resx, resy):
-        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, resx, resy)
+    def _slice_topo_4_sections(self, p1, p2, resx):
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, resx)
         z = self.model.grid.topography.interpolate_zvals_at_xy(xy)
         return xy[:, 0], xy[:, 1], z
 
@@ -449,8 +464,7 @@ class Plot2D:
 
             p1 = self.model.grid.sections.df.loc[section_name, 'start']
             p2 = self.model.grid.sections.df.loc[section_name, 'stop']
-            x, y, z = self._slice_topo_4_sections(p1, p2, self.model.grid.topography.resolution[0],
-                                                  self.model.grid.topography.resolution[1])
+            x, y, z = self._slice_topo_4_sections(p1, p2, self.model.grid.topography.resolution[0])
 
             pseudo_x = np.linspace(0, self.model.grid.sections.df.loc[section_name, 'dist'], z.shape[0])
             a = np.vstack((pseudo_x, z)).T
@@ -467,7 +481,7 @@ class Plot2D:
             resx = self.model.grid.topography.resolution[0]
             resy = self.model.grid.topography.resolution[1]
             print('p1', p1, 'p2', p2)
-            x, y, z = self._slice_topo_4_sections(p1, p2, resx, resy)
+            x, y, z = self._slice_topo_4_sections(p1, p2, resx)
             if direction == 'x':
                 a = np.vstack((y, z)).T
                 ext = self.model.grid.regular_grid.extent[[2, 3]]
@@ -512,6 +526,7 @@ class Plot2D:
                                linestyles='solid', origin='lower',
                                extent=extent_val, zorder=zorder - (e + len(level))
                                )
+                    c_id = c_id2
 
             else:
                 l0, l1 = self.model.grid.sections.get_section_args(section_name)
@@ -527,44 +542,34 @@ class Plot2D:
                     # that an interface does not exit for a given section
                     c_id2 = c_id + len(level)  # color id endpoint
                     ax.contour(block.reshape(shape).T, 0, levels=np.sort(level),
-                               colors=self.cmap.colors[c_id:c_id2],
+                               colors=self.cmap.colors[self.model.surfaces.df['isActive']][c_id:c_id2],
                                  linestyles='solid', origin='lower',
                                  extent=extent_val, zorder=zorder - (e+len(level))
                                )
+                    c_id = c_id2
 
         elif cell_number is not None or block is not None:
             _slice = self._slice(direction, cell_number)[:3]
             shape = self.model.grid.regular_grid.resolution
-            c_id = 0# color id startpoint
+            c_id = 0 # color id startpoint
 
             for e, block in enumerate(self.model.solutions.scalar_field_matrix):
                 level = self.model.solutions.scalar_field_at_surface_points[e][np.where(
                     self.model.solutions.scalar_field_at_surface_points[e] != 0)]
-                c_id = e
+                #c_id = e
                 c_id2 = c_id + len(level)
-                print(c_id, c_id2)
+            #    print(c_id, c_id2)
+
+                color_list = self.model.surfaces.df.groupby('isActive').get_group(True)['color'][c_id:c_id2][::-1]
+            #    print(color_list)
+
                 ax.contour(block.reshape(shape)[_slice].T, 0, levels=np.sort(level),
-                           colors=self.cmap.colors[c_id:c_id2][::-1],
+                           colors = color_list,# self.cmap.colors[self.model.surfaces.df['isActive']][c_id:c_id2][::-1],
                            linestyles='solid', origin='lower',
                            extent=extent_val, zorder=zorder - (e + len(level))
                            )
+                c_id = c_id2
 
-            # if len(contour_idx) == 0:
-            #     pass
-            # else:
-            #     _slice = self._slice(direction, cell_number)[:3]
-            #
-            #     for fault in contour_idx:
-            #         f_id = fault-1# - 1
-            #         block = self.model.solutions.scalar_field_matrix[f_id]
-            #         level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
-            #             self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]
-            #         level.sort()
-            #         block = block.reshape(self.model.grid.regular_grid.resolution)[_slice].T
-            #
-            #         ax.contour(block, 0, extent=extent_val,
-            #                    levels=level,
-            #                    colors=self.cmap.colors[f_id], linestyles='solid')
 
     def plot_section_traces(self, ax, section_names=None,  show_data=True, **kwargs):
 
@@ -677,3 +682,69 @@ class Plot2D:
 
         raise NotImplementedError
 
+
+def _scale_fig_size(figsize, textsize, rows=1, cols=1):
+    """Scale figure properties according to rows and cols.
+
+    Parameters
+    ----------
+    figsize : float or None
+        Size of figure in inches
+    textsize : float or None
+        fontsize
+    rows : int
+        Number of rows
+    cols : int
+        Number of columns
+
+    Returns
+    -------
+    figsize : float or None
+        Size of figure in inches
+    ax_labelsize : int
+        fontsize for axes label
+    titlesize : int
+        fontsize for title
+    xt_labelsize : int
+        fontsize for axes ticks
+    linewidth : int
+        linewidth
+    markersize : int
+        markersize
+    """
+    params = mpl.rcParams
+    rc_width, rc_height = tuple(params["figure.figsize"])
+    rc_ax_labelsize = params["axes.labelsize"]
+    rc_titlesize = params["axes.titlesize"]
+    rc_xt_labelsize = params["xtick.labelsize"]
+    rc_linewidth = params["lines.linewidth"]
+    rc_markersize = params["lines.markersize"]
+    if isinstance(rc_ax_labelsize, str):
+        rc_ax_labelsize = 15
+    if isinstance(rc_titlesize, str):
+        rc_titlesize = 16
+    if isinstance(rc_xt_labelsize, str):
+        rc_xt_labelsize = 14
+
+    if figsize is None:
+        width, height = rc_width, rc_height
+        sff = 1 if (rows == cols == 1) else 1.15
+        width = width * cols * sff
+        height = height * rows * sff
+    else:
+        width, height = figsize
+
+    if textsize is not None:
+        scale_factor = textsize / rc_xt_labelsize
+    elif rows == cols == 1:
+        scale_factor = ((width * height) / (rc_width * rc_height)) ** 0.5
+    else:
+        scale_factor = 1
+
+    ax_labelsize = rc_ax_labelsize * scale_factor
+    titlesize = rc_titlesize * scale_factor
+    xt_labelsize = rc_xt_labelsize * scale_factor
+    linewidth = rc_linewidth * scale_factor
+    markersize = rc_markersize * scale_factor
+
+    return (width, height), ax_labelsize, titlesize, xt_labelsize, linewidth, markersize

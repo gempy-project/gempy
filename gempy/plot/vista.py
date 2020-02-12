@@ -335,7 +335,9 @@ class Vista:
 
         if surfaces is None:
             surfaces = self.model.surfaces.df
-        for idx, val in surfaces[['vertices', 'edges', 'color']].dropna().iterrows():
+
+        select_active = surfaces['isActive']
+        for idx, val in surfaces[select_active][['vertices', 'edges', 'color']].dropna().iterrows():
 
             surf = pv.PolyData(val['vertices'], np.insert(val['edges'], 0, 3, axis=1).ravel())
             self.surf_polydata.at[idx] = surf
@@ -399,7 +401,7 @@ class Vista:
                 rgb = (255 * np.array(mcolors.hex2color(val)))
                 arr_ = np.vstack((arr_, rgb))
 
-            sel = np.round(self.model.solutions.geological_map).astype(int)[0]
+            sel = np.round(self.model.solutions.geological_map[0]).astype(int)[0]
           #  print(arr_)
           #  print(sel)
 

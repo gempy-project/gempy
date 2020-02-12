@@ -104,15 +104,15 @@ class Solution(object):
 
     def set_solution_to_custom(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('custom')
-        self.custom = np.array([values[0][:, l0: l1], values[3][:, l0: l1].astype(float)])
+        self.custom = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_solution_to_topography(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('topography')
-        self.geological_map = np.array([values[0][:, l0: l1], values[3][:, l0: l1].astype(float)])
+        self.geological_map = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_solution_to_sections(self, values: Union[list, np.ndarray]):
         l0, l1 = self.grid.get_grid_args('sections')
-        self.sections = np.array([values[0][:, l0: l1], values[3][:, l0: l1].astype(float)])
+        self.sections = np.array([values[0][:, l0: l1], values[4][:, l0: l1].astype(float)])
 
     def set_values_to_regular_grid(self, values: Union[list, np.ndarray]):
         # TODO ============ Set asserts of give flexibility 20.09.18 =============
@@ -129,28 +129,33 @@ class Solution(object):
         regular_grid_length_l0, regular_grid_length_l1 = self.grid.get_grid_args('regular')
         x_to_intep_length = self.grid.length[-1]
 
-        self.scalar_field_matrix = values[3][:, regular_grid_length_l0: regular_grid_length_l1]
-        self.scalar_field_at_surface_points = values[4]
-        self._scalar_field_at_surface = values[3][:, x_to_intep_length:]
-
-        self.weights_vector = values[2]
-
-        # Axis 0 is the series. Axis 1 is the value
-        self.block_matrix = values[1][:, :, regular_grid_length_l0: regular_grid_length_l1]
-        self.block_at_surface_points = values[1][:, :, x_to_intep_length:]
-
-        self.mask_matrix = values[5][:, regular_grid_length_l0: regular_grid_length_l1]
-        self.mask_at_surface_points = values[5][:, x_to_intep_length:]
-
         # Lithology final block
         self.lith_block = values[0][0, regular_grid_length_l0: regular_grid_length_l1]
 
         # Properties
         self.values_matrix = values[0][1:, regular_grid_length_l0: regular_grid_length_l1]
         self.values_at_surface_points = values[0][1:, x_to_intep_length:]
-        return True
-        # TODO Adapt it to the gradients
 
+        # Axis 0 is the series. Axis 1 is the value
+        self.block_matrix = values[1][:, :, regular_grid_length_l0: regular_grid_length_l1]
+        self.block_at_surface_points = values[1][:, :, x_to_intep_length:]
+
+        self.fault_block = values[2]
+        self.weights_vector = values[3]
+
+        self.scalar_field_matrix = values[4][:, regular_grid_length_l0: regular_grid_length_l1]
+        self._scalar_field_at_surface = values[4][:, x_to_intep_length:]
+
+        self.scalar_field_at_surface_points = values[5]
+
+        self.mask_matrix = values[6][:, regular_grid_length_l0: regular_grid_length_l1]
+        self.mask_at_surface_points = values[6][:, x_to_intep_length:]
+
+        self.fault_mask = values[7][:, regular_grid_length_l0: regular_grid_length_l1]
+
+        # TODO add topology solutions
+
+        return True
 
     @setdoc(measure.marching_cubes_lewiner.__doc__)
     def compute_surface_regular_grid(self, level: float, scalar_field, mask_array=None, classic=False, **kwargs):
@@ -239,6 +244,7 @@ class Solution(object):
         self.padding_mask_matrix()
         series_type = self.series.df['BottomRelation']
         s_n = 0
+        active_indices = self.surfaces.df.groupby('isActive').groups[True]
 
         # We loop the scalar fields
         for e, scalar_field in enumerate(self.scalar_field_matrix):
@@ -269,7 +275,8 @@ class Solution(object):
 
                 self.vertices.append(v)
                 self.edges.append(s)
-                idx = self.surfaces.df.index[s_n]
+
+                idx = active_indices[s_n]
                 self.surfaces.df.loc[idx, 'vertices'] = [v]
                 self.surfaces.df.loc[idx, 'edges'] = [s]
                 s_n += 1

@@ -766,8 +766,8 @@ class PlotSolution(PlotData2D):
         j = np.where(self.model.grid.sections.names == section_name)[0][0]
         startend = list(self.model.grid.sections.section_dict.values())[j]
         p1, p2 = startend[0], startend[1]
-        xy = self.model.grid.sections.calculate_line_coordinates_2points(np.array(p1),
-                                                                         np.array(p2),
+        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1,
+                                                                         p2,
                                                                          n)
         if len(np.unique(xy[:, 0])) == 1:
             labels = xy[:, 1].astype(int)

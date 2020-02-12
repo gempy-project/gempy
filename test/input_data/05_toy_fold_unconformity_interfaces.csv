@@ -1,0 +1,12 @@
+﻿X,Y,Z,formation
+1,1,2.75,Basefold
+2,1,2,Basefold
+3,1,1,Basefold
+2,1,2.75,Topfold
+3,1,2,Topfold
+4,1,1,Topfold
+6,1,3,Inclined
+7,1,3.5,Inclined
+1,1,3.5,Flat
+3,1,3.5,Flat
+6,1,3.5,Flat

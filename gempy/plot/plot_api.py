@@ -30,8 +30,9 @@ import sys
 #sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
 from .visualization_2d_pro import Plot2D
-from .vista import Vista
-import gempy as _gempy
+# from .vista import Vista
+# import gempy as _gempy
+import numpy as np
 import pandas as pn
 import matplotlib.pyplot as plt
 from typing import Union
@@ -44,11 +45,12 @@ except ImportError:
     mplstereonet_import = False
 
 
-def plot_2d(model, n_axis = None, section_names:list = None, cell_number: list = 'mid', direction: list = 'y',
+def plot_2d(model, n_axis = None, section_names:list = None, cell_number: list = None, direction: list = 'y',
             show_data: Union[bool, list] = True, show_lith: Union[bool, list] = True,
             show_scalar: Union[bool, list] = False, show_boundaries: Union[bool, list] = True, **kwargs):
 
     section_names = [] if section_names is None else section_names
+    section_names = np.atleast_1d(section_names)
     if cell_number is None:
         cell_number = []
     elif cell_number == 'mid':
@@ -72,9 +74,12 @@ def plot_2d(model, n_axis = None, section_names:list = None, cell_number: list =
     # init e
     e = 0
 
-    for e, sn in section_names:
-        assert e<10, 'Reached maximum of axes'
-        temp_ax = p.add_section(section_name=sn, ax_pos=(int(n_axis/2)+1)*100+20+e+1, **kwargs)
+    for e, sn in enumerate(section_names):
+        assert e < 10, 'Reached maximum of axes'
+
+        ax_pos = (int(n_axis/2)+1)*100+20+e+1
+        print(ax_pos, '1')
+        temp_ax = p.add_section(section_name=sn, ax_pos=ax_pos, **kwargs)
         if show_data[e] is True:
             p.plot_data(temp_ax, section_name=sn, **kwargs)
         if show_lith[e] is True:
@@ -84,9 +89,16 @@ def plot_2d(model, n_axis = None, section_names:list = None, cell_number: list =
         if show_boundaries[e] is True:
             p.plot_contacts(temp_ax, section_name=sn, **kwargs)
 
+        # If there are section we need to shift one axis for the perpendicular
+        e = e + 1
+
     for e2 in range(len(cell_number)):
-        assert (e+e2)<10, 'Reached maximum of axes'
-        temp_ax = p.add_section(cell_number=cell_number[e2], direction=direction[e2], ax_pos=(int(n_axis/2)+1)*100+20+e+e2+1)
+        assert (e+e2) < 10, 'Reached maximum of axes'
+
+        ax_pos = (int(n_axis/2)+1)*100+20+e+e2+1
+        print(ax_pos)
+
+        temp_ax = p.add_section(cell_number=cell_number[e2], direction=direction[e2], ax_pos=ax_pos)
         if show_data[e+e2] is True:
             p.plot_data(temp_ax, cell_number=cell_number[e2], direction=direction[e2], **kwargs)
         if show_lith[e+e2] is True:
