@@ -216,7 +216,7 @@ class vMF():
         plt.show()
         return fig
 
-    def plot_stereonet(self, poles=True, samples=None):
+    def plot_stereonet(self, poles=True, planes=False, density=True, samples=None):
         """
         Plots the orientations in a stereonet.
         Args:
@@ -241,9 +241,13 @@ class vMF():
                 pass
             for point in samples:
                 ax.pole(point[0] - 90, point[1], linewidth=1, color='#015482', markersize=4,markeredgewidth=0.5, markeredgecolor='black')
+                if planes is True:
+                    ax.plane(point[0] - 90, point[1], linewidth=2, color='#015482', markersize=4, markeredgewidth=0.5,
+                            markeredgecolor='black')
 
         ax.grid()
-        ax.density_contour(samples[:, 0] - 90, samples[:, 1], measurement='poles',sigma=1,method='linear_kamb', cmap='Blues_r')
+        if density:
+            ax.density_contour(samples[:, 0] - 90, samples[:, 1], measurement='poles', sigma=1, method='exponential_kamb', cmap='Blues_r')
         try:
             ax.set_title('kappa = '+str(round(self.kappa)), y=1.2)
         except AttributeError:

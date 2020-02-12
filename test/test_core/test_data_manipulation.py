@@ -170,8 +170,6 @@ def create_surface_points(create_surfaces, create_series):
     surface_points.map_data_from_series(create_series, 'order_series')
     print(surface_points)
 
-    # In[59]:
-
     surface_points.sort_table()
     print(surface_points)
     return surface_points
@@ -221,7 +219,7 @@ def create_grid():
     # Test creating an empty list
     grid = gp.Grid()
     # Test set regular grid by hand
-    grid.set_regular_grid([0, 2000, 0, 2000, -2000, 0], [50, 50, 50])
+    grid.create_regular_grid([0, 2000, 0, 2000, -2000, 0], [50, 50, 50])
     return grid
 
 
