@@ -818,9 +818,9 @@ class Surfaces(object):
     def __init__(self, series: Series, surface_names=None, values_array=None, properties_names=None):
 
         self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'isFault', 'isActive','color',
-                         'vertices', 'edges', 'id']
+                         'vertices', 'edges', 'sfai', 'id']
 
-        self._columns_vis_drop = ['vertices', 'edges', 'isBasement', 'isFault']
+        self._columns_vis_drop = ['vertices', 'edges', 'sfai', 'isBasement', 'isFault']
         self._n_properties = len(self._columns) - 1
         self.series = series
         self.colors = Colors(self)

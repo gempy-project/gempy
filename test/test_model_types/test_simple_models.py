@@ -196,7 +196,7 @@ class TestFaults:
         geo_data.set_is_fault('fault1')
 
         # Compute model
-        sol = gempy.compute_model(geo_data, sort_surfaces=False)
+        sol = gempy.compute_model(geo_data, sort_surfaces=True)
 
         if update_sol:
             np.save(input_path + '/test_f_sol.npy', sol.lith_block[test_values])
