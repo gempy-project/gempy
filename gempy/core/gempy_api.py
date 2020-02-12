@@ -332,7 +332,6 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
             model.solutions.set_solution_to_topography(sol)
         if model.grid.active_grids[3] is np.True_:
             model.solutions.set_solution_to_sections(sol)
-       # if output == 'gravity':
         # Set gravity
         model.solutions.fw_gravity = sol[12]
 

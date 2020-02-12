@@ -1047,26 +1047,37 @@ class DataMutation(object):
             Surfaces
         """
         # TODO time this function
-        spu = self.surface_points.df['surface'].unique()
-        sps = self.surface_points.df['series'].unique()
-        sel = self.surfaces.df['surface'].isin(spu)
-        for e, name_series in enumerate(sps):
+       # spu = self.surface_points.df['surface'].unique()
+       # sps = self.surface_points.df['series'].unique()
+
+        # Boolean array of size len surfaces with True active surfaces minus Basemes
+        sel = self.surfaces.df['isActive'] * ~self.surfaces.df['isBasement'] #self.surfaces.df['surface'].isin(spu)
+
+        # Loop each series
+        for e, name_series in enumerate(self.series.df.groupby('isActive').get_group(True).index):
             try:
+
+                # Scalar field at surfaces point of each seroies
                 sfai_series = self.solutions.scalar_field_at_surface_points[e]
                 sfai_order_aux = np.argsort(sfai_series[np.nonzero(sfai_series)])
+
+                # sfai args in order
                 sfai_order = (sfai_order_aux - sfai_order_aux.shape[0]) * -1
+
                 if len(sfai_order) == 0:
                     sfai_order = np.array([1])
-                # select surfaces which exist in surface_points
+                # select surfaces which exist in surface_points of the series
                 group = self.surfaces.df[sel].groupby('series').get_group(name_series)
+
                 idx = group.index
                 surface_names = group['surface']
-
-                self.surfaces.df.loc[idx, 'order_surfaces'] = self.surfaces.df.loc[idx, 'surface'].map(
+                right_order_surfaces = self.surfaces.df.loc[idx, 'surface'].map(
                     pn.DataFrame(sfai_order, index=surface_names)[0])
 
+                self.surfaces.df.loc[idx, 'order_surfaces'] = right_order_surfaces
+
             except IndexError:
-                pass # print('foo')
+                pass
 
         self.surfaces.sort_surfaces()
         self.surfaces.set_basement()
