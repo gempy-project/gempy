@@ -30,7 +30,7 @@ import sys
 #sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
 from .visualization_2d import PlotData2D, PlotSolution
-from .visualization_3d import steno3D, GemPyvtkInteract
+from .visualization_3d import GemPyvtkInteract
 from .vista import Vista
 import gempy as _gempy
 from typing import Set, Tuple, Dict, Union
