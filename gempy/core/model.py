@@ -171,7 +171,7 @@ class DataMutation(object):
         # TODO this should go to the api and let call all different grid types
         raise NotImplementedError
 
-    @setdoc(Grid.set_regular_grid.__doc__)
+    @setdoc(Grid.create_regular_grid.__doc__)
     @setdoc_pro([ds.extent, ds.resolution])
     def set_regular_grid(self, extent, resolution):
         """
@@ -186,12 +186,20 @@ class DataMutation(object):
 
         Set regular grid docs
         """
-        self.grid.set_regular_grid(extent=extent, resolution=resolution)
+        if self.grid.regular_grid is None:
+            self.grid.create_regular_grid(extent=extent, resolution=resolution)
+        else:
+            self.grid.regular_grid.set_regular_grid(extent=extent, resolution=resolution)
+            self.grid.set_active('regular')
+
+        if self.grid.topography is not None:
+            self.grid.regular_grid.set_topography_mask(self.grid.topography)
+
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
-    @setdoc(Grid.set_custom_grid.__doc__, )
+    @setdoc(Grid.create_custom_grid.__doc__, )
     @setdoc_pro(ds.coord)
     def set_custom_grid(self, custom_grid):
         """
@@ -204,33 +212,47 @@ class DataMutation(object):
 
         Set custom grid Docs
         """
-        self.grid.set_custom_grid(custom_grid)
+        if self.grid.custom_grid is None:
+            self.grid.create_custom_grid(custom_grid)
+        else:
+            self.grid.custom_grid.set_custmo_grid(custom_grid)
+            self.grid.update_grid_values()
+
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
     @plot_set_topography
-    @setdoc(Grid.set_topography.__doc__)
+    @setdoc(Grid.create_topography.__doc__)
     def set_topography(self, source='random', **kwargs):
         """
         Create a topography grid and activate it.
         """
 
-        self.grid.set_topography(source, **kwargs)
+        self.grid.create_topography(source, **kwargs)
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
-    @setdoc(Grid.set_centered_grid.__doc__)
+    @setdoc(Grid.create_centered_grid.__doc__)
     def set_centered_grid(self, centers, radio, resolution=None):
-        self.grid.set_centered_grid(centers, radio, resolution=resolution)
+        if self.grid.centered_grid is None:
+            self.grid.create_centered_grid(centers, radio, resolution=resolution)
+        else:
+            self.grid.centered_grid.set_centered_grid(centers=centers, radio=radio, resolution=resolution)
+            self.grid.update_grid_values()
+
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
-    @setdoc(Grid.set_section_grid.__doc__)
+    @setdoc(Grid.create_section_grid.__doc__)
     def set_section_grid(self, section_dict):
-        self.grid.set_section_grid(section_dict=section_dict)
+        if self.grid.sections is None:
+            self.grid.create_section_grid(section_dict=section_dict)
+        else:
+            self.grid.sections.set_sections(section_dict)
+
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid.sections
@@ -1025,27 +1047,43 @@ class DataMutation(object):
             Surfaces
         """
         # TODO time this function
-        spu = self.surface_points.df['surface'].unique()
-        sps = self.surface_points.df['series'].unique()
-        sel = self.surfaces.df['surface'].isin(spu)
-        for e, name_series in enumerate(sps):
-            try:
-                sfai_series = self.solutions.scalar_field_at_surface_points[e]
-                sfai_order_aux = np.argsort(sfai_series[np.nonzero(sfai_series)])
-                sfai_order = (sfai_order_aux - sfai_order_aux.shape[0]) * -1
-                if len(sfai_order) == 0:
-                    sfai_order = np.array([1])
-                # select surfaces which exist in surface_points
-                group = self.surfaces.df[sel].groupby('series').get_group(name_series)
-                idx = group.index
-                surface_names = group['surface']
+       # spu = self.surface_points.df['surface'].unique()
+       # sps = self.surface_points.df['series'].unique()
 
-                self.surfaces.df.loc[idx, 'order_surfaces'] = self.surfaces.df.loc[idx, 'surface'].map(
-                    pn.DataFrame(sfai_order, index=surface_names)[0])
+        # # Boolean array of size len surfaces with True active surfaces minus Basemes
+        # sel = self.surfaces.df['isActive'] & ~self.surfaces.df['isBasement'] #self.surfaces.df['surface'].isin(spu)
+        #
+        # # Loop each series
+        # for e, name_series in enumerate(self.series.df.groupby('isActive').get_group(True).index):
+        #     try:
+        #
+        #         # Scalar field at surfaces point of each seroies
+        #         sfai_series = self.solutions.scalar_field_at_surface_points[e]
+        #         sfai_order_aux = np.argsort(sfai_series[np.nonzero(sfai_series)])
+        #
+        #         # sfai args in order
+        #         sfai_order = (sfai_order_aux - sfai_order_aux.shape[0]) * -1
+        #
+        #         if len(sfai_order) == 0:
+        #             sfai_order = np.array([1])
+        #         # select surfaces which exist in surface_points of the series
+        #         group = self.surfaces.df[sel].groupby('series').get_group(name_series)
+        #
+        #         idx = group.index
+        #         surface_names = group['surface']
+        #         right_order_surfaces = self.surfaces.df.loc[idx, 'surface'].map(
+        #             pn.DataFrame(sfai_order, index=surface_names)[0])
+        #
+        #         self.surfaces.df.loc[idx, 'order_surfaces'] = right_order_surfaces
+        #
+        #     except IndexError:
+        #         pass
 
-            except IndexError:
-                pass # print('foo')
-
+        sfai_order = self.solutions.scalar_field_at_surface_points.sum(axis=0)
+        sel = self.surfaces.df['isActive'] & ~self.surfaces.df['isBasement']
+        self.surfaces.df.loc[sel, 'sfai'] = sfai_order
+        self.surfaces.df.sort_values(by=['series', 'sfai'], inplace=True, ascending=False)
+        self.surfaces.reset_order_surfaces()
         self.surfaces.sort_surfaces()
         self.surfaces.set_basement()
         self.surface_points.df['id'] = self.surface_points.df['surface'].map(

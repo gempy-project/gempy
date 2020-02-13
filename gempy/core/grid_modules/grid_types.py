@@ -28,11 +28,11 @@ class RegularGrid:
         dz (float): size of the cells on z
 
     """
-    def __init__(self, extent=None, resolution=None):
+    def __init__(self, extent=None, resolution=None, **kwargs):
         self.resolution = np.ones((0, 3), dtype='int64')
-        self.extent = np.empty(6, dtype='float64')
-        self.values = np.empty((0, 3))
-        self.mask_topo = np.empty((0,3), dtype=bool)
+        self.extent = np.zeros(6, dtype='float64')
+        self.values = np.zeros((0, 3))
+        self.mask_topo = np.zeros((0, 3), dtype=bool)
         if extent is not None and resolution is not None:
             self.set_regular_grid(extent, resolution)
             self.dx, self.dy, self.dz = self.get_dx_dy_dz()
@@ -82,12 +82,26 @@ class RegularGrid:
         self.resolution = np.asarray(resolution)
         self.values = self.create_regular_grid_3d(extent, resolution)
         self.length = self.values.shape[0]
+        self.dx, self.dy, self.dz = self.get_dx_dy_dz()
         return self.values
+
+    def set_topography_mask(self, topography):
+
+        ind = topography._find_indices()
+        gridz = self.values[:, 2].reshape(*self.resolution).copy()
+        for x in range(self.resolution[0]):
+            for y in range(self.resolution[1]):
+                z = ind[x, y]
+                gridz[x, y, z:] = 99999
+        mask = (gridz == 99999)
+        self.mask_topo = mask
+        return mask  # np.multiply(np.full(self.regular_grid.values.shape, True).T, mask.ravel()).T
 
 
 class Sections:
     """
     Object that creates a grid of cross sections between two points.
+
     Args:
         regular_grid: Model.grid.regular_grid
         section_dict: {'section name': ([p1_x, p1_y], [p2_x, p2_y], [xyres, zres])}
@@ -97,26 +111,37 @@ class Sections:
             self.z_ext = regular_grid.extent[4:]
         else:
             self.z_ext = z_ext
+
+        self.section_dict = section_dict
+        self.names = []
+        self.points = []
+        self.resolution = []
+        self.length = [0]
+        self.dist = []
+        self.df = pn.DataFrame()
+        self.df['dist'] = self.dist
+        self.values = []
+        self.extent = None
+
         if section_dict is not None:
-            self.section_dict = section_dict
-            self.names = np.array(list(self.section_dict.keys()))
-            self.points = []
-            self.resolution = []
-            self.length = [0]
-            self.dist = []
-            self.get_section_params()
-            self.calculate_all_distances()
-            self.df = pn.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution'])
-            self.df['dist'] = self.dist
-            self.values = []
-            self.extent = None
-            self.compute_section_coordinates()
+           self.set_sections(section_dict)
 
     def _repr_html_(self):
         return self.df.to_html()
 
     def show(self):
         pass
+
+    def set_sections(self, section_dict):
+        self.section_dict = section_dict
+        self.names = np.array(list(self.section_dict.keys()))
+
+        self.get_section_params()
+        self.calculate_all_distances()
+        self.df = pn.DataFrame.from_dict(self.section_dict, orient='index', columns=['start', 'stop', 'resolution'])
+        self.df['dist'] = self.dist
+
+        self.compute_section_coordinates()
 
     def get_section_params(self):
         for i, section in enumerate(self.names):

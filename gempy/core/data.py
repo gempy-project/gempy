@@ -101,8 +101,9 @@ class Grid(object):
         self.centered_grid_active = False
 
         # Init basic grid empty
-        self.regular_grid = self.set_regular_grid(**kwargs)
+        self.regular_grid = self.create_regular_grid(set_active=False, **kwargs)
         self.regular_grid_active = False
+        self.update_grid_values()
 
     def __str__(self):
         return 'Grid Object. Values: \n' + np.array2string(self.values)
@@ -111,7 +112,7 @@ class Grid(object):
         return 'Grid Object. Values: \n' + np.array_repr(self.values)
 
     @setdoc(grid_types.RegularGrid.__doc__)
-    def set_regular_grid(self, *args, **kwargs):
+    def create_regular_grid(self, extent=None, resolution=None, set_active=True, *args, **kwargs):
         """
         Set a new regular grid and activate it.
 
@@ -121,12 +122,13 @@ class Grid(object):
 
         RegularGrid Docs
         """
-        self.regular_grid = grid_types.RegularGrid(*args, **kwargs)
-        self.set_active('regular')
+        self.regular_grid = grid_types.RegularGrid(extent, resolution, **kwargs)
+        if set_active is True:
+            self.set_active('regular')
         return self.regular_grid
 
     @setdoc_pro(ds.coord)
-    def set_custom_grid(self, custom_grid: np.ndarray):
+    def create_custom_grid(self, custom_grid: np.ndarray):
         """
         Set a new regular grid and activate it.
 
@@ -137,7 +139,7 @@ class Grid(object):
         self.custom_grid = grid_types.CustomGrid(custom_grid)
         self.set_active('custom')
 
-    def set_topography(self, source='random', **kwargs):
+    def create_topography(self, source='random', **kwargs):
         """
         Create a topography grid and activate it.
         Args:
@@ -183,13 +185,13 @@ class Grid(object):
         self.set_active('topography')
 
     @setdoc(grid_types.Sections.__doc__)
-    def set_section_grid(self, section_dict):
+    def create_section_grid(self, section_dict):
         self.sections = grid_types.Sections(regular_grid=self.regular_grid, section_dict=section_dict)
         self.set_active('sections')
         return self.sections
 
     @setdoc(grid_types.CenteredGrid.set_centered_grid.__doc__)
-    def set_centered_grid(self, centers, radio, resolution=None):
+    def create_centered_grid(self, centers, radio, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
         self.centered_grid = grid_types.CenteredGrid(centers, radio, resolution)
        # self.active_grids = np.zeros(4, dtype=bool)
@@ -354,20 +356,21 @@ class Faults(object):
 
         offset_faults = self._offset_faults
 
-        # Update default fault relations
         try:
-            a_series_idx = self.df.groupby('isFault').get_group(True).index
-        except KeyError:  # no faults
-            return
-        for a_series in a_series_idx:
-            col_pos = self.faults_relations_df.columns.get_loc(a_series)
-            # set the faults offset all younger
-            self.faults_relations_df.iloc[col_pos, col_pos + 1:] = True
+            # Update default fault relations
+            for a_series in self.df.groupby('isFault').get_group(True).index:
+                col_pos = self.faults_relations_df.columns.get_loc(a_series)
+                # set the faults offset all younger
+                self.faults_relations_df.iloc[col_pos, col_pos + 1:] = True
 
-            if offset_faults is False:
-                # set the faults does not offset the younger faults
-                self.faults_relations_df.iloc[col_pos] = ~self.df['isFault'] & \
-                                                         self.faults_relations_df.iloc[col_pos]
+                if offset_faults is False:
+                    # set the faults does not offset the younger faults
+                    self.faults_relations_df.iloc[col_pos] = ~self.df['isFault'] & \
+                                                             self.faults_relations_df.iloc[col_pos]
+            return True
+
+        except KeyError:
+            return False
 
     def set_is_finite_fault(self, series_finite: Union[str, list, np.ndarray] = None, toggle=False):
         """
@@ -815,9 +818,9 @@ class Surfaces(object):
     def __init__(self, series: Series, surface_names=None, values_array=None, properties_names=None):
 
         self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'isFault', 'isActive','color',
-                         'vertices', 'edges', 'id']
+                         'vertices', 'edges', 'sfai', 'id']
 
-        self._columns_vis_drop = ['vertices', 'edges', 'isBasement', 'isFault']
+        self._columns_vis_drop = ['vertices', 'edges', 'sfai', 'isBasement', 'isFault']
         self._n_properties = len(self._columns) - 1
         self.series = series
         self.colors = Colors(self)
@@ -2824,6 +2827,10 @@ class KrigingParameters(object):
         """
         if extent is None:
             extent = self.grid.regular_grid.extent
+            if np.sum(extent) == 0 and self.grid.values.shape[0] > 1:
+                extent = np.concatenate((np.min(self.grid.values, axis=0),
+                                         np.max(self.grid.values, axis=0)))[[0, 3, 1, 4, 2, 5]]
+
         try:
             range_var = np.sqrt(
                 (extent[0] - extent[1]) ** 2 +
@@ -2872,8 +2879,8 @@ class KrigingParameters(object):
         if u_grade is None:
 
             len_series_i = self.structure.df.loc['values', 'len series surface_points']
-            u_grade = np.zeros_like(len_series_i)
-            u_grade[(len_series_i > 1)] = 1
+            u_grade = np.ones_like(len_series_i)
+            # u_grade[(len_series_i > 1)] = 1
 
         else:
             u_grade = np.array(u_grade)
