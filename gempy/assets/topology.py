@@ -628,6 +628,17 @@ def get_adjacencies(
 
 
 def count_unique_topologies(edges: List[Set[Tuple[int, int]]]):
+    """Count unique topologie graphs in given list of edge sets.
+
+    Args:
+        edges: List of topology edge sets.
+            E.g. [{(0,1), (0,2), ...}, {(0,1), (0,2), ...}]
+
+    Returns:
+        unique edges
+        unique edges count
+        unique edges idx
+    """
     unique_edges = [edges[0]]
     unique_edges_count = [1]
     unqiue_edges_idx = [0]
@@ -645,4 +656,4 @@ def count_unique_topologies(edges: List[Set[Tuple[int, int]]]):
         unique_edges_count.append(1)
         unqiue_edges_idx.append(len(unique_edges))
 
-    return unique_edges, unique_edges_count, unqiue_edges_idx
+    return unique_edges, np.array(unique_edges_count), np.array(unqiue_edges_idx)
