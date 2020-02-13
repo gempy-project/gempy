@@ -188,26 +188,6 @@ def _plot_3D(geo_model, render_surfaces=True, render_data=True, render_topograph
 #     return vv
 
 
-def plot_surfaces_3d_ipv(geo_model: object) -> None:
-    """
-
-    Args:
-        geo_model (gempy.core.model.Model):
-    """
-    ipvv = ipyvolumeVisualization(geo_model)
-    ipvv.plot_surfaces()
-
-
-def plot_data_3d_ipv(geo_model: object) -> None:
-    """
-
-    Args:
-        geo_model (gempy.core.model.Model):
-    """
-    ipvv = ipyvolumeVisualization(geo_model)
-    ipvv.plot_data()
-
-
 def export_to_vtk(geo_data, path=None, name=None, voxels=True, block=None, surfaces=True):
     """
       Export data to a vtk file for posterior visualizations
