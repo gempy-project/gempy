@@ -48,6 +48,7 @@ def plot_data_3D(geo_model, **kwargs) -> Vista:
         (Vista) GemPy Vista object for plotting.
     """
     gpv = Vista(geo_model, **kwargs)
+    gpv.set_bounds()
     gpv.plot_surface_points_all()
     gpv.plot_orientations_all()
     gpv.show()
@@ -76,6 +77,7 @@ def plot_3D(
         (Vista) GemPy Vista object for plotting.
     """
     gpv = Vista(geo_model, real_time=real_time, **kwargs)
+    gpv.set_bounds()
     if render_surfaces:
         gpv.plot_surfaces_all()
     if render_data:
