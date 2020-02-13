@@ -60,7 +60,6 @@ def plot_3D(
         render_surfaces: bool = True,
         render_data: bool = True,
         render_topography: bool = False,
-        real_time: bool = False,
         **kwargs,
 ) -> Vista:
     """Plot 3-D geomodel.
@@ -76,17 +75,13 @@ def plot_3D(
     Returns:
         (Vista) GemPy Vista object for plotting.
     """
-    gpv = Vista(geo_model, real_time=real_time, **kwargs)
+    gpv = Vista(geo_model, **kwargs)
     gpv.set_bounds()
     if render_surfaces:
         gpv.plot_surfaces_all()
     if render_data:
-        if real_time:
-            gpv.plot_surface_points_interactive_all()
-            gpv.plot_orientations_interactive_all()
-        else:
-            gpv.plot_surface_points_all()
-            gpv.plot_orientations_all()
+        gpv.plot_surface_points_all()
+        gpv.plot_orientations_all()
     if render_topography and geo_model.grid.topography is not None:
         gpv.plot_topography()
     gpv.show()
