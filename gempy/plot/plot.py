@@ -31,12 +31,67 @@ import sys
 
 from .visualization_2d import PlotData2D, PlotSolution
 from .visualization_3d import steno3D, GemPyvtkInteract, ipyvolumeVisualization
+from .vista import Vista
 import gempy as _gempy
 from typing import Set, Tuple, Dict, Union
 from nptyping import Array
 
 
-def plot_data_3D(geo_data, ve=1, **kwargs):
+def plot_data_3D(geo_model, **kwargs) -> Vista:
+    """Plot input data in 3-D.
+
+    Args:
+        geo_model: Geomodel object.
+        **kwargs: Keyword arguments for GemPy Vista instance.
+
+    Returns:
+        (Vista) GemPy Vista object for plotting.
+    """
+    gpv = Vista(geo_model, **kwargs)
+    gpv.plot_surface_points_all()
+    gpv.plot_orientations_all()
+    gpv.show()
+    return gpv
+
+
+def plot_3D(
+        geo_model,
+        render_surfaces: bool = True,
+        render_data: bool = True,
+        render_topography: bool = False,
+        real_time: bool = False,
+        **kwargs,
+) -> Vista:
+    """Plot 3-D geomodel.
+
+    Args:
+        geo_model: Geomodel object with solutions.
+        render_surfaces: Render geomodel surfaces. Defaults to True.
+        render_data: Render geomodel input data. Defaults to True.
+        render_topography: Render topography. Defaults to False.
+        real_time: Toggles modyfiable input data and real-time geomodel
+            updating. Defaults to False.
+
+    Returns:
+        (Vista) GemPy Vista object for plotting.
+    """
+    gpv = Vista(geo_model, real_time=real_time, **kwargs)
+    if render_surfaces:
+        gpv.plot_surfaces_all()
+    if render_data:
+        if real_time:
+            gpv.plot_surface_points_interactive_all()
+            gpv.plot_orientations_interactive_all()
+        else:
+            gpv.plot_surface_points_all()
+            gpv.plot_orientations_all()
+    if render_topography and geo_model.grid.topography is not None:
+        gpv.plot_topography()
+    gpv.show()
+    return gpv
+
+
+def _plot_data_3D(geo_data, ve=1, **kwargs):
     """
     Plot in vtk all the input data of a model
     Args:
@@ -54,7 +109,7 @@ def plot_data_3D(geo_data, ve=1, **kwargs):
     return vv
 
 
-def plot_3D(geo_model, render_surfaces=True, render_data=True, render_topography= True,
+def _plot_3D(geo_model, render_surfaces=True, render_data=True, render_topography= True,
             real_time=False, **kwargs):
     """
         Plot in vtk all the input data of a model
