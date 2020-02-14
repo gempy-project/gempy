@@ -437,6 +437,7 @@ class Vista:
                 factor=0.15,
                 implicit=False,
                 pass_widget=True,
+                test_callback=False,
                 color=self._color_lot[fmt]
             )
             widget.WIDGET_INDEX = index
