@@ -567,7 +567,7 @@ class Vista:
         elif scalars == "topography":
             scalars_val = topography[:, 2]
             cm = 'terrain'
-        elif type(scalers) is np.ndarray:
+        elif type(scalars) is np.ndarray:
             scalars_val = scalars
             scalars = 'custom'
             cm = 'terrain'
@@ -576,7 +576,7 @@ class Vista:
                 'geomap', 'topography' or a np.ndarray with scalar values")
         
         topography_actor = self.p.add_mesh(
-            cloud.delaunay_2d(), 
+            polydata.delaunay_2d(),
             scalars=scalars_val,
             cmap=cm,
             rgb=rgb,
