@@ -193,7 +193,7 @@ def _analyze_topology(
 
 def get_lot_node_to_lith_id(
         geo_model,
-        centroids: Dict[int, Array[float, 3]]
+        centroids: Dict[int, np.ndarray]
 ) -> Dict[int, int]:
     """Get look-up table to translate topology node id's back into GemPy lith
     id's.
@@ -218,7 +218,7 @@ def get_lot_node_to_lith_id(
 
 
 def get_lot_lith_to_node_id(
-        lot: Dict[int, Array[float, 3]]
+        lot: Dict[int, np.ndarray]
 ) -> Dict[int, List[int]]:
     """Get look-up table to translate lith id's back into topology node
     id's.
@@ -241,7 +241,7 @@ def get_lot_lith_to_node_id(
 
 def get_lot_node_to_fault_block(
         geo_model,
-        centroids: Dict[int, Array[float, 3]]
+        centroids: Dict[int, np.ndarray]
 ) -> Dict[int, int]:
     """Get a look-up table to access fault block id's for each topology node
     id.
@@ -305,8 +305,8 @@ def get_lith_ids(geo_model, basement: bool = True) -> List[int]:
 def get_detailed_labels(
         geo_model,
         edges: Set[Tuple[int, int]],
-        centroids: Dict[int, Array[float, 3]]
-) -> Tuple[Set[Tuple[str, str]], Dict[str, Array[float, 3]]]:
+        centroids: Dict[int, np.ndarray]
+) -> Tuple[Set[Tuple[str, str]], Dict[str, np.ndarray]]:
     """Convert given edges and centroids data into more detailed labels with
     pattern 'lithid_faultid'. 
     
@@ -342,7 +342,7 @@ def get_detailed_labels(
 def _get_edges(
         l: Array[int, ..., ..., ...],
         r: Array[int, ..., ..., ...]
-) -> Optional[Array[int, ..., 2]]:
+) -> Optional[np.ndarray]:
     """Get edges from given shifted arrays.
 
     Args:
@@ -364,8 +364,8 @@ def clean_unconformity_topology(
         geo_model,
         unconf_lith_id: int,
         edges: Array[int, ..., 2],
-        centroids: Dict[int, Array[int, ..., 3]]
-) -> Tuple[Set[Tuple[int, int]], Dict[int, Array[int, ..., 3]]]:
+        centroids: Dict[int, np.ndarray]
+) -> Tuple[Set[Tuple[int, int]], Dict[int, np.ndarray]]:
     """Clean unconformity topology edges and centroids. Needs to be run for
     each unconformity separately.
     
