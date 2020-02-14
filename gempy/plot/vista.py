@@ -538,7 +538,7 @@ class Vista:
     def plot_topography(
             self, 
             topography:Union[gp.core.grid_modules.grid_types.Topography, Array]=None,
-            scalars:Union["geomap", "topography", Array]="geomap",
+            scalars="geomap",
             **kwargs
         ):
         if not topography:
