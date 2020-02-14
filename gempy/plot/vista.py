@@ -451,8 +451,8 @@ class Vista:
 
     def _scale_topology_centroids(
             self, 
-            centroids:Dict[int, Array[float, 3]]
-        ) -> Dict[int, Array[float, 3]]:
+            centroids:Dict[int, np.ndarray]
+        ) -> Dict[int, np.ndarray]:
         """Scale topology centroid coordinates from grid coordinates to 
         physical coordinates.
         
@@ -478,7 +478,7 @@ class Vista:
     def plot_topology(
             self,
             edges:Set[Tuple[int, int]],
-            centroids:Dict[int, Array[float, 3]],
+            centroids:Dict[int, np.ndarray],
             node_kwargs:dict={},
             edge_kwargs:dict={}
         ):
@@ -537,7 +537,7 @@ class Vista:
 
     def plot_topography(
             self, 
-            topography:Union[gp.core.grid_modules.grid_types.Topography, Array]=None,
+            topography:Union[gp.core.grid_modules.grid_types.Topography, np.ndarray]=None,
             scalars="geomap",
             **kwargs
         ):
