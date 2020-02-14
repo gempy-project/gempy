@@ -346,12 +346,12 @@ class Vista:
         self.p.add_mesh(mesh, **kwargs)
         return [mesh]
 
-    def _callback_surface_points(self, pos, widget):
-        i = widget.WIDGET_INDEX
+    def _callback_surface_points(self, pos, index, widget):
+        i = index
         x, y, z = pos
-        self.model.modify_surface_points(
-            i, X=x, Y=y, Z=z
-        )
+
+        self.model.modify_surface_points(i, X=x, Y=y, Z=z)
+
         if self._live_updating:
             self._recompute()
             self._update_surface_polydata()
@@ -382,16 +382,16 @@ class Vista:
         for surf, (idx, val) in zip(
                 surfaces.surface, 
                 surfaces[['vertices', 'edges']].dropna().iterrows()
-            ):
-            polydata = self._surface_actors.get(surf, [False])[0]
+        ):
+            polydata = self._surface_actors.get(surf, False)
             if polydata:
                 polydata.points = val["vertices"]
                 polydata.faces = np.insert(
                     val['edges'], 0, 3, axis=1
                 ).ravel()
-                self._surface_actors[surf] = [polydata]
+                self._surface_actors[surf] = polydata
 
-    def plot_surface_points_interactive(self, fmt:str, **kwargs):
+    def plot_surface_points_interactive(self, fmt: str, **kwargs):
         self._live_updating = True
         i = self.model.surface_points.df.groupby("surface").groups[fmt]
         if len(i) == 0:
@@ -399,19 +399,18 @@ class Vista:
 
         pts = self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
 
-        for index, pt in zip(i, pts):
-            widget = self.p.add_sphere_widget(
-                self._callback_surface_points,
-                center=pt,
-                radius=np.mean(self.extent) / 20,
-                color=self._color_lot[fmt],
-                indices=i,
-                phi_resolution=6,
-                theta_resolution=6,
-                pass_widget=True,
-                **kwargs
-            )
-            widget.WIDGET_INDEX = index
+        self.p.add_sphere_widget(
+            self._callback_surface_points,
+            center=pts,
+            radius=np.mean(self.extent) / 20,
+            color=self._color_lot[fmt],
+            indices=i,
+            test_callback=False,
+            phi_resolution=6,
+            theta_resolution=6,
+            pass_widget=True,
+            **kwargs
+        )
     
     def plot_surface_points_interactive_all(self, **kwargs):
         self._live_updating = True
