@@ -1608,6 +1608,8 @@ class SurfacePoints(GeometricData):
         See Also:
             :meth:`GeometricData.read_data`
         """
+        # TODO read by default either formation or surface
+
         if 'sep' not in kwargs:
             kwargs['sep'] = ','
 
