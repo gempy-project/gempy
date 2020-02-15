@@ -251,7 +251,7 @@ class DataMutation(object):
         if self.grid.sections is None:
             self.grid.create_section_grid(section_dict=section_dict)
         else:
-            self.grid.sections.set_sections(section_dict)
+            self.grid.sections.set_sections(section_dict, regular_grid=self.grid.regular_grid)
 
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')

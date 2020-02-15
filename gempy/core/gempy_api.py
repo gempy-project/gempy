@@ -25,8 +25,8 @@ import pandas as pn
 from numpy import ndarray
 from typing import Union
 import warnings
-
-from gempy.core.model import Model
+from gempy.core.model import Model, DataMutation, AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
+    Surfaces, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
 from gempy.utils.meta import setdoc, setdoc_pro
 import gempy.utils.docstring as ds
