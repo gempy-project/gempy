@@ -37,57 +37,6 @@ from typing import Set, Tuple, Dict, Union
 from nptyping import Array
 
 
-def plot_data_3D(geo_model, **kwargs) -> Vista:
-    """Plot input data in 3-D.
-
-    Args:
-        geo_model: Geomodel object.
-        **kwargs: Keyword arguments for GemPy Vista instance.
-
-    Returns:
-        (Vista) GemPy Vista object for plotting.
-    """
-    gpv = Vista(geo_model, **kwargs)
-    gpv.set_bounds()
-    gpv.plot_surface_points_all()
-    gpv.plot_orientations_all()
-    gpv.show()
-    return gpv
-
-
-def plot_3D(
-        geo_model,
-        render_surfaces: bool = True,
-        render_data: bool = True,
-        render_topography: bool = False,
-        **kwargs,
-) -> Vista:
-    """Plot 3-D geomodel.
-
-    Args:
-        geo_model: Geomodel object with solutions.
-        render_surfaces: Render geomodel surfaces. Defaults to True.
-        render_data: Render geomodel input data. Defaults to True.
-        render_topography: Render topography. Defaults to False.
-        real_time: Toggles modyfiable input data and real-time geomodel
-            updating. Defaults to False.
-
-    Returns:
-        (Vista) GemPy Vista object for plotting.
-    """
-    gpv = Vista(geo_model, **kwargs)
-    gpv.set_bounds()
-    if render_surfaces:
-        gpv.plot_surfaces_all()
-    if render_data:
-        gpv.plot_surface_points_all()
-        gpv.plot_orientations_all()
-    if render_topography and geo_model.grid.topography is not None:
-        gpv.plot_topography()
-    gpv.show()
-    return gpv
-
-
 def _plot_data_3D(geo_data, ve=1, **kwargs):
     """
     Plot in vtk all the input data of a model
@@ -129,60 +78,6 @@ def _plot_3D(geo_model, render_surfaces=True, render_data=True, render_topograph
     vv.render_model(**kwargs)
 
     return vv
-
-# def plot_surfaces_3D_real_time(geo_model, vertices_l, simplices_l,
-#                                plot_data=True, posterior=None, samples=None, **kwargs):
-#
-#     """
-#     Plot in vtk the surfaces in real time. Moving the input data will affect the surfaces.
-#     IMPORTANT NOTE it is highly recommended to have the flag fast_run in the theano optimization. Also note that the
-#     time needed to compute each model increases linearly with every potential field (i.e. fault or discontinuity). It
-#     may be better to just modify each potential field individually to increase the speed (See gempy.select_series).
-#
-#     Args:
-#         vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
-#         simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
-#         formations_names_l (list): Name of the formation of the surfaces
-#         formation_numbers_l (list): formation_numbers (int)
-#         alpha (float): Opacity
-#         plot_data (bool): Default True
-#         size (tuple): Resolution of the window
-#         fullscreen (bool): Launch window in full screen or not
-#
-#     Returns:
-#         vtkPlot
-#     """
-#
-#     vv = vtkPlot(geo_model, **kwargs)
-#     vv.plot_surfaces_3D_real_time(vertices_l, simplices_l, plot_data=plot_data, posterior=posterior,
-#                                   samples=samples, **kwargs)
-#
-#     return vv
-#
-#
-# def plot_surfaces_3D(geo_data, vertices_l=None, simplices_l=None,
-#                      alpha=1, plot_data=True,
-#                      **kwargs):
-#     """
-#     Plot in vtk the surfaces. For getting vertices and simplices See gempy.get_surfaces
-#
-#     Args:
-#         vertices_l (numpy.array): 2D array (XYZ) with the coordinates of the points
-#         simplices_l (numpy.array): 2D array with the value of the vertices that form every single triangle
-#         formations_names_l (list): Name of the formation of the surfaces
-#         formation_numbers_l (list): formation_numbers (int)
-#         alpha (float): Opacity
-#         plot_data (bool): Default True
-#         size (tuple): Resolution of the window
-#         fullscreen (bool): Launch window in full screen or not
-#
-#     Returns:
-#         None
-#     """
-#     vv = vtkPlot(geo_data, **kwargs)
-#     vv.plot_surfaces_3D(vertices_l, simplices_l,
-#                         plot_data=plot_data)
-#     return vv
 
 
 def export_to_vtk(geo_data, path=None, name=None, voxels=True, block=None, surfaces=True):

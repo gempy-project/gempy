@@ -20,7 +20,7 @@
 
     Created on 10/11/2019
 
-    @author: Elisa Heim, Miguel de la Varga
+    @author: Alex Schaaf, Elisa Heim, Miguel de la Varga
 """
 
 from os import path
@@ -36,6 +36,10 @@ import numpy as np
 import pandas as pn
 import matplotlib.pyplot as plt
 from typing import Union
+from .vista import Vista
+import gempy as _gempy
+from typing import Set, Tuple, Dict, Union
+from nptyping import Array
 
 
 try:
@@ -158,3 +162,54 @@ def plot_stereonet(self, litho=None, planes=True, poles=True, single_plots=False
         by_label = OrderedDict(zip(labels, handles))
         ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
         ax.grid(True, color='black', alpha=0.25)
+
+
+def plot_data_3D(geo_model, **kwargs) -> Vista:
+    """Plot input data in 3-D.
+
+    Args:
+        geo_model: Geomodel object.
+        **kwargs: Keyword arguments for GemPy Vista instance.
+
+    Returns:
+        (Vista) GemPy Vista object for plotting.
+    """
+    gpv = Vista(geo_model, **kwargs)
+    gpv.set_bounds()
+    gpv.plot_surface_points_all()
+    gpv.plot_orientations_all()
+    gpv.show()
+    return gpv
+
+
+def plot_3D(
+        geo_model,
+        render_surfaces: bool = True,
+        render_data: bool = True,
+        render_topography: bool = False,
+        **kwargs,
+) -> Vista:
+    """Plot 3-D geomodel.
+
+    Args:
+        geo_model: Geomodel object with solutions.
+        render_surfaces: Render geomodel surfaces. Defaults to True.
+        render_data: Render geomodel input data. Defaults to True.
+        render_topography: Render topography. Defaults to False.
+        real_time: Toggles modyfiable input data and real-time geomodel
+            updating. Defaults to False.
+
+    Returns:
+        (Vista) GemPy Vista object for plotting.
+    """
+    gpv = Vista(geo_model, **kwargs)
+    gpv.set_bounds()
+    if render_surfaces:
+        gpv.plot_surfaces_all()
+    if render_data:
+        gpv.plot_surface_points_all()
+        gpv.plot_orientations_all()
+    if render_topography and geo_model.grid.topography is not None:
+        gpv.plot_topography()
+    gpv.show()
+    return gpv

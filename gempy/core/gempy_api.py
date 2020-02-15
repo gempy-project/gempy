@@ -20,22 +20,17 @@
     @author: Miguel de la Varga
 """
 
-from os import path
-import sys
 import numpy as np
 import pandas as pn
 from numpy import ndarray
 from typing import Union
 import warnings
-import copy
-# This is for sphenix to find the packages
-# sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-from gempy.core.model import Model, DataMutation, AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
-    Surfaces, Options, Structure, KrigingParameters
+
+from gempy.core.model import Model
 from gempy.core.solution import Solution
 from gempy.utils.meta import setdoc, setdoc_pro
 import gempy.utils.docstring as ds
-from gempy.core.interpolator import InterpolatorGravity, InterpolatorModel
+from gempy.core.interpolator import InterpolatorModel
 
 
 # This warning comes from numpy complaining about a theano optimization
