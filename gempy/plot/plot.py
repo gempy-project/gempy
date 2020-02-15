@@ -30,11 +30,65 @@ import sys
 #sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
 from .visualization_2d import PlotData2D, PlotSolution
-from .visualization_3d import steno3D, GemPyvtkInteract, ipyvolumeVisualization
+from .visualization_3d import GemPyvtkInteract
+from .vista import Vista
 import gempy as _gempy
+from typing import Set, Tuple, Dict, Union
+from nptyping import Array
 
 
-def plot_data_3D(geo_data, ve=1, **kwargs):
+def plot_data_3D(geo_model, **kwargs) -> Vista:
+    """Plot input data in 3-D.
+
+    Args:
+        geo_model: Geomodel object.
+        **kwargs: Keyword arguments for GemPy Vista instance.
+
+    Returns:
+        (Vista) GemPy Vista object for plotting.
+    """
+    gpv = Vista(geo_model, **kwargs)
+    gpv.set_bounds()
+    gpv.plot_surface_points_all()
+    gpv.plot_orientations_all()
+    gpv.show()
+    return gpv
+
+
+def plot_3D(
+        geo_model,
+        render_surfaces: bool = True,
+        render_data: bool = True,
+        render_topography: bool = False,
+        **kwargs,
+) -> Vista:
+    """Plot 3-D geomodel.
+
+    Args:
+        geo_model: Geomodel object with solutions.
+        render_surfaces: Render geomodel surfaces. Defaults to True.
+        render_data: Render geomodel input data. Defaults to True.
+        render_topography: Render topography. Defaults to False.
+        real_time: Toggles modyfiable input data and real-time geomodel
+            updating. Defaults to False.
+
+    Returns:
+        (Vista) GemPy Vista object for plotting.
+    """
+    gpv = Vista(geo_model, **kwargs)
+    gpv.set_bounds()
+    if render_surfaces:
+        gpv.plot_surfaces_all()
+    if render_data:
+        gpv.plot_surface_points_all()
+        gpv.plot_orientations_all()
+    if render_topography and geo_model.grid.topography is not None:
+        gpv.plot_topography()
+    gpv.show()
+    return gpv
+
+
+def _plot_data_3D(geo_data, ve=1, **kwargs):
     """
     Plot in vtk all the input data of a model
     Args:
@@ -52,7 +106,7 @@ def plot_data_3D(geo_data, ve=1, **kwargs):
     return vv
 
 
-def plot_3D(geo_model, render_surfaces=True, render_data=True, render_topography= True,
+def _plot_3D(geo_model, render_surfaces=True, render_data=True, render_topography= True,
             real_time=False, **kwargs):
     """
         Plot in vtk all the input data of a model
@@ -129,26 +183,6 @@ def plot_3D(geo_model, render_surfaces=True, render_data=True, render_topography
 #     vv.plot_surfaces_3D(vertices_l, simplices_l,
 #                         plot_data=plot_data)
 #     return vv
-
-
-def plot_surfaces_3d_ipv(geo_model: object) -> None:
-    """
-
-    Args:
-        geo_model (gempy.core.model.Model):
-    """
-    ipvv = ipyvolumeVisualization(geo_model)
-    ipvv.plot_surfaces()
-
-
-def plot_data_3d_ipv(geo_model: object) -> None:
-    """
-
-    Args:
-        geo_model (gempy.core.model.Model):
-    """
-    ipvv = ipyvolumeVisualization(geo_model)
-    ipvv.plot_data()
 
 
 def export_to_vtk(geo_data, path=None, name=None, voxels=True, block=None, surfaces=True):
@@ -398,24 +432,36 @@ def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,
                            **kwargs)
 
 
-def plot_topology(geo_data, G, centroids, direction="y", label_kwargs=None, node_kwargs=None, edge_kwargs=None):
-    """
-    Plot the topology adjacency graph in 2-D.
-
+def plot_topology(
+    geo_model,
+    edges:Set[Tuple[int, int]], 
+    centroids:Dict[int, Array[int, 3]], 
+    direction:Union["x", "y", "z"]="y", 
+    scale:bool=True,
+    label_kwargs:dict=None, 
+    edge_kwargs:dict=None
+    ):
+    """Plot the topology adjacency graph in 2-D.
+    
     Args:
-        geo_data (gempy.data_management.InputData):
-        G (skimage.future.graph.rag.RAG):
-        centroids (dict): Centroid node coordinates as a dictionary with node id's (int) as keys and (x,y,z) coordinates
-                as values.
-    Keyword Args
-        direction (str): "x", "y" or "z" specifying the slice direction for 2-D topology analysis. Default None.
-        label_kwargs (dict, optional): Dictionary of keyword arguments for graph node labels (plt.text)
-        node_kwargs (dict, optional): Dictionary of keyword arguments for graph nodes (plt.plot markers)
-        edge_kwargs (dict, optional): Dictionary of keyword arguments for graph edges (plt.plot lines)
-
-    Returns:
-        Nothing, it just plots.
+        geo_model ([type]): GemPy geomodel instance.
+        edges (Set[Tuple[int, int]]): Set of topology edges.
+        centroids (Dict[int, Array[int, 3]]): Dictionary of topology id's and
+            their centroids.
+        direction (Union["x", "y", "z", optional): Section direction. 
+            Defaults to "y".
+        label_kwargs (dict, optional): Keyword arguments for topology labels. 
+            Defaults to None.
+        edge_kwargs (dict, optional): Keyword arguments for topology edges. 
+            Defaults to None.
     """
-    PlotSolution.plot_topo_g(geo_data, G, centroids, direction=direction,
-                           label_kwargs=label_kwargs, node_kwargs=node_kwargs, edge_kwargs=edge_kwargs)
+    PlotSolution.plot_topo_g(
+        geo_model, 
+        edges, 
+        centroids,
+        direction=direction,
+        scale=scale,
+        label_kwargs=label_kwargs, 
+        edge_kwargs=edge_kwargs
+    )
 

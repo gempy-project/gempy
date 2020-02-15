@@ -141,3 +141,41 @@ def get_unique_regions(lith_block, fault_block, n_faults, neighbors=8, noddy=Fal
         labels_block += 1
 
     return labels_block
+
+
+def calculate_probability_lithology(lith_blocks):
+    """Blocks must be just the lith blocks!"""
+    lith_id = np.unique(lith_blocks)
+    # lith_count = np.zeros_like(lith_blocks[0:len(lith_id)])
+    lith_count = np.zeros((len(np.unique(lith_blocks)), lith_blocks.shape[1]))
+    for i, l_id in enumerate(lith_id):
+        lith_count[i] = np.sum(lith_blocks == l_id, axis=0)
+    lith_prob = lith_count / len(lith_blocks)
+    return lith_prob
+
+
+def calculate_information_entropy(lith_prob):
+    """Calculates information entropy for the given probability array."""
+    ie = np.zeros_like(lith_prob[0])
+    for l in lith_prob:
+        pm = np.ma.masked_equal(l, 0)  # mask where layer prob is 0
+        ie -= (pm * np.ma.log2(pm)).filled(0)
+    return ie
+
+
+def calculate_information_entropy_total(ie, absolute=False):
+    """Calculate total information entropy (float) from an information entropy array."""
+    if absolute:
+        return np.sum(ie)
+    else:
+        return np.sum(ie) / np.size(ie)
+
+
+def calculate_ie(lbs):
+    """Computes the per-voxel and total information entropy of given block models."""
+
+    lith_prob = calculate_probability_lithology(lbs)
+    ie = calculate_information_entropy(lith_prob)
+    ie_total = calculate_information_entropy_total(ie)
+
+    return ie, ie_total
