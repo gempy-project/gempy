@@ -13,8 +13,8 @@ jobs:
         docs-folder: "docs/"
     - name: Commit documentation changes
       run: |
-        git clone https://github.com/ammaraskar/sphinx-action-test.git --branch gh-pages --single-branch gh-pages
-        cp -r docs/_build/html/* gh-pages/
+        git clone https://github.com/cgre-aachen/gempy-dev.git --branch master --single-branch master
+        cp -r docs/_build/html/* gempy-dev/
         cd gh-pages
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
@@ -25,6 +25,6 @@ jobs:
     - name: Push changes
       uses: ad-m/github-push-action@master
       with:
-        branch: gh-pages
-        directory: gh-pages
+        branch: master
+        directory: master
         github_token: ${{ secrets.GITHUB_TOKEN }}
