@@ -58,7 +58,7 @@ class Plot2D:
         model: gempy.Model object
         cmap: Color map to pass to matplotlib
     """
-    def __init__(self, model, cmap=None, norm=None):
+    def __init__(self, model, cmap=None, norm=None, **kwargs):
         self.model = model
         self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
 
@@ -204,7 +204,6 @@ class Plot2D:
             if extent_val[3] < extent_val[2]:  # correct vertical orientation of plot
                 ax.invert_yaxis()
             self._aspect = (extent_val[3] - extent_val[2]) / (extent_val[1] - extent_val[0])/ve
-            print(self._aspect)
             ax.set_xlim(extent_val[0], extent_val[1])
             ax.set_ylim(extent_val[2], extent_val[3])
         ax.set_aspect('equal')
@@ -236,8 +235,8 @@ class Plot2D:
                 try:
                     image = self.model.solutions.geological_map[0].reshape(
                         self.model.grid.topography.values_3D[:, :, 2].shape)
-                    mask = self.model.solutions.geological_map[4].reshape(
-                        self.model.grid.topography.values_3D[:, :, 2].shape)
+                    #mask = self.model.solutions.geological_map[4].reshape(
+                    #    self.model.grid.topography.values_3D[:, :, 2].shape)
                 except AttributeError:
                     raise AttributeError('Geological map not computed. Activate the topography grid.')
             else:
@@ -247,7 +246,7 @@ class Plot2D:
                 l0, l1 = self.model.grid.sections.get_section_args(section_name)
                 shape = self.model.grid.sections.df.loc[section_name, 'resolution']
                 image = self.model.solutions.sections[0][0][l0:l1].reshape(shape[0], shape[1]).T
-                mask = self.model.solutions.sections[0].reshape(shape[0], shape[1].T)
+                #mask = self.model.solutions.sections[0].reshape(shape[0], shape[1]).T
 
         elif cell_number is not None or block is not None:
             _a, _b, _c, _, x, y = self._slice(direction, cell_number)[:-2]
@@ -263,7 +262,7 @@ class Plot2D:
 
             plot_block = _block.reshape(self.model.grid.regular_grid.resolution)
             image = plot_block[_a, _b, _c].T
-            mask = _mask.reshape(-1, *self.model.grid.regular_grid.resolution)[:, _a, _b, _c]
+            # mask = _mask.reshape(-1, *self.model.grid.regular_grid.resolution)[:, _a, _b, _c]
         else:
             raise AttributeError
         # for mask_series in mask:
@@ -480,7 +479,7 @@ class Plot2D:
             p1, p2 = self.calculate_p1p2(direction, cell_number)
             resx = self.model.grid.topography.resolution[0]
             resy = self.model.grid.topography.resolution[1]
-            print('p1', p1, 'p2', p2)
+          #  print('p1', p1, 'p2', p2)
             x, y, z = self._slice_topo_4_sections(p1, p2, resx)
             if direction == 'x':
                 a = np.vstack((y, z)).T
@@ -513,10 +512,10 @@ class Plot2D:
                 shape = self.model.grid.topography.resolution
             #    a = self.model.solutions.geological_map_scalfield
             #    extent = self.model.grid.topography.extent
-                faults_scalar = self.model.solutions.geological_map[1]
+                scalar_fields = self.model.solutions.geological_map[1]
                 c_id = 0  # color id startpoint
 
-                for e, block in enumerate(faults_scalar):
+                for e, block in enumerate(scalar_fields):
                     level = self.model.solutions.scalar_field_at_surface_points[e][np.where(
                         self.model.solutions.scalar_field_at_surface_points[e] != 0)]
 
@@ -531,20 +530,23 @@ class Plot2D:
             else:
                 l0, l1 = self.model.grid.sections.get_section_args(section_name)
                 shape = self.model.grid.sections.df.loc[section_name, 'resolution']
-                faults_scalar = self.model.solutions.sections[1][:, l0:l1]
+                scalar_fields = self.model.solutions.sections[1][:, l0:l1]
 
                 c_id = 0  # color id startpoint
 
-                for e, block in enumerate(faults_scalar):
+                for e, block in enumerate(scalar_fields):
                     level = self.model.solutions.scalar_field_at_surface_points[e][np.where(
                      self.model.solutions.scalar_field_at_surface_points[e] != 0)]
                     # Ignore warning about some scalars not being on the plot since it is very common
                     # that an interface does not exit for a given section
                     c_id2 = c_id + len(level)  # color id endpoint
+                    color_list = self.model.surfaces.df.groupby('isActive').get_group(True)['color'][c_id:c_id2][::-1]
+
                     ax.contour(block.reshape(shape).T, 0, levels=np.sort(level),
-                               colors=self.cmap.colors[self.model.surfaces.df['isActive']][c_id:c_id2],
-                                 linestyles='solid', origin='lower',
-                                 extent=extent_val, zorder=zorder - (e+len(level))
+                               #colors=self.cmap.colors[self.model.surfaces.df['isActive']][c_id:c_id2],
+                               colors=color_list,
+                               linestyles='solid', origin='lower',
+                               extent=extent_val, zorder=zorder - (e+len(level))
                                )
                     c_id = c_id2
 
@@ -564,12 +566,11 @@ class Plot2D:
             #    print(color_list)
 
                 ax.contour(block.reshape(shape)[_slice].T, 0, levels=np.sort(level),
-                           colors = color_list,# self.cmap.colors[self.model.surfaces.df['isActive']][c_id:c_id2][::-1],
+                           colors=color_list,
                            linestyles='solid', origin='lower',
                            extent=extent_val, zorder=zorder - (e + len(level))
                            )
                 c_id = c_id2
-
 
     def plot_section_traces(self, ax, section_names=None,  show_data=True, **kwargs):
 
@@ -584,6 +585,7 @@ class Plot2D:
             x1, y1 = np.asarray(self.model.grid.sections.df.loc[section, 'start'])
             x2, y2 = np.asarray(self.model.grid.sections.df.loc[section, 'stop'])
             ax.plot([x1, x2], [y1, y2], label=section, linestyle='--')
+            ax.legend(frameon=True)
 
     def plot_topo_g(self, ax, G, centroids, direction="y",
                         label_kwargs=None, node_kwargs=None, edge_kwargs=None):

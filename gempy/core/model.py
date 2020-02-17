@@ -241,7 +241,7 @@ class DataMutation(object):
         else:
             self.grid.centered_grid.set_centered_grid(centers=centers, radio=radio, resolution=resolution)
             self.grid.update_grid_values()
-
+        self.set_active_grid('centered')
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
@@ -253,6 +253,7 @@ class DataMutation(object):
         else:
             self.grid.sections.set_sections(section_dict, regular_grid=self.grid.regular_grid)
 
+        self.set_active_grid('sections')
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid.sections

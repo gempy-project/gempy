@@ -78,11 +78,18 @@ def plot_2d(model, n_axis = None, section_names:list = None, cell_number: list =
     # init e
     e = 0
 
+    # Check if topography in section names
+    # try:
+    #     section_names.pop(np.where('topography'==np.array(section_names))[0])
+    #
+    # except TypeError:
+    #     pass
+
     for e, sn in enumerate(section_names):
         assert e < 10, 'Reached maximum of axes'
 
         ax_pos = (int(n_axis/2)+1)*100+20+e+1
-        print(ax_pos, '1')
+        #print(ax_pos, '1')
         temp_ax = p.add_section(section_name=sn, ax_pos=ax_pos, **kwargs)
         if show_data[e] is True:
             p.plot_data(temp_ax, section_name=sn, **kwargs)
@@ -113,6 +120,12 @@ def plot_2d(model, n_axis = None, section_names:list = None, cell_number: list =
             p.plot_contacts(temp_ax, cell_number=cell_number[e2], direction=direction[e2], **kwargs)
 
     return p
+
+
+def plot_section_traces(model):
+    pst = plot_2d(model, n_axis=1, section_names=['topography'], show_data=False, show_boundaries=False)
+    pst.plot_section_traces(pst.axes[0], show_data=False)
+    return pst
 
 
 def plot_stereonet(self, litho=None, planes=True, poles=True, single_plots=False,
