@@ -10,3 +10,4 @@ networkx
 ipywidgets
 scikit-image
 pyvista
+IPython
