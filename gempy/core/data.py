@@ -95,7 +95,6 @@ class Grid(object):
         self.custom_grid_grid_active = False
         self.topography = None
         self.topography_grid_active = False
-        self.sections = grid_types.Sections()
         self.sections_grid_active = False
         self.centered_grid = None
         self.centered_grid_active = False
@@ -103,6 +102,10 @@ class Grid(object):
         # Init basic grid empty
         self.regular_grid = self.create_regular_grid(set_active=False, **kwargs)
         self.regular_grid_active = False
+
+        # Init optional sections
+        self.sections = grid_types.Sections(regular_grid=self.regular_grid)
+
         self.update_grid_values()
 
     def __str__(self):
