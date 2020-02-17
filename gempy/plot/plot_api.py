@@ -49,7 +49,7 @@ except ImportError:
     mplstereonet_import = False
 
 
-def plot_2d(model, n_axis = None, section_names:list = None, cell_number: list = None, direction: list = 'y',
+def plot_2d(model, n_axis=None, section_names:list = None, cell_number: list = None, direction: list = 'y',
             show_data: Union[bool, list] = True, show_lith: Union[bool, list] = True,
             show_scalar: Union[bool, list] = False, show_boundaries: Union[bool, list] = True, **kwargs):
 
@@ -177,7 +177,7 @@ def plot_stereonet(self, litho=None, planes=True, poles=True, single_plots=False
         ax.grid(True, color='black', alpha=0.25)
 
 
-def plot_data_3D(geo_model, **kwargs) -> Vista:
+def plot_data_3_d(geo_model, **kwargs) -> Vista:
     """Plot input data in 3-D.
 
     Args:
@@ -195,7 +195,7 @@ def plot_data_3D(geo_model, **kwargs) -> Vista:
     return gpv
 
 
-def plot_3D(
+def plot_3d(
         geo_model,
         render_surfaces: bool = True,
         render_data: bool = True,

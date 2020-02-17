@@ -11,3 +11,4 @@ ipywidgets
 scikit-image
 nptyping
 pyvista
+IPython

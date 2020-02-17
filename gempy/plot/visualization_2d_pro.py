@@ -168,7 +168,6 @@ class Plot2D:
                     ve=1., **kwargs):
 
         extent_val = kwargs.get('extent', None)
-
         self.update_colot_lot()
 
         if ax is None:
@@ -207,10 +206,33 @@ class Plot2D:
             ax.set_xlim(extent_val[0], extent_val[1])
             ax.set_ylim(extent_val[2], extent_val[3])
         ax.set_aspect('equal')
+
+        # Adding some properties to the axes to make easier to plot
+        ax.section_name = section_name
+        ax.cell_number = cell_number
+        ax.direction = direction
+
         self.axes = np.append(self.axes, ax)
         self.fig.tight_layout()
 
         return ax
+
+    @staticmethod
+    def _check_default_section(ax, section_name, cell_number, direction):
+
+        if section_name is None:
+            try:
+                section_name = ax.section_name
+            except AttributeError:
+                pass
+        if cell_number is None:
+            try:
+                cell_number = ax.cell_number
+                direction = ax.direction
+            except AttributeError:
+                pass
+
+        return section_name, cell_number, direction
 
     def plot_lith(self, ax, section_name=None, cell_number=None, direction='y',
                   block=None, mask=None, **kwargs):
@@ -229,6 +251,8 @@ class Plot2D:
         """
         self.update_colot_lot()
         extent_val = [*ax.get_xlim(), *ax.get_ylim()]
+
+        section_name, cell_number, direction = self._check_default_section(ax, section_name, cell_number, direction)
 
         if section_name is not None:
             if section_name == 'topography':
@@ -293,6 +317,8 @@ class Plot2D:
         """
 
         extent_val = [*ax.get_xlim(), *ax.get_ylim()]
+        section_name, cell_number, direction = self._check_default_section(ax, section_name, cell_number, direction)
+
 
         if section_name is not None:
             if section_name == 'topography':
@@ -342,6 +368,7 @@ class Plot2D:
 
         points = self.model.surface_points.df.copy()
         orientations = self.model.orientations.df.copy()
+        section_name, cell_number, direction = self._check_default_section(ax, section_name, cell_number, direction)
 
         if section_name is not None:
             if section_name == 'topography':
@@ -459,6 +486,8 @@ class Plot2D:
 
     def plot_topography(self, ax, section_name=None, cell_number=None, direction='y', block=None):
         self.update_colot_lot()
+        section_name, cell_number, direction = self._check_default_section(ax, section_name, cell_number, direction)
+
         if section_name is not None:
 
             p1 = self.model.grid.sections.df.loc[section_name, 'start']
@@ -479,7 +508,6 @@ class Plot2D:
             p1, p2 = self.calculate_p1p2(direction, cell_number)
             resx = self.model.grid.topography.resolution[0]
             resy = self.model.grid.topography.resolution[1]
-          #  print('p1', p1, 'p2', p2)
             x, y, z = self._slice_topo_4_sections(p1, p2, resx)
             if direction == 'x':
                 a = np.vstack((y, z)).T
@@ -500,6 +528,8 @@ class Plot2D:
     def plot_contacts(self, ax, section_name=None, cell_number=None, direction='y', block=None,
                       only_faults=False, **kwargs):
         self.update_colot_lot()
+        section_name, cell_number, direction = self._check_default_section(ax, section_name, cell_number, direction)
+
         if only_faults:
             contour_idx = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
         else:
