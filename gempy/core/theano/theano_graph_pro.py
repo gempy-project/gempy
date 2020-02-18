@@ -1147,6 +1147,10 @@ class TheanoGraphPro(object):
 
         Returns:
             theano.tensor.vector: independent vector
+            :param dip_angles:
+            :param azimuth:
+            :param polarity:
+
         """
 
         length_of_C = self.matrices_shapes()[-1]
@@ -1454,7 +1458,7 @@ class TheanoGraphPro(object):
             sigma_0_grad = self.contribution_gradient_interface(grid_val[a:b], tiled_weights)
             sigma_0_interf = self.contribution_interface(grid_val[a:b], tiled_weights)
             f_0 = self.contribution_universal_drift(grid_val[a:b], tiled_weights)
-            f_1 = self.contribution_faults(tiled_weights, a, b)
+            f_1 = self.contribution_faults(tiled_weights, a, b, fault_matrix)
 
             # Add an arbitrary number at the potential field to get unique values for each of them
             partial_Z_x = (sigma_0_grad + sigma_0_interf + f_0 + f_1)[0]
@@ -1501,7 +1505,7 @@ class TheanoGraphPro(object):
         # Check if we loop the grid or not
         if self.sparse_version is True:
             self.dot_version = True
-            Z_x = self.scalar_field_loop(0, 100000000, Z_x_init, grid_val, weights)
+            Z_x = self.scalar_field_loop(0, 100000000, Z_x_init, grid_val, weights, fault_matrix)
 
         elif self.max_speed < 2:
             # tiled_weights = self.extend_dual_kriging(weights, grid_val.shape[0])
@@ -1517,7 +1521,7 @@ class TheanoGraphPro(object):
             Z_x = Z_x_loop[-1][-1]
         else:
             tiled_weights = self.extend_dual_kriging(weights, grid_val.shape[0])
-            Z_x = self.scalar_field_loop(0, 100000000, Z_x_init, grid_val, tiled_weights)
+            Z_x = self.scalar_field_loop(0, 100000000, Z_x_init, grid_val, tiled_weights, fault_matrix)
 
         Z_x.name = 'Value of the potential field at every point'
 
@@ -1564,8 +1568,8 @@ class TheanoGraphPro(object):
 
     def compare(self, a, b, slice_init, Z_x, l, n_surface, drift):
         """
-        Treshold of the points to interpolate given 2 potential field values. TODO: This function is the one we
-        need to change for a sigmoid function
+        Treshold of the points to interpolate given 2 potential field values.
+        TODO: This function is the one we need to change for a sigmoid function
 
         Args:
             a (scalar): Upper limit of the potential field
@@ -1872,7 +1876,7 @@ class TheanoGraphPro(object):
 
         if self.sparse_version is True:
             weights = self.solve_kriging(b)
-            Z_x = self.compute_scalar_field(weights, grid)
+            Z_x = self.compute_scalar_field(weights, grid, fault_matrix_op)
             weights = weights[0]
 
         else:
