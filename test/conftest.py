@@ -18,7 +18,21 @@ def interpolator():
                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 
-    gempy.set_interpolation_data(geo_model,  grid=None, compile_theano=True)
+    gempy.set_interpolation_data(geo_model, grid=None, compile_theano=True)
+    return geo_model.interpolator
+
+
+@pytest.fixture(scope='session')
+def sparse_interpolator():
+
+    geo_model = gp.create_model('interpolator')
+
+    # Importing the data from csv files and settign extent and resolution
+    gp.init_data(geo_model, #[0, 10, 0, 10, -10, 0], [50, 50, 50],
+                                 path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
+                                 path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
+
+    gempy.set_interpolator(geo_model, grid=None, compile_theano=True, sparse_version=True)
     return geo_model.interpolator
 
 

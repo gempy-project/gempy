@@ -144,6 +144,37 @@ class TestFaults:
         # We only compare the block because the absolute pot field I changed it
         np.testing.assert_array_almost_equal(np.round(sol.lith_block[test_values]), real_sol, decimal=0)
 
+    def test_d_sparse(self, sparse_interpolator):
+        """
+        Two layers 1 fault
+        """
+
+        # Importing the data from csv files and settign extent and resolution
+        geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+                                     path_o=input_path+"/GeoModeller/test_d/test_d_Foliations.csv",
+                                     path_i=input_path+"/GeoModeller/test_d/test_d_Points.csv")
+
+        gempy.set_series(geo_data, {'fault1': 'f1', 'series': ('A', 'B')})
+
+        geo_data.set_is_fault('fault1')
+
+        geo_data.set_theano_function(sparse_interpolator)
+
+        # Compute model
+        sol = gempy.compute_model(geo_data)
+
+        gempy.plot.plot_section(geo_data, 25, direction='y', show_data=True)
+        plt.savefig(os.path.dirname(__file__)+'/../figs/test_d_sparse.png', dpi=200)
+
+        if update_sol:
+            np.save(input_path + '/test_d_sparse_sol.npy', sol.lith_block[test_values])
+
+        # Load model
+        real_sol = np.load(input_path + '/test_d_sparse_sol.npy')
+
+        # We only compare the block because the absolute pot field I changed it
+        np.testing.assert_array_almost_equal(np.round(sol.lith_block[test_values]), real_sol, decimal=0)
+
     def test_e(self, interpolator):
         """
         Two layers a bit curvy, 1 fault
