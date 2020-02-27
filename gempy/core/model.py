@@ -18,6 +18,7 @@ from gempy.plot.decorators import *
 pn.options.mode.chained_assignment = None
 
 
+# TODO rename to ImplicitCoKriging
 @setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__, SurfacePoints.__doc__,
              Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
              Solution.__doc__])
@@ -1096,6 +1097,7 @@ class DataMutation(object):
         return self.surfaces
 
 
+# TODO rename to Project. With DEP time
 @setdoc([MetaData.__doc__, DataMutation.__doc__], indent=False)
 class Model(DataMutation, ABC):
     """ Container class of all objects that constitute a GemPy model.
@@ -1108,7 +1110,6 @@ class Model(DataMutation, ABC):
 
         self.meta = MetaData(project_name=project_name)
         super().__init__()
-        #self.interpolator_gravity = None
 
     def __repr__(self):
         return self.meta.project_name + ' ' + self.meta.date
