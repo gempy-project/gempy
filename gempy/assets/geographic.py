@@ -9,6 +9,7 @@ additional data sets (e.g. GoogleEarth .kml files, GeoTiffs, etc.)
 try:
     from osgeo import ogr, osr
     import gdal
+
     gdal_installed = True
 except ModuleNotFoundError:
     print("Geopgraphic libraries (osgeo, gdal) not (correctly) installed")
@@ -47,7 +48,7 @@ class GeographicPoint(object):
             self.z = z[0]
         if 'zone' in kwds:
             self.zone = kwds['zone']
-        if 'type' in kwds and kwds['type'] == 'utm' and not 'zone' in kwds:
+        if 'type' in kwds and kwds['type'] == 'utm' and 'zone' not in kwds:
             raise AttributeError("Please provide utm zone")
         # for the case that self.type == 'latlong': determine UTM zone:
         if self.type == 'latlong':
@@ -130,24 +131,30 @@ class GeopgraphicPointSet(object):
         """
         self.points = []
         self.type = kwds.get('type', 'latlong')
+        self.normal = None
+        self.ctr = None
+        self.dip_direction = None
+        self.dip = None
+        self.min = None
+        self.max = None
 
     def __repr__(self):
         """Print out information about point set"""
-        str = "Point set with %d points" % len(self.points)
-        str += "; " + self.type
+        out_str = "Point set with %d points" % len(self.points)
+        out_str += "; " + self.type
         if hasattr(self, 'ctr'):
-            str+="; Centroid: at (%.2f, %.2f, %.2f)" % (self.ctr.x, self.ctr.y, self.ctr.z)
+            out_str += "; Centroid: at (%.2f, %.2f, %.2f)" % (self.ctr.x, self.ctr.y, self.ctr.z)
 
         if hasattr(self, 'dip'):
-            str+="; Orientation: (%03d/%02d)" % (self.dip_direction, self.dip)
-        return str
+            out_str += "; Orientation: (%03d/%02d)" % (self.dip_direction, self.dip)
+        return out_str
 
     def add_point(self, point):
         self.points.append(point)
 
     def latlong_to_utm(self):
         """Convert all points from lat long to utm"""
-        if self.type == 'latlong': # else not required...
+        if self.type == 'latlong':  # else not required...
             for point in self.points:
                 point.latlong_to_utm()
             self.type = 'utm'
@@ -157,7 +164,7 @@ class GeopgraphicPointSet(object):
 
     def utm_to_latlong(self):
         """Convert all points from utm to lat long"""
-        if self.type == 'utm': # else not required...
+        if self.type == 'utm':  # else not required...
             for point in self.points:
                 point.utm_to_latlong()
             self.type = 'latlong'
@@ -168,7 +175,8 @@ class GeopgraphicPointSet(object):
     def get_z_values_from_geotiff(self, filename):
         """Open GeoTiff file and get z-value for all points in set
 
-
+        Args:
+            filename: filename of GeoTiff file
         Note: requires gdal installed!
         """
 
@@ -191,8 +199,6 @@ class GeopgraphicPointSet(object):
 
         adjusted from: http://stackoverflow.com/questions/12299540/plane-fitting-to-4-or-more-xyz-points
         """
-        import numpy as np
-
         if self.type == 'latlong':
             self.latlong_to_utm()
 
@@ -208,10 +214,10 @@ class GeopgraphicPointSet(object):
                                                                                                        points.shape[0])
         ctr = points.mean(axis=1)
         x = points - ctr[:, np.newaxis]
-        M = np.dot(x, x.T)  # Could also use np.cov(x) here.
+        m = np.dot(x, x.T)  # Could also use np.cov(x) here.
 
         self.ctr = GeographicPoint(x=ctr[0], y=ctr[1], z=ctr[2], type='utm', zone=self.points[0].zone)
-        self.normal = svd(M)[0][:, -1]
+        self.normal = svd(m)[0][:, -1]
         # return ctr, svd(M)[0][:, -1]
         if self.normal[2] < 0:
             self.normal = - self.normal
@@ -227,7 +233,7 @@ class GeopgraphicPointSet(object):
         # calculate dip direction
         # +/+
         if self.normal[0] >= 0 and self.normal[1] > 0:
-            self.dip_direction = np.arctan(self.normal[0]/self.normal[1]) / np.pi * 180.
+            self.dip_direction = np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
         # border cases where arctan not defined:
         elif self.normal[0] > 0 and self.normal[1] == 0:
             self.dip_direction = 90
@@ -235,12 +241,13 @@ class GeopgraphicPointSet(object):
             self.dip_direction = 270
         # +-/-
         elif self.normal[1] < 0:
-            self.dip_direction = 180 + np.arctan(self.normal[0]/self.normal[1]) / np.pi * 180.
+            self.dip_direction = 180 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
         # -/-
-        elif self.normal[0] < 0 and self.normal[1] >= 0:
-            self.dip_direction = 360 + np.arctan(self.normal[0]/self.normal[1]) / np.pi * 180.
-#    elif normal_vec[1] == 0:
-#        return 90
+        elif self.normal[0] < 0 <= self.normal[1]:
+            self.dip_direction = 360 + np.arctan(self.normal[0] / self.normal[1]) / np.pi * 180.
+
+    #    elif normal_vec[1] == 0:
+    #        return 90
 
     def stereonet(self):
         """Create stereonet plot of plane pole and half circle for this point set"""
@@ -266,4 +273,3 @@ class GeopgraphicPointSet(object):
 
         self.min = np.min(point_array, axis=0)
         self.max = np.max(point_array, axis=0)
-
