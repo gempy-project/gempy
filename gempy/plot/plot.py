@@ -23,18 +23,16 @@
     @author: Elisa Heim, Miguel de la Varga
 """
 
-from os import path
-import sys
-
 # This is for sphenix to find the packages
-#sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+# sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
+from typing import Set, Tuple, Dict, Union
+
+from nptyping import Array
+
+import gempy as _gempy
 from .visualization_2d import PlotData2D, PlotSolution
 from .visualization_3d import GemPyvtkInteract
-from .vista import Vista
-import gempy as _gempy
-from typing import Set, Tuple, Dict, Union
-from nptyping import Array
 
 
 def _plot_data_3D(geo_data, ve=1, **kwargs):
@@ -47,7 +45,7 @@ def _plot_data_3D(geo_data, ve=1, **kwargs):
         None
     """
     vv = GemPyvtkInteract(geo_data, ve=ve, **kwargs)
-   # vv.restart()
+    # vv.restart()
     vv.set_surface_points()
     vv.set_orientations()
     vv.render_model(**kwargs)
@@ -55,8 +53,9 @@ def _plot_data_3D(geo_data, ve=1, **kwargs):
     return vv
 
 
-def _plot_3D(geo_model, render_surfaces=True, render_data=True, render_topography= True,
-            real_time=False, **kwargs):
+def _plot_3D(geo_model, render_surfaces=True, render_data=True,
+             render_topography=True,
+             real_time=False, **kwargs):
     """
         Plot in vtk all the input data of a model
         Args:
@@ -80,7 +79,8 @@ def _plot_3D(geo_model, render_surfaces=True, render_data=True, render_topograph
     return vv
 
 
-def export_to_vtk(geo_data, path=None, name=None, voxels=True, block=None, surfaces=True):
+def export_to_vtk(geo_data, path=None, name=None, voxels=True, block=None,
+                  surfaces=True):
     """
       Export data to a vtk file for posterior visualizations
 
@@ -99,15 +99,18 @@ def export_to_vtk(geo_data, path=None, name=None, voxels=True, block=None, surfa
       """
 
     if voxels is True:
-        GemPyvtkInteract.export_vtk_lith_block(geo_data, lith_block=block, path=path)
+        GemPyvtkInteract.export_vtk_lith_block(geo_data, lith_block=block,
+                                               path=path)
     if surfaces is True:
         geo_data.solutions.compute_all_surfaces()
         ver, sim = _gempy.get_surfaces(geo_data)
-        GemPyvtkInteract.export_vtk_surfaces(geo_data, ver, sim, path=path, name=name)
+        GemPyvtkInteract.export_vtk_surfaces(geo_data, ver, sim, path=path,
+                                             name=name)
     return True
 
 
-def plot_data(geo_data, direction="y", data_type = 'all', series="all", show_legend=True, **kwargs):
+def plot_data(geo_data, direction="y", data_type='all', series="all",
+              show_legend=True, **kwargs):
     """
     Plot the projection of the raw data (surface_points and orientations) in 2D following a
     specific directions
@@ -123,11 +126,13 @@ def plot_data(geo_data, direction="y", data_type = 'all', series="all", show_leg
     """
     plot = PlotData2D(geo_data)
     p = plot.plot_data(direction=direction, data_type=data_type, series=series,
-                          show_legend=show_legend, **kwargs)
+                       show_legend=show_legend, **kwargs)
     # TODO saving options
     return plot
 
-def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=False,
+
+def plot_stereonet(geo_data, litho=None, planes=True, poles=True,
+                   single_plots=False,
                    show_density=False):
     '''
     Plot an equal-area projection of the orientations dataframe using mplstereonet.
@@ -146,11 +151,12 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True, single_plots=F
     '''
 
     plot = PlotData2D(geo_data)
-    plot.plot_stereonet(litho=litho, planes=planes, poles=poles, single_plots=single_plots,
+    plot.plot_stereonet(litho=litho, planes=planes, poles=poles,
+                        single_plots=single_plots,
                         show_density=show_density)
 
 
-def plot_map(model, contour_lines=True, show_data=True, figsize=(12,12)):
+def plot_map(model, contour_lines=True, show_data=True, figsize=(12, 12)):
     """
 
     Args:
@@ -163,10 +169,12 @@ def plot_map(model, contour_lines=True, show_data=True, figsize=(12,12)):
 
     """
     plot = PlotSolution(model)
-    plot.plot_map(contour_lines=contour_lines, show_data=show_data, figsize=figsize)
+    plot.plot_map(contour_lines=contour_lines, show_data=show_data,
+                  figsize=figsize)
 
 
-def plot_section_traces(model, section_names=None, contour_lines=False, show_data=True, show_all_data=False):
+def plot_section_traces(model, section_names=None, contour_lines=False,
+                        show_data=True, show_all_data=False):
     """
 
     Args:
@@ -180,13 +188,16 @@ def plot_section_traces(model, section_names=None, contour_lines=False, show_dat
     """
     plot = PlotSolution(model)
     if plot.model.solutions.geological_map is not None:
-        plot.plot_map(contour_lines=contour_lines, show_data=show_data, show_all_data=show_all_data)
-    #else:
-        #fig = plt.figure()
-        #plt.title('Section traces, z direction')
+        plot.plot_map(contour_lines=contour_lines, show_data=show_data,
+                      show_all_data=show_all_data)
+    # else:
+    # fig = plt.figure()
+    # plt.title('Section traces, z direction')
 
-    plot.plot_section_traces(show_data=show_data, section_names=section_names, contour_lines=contour_lines,
+    plot.plot_section_traces(show_data=show_data, section_names=section_names,
+                             contour_lines=contour_lines,
                              show_all_data=show_all_data)
+
 
 """
 def plot_predef_sections(model, show_traces=True, show_data=False, section_names=None, show_faults=True,
@@ -211,23 +222,32 @@ def plot_predef_sections(model, show_traces=True, show_data=False, section_names
 
 """
 
-def plot_section_by_name(model, section_name, show_faults=True, show_topo=True, show_data=True,
-                         show_all_data=False, radius='default', contourplot=True):
+
+def plot_section_by_name(model, section_name, show_faults=True, show_topo=True,
+                         show_data=True,
+                         show_all_data=False, radius='default',
+                         contourplot=True):
     # Todo needs more keywords:
     ### if show_data: radius, data_type
     plot = PlotSolution(model)
-    plot.plot_section_by_name(section_name=section_name, show_topo=show_topo, show_faults=show_faults,
-                              show_data=show_data, show_all_data=show_all_data, radius=radius, contourplot=contourplot)
+    plot.plot_section_by_name(section_name=section_name, show_topo=show_topo,
+                              show_faults=show_faults,
+                              show_data=show_data, show_all_data=show_all_data,
+                              radius=radius, contourplot=contourplot)
 
 
-def plot_all_sections(model, show_data=False, section_names=None, show_topo=True, figsize=(12, 12)):
+def plot_all_sections(model, show_data=False, section_names=None,
+                      show_topo=True, figsize=(12, 12)):
     plot = PlotSolution(model)
-    plot.plot_all_sections(show_data=show_data, section_names=section_names, show_topo=show_topo,
+    plot.plot_all_sections(show_data=show_data, section_names=section_names,
+                           show_topo=show_topo,
                            figsize=figsize)
 
 
-def plot_section(model, cell_number=13, block=None, direction="y", interpolation='none',
-                 show_data=True, show_faults=True, show_topo = False,  block_type=None, ve=1,
+def plot_section(model, cell_number=13, block=None, direction="y",
+                 interpolation='none',
+                 show_data=True, show_faults=True, show_topo=False,
+                 block_type=None, ve=1,
                  show_all_data=False, show_legend=True, **kwargs):
     """
     Plot a section of the block model
@@ -247,9 +267,12 @@ def plot_section(model, cell_number=13, block=None, direction="y", interpolation
         None
     """
     plot = PlotSolution(model)
-    plot.fig = plot.plot_block_section(model.solutions, cell_number, block, direction, interpolation,
-                                       show_data, show_faults, show_topo,  block_type, ve,
-                                       show_all_data=show_all_data, show_legend=show_legend, **kwargs)
+    plot.fig = plot.plot_block_section(model.solutions, cell_number, block,
+                                       direction, interpolation,
+                                       show_data, show_faults, show_topo,
+                                       block_type, ve,
+                                       show_all_data=show_all_data,
+                                       show_legend=show_legend, **kwargs)
     return plot
 
 
@@ -278,10 +301,13 @@ def plot_scalar_field(model, cell_number, N=20,
 
     plot.plot_scalar_field(block, cell_number, N=N,
                            direction=direction, show_data=show_data,
-                           series=series, alpha=alpha, show_all_data=show_all_data,
+                           series=series, alpha=alpha,
+                           show_all_data=show_all_data,
                            *args, **kwargs)
 
-def plot_section_scalarfield(model, section_name, sn, levels=50, show_faults=True, show_topo=True, lithback=True):
+
+def plot_section_scalarfield(model, section_name, sn, levels=50,
+                             show_faults=True, show_topo=True, lithback=True):
     """
     Plot the potential field in the predefined sections.
     Args:
@@ -297,7 +323,8 @@ def plot_section_scalarfield(model, section_name, sn, levels=50, show_faults=Tru
         None
     """
     plot = PlotSolution(model)
-    plot.plot_section_scalarfield(section_name=section_name, sn=sn, levels=levels, show_faults=show_faults,
+    plot.plot_section_scalarfield(section_name=section_name, sn=sn,
+                                  levels=levels, show_faults=show_faults,
                                   show_topo=show_topo, lithback=lithback)
 
 
@@ -322,20 +349,21 @@ def plot_gradient(geo_data, scalar_field, gx, gy, gz, cell_number, q_stepsize=5,
             None
     """
     plot = PlotSolution(geo_data)
-    plot.plot_gradient(scalar_field, gx, gy, gz, cell_number, q_stepsize=q_stepsize,
-                           direction=direction, plot_scalar=plot_scalar,
-                           **kwargs)
+    plot.plot_gradient(scalar_field, gx, gy, gz, cell_number,
+                       q_stepsize=q_stepsize,
+                       direction=direction, plot_scalar=plot_scalar,
+                       **kwargs)
 
 
 def plot_topology(
-    geo_model,
-    edges:Set[Tuple[int, int]], 
-    centroids:Dict[int, Array[int, 3]], 
-    direction:Union["x", "y", "z"]="y", 
-    scale:bool=True,
-    label_kwargs:dict=None, 
-    edge_kwargs:dict=None
-    ):
+        geo_model,
+        edges: Set[Tuple[int, int]],
+        centroids: Dict[int, Array[int, 3]],
+        direction: Union["x", "y", "z"] = "y",
+        scale: bool = True,
+        label_kwargs: dict = None,
+        edge_kwargs: dict = None
+):
     """Plot the topology adjacency graph in 2-D.
     
     Args:
@@ -351,12 +379,11 @@ def plot_topology(
             Defaults to None.
     """
     PlotSolution.plot_topo_g(
-        geo_model, 
-        edges, 
+        geo_model,
+        edges,
         centroids,
         direction=direction,
         scale=scale,
-        label_kwargs=label_kwargs, 
+        label_kwargs=label_kwargs,
         edge_kwargs=edge_kwargs
     )
-
