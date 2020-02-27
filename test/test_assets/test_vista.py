@@ -1,9 +1,12 @@
-import pytest
-from gempy.plot import vista as vs
-import pyvista as pv
 import os
+from pickle import load
+
+import pytest
+import pyvista as pv
+
 import gempy as gp
-from pickle import dump, load
+from gempy.plot import vista as vs
+
 input_path = os.path.dirname(__file__) + '/../../notebooks/data'
 
 
@@ -87,39 +90,9 @@ def test_plot_structured_grid_scalar(vista_obj):
 
 def test_plot_structured_grid_scalar(vista_obj):
     mesh = vista_obj.plot_structured_grid("scalar")
-    assert mesh.points.shape[0] == vista_obj.model.grid.regular_grid.values.shape[0]
-
+    shape = vista_obj.model.grid.regular_grid.values.shape[0]
+    assert mesh.points.shape[0] == shape
 
 # def test_plot_structured_grid_values(vista_obj):
 #     vista_obj.plot_structured_grid("values")
 #     assert type(vista_obj._actors[0]) == pv.StructuredGrid
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
