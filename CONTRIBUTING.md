@@ -135,9 +135,10 @@ with tests, so that we can ensure it working properly.
 All tests are located in the `test` folder of the GemPy repository. This is where
 you need to add your own tests as a subfolder. 
 
-### Pull Request Checklist
+### Pull Requests
 
-Make Pull Requests to the master branch.
+All contributions are made via Pull Requests to the master branch.
+
 The following checklist *needs* to be completed before we will accept any pull
 request to the GemPy codebase. 
 
