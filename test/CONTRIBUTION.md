@@ -1,9 +1,8 @@
 # Contributing
 
-We welcome and strongly encoruage any kind of contributions to the GemPy 
-open-source geomodeling project: questions, bug reports, feature requests and
-new code. This document will provide you with the basic understanding on how 
-to start with your contributions.
+We welcome and encoruage everyone to contribute to GemPy! 
+Contributions can be questions, bug reports, feature requests and new code. 
+Here is how to get started.
 
 ## Cloning the Source Repository
 
