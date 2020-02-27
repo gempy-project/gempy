@@ -2,7 +2,6 @@ from gempy.core.interp_methods.tf_2D import Tensorflow_kriging_2D
 import tensorflow as tf
 
 
-
 def test_basic_tf():
     dips_position = tf.constant([[1,0],
                                  [1,1]],
