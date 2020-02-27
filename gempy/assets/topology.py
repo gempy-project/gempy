@@ -17,9 +17,6 @@
 
 @author: Alexander Schaaf
 """
-
-from itertools import combinations
-from logging import debug
 import numpy as np
 from nptyping import Array
 from typing import Iterable, List, Set, Tuple, Dict, Union, Optional
@@ -58,8 +55,6 @@ def compute_topology(
         voxel_threshold: int = 1
 ):
     res = geo_model.grid.regular_grid.resolution
-    n_unconf = _get_nunconf(geo_model)
-    n_faults = _get_nfaults(geo_model)
     fb = _get_fb(geo_model)
     lb = _get_lb(geo_model)
     n_lith = len(np.unique(lb))  # ? quicker looking it up in geomodel?
@@ -255,8 +250,7 @@ def get_lot_node_to_fault_block(
     """
     n_lith = len(get_lith_ids(geo_model))
     lot = {}
-    for node, pos in centroids.items():
-        # ? - n_unconf????
+    for node, _ in centroids.items():
         lot[node] = (node - 0 - (node // n_lith)) // n_lith
     return lot
 
@@ -274,7 +268,8 @@ def get_fault_ids(geo_model) -> List[int]:
     fault_ids = [0]
     for fsn in f_series_names:
         fid = \
-        geo_model.surfaces.df[geo_model.surfaces.df.series == fsn].id.values[0]
+            geo_model.surfaces.df[
+                geo_model.surfaces.df.series == fsn].id.values[0]
         fault_ids.append(fid)
     return fault_ids
 
@@ -642,7 +637,7 @@ def count_unique_topologies(edges: List[Set[Tuple[int, int]]]):
     unique_edges = [edges[0]]
     unique_edges_count = [1]
     unqiue_edges_idx = [0]
-    for a, topology in enumerate(edges[1:]):
+    for _, topology in enumerate(edges[1:]):
         skip = False
         for b, utopology in enumerate(unique_edges):
             if utopology == topology:
@@ -656,4 +651,5 @@ def count_unique_topologies(edges: List[Set[Tuple[int, int]]]):
         unique_edges_count.append(1)
         unqiue_edges_idx.append(len(unique_edges))
 
-    return unique_edges, np.array(unique_edges_count), np.array(unqiue_edges_idx)
+    return unique_edges, np.array(unique_edges_count), np.array(
+        unqiue_edges_idx)
