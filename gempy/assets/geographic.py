@@ -39,7 +39,6 @@ class GeographicPoint(object):
 
         """
         self.type = kwds.get("type", "nongeo")
-        self.type = kwds['type']
         if 'z' in kwds:
             self.z = kwds['z']
         # self.z = z
