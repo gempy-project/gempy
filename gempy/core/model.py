@@ -22,7 +22,7 @@ pn.options.mode.chained_assignment = None
 @setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__, SurfacePoints.__doc__,
              Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
              Solution.__doc__])
-class DataMutation(object):
+class ImplicitCoKriging(object):
     """
     This class handles all the mutation of an object belonging to model and the update of every single object depend
     on that.
@@ -1098,8 +1098,8 @@ class DataMutation(object):
 
 
 # TODO rename to Project. With DEP time
-@setdoc([MetaData.__doc__, DataMutation.__doc__], indent=False)
-class Model(DataMutation, ABC):
+@setdoc([MetaData.__doc__, ImplicitCoKriging.__doc__], indent=False)
+class Project(ImplicitCoKriging):
     """ Container class of all objects that constitute a GemPy model.
 
     In addition the class provides the methods that act in more than one of this class. Model is a child class of

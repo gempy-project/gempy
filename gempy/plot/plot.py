@@ -135,7 +135,7 @@ def plot_surfaces_3d_ipv(geo_model: object) -> None:
     """
 
     Args:
-        geo_model (gempy.core.model.Model):
+        geo_model (gempy.core.model.Project):
     """
     ipvv = ipyvolumeVisualization(geo_model)
     ipvv.plot_surfaces()
@@ -145,7 +145,7 @@ def plot_data_3d_ipv(geo_model: object) -> None:
     """
 
     Args:
-        geo_model (gempy.core.model.Model):
+        geo_model (gempy.core.model.Project):
     """
     ipvv = ipyvolumeVisualization(geo_model)
     ipvv.plot_data()

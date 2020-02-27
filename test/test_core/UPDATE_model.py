@@ -10,7 +10,7 @@ class TestModel:
 
     @pytest.fixture(scope='class')
     def test_create_model(self):
-        model = gp.Model()
+        model = gp.Project()
         print(model)
         return model
 

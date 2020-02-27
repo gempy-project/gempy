@@ -1,4 +1,4 @@
-from gempy.core.model import Model
+from gempy.core.model import Project
 import qgrid
 
 
@@ -7,7 +7,7 @@ class QgridModelIntegration(object):
     Class that handles the changes done interactively in qgrid and updates a Model object.
 
     """
-    def __init__(self, geo_model: Model, plot_object=None):
+    def __init__(self, geo_model: Project, plot_object=None):
         # TODO add on all to update from data_object and plots?
 
         self._geo_model = geo_model

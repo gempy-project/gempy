@@ -1415,7 +1415,7 @@ class ipyvolumeVisualization:
         """ipyvolume-based 3-D visualization for gempy.
 
         Args:
-            geo_model (gempy.core.model.Model):
+            geo_model (gempy.core.model.Project):
         """
         if IPV_IMPORT is False:
             raise ImportError('ipyvolume package is not installed.')
@@ -1503,7 +1503,7 @@ def get_fault_rotation_objects(geo_model, fault:str):
     rotated centroid, and the ellipse parameters a and b.
 
     Args:
-        geo_model (gempy.core.model.Model): gempy geo_model object
+        geo_model (gempy.core.model.Project): gempy geo_model object
         fault (str): Name of the fault surface.
 
     Returns:
@@ -1531,7 +1531,7 @@ def cut_finite_fault_surfaces(geo_model, ver:dict, sim:dict):
     """Cut vertices and simplices for finite fault surfaces to finite fault ellipse
 
     Args:
-        geo_model (gempy.core.model.Model): gempy geo_model object
+        geo_model (gempy.core.model.Project): gempy geo_model object
         ver (dict): Dictionary with surfaces as keys and vertices ndarray as values.
         sim (dict): Dictionary with surfaces as keys and simplices ndarray as values.
 

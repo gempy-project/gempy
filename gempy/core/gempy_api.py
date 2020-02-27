@@ -30,7 +30,7 @@ import warnings
 import copy
 # This is for sphenix to find the packages
 # sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
-from gempy.core.model import Model, DataMutation, AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
+from gempy.core.model import Project, ImplicitCoKriging, AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
     Surfaces, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
 from gempy.utils.meta import setdoc, setdoc_pro
@@ -45,7 +45,7 @@ warnings.filterwarnings("ignore",
 
 
 # region Model
-@setdoc(Model.__doc__)
+@setdoc(Project.__doc__)
 def create_model(project_name='default_project'):
     """Create a Model object
 
@@ -53,13 +53,13 @@ def create_model(project_name='default_project'):
         Model
 
     """
-    return Model(project_name)
+    return Project(project_name)
 # endregion
 
 
 # region Series functionality
-@setdoc(Model.map_series_to_surfaces.__doc__)
-def set_series(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = None,
+@setdoc(Project.map_series_to_surfaces.__doc__)
+def set_series(geo_model: Project, mapping_object: Union[dict, pn.Categorical] = None,
                set_series=True, sort_data: bool = True):
     warnings.warn("set_series will get deprecated in the next version of gempy. It still exist only to keep"
                   "the behaviour equal to older version. Use map_series_to_surfaces isnead.", FutureWarning)
@@ -67,8 +67,8 @@ def set_series(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = N
     map_series_to_surfaces(geo_model, mapping_object, set_series, sort_data)
 
 
-@setdoc(Model.map_series_to_surfaces.__doc__)
-def map_series_to_surfaces(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = None,
+@setdoc(Project.map_series_to_surfaces.__doc__)
+def map_series_to_surfaces(geo_model: Project, mapping_object: Union[dict, pn.Categorical] = None,
                            set_series=True, sort_geometric_data: bool = True, remove_unused_series=True):
     """"""
     geo_model.map_series_to_surfaces(mapping_object, set_series, sort_geometric_data, remove_unused_series)
@@ -77,8 +77,8 @@ def map_series_to_surfaces(geo_model: Model, mapping_object: Union[dict, pn.Cate
 
 
 # region Point-Orientation functionality
-@setdoc([Model.read_data.__doc__])
-def read_csv(geo_model: Model, path_i=None, path_o=None, **kwargs):
+@setdoc([Project.read_data.__doc__])
+def read_csv(geo_model: Project, path_i=None, path_o=None, **kwargs):
     if path_i is not None or path_o is not None:
         geo_model.read_data(path_i, path_o, **kwargs)
     return True
@@ -90,7 +90,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
      Dataframe
 
     Args:
-        geo_model (:class:`Model`):
+        geo_model (:class:`Project`):
         indices_array (array-like): 1D or 2D array with the pandas indices of the
           :attr:`surface_points`. If 2D every row of the 2D matrix will be used to create an
           orientation
@@ -128,7 +128,7 @@ def set_orientation_from_surface_points(geo_model, indices_array):
 
 # region Interpolator functionality
 @setdoc([InterpolatorModel.__doc__])
-@setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
+@setdoc_pro([Project.__doc__, ds.compile_theano, ds.theano_optimizer])
 def set_interpolation_data(*args, **kwargs):
     warnings.warn('set_interpolation_data will be deprecrated in GemPy 2.2. Use '
                   'set_interpolator instead.', DeprecationWarning)
@@ -136,8 +136,8 @@ def set_interpolation_data(*args, **kwargs):
 
 
 @setdoc([InterpolatorModel.__doc__])
-@setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
-def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool = True,
+@setdoc_pro([Project.__doc__, ds.compile_theano, ds.theano_optimizer])
+def set_interpolator(geo_model: Project, output: list = None, compile_theano: bool = True,
                      theano_optimizer=None, verbose: list = None, grid=None, type_=None,
                      update_structure=True, update_kriging=True,
                      **kwargs):
@@ -145,7 +145,7 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
     Method to create a graph and compile the theano code to compute the interpolation.
 
     Args:
-        geo_model (:class:`Model`): [s0]
+        geo_model (:class:`Project`): [s0]
         output (list[str:{geo, grav}]): type of interpolation.
         compile_theano (bool): [s1]
         theano_optimizer (str {'fast_run', 'fast_compile'}): [s2]
@@ -241,16 +241,16 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
     return geo_model.interpolator
 
 
-def get_interpolator(model: Model):
+def get_interpolator(model: Project):
     return model.interpolator
 
 
-def get_th_fn(model: Model):
+def get_th_fn(model: Project):
     """
     Get the compiled theano function
 
     Args:
-        model (:class:`gempy.core.model.Model`)
+        model (:class:`gempy.core.model.Project`)
 
     Returns:
         :class:`theano.compile.function_module.Function`: Compiled function if C or CUDA which computes the interpolation given the input data
@@ -263,7 +263,7 @@ def get_th_fn(model: Model):
 
 
 # region Additional data functionality
-def update_additional_data(model: Model, update_structure=True, update_kriging=True):
+def update_additional_data(model: Project, update_structure=True, update_kriging=True):
     if update_structure is True:
         model.additional_data.update_structure()
     # if update_rescaling is True:
@@ -274,21 +274,21 @@ def update_additional_data(model: Model, update_structure=True, update_kriging=T
     return model.additional_data
 
 
-def get_additional_data(model: Model):
+def get_additional_data(model: Project):
     return model.get_additional_data()
 # endregion
 
 
 # region Computing the model
-@setdoc_pro([Model.__doc__, Solution.compute_surface_regular_grid.__doc__,
-             Model.set_surface_order_from_solution.__doc__])
-def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=False, reset_scalar=False,
+@setdoc_pro([Project.__doc__, Solution.compute_surface_regular_grid.__doc__,
+             Project.set_surface_order_from_solution.__doc__])
+def compute_model(model: Project, output=None, compute_mesh=True, reset_weights=False, reset_scalar=False,
                   reset_block=False, sort_surfaces=True, debug=False, set_solutions=True) -> Solution:
     """
     Computes the geological model and any extra output given in the additional data option.
 
     Args:
-        model (:class:`Model`): [s0]
+        model (:class:`Project`): [s0]
         output (str {'geology', 'gravity'}): Compute the lithologies or gravity
         compute_mesh (bool): if True compute marching cubes: [s1]
         reset_weights (bool): Not Implemented
@@ -341,8 +341,8 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
         return model.solutions
 
 
-@setdoc([Model.set_custom_grid.__doc__, compute_model.__doc__], indent=False)
-def compute_model_at(new_grid: Union[ndarray], model: Model, **kwargs):
+@setdoc([Project.set_custom_grid.__doc__, compute_model.__doc__], indent=False)
+def compute_model_at(new_grid: Union[ndarray], model: Project, **kwargs):
     """
     This function creates a new custom grid and deactivate all the other grids and compute the model there:
 
@@ -369,7 +369,7 @@ def compute_model_at(new_grid: Union[ndarray], model: Model, **kwargs):
 
 # region Solution
 
-def get_surfaces(model_solution: Union[Model, Solution]):
+def get_surfaces(model_solution: Union[Project, Solution]):
     """
     Get vertices and simplices of the surface_points for its vtk visualization and further
     analysis
@@ -380,7 +380,7 @@ def get_surfaces(model_solution: Union[Model, Solution]):
     Returns:
         list[np.array]: vertices, simpleces
     """
-    if isinstance(model_solution, Model):
+    if isinstance(model_solution, Project):
         return model_solution.solutions.vertices, model_solution.solutions.edges
     elif isinstance(model_solution, Solution):
         return model_solution.vertices, model_solution.edges
@@ -390,13 +390,13 @@ def get_surfaces(model_solution: Union[Model, Solution]):
 
 
 # region Model level functions
-def get_data(model: Model, itype='data', numeric=False):
+def get_data(model: Project, itype='data', numeric=False):
     """
     Method to return the data stored in :class:`DataFrame` within a :class:`gempy.interpolator.InterpolatorData`
     object.
 
     Args:
-        model (:class:`gempy.core.model.Model`)
+        model (:class:`gempy.core.model.Project`)
         itype(str {'all', 'surface_points', 'orientations', 'surfaces', 'series', 'faults', 'faults_relations',
         additional data}): input data type to be retrieved.
         numeric (bool): if True it only returns numerical properties. This may be useful due to memory issues
@@ -410,7 +410,7 @@ def get_data(model: Model, itype='data', numeric=False):
 
 
 def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] = (50, 50, 50),
-                project_name: str = 'default_project', **kwargs) -> Model:
+                project_name: str = 'default_project', **kwargs) -> Project:
     """
     Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
 
@@ -439,10 +439,10 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
     return init_data(geo_model, extent=extent, resolution=resolution, project_name=project_name, **kwargs)
 
 
-@setdoc_pro([Model.__doc__])
-def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
+@setdoc_pro([Project.__doc__])
+def init_data(geo_model: Project, extent: Union[list, ndarray] = None,
               resolution: Union[list, ndarray] = None,
-              **kwargs) -> Model:
+              **kwargs) -> Project:
     """
     Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
 
@@ -490,8 +490,8 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 # endregion
 
 
-@setdoc_pro([Model.__doc__],)
-def activate_interactive_df(geo_model: Model, plot_object=None):
+@setdoc_pro([Project.__doc__], )
+def activate_interactive_df(geo_model: Project, plot_object=None):
     """
     Experimental: Activate the use of the QgridModelIntegration:
     TODO evaluate the use of this functionality
@@ -516,15 +516,15 @@ def activate_interactive_df(geo_model: Model, plot_object=None):
 
 
 # region Save
-@setdoc(Model.save_model_pickle.__doc__)
-def save_model_to_pickle(model: Model, path=None):
+@setdoc(Project.save_model_pickle.__doc__)
+def save_model_to_pickle(model: Project, path=None):
 
     model.save_model_pickle(path)
     return True
 
 
-@setdoc(Model.save_model.__doc__)
-def save_model(model: Model, name=None, path=None):
+@setdoc(Project.save_model.__doc__)
+def save_model(model: Project, name=None, path=None):
     try:
         model.grid.topography.topo = None
     except AttributeError:
@@ -533,7 +533,7 @@ def save_model(model: Model, name=None, path=None):
     return True
 
 
-@setdoc(Model.load_model_pickle.__doc__)
+@setdoc(Project.load_model_pickle.__doc__)
 def load_model_pickle(path):
     """
     Read InputData object from python pickle.
@@ -545,7 +545,7 @@ def load_model_pickle(path):
         :class:`Model`
 
     """
-    return Model.load_model_pickle(path)
+    return Project.load_model_pickle(path)
 
 
 def load_model(name, path=None, recompile=False):
