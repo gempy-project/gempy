@@ -84,7 +84,7 @@ class QgridModelIntegration(object):
         for e, qgrid_object in enumerate(qgrid_objects):
            # print('qgrid_object' + str(e) )
             if e == 1:
-                qgrid_object.df = self._geo_model.series.df.reset_index().rename(columns={'index': 'series_names'}).astype(
+                qgrid_object.df = self._geo_model._series.df.reset_index().rename(columns={'index': 'series_names'}).astype(
                     {'series_names': str})
 
             self.update_qgrid_object(qgrid_object)
@@ -141,7 +141,7 @@ class QgridModelIntegration(object):
                                  'options, kriging or rescale. UPDATE message')
 
     def create_faults_qgrid(self):
-        faults_object = self._geo_model.faults
+        faults_object = self._geo_model._faults
 
         qgrid_widget = qgrid.show_grid(faults_object.df,
                                        show_toolbar=False,
@@ -176,7 +176,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_rescaling_data_qgrid(self):
-        rescaling_object = self._geo_model.rescaling
+        rescaling_object = self._geo_model._rescaling
 
         qgrid_widget = qgrid.show_grid(rescaling_object.df,
                                        show_toolbar=False,
@@ -197,7 +197,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_options_qgrid(self):
-        options_object = self._geo_model.additional_data.options
+        options_object = self._geo_model._additional_data.options
 
         qgrid_widget = qgrid.show_grid(options_object.df,
                                        show_toolbar=False,
@@ -223,7 +223,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_kriging_parameters_qgrid(self):
-        kriging_parameters_object = self._geo_model.additional_data.kriging_data
+        kriging_parameters_object = self._geo_model._additional_data.kriging_data
 
         qgrid_widget = qgrid.show_grid(kriging_parameters_object.df,
                                        show_toolbar=False,
@@ -245,7 +245,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_faults_relations_qgrid(self):
-        faults_object = self._geo_model.faults
+        faults_object = self._geo_model._faults
 
         # We need to add the qgrid special columns to categories if does not exist
         try:
@@ -274,7 +274,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_surface_points_qgrid(self):
-        surface_points_object = self._geo_model.surface_points
+        surface_points_object = self._geo_model._surface_points
         self._geo_model.set_default_surfaces()
         self._geo_model.set_default_surface_point(plot_object=self._plot_object)
 
@@ -329,7 +329,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_orientations_qgrid(self):
-        orientations_object = self._geo_model.orientations
+        orientations_object = self._geo_model._orientations
         self._geo_model.set_default_orientation(plot_object=self._plot_object)
 
         qgrid_widget = qgrid.show_grid(
@@ -386,7 +386,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_surfaces_qgrid(self):
-        surface_object = self._geo_model.surfaces
+        surface_object = self._geo_model._surfaces
 
         surface_object.set_default_surface_name()
         qgrid_widget = qgrid.show_grid(surface_object.df, show_toolbar=True,
@@ -452,7 +452,7 @@ class QgridModelIntegration(object):
         return qgrid_widget
 
     def create_series_qgrid(self):
-        series_object = self._geo_model.series
+        series_object = self._geo_model._series
 
         # I need to do a serious hack because qgrid does not accept categorical index yet
         qgrid_widget = qgrid.show_grid(
@@ -522,7 +522,7 @@ class QgridModelIntegration(object):
 
          #   self._geo_model.update_from_series(rename_series={event['old']: event['new']})
             # Hack for the faults relations
-            print(self._geo_model.faults.faults_relations_df.columns)
+            print(self._geo_model._faults.faults_relations_df.columns)
            # self._geo_model.faults.faults_relations_df.columns = self._geo_model.faults.faults_relations_df.columns.add_categories(
           #      ['index', 'qgrid_unfiltered_index'])
 

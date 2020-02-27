@@ -1426,14 +1426,14 @@ class ipyvolumeVisualization:
 
     def get_color_id(self, surface):
         """Get id of given surface (str)."""
-        filter_ = self.geo_model.surfaces.df.surface == surface
-        color_id = self.geo_model.surfaces.df.id[filter_].values[0]
+        filter_ = self.geo_model._surfaces.df.surface == surface
+        color_id = self.geo_model._surfaces.df.id[filter_].values[0]
         return color_id
 
     def get_color(self, surface):
         """Get color code of given gempy surface."""
-        f = self.geo_model.surfaces.df.surface==surface
-        return self.geo_model.surfaces.df[f].color
+        f = self.geo_model._surfaces.df.surface == surface
+        return self.geo_model._surfaces.df[f].color
 
     def plot_surfaces(self):
         """Plot gempy surface model."""
@@ -1450,7 +1450,7 @@ class ipyvolumeVisualization:
                 points[:, 1],
                 points[:, 2],
                 triangles=triangles,
-                color=list(self.geo_model.surfaces.df['color'])[surf]
+                color=list(self.geo_model._surfaces.df['color'])[surf]
             )
             meshes.append(mesh)
 
@@ -1464,7 +1464,7 @@ class ipyvolumeVisualization:
         """Plot gempy surface points."""
         # TODO: orientations
         ipv.figure()
-        points = self.geo_model.surface_points.df
+        points = self.geo_model._surface_points.df
 
         for surf, i in points.groupby("surface").groups.items():
             if surf == "basement":
@@ -1473,8 +1473,8 @@ class ipyvolumeVisualization:
                 points.loc[i, "X"].values,
                 points.loc[i, "Y"].values,
                 points.loc[i, "Z"].values,
-                color=self.geo_model.surfaces.df[
-                    self.geo_model.surfaces.df.surface == surf].color.values
+                color=self.geo_model._surfaces.df[
+                    self.geo_model._surfaces.df.surface == surf].color.values
             )
 
         ipv.xlim(self.geo_model.grid.regular_grid.extent[0], self.geo_model.grid.regular_grid.extent[1])
@@ -1513,8 +1513,8 @@ def get_fault_rotation_objects(geo_model, fault:str):
         a (float): Horizontal ellipse parameter.
         b (float): Vertical ellipse parameter.
     """
-    filter_ = geo_model.surface_points.df.surface == fault
-    fpts = geo_model.surface_points.df[filter_][["X", "Y", "Z"]].values.T
+    filter_ = geo_model._surface_points.df.surface == fault
+    fpts = geo_model._surface_points.df[filter_][["X", "Y", "Z"]].values.T
     ctr = np.mean(fpts, axis=1)
     x = fpts - ctr.reshape((-1, 1))
     M = np.dot(x, x.T)
@@ -1545,9 +1545,9 @@ def cut_finite_fault_surfaces(geo_model, ver:dict, sim:dict):
     finite_ver = copy(ver)
     finite_sim = copy(sim)
 
-    finite_fault_series = list(geo_model.faults.df[geo_model.faults.df["isFinite"] == True].index)
+    finite_fault_series = list(geo_model._faults.df[geo_model._faults.df["isFinite"] == True].index)
     finite_fault_surfaces = list(
-        geo_model.surfaces.df[geo_model.surfaces.df.series == finite_fault_series].surface.unique())
+        geo_model._surfaces.df[geo_model._surfaces.df.series == finite_fault_series].surface.unique())
 
     for fault in finite_fault_surfaces:
         U, fpoints_rot, fctr_rot, a, b = get_fault_rotation_objects(geo_model, "Fault 1")

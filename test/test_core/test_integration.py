@@ -90,7 +90,8 @@ def test_kriging_mutation(interpolator_islith_isfault, map_sequential_pile):
     gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
                               direction='y', show_data=True)
     print(geo_model.solutions.lith_block, geo_model.additional_data)
-    #plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation')
+    if False:
+        plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation')
 
     geo_model.modify_kriging_parameters('range', 1)
 
@@ -102,5 +103,11 @@ def test_kriging_mutation(interpolator_islith_isfault, map_sequential_pile):
                               direction='y', show_data=True)
 
     print(geo_model.solutions.lith_block, geo_model.additional_data)
-   # plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation2')
+    if False:
+        plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation2')
+
+
+def test_ImplicitCoKriging_properties(load_model):
+    geo_model = load_model
+    print(geo_model.surfaces)
 

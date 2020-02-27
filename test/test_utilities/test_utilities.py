@@ -23,4 +23,4 @@ def test_set_orientations():
     gp.set_series(geo_data, {"Fault_Series":'Main_Fault',
                              "Strat_Series": ('Sandstone_2','Siltstone')})
 
-    geo_data.orientations.create_orientation_from_surface_points(geo_data.surface_points, [0, 1, 2])
+    geo_data._orientations.create_orientation_from_surface_points(geo_data._surface_points, [0, 1, 2])

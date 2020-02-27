@@ -843,6 +843,9 @@ class Surfaces(object):
         if values_array is not None:
             self.set_surfaces_values(values_array=values_array, properties_names=properties_names)
 
+    def _rep_columns(self):
+        return self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
+
     def __repr__(self):
         c_ = self.df.columns[~(self.df.columns.isin(self._columns_vis_drop))]
 
@@ -1410,11 +1413,13 @@ class SurfacePoints(GeometricData):
         self._columns_i_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r']
         self._columns_i_rend = ['X', 'Y', 'Z', 'surface', 'color']
 
-
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
             self.df: pn.DataFrame
 
         self.set_surface_points(coord, surface)
+
+    def _rep_columns(self):
+        return self.df.columns[(self.df.columns.isin(self._columns_i_rend))]
 
     @setdoc_pro([ds.coord, ds.surface_sp])
     def set_surface_points(self, coord: np.ndarray = None, surface: list = None):
@@ -1701,6 +1706,9 @@ class Orientations(GeometricData):
             self.df: pn.DataFrame
 
         self.set_orientations(coord, pole_vector, orientation, surface)
+
+    def _rep_columns(self):
+        return self.df.columns[(self.df.columns.isin(self._columns_o_rend))]
 
     @setdoc_pro([ds.coord_ori, ds.surface_sp, ds.pole_vector, ds.orientations])
     def set_orientations(self, coord: np.ndarray = None, pole_vector: np.ndarray = None,

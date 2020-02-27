@@ -151,7 +151,7 @@ class TestSeries:
                                         'Shale', 'Sandstone_1', 'basement'
                                         ], verbose=0)
 
-        print(model.series)
+        print(model._series)
         return model
 
     def test_sequential_pile(self, test_series_front):

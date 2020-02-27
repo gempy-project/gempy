@@ -72,7 +72,7 @@ def map_series_to_surfaces(geo_model: Project, mapping_object: Union[dict, pn.Ca
                            set_series=True, sort_geometric_data: bool = True, remove_unused_series=True):
     """"""
     geo_model.map_series_to_surfaces(mapping_object, set_series, sort_geometric_data, remove_unused_series)
-    return geo_model.surfaces
+    return geo_model._surfaces
 # endregion
 
 
@@ -102,27 +102,27 @@ def set_orientation_from_surface_points(geo_model, indices_array):
 
     if np.ndim(indices_array) is 1:
         indices = indices_array
-        form = geo_model.surface_points.df['surface'].loc[indices].unique()
+        form = geo_model._surface_points.df['surface'].loc[indices].unique()
         assert form.shape[0] is 1, 'The interface points must belong to the same surface'
         form = form[0]
 
-        ori_parameters = geo_model.orientations.create_orientation_from_surface_points(
-            geo_model.surface_points, indices)
+        ori_parameters = geo_model._orientations.create_orientation_from_surface_points(
+            geo_model._surface_points, indices)
         geo_model.add_orientations(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                    orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
                                    surface=form)
     elif np.ndim(indices_array) is 2:
         for indices in indices_array:
-            form = geo_model.surface_points.df['surface'].loc[indices].unique()
+            form = geo_model._surface_points.df['surface'].loc[indices].unique()
             assert form.shape[0] is 1, 'The interface points must belong to the same surface'
             form = form[0]
-            ori_parameters = geo_model.orientations.create_orientation_from_surface_points(
-                geo_model.surface_points, indices)
+            ori_parameters = geo_model._orientations.create_orientation_from_surface_points(
+                geo_model._surface_points, indices)
             geo_model.add_orientations(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                        orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
                                        surface=form)
 
-    return geo_model.orientations
+    return geo_model._orientations
 # endregion
 
 
@@ -179,18 +179,18 @@ def set_interpolator(geo_model: Project, output: list = None, compile_theano: bo
         output = type_
 
     if theano_optimizer is not None:
-        geo_model.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
+        geo_model._additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
     if verbose is not None:
-        geo_model.additional_data.options.df.at['values', 'verbosity'] = verbose
+        geo_model._additional_data.options.df.at['values', 'verbosity'] = verbose
 
-    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True,
+    geo_model.interpolator.create_theano_graph(geo_model._additional_data, inplace=True,
                                                output=output, **kwargs)
 
     # TODO add kwargs
-    geo_model.rescaling.rescale_data()
+    geo_model._rescaling.rescale_data()
     update_additional_data(geo_model, update_structure=update_structure, update_kriging=update_kriging)
-    geo_model.surface_points.sort_table()
-    geo_model.orientations.sort_table()
+    geo_model._surface_points.sort_table()
+    geo_model._orientations.sort_table()
 
     if 'gravity' in output:
         pos_density = kwargs.get('pos_density', 1)
@@ -224,7 +224,7 @@ def set_interpolator(geo_model: Project, output: list = None, compile_theano: bo
     if 'topology' in output:
 
         # This id is necessary for topology
-        id_list = geo_model.surfaces.df.groupby('isFault').cumcount() + 1
+        id_list = geo_model._surfaces.df.groupby('isFault').cumcount() + 1
         geo_model.add_surface_values(id_list, 'topology_id')
         geo_model.interpolator.set_theano_shared_topology()
 
@@ -265,13 +265,13 @@ def get_th_fn(model: Project):
 # region Additional data functionality
 def update_additional_data(model: Project, update_structure=True, update_kriging=True):
     if update_structure is True:
-        model.additional_data.update_structure()
+        model._additional_data.update_structure()
     # if update_rescaling is True:
     #     model.additional_data.update_rescaling_data()
     if update_kriging is True:
-        model.additional_data.update_default_kriging()
+        model._additional_data.update_default_kriging()
 
-    return model.additional_data
+    return model._additional_data
 
 
 def get_additional_data(model: Project):
@@ -304,7 +304,7 @@ def compute_model(model: Project, output=None, compute_mesh=True, reset_weights=
 
     # TODO: Assert frame by frame that all data is like is supposed. Otherwise,
 
-    assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1, \
+    assert model._additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1, \
         'To compute the model is necessary at least 2 interface points per layer'
     assert len(model.interpolator.len_series_i) == len(model.interpolator.len_series_o),\
         'Every Series/Fault need at least 1 orientation and 2 surfaces points.'
@@ -574,101 +574,101 @@ def load_model(name, path=None, recompile=False):
     init_data(geo_model, np.load(f'{path}/{name}_extent.npy'), np.load(f'{path}/{name}_resolution.npy'))
     # rel_matrix = np.load()
     # set additonal data
-    geo_model.additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0,
-                                            dtype={'range': 'float64', '$C_o$': 'float64', 'drift equations': object,
+    geo_model._additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0,
+                                                             dtype={'range': 'float64', '$C_o$': 'float64', 'drift equations': object,
                                             'nugget grad': 'float64', 'nugget scalar': 'float64'})
 
-    geo_model.additional_data.kriging_data.str2int_u_grade()
+    geo_model._additional_data.kriging_data.str2int_u_grade()
 
-    geo_model.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0,
-                                            dtype={'dtype': 'category', 'output': 'category',
+    geo_model._additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0,
+                                                        dtype={'dtype': 'category', 'output': 'category',
                                             'theano_optimizer': 'category', 'device': 'category',
                                             'verbosity': object})
-    geo_model.additional_data.options.df['dtype'].cat.set_categories(['float32', 'float64'], inplace=True)
-    geo_model.additional_data.options.df['theano_optimizer'].cat.set_categories(['fast_run', 'fast_compile'], inplace=True)
-    geo_model.additional_data.options.df['device'].cat.set_categories(['cpu', 'cuda'], inplace=True)
-    geo_model.additional_data.options.df['output'].cat.set_categories(['geology', 'gradients'], inplace=True)
+    geo_model._additional_data.options.df['dtype'].cat.set_categories(['float32', 'float64'], inplace=True)
+    geo_model._additional_data.options.df['theano_optimizer'].cat.set_categories(['fast_run', 'fast_compile'], inplace=True)
+    geo_model._additional_data.options.df['device'].cat.set_categories(['cpu', 'cuda'], inplace=True)
+    geo_model._additional_data.options.df['output'].cat.set_categories(['geology', 'gradients'], inplace=True)
 
     # do series properly - this needs proper check
-    geo_model.series.df = pn.read_csv(f'{path}/{name}_series.csv', index_col=0,
-                                            dtype={'order_series': 'int32', 'BottomRelation': 'category'})
-    series_index = pn.CategoricalIndex(geo_model.series.df.index.values)
+    geo_model._series.df = pn.read_csv(f'{path}/{name}_series.csv', index_col=0,
+                                       dtype={'order_series': 'int32', 'BottomRelation': 'category'})
+    series_index = pn.CategoricalIndex(geo_model._series.df.index.values)
     # geo_model.series.df.index = pn.CategoricalIndex(series_index)
-    geo_model.series.df.index = series_index
-    geo_model.series.df['BottomRelation'].cat.set_categories(['Erosion', 'Onlap', 'Fault'], inplace=True)
+    geo_model._series.df.index = series_index
+    geo_model._series.df['BottomRelation'].cat.set_categories(['Erosion', 'Onlap', 'Fault'], inplace=True)
     try:
-        geo_model.series.df['isActive']
+        geo_model._series.df['isActive']
     except KeyError:
-        geo_model.series.df['isActive'] = False
+        geo_model._series.df['isActive'] = False
 
-    cat_series = geo_model.series.df.index.values
+    cat_series = geo_model._series.df.index.values
 
     # do faults properly - check
-    geo_model.faults.df = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0,
-                                            dtype={'isFault': 'bool', 'isFinite': 'bool'})
-    geo_model.faults.df.index = series_index
+    geo_model._faults.df = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0,
+                                       dtype={'isFault': 'bool', 'isFinite': 'bool'})
+    geo_model._faults.df.index = series_index
 
     # # do faults relations properly - this is where I struggle
-    geo_model.faults.faults_relations_df = pn.read_csv(f'{path}/{name}_faults_relations.csv', index_col=0)
-    geo_model.faults.faults_relations_df.index = series_index
-    geo_model.faults.faults_relations_df.columns = series_index
+    geo_model._faults.faults_relations_df = pn.read_csv(f'{path}/{name}_faults_relations.csv', index_col=0)
+    geo_model._faults.faults_relations_df.index = series_index
+    geo_model._faults.faults_relations_df.columns = series_index
 
-    geo_model.faults.faults_relations_df.fillna(False, inplace=True)
+    geo_model._faults.faults_relations_df.fillna(False, inplace=True)
 
     # do surfaces properly
     surf_df = pn.read_csv(f'{path}/{name}_surfaces.csv', index_col=0,
                           dtype={'surface': 'str', 'series': 'category',
                                  'order_surfaces': 'int64', 'isBasement': 'bool', 'id': 'int64',
                                  'color': 'str'})
-    c_ = surf_df.columns[~(surf_df.columns.isin(geo_model.surfaces._columns_vis_drop))]
-    geo_model.surfaces.df[c_] = surf_df[c_]
-    geo_model.surfaces.df['series'].cat.reorder_categories(np.asarray(geo_model.series.df.index),
-                                                           ordered=False, inplace=True)
-    geo_model.surfaces.sort_surfaces()
+    c_ = surf_df.columns[~(surf_df.columns.isin(geo_model._surfaces._columns_vis_drop))]
+    geo_model._surfaces.df[c_] = surf_df[c_]
+    geo_model._surfaces.df['series'].cat.reorder_categories(np.asarray(geo_model._series.df.index),
+                                                            ordered=False, inplace=True)
+    geo_model._surfaces.sort_surfaces()
 
-    geo_model.surfaces.colors.generate_colordict()
-    geo_model.surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
+    geo_model._surfaces.colors.generate_colordict()
+    geo_model._surfaces.df['series'].cat.set_categories(cat_series, inplace=True)
 
     try:
-        geo_model.surfaces.df['isActive']
+        geo_model._surfaces.df['isActive']
     except KeyError:
-        geo_model.surfaces.df['isActive'] = False
+        geo_model._surfaces.df['isActive'] = False
 
-    cat_surfaces = geo_model.surfaces.df['surface'].values
+    cat_surfaces = geo_model._surfaces.df['surface'].values
 
     # do orientations properly, reset all dtypes
-    geo_model.orientations.df = pn.read_csv(f'{path}/{name}_orientations.csv', index_col=0,
-                                            dtype={'X': 'float64', 'Y': 'float64', 'Z': 'float64',
+    geo_model._orientations.df = pn.read_csv(f'{path}/{name}_orientations.csv', index_col=0,
+                                             dtype={'X': 'float64', 'Y': 'float64', 'Z': 'float64',
                                                    'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
                                                    'dip': 'float64', 'azimuth': 'float64', 'polarity': 'float64',
                                                    'surface': 'category', 'series': 'category',
                                                    'id': 'int64', 'order_series': 'int64'})
-    geo_model.orientations.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
-    geo_model.orientations.df['series'].cat.set_categories(cat_series, inplace=True)
+    geo_model._orientations.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
+    geo_model._orientations.df['series'].cat.set_categories(cat_series, inplace=True)
 
     # do surface_points properly, reset all dtypes
-    geo_model.surface_points.df = pn.read_csv(f'{path}/{name}_surface_points.csv', index_col=0,
-                                              dtype={'X': 'float64', 'Y': 'float64', 'Z': 'float64',
+    geo_model._surface_points.df = pn.read_csv(f'{path}/{name}_surface_points.csv', index_col=0,
+                                               dtype={'X': 'float64', 'Y': 'float64', 'Z': 'float64',
                                                      'X_r': 'float64', 'Y_r': 'float64', 'Z_r': 'float64',
                                                      'surface': 'category', 'series': 'category',
                                                      'id': 'int64', 'order_series': 'int64'})
-    geo_model.surface_points.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
-    geo_model.surface_points.df['series'].cat.set_categories(cat_series, inplace=True)
+    geo_model._surface_points.df['surface'].cat.set_categories(cat_surfaces, inplace=True)
+    geo_model._surface_points.df['series'].cat.set_categories(cat_series, inplace=True)
 
     # Code to add smooth columns for models saved before gempy 2.0bdev4
     try:
-        geo_model.surface_points.df['smooth']
+        geo_model._surface_points.df['smooth']
     except KeyError:
-        geo_model.surface_points.df['smooth'] = 1e-7
+        geo_model._surface_points.df['smooth'] = 1e-7
 
     try:
-        geo_model.orientations.df['smooth']
+        geo_model._orientations.df['smooth']
     except KeyError:
-        geo_model.orientations.df['smooth'] = 0.01
+        geo_model._orientations.df['smooth'] = 0.01
 
     # update structure from loaded input
-    geo_model.additional_data.structure_data.update_structure_from_input()
-    geo_model.rescaling.rescale_data()
+    geo_model._additional_data.structure_data.update_structure_from_input()
+    geo_model._rescaling.rescale_data()
     geo_model.update_from_series()
     geo_model.update_from_surfaces()
     geo_model.update_structure()
