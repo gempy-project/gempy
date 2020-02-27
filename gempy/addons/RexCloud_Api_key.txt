@@ -1,3 +1,0 @@
-REPLACE_TEXT_WITH_YOUR_API_KEY
-# put your API key in the line above.
-# The key file is not tracked in git so it will not be uploaded to the repository.
