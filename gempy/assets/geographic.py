@@ -8,7 +8,7 @@ additional data sets (e.g. GoogleEarth .kml files, GeoTiffs, etc.)
 
 try:
     from osgeo import osr
-    # import gdal
+    import gdal
 
     gdal_installed = True
 except ModuleNotFoundError:
@@ -185,10 +185,10 @@ class GeopgraphicPointSet(object):
             self.utm_to_latlong()
 
         # initialise lookup for entire point set
-        l = looker(filename)
+        geotiff_file = GeoTiffgetValue(filename)
 
         for point in self.points:
-            point.z = l.lookup(point.x, point.y)
+            point.z = geotiff_file.lookup(point.x, point.y)
 
     def plane_fit(self):
         """Fit plane to points in PointSet
@@ -274,3 +274,59 @@ class GeopgraphicPointSet(object):
         self.min = np.min(point_array, axis=0)
         self.max = np.max(point_array, axis=0)
 
+
+class GeoTiffgetValue(object):
+    """Determin a value from a GeoTiff
+
+    Required, for example, to determine z-values in GeoTiffs of DEMs.
+
+    Note: at this stage, the value is taken from Raster Band 1.
+
+    Credits to entry on stackoverflow:
+    http://stackoverflow.com/questions/13439357/extract-point-from-raster-in-gdal
+
+    Args:
+        tifname (filename): path and filename to GeoTiff file
+    """
+
+    def __init__(self, tifname='test.tif'):
+
+        # open the GeoTiff raster file and its spatial reference
+        self.ds = gdal.Open(tifname)
+        sr_raster = osr.SpatialReference(self.ds.GetProjection())
+
+        # get the WGS84 spatial reference
+        sr_point = osr.SpatialReference()
+        sr_point.ImportFromEPSG(4326)  # WGS84
+
+        # coordinate transformation
+        self.ct = osr.CoordinateTransformation(sr_point, sr_raster)
+
+        # geotranformation and its inverse
+        gt = self.ds.GetGeoTransform()
+        dev = (gt[1]*gt[5] - gt[2]*gt[4])
+        gtinv = (gt[0], gt[5]/dev, -gt[2]/dev,
+                 gt[3], -gt[4]/dev, gt[1]/dev)
+        self.gt = gt
+        self.gtinv = gtinv
+
+        # band as array
+        b = self.ds.GetRasterBand(1)
+        self.arr = b.ReadAsArray()
+
+    def lookup(self, lon, lat):
+        """look up value at lon, lat"""
+
+        # get coordinate of the raster
+        xgeo, ygeo, zgeo = self.ct.TransformPoint(lon, lat, 0)
+
+        # convert it to pixel/line on band
+        u = xgeo - self.gtinv[0]
+        v = ygeo - self.gtinv[3]
+        # FIXME this int() is probably bad idea, there should be
+        # half cell size thing needed
+        xpix = int(self.gtinv[1] * u + self.gtinv[2] * v)
+        ylin = int(self.gtinv[4] * u + self.gtinv[5] * v)
+
+        # look the value up
+        return self.arr[ylin, xpix]
