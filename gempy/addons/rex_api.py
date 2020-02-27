@@ -1,5 +1,6 @@
 import os
 import requests
+import json
 package_directory = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -9,6 +10,9 @@ class RexAPI:
         self.api_key = None
         self.token_ID = None
         self.secret = None
+        self.owner = None
+        self.access_token = None
+        self.project_urn = None
         self.response = None  # saves the most current server response for debugging
 
     def read_credentials(self, filename = os.path.join(package_directory, 'RexCloud_Api_key.txt')):
@@ -31,3 +35,33 @@ class RexAPI:
 
         else:
             print("something went wrong! Status code: "+str (self.response.status_code))
+
+    def get_user_information(self):
+        headers = {'Authorization': 'Bearer ' + self.access_token, 'Accept': 'application/json;charset=UTF-8'}
+        self.response = requests.get('https://rex.robotic-eyes.com/api/v2/users/current', headers=headers)
+
+        if self.response.status_code == 200:
+            self.owner = self.response.json()['userId']
+
+        else:
+            print("something went wrong! Status code: "+str (self.response.status_code))
+
+    def create_project(self, project_name):
+        headers = {
+            'Authorization': 'Bearer ' + self.access_token,
+            'Accept': 'application/json;charset=UTF-8',
+            'Content-Type': 'application/json;charset=UTF-8'
+        }
+
+        data = json.dumps({"name" : project_name,  "owner" : self.owner})  # this call expects json!
+
+        self.response = requests.post('https://rex.robotic-eyes.com/api/v2/projects', headers=headers, data=data)
+
+        if self.response.status_code == 201:
+            self.project_urn = self.response.json()['urn']
+
+        else:
+            print("something went wrong! Status code: " + str(self.response.status_code))
+
+    def upload_rexfile(self):
+
