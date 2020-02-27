@@ -9,8 +9,8 @@ Here is how to get started.
 ### Questions
 
 For questions about GemPy (e.g. its applications, functionality, and usage), 
-please create an issue in the [GitHub repository](https://github.com/cgre-aachen/gempy).
-This provides a nice archive and allows others to check if their questions are already answered.
+please [search the existing issues for related questions](https://github.com/cgre-aachen/gempy/issues).
+If your question has not already been asked, then [make a new issue](https://github.com/cgre-aachen/gempy/issues/new/choose).
 
 ### Reporting Bugs
 
