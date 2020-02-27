@@ -209,6 +209,28 @@ def write_file(bytes, path: str):
     return True
 
 
+def write_material_data(ka_red=255.0, ka_green=255.0, ka_blue=255.0, ka_texture_ID=9223372036854775807,  # ambient
+                        ks_red=255.0, ks_green=255.0, ks_blue=255.0, ks_texture_ID=9223372036854775807,  # specular
+                        kd_red=255.0, kd_green=255.0, kd_blue=255.0, kd_texture_ID=9223372036854775807,  # diffuse
+                        ns=0.1,  #specular exponent
+                        alpha=0.5  #opacity
+                        ):
+    """
+    writes a standard material definition block
+
+    Returns: bytes (size:68) representation of the material
+
+    """
+
+    input_ = [(ka_red, 'float32'), (ka_green, 'float32'), (ka_blue, 'float32'), (ka_texture_ID, 'uint64'),
+              (ks_red, 'float32'), (ks_green, 'float32'), (ks_blue, 'float32'), (ks_texture_ID, 'uint64'),
+              (kd_red, 'float32'), (kd_green, 'float32'), (kd_blue, 'float32'), (kd_texture_ID, 'uint64'),
+              (ns,'float32'), (alpha, 'float32')]
+
+    block_bytes = encode(input_)
+    return block_bytes
+
+
 def geo_model_to_res(geo_model, path='./gempy_rex'):
 
     mesh_header_size = 128
