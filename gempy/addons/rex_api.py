@@ -1,6 +1,7 @@
 import os
 import requests
 import json
+import datetime
 package_directory = os.path.dirname(os.path.abspath(__file__))
 
 
@@ -156,3 +157,45 @@ class RexAPI:
             }
 
         self.response = requests.get(self.project_link + '/projectFiles', headers=headers)
+
+
+    def upload_rexfiles(self, infiles : list):
+        """
+        wrapper around api calls to upload rexfiles of a gempy model.
+
+        you will need to register an account under https://app.rexos.cloud/ .
+        create an api key and store the key and secret in RexCloud_Api_key.txt.
+
+        the function will take a list of rexos input filenames and uploads them into a newly created project.
+
+        an ar code is plotted that can be scanned with the rexview app to show the model in vr.
+
+        all api calls are python implementation of the Rex os api:
+        https://www.rexos.org/rex-api/#tutorial-rex-project-before-you-begin
+
+
+        Args:
+            infiles: List of rexos file names
+
+        Returns:
+
+        """
+
+        self.read_credentials()
+        self.authorize_session()
+        self.get_user_information()
+
+        timestamp = datetime.datetime.now()
+        self.create_project(str(timestamp))
+        self.create_root_reference()
+
+        for file in infiles:
+            self.create_file_ressource_reference()
+            self.create_project_file(file)
+            self.upload_rexfile(file)
+
+        #TODO: get tag, display tag
+
+
+
+
