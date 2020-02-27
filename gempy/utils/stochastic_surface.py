@@ -27,18 +27,12 @@
     @author: Alexander Schaaf
 """
 
-from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import Any, Dict, Iterable, Sequence, Union
+from typing import Dict
 
 import numpy as np
 import pandas as pd
-import scipy.stats as ss
-from gstools import SRF, Gaussian
 from nptyping import Array
-
-from gempy.core.api_modules.data_mutation import modify_surface_points
-from gempy.core.model import Model
 
 
 # class StochasticSurfaceGRF(_StochasticSurface):
@@ -69,23 +63,23 @@ class StochasticModel:
 
     def prior_surface_single(
             self,
-            surface:str,
-            dist:object,
+            surface: str,
+            dist: object,
             column="Z",
-            grouping:str="surface",
-            name:str=None,  
-        ):
+            grouping: str = "surface",
+            name: str = None,
+    ):
         self._create_prior(surface, "surfpts", dist, column, grouping, name)
 
     def _create_prior(
             self,
-            surface:str,
-            type_:str,
-            dist:object,
-            column:str,
-            grouping:str,
-            name:str=None,
-        ):
+            surface: str,
+            type_: str,
+            dist: object,
+            column: str,
+            grouping: str,
+            name: str = None,
+    ):
         if type_.lower() not in ("surfpts"):
             raise NotImplementedError
         name = name if name else f"{surface}_{column}_{type_}"
@@ -116,7 +110,7 @@ class StochasticModel:
     def modify(self, surfpts_samples, orients_samples):
         self._modify_surface_points(surfpts_samples)
 
-    def _modify_surface_points(self, samples:Dict[str, float]):
+    def _modify_surface_points(self, samples: Dict[str, float]):
         samples_df = pd.DataFrame(columns=["i", "col", "val"])
         for name, sample in samples.items():
             prior = self.priors.get(name)
@@ -128,7 +122,7 @@ class StochasticModel:
                         "col": prior.get("column"),
                         "val": np.repeat(sample, len(idx))
                     }
-                )                
+                )
             )
 
         for col, i in samples_df.groupby("col").groups.items():
@@ -140,8 +134,8 @@ class StochasticModel:
                          + samples_df.loc[i, "val"].values
                 }
             )
-    
-    def _modify_orientations(self, samples:Dict[str, float]):
+
+    def _modify_orientations(self, samples: Dict[str, float]):
         raise NotImplementedError
 
     def reset(self):
