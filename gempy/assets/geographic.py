@@ -9,9 +9,11 @@ additional data sets (e.g. GoogleEarth .kml files, GeoTiffs, etc.)
 try:
     from osgeo import ogr, osr
     import gdal
-except ImportError:
+    gdal_installed = True
+except ModuleNotFoundError:
     print("Geopgraphic libraries (osgeo, gdal) not (correctly) installed")
     print("Continuing... but some functionality may not work!")
+    gdal_installed = False
 
 import numpy as np
 
@@ -34,14 +36,15 @@ class GeographicPoint(object):
         zone (int): utm zone (needs to be defined for type=utm!)
     """
 
-    def __init__(self, x, y, **kwds):
+    def __init__(self, x, y, *z, **kwds):
         """3-D point in space
 
         """
+        self.x = x
+        self.y = y
         self.type = kwds.get("type", "nongeo")
-        if 'z' in kwds:
-            self.z = kwds['z']
-        # self.z = z
+        if len(z) == 1:
+            self.z = z[0]
         if 'zone' in kwds:
             self.zone = kwds['zone']
         if 'type' in kwds and kwds['type'] == 'utm' and not 'zone' in kwds:
@@ -61,6 +64,11 @@ class GeographicPoint(object):
         if self.type == 'utm':
             # Points already in utm coordinates, nothing to do...
             return
+        if not gdal_installed:
+            print("gdal not imported, conversion not possible.")
+            print("Please check gdal installation and import.")
+            return None
+
         wgs = osr.SpatialReference()
         wgs.ImportFromEPSG(4326)
         if self.zone == 40:
@@ -82,6 +90,11 @@ class GeographicPoint(object):
         if self.type == 'latlong':
             # Points already in latlong coordinates, nothing to do...
             return
+        if not gdal_installed:
+            print("gdal not imported, conversion not possible.")
+            print("Please check gdal installation and import.")
+            return None
+
         wgs = osr.SpatialReference()
         wgs.ImportFromEPSG(4326)
         if self.zone == 40:
