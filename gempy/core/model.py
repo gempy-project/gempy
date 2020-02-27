@@ -572,7 +572,7 @@ class DataMutation(object):
             aux = self.series.df.index.drop('Basement').array
             self.reorder_series(np.append(aux, 'Basement'))
 
-        if twofins is False: #assert if every fault has its own series
+        if twofins is False: # assert if every fault has its own series
             for serie in list(self.faults.df[self.faults.df['isFault'] == True].index):
                 assert np.sum(self.surfaces.df['series'] == serie) < 2, \
                 'Having more than one fault in a series is generally rather bad. Better give each '\
