@@ -7,8 +7,8 @@ additional data sets (e.g. GoogleEarth .kml files, GeoTiffs, etc.)
 """
 
 try:
-    from osgeo import ogr, osr
-    import gdal
+    from osgeo import osr
+    # import gdal
 
     gdal_installed = True
 except ModuleNotFoundError:
@@ -182,7 +182,7 @@ class GeopgraphicPointSet(object):
 
         # check if points in latlong, else: convert
         if self.type == 'utm':
-            self.utm_to_latlong(self.zone)
+            self.utm_to_latlong()
 
         # initialise lookup for entire point set
         l = looker(filename)
@@ -273,3 +273,4 @@ class GeopgraphicPointSet(object):
 
         self.min = np.min(point_array, axis=0)
         self.max = np.max(point_array, axis=0)
+
