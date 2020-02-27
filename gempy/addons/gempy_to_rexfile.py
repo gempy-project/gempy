@@ -93,7 +93,7 @@ def write_header_block(n_data_blocks, size_data_blocks, version=1, start_data=86
     return block_bytes
 
 
-def write_data_block(size_data, data_id = 1, data_type=3, version_data=1):
+def write_data_block_header(size_data, data_id = 1, data_type=3, version_data=1):
     """
     Function to write a data block header.
 
@@ -116,9 +116,10 @@ def write_data_block(size_data, data_id = 1, data_type=3, version_data=1):
     return block_bytes
 
 
+
 def write_mesh_header(n_vtx_coord,  n_triangles,
                       start_vtx_coord, start_nor_coord, start_tex_coord, start_vtx_colors, start_triangles,
-                      name, material_id=9223372036854775807,
+                      name, material_id=1,  # material_id=9223372036854775807
                       n_nor_coord=0, n_tex_coord=0, n_vtx_colors=0,
                       lod=1, max_lod=1):
     """
@@ -142,6 +143,7 @@ def write_mesh_header(n_vtx_coord,  n_triangles,
     Returns:
 
     """
+
 
     str_size = len(name)
     rest_name_ = ' ' * (74 - str_size)
@@ -212,6 +214,10 @@ def geo_model_to_res(geo_model, path='./gempy_rex'):
     mesh_header_size = 128
     file_header_size = 86
     e = 0
+
+    material_head_bytes = write_data_block_header(data_type=5, version_data=1, size_data=68, data_id=1)
+    #material_bytes =
+
     for ver, tri in zip(geo_model.solutions.vertices, geo_model.solutions.edges):
 
         colors = np.ones_like(ver) * 200
@@ -233,7 +239,7 @@ def geo_model_to_res(geo_model, path='./gempy_rex'):
                                           start_data=file_header_size)
 
         # Write data block
-        data_bytes = write_data_block(size_data=data_block_size_no_header,
+        data_bytes = write_data_block_header(size_data=data_block_size_no_header,  #TODO: Miguel: this is the general data header for the mesh block?
                                       data_id=1, data_type=3, version_data=1)
 
         # Write mesh block
