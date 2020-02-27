@@ -13,8 +13,9 @@ from GitHub using Git:
 ```bash
 git clone https://github.com/cgre-aachen/gempy.git
 ``` 
+## Issues 
 
-## Questions
+### Questions
 
 For questions about GemPy, its applications and functionality and usage, please
 create an issue in the GitHub repository 
@@ -22,7 +23,7 @@ create an issue in the GitHub repository
 document any questions you may have, so other people with similar questions 
 will be able to find the answers in the future.
 
-## Reporting Bugs
+### Reporting Bugs
 
 If you happen to stumble upon one of the incredibly rare and utterly unlikely
 bugs, crashes or concerning behaviour while using GemPy, please report it on 
@@ -34,7 +35,7 @@ overly descriptive so that we will be able to to reproduce and resolve the issue
 Whenever possible, please provide tracebacks / error messages, screenshots and
 sample code / files to help us address your issue.
 
-## Feature Requests
+### Feature Requests
 
 We encourage users to submit ideas for improvements to the GemPy project. For
 this please create an issue on the
@@ -52,8 +53,6 @@ you might need.
 
 **Once you are ready to start coding, please take a look at the following 
 contribution guidelines.**
-
-## Guidelines
 
 Any code contributions are welcome: if you want to fix a couple of typos, add
 custom geomodel post-processing functionality or a new plotting function - your
@@ -145,5 +144,13 @@ with tests, so that we can ensure it working properly.
 All tests are located in the `test` folder of the GemPy repository. This is where
 you need to add your own tests as a subfolder. 
 
-### Release Checklist
+### Pull Request Checklist
 
+The following checklist *needs* to be completed before we will accept any pull
+request to the GemPy codebase. 
+
+1. Run all tests.
+2. Check documentation
+3. Check if your code adheres to PEP8
+
+ 
