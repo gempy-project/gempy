@@ -24,18 +24,17 @@
     @author: Miguel de la Varga, Bane Sullivan, Alexander Schaaf
 """
 
-import os
-import matplotlib.colors as mcolors
-import copy
-import pandas as pn
-import numpy as np
-import sys
-import gempy as gp
 import warnings
 # insys.path.append("../../pyvista")
 from typing import Union, Dict, List, Iterable, Set, Tuple
+
+import matplotlib.colors as mcolors
+import numpy as np
+import pandas as pn
 import pyvista as pv
 from pyvista.plotting.theme import parse_color
+
+import gempy as gp
 
 warnings.filterwarnings("ignore",
                         message='.*Conversion of the second argument of issubdtype *.',
@@ -43,6 +42,7 @@ warnings.filterwarnings("ignore",
 try:
     import vtk
     from vtk.util.numpy_support import numpy_to_vtk
+
     VTK_IMPORT = True
 except ImportError:
     VTK_IMPORT = False
@@ -53,14 +53,14 @@ from logging import debug
 
 class Vista:
     def __init__(
-        self, 
-        model:gp.Model, 
-        extent:List[float]=None, 
-        color_lot: pn.DataFrame = None, 
-        real_time:bool=False,
-        plotter_type:Union["basic", "background"]='basic',
-        **kwargs
-        ):
+            self,
+            model: gp.Model,
+            extent: List[float] = None,
+            color_lot: pn.DataFrame = None,
+            real_time: bool = False,
+            plotter_type: Union["basic", "background"] = 'basic',
+            **kwargs
+    ):
         """GemPy 3-D visualization using pyVista.
         
         Args:
@@ -78,7 +78,7 @@ class Vista:
             self.extent = list(extent)
         else:
             self.extent = list(model.grid.regular_grid.extent)
-        
+
         if color_lot:
             self._color_lot = color_lot
         else:
@@ -114,12 +114,12 @@ class Vista:
         return False
 
     def set_bounds(
-            self, 
-            extent:list=None, 
-            grid:bool=False,
-            location:str='furthest', 
+            self,
+            extent: list = None,
+            grid: bool = False,
+            location: str = 'furthest',
             **kwargs
-        ):
+    ):
         """Set and toggle display of bounds of geomodel.
         
         Args:
@@ -133,14 +133,14 @@ class Vista:
             bounds=extent, location=location, grid=grid, **kwargs
         )
 
-    def plot_surface_points(self, fmt:str, **kwargs):
+    def plot_surface_points(self, fmt: str, **kwargs):
         i = self.model.surface_points.df.groupby("surface").groups[fmt]
         if len(i) == 0:
             return
 
         mesh = pv.PolyData(
-                self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
-            )
+            self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
+        )
         if self._actor_exists(mesh):
             return []
 
@@ -152,7 +152,7 @@ class Vista:
         self._actors.append(mesh)
         return [mesh]
 
-    def plot_orientations(self, fmt:str, length:float=None, **kwargs):
+    def plot_orientations(self, fmt: str, length: float = None, **kwargs):
         meshes = []
         i = self.model.orientations.df.groupby("surface").groups[fmt]
         if len(i) == 0:
@@ -170,7 +170,7 @@ class Vista:
 
         pts = self.model.orientations.df.loc[i][["X", "Y", "Z"]].values
         nrms = self.model.orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
-        
+
         line_kwargs = dict(
             color=self._color_lot[fmt],
             line_width=3,
@@ -179,13 +179,13 @@ class Vista:
 
         for pt, nrm in zip(pts, nrms):
             mesh = pv.Line(
-                pointa=pt, 
-                pointb=pt+length*nrm,
+                pointa=pt,
+                pointb=pt + length * nrm,
             )
             if self._actor_exists(mesh):
                 continue
             self.p.add_mesh(
-                mesh, 
+                mesh,
                 **line_kwargs
             )
             self._actors.append(mesh)
@@ -214,24 +214,25 @@ class Vista:
                     meshes.append(orient_mesh)
         return meshes
 
-    def get_surface(self, fmt:str) -> pv.PolyData:
+    def get_surface(self, fmt: str) -> pv.PolyData:
         i = np.where(self.model.surfaces.df.surface == fmt)[0][0]
-        ver = self.model.solutions.vertices[i]  # TODO: BUG surfaces within series are flipped in order !!!!!!!
-        
+        ver = self.model.solutions.vertices[
+            i]  # TODO: BUG surfaces within series are flipped in order !!!!!!!
+
         sim = self._simplices_to_pv_tri_simplices(
             self.model.solutions.edges[i]
         )
         mesh = pv.PolyData(ver, sim)
         return mesh
 
-    def plot_surface(self, fmt:str, **kwargs):
+    def plot_surface(self, fmt: str, **kwargs):
         mesh = self.get_surface(fmt)
         if self._actor_exists(mesh):
             return []
 
         mesh_kwargs = dict(color=self._color_lot[fmt])
         mesh_kwargs.update(kwargs)
-        
+
         self.p.add_mesh(mesh, **mesh_kwargs)
         self._actors.append(mesh)
         self._surface_actors[fmt] = mesh
@@ -239,10 +240,10 @@ class Vista:
 
     def clip_horizon_with_faults(
             self,
-            horizon:pv.PolyData, 
-            faults:Iterable[pv.PolyData], 
-            value:float=None
-        ) -> List[pv.PolyData]:
+            horizon: pv.PolyData,
+            faults: Iterable[pv.PolyData],
+            value: float = None
+    ) -> List[pv.PolyData]:
         """Clip given horizon surface with given list of fault surfaces. The
         given value represents the distance to clip away from the fault 
         surfaces.
@@ -288,7 +289,7 @@ class Vista:
 
         return horizons
 
-    def plot_surfaces_all(self, fmts:Iterable[str]=None, **kwargs):
+    def plot_surfaces_all(self, fmts: Iterable[str] = None, **kwargs):
         """Plot all geomodel surfaces. If given an iterable containing surface
         strings, it will plot all surfaces specified in it.
         
@@ -306,13 +307,15 @@ class Vista:
         return meshes
 
     @staticmethod
-    def _simplices_to_pv_tri_simplices(sim:Array[int, ..., 3]) -> Array[int, ..., 4]:
+    def _simplices_to_pv_tri_simplices(sim: Array[int, ..., 3]) -> Array[
+        int, ..., 4]:
         """Convert triangle simplices (n, 3) to pyvista-compatible
         simplices (n, 4)."""
         n_edges = np.ones(sim.shape[0]) * 3
         return np.append(n_edges[:, None], sim, axis=1)
 
-    def plot_structured_grid(self, name:str, series:str=None, **kwargs) -> list:
+    def plot_structured_grid(self, name: str, series: str = None,
+                             **kwargs) -> list:
         """Plot a structured grid of the geomodel.
 
         Args:
@@ -336,7 +339,8 @@ class Vista:
             if series == None:
                 # default to oldest series above basement
                 series = self.model.series.df.iloc[-2].name
-            vals = self.model.solutions.scalar_field_matrix[self.model.series.df.index.get_loc(series)]
+            vals = self.model.solutions.scalar_field_matrix[
+                self.model.series.df.index.get_loc(series)]
         elif name == "values":
             vals = self.model.solutions.values_matrix.T
             if vals.shape[1] == 0:
@@ -366,7 +370,7 @@ class Vista:
         gx, gy, gz = normal
 
         self.model.modify_orientations(
-            i, 
+            i,
             X=x, Y=y, Z=z,
             G_x=gx, G_y=gy, G_z=gz
         )
@@ -384,7 +388,7 @@ class Vista:
     def _update_surface_polydata(self):
         surfaces = self.model.surfaces.df
         for surf, (idx, val) in zip(
-                surfaces.surface, 
+                surfaces.surface,
                 surfaces[['vertices', 'edges']].dropna().iterrows()
         ):
             polydata = self._surface_actors.get(surf, False)
@@ -415,7 +419,7 @@ class Vista:
             pass_widget=True,
             **kwargs
         )
-    
+
     def plot_surface_points_interactive_all(self, **kwargs):
         self._live_updating = True
         for fmt in self.model.surfaces.df.surface:
@@ -423,7 +427,7 @@ class Vista:
                 continue
             self.plot_surface_points_interactive(fmt, **kwargs)
 
-    def plot_orientations_interactive(self, fmt:str):
+    def plot_orientations_interactive(self, fmt: str):
         self._live_updating = True
         i = self.model.orientations.df.groupby("surface").groups[fmt]
         if len(i) == 0:
@@ -454,9 +458,9 @@ class Vista:
             self.plot_orientations_interactive(fmt)
 
     def _scale_topology_centroids(
-            self, 
-            centroids:Dict[int, np.ndarray]
-        ) -> Dict[int, np.ndarray]:
+            self,
+            centroids: Dict[int, np.ndarray]
+    ) -> Dict[int, np.ndarray]:
         """Scale topology centroid coordinates from grid coordinates to 
         physical coordinates.
         
@@ -470,7 +474,7 @@ class Vista:
         scaling = np.diff(self.extent)[::2] / res
 
         scaled_centroids = {}
-        for n, pos in centroids.items(): 
+        for n, pos in centroids.items():
             pos_scaled = pos * scaling
             pos_scaled[0] += np.min(self.extent[:2])
             pos_scaled[1] += np.min(self.extent[2:4])
@@ -481,11 +485,11 @@ class Vista:
 
     def plot_topology(
             self,
-            edges:Set[Tuple[int, int]],
-            centroids:Dict[int, np.ndarray],
-            node_kwargs:dict={},
-            edge_kwargs:dict={}
-        ):
+            edges: Set[Tuple[int, int]],
+            centroids: Dict[int, np.ndarray],
+            node_kwargs: dict = {},
+            edge_kwargs: dict = {}
+    ):
         """Plot geomodel topology graph based on given set of topology edges 
         and node centroids.
         
@@ -499,14 +503,13 @@ class Vista:
         centroids_scaled = self._scale_topology_centroids(centroids)
 
         for node, pos in centroids_scaled.items():
-            
             mesh = pv.Sphere(
                 center=pos,
                 radius=np.average(self.extent) / 15
             )
             # * Requires topo id to lith id lot
             self.p.add_mesh(
-                mesh, 
+                mesh,
                 color=self._color_id_lot[lot[node]],
                 **node_kwargs
             )
@@ -518,13 +521,13 @@ class Vista:
 
         for e1, e2 in edges:
             pos1, pos2 = centroids_scaled[e1], centroids_scaled[e2]
-            
+
             x1, y1, z1 = pos1
             x2, y2, z2 = pos2
             x, y, z = (x1, x2), (y1, y2), (z1, z2)
             pos_mid = (
-                min(x) + (max(x) - min(x)) / 2, 
-                min(y) + (max(y) - min(y)) / 2, 
+                min(x) + (max(x) - min(x)) / 2,
+                min(y) + (max(y) - min(y)) / 2,
                 min(z) + (max(z) - min(z)) / 2
             )
             mesh = pv.Line(
@@ -540,11 +543,12 @@ class Vista:
             self.p.add_mesh(mesh, color=self._color_id_lot[lot[e2]], **ekwargs)
 
     def plot_topography(
-            self, 
-            topography:Union[gp.core.grid_modules.grid_types.Topography, np.ndarray]=None,
+            self,
+            topography: Union[
+                gp.core.grid_modules.grid_types.Topography, np.ndarray] = None,
             scalars="geomap",
             **kwargs
-        ):
+    ):
         if not topography:
             try:
                 topography = self.model.grid.topography.values
@@ -562,7 +566,7 @@ class Vista:
             for val in list(self._color_lot):
                 rgb = (255 * np.array(mcolors.hex2color(val)))
                 arr_ = np.vstack((arr_, rgb))
-            
+
             sel = np.round(self.model.solutions.geological_map).astype(int)[0]
 
             scalars_val = numpy_to_vtk(arr_[sel - 1], array_type=3)
@@ -578,7 +582,7 @@ class Vista:
         else:
             raise AttributeError("Parameter scalars needs to be either \
                 'geomap', 'topography' or a np.ndarray with scalar values")
-        
+
         topography_actor = self.p.add_mesh(
             polydata.delaunay_2d(),
             scalars=scalars_val,
@@ -597,7 +601,8 @@ class _Vista:
     will be displayed.
     """
 
-    def __init__(self, model, extent=None, lith_c: pn.DataFrame = None, real_time=False,
+    def __init__(self, model, extent=None, lith_c: pn.DataFrame = None,
+                 real_time=False,
                  plotter_type='basic', **kwargs):
 
         # Override default notebook value
@@ -605,7 +610,8 @@ class _Vista:
 
         self.model = model
         self.extent = model.grid.regular_grid.extent if extent is None else extent
-        self._color_lot = model.surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
+        self._color_lot = model.surfaces.df.set_index('id')[
+            'color'] if lith_c is None else lith_c
 
         self.s_widget = pn.DataFrame(columns=['val'])
         self.p_widget = pn.DataFrame(columns=['val'])
@@ -616,7 +622,7 @@ class _Vista:
         self.vista_topo_actors = {}
         self.vista_surf_actor = {}
 
-        self.real_time =real_time
+        self.real_time = real_time
 
         if plotter_type == 'basic':
             self.p = pv.Plotter(**kwargs)
@@ -628,20 +634,24 @@ class _Vista:
 
     def update_colot_lot(self, lith_c=None):
         if lith_c is None:
-            lith_c = self.model.surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
+            lith_c = self.model.surfaces.df.set_index('id')[
+                'color'] if lith_c is None else lith_c
             # Hopefully this removes the colors that exist in surfaces but not in data
             idx_uniq = self.model.surface_points.df['id'].unique()
             # + basement
-            idx = np.append(idx_uniq, idx_uniq.max()+1)
+            idx = np.append(idx_uniq, idx_uniq.max() + 1)
             lith_c = lith_c[idx]
         self._color_lot = lith_c
 
-    def set_bounds(self, extent=None, grid=False, location='furthest', **kwargs):
+    def set_bounds(self, extent=None, grid=False, location='furthest',
+                   **kwargs):
         if extent is None:
             extent = self.extent
-        self.p.show_bounds(bounds=extent,  location=location, grid=grid, **kwargs)
+        self.p.show_bounds(bounds=extent, location=location, grid=grid,
+                           **kwargs)
 
-    def plot_structured_grid(self, regular_grid=None, data: Union[dict, gp.Solution, str] = 'Default',
+    def plot_structured_grid(self, regular_grid=None,
+                             data: Union[dict, gp.Solution, str] = 'Default',
                              name='lith',
                              **kwargs):
         # Remove previous actor with the same name:
@@ -667,11 +677,13 @@ class _Vista:
 
         self.vista_rgrids_mesh[name] = rg
 
-        actor = self.p.add_mesh(rg,  **kwargs)
+        actor = self.p.add_mesh(rg, **kwargs)
         self.vista_rgrids_actors[name] = actor
         return actor
 
-    def plot_scalar_data(self, regular_grid, data: Union[dict, gp.Solution, str] = 'Default', name='lith'):
+    def plot_scalar_data(self, regular_grid,
+                         data: Union[dict, gp.Solution, str] = 'Default',
+                         name='lith'):
         """
 
         Args:
@@ -725,10 +737,12 @@ class _Vista:
     def call_back_sphere_change_df(self, index, new_center):
         index = np.atleast_1d(index)
         # Modify Pandas DataFrame
-        self.model.modify_surface_points(index, X=[new_center[0]], Y=[new_center[1]], Z=[new_center[2]])
+        self.model.modify_surface_points(index, X=[new_center[0]],
+                                         Y=[new_center[1]], Z=[new_center[2]])
 
     def call_back_sphere_move_changes(self, indices):
-        df_changes = self.model.surface_points.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
+        df_changes = self.model.surface_points.df.loc[np.atleast_1d(indices)][
+            ['X', 'Y', 'Z', 'id']]
         for index, df_row in df_changes.iterrows():
             new_center = df_row[['X', 'Y', 'Z']].values
 
@@ -739,8 +753,9 @@ class _Vista:
                            new_center[1] - r_f, new_center[1] + r_f,
                            new_center[2] - r_f, new_center[2] + r_f)
 
-            s1.GetSphereProperty().SetColor(mcolors.hex2color(self._color_lot[df_row['id']]))
-                #self.geo_model.surfaces.df.set_index('id')['color'][df_row['id']]))#self.C_LOT[df_row['id']])
+            s1.GetSphereProperty().SetColor(
+                mcolors.hex2color(self._color_lot[df_row['id']]))
+            # self.geo_model.surfaces.df.set_index('id')['color'][df_row['id']]))#self.C_LOT[df_row['id']])
 
     def call_back_sphere_delete_point(self, ind_i):
         """
@@ -761,7 +776,8 @@ class _Vista:
         self.plot_surface_points(surface_points, **kwargs)
         self.plot_orientations(orientations, **kwargs)
 
-    def plot_surface_points(self, surface_points=None, radio=None, clear=True, **kwargs):
+    def plot_surface_points(self, surface_points=None, radio=None, clear=True,
+                            **kwargs):
         self.update_colot_lot()
         if clear is True:
             self.p.clear_sphere_widgets()
@@ -784,12 +800,14 @@ class _Vista:
         centers = surface_points[['X', 'Y', 'Z']]
         colors = self._color_lot[surface_points['id']].values
         s = self.p.add_sphere_widget(self.call_back_sphere,
-                                     center=centers, color=colors, pass_widget=True,
+                                     center=centers, color=colors,
+                                     pass_widget=True,
                                      test_callback=test_callback,
                                      indices=surface_points.index.values,
                                      radius=radio, **kwargs)
 
-        self.s_widget.append(pn.DataFrame(data=s, index=surface_points.index, columns=['val']))
+        self.s_widget.append(
+            pn.DataFrame(data=s, index=surface_points.index, columns=['val']))
 
         return self.s_widget
 
@@ -822,13 +840,16 @@ class _Vista:
     def call_back_plane_change_df(self, index, new_center, new_normal):
         # Modify Pandas DataFrame
         # update the gradient vector components and its location
-        self.model.modify_orientations(index, X=new_center[0], Y=new_center[1], Z=new_center[2],
-                                       G_x=new_normal[0], G_y=new_normal[1], G_z=new_normal[2])
+        self.model.modify_orientations(index, X=new_center[0], Y=new_center[1],
+                                       Z=new_center[2],
+                                       G_x=new_normal[0], G_y=new_normal[1],
+                                       G_z=new_normal[2])
         return True
 
     def call_back_plane_move_changes(self, indices):
-        df_changes = self.model.orientations.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z',
-                                                                             'G_x', 'G_y', 'G_z', 'id']]
+        df_changes = self.model.orientations.df.loc[np.atleast_1d(indices)][
+            ['X', 'Y', 'Z',
+             'G_x', 'G_y', 'G_z', 'id']]
         for index, new_values_df in df_changes.iterrows():
             new_center = new_values_df[['X', 'Y', 'Z']].values
             new_normal = new_values_df[['G_x', 'G_y', 'G_z']].values
@@ -843,9 +864,12 @@ class _Vista:
             plane1.SetCenter(new_center[0], new_center[1], new_center[2])
 
             plane1.GetPlaneProperty().SetColor(
-                parse_color(self.model.surfaces.df.set_index('id')['color'][new_values_df['id']]))  # self.C_LOT[new_values_df['id']])
+                parse_color(self.model.surfaces.df.set_index('id')['color'][
+                                new_values_df[
+                                    'id']]))  # self.C_LOT[new_values_df['id']])
             plane1.GetHandleProperty().SetColor(
-                parse_color(self.model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
+                parse_color(self.model.surfaces.df.set_index('id')['color'][
+                                new_values_df['id']]))
         return True
 
     def plot_orientations(self, orientations=None, clear=True, **kwargs):
@@ -879,11 +903,13 @@ class _Vista:
             surfaces = self.model.surfaces.df
 
         select_active = surfaces['isActive']
-        for idx, val in surfaces[select_active][['vertices', 'edges', 'color']].dropna().iterrows():
-
-            surf = pv.PolyData(val['vertices'], np.insert(val['edges'], 0, 3, axis=1).ravel())
+        for idx, val in surfaces[select_active][
+            ['vertices', 'edges', 'color']].dropna().iterrows():
+            surf = pv.PolyData(val['vertices'],
+                               np.insert(val['edges'], 0, 3, axis=1).ravel())
             self.surf_polydata.at[idx] = surf
-            self.vista_surf_actor[idx] = self.p.add_mesh(surf, parse_color(val['color']), **kwargs)
+            self.vista_surf_actor[idx] = self.p.add_mesh(surf, parse_color(
+                val['color']), **kwargs)
 
         self.set_bounds()
         return self.surf_polydata
@@ -891,9 +917,12 @@ class _Vista:
     def update_surfaces(self):
         surfaces = self.model.surfaces
         # TODO add the option of update specific surfaces
-        for idx, val in surfaces.df[['vertices', 'edges', 'color']].dropna().iterrows():
+        for idx, val in surfaces.df[
+            ['vertices', 'edges', 'color']].dropna().iterrows():
             self.surf_polydata.loc[idx, 'val'].points = val['vertices']
-            self.surf_polydata.loc[idx, 'val'].faces = np.insert(val['edges'], 0, 3, axis=1).ravel()
+            self.surf_polydata.loc[idx, 'val'].faces = np.insert(val['edges'],
+                                                                 0, 3,
+                                                                 axis=1).ravel()
 
         return True
 
@@ -911,12 +940,13 @@ class _Vista:
         except IndexError:
             print('IndexError: Model not computed. Laking data in some surface')
         except AssertionError:
-            print('AssertionError: Model not computed. Laking data in some surface')
+            print(
+                'AssertionError: Model not computed. Laking data in some surface')
 
         self.update_surfaces()
         return True
 
-    def plot_topography(self, topography = None, scalars='geo_map', **kwargs):
+    def plot_topography(self, topography=None, scalars='geo_map', **kwargs):
         """
 
         Args:
@@ -943,11 +973,12 @@ class _Vista:
                 rgb = (255 * np.array(mcolors.hex2color(val)))
                 arr_ = np.vstack((arr_, rgb))
 
-            sel = np.round(self.model.solutions.geological_map[0]).astype(int)[0]
-          #  print(arr_)
-          #  print(sel)
+            sel = np.round(self.model.solutions.geological_map[0]).astype(int)[
+                0]
+            #  print(arr_)
+            #  print(sel)
 
-            scalars_val = numpy_to_vtk(arr_[sel-1], array_type=3)
+            scalars_val = numpy_to_vtk(arr_[sel - 1], array_type=3)
             cm = None
             rgb = True
 
@@ -962,29 +993,7 @@ class _Vista:
         else:
             raise AttributeError()
 
-        topo_actor = self.p.add_mesh(cloud.delaunay_2d(), scalars=scalars_val, cmap=cm, rgb=rgb, **kwargs)
+        topo_actor = self.p.add_mesh(cloud.delaunay_2d(), scalars=scalars_val,
+                                     cmap=cm, rgb=rgb, **kwargs)
         self.vista_topo_actors[scalars] = topo_actor
         return topo_actor
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
