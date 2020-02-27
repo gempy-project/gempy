@@ -63,5 +63,21 @@ class RexAPI:
         else:
             print("something went wrong! Status code: " + str(self.response.status_code))
 
-    def upload_rexfile(self):
+    def retrieve_project(self): #this is necessary to get an upload link for the rexfiles
+        headers = {'Authorization': 'Bearer ' + self.access_token,
+                    'Accept': 'application/json;charset=UTF-8'}
+
+        self.response = requests.get('http://curl', headers=headers)
+
+    def upload_rexfile(self,filename):
+        headers = {
+            'Authorization': 'Bearer ' + self.access_token,
+          #  'Content-Type': 'multipart/form-data; boundary="7YHbCQEvZJ4UpDxLWav_05SOJpLdJKI6541wYs6_"',
+        }
+
+        files = {
+            'file': open(filename,"r") , 'type': 'rex'
+        }
+
+        response = requests.post('http://curl', headers=headers, files=files)
 
