@@ -317,6 +317,7 @@ class Vista:
 
         Args:
             name (str): Can be either one of the following
+
                 'lith' - Lithology id block.
                 'scalar' - Scalar field block.
                 'values' - Values matrix block.
@@ -335,7 +336,7 @@ class Vista:
             if series == None:
                 # default to oldest series above basement
                 series = self.model.series.df.iloc[-2].name
-            vals = self.model.solutions.scalar_field_matrix[self.model.series.df.get_loc(series)]
+            vals = self.model.solutions.scalar_field_matrix[self.model.series.df.index.get_loc(series)]
         elif name == "values":
             vals = self.model.solutions.values_matrix.T
             if vals.shape[1] == 0:
