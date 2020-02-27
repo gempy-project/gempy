@@ -7,7 +7,7 @@ additional data sets (e.g. GoogleEarth .kml files, GeoTiffs, etc.)
 """
 
 try:
-    from osgeo import osr
+    from osgeo import ogr, osr
     import gdal
 
     gdal_installed = True
@@ -109,7 +109,7 @@ class GeographicPoint(object):
         self.type = 'latlong'
 
 
-class GeopgraphicPointSet(object):
+class GeographicPointSet(object):
     """Set of geographic points in 2-D (on surface) or 3-D (with z-coordinate)
 
     General class to handle point sets in in geographic reference systems. The main
@@ -290,7 +290,6 @@ class GeoTiffgetValue(object):
     """
 
     def __init__(self, tifname='test.tif'):
-
         # open the GeoTiff raster file and its spatial reference
         self.ds = gdal.Open(tifname)
         sr_raster = osr.SpatialReference(self.ds.GetProjection())
@@ -304,9 +303,9 @@ class GeoTiffgetValue(object):
 
         # geotranformation and its inverse
         gt = self.ds.GetGeoTransform()
-        dev = (gt[1]*gt[5] - gt[2]*gt[4])
-        gtinv = (gt[0], gt[5]/dev, -gt[2]/dev,
-                 gt[3], -gt[4]/dev, gt[1]/dev)
+        dev = (gt[1] * gt[5] - gt[2] * gt[4])
+        gtinv = (gt[0], gt[5] / dev, -gt[2] / dev,
+                 gt[3], -gt[4] / dev, gt[1] / dev)
         self.gt = gt
         self.gtinv = gtinv
 
@@ -330,3 +329,154 @@ class GeoTiffgetValue(object):
 
         # look the value up
         return self.arr[ylin, xpix]
+
+
+class KmlPoints(object):
+    """Get point sets from KML file
+
+    Optional Args:
+
+        filename (string): filename of kml file
+        debug (bool): provide debug output (Default: false)
+        auto_remove (bool): automatically remove unsuitable points (e.g. outside Geotiffs)
+            and point sets (e.g. too few points, too close on a line)
+        type ('utm', 'latlong') : coordinate system of points (default: latlong)
+    """
+
+    def __init__(self, **kwds):
+        self.debug = kwds.get("debug", False)
+        self.auto_remove = kwds.get("auto_remove", True)
+        self.type = kwds.get("type", 'latlong')
+        self.geotiffs = []
+        self.points = []
+        self.point_sets = []
+        # if kwds.has_key('filename'):
+        if 'filename' in kwds:
+            if self.debug:
+                print("read kml")
+            self.read_kml(kwds['filename'])
+
+    def read_kml(self, filename):
+        """Read kml file and extract points"""
+
+        ds = ogr.Open(filename)
+        # point_sets = []
+
+        for lyr in ds:
+            for j, feat in enumerate(lyr):
+                geom = feat.GetGeometryRef()
+                ps = GeographicPointSet()
+                if geom is not None:
+                    for i in range(0, geom.GetPointCount()):
+                        # print (geom.GetPoint(i))
+                        point = GeographicPoint(x=geom.GetPoint(i)[0],
+                                                y=geom.GetPoint(i)[1],
+                                                type='latlong')
+                        ps.add_point(point)
+                        # points.append([geom.GetPoint(i)[0], geom.GetPoint(i)[1], j])
+
+                self.point_sets.append(ps)
+
+        if self.debug:
+            print("%d point sets added" % len(self.point_sets))
+
+    def test_point_sets(self):
+        """Test if point sets contain at least three points; if not: remove"""
+        # test if all point sets have at least three points:
+        for ps in self.point_sets:
+            if len(ps.points) < 3:
+                self.point_sets.remove(ps)
+                if self.debug:
+                    print("Removed point set")
+
+        if self.debug:
+            print("%d point sets remaining" % len(self.point_sets))
+
+    def determine_z_values(self):
+        """Determine z values for all points in point sets
+
+        Approach: test all geotiffs in given order, stored in self.geotiffs list
+        """
+        if len(self.geotiffs) == 0:
+            raise AttributeError("Please define geotiffs first (self.add_geotiff())")
+
+        # check that coordinates are in latlong, if not: convert
+        if self.type == 'utm':
+            self.utm_to_latlong()
+
+        for ps in self.point_sets:
+            fail = True
+            for geotiff in self.geotiffs:
+                try:
+                    ps.get_z_values_from_geotiff(geotiff)
+                except IndexError:
+                    continue
+                fail = False
+
+            # if point can not be detected: remove (default) or raise error
+            # if self.auto_remove = False
+
+            if fail:
+                if self.auto_remove:
+                    if self.debug:
+                        print("Point outside geotiff, drop")
+                    self.point_sets.remove(ps)
+                else:
+                    raise IndexError("Point outside of defined geotiffs!\nPlease define\
+                                     suitable geotiff or remove point (set self.auto_remove = True)")
+
+    def fit_plane_to_all_sets(self):
+        """Fit plane to all point sets
+
+        Results are stored in point set object (self.ctr, self.normal)
+        """
+        if self.type == 'latlong':
+            self.latlong_to_utm()
+
+        for ps in self.point_sets:
+            ps.plane_fit()
+            ps.get_orientation()
+
+    def stereonet(self):
+        """Create stereonet plot of all plane pole and half circle for all planes"""
+        import matplotlib.pyplot as plt
+        import mplstereonet
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, projection='stereonet')
+
+        # ax.plane(dip_dirs, dips, 'g-', linewidth=0.5)
+        for ps in self.point_sets:
+            ax.pole(ps.dip_direction - 90, ps.dip, 'gs', markersize=4)
+            ax.plane(ps.dip_direction - 90, ps.dip, 'g', markersize=4)
+
+        # ax.rake(strike, dip, -25)
+        ax.grid()
+
+    def add_geotiff(self, geotiff):
+        """Add geotiff to list of geotiffs (self.geotiffs)
+
+        Args:
+            geotiff (filename) : filename (with complete path) to geotiff
+        """
+        if self.debug:
+            print("Note: for efficiency reasons, add the most important geotiff first!")
+        self.geotiffs.append(geotiff)
+
+    def latlong_to_utm(self):
+        """Convert all points from lat long to utm"""
+        if self.type == 'latlong':  # else not required...
+            if self.debug:
+                print("Convert Lat/Long to UTM")
+            for ps in self.point_sets:
+                ps.latlong_to_utm()
+            self.type = 'utm'
+
+    def utm_to_latlong(self):
+        """Convert all points from utm to lat long"""
+        if self.type == 'utm':  # else not required...
+            if self.debug:
+                print("Convert UTM to Lat/Long")
+            for ps in self.point_sets:
+                ps.utm_to_latlong()
+            self.type = 'latlong'
