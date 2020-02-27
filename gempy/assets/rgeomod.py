@@ -10,8 +10,10 @@ from tqdm import tqdm
 from time import sleep
 from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
-# from osgeo import ogr, osr
-# import gdal
+from osgeo import ogr, osr
+import gdal
+import matplotlib.pyplot as plt
+
 
 # TODO: we should rework the storage of xyz coordinates from single .x, .y, .z class-variables to np.ndarray
 
@@ -68,6 +70,7 @@ def points_to_gempy_interf(ks_coords, formations, filenames, series="Default ser
         formations: list of fromation names [str, str, ...]
         series (str, optional): Set the series for the given point sets.
         debug (bool, optional): Toggles verbosity.
+        filenames (list): filename of .kml file
 
     Returns:
         GemPy interfaces dataframe with columns ['X', 'Y', 'Z', 'formation', 'series', "formation number"].
@@ -101,11 +104,13 @@ def dips_to_gempy_fol(dips, dip_dirs, xs, ys, zs, formation, formation_number, s
         ys:
         zs:
         formation:
+        formation_number:
         series:
 
     Returns:
 
     """
+    # TODO: adjust to naming conventions of gempy
     foliations = pn.DataFrame(columns=['X', 'Y', 'Z', 'dip', 'azimuth', 'polarity', 'formation', 'series'])
 
     foliations["X"] = xs
@@ -145,7 +150,7 @@ def read_kml_files(folder_path, verbose=True):
 
     for i, fn in enumerate(os.listdir(folder_path)):
         if ".kml" in fn:
-            ks.append(kml_to_plane.KmlPoints(filename=folder_path + fn, debug=verbose))
+            ks.append(KmlPoints(filename=folder_path + fn, debug=verbose))
             if verbose:
                 print(fn)
 
@@ -223,6 +228,7 @@ def convert_to_df(ks, ks_names, filenames, ks_bool):
         ks:
         ks_names:
         ks_bool:
+        filenames:
 
     Returns:
 
@@ -259,19 +265,19 @@ def convert_dtm_to_gempy_grid(raster, dtm):
     # raster.RasterXSize, raster.RasterYSize
     geoinformation = raster.GetGeoTransform()
     # get DTM corners:
-    dtm_E_min = geoinformation[0]
-    dtm_E_max = geoinformation[0] + geoinformation[1] * raster.RasterXSize
-    dtm_N_min = geoinformation[3] + geoinformation[5] * raster.RasterYSize
-    dtm_N_max = geoinformation[3]
-    # dtm_E_min, dtm_E_max, dtm_N_min, dtm_N_max
+    dtm_east_min = geoinformation[0]
+    dtm_east_max = geoinformation[0] + geoinformation[1] * raster.RasterXSize
+    dtm_north_min = geoinformation[3] + geoinformation[5] * raster.RasterYSize
+    dtm_north_max = geoinformation[3]
+    # dtm_east_min, dtm_east_max, dtm_north_min, dtm_north_max
 
     # define range for x, y - values
-    X_range = np.arange(dtm_E_min, dtm_E_max, geoinformation[1])
-    Y_range = np.arange(dtm_N_min, dtm_N_max, np.abs(geoinformation[5]))
-    XX, YY = np.meshgrid(X_range, Y_range, indexing="ij")
+    x_range = np.arange(dtm_east_min, dtm_east_max, geoinformation[1])
+    y_range = np.arange(dtm_north_min, dtm_north_max, np.abs(geoinformation[5]))
+    xx, yy = np.meshgrid(x_range, y_range, indexing="ij")
 
     # Create list of input points for interpolation with gempy:
-    return np.array(list(zip(XX.ravel(), YY.ravel(), dtm[::-1, :].T.ravel())))
+    return np.array(list(zip(xx.ravel(), yy.ravel(), dtm[::-1, :].T.ravel())))
 
 
 def export_geotiff(path, geo_map, cmap, geotiff_filepath):
@@ -297,10 +303,10 @@ def export_geotiff(path, geo_map, cmap, geotiff_filepath):
     arr = band.ReadAsArray()
     [cols, rows] = arr.shape
 
-    outFileName = path
+    out_file_name = path
     driver = gdal.GetDriverByName("GTiff")
     options = ['PROFILE=GeoTiff', 'PHOTOMETRIC=RGB', 'COMPRESS=JPEG']
-    outdata = driver.Create(outFileName, rows, cols, 3, gdal.GDT_Byte, options=options)
+    outdata = driver.Create(out_file_name, rows, cols, 3, gdal.GDT_Byte, options=options)
 
     outdata.SetGeoTransform(ds.GetGeoTransform())  # sets same geotransform as input
     outdata.SetProjection(ds.GetProjection())  # sets same projection as input
@@ -314,9 +320,9 @@ def export_geotiff(path, geo_map, cmap, geotiff_filepath):
 
     # outdata.GetRasterBand(1).SetNoDataValue(999)##if you want these values transparent
     outdata.FlushCache()  # saves to disk
-    outdata = None  # closes file (important)
-    band = None
-    ds = None
+    # outdata = None  # closes file (important)
+    # band = None
+    # ds = None
 
     print("Successfully exported geological map to " + path)
 
@@ -330,13 +336,13 @@ def calculate_gradient(foliations):
     """
 
     foliations['G_x'] = np.sin(np.deg2rad(foliations["dip"].astype('float'))) * \
-                        np.sin(np.deg2rad(foliations["azimuth"].astype('float'))) * \
-                        foliations["polarity"].astype('float')
+        np.sin(np.deg2rad(foliations["azimuth"].astype('float'))) * \
+        foliations["polarity"].astype('float')
     foliations['G_y'] = np.sin(np.deg2rad(foliations["dip"].astype('float'))) * \
-                        np.cos(np.deg2rad(foliations["azimuth"].astype('float'))) * \
-                        foliations["polarity"].astype('float')
+        np.cos(np.deg2rad(foliations["azimuth"].astype('float'))) * \
+        foliations["polarity"].astype('float')
     foliations['G_z'] = np.cos(np.deg2rad(foliations["dip"].astype('float'))) * \
-                        foliations["polarity"].astype('float')
+        foliations["polarity"].astype('float')
 
 
 class Arrow3D(FancyArrowPatch):
@@ -418,7 +424,7 @@ def plot_input_data_3d_scatter(interfaces, foliations):
     ax.set_xlabel("X")
     ax.set_ylabel("Y")
     ax.set_zlabel("Z")
-    fig.suptitle("GoogleEarth picks");
+    fig.suptitle("GoogleEarth picks")
     # **********************************************************************
     return ax
 
