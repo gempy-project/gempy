@@ -59,13 +59,13 @@ class GravityPreprocessing(CenteredGrid):
 
         if scale is True:
             #
-            G = 6.674e-6 # mgal     cm3⋅g−1⋅s−26.67408e-2 -- 1 m/s^2 to milligal = 100000 milligal
+            G = 6.674e-3 # ugal     cm3⋅g−1⋅s−26.67408e-2 -- 1 m/s^2 to milligal = 100000 milligal
         else:
             from scipy.constants import G
 
         self.tz = (
+            G *
             np.sum(- 1 *
-                   G *
                    mu * (
                            x_matrix * np.log(y_matrix + s_r) +
                            y_matrix * np.log(x_matrix + s_r) -
