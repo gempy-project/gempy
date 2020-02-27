@@ -64,12 +64,12 @@ def test_pile_geomodel():
     geo_model.set_fault_relation(rel_matrix)
 
     surf_groups = pd.read_csv(input_path + "/filtered_surface_points.csv").group
-    geo_model.surface_points.df["group"] = surf_groups
+    geo_model._surface_points.df["group"] = surf_groups
     orient_groups = pd.read_csv(input_path + "/filtered_orientations.csv").group
-    geo_model.orientations.df["group"] = orient_groups
+    geo_model._orientations.df["group"] = orient_groups
 
-    geo_model.surface_points.df.reset_index(inplace=True, drop=True)
-    geo_model.orientations.df.reset_index(inplace=True, drop=True)
+    geo_model._surface_points.df.reset_index(inplace=True, drop=True)
+    geo_model._orientations.df.reset_index(inplace=True, drop=True)
 
     gp.set_interpolator(geo_model)
     gp.compute_model(geo_model)
@@ -118,12 +118,12 @@ def test_pile_geomodel_2():
     geo_model.set_fault_relation(rel_matrix)
 
     surf_groups = pd.read_csv(input_path + "/filtered_surface_points.csv").group
-    geo_model.surface_points.df["group"] = surf_groups
+    geo_model._surface_points.df["group"] = surf_groups
     orient_groups = pd.read_csv(input_path + "/filtered_orientations.csv").group
-    geo_model.orientations.df["group"] = orient_groups
+    geo_model.orientations["group"] = orient_groups
 
-    geo_model.surface_points.df.reset_index(inplace=True, drop=True)
-    geo_model.orientations.df.reset_index(inplace=True, drop=True)
+    geo_model._surface_points.df.reset_index(inplace=True, drop=True)
+    geo_model.orientations.reset_index(inplace=True, drop=True)
 
     gp.set_interpolator(geo_model, verbose=['mask_matrix_loop', 'mask_e', 'nsle'])
     gp.compute_model(geo_model)

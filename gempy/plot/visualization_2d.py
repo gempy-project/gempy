@@ -52,8 +52,8 @@ import matplotlib.patches as mpatches
 class PlotData2D:
     def __init__(self, model):
         self.model = model
-        self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
-        self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
+        self._color_lot = dict(zip(self.model.surfaces['surface'], self.model.surfaces['color']))
+        self._cmap = mcolors.ListedColormap(list(self.model.surfaces['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors) + 0.5)
 
     def get_plot_data(self, series="all", at="everywhere", direction=None, cell_number=None, radius='default',
@@ -67,14 +67,14 @@ class PlotData2D:
                                      'or less data into account.')
 
         if series == "all":
-            series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"].
-                isin(self.model.series.df.index.values)]
-            series_to_plot_f = self.model.orientations.df[self.model.orientations.df["series"].
-                isin(self.model.series.df.index.values)]
+            series_to_plot_i = self.model.surface_points[self.model.surface_points["series"].
+                isin(self.model.series.index.values)]
+            series_to_plot_f = self.model.orientations[self.model.orientations["series"].
+                isin(self.model.series.index.values)]
 
         else:
-            series_to_plot_i = self.model.surface_points.df[self.model.surface_points.df["series"] == series]
-            series_to_plot_f = self.model.orientations.df[self.model.orientations.df["series"] == series]
+            series_to_plot_i = self.model.surface_points[self.model.surface_points["series"] == series]
+            series_to_plot_f = self.model.orientations[self.model.orientations["series"] == series]
 
         if show_all_data:
             at = 'everywhere'
@@ -311,8 +311,8 @@ class PlotData2D:
 
     def get_mask_surface_data(self, radius=None):
         points_interf = np.vstack(
-            (self.model.surface_points.df['X'].values, self.model.surface_points.df['Y'].values)).T
-        points_orient = np.vstack((self.model.orientations.df['X'].values, self.model.orientations.df['Y'].values)).T
+            (self.model.surface_points['X'].values, self.model.surface_points['Y'].values)).T
+        points_orient = np.vstack((self.model.orientations['X'].values, self.model.orientations['Y'].values)).T
 
         mask_interf = self.get_data_within_extent(points_interf)
         mask_orient = self.get_data_within_extent(points_orient)
@@ -330,8 +330,8 @@ class PlotData2D:
             radius = np.diff(zj).max()
         print(radius)
 
-        dist_interf = np.abs(Z_interf_interp - self.model.surface_points.df['Z'].values[mask_interf])
-        dist_orient = np.abs(Z_orient_interp - self.model.orientations.df['Z'].values[mask_orient])
+        dist_interf = np.abs(Z_interf_interp - self.model.surface_points['Z'].values[mask_interf])
+        dist_orient = np.abs(Z_orient_interp - self.model.orientations['Z'].values[mask_orient])
 
         surfmask_interf = dist_interf < radius
         surfmask_orient = dist_orient < radius
@@ -371,15 +371,15 @@ class PlotData2D:
         if radius is None:
             radius = r_o_inf
         coord = start + radius * cell_number
-        mask_surfpoints = np.abs(self.model.surface_points.df[column].values - coord) < radius
-        mask_orient = np.abs(self.model.orientations.df[column].values - coord) < radius
+        mask_surfpoints = np.abs(self.model.surface_points[column].values - coord) < radius
+        mask_orient = np.abs(self.model.orientations[column].values - coord) < radius
         return mask_surfpoints, mask_orient
 
     def get_mask_sections(self, j, radius=None):
         points_interf = np.vstack(
-            (self.model.surface_points.df['X'].values, self.model.surface_points.df['Y'].values)).T
-        points_orient = np.vstack((self.model.orientations.df['X'].values,
-                                   self.model.orientations.df['Y'].values)).T
+            (self.model.surface_points['X'].values, self.model.surface_points['Y'].values)).T
+        points_orient = np.vstack((self.model.orientations['X'].values,
+                                   self.model.orientations['Y'].values)).T
         if radius is None:
             radius = self.model.grid.sections.dist[j] / self.model.grid.sections.resolution[j][0]
 
@@ -435,13 +435,13 @@ class PlotData2D:
         import pandas as pn
 
         if litho is None:
-            litho = self.model.orientations.df['surface'].unique()
+            litho = self.model.orientations['surface'].unique()
 
         if single_plots is False:
             fig, ax = mplstereonet.subplots(figsize=(5, 5))
             df_sub2 = pn.DataFrame()
             for i in litho:
-                df_sub2 = df_sub2.append(self.model.orientations.df[self.model.orientations.df['surface'] == i])
+                df_sub2 = df_sub2.append(self.model.orientations[self.model.orientations['surface'] == i])
 
         for formation in litho:
             if single_plots:
@@ -449,10 +449,7 @@ class PlotData2D:
                 ax = fig.add_subplot(111, projection='stereonet')
                 ax.set_title(formation, y=1.1)
 
-            #if series_only:
-                #df_sub = self.model.orientations.df[self.model.orientations.df['series'] == formation]
-            #else:
-            df_sub = self.model.orientations.df[self.model.orientations.df['surface'] == formation]
+            df_sub = self.model.orientations[self.model.orientations['surface'] == formation]
 
             if poles:
                 ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=10,
@@ -481,8 +478,8 @@ class PlotSolution(PlotData2D):
     def __init__(self, model):
         self.model = model
         #super().__init__(self)
-        self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
-        self._cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
+        self._color_lot = dict(zip(self.model._surfaces.df['surface'], self.model._surfaces.df['color']))
+        self._cmap = mcolors.ListedColormap(list(self.model._surfaces.df['color']))
         self._norm = mcolors.Normalize(vmin=0.5, vmax=len(self._cmap.colors) + 0.5)
         self._show_legend = False
 
@@ -521,7 +518,7 @@ class PlotSolution(PlotData2D):
 
     def extract_section_lines(self, section_name=None, axes=None, zorder=2, faults_only=False):
         # Todo merge this with extract fault lines
-        faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
+        faults = list(self.model.faults[self.model.faults['isFault'] == True].index)
         if section_name == 'topography':
             shape = self.model.grid.topography.resolution
             a = self.model.solutions.geological_map[1]
@@ -572,13 +569,13 @@ class PlotSolution(PlotData2D):
             c_id += len(level)
 
     def extract_fault_lines(self, cell_number=25, direction='y'):
-        faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
+        faults = list(self.model.faults[self.model.faults['isFault'] == True].index)
         if len(faults) == 0:
             pass
         else:
             _slice, extent = self._slice2D(cell_number, direction)
             for fault in faults:
-                f_id = int(self.model.series.df.loc[fault, 'order_series']) - 1
+                f_id = int(self.model.series.loc[fault, 'order_series']) - 1
                 block = self.model.solutions.scalar_field_matrix[f_id]
                 level = self.model.solutions.scalar_field_at_surface_points[f_id][np.where(
                     self.model.solutions.scalar_field_at_surface_points[f_id] != 0)]

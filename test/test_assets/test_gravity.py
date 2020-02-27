@@ -19,8 +19,8 @@ def test_gravity():
     geo_model.add_surfaces('surface 2')
     geo_model.add_surfaces('basement')
     dz = geo_model.grid.regular_grid.dz
-    geo_model.surfaces.add_surfaces_values([dz, 0, 0], ['dz'])
-    geo_model.surfaces.add_surfaces_values([2.6, 2.4, 3.2], ['density'])
+    geo_model.add_surfaces_values([dz, 0, 0], ['dz'])
+    geo_model.add_surfaces_values([2.6, 2.4, 3.2], ['density'])
     geo_model.add_surface_points(3, 0, 3.05, 'surface 1')
     geo_model.add_surface_points(9, 0, 3.05, 'surface 1')
 

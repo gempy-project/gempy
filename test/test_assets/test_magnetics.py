@@ -21,7 +21,7 @@ def test_magnetics():
     geo_model.add_surface_points(X=-1, Y=0, Z=0, surface='surface1')
     geo_model.add_surface_points(X=1, Y=0, Z=0, surface='surface1')
     geo_model.add_orientations(X=0, Y=0, Z=0, surface='surface1', pole_vector=(0, 0, 1))
-    geo_model.surfaces.add_surfaces_values([0.037289, 0.0297], ['susceptibility'])
+    geo_model.add_surfaces_values([0.037289, 0.0297], ['susceptibility'])
 
     # needed constants
     mu_0 = 4.0 * np.pi * 10e-7  # magnetic permeability in free space [N/A^2]
@@ -54,7 +54,7 @@ def test_magnetics_api():
     geo_model.add_surface_points(X=-1, Y=0, Z=0, surface='surface1')
     geo_model.add_surface_points(X=1, Y=0, Z=0, surface='surface1')
     geo_model.add_orientations(X=0, Y=0, Z=0, surface='surface1', pole_vector=(0, 0, 1))
-    geo_model.surfaces.add_surfaces_values([0.037289, 0.0297], ['susceptibility'])
+    geo_model.add_surfaces_values([0.037289, 0.0297], ['susceptibility'])
 
     # needed constants
     mu_0 = 4.0 * np.pi * 10e-7  # magnetic permeability in free space [N/A^2]
@@ -81,7 +81,7 @@ def test_magnetics_no_regular_grid():
     geo_model.add_surface_points(X=-1, Y=0, Z=0, surface='surface1')
     geo_model.add_surface_points(X=1, Y=0, Z=0, surface='surface1')
     geo_model.add_orientations(X=0, Y=0, Z=0, surface='surface1', pole_vector=(0, 0, 1))
-    geo_model.surfaces.add_surfaces_values([0.037289, 0.0297], ['susceptibility'])
+    geo_model.add_surfaces_values([0.037289, 0.0297], ['susceptibility'])
 
     # needed constants
     mu_0 = 4.0 * np.pi * 10e-7  # magnetic permeability in free space [N/A^2]

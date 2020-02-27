@@ -528,8 +528,8 @@ class ImplicitCoKriging(object):
         return self._surfaces
 
     @setdoc(Surfaces.add_surfaces_values.__doc__, indent=False)
-    def add_surface_values(self,  values_array: Union[np.ndarray, list],
-                           properties_names: Union[list, str] = np.empty(0)):
+    def add_surfaces_values(self, values_array: Union[np.ndarray, list],
+                            properties_names: Union[list, str] = np.empty(0)):
         self._surfaces.add_surfaces_values(values_array, properties_names)
         self.update_structure(update_theano='matrices')
         return self._surfaces

@@ -1411,7 +1411,7 @@ class SurfacePoints(GeometricData):
 
         self._columns_rep = ['X', 'Y', 'Z', 'surface', 'series']
         self._columns_i_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r']
-        self._columns_i_rend = ['X', 'Y', 'Z', 'surface', 'color']
+        self._columns_i_rend = ['X', 'Y', 'Z', 'surface', 'series', 'color']
 
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
             self.df: pn.DataFrame
@@ -1700,7 +1700,7 @@ class Orientations(GeometricData):
         self._columns_o_1 = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
                              'surface', 'series', 'id', 'order_series', 'isFault']
         self._columns_o_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
-        self._columns_o_rend = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'surface', 'color']
+        self._columns_o_rend = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'surface', 'series', 'color']
 
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
             self.df: pn.DataFrame

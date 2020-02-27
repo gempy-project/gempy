@@ -225,7 +225,7 @@ def set_interpolator(geo_model: Project, output: list = None, compile_theano: bo
 
         # This id is necessary for topology
         id_list = geo_model._surfaces.df.groupby('isFault').cumcount() + 1
-        geo_model.add_surface_values(id_list, 'topology_id')
+        geo_model.add_surfaces_values(id_list, 'topology_id')
         geo_model.interpolator.set_theano_shared_topology()
 
         # TODO it is missing to pass to theano the position of topology_id

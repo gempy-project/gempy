@@ -60,10 +60,11 @@ class Plot2D:
     """
     def __init__(self, model, cmap=None, norm=None):
         self.model = model
-        self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
+        self._color_lot = dict(zip(self.model._surfaces.df['surface'],
+                                   self.model._surfaces.df['color']))
 
         if cmap is None:
-            self.cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
+            self.cmap = mcolors.ListedColormap(list(self.model.surfaces['color']))
             self._custom_colormap = False
         else:
             self.cmap = cmap
@@ -76,10 +77,10 @@ class Plot2D:
 
     def update_colot_lot(self, color_dir=None):
         if color_dir is None:
-            color_dir = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
+            color_dir = dict(zip(self.model.surfaces['surface'], self.model.surfaces['color']))
         self._color_lot = color_dir
         if self._custom_colormap is False:
-            self.cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
+            self.cmap = mcolors.ListedColormap(list(self.model.surfaces['color']))
             self.norm = mcolors.Normalize(vmin=0.5, vmax=len(self.cmap.colors) + 0.5)
 
     def remove(self, ax):
@@ -341,8 +342,8 @@ class Plot2D:
         """
         self.update_colot_lot()
 
-        points = self.model.surface_points.df.copy()
-        orientations = self.model.orientations.df.copy()
+        points = self.model.surface_points.copy()
+        orientations = self.model.orientations.copy()
 
         if section_name is not None:
             if section_name == 'topography':
@@ -350,9 +351,9 @@ class Plot2D:
                 topo_comp = kwargs.get('topo_comp', 5000)
                 decimation_aux = int(self.model.grid.topography.values.shape[0] /topo_comp)
                 tpp = self.model.grid.topography.values[::decimation_aux + 1, :]
-                cartesian_point_dist = (dd.cdist(tpp, self.model.surface_points.df[['X', 'Y', 'Z']])
+                cartesian_point_dist = (dd.cdist(tpp, self.model.surface_points[['X', 'Y', 'Z']])
                                         < projection_distance).sum(axis=0).astype(bool)
-                cartesian_ori_dist = (dd.cdist(tpp, self.model.orientations.df[['X', 'Y', 'Z']])
+                cartesian_ori_dist = (dd.cdist(tpp, self.model.orientations[['X', 'Y', 'Z']])
                                       < projection_distance).sum(axis=0).astype(bool)
                 x, y, Gx, Gy = 'X', 'Y', 'G_x', 'G_y'
 
@@ -502,9 +503,9 @@ class Plot2D:
                       only_faults=False, **kwargs):
         self.update_colot_lot()
         if only_faults:
-            contour_idx = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
+            contour_idx = list(self.model.faults[self.model.faults['isFault'] == True].index)
         else:
-            contour_idx = list(self.model.surfaces.df.index)
+            contour_idx = list(self.model.surfaces.index)
         extent_val = [*ax.get_xlim(), *ax.get_ylim()]
         zorder = kwargs.get('zorder', 100)
 
@@ -542,7 +543,7 @@ class Plot2D:
                     # that an interface does not exit for a given section
                     c_id2 = c_id + len(level)  # color id endpoint
                     ax.contour(block.reshape(shape).T, 0, levels=np.sort(level),
-                               colors=self.cmap.colors[self.model.surfaces.df['isActive']][c_id:c_id2],
+                               colors=self.cmap.colors[self.model.surfaces['isActive']][c_id:c_id2],
                                  linestyles='solid', origin='lower',
                                  extent=extent_val, zorder=zorder - (e+len(level))
                                )
@@ -560,11 +561,11 @@ class Plot2D:
                 c_id2 = c_id + len(level)
             #    print(c_id, c_id2)
 
-                color_list = self.model.surfaces.df.groupby('isActive').get_group(True)['color'][c_id:c_id2][::-1]
+                color_list = self.model.surfaces.groupby('isActive').get_group(True)['color'][c_id:c_id2][::-1]
             #    print(color_list)
 
                 ax.contour(block.reshape(shape)[_slice].T, 0, levels=np.sort(level),
-                           colors = color_list,# self.cmap.colors[self.model.surfaces.df['isActive']][c_id:c_id2][::-1],
+                           colors = color_list,
                            linestyles='solid', origin='lower',
                            extent=extent_val, zorder=zorder - (e + len(level))
                            )
