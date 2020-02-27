@@ -99,11 +99,16 @@ All contributed code must include test code in the pull request.
 
 ### Pull Requests
 
-All contributions are made via pull requests to the master branch.
+All contributions are made via pull requests to the master branch. For this
+you will *need* to complete the pull request checklist before we will accept
+any pull request into the GemPy codebase.
 
-The following checklist *needs* to be completed before we will accept any pull
-request to the GemPy codebase. 
+The essentials of the checklist are:
 
-1. Run all tests.
-2. Check documentation
-3. Check if your code adheres to PEP8
+- [ ] My code follows the PEP8 style guidelines
+- [ ] My code uses type hinting for function and method arguments and return 
+values.
+- [ ] My code contains descriptive and helpful docstrings which are formatted 
+according to the Google Python Style Guidelines.
+- [ ] I have created tests for my code.
+- [ ] New and existing tests pass locally with my changes.
