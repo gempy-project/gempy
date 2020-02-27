@@ -1,6 +1,10 @@
 import tensorflow as tf
 
+"""
 
+This is a module creating scaler field through tensorflow instead of Theano
+
+"""
 def constant(val,dtype = tf.float32):
     """
 

@@ -10,7 +10,7 @@ def test_basic_tf():
 
     test_model = Tensorflow_kriging_2D(dips_position,surface_position,dips)
 
-    # test_model.squared_euclidean_distance(surface_position,surface_position)
+    test_model.squared_euclidean_distance(surface_position,surface_position)
 
 
 
