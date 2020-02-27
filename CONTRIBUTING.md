@@ -4,14 +4,6 @@ We welcome and encoruage everyone to contribute to GemPy!
 Contributions can be questions, bug reports, feature requests and new code. 
 Here is how to get started.
 
-## Cloning the Source Repository
-
-To get the latest release candidate of GemPy you can clone the master branch
-from GitHub using Git:
-
-```bash
-git clone https://github.com/cgre-aachen/gempy.git
-``` 
 ## Issues 
 
 ### Questions
@@ -145,11 +137,10 @@ you need to add your own tests as a subfolder.
 
 ### Pull Request Checklist
 
+Make Pull Requests to the master branch.
 The following checklist *needs* to be completed before we will accept any pull
 request to the GemPy codebase. 
 
 1. Run all tests.
 2. Check documentation
 3. Check if your code adheres to PEP8
-
- 
