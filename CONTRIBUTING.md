@@ -30,62 +30,27 @@ this please create an issue on the
 
 ## Contributing New Code
 
-If you want to contribute code to the GemPy open-source project please start by
-opening up an issue on the [issue page](https://github.com/cgre-aachen/gempy/issues)
-so we can start discussions about implementation and provide you with any help 
-you might need. 
+Any code contributions are welcome, 
+whether fixing a typo or bug,
+adding new post-processing/plotting functionality,
+improve core functionality,
+or anything that you think should be in the repository. 
 
-**Once you are ready to start coding, please take a look at the following 
-contribution guidelines.**
+Contributions should address an open issue (either a bug or a feature request).
+If you have found a new bug 
+or havehttps://www.python.org/dev/peps/pep-0008/ an idea or a new feature, 
+then please [open the issue](https://github.com/cgre-aachen/gempy/issues/new/choose) 
+for discussion and link to that issue in your pull request.
 
-Any code contributions are welcome: if you want to fix a couple of typos, add
-custom geomodel post-processing functionality or a new plotting function - your
-efforts are welcome! 
+### Python code guidelines
+We aim to follow particular Python coding guidelines to improve the sustainability and positive impact of this community project:
 
-We adhere to three general coding paradigms to ensure GemPy to grow as a valuable
-and reliable community project:
-
-1. **Write intuitive code.** Python allows for readable code - and we think that
-any good code should be readable and self-explanatory. From adhering to code
-formatting guidelines to intuitive naming conventions, applying good standards
-will ensure the usability and maintainability of the code for users and 
-developers alike.
-2. **Document everything.** Functions, methods and classes need to have 
-descriptive and helpful docstrings. Describe the *why* of your code. The *how*
-should be left to intuitive code. Consider including inline comments in your 
-code if you think it will make the *how* more intuitive. We also recommend 
-providing a simple use case descriptiong within the docstring of a new feature.
-3. **Untested code is broken code.** We aim to increase our test coverage and
-keep it as high as possible and sensible. Thus, any new code contributed to 
-GemPy needs to be tested.
-
-### Licensing
-
-All contributed code will be licensed under the LGPL-3 license found in the
-[license file](https://github.com/cgre-aachen/gempy/blob/master/LICENSE) within
-the GemPy repository.
-
-If you did not write the code yourself, it is your responsibility to
-ensure that the existing license is compatible and included in the contributed
-files. In general we would like to discourage contributing third party code to
-our project.
-
-### Code Formatting
-
-We reasonably adhere to the offical
- [Style Guide for Python Code (PEP8)](https://www.python.org/dev/peps/pep-0008/)
-, which you should already be using in all of your code. Please make sure to 
-format your code in a reasonable manner to make reviewing and using your code
-as easy and intuitive as possible.
-
-### Documentation
-
-Any contribution to GemPy needs to be appropriately documented using docstrings.
-This includes docstrings at the top of every module / Python file you contribute.
-We adhere to the docstring format provided by the 
-[Google Python Style Guidelines](https://github.com/cgre-aachen/gempy/issues) 
-(Section 3.8) and we recommend you read them before starting development.
-
+- Follow [The Zen of Python](https://www.python.org/dev/peps/pep-0020/), most importantly "readability counts" when writing Python code.
+- Adhere to the [Style Guide for Python Code (PEP8)](https://www.python.org/dev/peps/pep-0008/).
+- Write thorough and effective documentation: 
+Make a docstring for each module, function, class, and method, 
+all following [PEP 257](https://www.python.org/dev/peps/pep-0257/) for high-level guidelines
+and [Google Python Style Guidelines](http://google.github.io/styleguide/pyguide.html) for Syntax. 
 **Example function documentation:**
 ```python
 def func(arg1: int, arg2: float) -> int:
@@ -105,32 +70,36 @@ def func(arg1: int, arg2: float) -> int:
     """
     return 42
 ```
+- The code should explain the *what* and *how*. Add inline comments to explain the *why*.
+If an inline comment seems to be needed, consider first making the code more readable.
+For all comments, follow [PEP 8](https://www.python.org/dev/peps/pep-0008/).
+- Test every line of code. Untested code is dead code.
+
+### Licensing
+
+All contributed code will be licensed under 
+[a LGPL-3 license](https://github.com/cgre-aachen/gempy/blob/master/LICENSE).
+If you did not write the code yourself, 
+it is your responsibility to ensure that the existing license is compatible 
+and included in the contributed files. 
+In general we discourage contributing third party code.
 
 ### Testing
 
-To ensure that the GemPy release candidate (master branch) is working properly, 
-we employ the code testing suite [pytest](https://docs.pytest.org/). If you are
-unfamiliar with *pytest*, you should have a look at their documentation and get
-familiar with using it before you contribute to GemPy.
-
-If you contribute code that changes existing code (e.g. bug fixes), then please
-run all tests locally before creating a pull request. You can do this by running
-*pytest* via your terminal in your GemPy folder:
-
+Our test suite uses [`pytest`](https://docs.pytest.org/). 
+You should be familiar with `pytest` before contributing.
+Please run all tests locally before creating a pull request. 
+You can do this by running `pytest` via your terminal in your GemPy folder:
 ```bash
 cd ./path/to/gempy
 pytest
 ```
-
-If you contribute new functionality to GemPy, we require you to cover your code
-with tests, so that we can ensure it working properly.
-
-All tests are located in the `test` folder of the GemPy repository. This is where
-you need to add your own tests as a subfolder. 
+All tests are located in the `test` folder and its subfolders.  
+All contributed code must include test code in the pull request.
 
 ### Pull Requests
 
-All contributions are made via Pull Requests to the master branch.
+All contributions are made via pull requests to the master branch.
 
 The following checklist *needs* to be completed before we will accept any pull
 request to the GemPy codebase. 
