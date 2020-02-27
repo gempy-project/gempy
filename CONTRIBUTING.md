@@ -14,15 +14,10 @@ If your question has not already been asked, then [make a new issue](https://git
 
 ### Reporting Bugs
 
-If you happen to stumble upon one of the incredibly rare and utterly unlikely
-bugs, crashes or concerning behaviour while using GemPy, please report it on 
-the [issue page](https://github.com/cgre-aachen/gempy/issues) using the bug 
-report template and appropriate labeling. The remplate will provide you with 
-some default questions to answer, which will provide us with essential 
-information to understand and solve your issue. When reporting a bug, please be 
-overly descriptive so that we will be able to to reproduce and resolve the issue. 
-Whenever possible, please provide tracebacks / error messages, screenshots and
-sample code / files to help us address your issue.
+Please report bugs on the [issue page using the bug report template](https://github.com/cgre-aachen/gempy/issues/new?assignees=&labels=&template=bug_report.md&title=) and label the issue as a bug.
+The template asks essential questions for you to answer so that we can to understand, reproduce, and fix the bug. 
+Be verbose!
+Whenever possible, provide tracebacks and/or error messages, screenshots, and sample code or other files.
 
 ### Feature Requests
 
