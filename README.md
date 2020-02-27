@@ -292,8 +292,8 @@ c) Trying to install all the packages in one go but it does not work, as well as
 ## Documentation
 
 Extensive documentation for *GemPy* is hosted at [gempy.readthedocs.io](http://gempy.readthedocs.io/),
-explaining its capabilities, [the theory behind it](http://gempy.readthedocs.io/Kriging.html) and 
-providing detailed [tutorials](http://gempy.readthedocs.io/tutorial.html) on how to use it.
+explaining its capabilities, [the theory behind it](https://www.geosci-model-dev.net/12/1/2019/) and 
+providing detailed [tutorials](https://www.gempy.org/tutorials) on how to use it.
 
 <a name="ref"></a>
 ## References

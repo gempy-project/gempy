@@ -1,5 +1,7 @@
 import os
 import sys
+from abc import ABC
+
 import numpy as np
 import pandas as pn
 from typing import Union
@@ -83,7 +85,7 @@ class DataMutation(object):
     @setdoc_pro([AdditionalData.update_structure.__doc__, InterpolatorModel.set_theano_shared_structure.__doc__,
                  InterpolatorModel.modify_results_matrices_pro.__doc__,
                  InterpolatorModel.modify_results_weights.__doc__])
-    def update_structure(self, update_theano=None):
+    def update_structure(self, update_theano=None, update_series_is_active=True, update_surface_is_active=True):
         """Update python and theano structure parameters.
 
         [s0]
@@ -96,6 +98,35 @@ class DataMutation(object):
         """
 
         self.additional_data.update_structure()
+
+        if update_series_is_active is True:
+
+            len_series_i = self.additional_data.structure_data.df.loc['values', 'len series surface_points'] - \
+                          self.additional_data.structure_data.df.loc['values', 'number surfaces per series']
+
+            len_series_o = self.additional_data.structure_data.df.loc['values', 'len series orientations'].astype(
+                'int32')
+
+            # Remove series without data
+            non_zero_i = len_series_i.nonzero()[0]
+            non_zero_o = len_series_o.nonzero()[0]
+            non_zero = np.intersect1d(non_zero_i, non_zero_o)
+
+            bool_vec = np.zeros_like(self.series.df['isActive'], dtype=bool)
+            bool_vec[non_zero] = True
+            self.series.df['isActive'] = bool_vec
+
+        if update_surface_is_active is True:
+            act_series = self.surfaces.df['series'].map(self.series.df['isActive']).astype(bool)
+            unique_surf_points = np.unique(self.surface_points.df['id'])
+            if len(unique_surf_points) != 0:
+                bool_surf_points = np.zeros_like(act_series, dtype=bool)
+                bool_surf_points[unique_surf_points - 1] = True
+
+                # This is necessary to find the intersection between orientations (series) and
+                # surface points
+                self.surfaces.df['isActive'] = (act_series & bool_surf_points) | self.surfaces.df['isBasement']
+
         if update_theano == 'matrices':
             self.interpolator.modify_results_matrices_pro()
         elif update_theano == 'weights':
@@ -108,6 +139,9 @@ class DataMutation(object):
     def update_from_grid(self):
         self.rescaling.rescale_data()
         self.interpolator.set_initial_results_matrices()
+
+        if 'gravity' in self.interpolator.theano_graph.output or 'magnetics' in self.interpolator.theano_graph.output:
+            self.interpolator.set_theano_shared_l0_l1()
 
         # Check if grid is shared
         if hasattr(self.interpolator.theano_graph.grid_val_T, 'get_value'):
@@ -137,7 +171,7 @@ class DataMutation(object):
         # TODO this should go to the api and let call all different grid types
         raise NotImplementedError
 
-    @setdoc(Grid.set_regular_grid.__doc__)
+    @setdoc(Grid.create_regular_grid.__doc__)
     @setdoc_pro([ds.extent, ds.resolution])
     def set_regular_grid(self, extent, resolution):
         """
@@ -152,12 +186,20 @@ class DataMutation(object):
 
         Set regular grid docs
         """
-        self.grid.set_regular_grid(extent=extent, resolution=resolution)
+        if self.grid.regular_grid is None:
+            self.grid.create_regular_grid(extent=extent, resolution=resolution)
+        else:
+            self.grid.regular_grid.set_regular_grid(extent=extent, resolution=resolution)
+            self.grid.set_active('regular')
+
+        if self.grid.topography is not None:
+            self.grid.regular_grid.set_topography_mask(self.grid.topography)
+
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
-    @setdoc(Grid.set_custom_grid.__doc__, )
+    @setdoc(Grid.create_custom_grid.__doc__, )
     @setdoc_pro(ds.coord)
     def set_custom_grid(self, custom_grid):
         """
@@ -170,33 +212,47 @@ class DataMutation(object):
 
         Set custom grid Docs
         """
-        self.grid.set_custom_grid(custom_grid)
+        if self.grid.custom_grid is None:
+            self.grid.create_custom_grid(custom_grid)
+        else:
+            self.grid.custom_grid.set_custmo_grid(custom_grid)
+            self.grid.update_grid_values()
+
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
     @plot_set_topography
-    @setdoc(Grid.set_topography.__doc__)
+    @setdoc(Grid.create_topography.__doc__)
     def set_topography(self, source='random', **kwargs):
         """
         Create a topography grid and activate it.
         """
 
-        self.grid.set_topography(source, **kwargs)
+        self.grid.create_topography(source, **kwargs)
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
-    @setdoc(Grid.set_centered_grid.__doc__)
+    @setdoc(Grid.create_centered_grid.__doc__)
     def set_centered_grid(self, centers, radio, resolution=None):
-        self.grid.set_centered_grid(centers, radio, resolution=resolution)
+        if self.grid.centered_grid is None:
+            self.grid.create_centered_grid(centers, radio, resolution=resolution)
+        else:
+            self.grid.centered_grid.set_centered_grid(centers=centers, radio=radio, resolution=resolution)
+            self.grid.update_grid_values()
+
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
-    @setdoc(Grid.set_section_grid.__doc__)
+    @setdoc(Grid.create_section_grid.__doc__)
     def set_section_grid(self, section_dict):
-        self.grid.set_section_grid(section_dict=section_dict)
+        if self.grid.sections is None:
+            self.grid.create_section_grid(section_dict=section_dict)
+        else:
+            self.grid.sections.set_sections(section_dict)
+
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid.sections
@@ -347,7 +403,7 @@ class DataMutation(object):
         return self.faults
 
     @setdoc([Faults.set_is_finite_fault.__doc__], indent=False)
-    def set_is_finite_fault(self, series_fault=None, toggle: bool = False):
+    def set_is_finite_fault(self, series_fault=None, toggle: bool = True):
         """ """
         s = self.faults.set_is_finite_fault(series_fault, toggle)  # change df in Fault obj
         # change shared theano variable for infinite factor
@@ -384,8 +440,10 @@ class DataMutation(object):
         return self.surfaces
 
     @setdoc(Surfaces.delete_surface.__doc__, indent=False)
-    def delete_surfaces(self, indices: Union[str, list, np.ndarray], update_id=True, remove_data=False):
-        """Delete a surface and update all related object.
+    def delete_surfaces(self, indices: Union[str, list, np.ndarray], update_id=True, remove_data=True):
+        """
+        @TODO When implemeted activate geometric data, change remove data to False by default
+        Delete a surface and update all related object.
 
         Args:
             remove_data (bool): if true delete all GeometricData labeled with the given surface.
@@ -395,6 +453,10 @@ class DataMutation(object):
         indices = np.atleast_1d(indices)
         self.surfaces.delete_surface(indices, update_id)
 
+        if remove_data is False:
+            remove_data = True
+            warnings.warn('At the moment data must be deleted. Soon will be only deactivated.')
+
         if indices.dtype == int:
             surfaces_names = self.surfaces.df.loc[indices, 'surface']
         else:
@@ -402,13 +464,17 @@ class DataMutation(object):
         if remove_data:
             self.surface_points.del_surface_points(self.surface_points.df[self.surface_points.df.surface.isin(surfaces_names)].index)
             self.orientations.del_orientation(self.orientations.df[self.orientations.df.surface.isin(surfaces_names)].index)
-            self.update_structure(update_theano='matrices')
-            self.update_structure(update_theano='weights')
+
         self.surface_points.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
         self.orientations.df['surface'].cat.remove_categories(surfaces_names, inplace=True)
         self.map_geometric_data_df(self.surface_points.df)
         self.map_geometric_data_df(self.orientations.df)
         self.surfaces.colors.delete_colors(surfaces_names)
+
+        if remove_data:
+            self.update_structure(update_theano='matrices')
+            self.update_structure(update_theano='weights')
+
         return self.surfaces
 
     @setdoc(Surfaces.rename_surfaces.__doc__, indent=False)
@@ -433,7 +499,8 @@ class DataMutation(object):
         return self.surfaces
 
     @setdoc(Surfaces.add_surfaces_values.__doc__, indent=False)
-    def add_surface_values(self,  values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
+    def add_surface_values(self,  values_array: Union[np.ndarray, list],
+                           properties_names: Union[list, str] = np.empty(0)):
         self.surfaces.add_surfaces_values(values_array, properties_names)
         self.update_structure(update_theano='matrices')
         return self.surfaces
@@ -735,6 +802,7 @@ class DataMutation(object):
         self.interpolator.set_theano_shared_kriging()
         if attribute == 'drift equations':
             self.interpolator.set_initial_results()
+            self.update_structure()
 
     # endregion
 
@@ -842,6 +910,9 @@ class DataMutation(object):
             self.update_from_surfaces(set_categories_from_series=False, set_categories_from_surfaces=True,
                                       map_surface_points=False, map_orientations=False, update_structural_data=False)
 
+        # Update surface is active from series does not work because you can have only a subset of surfaces of a
+        # series active
+        # self.surfaces.df['isActive'] = self.surfaces.df['series'].map(self.series.df['isActive'])
         self.surfaces.set_basement()
 
         # Add categories from series
@@ -976,25 +1047,43 @@ class DataMutation(object):
             Surfaces
         """
         # TODO time this function
-        spu = self.surface_points.df['surface'].unique()
-        sps = self.surface_points.df['series'].unique()
-        sel = self.surfaces.df['surface'].isin(spu)
-        for e, name_series in enumerate(sps):
-            try:
-                sfai_series = self.solutions.scalar_field_at_surface_points[e]
-                sfai_order_aux = np.argsort(sfai_series[np.nonzero(sfai_series)])
-                sfai_order = (sfai_order_aux - sfai_order_aux.shape[0]) * -1
-                # select surfaces which exist in surface_points
-                group = self.surfaces.df[sel].groupby('series').get_group(name_series)
-                idx = group.index
-                surface_names = group['surface']
+       # spu = self.surface_points.df['surface'].unique()
+       # sps = self.surface_points.df['series'].unique()
 
-                self.surfaces.df.loc[idx, 'order_surfaces'] = self.surfaces.df.loc[idx, 'surface'].map(
-                    pn.DataFrame(sfai_order, index=surface_names)[0])
+        # # Boolean array of size len surfaces with True active surfaces minus Basemes
+        # sel = self.surfaces.df['isActive'] & ~self.surfaces.df['isBasement'] #self.surfaces.df['surface'].isin(spu)
+        #
+        # # Loop each series
+        # for e, name_series in enumerate(self.series.df.groupby('isActive').get_group(True).index):
+        #     try:
+        #
+        #         # Scalar field at surfaces point of each seroies
+        #         sfai_series = self.solutions.scalar_field_at_surface_points[e]
+        #         sfai_order_aux = np.argsort(sfai_series[np.nonzero(sfai_series)])
+        #
+        #         # sfai args in order
+        #         sfai_order = (sfai_order_aux - sfai_order_aux.shape[0]) * -1
+        #
+        #         if len(sfai_order) == 0:
+        #             sfai_order = np.array([1])
+        #         # select surfaces which exist in surface_points of the series
+        #         group = self.surfaces.df[sel].groupby('series').get_group(name_series)
+        #
+        #         idx = group.index
+        #         surface_names = group['surface']
+        #         right_order_surfaces = self.surfaces.df.loc[idx, 'surface'].map(
+        #             pn.DataFrame(sfai_order, index=surface_names)[0])
+        #
+        #         self.surfaces.df.loc[idx, 'order_surfaces'] = right_order_surfaces
+        #
+        #     except IndexError:
+        #         pass
 
-            except IndexError:
-                pass # print('foo')
-
+        sfai_order = self.solutions.scalar_field_at_surface_points.sum(axis=0)
+        sel = self.surfaces.df['isActive'] & ~self.surfaces.df['isBasement']
+        self.surfaces.df.loc[sel, 'sfai'] = sfai_order
+        self.surfaces.df.sort_values(by=['series', 'sfai'], inplace=True, ascending=False)
+        self.surfaces.reset_order_surfaces()
         self.surfaces.sort_surfaces()
         self.surfaces.set_basement()
         self.surface_points.df['id'] = self.surface_points.df['surface'].map(
@@ -1008,8 +1097,8 @@ class DataMutation(object):
 
 
 @setdoc([MetaData.__doc__, DataMutation.__doc__], indent=False)
-class Model(DataMutation):
-    """Container class of all objects that constitute a GemPy model.
+class Model(DataMutation, ABC):
+    """ Container class of all objects that constitute a GemPy model.
 
     In addition the class provides the methods that act in more than one of this class. Model is a child class of
     :class:`DataMutation` and :class:`MetaData`.

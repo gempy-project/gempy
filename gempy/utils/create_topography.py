@@ -111,6 +111,8 @@ class Load_DEM_GDAL():
         path_dest = 'topo.xyz'
         print('storing converted file...')
         shape = self.dem_zval.shape
+        if len(shape) == 3:
+            shape = shape[1:]
         gdal.Translate(path_dest, self.dem, options=gdal.TranslateOptions(options=['format'], format="XYZ"))
 
         xyz = pn.read_csv(path_dest, header=None, sep=' ').values
@@ -179,7 +181,7 @@ class Load_DEM_artificial():
 
         self.resolution = grid.resolution[:2] if resolution is None else resolution
 
-        assert all(np.asarray(self.resolution) > 2), 'The regular grid needs to be at least of size 2 on all ' \
+        assert all(np.asarray(self.resolution) >= 2), 'The regular grid needs to be at least of size 2 on all ' \
                                                      'directions.'
         self.extent = self.grid.extent[:4] if extent is None else extent
 

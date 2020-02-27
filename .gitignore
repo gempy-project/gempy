@@ -175,3 +175,9 @@ notebooks/prototype notebooks/vtk_res_model_adjusted_1
 notebooks/prototype notebooks/vtk_exp_smooth_trnasitions
 notebooks/prototype notebooks/plots
 
+docs/build
+test/figs
+
+Profiles
+notebooks/data/input_data/Claudius/Results_
+
