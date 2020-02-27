@@ -1,6 +1,8 @@
-from gempy.assets.geographic import GeographicPoint, broken_function
-import pytest  # to add fixtures
-import numpy as np  # as another testing environment
+from gempy.assets.geographic import GeographicPoint
+
+
+# import pytest  # to add fixtures
+# import numpy as np  # as another testing environment
 
 
 def test_geographic_point():
@@ -10,6 +12,7 @@ def test_geographic_point():
     g = GeographicPoint(x, y)
     assert g.x == 2.
     assert g.y == 3.
+
 
 def test_geographic_point_3D():
     """Test if call with three points works"""
@@ -34,4 +37,3 @@ def test_goegraphic_point_latlong_utm():
     assert g.type == 'nongeo'
     g.utm_to_latlong()
     print(g.x, g.y, g.z)
-
