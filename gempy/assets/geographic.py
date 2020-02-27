@@ -108,6 +108,3 @@ class GeographicPoint(object):
         self.type = 'latlong'
 
 
-def broken_function():
-    raise Exception('This is broken')
-
