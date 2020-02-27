@@ -237,12 +237,12 @@ def geo_model_to_res(geo_model, path='./gempy_rex'):
     file_header_size = 86
     e = 0
 
-    material_head_bytes = write_data_block_header(data_type=5, version_data=1, size_data=68, data_id=1)
-    #material_bytes =
+
 
     for ver, tri in zip(geo_model.solutions.vertices, geo_model.solutions.edges):
 
-        colors = np.ones_like(ver) * 200
+        colors = np.zeros_like(ver)
+        colors[:, e] = 255
 
         ver_ = np.copy(ver)
         ver_[:, 2] = ver[:, 1]
@@ -253,15 +253,15 @@ def geo_model_to_res(geo_model, path='./gempy_rex'):
         tri_[:, 1] = tri[:, 2]
 
         ver_ravel, tri_ravel, n_vtx_coord, n_triangles = mesh_preprocess(ver_, tri_)
-        data_block_size_no_header = 2 * (n_vtx_coord + n_triangles) * 4 + mesh_header_size
-
+        mesh_block_size_no_data_block_header = (2 * n_vtx_coord + n_triangles) * 4 + mesh_header_size
+        material_block_size_no_data_block_header = 68
         # Write header
-        header_bytes = write_header_block(n_data_blocks=1,
-                                          size_data_blocks=data_block_size_no_header + rexDataBlockHeaderSize,
+        header_bytes = write_header_block(n_data_blocks=2,
+                                          size_data_blocks=mesh_block_size_no_data_block_header + rexDataBlockHeaderSize + material_block_size_no_data_block_header,
                                           start_data=file_header_size)
 
         # Write data block
-        data_bytes = write_data_block_header(size_data=data_block_size_no_header,  #TODO: Miguel: this is the general data header for the mesh block?
+        data_bytes = write_data_block_header(size_data=mesh_block_size_no_data_block_header,
                                       data_id=1, data_type=3, version_data=1)
 
         # Write mesh block
@@ -271,11 +271,14 @@ def geo_model_to_res(geo_model, path='./gempy_rex'):
                                               start_tex_coord=mesh_header_size + n_vtx_coord * 4,
                                               start_vtx_colors=mesh_header_size + n_vtx_coord * 4,
                                               start_triangles=mesh_header_size + 2 * (n_vtx_coord * 4),
-                                              name='test_a')
+                                              name='test_a', material_id=0)
 
         mesh_block_bytes = write_mesh_coordinates(ver_ravel, tri_ravel, colors=colors.ravel())
 
-        all_bytes = header_bytes + data_bytes + mesh_header_bytes + mesh_block_bytes
+        material_header_bytes = write_data_block_header(data_type=5, version_data=1, size_data=68, data_id=0)
+        material_bytes = write_material_data()
+
+        all_bytes = header_bytes + data_bytes + mesh_header_bytes + mesh_block_bytes + material_header_bytes + material_bytes
 
         write_file(all_bytes, path+str(e))
         e += 1
