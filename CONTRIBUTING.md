@@ -4,35 +4,20 @@ We welcome and encoruage everyone to contribute to GemPy!
 Contributions can be questions, bug reports, feature requests and new code. 
 Here is how to get started.
 
-## Cloning the Source Repository
-
-To get the latest release candidate of GemPy you can clone the master branch
-from GitHub using Git:
-
-```bash
-git clone https://github.com/cgre-aachen/gempy.git
-``` 
 ## Issues 
 
 ### Questions
 
-For questions about GemPy, its applications and functionality and usage, please
-create an issue in the GitHub repository 
-[cgre-aachen/gempy](https://github.com/cgre-aachen/gempy). This way we can 
-document any questions you may have, so other people with similar questions 
-will be able to find the answers in the future.
+For questions about GemPy (e.g. its applications, functionality, and usage), 
+please [search the existing issues for related questions](https://github.com/cgre-aachen/gempy/issues).
+If your question has not already been asked, then [make a new issue](https://github.com/cgre-aachen/gempy/issues/new/choose).
 
 ### Reporting Bugs
 
-If you happen to stumble upon one of the incredibly rare and utterly unlikely
-bugs, crashes or concerning behaviour while using GemPy, please report it on 
-the [issue page](https://github.com/cgre-aachen/gempy/issues) using the bug 
-report template and appropriate labeling. The remplate will provide you with 
-some default questions to answer, which will provide us with essential 
-information to understand and solve your issue. When reporting a bug, please be 
-overly descriptive so that we will be able to to reproduce and resolve the issue. 
-Whenever possible, please provide tracebacks / error messages, screenshots and
-sample code / files to help us address your issue.
+Please report bugs on the [issue page using the bug report template](https://github.com/cgre-aachen/gempy/issues/new?assignees=&labels=&template=bug_report.md&title=) and label the issue as a bug.
+The template asks essential questions for you to answer so that we can to understand, reproduce, and fix the bug. 
+Be verbose!
+Whenever possible, provide tracebacks and/or error messages, screenshots, and sample code or other files.
 
 ### Feature Requests
 
@@ -143,7 +128,9 @@ with tests, so that we can ensure it working properly.
 All tests are located in the `test` folder of the GemPy repository. This is where
 you need to add your own tests as a subfolder. 
 
-### Pull Request Checklist
+### Pull Requests
+
+All contributions are made via Pull Requests to the master branch.
 
 The following checklist *needs* to be completed before we will accept any pull
 request to the GemPy codebase. 
@@ -151,5 +138,3 @@ request to the GemPy codebase.
 1. Run all tests.
 2. Check documentation
 3. Check if your code adheres to PEP8
-
- 
