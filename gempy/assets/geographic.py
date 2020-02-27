@@ -23,21 +23,22 @@ class GeographicPoint(object):
 
     Note: so far limited to lat/long and UTM projection
 
-    Optional Args:
+    Args:
         x (float) : x or longitude
         y (float) : y or latitude
+
+    Optional Args:
         z (float) : z or altitude
-        type ('utm', 'latlong', 'nongeo'): coordinate system # use nongeo for non-geographic projection
+        type ('utm', 'latlong', 'nongeo'): coordinate system # use nongeo for non-geographic projection;
+            default: 'nongeo'
         zone (int): utm zone (needs to be defined for type=utm!)
     """
 
-    def __init__(self, **kwds):
+    def __init__(self, x, y, **kwds):
         """3-D point in space
 
         """
-        # if hasattr(kwds, 'x'):
-        self.x = kwds['x']
-        self.y = kwds['y']
+        self.type = kwds.get("type", "nongeo")
         self.type = kwds['type']
         if 'z' in kwds:
             self.z = kwds['z']
@@ -93,4 +94,8 @@ class GeographicPoint(object):
         ct = osr.CoordinateTransformation(utm, wgs)
         self.x, self.y = ct.TransformPoint(self.x, self.y)[:2]
         self.type = 'latlong'
+
+
+def broken_function():
+    raise Exception('This is broken')
 
