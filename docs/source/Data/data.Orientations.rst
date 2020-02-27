@@ -1,0 +1,42 @@
+data.Orientations
+=================
+
+.. currentmodule:: data
+
+.. autoclass:: Orientations
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~Orientations.__init__
+      ~Orientations.add_orientation
+      ~Orientations.calculate_gradient
+      ~Orientations.calculate_orientations
+      ~Orientations.create_orientation_from_surface_points
+      ~Orientations.del_orientation
+      ~Orientations.get_orientation
+      ~Orientations.init_dependent_properties
+      ~Orientations.map_data_from_series
+      ~Orientations.map_data_from_surfaces
+      ~Orientations.modify_orientations
+      ~Orientations.plane_fit
+      ~Orientations.read_data
+      ~Orientations.read_orientations
+      ~Orientations.set_default_orientation
+      ~Orientations.set_orientations
+      ~Orientations.set_series_categories_from_series
+      ~Orientations.set_surface_categories_from_surfaces
+      ~Orientations.sort_table
+      ~Orientations.update_annotations
+      ~Orientations.update_series_category
+   
+   
+
+   
+   
+   

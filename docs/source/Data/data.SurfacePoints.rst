@@ -1,0 +1,37 @@
+data.SurfacePoints
+==================
+
+.. currentmodule:: data
+
+.. autoclass:: SurfacePoints
+
+   
+   .. automethod:: __init__
+
+   
+   .. rubric:: Methods
+
+   .. autosummary::
+   
+      ~SurfacePoints.__init__
+      ~SurfacePoints.add_surface_points
+      ~SurfacePoints.del_surface_points
+      ~SurfacePoints.init_dependent_properties
+      ~SurfacePoints.map_data_from_series
+      ~SurfacePoints.map_data_from_surfaces
+      ~SurfacePoints.modify_surface_points
+      ~SurfacePoints.read_data
+      ~SurfacePoints.read_surface_points
+      ~SurfacePoints.set_default_surface_points
+      ~SurfacePoints.set_series_categories_from_series
+      ~SurfacePoints.set_surface_categories_from_surfaces
+      ~SurfacePoints.set_surface_points
+      ~SurfacePoints.sort_table
+      ~SurfacePoints.update_annotations
+      ~SurfacePoints.update_series_category
+   
+   
+
+   
+   
+   

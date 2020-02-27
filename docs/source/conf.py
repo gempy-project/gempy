@@ -67,7 +67,8 @@ extensions = [
     'sphinx.ext.napoleon',
 #    'sphinxcontrib.bibtex',
     'IPython.sphinxext.ipython_console_highlighting',
-    'IPython.sphinxext.ipython_directive']
+    'IPython.sphinxext.ipython_directive',
+    'sphinx_gallery.gen_gallery']
 
 napoleon_google_docstring = True
 
@@ -218,3 +219,11 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {'https://docs.python.org/': None}
+
+
+# -- Sphinx Gallery Configuration ---------------------------------------------
+sphinx_gallery_conf = {
+    'examples_dirs': '../../examples',
+    'gallery_dirs': 'auto_examples',
+    "download_all_examples": False,
+}

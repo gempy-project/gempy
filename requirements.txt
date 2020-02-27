@@ -4,10 +4,12 @@ Theano>=1.0.4
 matplotlib
 numpy
 pytest
-nbsphinx
 seaborn
 networkx
 ipywidgets
 scikit-image
 pyvista
 IPython
+nbsphinx
+Sphinx===2.4.3
+sphinx-gallery==0.5.0
