@@ -1,0 +1,30 @@
+name: "Pull Request Docs Check"
+on: 
+- pull_request
+- push
+
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - uses: ammaraskar/sphinx-action@master
+      with:
+        docs-folder: "docs/"
+    - name: Commit documentation changes
+      run: |
+        git clone https://github.com/cgre-aachen/gempy-dev.git --branch master --single-branch master
+        cp -r docs/_build/html/* gempy-dev/
+        cd gh-pages
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "Update documentation" -a || true
+        # The above command will fail if no changes were present, so we ignore
+        # the return code.
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        branch: master
+        directory: master
+        github_token: ${{ secrets.GITHUB_TOKEN }}

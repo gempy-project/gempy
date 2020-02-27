@@ -19,7 +19,6 @@ import numpy as np
 import theano
 import theano.tensor as T
 from gempy.core.grid_modules.grid_types import CenteredGrid
-from scipy.constants import G
 
 
 class GravityPreprocessing(CenteredGrid):
@@ -59,10 +58,14 @@ class GravityPreprocessing(CenteredGrid):
         mu = np.array([1, -1, -1, 1, -1, 1, 1, -1])
 
         if scale is True:
-            G = 6.67408e-2
+            #
+            G = 6.674e-3 # ugal     cm3⋅g−1⋅s−26.67408e-2 -- 1 m/s^2 to milligal = 100000 milligal
+        else:
+            from scipy.constants import G
+
         self.tz = (
+            G *
             np.sum(- 1 *
-                   G *
                    mu * (
                            x_matrix * np.log(y_matrix + s_r) +
                            y_matrix * np.log(x_matrix + s_r) -

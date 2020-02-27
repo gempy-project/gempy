@@ -49,7 +49,7 @@ def map_sequential_pile(load_model):
 
 def test_get_data(load_model):
     geo_model = load_model
-    gp.get_data(geo_model, 'orientations').head()
+    return gp.get_data(geo_model, 'orientations').head()
 
 
 def test_define_sequential_pile(map_sequential_pile):

@@ -219,7 +219,7 @@ def create_grid():
     # Test creating an empty list
     grid = gp.Grid()
     # Test set regular grid by hand
-    grid.set_regular_grid([0, 2000, 0, 2000, -2000, 0], [50, 50, 50])
+    grid.create_regular_grid([0, 2000, 0, 2000, -2000, 0], [50, 50, 50])
     return grid
 
 
