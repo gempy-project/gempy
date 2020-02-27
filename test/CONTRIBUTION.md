@@ -55,10 +55,26 @@ contribution guidelines.**
 
 ## Guidelines
 
-1. intuitive, self-explanatory code and naming
-2. document everything.
-3. untested code is broken code
-4. license
+Any code contributions are welcome: if you want to fix a couple of typos, add
+custom geomodel post-processing functionality or a new plotting function - your
+efforts are welcome! 
+
+We adhere to three general coding paradigms to ensure GemPy to grow as a valuable
+and reliable community project:
+
+1. **Write intuitive code.** Python allows for readable code - and we think that
+any good code should be readable and self-explanatory. From adhering to code
+formatting guidelines to intuitive naming conventions, applying good standards
+will ensure the usability and maintainability of the code for users and 
+developers alike.
+2. **Document everything.** Functions, methods and classes need to have 
+descriptive and helpful docstrings. Describe the *why* of your code. The *how*
+should be left to intuitive code. Consider including inline comments in your 
+code if you think it will make the *how* more intuitive. We also recommend 
+providing a simple use case descriptiong within the docstring of a new feature.
+3. **Untested code is broken code.** We aim to increase our test coverage and
+keep it as high as possible and sensible. Thus, any new code contributed to 
+GemPy needs to be tested.
 
 ### Licensing
 
