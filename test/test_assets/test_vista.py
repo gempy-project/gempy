@@ -80,9 +80,14 @@ def test_plot_structured_grid_lith(vista_obj):
     assert type(mesh[0]) == pv.StructuredGrid
 
 
-# def test_plot_structured_grid_scalar(vista_obj):
-#     mesh = vista_obj.plot_structured_grid("scalar")
-#     assert type(mesh[0]) == pv.StructuredGrid
+def test_plot_structured_grid_scalar(vista_obj):
+    mesh = vista_obj.plot_structured_grid("scalar")
+    assert type(mesh) == pv.core.pointset.StructuredGrid
+
+
+def test_plot_structured_grid_scalar(vista_obj):
+    mesh = vista_obj.plot_structured_grid("scalar")
+    assert mesh.points.shape[0] == vista_obj.model.grid.regular_grid.values.shape[0]
 
 
 # def test_plot_structured_grid_values(vista_obj):

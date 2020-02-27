@@ -312,7 +312,7 @@ class Vista:
         n_edges = np.ones(sim.shape[0]) * 3
         return np.append(n_edges[:, None], sim, axis=1)
 
-    def plot_structured_grid(self, name:str, **kwargs) -> list:
+    def plot_structured_grid(self, name:str, series:str=None, **kwargs) -> list:
         """Plot a structured grid of the geomodel.
 
         Args:
@@ -332,7 +332,10 @@ class Vista:
             cmap = mcolors.ListedColormap(list(self._color_id_lot[n_faults:]))
             kwargs['cmap'] = kwargs.get('cmap', cmap)
         elif name == "scalar":
-            vals = self.model.solutions.scalar_field_matrix.T
+            if series == None:
+                # default to oldest series above basement
+                series = self.model.series.df.iloc[-2].name
+            vals = self.model.solutions.scalar_field_matrix[self.model.series.df.get_loc(series)]
         elif name == "values":
             vals = self.model.solutions.values_matrix.T
             if vals.shape[1] == 0:
