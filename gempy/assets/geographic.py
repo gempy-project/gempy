@@ -142,10 +142,10 @@ class GeographicPointSet(object):
         """Print out information about point set"""
         out_str = "Point set with %d points" % len(self.points)
         out_str += "; " + self.type
-        if hasattr(self, 'ctr'):
+        if hasattr(self, 'ctr') and self.ctr is not None:
             out_str += "; Centroid: at (%.2f, %.2f, %.2f)" % (self.ctr.x, self.ctr.y, self.ctr.z)
 
-        if hasattr(self, 'dip'):
+        if hasattr(self, 'dip') and self.dip is not None:
             out_str += "; Orientation: (%03d/%02d)" % (self.dip_direction, self.dip)
         return out_str
 
@@ -378,7 +378,7 @@ class KmlPoints(object):
                 self.point_sets.append(ps)
 
         if self.debug:
-            print("%d point sets added" % len(self.point_sets))
+            print("%d point set(s) added" % len(self.point_sets))
 
     def test_point_sets(self):
         """Test if point sets contain at least three points; if not: remove"""
@@ -390,7 +390,7 @@ class KmlPoints(object):
                     print("Removed point set")
 
         if self.debug:
-            print("%d point sets remaining" % len(self.point_sets))
+            print("%d point set(s) remaining" % len(self.point_sets))
 
     def determine_z_values(self):
         """Determine z values for all points in point sets
