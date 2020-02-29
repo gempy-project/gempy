@@ -127,6 +127,10 @@ class GeographicPoint(object):
         self.x, self.y = ct.TransformPoint(self.x, self.y)[:2]
         self.type = 'latlong'
 
+    def as_array(self):
+        """Return point values as np.array([x,y])"""
+        return np.array([self.x, self.y])
+
 
 class GeographicPointSet(object):
     """Set of geographic points in 2-D (on surface) or 3-D (with z-coordinate)
@@ -167,6 +171,14 @@ class GeographicPointSet(object):
         if hasattr(self, 'dip') and self.dip is not None:
             out_str += "; Orientation: (%03d/%02d)" % (self.dip_direction, self.dip)
         return out_str
+
+    def as_array(self):
+        """Return points as np.array([x,y])"""
+        point_array = np.empty((len(self.points),2))
+        for i,p in enumerate(self.points):
+            point_array[i, :] = p.as_array()[:]
+
+        return point_array
 
     def add_point(self, point):
         self.points.append(point)
