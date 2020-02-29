@@ -8,6 +8,7 @@ additional data sets (e.g. GoogleEarth .kml files, GeoTiffs, etc.)
 
 try:
     from osgeo import ogr, osr
+    import pyproj
     import gdal
 
     gdal_installed = True
@@ -70,20 +71,38 @@ class GeographicPoint(object):
             print("Please check gdal installation and import.")
             return None
 
-        wgs = osr.SpatialReference()
-        wgs.ImportFromEPSG(4326)
-        if self.zone == 40:
-            utm = osr.SpatialReference()
-            utm.ImportFromEPSG(32640)
-        elif self.zone == 33:
-            # !!! NOTE: this is 33S (for Namibia example)!
-            utm = osr.SpatialReference()
-            utm.ImportFromEPSG(32733)
+        # Determine UTM zone automatically - see Wikipedia page
+        # Note: works in most cases (except extreme North and South)
+        # For generality, keep option to add zone manually!
+
+        if hasattr(self, 'utm'):
+            zone = self.zone
         else:
-            raise AttributeError("Sorry, zone %d not yet implemented\
-             (to fix: check EPSG code on http://spatialreference.org/ref/epsg/ and include in code!)" % self.zone)
-        ct = osr.CoordinateTransformation(wgs, utm)
-        self.x, self.y = ct.TransformPoint(self.x, self.y)[:2]
+            zone = np.int((np.mod(np.floor((self.x + 180)/6), 60))) + 1
+
+        # create projection
+        p = pyproj.Proj(proj='utm', zone=zone, ellps='WGS84')
+
+        # convert points
+        self.x, self.y = p(self.x, self.y)
+
+        # wgs = osr.SpatialReference()
+        # wgs.ImportFromEPSG(4326)
+        # if self.zone == 40:
+        #     utm = osr.SpatialReference()
+        #     #utm.ImportFromEPSG(32640)
+        #     utm.ImportFromEPSG(2975)
+        #     print(utm)
+        # elif self.zone == 33:
+        #     # !!! NOTE: this is 33S (for Namibia example)!
+        #     utm = osr.SpatialReference()
+        #     utm.ImportFromEPSG(32733)
+        # else:
+        #     raise AttributeError("Sorry, zone %d not yet implemented\
+        #      (to fix: check EPSG code on http://spatialreference.org/ref/epsg/ and include in code!)" % self.zone)
+        # ct = osr.CoordinateTransformation(wgs, utm)
+        # self.x, self.y = ct.TransformPoint(self.x, self.y)[:2]
+
         self.type = 'utm'
 
     def utm_to_latlong(self):
@@ -159,7 +178,7 @@ class GeographicPointSet(object):
                 point.latlong_to_utm()
             self.type = 'utm'
         # convert plane centroid, if already calculated:
-        if hasattr(self, 'ctr'):
+        if hasattr(self, 'ctr') and self.ctr is not None:
             self.ctr.latlong_to_utm()
 
     def utm_to_latlong(self):
@@ -181,8 +200,9 @@ class GeographicPointSet(object):
         """
 
         # check if points in latlong, else: convert
-        if self.type == 'utm':
-            self.utm_to_latlong()
+        # if self.type == 'utm':
+        #     self.utm_to_latlong()
+        #     print("converted to utm")
 
         # initialise lookup for entire point set
         geotiff_file = GeoTiffgetValue(filename)
@@ -368,10 +388,11 @@ class KmlPoints(object):
                 ps = GeographicPointSet()
                 if geom is not None:
                     for i in range(0, geom.GetPointCount()):
-                        # print (geom.GetPoint(i))
+                        print (geom.GetPoint(i))
                         point = GeographicPoint(x=geom.GetPoint(i)[0],
                                                 y=geom.GetPoint(i)[1],
                                                 type='latlong')
+                        print(point)
                         ps.add_point(point)
                         # points.append([geom.GetPoint(i)[0], geom.GetPoint(i)[1], j])
 
