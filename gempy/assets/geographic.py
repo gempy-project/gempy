@@ -45,10 +45,11 @@ class GeographicPoint(object):
         """
         self.x = x
         self.y = y
-        self.z = np.nan
         self.type = kwds.get("type", "nongeo")
         if len(z) == 1:
             self.z = z[0]
+        else:
+            self.z = np.nan
 
         self.zone = kwds.get("zone", np.nan)
         # check if zone given, in case of utm projcetion:
@@ -80,13 +81,11 @@ class GeographicPoint(object):
         # Note: works in most cases (except extreme North and South)
         # For generality, keep option to add zone manually!
 
-        if not np.isnan(self.zone):
-            zone = self.zone
-        else:
-            zone = np.int((np.mod(np.floor((self.x + 180)/6), 60))) + 1
+        if np.isnan(self.zone):
+            self.zone = np.int((np.mod(np.floor((self.x + 180)/6), 60))) + 1
 
         # create projection
-        p = pyproj.Proj(proj='utm', zone=zone, ellps='WGS84')
+        p = pyproj.Proj(proj='utm', zone=self.zone, ellps='WGS84')
 
         # convert points
         self.x, self.y = p(self.x, self.y)
@@ -171,7 +170,7 @@ class GeographicPointSet(object):
         self.points = []
         self.type = kwds.get('type', 'latlong')
         self.normal = np.nan
-        self.ctr = np.nan
+        self.ctr = None
         self.dip_direction = np.nan
         self.dip = np.nan
         self.min = np.nan
@@ -181,7 +180,7 @@ class GeographicPointSet(object):
         """Print out information about point set"""
         out_str = "Point set with %d points" % len(self.points)
         out_str += "; " + self.type
-        if not np.isnan(self.ctr):
+        if self.ctr is not None:
             out_str += "; Centroid: at (%.2f, %.2f, %.2f)" % (self.ctr.x, self.ctr.y, self.ctr.z)
 
         if not np.isnan(self.dip):
@@ -206,7 +205,7 @@ class GeographicPointSet(object):
                 point.latlong_to_utm()
             self.type = 'utm'
         # convert plane centroid, if already calculated:
-        if not np.isnan(self.ctr):
+        if self.ctr is not None:
             self.ctr.latlong_to_utm()
 
     def utm_to_latlong(self):
@@ -216,7 +215,7 @@ class GeographicPointSet(object):
                 point.utm_to_latlong()
             self.type = 'latlong'
         # convert plane centroid, if already calculated:
-        if not np.isnan(self.ctr):
+        if self.ctr is not None:
             self.ctr.utm_to_latlong()
 
     def get_z_values_from_geotiff(self, fname):
@@ -261,7 +260,7 @@ class GeographicPointSet(object):
         x = points - ctr[:, np.newaxis]
         m = np.dot(x, x.T)  # Could also use np.cov(x) here.
 
-        self.ctr = GeographicPoint(x=ctr[0], y=ctr[1], z=ctr[2], type='utm', zone=self.points[0].zone)
+        self.ctr = GeographicPoint(ctr[0], ctr[1], ctr[2], type='utm', zone=self.points[0].zone)
         self.normal = svd(m)[0][:, -1]
         # return ctr, svd(M)[0][:, -1]
         if self.normal[2] < 0:
@@ -536,8 +535,6 @@ def get_pixel_values(geo_coords, data_source, **kwds):
     # check if only one point, then: add dimension for subsequent functions to work
     if len(geo_coords.shape) == 1:
         geo_coords = geo_coords[np.newaxis, :]
-
-    print(geo_coords)
 
     x, y = geo_coords[:, 0], geo_coords[:, 1]
 
