@@ -133,8 +133,8 @@ class GeographicPoint(object):
         """Return point values as np.array([x,y])"""
         return np.array([self.x, self.y])
 
-    def get_elevation_from_geotiff(self, geotiff_file):
-        """Get elevation/ z-value from specified GeoTiff file
+    def get_z_value_from_geotiff(self, geotiff_file):
+        """Get z-value (e.g. elevation) from specified GeoTiff file
 
         Value is then stored in self.z
 
@@ -216,11 +216,11 @@ class GeographicPointSet(object):
         if hasattr(self, 'ctr'):
             self.ctr.utm_to_latlong()
 
-    def get_z_values_from_geotiff(self, filename):
+    def get_z_values_from_geotiff(self, fname):
         """Open GeoTiff file and get z-value for all points in set
 
         Args:
-            filename: filename of GeoTiff file
+            fname (filepath): filename of GeoTiff file
         Note: requires gdal installed!
         """
 
@@ -229,11 +229,8 @@ class GeographicPointSet(object):
         #     self.utm_to_latlong()
         #     print("converted to utm")
 
-        # initialise lookup for entire point set
-        geotiff_file = GeoTiffgetValue(filename)
-
-        for point in self.points:
-            point.z = geotiff_file.lookup(point.x, point.y)
+        for geo_point in self.points:
+            geo_point.get_z_value_from_geotiff(fname)
 
     def plane_fit(self):
         """Fit plane to points in PointSet

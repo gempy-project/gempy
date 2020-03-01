@@ -174,12 +174,24 @@ def read_kml_files(folder_path, verbose=True):
     return ks, ks_names, np.array(ks_bool).astype(bool), filenames
 
 
-def get_elevation_from_dtm(ks, dtm_path, verbose=True):
-    for k in tqdm(ks, desc="Extracting elevation data"):
-        sleep(0.3)
+def get_elevation_from_dtm(geographic_point_sets, fname, verbose=True):
+    """Get elevation value from GeoTiff dtm for entire geopgraphic point set
+
+    All z-values are then added to the GeographicPoint objects
+
+    Args:
+        geographic_point_sets (list): list of GeographicPonitSet
+        fname (filepath): filename of GeoTiff file
+        verbose (bool): Show debug information
+
+    Returns: None
+
+    """
+    for k in tqdm(geographic_point_sets, desc="Extracting elevation data"):
+        sleep(0.2)
         for ps in k.point_sets:
             try:
-                ps.get_z_values_from_geotiff(dtm_path)
+                ps.get_z_values_from_geotiff(fname)
             except IndexError:
                 if verbose:
                     print("Point outside geotiff, drop")
