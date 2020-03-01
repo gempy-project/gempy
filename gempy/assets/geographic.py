@@ -10,6 +10,7 @@ try:
     from osgeo import ogr, osr
     import pyproj
     import gdal
+    import affine
 
     gdal_installed = True
 except ModuleNotFoundError:
@@ -44,6 +45,7 @@ class GeographicPoint(object):
         """
         self.x = x
         self.y = y
+        self.z = np.nan
         self.type = kwds.get("type", "nongeo")
         if len(z) == 1:
             self.z = z[0]
@@ -56,7 +58,7 @@ class GeographicPoint(object):
             self.zone = int(np.floor(np.mod((self.x + 180) / 6, 60)) + 1)
 
     def __repr__(self):
-        if hasattr(self, 'z'):
+        if not np.isnan(self.z):
             return "p(%f, %f, %f) in %s" % (self.x, self.y, self.z, self.type)
         else:
             return "p(%f, %f) in %s" % (self.x, self.y, self.type)
@@ -130,6 +132,17 @@ class GeographicPoint(object):
     def as_array(self):
         """Return point values as np.array([x,y])"""
         return np.array([self.x, self.y])
+
+    def get_elevation_from_geotiff(self, geotiff_file):
+        """Get elevation/ z-value from specified GeoTiff file
+
+        Value is then stored in self.z
+
+        Args:
+            geotiff_file: file with corresponding GeoTiff
+        """
+        data_source = gdal.Open(geotiff_file)
+        self.z = get_pixel_values(self.as_array(), data_source)
 
 
 class GeographicPointSet(object):
@@ -513,3 +526,36 @@ class KmlPoints(object):
             for ps in self.point_sets:
                 ps.utm_to_latlong()
             self.type = 'latlong'
+
+
+def get_pixel_values(geo_coords, data_source, **kwds):
+    """Get pixel values of GeoTiff at defined coordinate locations"""
+
+    raster_band = kwds.get('raster_band', 1)
+
+    # check if only one point, then: add dimension for subsequent functions to work
+    if len(geo_coords.shape) == 1:
+        geo_coords = geo_coords[np.newaxis, :]
+
+    print(geo_coords)
+
+    x, y = geo_coords[:, 0], geo_coords[:, 1]
+
+    # determine geographic transformations
+    forward_transform = \
+        affine.Affine.from_gdal(*data_source.GetGeoTransform())
+    reverse_transform = ~forward_transform
+    px, py = reverse_transform * (x, y)
+
+    # get pixel values for point locations and combine in one array
+    px, py = np.floor(px + 0.5), np.floor(py + 0.5)
+    pixel_coord = np.vstack([px, py]).transpose().astype('int32')
+
+    # read raster data
+    data_array = np.array(data_source.GetRasterBand(raster_band).ReadAsArray())
+
+    # get raster values
+    raster_vals = data_array[pixel_coord[:, 0], pixel_coord[:, 1]]
+
+    return raster_vals
+

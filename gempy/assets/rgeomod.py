@@ -57,7 +57,10 @@ def extract_xyz(k):
         for j, p in enumerate(ps.points):
             x.append(p.x)
             y.append(p.y)
-            z.append(p.z)
+            try:
+                z.append(p.z)
+            except AttributeError:
+                z.append(-9999)
 
     return np.array([x, y, z])
 
@@ -192,9 +195,12 @@ def fit_planes_to_points(ks, verbose=True):
         sleep(0.3)
         for ps in k.point_sets:
             # convert LatLon coordinates to UTM
-            ps.latlong_to_utm()
-            # Fit plane to point set
-            ps.plane_fit()
+            try:
+                ps.latlong_to_utm()
+                # Fit plane to point set
+                ps.plane_fit()
+            except AttributeError:
+                print("Point set is NoneType - ignored")
 
     if verbose:
         print("Planes successfully fit to point sets.")
@@ -512,3 +518,8 @@ def gempy_export_fol_to_kml(fp, geo_data,
 
     with open(fp, 'w') as file:
         file.write("".join(template))
+
+
+if __name__ == '__main__':
+    print(test)
+
