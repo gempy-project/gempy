@@ -129,7 +129,7 @@ def dips_to_gempy_fol(dips, dip_dirs, xs, ys, zs, formation, formation_number, s
     return foliations
 
 
-def read_kml_files(folder_path, verbose=True):
+def read_kml_files(folder_path, verbose=False):
     """Reads in all .kml files from given folder, creating a KmlPoints instance for each
     file found.
     Filename convention:
@@ -227,6 +227,9 @@ def calc_dips_from_points(ks, ks_bool):
 
     for k in np.array(ks)[ks_bool]:
         for ps in k.point_sets:
+            print(ps.normal)
+            if type(ps.normal) == float and np.isnan(ps.normal):
+                continue
             # determine dip angle from normal vector of plane
             dips.append(dip(ps.normal))
             # get dip direction from normal vector

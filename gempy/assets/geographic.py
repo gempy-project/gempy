@@ -19,6 +19,7 @@ except ModuleNotFoundError:
     gdal_installed = False
 
 import numpy as np
+from numpy.linalg import svd, LinAlgError
 
 
 class GeographicPoint(object):
@@ -189,8 +190,8 @@ class GeographicPointSet(object):
 
     def as_array(self):
         """Return points as np.array([x,y])"""
-        point_array = np.empty((len(self.points),2))
-        for i,p in enumerate(self.points):
+        point_array = np.empty((len(self.points), 2))
+        for i, p in enumerate(self.points):
             point_array[i, :] = p.as_array()[:]
 
         return point_array
@@ -252,7 +253,6 @@ class GeographicPointSet(object):
             points[1, i] = point.y
             points[2, i] = point.z
 
-        from numpy.linalg import svd
         points = np.reshape(points, (np.shape(points)[0], -1))  # Collapse trialing dimensions
         assert points.shape[0] <= points.shape[1], "There are only {} points in {} dimensions.".format(points.shape[1],
                                                                                                        points.shape[0])
@@ -260,11 +260,15 @@ class GeographicPointSet(object):
         x = points - ctr[:, np.newaxis]
         m = np.dot(x, x.T)  # Could also use np.cov(x) here.
 
-        self.ctr = GeographicPoint(ctr[0], ctr[1], ctr[2], type='utm', zone=self.points[0].zone)
-        self.normal = svd(m)[0][:, -1]
-        # return ctr, svd(M)[0][:, -1]
-        if self.normal[2] < 0:
-            self.normal = - self.normal
+        try:
+            self.normal = svd(m)[0][:, -1]
+            self.ctr = GeographicPoint(ctr[0], ctr[1], ctr[2], type='utm', zone=self.points[0].zone)
+            # return ctr, svd(M)[0][:, -1]
+            if self.normal[2] < 0:
+                self.normal = - self.normal
+
+        except LinAlgError:
+            print("Problem with point set in SVD - ignore")
 
     def get_orientation(self):
         """Get orientation (dip_direction, dip) for points in all point set"""
@@ -412,7 +416,7 @@ class KmlPoints(object):
                 ps = GeographicPointSet()
                 if geom is not None:
                     for i in range(0, geom.GetPointCount()):
-                        print (geom.GetPoint(i))
+                        print(geom.GetPoint(i))
                         point = GeographicPoint(x=geom.GetPoint(i)[0],
                                                 y=geom.GetPoint(i)[1],
                                                 type='latlong')
