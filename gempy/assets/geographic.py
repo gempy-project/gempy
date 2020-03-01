@@ -49,13 +49,16 @@ class GeographicPoint(object):
         self.type = kwds.get("type", "nongeo")
         if len(z) == 1:
             self.z = z[0]
-        if 'zone' in kwds:
-            self.zone = kwds['zone']
-        if 'type' in kwds and kwds['type'] == 'utm' and 'zone' not in kwds:
+
+        self.zone = kwds.get("zone", np.nan)
+        # check if zone given, in case of utm projcetion:
+
+        if self.type == 'utm' and np.isnan(self.zone):
             raise AttributeError("Please provide utm zone")
+
         # for the case that self.type == 'latlong': determine UTM zone:
-        if self.type == 'latlong':
-            self.zone = int(np.floor(np.mod((self.x + 180) / 6, 60)) + 1)
+        # if self.type == 'latlong':
+        #     self.zone = int(np.floor(np.mod((self.x + 180) / 6, 60)) + 1)
 
     def __repr__(self):
         if not np.isnan(self.z):
@@ -77,7 +80,7 @@ class GeographicPoint(object):
         # Note: works in most cases (except extreme North and South)
         # For generality, keep option to add zone manually!
 
-        if hasattr(self, 'utm'):
+        if not np.isnan(self.zone):
             zone = self.zone
         else:
             zone = np.int((np.mod(np.floor((self.x + 180)/6), 60))) + 1
@@ -167,21 +170,21 @@ class GeographicPointSet(object):
         """
         self.points = []
         self.type = kwds.get('type', 'latlong')
-        self.normal = None
-        self.ctr = None
-        self.dip_direction = None
-        self.dip = None
-        self.min = None
-        self.max = None
+        self.normal = np.nan
+        self.ctr = np.nan
+        self.dip_direction = np.nan
+        self.dip = np.nan
+        self.min = np.nan
+        self.max = np.nan
 
     def __repr__(self):
         """Print out information about point set"""
         out_str = "Point set with %d points" % len(self.points)
         out_str += "; " + self.type
-        if hasattr(self, 'ctr') and self.ctr is not None:
+        if not np.isnan(self.ctr):
             out_str += "; Centroid: at (%.2f, %.2f, %.2f)" % (self.ctr.x, self.ctr.y, self.ctr.z)
 
-        if hasattr(self, 'dip') and self.dip is not None:
+        if not np.isnan(self.dip):
             out_str += "; Orientation: (%03d/%02d)" % (self.dip_direction, self.dip)
         return out_str
 
@@ -203,7 +206,7 @@ class GeographicPointSet(object):
                 point.latlong_to_utm()
             self.type = 'utm'
         # convert plane centroid, if already calculated:
-        if hasattr(self, 'ctr') and self.ctr is not None:
+        if not np.isnan(self.ctr):
             self.ctr.latlong_to_utm()
 
     def utm_to_latlong(self):
@@ -213,7 +216,7 @@ class GeographicPointSet(object):
                 point.utm_to_latlong()
             self.type = 'latlong'
         # convert plane centroid, if already calculated:
-        if hasattr(self, 'ctr'):
+        if not np.isnan(self.ctr):
             self.ctr.utm_to_latlong()
 
     def get_z_values_from_geotiff(self, fname):
