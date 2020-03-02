@@ -37,4 +37,4 @@ def test_gravity():
     gp.compute_model(geo_model, set_solutions=True, compute_mesh=False)
     print(geo_model.solutions.fw_gravity)
     np.testing.assert_almost_equal(geo_model.solutions.fw_gravity,
-                                   np.array([-9.2919]), decimal=4)
+                                   np.array([-9291.8003]), decimal=4)
