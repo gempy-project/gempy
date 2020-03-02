@@ -100,14 +100,4 @@ All contributed code must include test code in the pull request.
 ### Pull Requests
 
 All contributions are made via pull requests (PR's) to the master branch. 
-You must complete the PR checklist before we will review the PR and consider merging your contribution.
-
-The essentials of the PR checklist are:
-
-- [ ] My code follows the PEP8 style guidelines.
-- [ ] My code uses type hinting for function and method arguments and return values.
-- [ ] My code contains descriptive and helpful docstrings 
-which are formatted per the [Google Python Style Guidelines](http://google.github.io/styleguide/pyguide.html).
-- [ ] I have created tests which entirely cover my code.
-- [ ] The test code either 1. demonstrates at least one valuable use case (e.g. integration tests) or 2. verifies that outputs are as  expected for given inputs (e.g. unit tests).
-- [ ] New and existing tests pass locally with my changes.
+You must complete the checklist in the [PR template](https://github.com/cgre-aachen/gempy/blob/master/.github/PULL_REQUEST_TEMPLATE.md) before we will review the PR and consider merging your contribution.
