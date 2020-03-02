@@ -231,26 +231,45 @@ def write_material_data(ka_red=255.0, ka_green=255.0, ka_blue=255.0, ka_texture_
     return block_bytes
 
 
-def geo_model_to_res(geo_model, path='./gempy_rex'):
+# TODO Move to utils
+def hex_to_rgb(hex):
+    hex = hex.lstrip('#')
+    hlen = len(hex)
+    return tuple(int(hex[i:i + hlen // 3], 16) for i in range(0, hlen, hlen // 3))
+
+
+def geo_model_to_rex(geo_model, path='./gempy_rex'):
 
     mesh_header_size = 128
     file_header_size = 86
     e = 0
 
+    for idx, surface_vals in geo_model.surfaces.df.iterrows():
+        ver = surface_vals['vertices']
 
+        # TODO: Remove this when the shader is fixed: Duplicate the number of triangles to fix the normals
 
-    for ver, tri in zip(geo_model.solutions.vertices, geo_model.solutions.edges):
+        tri = surface_vals['edges']
+        if tri is np.nan:
+            break
 
-        colors = np.zeros_like(ver)
-        colors[:, e] = 255
+        col = surface_vals['color']
+
+        ver = np.tile(ver, (2, 1))
+        colors = (np.zeros_like(ver) + hex_to_rgb(col)).astype('float32')
 
         ver_ = np.copy(ver)
         ver_[:, 2] = ver[:, 1]
         ver_[:, 1] = ver[:, 2]
 
-        tri_ = np.copy(tri)
-        tri_[:, 2] = tri[:, 1]
-        tri_[:, 1] = tri[:, 2]
+        tri_ = np.copy(np.tile(tri, (2, 1)))
+        # One side of the normals
+        tri_[:tri.shape[0], 2] = tri[:, 1]
+        tri_[:tri.shape[0], 1] = tri[:, 2]
+
+        # second side of the normal
+        #tri_[tri.shape[0]:, 2] = tri[:, 1]
+        #tri_[tri.shape[0]:, 1] = tri[:, 2]
 
         ver_ravel, tri_ravel, n_vtx_coord, n_triangles = mesh_preprocess(ver_, tri_)
         mesh_block_size_no_data_block_header = (2 * n_vtx_coord + n_triangles) * 4 + mesh_header_size

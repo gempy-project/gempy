@@ -67,6 +67,6 @@ class TestGemPyToREX:
         if False:
             gtr.write_file(all_bytes, './rexfiles/one_mesh_test')
 
-    def TEST_geo_model_to_rex(self, geo_model):
+    def test_geo_model_to_rex(self, geo_model):
 
-        gtr.geo_model_to_res(geo_model, path='./rexfiles/gtr_test')
+        gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_test')
