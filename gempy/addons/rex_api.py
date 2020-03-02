@@ -107,7 +107,8 @@ class RexAPI:
         }
 
         data = json.dumps({"project" : self.project_link,
-                           "name" : "root reference",
+                           "name" : "file ressource reference",
+                           "rootReference" : "false",  #setting root reference to false
                            "parentReference" : self.root_reference_link})
 
         self.response = requests.post('https://rex.robotic-eyes.com/api/v2/rexReferences', headers=headers, data=data)
@@ -129,6 +130,7 @@ class RexAPI:
         data = json.dumps({"project" : self.project_link,
                            "name" : self.project_name,
                            "type" : "rex",
+
                            "rexReference" : self.file_reference_link
                            })
 
@@ -174,7 +176,7 @@ class RexAPI:
         you can invert the color by setting inverse=True, this is necessary if you run it in a jupyter notebook
         after creation, you can save the rextag as svg using the rextag.svg method:
         self.rextag.svg("project_name", scale=8)
-        
+
         Args:
             reverse: (boolean) inverts background and foreground color in the terminal output
 
@@ -226,9 +228,10 @@ class RexAPI:
         timestamp = datetime.datetime.now()
         self.create_project(str(timestamp))
         self.create_root_reference()
+        self.create_file_ressource_reference()
 
         for file in infiles:
-            self.create_file_ressource_reference()
+
             self.create_project_file(file)
             self.upload_rexfile(file)
 
