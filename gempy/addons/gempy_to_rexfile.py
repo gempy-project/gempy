@@ -116,7 +116,6 @@ def write_data_block_header(size_data, data_id = 1, data_type=3, version_data=1)
     return block_bytes
 
 
-
 def write_mesh_header(n_vtx_coord,  n_triangles,
                       start_vtx_coord, start_nor_coord, start_tex_coord, start_vtx_colors, start_triangles,
                       name, material_id=1,  # material_id=9223372036854775807
@@ -209,11 +208,11 @@ def write_file(bytes, path: str):
     return True
 
 
-def write_material_data(ka_red=255.0, ka_green=255.0, ka_blue=255.0, ka_texture_ID=9223372036854775807,  # ambient
-                        ks_red=255.0, ks_green=255.0, ks_blue=255.0, ks_texture_ID=9223372036854775807,  # specular
-                        kd_red=255.0, kd_green=255.0, kd_blue=255.0, kd_texture_ID=9223372036854775807,  # diffuse
+def write_material_data(ka_red=255.0/255, ka_green=255.0/255, ka_blue=255.0/255, ka_texture_ID=9223372036854775807,  # ambient
+                        ks_red=255.0/255, ks_green=255.0/255, ks_blue=255.0/255, ks_texture_ID=9223372036854775807,  # specular
+                        kd_red=255.0/255, kd_green=255.0/255, kd_blue=255.0/255, kd_texture_ID=9223372036854775807,  # diffuse
                         ns=0.1,  #specular exponent
-                        alpha=0.5  #opacity
+                        alpha=1  #opacity
                         ):
     """
     writes a standard material definition block
@@ -256,27 +255,31 @@ def geo_model_to_rex(geo_model, path='./gempy_rex'):
         col = surface_vals['color']
 
         ver = np.tile(ver, (2, 1))
-        colors = (np.zeros_like(ver) + hex_to_rgb(col)).astype('float32')
+        colors = (np.zeros_like(ver) + hex_to_rgb(col))/255
 
         ver_ = np.copy(ver)
         ver_[:, 2] = ver[:, 1]
         ver_[:, 1] = ver[:, 2]
 
         tri_ = np.copy(np.tile(tri, (2, 1)))
+        # tri_ = np.copy(tri)
         # One side of the normals
-        tri_[:tri.shape[0], 2] = tri[:, 1]
-        tri_[:tri.shape[0], 1] = tri[:, 2]
+        tri_[tri.shape[0]:, 2] = tri[:, 0]
+        tri_[tri.shape[0]:, 0] = tri[:, 2]
 
         # second side of the normal
         #tri_[tri.shape[0]:, 2] = tri[:, 1]
         #tri_[tri.shape[0]:, 1] = tri[:, 2]
 
         ver_ravel, tri_ravel, n_vtx_coord, n_triangles = mesh_preprocess(ver_, tri_)
-        mesh_block_size_no_data_block_header = (2 * n_vtx_coord + n_triangles) * 4 + mesh_header_size
+        mesh_block_size_no_data_block_header = (2 *
+                                                n_vtx_coord + n_triangles) * 4 + mesh_header_size
         material_block_size_no_data_block_header = 68
         # Write header
         header_bytes = write_header_block(n_data_blocks=2,
-                                          size_data_blocks=mesh_block_size_no_data_block_header + rexDataBlockHeaderSize + material_block_size_no_data_block_header,
+                                          size_data_blocks=mesh_block_size_no_data_block_header +
+                                                           rexDataBlockHeaderSize +
+                                                           material_block_size_no_data_block_header,
                                           start_data=file_header_size)
 
         # Write data block
@@ -289,10 +292,12 @@ def geo_model_to_rex(geo_model, path='./gempy_rex'):
                                               start_nor_coord=mesh_header_size + n_vtx_coord * 4,
                                               start_tex_coord=mesh_header_size + n_vtx_coord * 4,
                                               start_vtx_colors=mesh_header_size + n_vtx_coord * 4,
-                                              start_triangles=mesh_header_size + 2 * (n_vtx_coord * 4),
+                                              start_triangles=mesh_header_size + 2 *
+                                                              (n_vtx_coord * 4),
                                               name='test_a', material_id=0)
 
-        mesh_block_bytes = write_mesh_coordinates(ver_ravel, tri_ravel, colors=colors.ravel())
+        mesh_block_bytes = write_mesh_coordinates(ver_ravel, tri_ravel, colors=colors.ravel()
+                                                  )
 
         material_header_bytes = write_data_block_header(data_type=5, version_data=1, size_data=68, data_id=0)
         material_bytes = write_material_data()
