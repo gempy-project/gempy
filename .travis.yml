@@ -21,7 +21,7 @@ script:
 
   - pytest -v notebooks/integrations/ --nbval-lax --ignore-glob='*discret*'
   - pytest -v notebooks/examples/ --nbval-lax --current-env --ignore-glob='*pography*' --ignore-glob='*lesmodel*' --ignore-glob='*Course*'
-  - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='ch1-6*' --ignore-glob='ch1-7*' --ignore-glob='ch1-10*'
+  - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='ch1-6*' --ignore-glob='ch1-7*' --ignore-glob='ch1-10*' --ignore-glob='ch1-10_3D_Visualization'
   - pytest
 
 sudo: required
