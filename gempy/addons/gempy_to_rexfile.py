@@ -254,6 +254,8 @@ def geo_model_to_rex(geo_model, path='./gempy_rex'):
 
         col = surface_vals['color']
 
+        n_vertices = ver.shape[0]
+
         ver = np.tile(ver, (2, 1))
         colors = (np.zeros_like(ver) + hex_to_rgb(col))/255
 
@@ -261,11 +263,13 @@ def geo_model_to_rex(geo_model, path='./gempy_rex'):
         ver_[:, 2] = ver[:, 1]
         ver_[:, 1] = ver[:, 2]
 
-        tri_ = np.copy(np.tile(tri, (2, 1)))
+        #tri_ = np.copy(np.tile(tri, (2, 1)))
+        tri_ = np.copy(np.vstack((tri, tri+n_vertices)))
+
         # tri_ = np.copy(tri)
         # One side of the normals
-        tri_[tri.shape[0]:, 2] = tri[:, 0]
-        tri_[tri.shape[0]:, 0] = tri[:, 2]
+        tri_[tri.shape[0]:, 2] = tri[:, 1]
+        tri_[tri.shape[0]:, 1] = tri[:, 2]
 
         # second side of the normal
         #tri_[tri.shape[0]:, 2] = tri[:, 1]
