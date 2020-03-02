@@ -38,7 +38,7 @@ or anything that you think should be in the repository.
 
 Contributions should address an open issue (either a bug or a feature request).
 If you have found a new bug 
-or havehttps://www.python.org/dev/peps/pep-0008/ an idea or a new feature, 
+or have an idea or a new feature, 
 then please [open the issue](https://github.com/cgre-aachen/gempy/issues/new/choose) 
 for discussion and link to that issue in your pull request.
 
