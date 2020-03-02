@@ -26,11 +26,11 @@ A clear and concise description of what you expected to happen.
 If applicable, add screenshots to help explain your problem.
 
 **Desktop (please complete the following information):**
-- OS: [e.g. iOS]
-- GemPy Version
-    - if installed via pip: provide GemPy version [e.g. 2.0.1]
-    - if cloned from GitHub: provide Git commit id [e.g. 839bf85f]
-- Jupyter Version (if applicable)
+* OS: (e.g. iOS)
+* GemPy Version
+    * if installed via pip: provide GemPy version (e.g. 2.0.1)
+    * if cloned from GitHub: provide Git commit id (e.g. 839bf85f)
+* Jupyter Version (if applicable)
 
 **Additional context**
 Add any other context about the problem here.
