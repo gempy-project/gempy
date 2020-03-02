@@ -9,5 +9,8 @@ Relates to <issue>
 values.
 - [ ] My code contains descriptive and helpful docstrings which are formatted 
 according to the Google Python Style Guidelines.
-- [ ] I have created tests for my code.
+- [ ] I have created tests which entirely cover my code.
+- [ ] The test code either 1. demonstrates at least one valuable use case (e.g. integration tests) 
+or 2. verifies that outputs are as expected for given inputs (e.g. unit tests).
 - [ ] New and existing tests pass locally with my changes.
+ 
