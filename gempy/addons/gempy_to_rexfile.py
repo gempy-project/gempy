@@ -334,7 +334,7 @@ def geo_model_to_rex(geo_model, path='./gempy_rex'):
 
         file_name = path+str(e)
         write_file(all_bytes, file_name)
-        file_names.append(file_name)
+        file_names.append(file_name+'.rex')
         e += 1
 
     return file_names

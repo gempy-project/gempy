@@ -72,4 +72,6 @@ class TestGemPyToREX:
 
         gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_test')
 
-
+    def test_upload_to_rexos(self, geo_model):
+        file_names = gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_test')
+        rex_api.RexAPI().upload_rexfiles(file_names)
