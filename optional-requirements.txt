@@ -6,3 +6,4 @@ qgrid
 pymc3
 pyvolume
 pyevtk
+pyqrcode

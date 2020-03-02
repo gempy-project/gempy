@@ -6,6 +6,7 @@ sys.path.append("../..")
 import gempy
 import matplotlib.pyplot as plt
 from gempy.addons import gempy_to_rexfile as gtr
+from gempy.addons import rex_api
 
 input_path = os.path.dirname(__file__)+'/../input_data'
 
@@ -67,6 +68,10 @@ class TestGemPyToREX:
         if False:
             gtr.write_file(all_bytes, './rexfiles/one_mesh_test')
 
-    def TEST_geo_model_to_rex(self, geo_model):
+    def test_geo_model_to_rex(self, geo_model):
 
-        gtr.geo_model_to_res(geo_model, path='./rexfiles/gtr_test')
+        gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_test')
+
+    def test_upload_to_rexos(self, geo_model):
+        file_names = gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_test')
+        rex_api.RexAPI().upload_rexfiles(file_names)
