@@ -12,7 +12,7 @@ from matplotlib import rcParams
 # print rcParams
 rcParams['font.size'] = 15
 # determine path of repository to set paths corretly below
-repo_path = os.path.realpath('../..')
+repo_path = os.path.realpath('../../..')
 import gempy as gp
 import pynoddy
 

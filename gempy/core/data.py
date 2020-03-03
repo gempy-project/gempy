@@ -95,7 +95,6 @@ class Grid(object):
         self.custom_grid_grid_active = False
         self.topography = None
         self.topography_grid_active = False
-        self.sections = grid_types.Sections()
         self.sections_grid_active = False
         self.centered_grid = None
         self.centered_grid_active = False
@@ -103,6 +102,10 @@ class Grid(object):
         # Init basic grid empty
         self.regular_grid = self.create_regular_grid(set_active=False, **kwargs)
         self.regular_grid_active = False
+
+        # Init optional sections
+        self.sections = grid_types.Sections(regular_grid=self.regular_grid)
+
         self.update_grid_values()
 
     def __str__(self):
@@ -818,9 +821,9 @@ class Surfaces(object):
     def __init__(self, series: Series, surface_names=None, values_array=None, properties_names=None):
 
         self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'isFault', 'isActive','color',
-                         'vertices', 'edges', 'id']
+                         'vertices', 'edges', 'sfai', 'id']
 
-        self._columns_vis_drop = ['vertices', 'edges', 'isBasement', 'isFault']
+        self._columns_vis_drop = ['vertices', 'edges', 'sfai', 'isBasement', 'isFault']
         self._n_properties = len(self._columns) - 1
         self.series = series
         self.colors = Colors(self)
@@ -1608,6 +1611,8 @@ class SurfacePoints(GeometricData):
         See Also:
             :meth:`GeometricData.read_data`
         """
+        # TODO read by default either formation or surface
+
         if 'sep' not in kwargs:
             kwargs['sep'] = ','
 

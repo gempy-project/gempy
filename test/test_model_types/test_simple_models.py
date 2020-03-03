@@ -1,12 +1,10 @@
 import pytest
 
-import theano
 import numpy as np
 import sys, os
 sys.path.append("../..")
 import gempy
 import matplotlib.pyplot as plt
-import pdb
 
 
 input_path = os.path.dirname(__file__)+'/../input_data'
@@ -173,7 +171,7 @@ class TestFaults:
         # We only compare the block because the absolute pot field I changed it
         np.testing.assert_array_almost_equal(np.round(sol.lith_block[test_values]), real_sol, decimal=0)
 
-    def test_f(self, interpolator):
+    def test_f_sort_surfaces(self, interpolator):
         """
         Two layers a bit curvy, 1 fault. Checked with geomodeller
         """
@@ -189,20 +187,19 @@ class TestFaults:
                                                'SecondaryReservoir',
                                                'NonReservoirDeep'
                                                ),
-                                   },
+                                    },
                        )
 
         geo_data.set_theano_function(interpolator)
         geo_data.set_is_fault('fault1')
 
         # Compute model
-        sol = gempy.compute_model(geo_data)
+        sol = gempy.compute_model(geo_data, sort_surfaces=True)
 
         if update_sol:
             np.save(input_path + '/test_f_sol.npy', sol.lith_block[test_values])
 
         real_sol = np.load(input_path + '/test_f_sol.npy')
-
         gempy.plot.plot_section(geo_data, 25, direction='y', show_data=True)
 
         plt.savefig(os.path.dirname(__file__)+'/../figs/test_f.png', dpi=200)

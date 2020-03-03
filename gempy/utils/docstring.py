@@ -5,13 +5,19 @@ coord = '2D numpy array where axis 1 is the XYZ coordinates while axis 0 is n nu
 coord_ori = coord + 'Notice that orientations may be place anywhere in the 3D space.'
 
 pole_vector = '2D numpy array where axis 1 is the gradient values G_x, G_y, G_z of the pole while axis 0 is n number of' \
-              'orientations.'
+              ' orientations.'
 
 orientations = '2D numpy array where axis 1 is are orientation values [dip, azimuth, polarity] of the pole while axis 0' \
-               ' is n number of orientations.'
+               ' is n number of orientations. --- ' \
+               '*Dip* is the inclination angle of 0 to 90 degrees measured from the horizontal plane downwards. ' \
+               '*Azimuth* is the dip direction defined by a 360 degrees clockwise rotation, i.e. 0 = North,' \
+               ' 90 = East, 180 = South, and 270 = West.' \
+               '*Polarity* defines where the upper (geologically younger) side of the orientation plane ' \
+               'is and can be declared to be either normal (1) or reversed (-1).' \
+               'The orientation plane is perpendicular to the gradient.'
 
 surface_sp = 'list with the surface names for each input point. They must exist in the surfaces ' \
-             'object linked to SurfacePoints '
+             'object linked to SurfacePoints.'
 
 x = 'values or list of values for the x coordinates'
 y = 'values or list of values for the y coordinates'
