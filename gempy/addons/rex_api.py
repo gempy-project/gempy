@@ -9,30 +9,31 @@ package_directory = os.path.dirname(os.path.abspath(__file__))
 
 class RexAPI:
 
-    def __init__(self):
-        self.api_key = None
-        self.token_ID = None
-        self.secret = None
-        self.owner = None
-        self.access_token = None
-        self.project_name = None
-        self.project_urn = None
-        self.project_link = None
-        self.project_reference = None
-        self.root_reference_link = None
-        self.root_reference_key = None
-        self.file_reference_link = None
+    def __init__(self, project_name):
+        self.response = None  # saves the most current server response
+
+        self.token_ID, self.secret = self.read_credentials()
+        self.access_token = self.authorize_session()
+        self.owner = self.get_user_information()
+        self.project_name = project_name
+        self.project_urn, self.project_link = self.create_project(self.project_name)
+        self.root_reference_link, self.root_reference_key = self.create_root_reference()
+        self.file_reference_link = self.create_file_resource_reference()
+
         self.project_file_urn = None
         self.project_file_uplink = None
-        self.rextag_url = None
+        self.project_reference = None
+
         self.rextag = None
 
-        self.response = None  # saves the most current server response for debugging
+
 
     def read_credentials(self, filename = os.path.join(package_directory, 'RexCloud_Api_key.txt')):
-        with open(filename, "r") as file:
-            self.token_ID = file.readline().strip('\n')
-            self.secret = file.readline().strip('\n')
+        with open(filename, "r") as credential_file:
+            token_id = credential_file.readline().strip('\n')
+            secret = credential_file.readline().strip('\n')
+
+        return token_id, secret
 
     def authorize_session(self):
 
@@ -45,20 +46,22 @@ class RexAPI:
                                       headers=headers, data=data, auth=(self.token_ID, self.secret)
                                       )
         if self.response.status_code == 200:
-            self.access_token = self.response.json()['access_token']
+            access_token = self.response.json()['access_token']
+            return access_token
 
         else:
-            print("something went wrong! Status code: "+str (self.response.status_code))
+            print("something went wrong! Status code: "+str(self.response.status_code))
 
     def get_user_information(self):
         headers = {'Authorization': 'Bearer ' + self.access_token, 'Accept': 'application/json;charset=UTF-8'}
         self.response = requests.get('https://rex.robotic-eyes.com/api/v2/users/current', headers=headers)
 
         if self.response.status_code == 200:
-            self.owner = self.response.json()['userId']
+            owner = self.response.json()['userId']
+            return owner
 
         else:
-            print("something went wrong! Status code: "+str (self.response.status_code))
+            print("something went wrong! Status code: "+str(self.response.status_code))
 
     def create_project(self, project_name):
         headers = {
@@ -72,8 +75,10 @@ class RexAPI:
         self.response = requests.post('https://rex.robotic-eyes.com/api/v2/projects', headers=headers, data=data)
 
         if self.response.status_code == 201:
-            self.project_urn = self.response.json()['urn']
-            self.project_link = self.response.json()['_links']['self']['href']
+            project_urn = self.response.json()['urn']
+            project_link = self.response.json()['_links']['self']['href']
+
+            return project_urn, project_link
 
         else:
             print("something went wrong! Status code: " + str(self.response.status_code))
@@ -93,13 +98,15 @@ class RexAPI:
 
         self.response = requests.post('https://rex.robotic-eyes.com/api/v2/rexReferences', headers=headers, data=data)
         if self.response.status_code == 201:
-            self.root_reference_link = self.response.json()['_links']['self']['href']
-            self.root_reference_key = self.response.json()['key']
+            root_reference_link = self.response.json()['_links']['self']['href']
+            root_reference_key = self.response.json()['key']
+
+            return root_reference_link, root_reference_key
 
         else:
             print("something went wrong! Status code: " + str(self.response.status_code))
 
-    def create_file_ressource_reference(self):
+    def create_file_resource_reference(self):
         headers = {
             'Authorization': 'Bearer ' + self.access_token,
             'Accept': 'application/json;charset=UTF-8',
@@ -113,13 +120,14 @@ class RexAPI:
 
         self.response = requests.post('https://rex.robotic-eyes.com/api/v2/rexReferences', headers=headers, data=data)
         if self.response.status_code == 201:
-            self.file_reference_link = self.response.json()['_links']['self']['href']
+            file_reference_link = self.response.json()['_links']['self']['href']
+
+            return file_reference_link
 
         else:
             print("something went wrong! Status code: " + str(self.response.status_code))
 
     def create_project_file(self, projectname):
-        self.project_name = projectname
         headers = {
             'Authorization':'Bearer ' + self.access_token,
             'Accept': 'application/json;charset=UTF-8',
@@ -127,7 +135,7 @@ class RexAPI:
                  }
 
         data = json.dumps({"project" : self.project_link,
-                           "name" : self.project_name,
+                           "name" : projectname,
                            "type" : "rex",
 
                            "rexReference" : self.file_reference_link
@@ -140,8 +148,12 @@ class RexAPI:
             self.project_file_uplink = self.response.json()['_links']['file.upload']['href']
             self.project_reference = self.response.json()['rexReferenceKey']
 
+            return True
+
         else:
             print("something went wrong! Status code: " + str(self.response.status_code))
+
+            return False
 
     def upload_rexfile(self, filename):
 
@@ -159,16 +171,25 @@ class RexAPI:
         self.response = requests.post(self.project_file_uplink,
                                  headers=headers, files=file)
 
-    def get_project_files(self):
+    def return_rextag(self):
+        self.rextag = Rextag(self.project_reference)
 
-        headers = {
-            'Authorization': 'Bearer ' + self.access_token,
-            'Accept': 'application/json;charset=UTF-8'
-            }
+        return self.rextag
 
-        self.response = requests.get(self.project_link + '/projectFiles', headers=headers)
 
-    def show_tag(self, reverse=True):
+class Rextag:
+
+    def __init__(self, project_reference):
+        self.rextag_url, self.rextag = self.create_rextag(project_reference)
+
+    def create_rextag(self, project_reference):
+
+        base_url = "https://rex.codes/v1/"
+        rextag_url = base_url+project_reference
+        rextag = qr.create(rextag_url)
+        return rextag_url, rextag
+
+    def display_tag(self, reverse=True):
         """
         displays the rextag to the terminal standard output as ascii.
 
@@ -183,56 +204,60 @@ class RexAPI:
 
         """
 
-        base_url = "https://rex.codes/v1/"
-        self.rextag_url = base_url+self.project_reference
-        self.rextag = qr.create(self.rextag_url)
-
         if reverse:
             print(self.rextag.terminal(module_color="reverse", background="default", quiet_zone=1))
 
         else:
             print(self.rextag.terminal(quiet_zone=1))
 
-    def upload_rexfiles(self, infiles : list):
-        """
-        wrapper around api calls to upload rexfiles of a gempy model.
+        return True
 
-        you will need to register an account under https://app.rexos.cloud/ .
-        create an api key and store the key and secret in RexCloud_Api_key.txt.
-
-        the function will take a list of rexos input filenames and uploads them into a newly created project.
-
-        an ar code is plotted that can be scanned with the rexview app to show the model in vr.
-        the qr code is plotted in ascii to the standard output, if the qr code is not crecognizable,
-         try to revert the colors o0f the terminal output by setting reverse=False in thew show_tag() Method.
-
-        all api calls are python implementation of the Rex os api:
-        https://www.rexos.org/rex-api/#tutorial-rex-project-before-you-begin
+    def save_svg(self, filename):
+        self.rextag.svg(filename, scale=8)
+        #self.rextag.eps(self.project_name, scale=2)
 
 
-        Args:
-            infiles: List of rexos file names
 
-        Returns:
+def upload_to_rexcloud(infiles : list, project_name = None  ):
+    """
+    wrapper around api calls to upload rexfiles of a gempy model.
 
-        """
+    you will need to register an account under https://app.rexos.cloud/ .
+    create an api key and store the key and secret in RexCloud_Api_key.txt.
 
-        self.read_credentials()
-        self.authorize_session()
-        self.get_user_information()
+    the function will take a list of rexos input filenames and uploads them into a newly created project.
 
+    an ar code is plotted that can be scanned with the rexview app to show the model in vr.
+    the qr code is plotted in ascii to the standard output, if the qr code is not recognizable,
+     try to revert the colors o0f the terminal output by setting reverse=False in thew show_tag() Method.
+
+    all api calls are python implementation of the Rex os api:
+    https://www.rexos.org/rex-api/#tutorial-rex-project-before-you-begin
+
+
+    Args:
+        infiles: List of rexos file names
+        project_name: name of the project under which it appears in the rexcloud. if none is specified,
+        the current timestamp is used.
+
+    Returns:
+        A Rextag Object
+
+    """
+
+    if project_name is None:
         timestamp = datetime.datetime.now()
-        self.create_project(str(timestamp))
-        self.create_root_reference()
-        self.create_file_ressource_reference()
+        project_name = str(timestamp)
 
-        for file in infiles:
+    api=RexAPI(project_name)
 
-            self.create_project_file(file)
-            self.upload_rexfile(file)
+    for file in infiles:
 
-        #TODO: get tag, display tag
+        api.create_project_file(file)
+        api.upload_rexfile(file)
 
+    tag = api.return_rextag()
 
+    return tag
 
 
