@@ -118,7 +118,6 @@ class RexAPI:
         else:
             print("something went wrong! Status code: " + str(self.response.status_code))
 
-
     def create_project_file(self, projectname):
         self.project_name = projectname
         headers = {
@@ -187,15 +186,12 @@ class RexAPI:
         base_url = "https://rex.codes/v1/"
         self.rextag_url = base_url+self.project_reference
         self.rextag = qr.create(self.rextag_url)
-        #self.rextag.svg(self.project_name, scale=8)
-        #self.rextag.eps(self.project_name, scale=2)
 
         if reverse:
             print(self.rextag.terminal(module_color="reverse", background="default", quiet_zone=1))
 
         else:
             print(self.rextag.terminal(quiet_zone=1))
-
 
     def upload_rexfiles(self, infiles : list):
         """
