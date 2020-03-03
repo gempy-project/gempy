@@ -1,4 +1,0 @@
-REPLACE_TEXT_WITH_YOUR_API_Token
-REPLACE_TEXT_WITH_SECRE
-# put your API tokens and secrets in the lines above.
-# The key file is not tracked in git so it will not be uploaded to the repository.

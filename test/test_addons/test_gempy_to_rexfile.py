@@ -11,7 +11,8 @@ from gempy.addons import rex_api
 input_path = os.path.dirname(__file__)+'/../input_data'
 
 
-@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true", "Skipping this test on Travis CI.")
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Skipping this test on Travis CI.")
 class TestGemPyToREX:
     @pytest.fixture(scope='module')
     def geo_model(self, interpolator_islith_nofault):
@@ -69,6 +70,12 @@ class TestGemPyToREX:
         if False:
             gtr.write_file(all_bytes, './rexfiles/one_mesh_test')
 
+    def TEST_rex_cloud_api(self):
+        import datetime
+        timestamp = datetime.datetime.now()
+        project_name = str(timestamp)
+        rex_api.RexAPI(project_name)
+
     def test_geo_model_to_rex(self, geo_model):
 
         gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_test')
@@ -76,4 +83,7 @@ class TestGemPyToREX:
     def test_upload_to_rexos(self, geo_model):
         # file_names = gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_test')
         rex_api.RexAPI().upload_rexfiles(['./rexfiles/gtr_test0.rex', './rexfiles/gtr_test1.rex'])
+
+    def test_upload_to_rexcloud(self):
+        rex_api.upload_to_rexcloud(['./rexfiles/gtr_test0.rex', './rexfiles/gtr_test1.rex'], project_name=None)
 

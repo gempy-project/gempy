@@ -9,10 +9,10 @@ package_directory = os.path.dirname(os.path.abspath(__file__))
 
 class RexAPI:
 
-    def __init__(self, project_name):
+    def __init__(self, project_name, api_token=None, secret=None):
         self.response = None  # saves the most current server response
 
-        self.token_ID, self.secret = self.read_credentials()
+        self.token_ID, self.secret = self.load_credentials(api_token=api_token, secret=secret)
         self.access_token = self.authorize_session()
         self.owner = self.get_user_information()
         self.project_name = project_name
@@ -26,9 +26,28 @@ class RexAPI:
 
         self.rextag = None
 
+    def load_credentials(self, filename=os.path.join(package_directory, 'RexCloud_Api_key.txt'),
+                         api_token: str = None, secret: str =None):
 
+        if not os.path.isfile(filename) or (api_token is not None and secret is not None):
+            file = open(filename, 'w')
+            login_data = False
+            if api_token is None or secret is None:
+                login_data = True
 
-    def read_credentials(self, filename = os.path.join(package_directory, 'RexCloud_Api_key.txt')):
+            if api_token is None:
+                api_token = 'REPLACE_TEXT_WITH_YOUR_API_Token'
+            if secret is None:
+                secret = 'REPLACE_TEXT_WITH_SECRET'
+
+            file.write(api_token+'\n'+secret+'\n'+' # put your API tokens and secrets in the lines above.\n'
+                                                  ' # Do not track the file on git.')
+            file.close()
+
+            if login_data:
+                raise AttributeError('Cache key is not created. You need to pass as argument the REX api_token and secret,'
+                                     ' or adding them in RexCloud_API_key.txt')
+
         with open(filename, "r") as credential_file:
             token_id = credential_file.readline().strip('\n')
             secret = credential_file.readline().strip('\n')
@@ -215,7 +234,6 @@ class Rextag:
     def save_svg(self, filename):
         self.rextag.svg(filename, scale=8)
         #self.rextag.eps(self.project_name, scale=2)
-
 
 
 def upload_to_rexcloud(infiles : list, project_name = None  ):
