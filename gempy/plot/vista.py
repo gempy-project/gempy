@@ -26,9 +26,11 @@
 
 import warnings
 # insys.path.append("../../pyvista")
+from copy import deepcopy
 from typing import Union, Dict, List, Iterable, Set, Tuple
 
 import matplotlib.colors as mcolors
+from matplotlib import cm
 import numpy as np
 import pandas as pn
 import pyvista as pv
@@ -314,7 +316,7 @@ class Vista:
         n_edges = np.ones(sim.shape[0]) * 3
         return np.append(n_edges[:, None], sim, axis=1)
 
-    def plot_structured_grid(self, name: str, series: str = None, render_topography=True,
+    def plot_structured_grid(self, name: str, series: str = None, render_topography: bool = False,
                              **kwargs) -> list:
         """Plot a structured grid of the geomodel.
 
@@ -332,7 +334,7 @@ class Vista:
         mesh = pv.StructuredGrid(*grid_3d)
 
         if name == "lith":
-            vals = self.model.solutions.lith_block
+            vals = self.model.solutions.lith_block.copy()
             n_faults = self.model.faults.df['isFault'].sum()
             cmap = mcolors.ListedColormap(list(self._color_id_lot[n_faults:]))
             kwargs['cmap'] = kwargs.get('cmap', cmap)
@@ -340,10 +342,10 @@ class Vista:
             if series == None:
                 # default to oldest series above basement
                 series = self.model.series.df.iloc[-2].name
-            vals = self.model.solutions.scalar_field_matrix[
+            vals = self.model.solutions.scalar_field_matrix.copy()[
                 self.model.series.df.index.get_loc(series)]
         elif name == "values":
-            vals = self.model.solutions.values_matrix.T
+            vals = self.model.solutions.values_matrix.copy().T
             if vals.shape[1] == 0:
                 print("No scalar values matrix found in given geomodel.")
                 return
@@ -351,14 +353,71 @@ class Vista:
         mesh.point_arrays[name] = vals
 
         if render_topography == True:
-            mesh["lith"][regular_grid.mask_topo.T.ravel(order='F')] = -1
-            mesh = mesh.threshold(0)
+            mesh[name][regular_grid.mask_topo.T.ravel(order='F')] = -100
+            mesh = mesh.threshold(-99)
 
         if self._actor_exists(mesh):
             return []
         self._actors.append(mesh)
         self.p.add_mesh(mesh, **kwargs)
         return [mesh]
+
+
+    def plot_structured_grid_interactive(
+            self,
+            name: str,
+            render_topography: bool = False,
+            **kwargs,
+    ):
+        """Plot interactive 3-D geomodel with three cross sections in subplot.
+
+        Args:
+            geo_model: Geomodel object with solutions.
+            render_topography: Render topography. Defaults to False.
+            **kwargs:
+
+        Returns:
+            (Vista) GemPy Vista object for plotting.
+        """
+
+        mesh = self.plot_structured_grid(name=name, render_topography=render_topography, **kwargs)[0]
+
+        # Figure out which colormap to use
+        if name == "lith":
+            cmap = mcolors.ListedColormap(list(self._color_id_lot[self.model.series.faults.n_faults:]))
+        elif name == "scalar":
+            cmap = cm.viridis
+
+        def xcallback(normal, origin):
+            self.p.subplot(1)
+            self.p.add_mesh(mesh.slice(normal=normal, origin=origin), name="xslc", cmap=cmap)
+
+        def ycallback(normal, origin):
+            self.p.subplot(2)
+            self.p.add_mesh(mesh.slice(normal=normal, origin=origin), name="yslc", cmap=cmap)
+
+        def zcallback(normal, origin):
+            self.p.subplot(3)
+            self.p.add_mesh(mesh.slice(normal=normal, origin=origin), name="zslc", cmap=cmap)
+
+        self.p.subplot(0)
+        self.p.add_plane_widget(xcallback, normal="x")
+        self.p.subplot(0)
+        self.p.add_plane_widget(ycallback, normal="y")
+        self.p.subplot(0)
+        self.p.add_plane_widget(zcallback, normal="z")
+
+        # Lock other three views in place
+        self.p.subplot(1)
+        self.p.view_yz()
+        self.p.disable()
+        self.p.subplot(2)
+        self.p.view_xz()
+        self.p.disable()
+        self.p.subplot(3)
+        self.p.view_xy()
+        self.p.disable()
+
 
     def _callback_surface_points(self, pos, index, widget):
         i = index
@@ -550,8 +609,7 @@ class Vista:
 
     def plot_topography(
             self,
-            topography: Union[
-                gp.core.grid_modules.grid_types.Topography, np.ndarray] = None,
+            topography = None,
             scalars="geomap",
             **kwargs
     ):
@@ -598,4 +656,3 @@ class Vista:
         )
         self._surface_actors["topography"] = topography_actor
         return topography_actor
-

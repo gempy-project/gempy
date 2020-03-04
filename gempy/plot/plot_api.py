@@ -240,3 +240,27 @@ def plot_3d(
         gpv.plot_topography()
     gpv.show()
     return gpv
+
+
+def plot_interactive_3d(
+        geo_model,
+        name: str,
+        render_topography: bool = False,
+        **kwargs,
+) -> Vista:
+    """Plot interactive 3-D geomodel with three cross sections in subplots.
+
+    Args:
+        geo_model: Geomodel object with solutions.
+        render_topography: Render topography. Defaults to False.
+        **kwargs:
+
+    Returns:
+        (Vista) GemPy Vista object for plotting.
+    """
+    gpv = Vista(geo_model, plotter_type='background', shape="1|3")
+    gpv.set_bounds()
+    gpv.plot_structured_grid_interactive(name=name, render_topography=render_topography, **kwargs)
+
+    gpv.show()
+    return gpv
