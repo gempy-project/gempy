@@ -91,7 +91,7 @@ def test_plot_structured_grid_scalar(vista_obj):
 def test_plot_structured_grid_scalar(vista_obj):
     mesh = vista_obj.plot_structured_grid("scalar")
     shape = vista_obj.model.grid.regular_grid.values.shape[0]
-    assert mesh.points.shape[0] == shape
+    assert mesh[0].points.shape[0] == shape
 
 # def test_plot_structured_grid_values(vista_obj):
 #     vista_obj.plot_structured_grid("values")
