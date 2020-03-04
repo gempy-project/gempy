@@ -135,8 +135,13 @@ class Sections:
     def show(self):
         pass
 
-    def set_sections(self, section_dict):
+    def set_sections(self, section_dict, regular_grid=None, z_ext=None):
         self.section_dict = section_dict
+        if regular_grid is not None:
+            self.z_ext = regular_grid.extent[4:]
+        else:
+            self.z_ext = z_ext
+
         self.names = np.array(list(self.section_dict.keys()))
 
         self.get_section_params()
