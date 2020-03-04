@@ -17,7 +17,7 @@ install:
   - pip install vtk
   - pip install pyevtk
   - pip install dataclasses emg3d pyvista panel discretize
-
+  - pip install pyqrcode
 
 script:
 
