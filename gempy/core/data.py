@@ -2463,15 +2463,17 @@ class RescaledData(object):
     def rescale_grid(grid, rescaling_factor, centers: pn.DataFrame):
         new_grid_extent = (grid.regular_grid.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
         new_grid_values = (grid.values - centers) / rescaling_factor + 0.5001
-        return new_grid_extent, new_grid_values
+        return new_grid_extent, new_grid_values,
 
     def set_rescaled_grid(self):
         """
         Set the rescaled coordinates and extent into a grid object
         """
 
-        self.grid.extent_r, self.grid.values_r = self.rescale_grid(self.grid, self.df.loc['values', 'rescaling factor'],
-                                                                   self.df.loc['values', 'centers'])
+        self.grid.extent_r, self.grid.values_r = self.rescale_grid(
+            self.grid, self.df.loc['values', 'rescaling factor'], self.df.loc['values', 'centers'])
+
+        self.grid.regular_grid.extent_r, self.grid.regular_grid.values_r = self.grid.extent_r, self.grid.values_r
 
 
 @setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Surfaces.__doc__, Faults.__doc__])

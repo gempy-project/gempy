@@ -1,4 +1,4 @@
-pandas==0.24
+pandas==1.01
 cython
 Theano>=1.0.4
 matplotlib

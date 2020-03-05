@@ -27,7 +27,7 @@ class TestGemPyToREX:
         geo_data.set_theano_function(interpolator_islith_nofault)
 
         # Compute model
-        sol = gempy.compute_model(geo_data)
+        sol = gempy.compute_model(geo_data, compute_mesh_options={'rescale': True})
 
         return geo_data
 
@@ -80,7 +80,7 @@ class TestGemPyToREX:
 
         gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_test')
 
-    def test_create_API_file(self, geo_model):
+    def test_create_api_file(self, geo_model):
         project_name = 'test'
         rex_api.RexAPI(project_name).upload_rexfile('./rexfiles/gtr_test0.rex')
 
@@ -88,6 +88,6 @@ class TestGemPyToREX:
         rex_api.upload_to_rexcloud(['./rexfiles/gtr_test0.rex', './rexfiles/gtr_test1.rex'], project_name=None)
 
     def test_plot_ar(self, geo_model):
-        tag = gempy.plot.plot_ar(geo_model, api_token='8e8a12ef-5da2-4790-9a84-15923a287965',
+        tag = gempy.plot.plot_ar(geo_model, api_token='8e8a12ef-5da2-4790-9a84-15923a287965', project_name='Alesmodel',
                                  secret='45tBkVGgbhodX1C9SCaGf7FxBOCTDIQv')
         print(tag.display_tag(reverse=False))

@@ -78,7 +78,8 @@ class Solution(object):
         return '\nLithology ids \n  %s \n' \
                % (np.array2string(self.lith_block))
 
-    def set_solution_to_regular_grid(self, values: Union[list, np.ndarray], compute_mesh: bool = True):
+    def set_solution_to_regular_grid(self, values: Union[list, np.ndarray], compute_mesh: bool = True,
+                                     compute_mesh_options: dict = None):
         """
         If regular grid is active set all the solution objects dependent on them and compute mesh.
 
@@ -92,13 +93,15 @@ class Solution(object):
                  - mask_matrix
             compute_mesh (bool): if True perform marching cubes algorithm to recover the surface mesh from the
              implicit model.
+            compute_mesh_options (dict): options for the marching cube function.
+             1) rescale: True
 
         Returns:
 
         """
         self.set_values_to_regular_grid(values)
         if compute_mesh is True:
-            self.compute_all_surfaces()
+            self.compute_all_surfaces(**compute_mesh_options)
 
         return self
 
@@ -158,7 +161,8 @@ class Solution(object):
         return True
 
     @setdoc(measure.marching_cubes_lewiner.__doc__)
-    def compute_surface_regular_grid(self, level: float, scalar_field, mask_array=None, classic=False, **kwargs):
+    def compute_marching_cubes_regular_grid(self, level: float, scalar_field, mask_array=None, classic=False,
+                                            rescale=False, **kwargs):
         """
         Compute the surface (vertices and edges) of a given surface by computing marching cubes (by skimage)
 
@@ -182,7 +186,7 @@ class Solution(object):
                                      self.grid.regular_grid.resolution[1],
                                      self.grid.regular_grid.resolution[2]),
                 level,
-                spacing=self.grid.regular_grid.get_dx_dy_dz(),
+                spacing=self.grid.regular_grid.get_dx_dy_dz(rescale=rescale),
                 **kwargs
             )
 
@@ -192,14 +196,19 @@ class Solution(object):
                                      self.grid.regular_grid.resolution[1],
                                      self.grid.regular_grid.resolution[2]),
                 level,
-                spacing=self.grid.regular_grid.get_dx_dy_dz(),
+                spacing=self.grid.regular_grid.get_dx_dy_dz(rescale=rescale),
                 mask=mask_array,
                 **kwargs
             )
 
-        vertices += np.array([self.grid.regular_grid.extent[0],
-                              self.grid.regular_grid.extent[2],
-                              self.grid.regular_grid.extent[4]]).reshape(1, 3)
+        if rescale is True:
+            vertices += np.array([self.grid.regular_grid.extent_r[0],
+                                  self.grid.regular_grid.extent_r[2],
+                                  self.grid.regular_grid.extent_r[4]]).reshape(1, 3)
+        else:
+            vertices += np.array([self.grid.regular_grid.extent[0],
+                                  self.grid.regular_grid.extent[2],
+                                  self.grid.regular_grid.extent[4]]).reshape(1, 3)
 
         return [vertices, simplices, normals, values]
 
@@ -226,7 +235,7 @@ class Solution(object):
             self.mask_matrix_pad.append(mask_pad)
         return True
 
-    @setdoc(compute_surface_regular_grid.__doc__)
+    @setdoc(compute_marching_cubes_regular_grid.__doc__)
     def compute_all_surfaces(self, **kwargs):
         """
         Compute all surfaces of the model given the geological features rules.
@@ -245,6 +254,10 @@ class Solution(object):
         series_type = self.series.df['BottomRelation']
         s_n = 0
         active_indices = self.surfaces.df.groupby('isActive').groups[True]
+        if 'rescale' in kwargs:
+            rescale = kwargs.pop('rescale')
+        else:
+            rescale = False
 
         # We loop the scalar fields
         for e, scalar_field in enumerate(self.scalar_field_matrix):
@@ -260,12 +273,14 @@ class Solution(object):
 
             for level in sfas:
                 try:
-                    v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array, **kwargs)
+                    v, s, norm, val = self.compute_marching_cubes_regular_grid(level, scalar_field, mask_array,
+                                                                               rescale=rescale, **kwargs)
 
                 except TypeError as e:
                     warnings.warn('Attribute error. Using non masked marching cubes' + str(e)+'.')
-                    v, s, norm, val = self.compute_surface_regular_grid(level, scalar_field, mask_array,
-                                                                        classic=True, **kwargs)
+                    v, s, norm, val = self.compute_marching_cubes_regular_grid(level, scalar_field, mask_array,
+                                                                               rescale=rescale,
+                                                                               classic=True, **kwargs)
 
                 except Exception as e:
                     warnings.warn('Surfaces not computed due to: ' + str(e)+'. The surface is: Series: '+str(e)+

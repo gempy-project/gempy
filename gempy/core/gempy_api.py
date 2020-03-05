@@ -280,10 +280,11 @@ def get_additional_data(model: Model):
 
 
 # region Computing the model
-@setdoc_pro([Model.__doc__, Solution.compute_surface_regular_grid.__doc__,
+@setdoc_pro([Model.__doc__, Solution.compute_marching_cubes_regular_grid.__doc__,
              Model.set_surface_order_from_solution.__doc__])
 def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=False, reset_scalar=False,
-                  reset_block=False, sort_surfaces=True, debug=False, set_solutions=True) -> Solution:
+                  reset_block=False, sort_surfaces=True, debug=False, set_solutions=True,
+                  **kwargs) -> Solution:
     """
     Computes the geological model and any extra output given in the additional data option.
 
@@ -297,6 +298,10 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
         sort_surfaces (bool): if True call Model.set_surface_order_from_solution: [s2]
         debug (bool): if True, the computed interpolation are not stored in any object but instead returned
         set_solutions (bool): Default True. If True set the results into the :class:`Solutions` linked object.
+
+    Keyword Args:
+        compute_mesh_options (dict): options for the marching cube function.
+            1) rescale: True
 
     Returns:
         :class:`Solutions`
@@ -325,7 +330,7 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
 
         # Set geology:
         if model.grid.active_grids[0] is np.True_:
-            model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh)
+            model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh, **kwargs)
         if model.grid.active_grids[1] is np.True_:
             model.solutions.set_solution_to_custom(sol)
         if model.grid.active_grids[2] is np.True_:
