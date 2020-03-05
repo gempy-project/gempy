@@ -6,6 +6,9 @@ from typing import Union
 import numpy as np
 import pandas as pn
 
+from sklearn.neighbors import NearestNeighbors
+from sklearn.preprocessing import normalize
+
 try:
     import ipywidgets as widgets
     ipywidgets_import = True
@@ -1974,6 +1977,112 @@ class Orientations(GeometricData):
         orientation = self.get_orientation(normal)
 
         return np.array([*center, *orientation, *normal])
+
+    def create_orientation_from_NN(self, surface_points: SurfacePoints,  searchcrit):
+        """
+        Calculates the orientation from neighbour points of the same surface
+        by given radius (radius-search) or fix number (knn) if you haven't
+        any orientation.
+    
+        Parameters
+        ----------
+        self : geo_model
+            GemPy-model.
+        surface_points (:class:`SurfacePoints`): Pandas-dataframe
+            Contains (point-)data.
+        searchcrit : int or float
+            if is int: uses knn-search.
+            if is float: uses radius-search.
+        """
+    
+        # extract surface names
+        surfaces = np.unique(surface_points.df['surface'])
+        nbrs = []
+        search_id = []
+        # for each surface
+        if isinstance(searchcrit, int):  # in case knn-search
+            searchcrit = searchcrit + 1  # because the point itself is also found
+            for i in range(surfaces.size):
+                # extract point-ids
+                i_surfaces = surface_points.df['surface'] == surfaces[i]
+                # extract point coordinates
+                p_surfaces = surface_points.df[i_surfaces][['X', 'Y', 'Z']]
+                # save order of point ids for search
+                search_id.append(p_surfaces.index)
+                # create search-tree
+                Tree = NearestNeighbors(n_neighbors=searchcrit)
+                # add data to tree
+                Tree.fit(p_surfaces)
+                # find neighbours
+                nbrs_surfaces = Tree.kneighbors(p_surfaces, n_neighbors=searchcrit,
+                                                return_distance=False)
+                # add neighbours with initial index to total list
+                for i in nbrs_surfaces:
+                    nbrs.append(p_surfaces.index[i])
+        else:  # in case radius-search
+            for i in range(surfaces.size):
+                # extract point-ids
+                i_surfaces = surface_points.df['surface'] == surfaces[i]
+                # extract point coordinates
+                p_surfaces = surface_points.df[i_surfaces][['X', 'Y', 'Z']]
+                # save order of point ids for search
+                search_id.append(p_surfaces.index)
+                # create search-tree
+                Tree = NearestNeighbors(radius=searchcrit)
+                # add data to tree
+                Tree.fit(p_surfaces)
+                # find neighbours (attention: relativ index!)
+                nbrs_surfaces = Tree.radius_neighbors(p_surfaces,
+                                                      radius=searchcrit,
+                                                      return_distance=False)
+                # add neighbours with initial index to total list
+                for i in nbrs_surfaces:
+                    nbrs.append(p_surfaces.index[i])
+        # connect search_id to one array
+        search_id = np.concatenate(search_id)
+    
+        # count neighbours found
+        c = []
+        for i in nbrs:
+            c.append(i.size)
+    
+        # initialize one orientation if none exists
+        if self.df.empty:
+            self.set_default_orientation()
+            deleteFirst = True
+        # compute normal vector for each point
+        for i in range(len(nbrs)):
+            if c[i] > 2:
+                # extract point coordinates
+                coo = surface_points.df.iloc[nbrs[i]][['X', 'Y', 'Z']]
+                # calculates covariance matrix
+                cov = np.cov(coo.T)
+                # extract eigenvalues from covariance matrix
+                eig = np.diag(cov)
+                # check orientation of normal vector (has to be oriented to sky)
+                if eig[2] < 0:
+                    eig = eig*(-1)
+                # calculate normalized normal vector
+                normvec = normalize(np.cross(cov[0].T, cov[1].T).reshape(1, -1))
+                # change normal vector format from coordinates to azimuth and dip
+                dip = np.degrees(np.arccos(normvec[0, 2])) % 360
+                azimuth = np.degrees(np.arctan2(normvec[0, 0], normvec[0, 1])) % 360
+                # append to the GemPy-model
+                self.add_orientation(surface_points.df['X'][search_id[i]],
+                                     surface_points.df['Y'][search_id[i]],
+                                     surface_points.df['Z'][search_id[i]],
+                                     surface_points.df['surface'][search_id[i]],
+                                     orientation=[azimuth, dip, 1])
+            # if computation is impossible set normal vector to default orientation
+            else:
+                self.add_orientation(surface_points.df['X'][search_id[i]],
+                                     surface_points.df['Y'][search_id[i]],
+                                     surface_points.df['Z'][search_id[i]],
+                                     surface_points.df['surface'][search_id[i]],
+                                     orientation=[0, 0, 1])
+        # delete initialize orientation, if it was set
+        if deleteFirst:
+            self.del_orientation(0)
 
     def set_default_orientation(self):
         """
