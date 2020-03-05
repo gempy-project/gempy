@@ -19,7 +19,7 @@
 """
 import numpy as np
 from nptyping import Array
-from typing import Iterable, List, Set, Tuple, Dict, Union, Optional
+from typing import List, Set, Tuple, Dict, Union, Optional
 import matplotlib.pyplot as plt
 
 
@@ -275,8 +275,8 @@ def get_fault_ids(geo_model) -> List[int]:
 
 
 def get_lith_ids(geo_model, basement: bool = True) -> List[int]:
-    """Get lithology id's of all lithologies (except basement) in given 
-    geomodel.
+    """ Get lithology id's of all lithologies (except basement) in given
+     geomodel.
     
     Args:
         geo_model: Geomodel instance.
@@ -303,7 +303,7 @@ def get_detailed_labels(
         centroids: Dict[int, np.ndarray]
 ) -> Tuple[Set[Tuple[str, str]], Dict[str, np.ndarray]]:
     """Convert given edges and centroids data into more detailed labels with
-    pattern 'lithid_faultid'. 
+     pattern 'lithid_faultid'.
     
     Args:
         geo_model: [description]
@@ -604,7 +604,7 @@ def get_adjacencies(
         node: Union[int, str]
 ) -> set:
     """Get node labels of all adjacent geobodies of geobody with given node
-    in given set of edges.
+     in given set of edges.
     
     Args:
         edges (set): Topology edges.

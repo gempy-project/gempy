@@ -35,7 +35,7 @@ from .visualization_2d import PlotData2D, PlotSolution
 from .visualization_3d import GemPyvtkInteract
 
 
-def _plot_data_3D(geo_data, ve=1, **kwargs):
+def plot_data_3D(geo_data, ve=1, **kwargs):
     """
     Plot in vtk all the input data of a model
     Args:
@@ -53,9 +53,9 @@ def _plot_data_3D(geo_data, ve=1, **kwargs):
     return vv
 
 
-def _plot_3D(geo_model, render_surfaces=True, render_data=True,
-             render_topography=True,
-             real_time=False, **kwargs):
+def plot_3D(geo_model, render_surfaces=True, render_data=True,
+            render_topography=True,
+            real_time=False, **kwargs):
     """
         Plot in vtk all the input data of a model
         Args:

@@ -248,6 +248,7 @@ class DataMutation(object):
 
     @setdoc(Grid.create_section_grid.__doc__)
     def set_section_grid(self, section_dict):
+        # TODO being able to change the regular grid associated to the section grid
         if self.grid.sections is None:
             self.grid.create_section_grid(section_dict=section_dict)
         else:
