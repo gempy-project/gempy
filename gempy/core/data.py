@@ -1981,8 +1981,7 @@ class Orientations(GeometricData):
     def create_orientation_from_NN(self, surface_points: SurfacePoints,  searchcrit):
         """
         Calculates the orientation from neighbour points of the same surface
-        by given radius (radius-search) or fix number (knn) if you haven't
-        any orientation.
+        by given radius (radius-search) or fix number (knn).
     
         Parameters
         ----------
