@@ -373,21 +373,25 @@ class Vista:
 
         Args:
             geo_model: Geomodel object with solutions.
+            name (str): Can be either one of the following
+                'lith' - Lithology id block.
+                'scalar' - Scalar field block.
+                'values' - Values matrix block.
             render_topography: Render topography. Defaults to False.
             **kwargs:
 
         Returns:
             (Vista) GemPy Vista object for plotting.
         """
-
         mesh = self.plot_structured_grid(name=name, render_topography=render_topography, **kwargs)[0]
 
-        # Figure out which colormap to use
+        # define colormaps
         if name == "lith":
             cmap = mcolors.ListedColormap(list(self._color_id_lot[self.model.series.faults.n_faults:]))
         elif name == "scalar":
             cmap = cm.viridis
 
+        # callback functions for subplots
         def xcallback(normal, origin):
             self.p.subplot(1)
             self.p.add_mesh(mesh.slice(normal=normal, origin=origin), name="xslc", cmap=cmap)
@@ -400,6 +404,7 @@ class Vista:
             self.p.subplot(3)
             self.p.add_mesh(mesh.slice(normal=normal, origin=origin), name="zslc", cmap=cmap)
 
+        # cross section widgets
         self.p.subplot(0)
         self.p.add_plane_widget(xcallback, normal="x")
         self.p.subplot(0)

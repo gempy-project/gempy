@@ -252,6 +252,10 @@ def plot_interactive_3d(
 
     Args:
         geo_model: Geomodel object with solutions.
+        name (str): Can be either one of the following
+                'lith' - Lithology id block.
+                'scalar' - Scalar field block.
+                'values' - Values matrix block.
         render_topography: Render topography. Defaults to False.
         **kwargs:
 
