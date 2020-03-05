@@ -2,7 +2,11 @@ import os
 import requests
 import json
 import datetime
-import pyqrcode as qr
+try:
+    import pyqrcode as qr
+    PYQRCODE_IMPORT = True
+except ImportError:
+    PYQRCODE_IMPORT = False
 
 package_directory = os.path.dirname(os.path.abspath(__file__))
 
@@ -202,7 +206,8 @@ class Rextag:
         self.rextag_url, self.rextag = self.create_rextag(project_reference)
 
     def create_rextag(self, project_reference):
-
+        if PYQRCODE_IMPORT is False:
+            raise ImportError('This method depends on pyqrcode and it is not possible to import.')
         base_url = "https://rex.codes/v1/"
         rextag_url = base_url+project_reference
         rextag = qr.create(rextag_url)
