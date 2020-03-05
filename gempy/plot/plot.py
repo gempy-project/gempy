@@ -422,14 +422,16 @@ def plot_topology(geo_data, G, centroids, direction="y", label_kwargs=None, node
 
 
 def plot_ar(geo_model, path=None, project_name=None, api_token=None, secret=None):
-    """
+    """ Create, upload and retrieve tag to visualize the model in AR in rexview
 
     https://www.rexos.org/getting-started/
 
     Args:
         geo_model (gempy.Model):
-        path:
-        project_name:
+        path: Location for rex files. Default cwd
+        project_name: Name of the project in rexos
+        api_token: rexos api token
+        secret: rexos secret
 
     Returns:
         gempy.addons.rex_api.Rextag
