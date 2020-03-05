@@ -31,7 +31,7 @@ class RexAPI:
         self.rextag = None
 
     def load_credentials(self, filename=os.path.join(package_directory, 'RexCloud_Api_key.txt'),
-                         api_token: str = None, secret: str =None):
+                         api_token: str = None, secret: str = None):
 
         if not os.path.isfile(filename) or (api_token is not None and secret is not None):
             file = open(filename, 'w')
@@ -49,8 +49,9 @@ class RexAPI:
             file.close()
 
             if login_data:
-                raise AttributeError('Cache key is not created. You need to pass as argument the REX api_token and secret,'
-                                     ' or adding them in RexCloud_API_key.txt')
+                raise AttributeError('Cache key is not created. You need to pass as argument the REX api_token'
+                                     ' and secret, or adding them in RexCloud_API_key.txt.'
+                                     ' https://www.rexos.org/getting-started/')
 
         with open(filename, "r") as credential_file:
             token_id = credential_file.readline().strip('\n')
@@ -73,7 +74,9 @@ class RexAPI:
             return access_token
 
         else:
-            print("something went wrong! Status code: "+str(self.response.status_code))
+            raise ConnectionError("something went wrong! Status code: "+str(self.response.status_code) +
+                                  'Probably the token or the secret is not valid. '
+                                  'https://www.rexos.org/getting-started/')
 
     def get_user_information(self):
         headers = {'Authorization': 'Bearer ' + self.access_token, 'Accept': 'application/json;charset=UTF-8'}
@@ -104,7 +107,8 @@ class RexAPI:
             return project_urn, project_link
 
         else:
-            print("something went wrong! Status code: " + str(self.response.status_code))
+            raise ConnectionError("something went wrong! Status code: " + str(self.response.status_code) +
+                                  'Probably project name already exists.')
 
     def create_root_reference(self):
         headers = {
@@ -115,8 +119,8 @@ class RexAPI:
 
         data = json.dumps({"project" : self.project_link,
                 "name" : "root reference",
-                "address" : {   "addressLine1" : "Sample",    "postcode" : "52072",
-                                "city" : "Aachen",   "country" : "Austria"  }}
+                "address" : {"addressLine1": "Sample", "postcode": "52072",
+                             "city": "Aachen",   "country" : "Austria"}}
                           )
 
         self.response = requests.post('https://rex.robotic-eyes.com/api/v2/rexReferences', headers=headers, data=data)
@@ -205,6 +209,9 @@ class Rextag:
     def __init__(self, project_reference):
         self.rextag_url, self.rextag = self.create_rextag(project_reference)
 
+    def __repr__(self):
+        return self.rextag.terminal(module_color="reverse", background="default", quiet_zone=1)
+
     def create_rextag(self, project_reference):
         if PYQRCODE_IMPORT is False:
             raise ImportError('This method depends on pyqrcode and it is not possible to import.')
@@ -238,10 +245,9 @@ class Rextag:
 
     def save_svg(self, filename):
         self.rextag.svg(filename, scale=8)
-        #self.rextag.eps(self.project_name, scale=2)
 
 
-def upload_to_rexcloud(infiles : list, project_name = None  ):
+def upload_to_rexcloud(infiles : list, project_name=None, **kwargs):
     """
     wrapper around api calls to upload rexfiles of a gempy model.
 
@@ -272,7 +278,7 @@ def upload_to_rexcloud(infiles : list, project_name = None  ):
         timestamp = datetime.datetime.now()
         project_name = str(timestamp)
 
-    api=RexAPI(project_name)
+    api = RexAPI(project_name, **kwargs)
 
     for file in infiles:
 

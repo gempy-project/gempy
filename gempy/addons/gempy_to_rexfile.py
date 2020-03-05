@@ -316,9 +316,9 @@ def geo_model_to_rex(geo_model, path='./gempy_rex'):
                                  data_bytes_r + mesh_header_bytes_r + mesh_block_bytes_r +\
                                  material_header_bytes + material_bytes
 
-        file_name = path+str(e)
+        file_name = path+surface_vals['surface']
         write_file(all_bytes, file_name)
-        file_names.append(surface_vals['surface']+'.rex')
+        file_names.append(file_name+'.rex')
         e += 1
 
     return file_names

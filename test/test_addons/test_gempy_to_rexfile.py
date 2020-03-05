@@ -80,10 +80,14 @@ class TestGemPyToREX:
 
         gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_test')
 
-    def test_upload_to_rexos(self, geo_model):
-        # file_names = gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_test')
-        rex_api.RexAPI().upload_rexfiles(['./rexfiles/gtr_test0.rex', './rexfiles/gtr_test1.rex'])
+    def test_create_API_file(self, geo_model):
+        project_name = 'test'
+        rex_api.RexAPI(project_name).upload_rexfile('./rexfiles/gtr_test0.rex')
 
     def test_upload_to_rexcloud(self):
         rex_api.upload_to_rexcloud(['./rexfiles/gtr_test0.rex', './rexfiles/gtr_test1.rex'], project_name=None)
 
+    def test_plot_ar(self, geo_model):
+        tag = gempy.plot.plot_ar(geo_model, api_token='8e8a12ef-5da2-4790-9a84-15923a287965',
+                                 secret='45tBkVGgbhodX1C9SCaGf7FxBOCTDIQv')
+        print(tag.display_tag(reverse=False))

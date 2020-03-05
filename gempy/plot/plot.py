@@ -352,6 +352,7 @@ def plot_scalar_field(model, cell_number, N=20,
                            series=series, alpha=alpha, show_all_data=show_all_data,
                            *args, **kwargs)
 
+
 def plot_section_scalarfield(model, section_name, sn, levels=50, show_faults=True, show_topo=True, lithback=True):
     """
     Plot the potential field in the predefined sections.
@@ -417,5 +418,31 @@ def plot_topology(geo_data, G, centroids, direction="y", label_kwargs=None, node
         Nothing, it just plots.
     """
     PlotSolution.plot_topo_g(geo_data, G, centroids, direction=direction,
-                           label_kwargs=label_kwargs, node_kwargs=node_kwargs, edge_kwargs=edge_kwargs)
+                             label_kwargs=label_kwargs, node_kwargs=node_kwargs, edge_kwargs=edge_kwargs)
 
+
+def plot_ar(geo_model, path=None, project_name=None, api_token=None, secret=None):
+    """
+
+    https://www.rexos.org/getting-started/
+
+    Args:
+        geo_model (gempy.Model):
+        path:
+        project_name:
+
+    Returns:
+        gempy.addons.rex_api.Rextag
+    """
+    from gempy.addons.rex_api import upload_to_rexcloud
+    from gempy.addons.gempy_to_rexfile import geo_model_to_rex
+    if project_name is None:
+        project_name = geo_model.meta.project_name
+
+    if path is None:
+        path='./'
+
+    files_path = geo_model_to_rex(geo_model, path)
+    tag = upload_to_rexcloud(files_path, project_name=project_name, api_token=api_token, secret=secret)
+
+    return tag
