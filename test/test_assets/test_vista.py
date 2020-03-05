@@ -10,7 +10,7 @@ from gempy.plot import vista as vs
 input_path = os.path.dirname(__file__) + '/../../notebooks/data'
 
 
-@pytest.fixture
+@pytest.fixture(scope='module')
 def vista_obj() -> vs.Vista:
     """Return a GemPy Vista instance with basic geomodel attached."""
     geo_model = gp.create_data(
@@ -27,9 +27,10 @@ def vista_obj() -> vs.Vista:
          "Strat_Series": ('Sandstone_2', 'Siltstone', 'Shale', 'Sandstone_1')}
     )
     geo_model.set_is_fault(['Fault_Series'])
-
-    with open("input_data/geomodel_fabian_sol.p", "rb") as f:
-        geo_model.solutions = load(f)
+    gp.set_interpolator(geo_model)
+    gp.compute_model(geo_model)
+    # with open(os.path.dirname(__file__)+"input_data/geomodel_fabian_sol.p", "rb") as f:
+    #     geo_model.solutions = load(f)
 
     return vs.Vista(geo_model)
 
@@ -88,7 +89,7 @@ def test_plot_structured_grid_scalar(vista_obj):
     assert type(mesh) == pv.core.pointset.StructuredGrid
 
 
-def test_plot_structured_grid_scalar(vista_obj):
+def test_plot_structured_grid_scalar2(vista_obj):
     mesh = vista_obj.plot_structured_grid("scalar")
     shape = vista_obj.model.grid.regular_grid.values.shape[0]
     assert mesh[0].points.shape[0] == shape
