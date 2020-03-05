@@ -245,35 +245,19 @@ def geo_model_to_rex(geo_model, path='./gempy_rex'):
 
     for idx, surface_vals in geo_model.surfaces.df.iterrows():
         ver = surface_vals['vertices']
-
-        # TODO: Remove this when the shader is fixed: Duplicate the number of triangles to fix the normals
-
         tri = surface_vals['edges']
         if tri is np.nan:
             break
 
         col = surface_vals['color']
 
-        n_vertices = ver.shape[0]
-
-       # ver = np.tile(ver, (2, 1))
         colors = (np.zeros_like(ver) + hex_to_rgb(col))/255
 
         ver_ = np.copy(ver)
         ver_[:, 2] = ver[:, 1]
         ver_[:, 1] = ver[:, 2]
 
-        #tri_ = np.copy(np.tile(tri, (2, 1)))
-        #tri_ = np.copy(np.vstack((tri, tri+n_vertices)))
-
         tri_ = np.copy(tri)
-        # One side of the normals
-      #  tri_[:, 2] = tri[:, 1]
-      #  tri_[:, 1] = tri[:, 2]
-
-        # second side of the normal
-        #tri_[tri.shape[0]:, 2] = tri[:, 1]
-        #tri_[tri.shape[0]:, 1] = tri[:, 2]
 
         ver_ravel, tri_ravel, n_vtx_coord, n_triangles = mesh_preprocess(ver_, tri_)
         mesh_block_size_no_data_block_header = (2 * n_vtx_coord + n_triangles) * 4 + mesh_header_size
@@ -334,7 +318,7 @@ def geo_model_to_rex(geo_model, path='./gempy_rex'):
 
         file_name = path+str(e)
         write_file(all_bytes, file_name)
-        file_names.append(file_name+'.rex')
+        file_names.append(surface_vals['surface']+'.rex')
         e += 1
 
     return file_names
