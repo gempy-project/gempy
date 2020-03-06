@@ -99,6 +99,8 @@ class Solution(object):
         Returns:
 
         """
+        if compute_mesh_options is None:
+            compute_mesh_options = {}
         self.set_values_to_regular_grid(values)
         if compute_mesh is True:
             self.compute_all_surfaces(**compute_mesh_options)
