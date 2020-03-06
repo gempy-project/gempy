@@ -31,7 +31,9 @@ class RegularGrid:
     def __init__(self, extent=None, resolution=None, **kwargs):
         self.resolution = np.ones((0, 3), dtype='int64')
         self.extent = np.zeros(6, dtype='float64')
+        self.extent_r = np.zeros(6, dtype='float64')
         self.values = np.zeros((0, 3))
+        self.values_r = np.zeros((0, 3))
         self.mask_topo = np.zeros((0, 3), dtype=bool)
         if extent is not None and resolution is not None:
             self.set_regular_grid(extent, resolution)
@@ -64,18 +66,23 @@ class RegularGrid:
         values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
         return values
 
-    def get_dx_dy_dz(self):
-        dx = (self.extent[1] - self.extent[0]) / self.resolution[0]
-        dy = (self.extent[3] - self.extent[2]) / self.resolution[1]
-        dz = (self.extent[5] - self.extent[4]) / self.resolution[2]
+    def get_dx_dy_dz(self, rescale=False):
+        if rescale is True:
+            dx = (self.extent_r[1] - self.extent_r[0]) / self.resolution[0]
+            dy = (self.extent_r[3] - self.extent_r[2]) / self.resolution[1]
+            dz = (self.extent_r[5] - self.extent_r[4]) / self.resolution[2]
+        else:
+            dx = (self.extent[1] - self.extent[0]) / self.resolution[0]
+            dy = (self.extent[3] - self.extent[2]) / self.resolution[1]
+            dz = (self.extent[5] - self.extent[4]) / self.resolution[2]
         return dx, dy, dz
 
     def set_regular_grid(self, extent, resolution):
         """
         Set a regular grid into the values parameters for further computations
         Args:
-             extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]
-            resolution (list): [nx, ny, nz]
+             extent (list, np.ndarry):  [x_min, x_max, y_min, y_max, z_min, z_max]
+            resolution (list, np.ndarray): [nx, ny, nz]
         """
 
         self.extent = np.asarray(extent, dtype='float64')
@@ -129,11 +136,17 @@ class Sections:
     def _repr_html_(self):
         return self.df.to_html()
 
+    def __repr__(self):
+        return self.df.to_string()
+
     def show(self):
         pass
 
-    def set_sections(self, section_dict):
+    def set_sections(self, section_dict, regular_grid=None, z_ext=None):
         self.section_dict = section_dict
+        if regular_grid is not None:
+            self.z_ext = regular_grid.extent[4:]
+
         self.names = np.array(list(self.section_dict.keys()))
 
         self.get_section_params()

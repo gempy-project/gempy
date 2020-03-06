@@ -1,15 +1,15 @@
 import pytest
-
-import numpy as np
 import sys, os
 sys.path.append("../..")
 import gempy
-import matplotlib.pyplot as plt
 from gempy.addons import gempy_to_rexfile as gtr
+from gempy.addons import rex_api
 
 input_path = os.path.dirname(__file__)+'/../input_data'
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Skipping this test on Travis CI.")
 class TestGemPyToREX:
     @pytest.fixture(scope='module')
     def geo_model(self, interpolator_islith_nofault):
@@ -24,7 +24,7 @@ class TestGemPyToREX:
         geo_data.set_theano_function(interpolator_islith_nofault)
 
         # Compute model
-        sol = gempy.compute_model(geo_data)
+        sol = gempy.compute_model(geo_data, compute_mesh_options={'rescale': True})
 
         return geo_data
 
@@ -48,7 +48,7 @@ class TestGemPyToREX:
                                               start_data=file_header_size)
 
         # Write data block
-        data_bytes = gtr.write_data_block(size_data=data_block_size_no_header,
+        data_bytes = gtr.write_data_block_header(size_data=data_block_size_no_header,
                                           data_id=1, data_type=3, version_data=1)
 
         # Write mesh block
@@ -67,6 +67,17 @@ class TestGemPyToREX:
         if False:
             gtr.write_file(all_bytes, './rexfiles/one_mesh_test')
 
-    def TEST_geo_model_to_rex(self, geo_model):
+    def TEST_rex_cloud_api(self):
+        import datetime
+        timestamp = datetime.datetime.now()
+        project_name = str(timestamp)
+        rex_api.RexAPI(project_name)
 
-        gtr.geo_model_to_res(geo_model, path='./rexfiles/gtr_test')
+    def test_geo_model_to_rex(self, geo_model):
+
+        gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_testA')
+
+    def test_plot_ar(self, geo_model):
+        tag = gempy.plot.plot_ar(geo_model, api_token='8e8a12ef-5da2-4790-9a84-15923a287965', project_name='Alesmodel',
+                                 secret='45tBkVGgbhodX1C9SCaGf7FxBOCTDIQv')
+        print(tag.display_tag(reverse=False))

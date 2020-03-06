@@ -2,7 +2,9 @@ git+git://github.com/Leguark/scikit-image@master
 steno3d
 vtk
 gdal
-qgrid
+qgrid==1.3.0
 pymc3
 pyvolume
 pyevtk
+pyqrcode
+mplstereonet

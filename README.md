@@ -35,6 +35,7 @@ Check out the documentation either in [gempy.org](https://www.gempy.org/) (bette
 
 <a name="feat"></a>
 
+
 ## Features
 
 The core algorithm of *GemPy* is based on a universal cokriging interpolation method devised by

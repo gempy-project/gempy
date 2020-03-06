@@ -8,46 +8,7 @@ GeMpy/__pycache__/__init__.cpython-36.pyc
 GeMpy/__pycache__/geomodeller_xml_obj.cpython-36.pyc
 GeMpy/geomodeller_xml_obj.py.bak
 GeMpy/qgrid/__pycache__/
-notebooks/prototype notebooks/Example_4_faults_network.ipynb
-notebooks/prototype notebooks/Example_Peter_Model.ipynb
-notebooks/prototype notebooks/Fabian.vtp
-notebooks/prototype notebooks/Fabian1.vtp
-notebooks/prototype notebooks/Fabian2.vtp
-notebooks/prototype notebooks/Fabian3.vtp
-notebooks/prototype notebooks/Fabian4.vtp
-notebooks/prototype notebooks/FabianModelBigPoints.vtk
-notebooks/prototype notebooks/FabianModelSmallPoints.vtk
-notebooks/prototype notebooks/FabianModel_point.vti
-notebooks/prototype notebooks/FabianModel_point_good_res.vti
-notebooks/prototype notebooks/Fabian_f.vtp
-notebooks/prototype notebooks/Fault.vtk
-notebooks/prototype notebooks/Intrusions.ipynb
-notebooks/prototype notebooks/Layer1.vtk
-notebooks/prototype notebooks/Layer2.vtk
-notebooks/prototype notebooks/Layer3.vtk
-notebooks/prototype notebooks/Layer4.vtk
-notebooks/prototype notebooks/More cave/
-notebooks/prototype notebooks/PF_over_TKC/
-notebooks/prototype notebooks/PerthBasin.vti
-notebooks/prototype notebooks/PerthBasin.vtk
-notebooks/prototype notebooks/PerthBasinOtherColors.vtk
-notebooks/prototype notebooks/Physics.ipynb
-notebooks/prototype notebooks/SandstoneSol.npy
-notebooks/prototype notebooks/TriangleColoredPoints.vtp
-notebooks/prototype notebooks/TriangleSolidColor.vtp
-notebooks/prototype notebooks/Visualization3_vtkBasics.ipynb
-notebooks/prototype notebooks/files fab/
-notebooks/prototype notebooks/geomodels.sqlite
-notebooks/prototype notebooks/legacy/.ipynb_checkpoints/
-notebooks/prototype notebooks/models.npy
-notebooks/prototype notebooks/olaqases.vox
-notebooks/prototype notebooks/preth.npy
-notebooks/prototype notebooks/sandstone.vtk
-notebooks/prototype notebooks/sandstone.vtr
-notebooks/prototype notebooks/simplices.npy
-notebooks/prototype notebooks/vertices.npy
-notebooks/prototype notebooks/voxet_sub.vox
-notebooks/prototype notebooks/withfault.npy
+gempy/addons/RexCloud_Api_key.txt
 docs/source/Notebooks/Erosion.rst
 docs/source/Notebooks/Example_1_Sandstone_files/Example_1_Sandstone_39_0.png
 docs/source/Notebooks/Example_1_Sandstone_files/Example_1_Sandstone_41_0.png
