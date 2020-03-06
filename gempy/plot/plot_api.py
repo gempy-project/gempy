@@ -50,7 +50,9 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             show_data: Union[bool, list] = True,
             show_lith: Union[bool, list] = True,
             show_scalar: Union[bool, list] = False,
-            show_boundaries: Union[bool, list] = True, **kwargs):
+            show_boundaries: Union[bool, list] = True,
+            show_topography: Union[bool, list] = True,
+            **kwargs):
     section_names = [] if section_names is None else section_names
     section_names = np.atleast_1d(section_names)
     if cell_number is None:
@@ -70,6 +72,8 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         show_scalar = [show_scalar] * n_axis
     if type(show_boundaries) is bool:
         show_boundaries = [show_boundaries] * n_axis
+    if type(show_topography) is bool:
+        show_topography = [show_topography] * n_axis
 
     p = Plot2D(model, **kwargs)
     p.create_figure(**kwargs)
@@ -97,6 +101,8 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             p.plot_scalar_field(temp_ax, section_name=sn, **kwargs)
         if show_boundaries[e] is True:
             p.plot_contacts(temp_ax, section_name=sn, **kwargs)
+        if show_topography[e] is True:
+            p.plot_topography(temp_ax, section_name=sn, **kwargs)
 
         # If there are section we need to shift one axis for the perpendicular
         e = e + 1
@@ -121,6 +127,9 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         if show_boundaries[e + e2] is True:
             p.plot_contacts(temp_ax, cell_number=cell_number[e2],
                             direction=direction[e2], **kwargs)
+        if show_topography[e + e2] is True:
+            p.plot_topography(temp_ax, cell_number=cell_number[e2],
+                              direction=direction[e2], **kwargs)
 
     return p
 
