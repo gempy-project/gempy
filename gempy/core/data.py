@@ -2082,6 +2082,7 @@ class Orientations(GeometricData):
         # delete initialize orientation, if it was set
         if deleteFirst:
             self.del_orientation(0)
+        return self
 
     def set_default_orientation(self):
         """
