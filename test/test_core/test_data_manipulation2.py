@@ -15,6 +15,7 @@ import pytest
 mm = gp.DataMutation()
 mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
 
+
 def test_add_surface_points_raise_non_surface():
     with pytest.raises(ValueError):
         mm.add_surface_points(400, 300, -500, 'surface5')

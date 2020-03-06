@@ -27,9 +27,7 @@
 # sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
 from typing import Set, Tuple, Dict, Union
-
 from nptyping import Array
-
 import gempy as _gempy
 from .visualization_2d import PlotData2D, PlotSolution
 from .visualization_3d import GemPyvtkInteract
@@ -79,8 +77,7 @@ def plot_3D(geo_model, render_surfaces=True, render_data=True,
     return vv
 
 
-def export_to_vtk(geo_data, path=None, name=None, voxels=True, block=None,
-                  surfaces=True):
+def export_to_vtk(geo_data, path=None, name=None, voxels=True, block=None, surfaces=True):
     """
       Export data to a vtk file for posterior visualizations
 
@@ -365,17 +362,17 @@ def plot_topology(
         edge_kwargs: dict = None
 ):
     """Plot the topology adjacency graph in 2-D.
-    
+
     Args:
         geo_model ([type]): GemPy geomodel instance.
         edges (Set[Tuple[int, int]]): Set of topology edges.
         centroids (Dict[int, Array[int, 3]]): Dictionary of topology id's and
             their centroids.
-        direction (Union["x", "y", "z", optional): Section direction. 
+        direction (Union["x", "y", "z", optional): Section direction.
             Defaults to "y".
-        label_kwargs (dict, optional): Keyword arguments for topology labels. 
+        label_kwargs (dict, optional): Keyword arguments for topology labels.
             Defaults to None.
-        edge_kwargs (dict, optional): Keyword arguments for topology edges. 
+        edge_kwargs (dict, optional): Keyword arguments for topology edges.
             Defaults to None.
     """
     PlotSolution.plot_topo_g(
@@ -387,3 +384,38 @@ def plot_topology(
         label_kwargs=label_kwargs,
         edge_kwargs=edge_kwargs
     )
+
+def plot_ar(geo_model, path=None, project_name=None, api_token=None, secret=None):
+    """ Create, upload and retrieve tag to visualize the model in AR in rexview
+
+    https://www.rexos.org/getting-started/
+
+    Args:
+        geo_model (gempy.Model):
+        path: Location for rex files. Default cwd
+        project_name: Name of the project in rexos
+        api_token: rexos api token
+        secret: rexos secret
+
+    Returns:
+        gempy.addons.rex_api.Rextag
+    """
+    from gempy.addons.rex_api import upload_to_rexcloud
+    from gempy.addons.gempy_to_rexfile import geo_model_to_rex
+    if project_name is None:
+        project_name = geo_model.meta.project_name
+
+    if path is None:
+        path='./'
+
+    files_path = geo_model_to_rex(geo_model, path)
+    project_name_ = project_name
+    for i in range(40):
+        try:
+            tag = upload_to_rexcloud(files_path, project_name=project_name_, api_token=api_token, secret=secret)
+            break
+        except ConnectionError:
+            project_name_ = project_name+str(i)
+            pass
+
+    return tag
