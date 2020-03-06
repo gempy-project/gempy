@@ -1,10 +1,7 @@
 import pytest
-
-import numpy as np
 import sys, os
 sys.path.append("../..")
 import gempy
-import matplotlib.pyplot as plt
 from gempy.addons import gempy_to_rexfile as gtr
 from gempy.addons import rex_api
 

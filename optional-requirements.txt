@@ -7,3 +7,4 @@ pymc3
 pyvolume
 pyevtk
 pyqrcode
+mplstereonet
