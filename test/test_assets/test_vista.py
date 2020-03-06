@@ -8,12 +8,13 @@ input_path = os.path.dirname(__file__) + '/../../notebooks/data'
 @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
                     reason="Skipping this test on Travis CI.")
 class TestVista:
-    pv = pytest.importorskip("pyvista")
     from gempy.plot import vista as vs
 
     @pytest.fixture(scope='module')
     def vista_obj(self) -> vs.Vista:
         """Return a GemPy Vista instance with basic geomodel attached."""
+        from gempy.plot import vista as vs
+
         geo_model = gp.create_data(
             [0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
             path_o=input_path + '/input_data/tut_chapter1'
@@ -58,6 +59,8 @@ class TestVista:
             assert vista_obj._actor_exists(mesh)
 
     def test_get_surface(self, vista_obj):
+        pv = pytest.importorskip("pyvista")
+
         surface = vista_obj.get_surface("Shale")
         assert type(surface) == pv.PolyData
 
@@ -72,10 +75,14 @@ class TestVista:
             assert vista_obj._actor_exists(mesh)
 
     def test_plot_structured_grid_lith(self, vista_obj):
+        pv = pytest.importorskip("pyvista")
+
         mesh = vista_obj.plot_structured_grid("lith")
         assert type(mesh[0]) == pv.StructuredGrid
 
     def test_plot_structured_grid_scalar(self, vista_obj):
+        pv = pytest.importorskip("pyvista")
+
         mesh = vista_obj.plot_structured_grid("scalar")
         assert type(mesh[0]) == pv.core.pointset.StructuredGrid
 
