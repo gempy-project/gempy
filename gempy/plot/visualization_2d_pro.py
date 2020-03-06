@@ -465,12 +465,17 @@ class Plot2D:
             pass
 
     def calculate_p1p2(self, direction, cell_number):
+
         if direction == 'y':
+            cell_number = int(self.model.grid.regular_grid.resolution[1]/2) if cell_number == 'mid' else cell_number
+
             y = self.model.grid.regular_grid.extent[2] + self.model.grid.regular_grid.dy * cell_number
             p1 = [self.model.grid.regular_grid.extent[0], y]
             p2 = [self.model.grid.regular_grid.extent[1], y]
 
         elif direction == 'x':
+            cell_number = int(self.model.grid.regular_grid.resolution[0]/2) if cell_number == 'mid' else cell_number
+
             x = self.model.grid.regular_grid.extent[0] + self.model.grid.regular_grid.dx * cell_number
             p1 = [x, self.model.grid.regular_grid.extent[2]]
             p2 = [x, self.model.grid.regular_grid.extent[3]]
@@ -484,11 +489,11 @@ class Plot2D:
         z = self.model.grid.topography.interpolate_zvals_at_xy(xy)
         return xy[:, 0], xy[:, 1], z
 
-    def plot_topography(self, ax, section_name=None, cell_number=None, direction='y', block=None):
+    def plot_topography(self, ax, section_name=None, cell_number=None, direction='y', block=None, **kwargs):
         self.update_colot_lot()
         section_name, cell_number, direction = self._check_default_section(ax, section_name, cell_number, direction)
 
-        if section_name is not None:
+        if section_name is not None and section_name != 'topography':
 
             p1 = self.model.grid.sections.df.loc[section_name, 'start']
             p2 = self.model.grid.sections.df.loc[section_name, 'stop']
