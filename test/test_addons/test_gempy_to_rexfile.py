@@ -51,7 +51,7 @@ class TestGemPyToREX:
                                               start_data=file_header_size)
 
         # Write data block
-        data_bytes = gtr.write_data_block(size_data=data_block_size_no_header,
+        data_bytes = gtr.write_data_block_header(size_data=data_block_size_no_header,
                                           data_id=1, data_type=3, version_data=1)
 
         # Write mesh block
@@ -78,14 +78,7 @@ class TestGemPyToREX:
 
     def test_geo_model_to_rex(self, geo_model):
 
-        gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_test')
-
-    def test_create_api_file(self, geo_model):
-        project_name = 'test'
-        rex_api.RexAPI(project_name).upload_rexfile('./rexfiles/gtr_test0.rex')
-
-    def test_upload_to_rexcloud(self):
-        rex_api.upload_to_rexcloud(['./rexfiles/gtr_test0.rex', './rexfiles/gtr_test1.rex'], project_name=None)
+        gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_testA')
 
     def test_plot_ar(self, geo_model):
         tag = gempy.plot.plot_ar(geo_model, api_token='8e8a12ef-5da2-4790-9a84-15923a287965', project_name='Alesmodel',
