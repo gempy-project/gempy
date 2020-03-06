@@ -661,3 +661,25 @@ class Vista:
         )
         self._surface_actors["topography"] = topography_actor
         return topography_actor
+
+
+    def plot_scalar_surfaces_3D(self, surfaces_nr: int = 10):
+        """Plot scalar field as surfaces
+
+        Args:
+            surfaces_nr: Number of plotted scalar field isosurfaces
+
+        Returns:
+
+        """
+        regular_grid = self.model.grid.regular_grid
+
+        grid_values = regular_grid.values
+        grid_3d = grid_values.reshape(*regular_grid.resolution, 3).T
+        mesh = pv.StructuredGrid(*grid_3d)
+
+        values = self.model.solutions.scalar_field_matrix.reshape(self.model.grid.regular_grid.resolution)
+        mesh["vol"] = values.flatten()
+        contours = mesh.contour(np.linspace(values.min(), values.max(), surfaces_nr + 2))
+        self.p.add_mesh(contours, show_scalar_bar=True, label="scalar_field_main")
+
