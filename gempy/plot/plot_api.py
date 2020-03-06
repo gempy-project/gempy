@@ -51,7 +51,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             show_lith: Union[bool, list] = True,
             show_scalar: Union[bool, list] = False,
             show_boundaries: Union[bool, list] = True,
-            show_topography: Union[bool, list] = True,
+            show_topography: Union[bool, list] = False,
             **kwargs):
     section_names = [] if section_names is None else section_names
     section_names = np.atleast_1d(section_names)
