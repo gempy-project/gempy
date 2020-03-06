@@ -1978,7 +1978,7 @@ class Orientations(GeometricData):
 
         return np.array([*center, *orientation, *normal])
 
-    def create_orientation_from_NN(self, surface_points: SurfacePoints,  searchcrit):
+    def create_orientation_from_NN(self, surface_points,  searchcrit):
         """
         Calculates the orientation from neighbour points of the same surface
         by given radius (radius-search) or fix number (knn).
@@ -1987,15 +1987,15 @@ class Orientations(GeometricData):
         ----------
         self : geo_model
             GemPy-model.
-        surface_points (:class:`SurfacePoints`): Pandas-dataframe
-            Contains (point-)data.
+        surface_points: Pandas-dataframe
+            Contains the dataframe of the (point-)data from the GemPy-model.
         searchcrit : int or float
             if is int: uses knn-search.
             if is float: uses radius-search.
         """
     
         # extract surface names
-        surfaces = np.unique(surface_points.df['surface'])
+        surfaces = np.unique(surface_points['surface'])
         nbrs = []
         search_id = []
         # for each surface
@@ -2003,9 +2003,9 @@ class Orientations(GeometricData):
             searchcrit = searchcrit + 1  # because the point itself is also found
             for i in range(surfaces.size):
                 # extract point-ids
-                i_surfaces = surface_points.df['surface'] == surfaces[i]
+                i_surfaces = surface_points['surface'] == surfaces[i]
                 # extract point coordinates
-                p_surfaces = surface_points.df[i_surfaces][['X', 'Y', 'Z']]
+                p_surfaces = surface_points[i_surfaces][['X', 'Y', 'Z']]
                 # save order of point ids for search
                 search_id.append(p_surfaces.index)
                 # create search-tree
@@ -2021,9 +2021,9 @@ class Orientations(GeometricData):
         else:  # in case radius-search
             for i in range(surfaces.size):
                 # extract point-ids
-                i_surfaces = surface_points.df['surface'] == surfaces[i]
+                i_surfaces = surface_points['surface'] == surfaces[i]
                 # extract point coordinates
-                p_surfaces = surface_points.df[i_surfaces][['X', 'Y', 'Z']]
+                p_surfaces = surface_points[i_surfaces][['X', 'Y', 'Z']]
                 # save order of point ids for search
                 search_id.append(p_surfaces.index)
                 # create search-tree
@@ -2046,6 +2046,7 @@ class Orientations(GeometricData):
             c.append(i.size)
     
         # initialize one orientation if none exists
+        deleteFirst = False
         if self.df.empty:
             self.set_default_orientation()
             deleteFirst = True
@@ -2053,7 +2054,7 @@ class Orientations(GeometricData):
         for i in range(len(nbrs)):
             if c[i] > 2:
                 # extract point coordinates
-                coo = surface_points.df.iloc[nbrs[i]][['X', 'Y', 'Z']]
+                coo = surface_points.loc[nbrs[i]][['X', 'Y', 'Z']]
                 # calculates covariance matrix
                 cov = np.cov(coo.T)
                 # extract eigenvalues from covariance matrix
@@ -2067,17 +2068,17 @@ class Orientations(GeometricData):
                 dip = np.degrees(np.arccos(normvec[0, 2])) % 360
                 azimuth = np.degrees(np.arctan2(normvec[0, 0], normvec[0, 1])) % 360
                 # append to the GemPy-model
-                self.add_orientation(surface_points.df['X'][search_id[i]],
-                                     surface_points.df['Y'][search_id[i]],
-                                     surface_points.df['Z'][search_id[i]],
-                                     surface_points.df['surface'][search_id[i]],
+                self.add_orientation(surface_points['X'][search_id[i]],
+                                     surface_points['Y'][search_id[i]],
+                                     surface_points['Z'][search_id[i]],
+                                     surface_points['surface'][search_id[i]],
                                      orientation=[azimuth, dip, 1])
             # if computation is impossible set normal vector to default orientation
             else:
-                self.add_orientation(surface_points.df['X'][search_id[i]],
-                                     surface_points.df['Y'][search_id[i]],
-                                     surface_points.df['Z'][search_id[i]],
-                                     surface_points.df['surface'][search_id[i]],
+                self.add_orientation(surface_points['X'][search_id[i]],
+                                     surface_points['Y'][search_id[i]],
+                                     surface_points['Z'][search_id[i]],
+                                     surface_points['surface'][search_id[i]],
                                      orientation=[0, 0, 1])
         # delete initialize orientation, if it was set
         if deleteFirst:
