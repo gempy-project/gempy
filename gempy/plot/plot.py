@@ -28,7 +28,6 @@
 
 from typing import Set, Tuple, Dict, Union
 from nptyping import Array
-from .visualization_3d import  ipyvolumeVisualization
 import gempy as _gempy
 from .visualization_2d import PlotData2D, PlotSolution
 from .visualization_3d import GemPyvtkInteract
@@ -76,17 +75,6 @@ def plot_3D(geo_model, render_surfaces=True, render_data=True,
     vv.render_model(**kwargs)
 
     return vv
-
-
-
-def plot_data_3d_ipv(geo_model: object) -> None:
-    """
-
-    Args:
-        geo_model (gempy.core.model.Model):
-    """
-    ipvv = ipyvolumeVisualization(geo_model)
-    ipvv.plot_data()
 
 
 def export_to_vtk(geo_data, path=None, name=None, voxels=True, block=None, surfaces=True):
