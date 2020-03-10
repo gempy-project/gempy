@@ -217,9 +217,8 @@ class Vista:
         return meshes
 
     def get_surface(self, fmt: str) -> pv.PolyData:
-        i = np.where(self.model.surfaces.df.surface == fmt)[0][0]
-        ver = self.model.solutions.vertices[
-            i]  # TODO: BUG surfaces within series are flipped in order !!!!!!!
+        i = self.model.surfaces.df.index[np.where(self.model.surfaces.df.surface == fmt)[0][0]]
+        ver = self.model.solutions.vertices[i]
 
         sim = self._simplices_to_pv_tri_simplices(
             self.model.solutions.edges[i]
