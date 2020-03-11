@@ -157,8 +157,16 @@ def plot_2d(model, n_axis=None, section_names: list = None,
 
 
 def plot_section_traces(model):
+    """Plot section traces of section grid in 2-D topview (xy).
+
+    Args:
+        model: Geomodel object with solutions.
+
+    Returns:
+        (Plot2D) Plot2D object
+    """
     pst = plot_2d(model, n_axis=1, section_names=['topography'],
-                  show_data=False, show_boundaries=False)
+                  show_data=False, show_boundaries=False, show_lith=False)
     pst.plot_section_traces(pst.axes[0], show_data=False)
     return pst
 
