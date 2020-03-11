@@ -230,24 +230,6 @@ def plot_stereonet(self, litho=None, planes=True, poles=True,
         ax.grid(True, color='black', alpha=0.25)
 
 
-def plot_data_3d(geo_model, **kwargs) -> Vista:
-    """Plot input data in 3-D.
-
-    Args:
-        geo_model: Geomodel object.
-        **kwargs: Keyword arguments for GemPy Vista instance.
-
-    Returns:
-        (Vista) GemPy Vista object for plotting.
-    """
-    gpv = Vista(geo_model, **kwargs)
-    gpv.set_bounds()
-    gpv.plot_surface_points_all()
-    gpv.plot_orientations_all()
-    gpv.show()
-    return gpv
-
-
 def plot_3d(
         geo_model,
         render_surfaces: bool = True,
