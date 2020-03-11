@@ -53,6 +53,28 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             show_boundaries: Union[bool, list] = True,
             show_topography: Union[bool, list] = False,
             **kwargs):
+    """"Plot 2-D sections of geomodel.
+
+    Plot cross sections either based on custom section traces or cell number in xyz direction.
+    Options to plot lithology block, scalar field or rendered surface lines.
+    Input data and topography can be included.
+
+    Args:
+        model: Geomodel object with solutions.
+        n_axis (int): Subplot axis for multiple sections
+        section_names (list): Names of predefined custom section traces
+        cell_number (list): Position of the array to plot
+        direction (str): Cartesian direction to be plotted (xyz)
+        show_data (bool): Show original input data. Defaults to True.
+        show_lith (bool): Show lithological block volumes. Defaults to True.
+        show_scalar (bool): Show scalar field isolines. Defaults to False.
+        show_boundaries (bool): Show surface boundaries as lines. Defaults to True.
+        show_topography (bool): Show topography on plot. Defaults to False.
+        **kwargs:
+
+    Returns:
+        (Plot2D) Plot2D object
+    """
     section_names = [] if section_names is None else section_names
     section_names = np.atleast_1d(section_names)
     if cell_number is None:
