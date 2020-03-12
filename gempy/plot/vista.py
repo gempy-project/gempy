@@ -362,6 +362,35 @@ class Vista:
         self.p.add_mesh(mesh, **kwargs)
         return [mesh]
 
+    def set_scalar_data(self, regular_grid, data: Union[dict, gp.Solution, str] = 'Default', name='lith'):
+        """
+
+        Args:
+            regular_grid:
+            data: dictionary or solution
+            name: if data is a gp.Solutions object, name of the grid that you want to plot.
+
+        Returns:
+
+        """
+        if data == 'Default':
+            data = self.model.solutions
+
+        if isinstance(data, gp.Solution):
+            if name == 'lith':
+                data = {'lith': data.lith_block}
+
+            elif name == 'scalar':
+                data = {name: data.scalar_field_matrix.T}
+
+            elif name == 'values':
+                data = {name: data.values_matrix.T}
+
+        if type(data) == dict:
+            for key in data:
+                regular_grid.point_arrays[key] = data[key]
+
+        return regular_grid
 
     def plot_structured_grid_interactive(
             self,
