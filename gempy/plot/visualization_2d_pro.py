@@ -319,7 +319,6 @@ class Plot2D:
         extent_val = [*ax.get_xlim(), *ax.get_ylim()]
         section_name, cell_number, direction = self._check_default_section(ax, section_name, cell_number, direction)
 
-
         if section_name is not None:
             if section_name == 'topography':
                 try:

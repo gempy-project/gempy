@@ -58,7 +58,7 @@ class Vista:
             self,
             model: gp.Model,
             extent: List[float] = None,
-            color_lot: pn.DataFrame = None,
+            lith_c: pn.DataFrame = None,
             real_time: bool = False,
             plotter_type: Union["basic", "background"] = 'basic',
             **kwargs
@@ -68,7 +68,7 @@ class Vista:
         Args:
             model (gp.Model): Geomodel instance with solutions.
             extent (List[float], optional): Custom extent. Defaults to None.
-            color_lot (pn.DataFrame, optional): Custom color scheme in the form
+            lith_c (pn.DataFrame, optional): Custom color scheme in the form
                 of a look-up table. Defaults to None.
             real_time (bool, optional): Toggles real-time updating of the plot. 
                 Defaults to False.
@@ -81,10 +81,7 @@ class Vista:
         else:
             self.extent = list(model.grid.regular_grid.extent)
 
-        if color_lot:
-            self._color_lot = color_lot
-        else:
-            self._color_lot = model.surfaces.df.set_index('surface')['color']
+        self.lith_c = model.surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
         self._color_id_lot = model.surfaces.df.set_index('id')['color']
 
         if plotter_type == 'basic':
@@ -102,8 +99,18 @@ class Vista:
         self.topo_edges = None
         self.topo_ctrs = None
 
+        # Set the default extent of the model to the render
+        self.set_bounds()
+
+        # Set a nice default view
+        self.p.view_isometric(negative=False)
+
     def show(self):
         self.p.show()
+
+    def get_default_color(self, lith_c: pn.DataFrame = None):
+        self.lith_c = self.model.surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
+        return self.lith_c
 
     def _actor_exists(self, new_actor):
         if not hasattr(new_actor, "points"):
@@ -135,66 +142,73 @@ class Vista:
             bounds=extent, location=location, grid=grid, **kwargs
         )
 
-    def plot_surface_points(self, fmt: str, **kwargs):
-        i = self.model.surface_points.df.groupby("surface").groups[fmt]
-        if len(i) == 0:
-            return
+    def plot_surface_points(self, fmt: str = None, **kwargs):
+        if fmt is None:
+            self._plot_surface_points_all()
+        else:
+            i = self.model.surface_points.df.groupby("surface").groups[fmt]
+            if len(i) == 0:
+                return False
 
-        mesh = pv.PolyData(
-            self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
-        )
-        if self._actor_exists(mesh):
-            return []
-
-        self.p.add_mesh(
-            mesh,
-            color=self._color_lot[fmt],
-            **kwargs
-        )
-        self._actors.append(mesh)
-        return [mesh]
-
-    def plot_orientations(self, fmt: str, length: float = None, **kwargs):
-        meshes = []
-        i = self.model.orientations.df.groupby("surface").groups[fmt]
-        if len(i) == 0:
-            return meshes
-        if not length:
-            length = abs(
-                np.min(
-                    [
-                        np.diff(self.extent[:2]),
-                        np.diff(self.extent[2:4]),
-                        np.diff(self.extent[4:])
-                    ]
-                )
-            ) / 10
-
-        pts = self.model.orientations.df.loc[i][["X", "Y", "Z"]].values
-        nrms = self.model.orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
-
-        line_kwargs = dict(
-            color=self._color_lot[fmt],
-            line_width=3,
-        )
-        line_kwargs.update(kwargs)
-
-        for pt, nrm in zip(pts, nrms):
-            mesh = pv.Line(
-                pointa=pt,
-                pointb=pt + length * nrm,
+            surface_points = self.model.surface_points.df.loc[i]
+            mesh = pv.PolyData(
+                surface_points[["X", "Y", "Z"]].values
             )
             if self._actor_exists(mesh):
-                continue
+                return []
+
             self.p.add_mesh(
                 mesh,
-                **line_kwargs
+                color=self.get_default_color()[surface_points['id']].values[0],
+                **kwargs
             )
             self._actors.append(mesh)
-            meshes.append(mesh)
-        return meshes
+            return [mesh]
 
-    def plot_surface_points_all(self, **kwargs):
+    def plot_orientations(self, fmt: str = None, length: float = None, **kwargs):
+        if fmt is None:
+            return self._plot_orientations_all()
+        else:
+            meshes = []
+            i = self.model.orientations.df.groupby("surface").groups[fmt]
+            if len(i) == 0:
+                return meshes
+            if not length:
+                length = abs(
+                    np.min(
+                        [
+                            np.diff(self.extent[:2]),
+                            np.diff(self.extent[2:4]),
+                            np.diff(self.extent[4:])
+                        ]
+                    )
+                ) / 10
+            orientations = self.model.orientations.df.loc[i]
+            pts = orientations[["X", "Y", "Z"]].values
+            nrms = orientations[["G_x", "G_y", "G_z"]].values
+
+            line_kwargs = dict(
+                color=self.get_default_color()[orientations['id']].values[0],
+                line_width=3,
+            )
+            line_kwargs.update(kwargs)
+
+            for pt, nrm in zip(pts, nrms):
+                mesh = pv.Line(
+                    pointa=pt,
+                    pointb=pt + length * nrm,
+                )
+                if self._actor_exists(mesh):
+                    continue
+                self.p.add_mesh(
+                    mesh,
+                    **line_kwargs
+                )
+                self._actors.append(mesh)
+                meshes.append(mesh)
+            return meshes
+
+    def _plot_surface_points_all(self, **kwargs):
         meshes = []
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":
@@ -205,7 +219,7 @@ class Vista:
                     meshes.append(mesh)
         return meshes
 
-    def plot_orientations_all(self, **kwargs):
+    def _plot_orientations_all(self, **kwargs):
         meshes = []
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":
@@ -215,24 +229,64 @@ class Vista:
                 if orient_mesh is not None:
                     meshes.append(orient_mesh)
         return meshes
+    #
+    # def get_surface(self, fmt: str) -> pv.PolyData:
+    #     i = np.where(self.model.surfaces.df.surface == fmt)[0][0]
+    #     ver = self.model.solutions.vertices[
+    #         i]  # TODO: BUG surfaces within series are flipped in order !!!!!!!
+    #
+    #     sim = self._simplices_to_pv_tri_simplices(
+    #         self.model.solutions.edges[i]
+    #     )
+    #     mesh = pv.PolyData(ver, sim)
+    #     return mesh
+    #
+    # def set_surfaces(self, surfaces=None, **kwargs):
+    #     if surfaces is None:
+    #         surfaces = self.model.surfaces
+    #         for idx, val in surfaces.df[['vertices', 'edges', 'color']].dropna().iterrows():
+    #
+    #             surf = pv.PolyData(val['vertices'], np.insert(val['edges'], 0, 3, axis=1).ravel())
+    #             self.surf_polydata.at[idx] = surf
+    #             self.p.add_mesh(surf, parse_color(val['color']), **kwargs)
+    #
+    #     return self.surf_polydata
 
     def get_surface(self, fmt: str) -> pv.PolyData:
-        i = np.where(self.model.surfaces.df.surface == fmt)[0][0]
-        ver = self.model.solutions.vertices[
-            i]  # TODO: BUG surfaces within series are flipped in order !!!!!!!
+        surfaces = self.model.surfaces.df.groupby('surface').get_group(fmt)
+        return surfaces
 
-        sim = self._simplices_to_pv_tri_simplices(
-            self.model.solutions.edges[i]
-        )
-        mesh = pv.PolyData(ver, sim)
-        return mesh
+    def create_surface_mesh(self, fmt = None, ver = None, tri = None):
+        """Create vtk mesh either from the name of a gempy.Model surface or directly by passing the vertices
+         and edges.
+
+        Args:
+            fmt:
+            ver:
+            tri:
+
+        Returns:
+
+        """
+        if fmt is not None:
+            surfaces = self.get_surface(fmt)
+            mesh = pv.PolyData(surfaces['vertices'][0], np.insert(surfaces['edges'][0], 0, 3, axis=1).ravel())
+            return mesh
+
+        elif fmt is None and ver is not None and tri is not None:
+            mesh = pv.PolyData(ver, tri)
+            return mesh
+
+        else:
+            raise AttributeError
 
     def plot_surface(self, fmt: str, **kwargs):
-        mesh = self.get_surface(fmt)
+        surfaces = self.get_surface(fmt)
+        mesh = self.create_surface_mesh(surfaces['vertices'][0], np.insert(surfaces['edges'][0], 0, 3, axis=1).ravel())
         if self._actor_exists(mesh):
             return []
 
-        mesh_kwargs = dict(color=self._color_lot[fmt])
+        mesh_kwargs = dict(color=parse_color(surfaces['color']))
         mesh_kwargs.update(kwargs)
 
         self.p.add_mesh(mesh, **mesh_kwargs)
@@ -261,7 +315,7 @@ class Vista:
         """
         if hasattr(faults, "next"):
             if type(faults[0]) == str:
-                faults = [self.get_surface(f) for f in faults]
+                faults = [self.create_surface_mesh(f) for f in faults]
 
         horizons = []
         if not value:
@@ -311,6 +365,7 @@ class Vista:
     @staticmethod
     def _simplices_to_pv_tri_simplices(sim: Array[int, ..., 3]) -> Array[
         int, ..., 4]:
+        # TODO time this method and this: np.insert(surfaces['edges'], 0, 3, axis=1).ravel()
         """Convert triangle simplices (n, 3) to pyvista-compatible
         simplices (n, 4)."""
         n_edges = np.ones(sim.shape[0]) * 3
@@ -336,7 +391,7 @@ class Vista:
         if name == "lith":
             vals = self.model.solutions.lith_block.copy()
             n_faults = self.model.faults.df['isFault'].sum()
-            cmap = mcolors.ListedColormap(list(self._color_id_lot[n_faults:]))
+            cmap = mcolors.ListedColormap(list(self.get_default_color()[n_faults:]))
             kwargs['cmap'] = kwargs.get('cmap', cmap)
         elif name == "scalar":
             if series == None:
@@ -362,6 +417,35 @@ class Vista:
         self.p.add_mesh(mesh, **kwargs)
         return [mesh]
 
+    def set_scalar_data(self, regular_grid, data: Union[dict, gp.Solution, str] = 'Default', name='lith'):
+        """
+
+        Args:
+            regular_grid:
+            data: dictionary or solution
+            name: if data is a gp.Solutions object, name of the grid that you want to plot.
+
+        Returns:
+
+        """
+        if data == 'Default':
+            data = self.model.solutions
+
+        if isinstance(data, gp.Solution):
+            if name == 'lith':
+                data = {'lith': data.lith_block}
+
+            elif name == 'scalar':
+                data = {name: data.scalar_field_matrix.T}
+
+            elif name == 'values':
+                data = {name: data.values_matrix.T}
+
+        if type(data) == dict:
+            for key in data:
+                regular_grid.point_arrays[key] = data[key]
+
+        return regular_grid
 
     def plot_structured_grid_interactive(
             self,
@@ -387,7 +471,7 @@ class Vista:
 
         # define colormaps
         if name == "lith":
-            cmap = mcolors.ListedColormap(list(self._color_id_lot[self.model.series.faults.n_faults:]))
+            cmap = mcolors.ListedColormap(list(self.get_default_color()[self.model.series.faults.n_faults:]))
         elif name == "scalar":
             cmap = cm.viridis
 
@@ -422,7 +506,6 @@ class Vista:
         self.p.subplot(3)
         self.p.view_xy()
         self.p.disable()
-
 
     def _callback_surface_points(self, pos, index, widget):
         i = index
@@ -469,58 +552,65 @@ class Vista:
                 ).ravel()
                 self._surface_actors[surf] = polydata
 
-    def plot_surface_points_interactive(self, fmt: str, **kwargs):
-        self._live_updating = True
-        i = self.model.surface_points.df.groupby("surface").groups[fmt]
-        if len(i) == 0:
-            return
+    def plot_surface_points_interactive(self, fmt: str = None, **kwargs):
+        if fmt is None:
+            self._plot_surface_points_interactive_all()
+        else:
 
-        pts = self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
+            self._live_updating = True
+            i = self.model.surface_points.df.groupby("surface").groups[fmt]
+            if len(i) == 0:
+                return
 
-        self.p.add_sphere_widget(
-            self._callback_surface_points,
-            center=pts,
-            radius=np.mean(self.extent) / 20,
-            color=self._color_lot[fmt],
-            indices=i,
-            test_callback=False,
-            phi_resolution=6,
-            theta_resolution=6,
-            pass_widget=True,
-            **kwargs
-        )
+            pts = self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
 
-    def plot_surface_points_interactive_all(self, **kwargs):
+            self.p.add_sphere_widget(
+                self._callback_surface_points,
+                center=pts,
+                radius=np.mean(self.extent) / 20,
+                color=self.get_default_color()[i],
+                indices=i,
+                test_callback=False,
+                phi_resolution=6,
+                theta_resolution=6,
+                pass_widget=True,
+                **kwargs
+            )
+
+    def _plot_surface_points_interactive_all(self, **kwargs):
         self._live_updating = True
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":
                 continue
             self.plot_surface_points_interactive(fmt, **kwargs)
 
-    def plot_orientations_interactive(self, fmt: str):
-        self._live_updating = True
-        i = self.model.orientations.df.groupby("surface").groups[fmt]
-        if len(i) == 0:
-            return
+    def plot_orientations_interactive(self, fmt: str = None):
+        if fmt is None:
+            self._plot_orientations_interactive_all()
+        else:
+            self._live_updating = True
+            i = self.model.orientations.df.groupby("surface").groups[fmt]
+            if len(i) == 0:
+                return
 
-        pts = self.model.orientations.df.loc[i][["X", "Y", "Z"]].values
-        nrms = self.model.orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
+            pts = self.model.orientations.df.loc[i][["X", "Y", "Z"]].values
+            nrms = self.model.orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
 
-        for index, pt, nrm in zip(i, pts, nrms):
-            widget = self.p.add_plane_widget(
-                self._callback_orientations,
-                normal=nrm,
-                origin=pt,
-                bounds=self.extent,
-                factor=0.15,
-                implicit=False,
-                pass_widget=True,
-                test_callback=False,
-                color=self._color_lot[fmt]
-            )
-            widget.WIDGET_INDEX = index
+            for index, pt, nrm in zip(i, pts, nrms):
+                widget = self.p.add_plane_widget(
+                    self._callback_orientations,
+                    normal=nrm,
+                    origin=pt,
+                    bounds=self.extent,
+                    factor=0.15,
+                    implicit=False,
+                    pass_widget=True,
+                    test_callback=False,
+                    color=self.get_default_color()[i]
+                )
+                widget.WIDGET_INDEX = index
 
-    def plot_orientations_interactive_all(self):
+    def _plot_orientations_interactive_all(self):
         self._live_updating = True
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":
@@ -632,7 +722,7 @@ class Vista:
         if scalars == "geomap":
             arr_ = np.empty((0, 3), dtype=int)
             # convert hex colors to rgb
-            for val in list(self._color_lot):
+            for val in list(self.get_default_color()):
                 rgb = (255 * np.array(mcolors.hex2color(val)))
                 arr_ = np.vstack((arr_, rgb))
 
