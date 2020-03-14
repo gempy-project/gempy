@@ -102,6 +102,8 @@ class Vista:
         self.topo_edges = None
         self.topo_ctrs = None
 
+        self.set_bounds()
+
     def show(self):
         self.p.show()
 
@@ -135,10 +137,13 @@ class Vista:
             bounds=extent, location=location, grid=grid, **kwargs
         )
 
-    def plot_surface_points(self, fmt: str, **kwargs):
+    def plot_surface_points(self, fmt: str = None, **kwargs):
+        if fmt is None:
+            self._plot_surface_points_all()
+
         i = self.model.surface_points.df.groupby("surface").groups[fmt]
         if len(i) == 0:
-            return
+            return False
 
         mesh = pv.PolyData(
             self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
@@ -154,7 +159,10 @@ class Vista:
         self._actors.append(mesh)
         return [mesh]
 
-    def plot_orientations(self, fmt: str, length: float = None, **kwargs):
+    def plot_orientations(self, fmt: str = None, length: float = None, **kwargs):
+        if fmt is None:
+            self._plot_orientations_all()
+
         meshes = []
         i = self.model.orientations.df.groupby("surface").groups[fmt]
         if len(i) == 0:
@@ -194,7 +202,7 @@ class Vista:
             meshes.append(mesh)
         return meshes
 
-    def plot_surface_points_all(self, **kwargs):
+    def _plot_surface_points_all(self, **kwargs):
         meshes = []
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":
@@ -205,7 +213,7 @@ class Vista:
                     meshes.append(mesh)
         return meshes
 
-    def plot_orientations_all(self, **kwargs):
+    def _plot_orientations_all(self, **kwargs):
         meshes = []
         for fmt in self.model.surfaces.df.surface:
             if fmt.lower() == "basement":

@@ -212,8 +212,8 @@ def plot_data_3d(geo_model, **kwargs) -> Vista:
     """
     gpv = Vista(geo_model, **kwargs)
     gpv.set_bounds()
-    gpv.plot_surface_points_all()
-    gpv.plot_orientations_all()
+    gpv._plot_surface_points_all()
+    gpv._plot_orientations_all()
     gpv.show()
     return gpv
 
@@ -243,8 +243,8 @@ def plot_3d(
     if render_surfaces:
         gpv.plot_surfaces_all()
     if render_data:
-        gpv.plot_surface_points_all()
-        gpv.plot_orientations_all()
+        gpv._plot_surface_points_all()
+        gpv._plot_orientations_all()
     if render_topography and geo_model.grid.topography is not None:
         gpv.plot_topography()
     gpv.show()
