@@ -257,7 +257,6 @@ class DataMutation(object):
 
         self.set_active_grid('sections')
         self.update_from_grid()
-        print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid.sections
 
     # endregion

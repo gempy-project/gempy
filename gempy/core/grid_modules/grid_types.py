@@ -157,12 +157,18 @@ class Sections:
         self.compute_section_coordinates()
 
     def get_section_params(self):
+        self.points = []
+        self.resolution = []
+        self.length = [0]
+
         for i, section in enumerate(self.names):
             points = [self.section_dict[section][0], self.section_dict[section][1]]
             assert points[0] != points[1], 'The start and end points of the section must not be identical.'
+
             self.points.append(points)
             self.resolution.append(self.section_dict[section][2])
-            self.length.append(self.section_dict[section][2][0] * self.section_dict[section][2][1])
+            self.length = np.append(self.length, self.section_dict[section][2][0] *
+                                    self.section_dict[section][2][1])
         self.length = np.array(self.length).cumsum()
 
     def calculate_all_distances(self):
