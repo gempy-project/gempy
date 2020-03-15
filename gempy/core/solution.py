@@ -216,7 +216,8 @@ class Solution(object):
 
     def mask_topo(self, mask_matrix):
         """Add the masked elements of the topography to the masking matrix"""
-        a = (~self.grid.regular_grid.mask_topo) * mask_matrix
+        x = ~self.grid.regular_grid.mask_topo
+        a = (np.swapaxes(x, 0, 1) * mask_matrix)
         return a
 
     def padding_mask_matrix(self, mask_topography=True, shift=2):
