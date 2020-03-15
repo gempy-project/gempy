@@ -438,8 +438,9 @@ class TheanoGraphPro(object):
         self.sfai_op = series[3][-1]
 
         mask = series[4][-1]
-        self.mask_op2 = mask
+        #self.mask_op2 = mask
         mask_rev_cumprod = T.vertical_stack(mask[[-1]], T.cumprod(T.invert(mask[:-1]), axis=0))
+        self.mask_op2 = mask_rev_cumprod
         block_mask = mask * mask_rev_cumprod
 
         fault_mask = series[5][-1]
