@@ -356,7 +356,7 @@ class DataMutation(object):
         self.orientations.sort_table()
 
         self.interpolator.set_flow_control()
-        self.update_structure()
+        self.update_structure(update_theano='weights')
         return self.series
 
     # endregion
