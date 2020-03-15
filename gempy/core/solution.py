@@ -220,7 +220,7 @@ class Solution(object):
         a = (np.swapaxes(x, 0, 1) * mask_matrix)
         return a
 
-    def padding_mask_matrix(self, mask_topography=True, shift=2):
+    def padding_mask_matrix(self, mask_topography=False, shift=2):
         """Pad as many elements as in shift to the masking arrays. This is done to guarantee intersection of layers
         if masked marching cubes are done"""
         self.mask_matrix_pad = []
@@ -233,7 +233,8 @@ class Solution(object):
                 mask_series_reshape, True, shift=shift))
 
             if mask_topography and self.grid.regular_grid.mask_topo.size != 0:
-                mask_pad = self.mask_topo(mask_pad)
+                raise NotImplementedError
+               # mask_pad = self.mask_topo(mask_pad)
 
             self.mask_matrix_pad.append(mask_pad)
         return True
