@@ -145,12 +145,14 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         compile_theano (bool): [s1]
         theano_optimizer (str {'fast_run', 'fast_compile'}): [s2]
         verbose:
-        kwargs:
-            -  pos_density (Optional[int]): Only necessary when type='grav'. Location on the Surfaces().df
-             where density is located (starting on id being 0).
-            - Vs
-            - pos_magnetics
-            -
+        update_kriging (bool): reset kriging values to its default.
+        update_structure (bool): sync Structure instance before setting theano graph.
+
+    Keyword Args:
+        -  pos_density (Optional[int]): Only necessary when type='grav'. Location on the Surfaces().df
+         where density is located (starting on id being 0).
+        - Vs
+        - pos_magnetics
 
     Returns:
 

@@ -99,8 +99,8 @@ def test_kriging_mutation(interpolator_islith_isfault, map_sequential_pile):
     # copy dataframe before interpolator is calculated
     pre = geo_model.additional_data.kriging_data.df.copy()
 
-    gp.set_interpolation_data(geo_model, compile_theano=True,
-                    theano_optimizer='fast_compile')
+    gp.set_interpolator(geo_model, compile_theano=True,
+                        theano_optimizer='fast_compile', update_kriging=False)
     gp.compute_model(geo_model, compute_mesh=False)
     gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
                               direction='y', show_data=True)
