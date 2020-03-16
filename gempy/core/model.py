@@ -18,6 +18,7 @@ from gempy.plot.decorators import *
 pn.options.mode.chained_assignment = None
 
 
+# TODO rename to ImplicitCoKriging
 @setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__, SurfacePoints.__doc__,
              Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
              Solution.__doc__])
@@ -256,7 +257,6 @@ class DataMutation(object):
 
         self.set_active_grid('sections')
         self.update_from_grid()
-        print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid.sections
 
     # endregion
@@ -356,7 +356,7 @@ class DataMutation(object):
         self.orientations.sort_table()
 
         self.interpolator.set_flow_control()
-        self.update_structure()
+        self.update_structure(update_theano='weights')
         return self.series
 
     # endregion
@@ -573,7 +573,7 @@ class DataMutation(object):
             aux = self.series.df.index.drop('Basement').array
             self.reorder_series(np.append(aux, 'Basement'))
 
-        if twofins is False: #assert if every fault has its own series
+        if twofins is False: # assert if every fault has its own series
             for serie in list(self.faults.df[self.faults.df['isFault'] == True].index):
                 assert np.sum(self.surfaces.df['series'] == serie) < 2, \
                 'Having more than one fault in a series is generally rather bad. Better give each '\
@@ -619,8 +619,9 @@ class DataMutation(object):
 
         self.map_geometric_data_df(self.surface_points.df)
         self.rescaling.rescale_data()
-        self.additional_data.update_structure()
-        self.additional_data.update_default_kriging()
+        self.update_structure()
+    #    self.additional_data.update_structure()
+      #  self.additional_data.update_default_kriging()
 
     @setdoc(Orientations.set_orientations.__doc__, indent=False, position='beg')
     def set_orientations(self, table: pn.DataFrame, **kwargs):
@@ -654,8 +655,9 @@ class DataMutation(object):
 
         self.map_geometric_data_df(self.orientations.df)
         self.rescaling.rescale_data()
-        self.additional_data.update_structure()
-        self.additional_data.update_default_kriging()
+      #  self.additional_data.update_structure()
+        self.update_structure()
+       # self.additional_data.update_default_kriging()
 
     @setdoc_pro(ds.recompute_rf)
     @setdoc(SurfacePoints.add_surface_points.__doc__, indent=False, position='beg')
@@ -1098,6 +1100,7 @@ class DataMutation(object):
         return self.surfaces
 
 
+# TODO rename to Project. With DEP time
 @setdoc([MetaData.__doc__, DataMutation.__doc__], indent=False)
 class Model(DataMutation, ABC):
     """ Container class of all objects that constitute a GemPy model.
@@ -1110,7 +1113,6 @@ class Model(DataMutation, ABC):
 
         self.meta = MetaData(project_name=project_name)
         super().__init__()
-        #self.interpolator_gravity = None
 
     def __repr__(self):
         return self.meta.project_name + ' ' + self.meta.date

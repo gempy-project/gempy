@@ -44,7 +44,7 @@ class TestVista:
         assert vista_obj._actor_exists(mesh[0])
 
     def test_plot_surface_points_all(self, vista_obj):
-        meshes = vista_obj.plot_surface_points_all()
+        meshes = vista_obj._plot_surface_points_all()
         for mesh in meshes:
             assert vista_obj._actor_exists(mesh)
 
@@ -54,7 +54,7 @@ class TestVista:
             assert vista_obj._actor_exists(mesh)
 
     def test_plot_orientations_all(self, vista_obj):
-        meshes = vista_obj.plot_orientations_all()
+        meshes = vista_obj._plot_orientations_all()
         for mesh in meshes:
             assert vista_obj._actor_exists(mesh)
 
