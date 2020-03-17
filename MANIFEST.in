@@ -1,1 +1,1 @@
-recursive-include notebooks/ *
+exclude notebooks/ *

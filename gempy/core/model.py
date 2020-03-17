@@ -257,7 +257,6 @@ class DataMutation(object):
 
         self.set_active_grid('sections')
         self.update_from_grid()
-        print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid.sections
 
     # endregion
@@ -357,7 +356,7 @@ class DataMutation(object):
         self.orientations.sort_table()
 
         self.interpolator.set_flow_control()
-        self.update_structure()
+        self.update_structure(update_theano='weights')
         return self.series
 
     # endregion
@@ -620,8 +619,9 @@ class DataMutation(object):
 
         self.map_geometric_data_df(self.surface_points.df)
         self.rescaling.rescale_data()
-        self.additional_data.update_structure()
-        self.additional_data.update_default_kriging()
+        self.update_structure()
+    #    self.additional_data.update_structure()
+      #  self.additional_data.update_default_kriging()
 
     @setdoc(Orientations.set_orientations.__doc__, indent=False, position='beg')
     def set_orientations(self, table: pn.DataFrame, **kwargs):
@@ -655,8 +655,9 @@ class DataMutation(object):
 
         self.map_geometric_data_df(self.orientations.df)
         self.rescaling.rescale_data()
-        self.additional_data.update_structure()
-        self.additional_data.update_default_kriging()
+      #  self.additional_data.update_structure()
+        self.update_structure()
+       # self.additional_data.update_default_kriging()
 
     @setdoc_pro(ds.recompute_rf)
     @setdoc(SurfacePoints.add_surface_points.__doc__, indent=False, position='beg')

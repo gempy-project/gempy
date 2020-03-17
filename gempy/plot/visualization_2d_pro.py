@@ -446,7 +446,6 @@ class Plot2D:
 
         sel_ori = orientations[select_projected_o]
 
-        #print(sel_ori)
         aspect = np.subtract(*ax.get_ylim()) / np.subtract(*ax.get_xlim())
         min_axis = 'width' if aspect < 1 else 'height'
 
@@ -455,12 +454,8 @@ class Plot2D:
                   pivot="tail", scale_units=min_axis, scale=30, color=sel_ori['surface'].map(self._color_lot),
                   edgecolor='k', headwidth=8, linewidths=1, zorder=102)
 
-                # My old values
-                #  scale=10, edgecolor='k', color=sel_ori['surface'].map(self._color_lot),
-                #  headwidth=4, linewidths=1)
         try:
             ax.legend_.set_frame_on(True)
-          #  ax.legend_.set_bbox_to_anchor((1.5, 1))
         except AttributeError:
             pass
 
