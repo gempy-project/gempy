@@ -197,10 +197,13 @@ class Grid(object):
     def create_centered_grid(self, centers, radio, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
         self.centered_grid = grid_types.CenteredGrid(centers, radio, resolution)
-       # self.active_grids = np.zeros(4, dtype=bool)
         self.set_active('centered')
 
     def deactivate_all_grids(self):
+        """
+        Deactivates
+        :return: the active grids array
+        """
         self.active_grids = np.zeros(5, dtype=bool)
         self.update_grid_values()
         return self.active_grids
