@@ -201,8 +201,8 @@ class Grid(object):
 
     def deactivate_all_grids(self):
         """
-        Deactivates
-        :return: the active grids array
+        Deactivates the active grids array
+        :return:
         """
         self.active_grids = np.zeros(5, dtype=bool)
         self.update_grid_values()
