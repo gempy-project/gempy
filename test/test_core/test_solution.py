@@ -22,7 +22,7 @@ def test_rescaled_marching_cube(interpolator_islith_nofault):
     return geo_data
 
 
-def test_custom_grid(interpolator_islith_nofault):
+def test_custom_grid_solution(interpolator_islith_nofault):
     """
     Integration test for a gempy model using a custom grid
 
@@ -38,11 +38,13 @@ def test_custom_grid(interpolator_islith_nofault):
     # add a custom grid
     cg = np.array([[5, 5, -9],
                    [5, 5, -5],
+                   [5, 5, -5.1],
+                   [5, 5, -5.2],
                    [5, 5, -1]])
     values = geo_model.set_custom_grid(cg)
     assert geo_model.grid.active_grids[1]
     # set the theano function
     geo_model.set_theano_function(interpolator_islith_nofault)
     # Compute model
-    sol = gempy.compute_model(geo_model)
-    # TODO inspect the solution
+    sol = gempy.compute_model(geo_model, compute_mesh=False)
+    assert sol.custom.shape == (2,1,5)
