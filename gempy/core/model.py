@@ -216,7 +216,7 @@ class DataMutation(object):
         if self.grid.custom_grid is None:
             self.grid.create_custom_grid(custom_grid)
         else:
-            self.grid.custom_grid.set_custmo_grid(custom_grid)
+            self.grid.custom_grid.set_custom_grid(custom_grid)
             self.grid.update_grid_values()
 
         self.update_from_grid()
