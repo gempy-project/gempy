@@ -104,9 +104,13 @@ class Vista:
             extent = self.extent
         self.p.show_bounds(bounds=extent,  location=location, grid=grid, **kwargs)
 
-    def plot_structured_grid(self, regular_grid=None, data: Union[dict, gp.Solution, str] = 'Default',
-                             name='lith',
-                             **kwargs):
+    def plot_structured_grid(
+            self,
+            regular_grid=None,
+            data: Union[dict, str] = 'Default',
+            name='lith',
+            **kwargs
+    ):
         # Remove previous actor with the same name:
         try:
             self.p.remove_actor(self.vista_rgrids_actors[name])
