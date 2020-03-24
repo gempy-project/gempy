@@ -50,3 +50,22 @@ class TestGrid:
         geo_data.set_section_grid(section_dict)
         geo_data.set_section_grid(section_dict)
         print(geo_data.grid.sections)
+
+
+    def test_custom_grid(self):
+        # create custom grid
+        grid = gp.Grid()
+        cg = np.array([[1, 2, 3],
+                        [4, 5, 6],
+                        [7, 8, 9]])
+        grid.create_custom_grid(cg)
+        # make sure the custom grid is active
+        assert grid.active_grids[1]
+        # make sure the custom grid is equal to the provided values
+        np.testing.assert_array_almost_equal(cg, grid.custom_grid.values)
+        # make sure we have the correct number of values in our grid
+        l0, l1 = grid.get_grid_args('custom')
+        assert l0 == 0
+        assert l1 == 3
+
+

@@ -216,7 +216,7 @@ class DataMutation(object):
         if self.grid.custom_grid is None:
             self.grid.create_custom_grid(custom_grid)
         else:
-            self.grid.custom_grid.set_custmo_grid(custom_grid)
+            self.grid.custom_grid.set_custom_grid(custom_grid)
             self.grid.update_grid_values()
 
         self.update_from_grid()
@@ -1051,8 +1051,8 @@ class DataMutation(object):
             Surfaces
         """
         # TODO time this function
-       # spu = self.surface_points.df['surface'].unique()
-       # sps = self.surface_points.df['series'].unique()
+        # spu = self.surface_points.df['surface'].unique()
+        # sps = self.surface_points.df['series'].unique()
 
         # # Boolean array of size len surfaces with True active surfaces minus Basemes
         # sel = self.surfaces.df['isActive'] & ~self.surfaces.df['isBasement'] #self.surfaces.df['surface'].isin(spu)

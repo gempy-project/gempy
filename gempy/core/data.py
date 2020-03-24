@@ -201,6 +201,10 @@ class Grid(object):
         self.set_active('centered')
 
     def deactivate_all_grids(self):
+        """
+        Deactivates the active grids array
+        :return:
+        """
         self.active_grids = np.zeros(5, dtype=bool)
         self.update_grid_values()
         return self.active_grids
