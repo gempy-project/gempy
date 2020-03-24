@@ -252,7 +252,7 @@ class CenteredGrid:
     Logarithmic spaced grid.
     """
 
-    def __init__(self, centers=None, radio=None, resolution=None):
+    def __init__(self, centers=None, radius=None, resolution=None):
         self.grid_type = 'centered_grid'
         self.values = np.empty((0, 3))
         self.length = self.values.shape[0]
@@ -261,28 +261,28 @@ class CenteredGrid:
         self.kernel_dxyz_right = np.empty((0, 3))
         self.tz = np.empty(0)
 
-        if centers is not None and radio is not None:
+        if centers is not None and radius is not None:
             if resolution is None:
                 resolution = [10, 10, 20]
 
-            self.set_centered_grid(centers=centers, radio=radio, resolution=resolution)
+            self.set_centered_grid(centers=centers, radius=radius, resolution=resolution)
 
     @staticmethod
     @setdoc_pro(ds.resolution)
-    def create_irregular_grid_kernel(resolution, radio):
+    def create_irregular_grid_kernel(resolution, radius):
         """
         Create an isometric grid kernel (centered at 0)
 
         Args:
             resolution: [s0]
-            radio (float): Maximum distance of the kernel
+            radius (float): Maximum distance of the kernel
 
         Returns:
             tuple: center of the voxel, left edge of each voxel (for xyz), right edge of each voxel (for xyz).
         """
 
-        if radio is not list or radio is not np.ndarray:
-            radio = np.repeat(radio, 3)
+        if radius is not list or radius is not np.ndarray:
+            radius = np.repeat(radius, 3)
 
         g_ = []
         g_2 = []
@@ -293,10 +293,10 @@ class CenteredGrid:
                 # Make the grid only negative for the z axis
 
                 g_.append(np.geomspace(0.01, 1, int(resolution[xyz])))
-                g_2.append((np.concatenate(([0], g_[xyz])) + 0.05) * - radio[xyz]*1.2)
+                g_2.append((np.concatenate(([0], g_[xyz])) + 0.05) * - radius[xyz] * 1.2)
             else:
                 g_.append(np.geomspace(0.01, 1, int(resolution[xyz] / 2)))
-                g_2.append(np.concatenate((-g_[xyz][::-1], [0], g_[xyz])) * radio[xyz])
+                g_2.append(np.concatenate((-g_[xyz][::-1], [0], g_[xyz])) * radius[xyz])
             d_.append(np.diff(np.pad(g_2[xyz], 1, 'reflect', reflect_type='odd')))
 
         g = np.meshgrid(*g_2)
@@ -309,19 +309,19 @@ class CenteredGrid:
         return kernel_g, kernel_d_left, kernel_d_right
 
     @setdoc_pro(ds.resolution)
-    def set_centered_kernel(self, resolution, radio):
+    def set_centered_kernel(self, resolution, radius):
         """
         Set a centered
 
         Args:
             resolution: [s0]
-            radio (float): Maximum distance of the kernel
+            radius (float): Maximum distance of the kernel
 
         Returns:
 
         """
         self.kernel_centers, self.kernel_dxyz_left, self.kernel_dxyz_right = self.create_irregular_grid_kernel(
-            resolution, radio)
+            resolution, radius)
 
         return self.kernel_centers
 
@@ -335,7 +335,7 @@ class CenteredGrid:
             kernel_centers (Optional[np.array]): center of the voxels of a desired kernel.
             **kwargs:
                 * resolution: [s0]
-                * radio (float): Maximum distance of the kernel
+                * radius (float): Maximum distance of the kernel
         Returns:
 
         """

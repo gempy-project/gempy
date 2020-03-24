@@ -54,6 +54,28 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             show_boundaries: Union[bool, list] = True,
             show_topography: Union[bool, list] = False,
             **kwargs):
+    """"Plot 2-D sections of geomodel.
+
+    Plot cross sections either based on custom section traces or cell number in xyz direction.
+    Options to plot lithology block, scalar field or rendered surface lines.
+    Input data and topography can be included.
+
+    Args:
+        model: Geomodel object with solutions.
+        n_axis (int): Subplot axis for multiple sections
+        section_names (list): Names of predefined custom section traces
+        cell_number (list): Position of the array to plot
+        direction (str): Cartesian direction to be plotted (xyz)
+        show_data (bool): Show original input data. Defaults to True.
+        show_lith (bool): Show lithological block volumes. Defaults to True.
+        show_scalar (bool): Show scalar field isolines. Defaults to False.
+        show_boundaries (bool): Show surface boundaries as lines. Defaults to True.
+        show_topography (bool): Show topography on plot. Defaults to False.
+        **kwargs:
+
+    Returns:
+        (Plot2D) Plot2D object
+    """
     section_names = [] if section_names is None else section_names
     section_names = np.atleast_1d(section_names)
     if cell_number is None:
@@ -136,8 +158,16 @@ def plot_2d(model, n_axis=None, section_names: list = None,
 
 
 def plot_section_traces(model):
+    """Plot section traces of section grid in 2-D topview (xy).
+
+    Args:
+        model: Geomodel object with solutions.
+
+    Returns:
+        (Plot2D) Plot2D object
+    """
     pst = plot_2d(model, n_axis=1, section_names=['topography'],
-                  show_data=False, show_boundaries=False)
+                  show_data=False, show_boundaries=False, show_lith=False)
     pst.plot_section_traces(pst.axes[0], show_data=False)
     return pst
 
@@ -199,24 +229,6 @@ def plot_stereonet(self, litho=None, planes=True, poles=True,
         by_label = OrderedDict(zip(labels, handles))
         ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
         ax.grid(True, color='black', alpha=0.25)
-
-
-def plot_data_3d(geo_model, **kwargs) -> Vista:
-    """Plot input data in 3-D.
-
-    Args:
-        geo_model: Geomodel object.
-        **kwargs: Keyword arguments for GemPy Vista instance.
-
-    Returns:
-        (Vista) GemPy Vista object for plotting.
-    """
-    gpv = Vista(geo_model, **kwargs)
-    gpv.set_bounds()
-    gpv._plot_surface_points_all()
-    gpv._plot_orientations_all()
-    gpv.show()
-    return gpv
 
 
 def plot_3d(

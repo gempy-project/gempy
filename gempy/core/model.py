@@ -216,7 +216,7 @@ class DataMutation(object):
         if self.grid.custom_grid is None:
             self.grid.create_custom_grid(custom_grid)
         else:
-            self.grid.custom_grid.set_custmo_grid(custom_grid)
+            self.grid.custom_grid.set_custom_grid(custom_grid)
             self.grid.update_grid_values()
 
         self.update_from_grid()
@@ -236,11 +236,11 @@ class DataMutation(object):
         return self.grid
 
     @setdoc(Grid.create_centered_grid.__doc__)
-    def set_centered_grid(self, centers, radio, resolution=None):
+    def set_centered_grid(self, centers, radius, resolution=None):
         if self.grid.centered_grid is None:
-            self.grid.create_centered_grid(centers, radio, resolution=resolution)
+            self.grid.create_centered_grid(centers, radius, resolution=resolution)
         else:
-            self.grid.centered_grid.set_centered_grid(centers=centers, radio=radio, resolution=resolution)
+            self.grid.centered_grid.set_centered_grid(centers=centers, radius=radius, resolution=resolution)
             self.grid.update_grid_values()
         self.set_active_grid('centered')
         self.update_from_grid()
@@ -1051,8 +1051,8 @@ class DataMutation(object):
             Surfaces
         """
         # TODO time this function
-       # spu = self.surface_points.df['surface'].unique()
-       # sps = self.surface_points.df['series'].unique()
+        # spu = self.surface_points.df['surface'].unique()
+        # sps = self.surface_points.df['series'].unique()
 
         # # Boolean array of size len surfaces with True active surfaces minus Basemes
         # sel = self.surfaces.df['isActive'] & ~self.surfaces.df['isBasement'] #self.surfaces.df['surface'].isin(spu)

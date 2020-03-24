@@ -5,7 +5,7 @@ matplotlib
 numpy
 pytest
 nbsphinx
-seaborn
+seaborn>=0.9
 networkx
 ipywidgets
 scikit-image

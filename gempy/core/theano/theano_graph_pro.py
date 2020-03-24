@@ -1552,11 +1552,11 @@ class TheanoGraphPro(object):
         rotated_x = T.dot(T.dot(grid, U), V)
         rotated_fault_points = T.dot(T.dot(fault_points.T, U), V)
         rotated_ctr = T.mean(rotated_fault_points, axis=0)
-        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()) / 2
-        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()) / 2
+        a_radius = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()) / 2
+        b_radius = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()) / 2
 
-        ellipse_factor = (rotated_x[:, 0] - rotated_ctr[0])**2 / a_radio**2 + \
-            (rotated_x[:, 1] - rotated_ctr[1])**2 / b_radio**2
+        ellipse_factor = (rotated_x[:, 0] - rotated_ctr[0])**2 / a_radius**2 + \
+            (rotated_x[:, 1] - rotated_ctr[1])**2 / b_radius**2
 
         if "select_finite_faults" in self.verbose:
             ellipse_factor = theano.printing.Print("h")(ellipse_factor)
