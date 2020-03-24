@@ -2745,10 +2745,10 @@ class KrigingParameters(object):
         self.structure = structure
         self.grid = grid
 
-        df_ = pn.DataFrame(np.array([np.nan, np.nan, 3, 0.01, 1e-6]).reshape(1, -1),
+        df_ = pn.DataFrame(np.array([np.nan, np.nan, 3]).reshape(1, -1),
                            index=['values'],
                            columns=['range', '$C_o$', 'drift equations',
-                                    'nugget grad', 'nugget scalar'])
+                                    ])
 
         self.df = df_.astype({'drift equations': object})
         self.set_default_range()
