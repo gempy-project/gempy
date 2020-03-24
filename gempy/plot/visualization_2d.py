@@ -512,7 +512,7 @@ class PlotSolution(PlotData2D):
             ax.clabel(CS, inline=1, fontsize=10, fmt='%d')
             plothelp.add_colorbar(im=im, label='elevation [m]', cs=CS, aspect=35)
 
-        self.extract_section_lines('topography')
+        # self.extract_section_lines('topography')
 
         plt.title("Geological map", fontsize=15)
         plt.xlabel('X')
