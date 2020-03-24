@@ -93,14 +93,18 @@ def test_kriging_mutation(interpolator_islith_isfault, map_sequential_pile):
     #plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation')
 
     geo_model.modify_kriging_parameters('range', 1)
-
     geo_model.modify_kriging_parameters('drift equations', [0, 3])
-    print(geo_model.solutions.lith_block, geo_model.additional_data)
 
+    print(geo_model.solutions.lith_block, geo_model.additional_data)
+    # copy dataframe before interpolator is calculated
+    pre = geo_model.additional_data.kriging_data.df.copy()
+
+    gp.set_interpolator(geo_model, compile_theano=True,
+                        theano_optimizer='fast_compile', update_kriging=False)
     gp.compute_model(geo_model, compute_mesh=False)
     gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
                               direction='y', show_data=True)
 
     print(geo_model.solutions.lith_block, geo_model.additional_data)
-   # plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation2')
-
+    # plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation2')
+    assert geo_model.additional_data.kriging_data.df['range'][0] == pre['range'][0]
