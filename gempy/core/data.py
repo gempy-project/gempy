@@ -1761,7 +1761,7 @@ class Orientations(GeometricData):
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
 
     @setdoc_pro([ds.x, ds.y, ds.z, ds.surface_sp, ds.pole_vector, ds.orientations, ds.idx_sp])
-    def add_orientation(self, x, y, z, surface, pole_vector: Union[list, np.ndarray] = None,
+    def add_orientation(self, x, y, z, surface, pole_vector: Union[list, tuple, np.ndarray] = None,
                         orientation: Union[list, np.ndarray] = None, idx=None):
         """
         Add orientation.
@@ -1770,7 +1770,7 @@ class Orientations(GeometricData):
             x (float, np.ndarray): [s0]
             y (float, np.ndarray): [s1]
             z (float, np.ndarray): [s2]
-            surface (list[str]): [s3]
+            surface (list[str], str): [s3]
             pole_vector (np.ndarray): [s4]
             orientation (np.ndarray): [s5]
             idx (Optional[int, list[int]): [s6]
@@ -2959,8 +2959,6 @@ class AdditionalData(object):
         self.kriging_data.set_default_range()
         self.kriging_data.set_default_c_o()
         self.kriging_data.set_u_grade()
-        self.kriging_data.df['nugget grad'] = 0.01
-        self.kriging_data.df['nugget scalar'] = 1e-6
 
     def update_structure(self):
         """
