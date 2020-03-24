@@ -353,7 +353,7 @@ class vtkVisualization(object):
             n_sphere (int): Number of the sphere
             n_render (int): Number of the render where the sphere belongs
             n_index (int): index value in the PandasDataframe of InupData.surface_points
-            r (float): radio of the sphere
+            r (float): radius of the sphere
 
         Returns:
             vtk.vtkSphereWidget
@@ -737,7 +737,7 @@ class vtkVisualization(object):
         # Check what render we are working with
         render = obj.n_render
 
-        # This must be the radio
+        # This must be the radius
         #r_f = obj.r_f
 
         self.SphereCallback_change_df(index, new_center)

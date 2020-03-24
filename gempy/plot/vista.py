@@ -228,19 +228,19 @@ class Vista:
         self.plot_surface_points(surface_points, **kwargs)
         self.plot_orientations(orientations, **kwargs)
 
-    def plot_surface_points(self, surface_points=None, radio=None, clear=True, **kwargs):
+    def plot_surface_points(self, surface_points=None, radius=None, clear=True, **kwargs):
         self.update_colot_lot()
         if clear is True:
             self.p.clear_sphere_widgets()
 
-        # Calculate default surface_points radio
-        if radio is None:
+        # Calculate default surface_points radius
+        if radius is None:
             _e = self.extent
             _e_dx = _e[1] - _e[0]
             _e_dy = _e[3] - _e[2]
             _e_dz = _e[5] - _e[4]
             _e_d_avrg = (_e_dx + _e_dy + _e_dz) / 3
-            radio = _e_d_avrg * .01
+            radius = _e_d_avrg * .01
 
         if surface_points is None:
             surface_points = self.model.surface_points.df
@@ -254,7 +254,7 @@ class Vista:
                                      center=centers, color=colors, pass_widget=True,
                                      test_callback=test_callback,
                                      indices=surface_points.index.values,
-                                     radius=radio, **kwargs)
+                                     radius=radius, **kwargs)
 
         self.s_widget.append(pn.DataFrame(data=s, index=surface_points.index, columns=['val']))
 

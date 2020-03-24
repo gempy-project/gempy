@@ -194,9 +194,9 @@ class Grid(object):
         return self.sections
 
     @setdoc(grid_types.CenteredGrid.set_centered_grid.__doc__)
-    def create_centered_grid(self, centers, radio, resolution=None):
+    def create_centered_grid(self, centers, radius, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
-        self.centered_grid = grid_types.CenteredGrid(centers, radio, resolution)
+        self.centered_grid = grid_types.CenteredGrid(centers, radius, resolution)
        # self.active_grids = np.zeros(4, dtype=bool)
         self.set_active('centered')
 

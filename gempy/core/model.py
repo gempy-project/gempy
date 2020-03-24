@@ -236,11 +236,11 @@ class DataMutation(object):
         return self.grid
 
     @setdoc(Grid.create_centered_grid.__doc__)
-    def set_centered_grid(self, centers, radio, resolution=None):
+    def set_centered_grid(self, centers, radius, resolution=None):
         if self.grid.centered_grid is None:
-            self.grid.create_centered_grid(centers, radio, resolution=resolution)
+            self.grid.create_centered_grid(centers, radius, resolution=resolution)
         else:
-            self.grid.centered_grid.set_centered_grid(centers=centers, radio=radio, resolution=resolution)
+            self.grid.centered_grid.set_centered_grid(centers=centers, radius=radius, resolution=resolution)
             self.grid.update_grid_values()
         self.set_active_grid('centered')
         self.update_from_grid()
