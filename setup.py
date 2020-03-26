@@ -15,7 +15,8 @@ setup(
         'matplotlib',
         'theano',
         'scikit-image',
-        'seaborn'
+        'seaborn',
+        'nptyping',
     ],
     url='https://github.com/cgre-aachen/gempy',
     download_url='https://github.com/cgre-aachen/gempy/archive/2.0.0tar.gz',

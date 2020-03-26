@@ -40,3 +40,32 @@ class TestGrid:
         print(geo_data.grid.sections)
         np.testing.assert_almost_equal(geo_data.grid.sections.df.loc['section3', 'dist'], 304.138127,
                                        decimal=4)
+
+    def test_set_section_twice(self):
+        geo_data = gp.create_data([0, 1000, 0, 1000, 0, 1000], resolution=[10, 10, 10])
+        section_dict = {'section1': ([0, 0], [1000, 1000], [100, 80]),
+                        'section2': ([800, 0], [800, 1000], [150, 100]),
+                        'section3': ([50, 200], [100, 500], [200, 150])}
+
+        geo_data.set_section_grid(section_dict)
+        geo_data.set_section_grid(section_dict)
+        print(geo_data.grid.sections)
+
+
+    def test_custom_grid(self):
+        # create custom grid
+        grid = gp.Grid()
+        cg = np.array([[1, 2, 3],
+                        [4, 5, 6],
+                        [7, 8, 9]])
+        grid.create_custom_grid(cg)
+        # make sure the custom grid is active
+        assert grid.active_grids[1]
+        # make sure the custom grid is equal to the provided values
+        np.testing.assert_array_almost_equal(cg, grid.custom_grid.values)
+        # make sure we have the correct number of values in our grid
+        l0, l1 = grid.get_grid_args('custom')
+        assert l0 == 0
+        assert l1 == 3
+
+

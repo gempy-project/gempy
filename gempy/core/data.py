@@ -194,13 +194,17 @@ class Grid(object):
         return self.sections
 
     @setdoc(grid_types.CenteredGrid.set_centered_grid.__doc__)
-    def create_centered_grid(self, centers, radio, resolution=None):
+    def create_centered_grid(self, centers, radius, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
-        self.centered_grid = grid_types.CenteredGrid(centers, radio, resolution)
+        self.centered_grid = grid_types.CenteredGrid(centers, radius, resolution)
        # self.active_grids = np.zeros(4, dtype=bool)
         self.set_active('centered')
 
     def deactivate_all_grids(self):
+        """
+        Deactivates the active grids array
+        :return:
+        """
         self.active_grids = np.zeros(5, dtype=bool)
         self.update_grid_values()
         return self.active_grids
@@ -1761,7 +1765,7 @@ class Orientations(GeometricData):
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
 
     @setdoc_pro([ds.x, ds.y, ds.z, ds.surface_sp, ds.pole_vector, ds.orientations, ds.idx_sp])
-    def add_orientation(self, x, y, z, surface, pole_vector: Union[list, np.ndarray] = None,
+    def add_orientation(self, x, y, z, surface, pole_vector: Union[list, tuple, np.ndarray] = None,
                         orientation: Union[list, np.ndarray] = None, idx=None):
         """
         Add orientation.
@@ -1770,7 +1774,7 @@ class Orientations(GeometricData):
             x (float, np.ndarray): [s0]
             y (float, np.ndarray): [s1]
             z (float, np.ndarray): [s2]
-            surface (list[str]): [s3]
+            surface (list[str], str): [s3]
             pole_vector (np.ndarray): [s4]
             orientation (np.ndarray): [s5]
             idx (Optional[int, list[int]): [s6]
@@ -2745,10 +2749,10 @@ class KrigingParameters(object):
         self.structure = structure
         self.grid = grid
 
-        df_ = pn.DataFrame(np.array([np.nan, np.nan, 3, 0.01, 1e-6]).reshape(1, -1),
+        df_ = pn.DataFrame(np.array([np.nan, np.nan, 3]).reshape(1, -1),
                            index=['values'],
                            columns=['range', '$C_o$', 'drift equations',
-                                    'nugget grad', 'nugget scalar'])
+                                    ])
 
         self.df = df_.astype({'drift equations': object})
         self.set_default_range()
@@ -2959,8 +2963,6 @@ class AdditionalData(object):
         self.kriging_data.set_default_range()
         self.kriging_data.set_default_c_o()
         self.kriging_data.set_u_grade()
-        self.kriging_data.df['nugget grad'] = 0.01
-        self.kriging_data.df['nugget scalar'] = 1e-6
 
     def update_structure(self):
         """

@@ -33,8 +33,12 @@ import matplotlib.colors as mcolors
 from matplotlib import cm
 import numpy as np
 import pandas as pn
-import pyvista as pv
-from pyvista.plotting.theme import parse_color
+try:
+    import pyvista as pv
+    from pyvista.plotting.theme import parse_color
+    PYVISTA_IMPORT = True
+except ImportError:
+    PYVISTA_IMPORT = False
 
 import gempy as gp
 
@@ -228,19 +232,19 @@ class Vista:
         self.plot_surface_points(surface_points, **kwargs)
         self.plot_orientations(orientations, **kwargs)
 
-    def plot_surface_points(self, surface_points=None, radio=None, clear=True, **kwargs):
+    def plot_surface_points(self, surface_points=None, radius=None, clear=True, **kwargs):
         self.update_colot_lot()
         if clear is True:
             self.p.clear_sphere_widgets()
 
-        # Calculate default surface_points radio
-        if radio is None:
+        # Calculate default surface_points radius
+        if radius is None:
             _e = self.extent
             _e_dx = _e[1] - _e[0]
             _e_dy = _e[3] - _e[2]
             _e_dz = _e[5] - _e[4]
             _e_d_avrg = (_e_dx + _e_dy + _e_dz) / 3
-            radio = _e_d_avrg * .01
+            radius = _e_d_avrg * .01
 
         if surface_points is None:
             surface_points = self.model.surface_points.df
@@ -254,7 +258,7 @@ class Vista:
                                      center=centers, color=colors, pass_widget=True,
                                      test_callback=test_callback,
                                      indices=surface_points.index.values,
-                                     radius=radio, **kwargs)
+                                     radius=radius, **kwargs)
 
         self.s_widget.append(pn.DataFrame(data=s, index=surface_points.index, columns=['val']))
 
@@ -606,9 +610,8 @@ class _Vista:
         return meshes
 
     def get_surface(self, fmt: str) -> pv.PolyData:
-        i = np.where(self.model.surfaces.df.surface == fmt)[0][0]
-        ver = self.model.solutions.vertices[
-            i]  # TODO: BUG surfaces within series are flipped in order !!!!!!!
+        i = self.model.surfaces.df.index[np.where(self.model.surfaces.df.surface == fmt)[0][0]]
+        ver = self.model.solutions.vertices[i]
 
         sim = self._simplices_to_pv_tri_simplices(
             self.model.solutions.edges[i]
@@ -1054,7 +1057,7 @@ class _Vista:
                 rgb = (255 * np.array(mcolors.hex2color(val)))
                 arr_ = np.vstack((arr_, rgb))
 
-            sel = np.round(self.model.solutions.geological_map).astype(int)[0]
+            sel = np.round(self.model.solutions.geological_map[0]).astype(int)[0]
 
             scalars_val = numpy_to_vtk(arr_[sel - 1], array_type=3)
             cm = None
