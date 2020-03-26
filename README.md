@@ -123,9 +123,8 @@ map, which can then be reimported into GoogleEarth.
 
 *GemPy* requires Python 3 and makes use of numerous open-source libraries:
 
-* pandas>=0.21.0
-* cython
-* Theano
+* pandas==0.24
+* Theano>=1.0.4
 * matplotlib
 * numpy
 * pytest
@@ -133,20 +132,21 @@ map, which can then be reimported into GoogleEarth.
 * seaborn
 * networkx
 * ipywidgets
+* scikit-image
+* nptyping
+* pyvista
+* IPython
 
 Optional:
 
-* git+git://github.com/Leguark/scikit-image@master
-* steno3d
 * vtk
 * gdal
-* qgrid
-* pymc
+* qgrid==1.3.0
 * pymc3
-
-* `vtk>=7` for interactive 3-D visualization 
-* `pymc` or `pymc3`
-* `steno3d` 
+* pyvolume
+* pyevtk
+* pyqrcode
+* mplstereonet
 
 Overall we recommend the use of a dedicated Python distribution, such as 
 [Anaconda](https://www.continuum.io/what-is-anaconda), for hassle-free package installation. 
@@ -235,15 +235,29 @@ in the cloned or downloaded repository folder. Make sure you have installed all 
 
 2) Install Anaconda3 2019.03 with Python 3.7 (this is the last release).
 
+2) Install Conda (recommended latest miniconda)
+    - Install in you user
+    - Add conda to the main path
+    - Add conda enviroment:
+        - `conda create --name gempy`
+        - `conda init powershell`
+        -  As admin `Set-ExecutionPolicy RemoteSigned`
+    - After this stage we should have a new empty environment attached to a user
+
 3) Install Theano and associated packages from the Anaconda prompt as administrator, and finally install GemPy 2.0:
 
-- conda update --all
-- conda install libpython
-- conda install m2w64-toolchain
-- conda install git
-- conda install pygpu
-- pip install theano==1.0.4
-- pip install gempy
+    - conda update --all
+    - conda install libpython
+    - conda install m2w64-toolchain
+    - conda install git
+    - conda install -c conda-forge pygpu
+    - pip install theano==1.0.4
+    - pip install gempy
+
+4) Set up Jupyter to work properly with conda environments:
+    - conda install Jupyter
+    - conda install nb_conda_kernels
+    - pip install jupyter-conda
 
 Note that:
 
