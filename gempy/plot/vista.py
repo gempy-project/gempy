@@ -33,8 +33,12 @@ import matplotlib.colors as mcolors
 from matplotlib import cm
 import numpy as np
 import pandas as pn
-import pyvista as pv
-from pyvista.plotting.theme import parse_color
+try:
+    import pyvista as pv
+    from pyvista.plotting.theme import parse_color
+    PYVISTA_IMPORT = True
+except ImportError:
+    PYVISTA_IMPORT = False
 
 import gempy as gp
 
