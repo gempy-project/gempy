@@ -290,10 +290,18 @@ class DataMutation(object):
         return self.series
 
     @setdoc(Series.delete_series.__doc__, indent=False)
-    def delete_series(self, indices: Union[str, list], refactor_order_series=True):
+    def delete_series(self, indices: Union[str, list], refactor_order_series=True,
+                      remove_surfaces=False, remove_data=False):
         """Delete series, update the categories dependet on them and reset the flow control.
         """
+        indices = np.atleast_1d(indices)
         self.series.delete_series(indices, refactor_order_series)
+
+        if remove_surfaces is True:
+            for s in indices:
+                self.delete_surfaces(self.surfaces.df.groupby('series').get_group(s)['surface'],
+                                     remove_data=remove_data)
+
         self.surfaces.df['series'].cat.remove_categories(indices, inplace=True)
         self.surface_points.df['series'].cat.remove_categories(indices, inplace=True)
         self.orientations.df['series'].cat.remove_categories(indices, inplace=True)
@@ -455,14 +463,16 @@ class DataMutation(object):
         indices = np.atleast_1d(indices)
         self.surfaces.delete_surface(indices, update_id)
 
-        if remove_data is False:
-            remove_data = True
-            warnings.warn('At the moment data must be deleted. Soon will be only deactivated.')
+        # TODO check this does not break anything anymore
+        # if remove_data is False:
+        #     remove_data = True
+        #     warnings.warn('At the moment data must be deleted. Soon will be only deactivated.')
 
         if indices.dtype == int:
             surfaces_names = self.surfaces.df.loc[indices, 'surface']
         else:
             surfaces_names = indices
+
         if remove_data:
             self.surface_points.del_surface_points(self.surface_points.df[self.surface_points.df.surface.isin(surfaces_names)].index)
             self.orientations.del_orientation(self.orientations.df[self.orientations.df.surface.isin(surfaces_names)].index)

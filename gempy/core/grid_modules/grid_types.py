@@ -448,7 +448,6 @@ class Topography:
 
         self.regular_grid.mask_topo = self._create_grid_mask()
 
-
     def _crop(self):
         pass
 

@@ -229,11 +229,14 @@ and then manually install it using the provided Python install file by calling
 
 in the cloned or downloaded repository folder. Make sure you have installed all necessary dependencies listed above before using *GemPy*.
 
-##### Windows installation guide (Jun 2019)
+##### Windows installation guide (March 2020)
 
-1) Install CUDA if you do not have it already.
-
-2) Install Anaconda3 2019.03 with Python 3.7 (this is the last release).
+1) This step is **only important if you want GPU acceleration**. Install CUDA if you
+ do not have it already.
+    - For CUDA > 10 (For RTX cards you need those drivers):
+        - Go to your cuda installation (probably
+         `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin` )
+        - Duplicate cublas64_XX and nvrtc64_XX and rename them to cublas64_70 and nvrtc64_70
 
 2) Install Conda (recommended latest miniconda)
     - Install in you user
@@ -251,6 +254,8 @@ in the cloned or downloaded repository folder. Make sure you have installed all 
     - conda install m2w64-toolchain
     - conda install git
     - conda install -c conda-forge pygpu
+    - conda install python==3.7 **Downgrade python back to 3.7 till vtk has 
+    support for python 3.8**
     - pip install theano==1.0.4
     - pip install gempy
 
@@ -258,6 +263,11 @@ in the cloned or downloaded repository folder. Make sure you have installed all 
     - conda install Jupyter
     - conda install nb_conda_kernels
     - pip install jupyter-conda
+    
+5) Optional requirements:
+    - pip install pyvista
+    - pip install pyevtk
+    - conda install gdal
 
 Note that:
 

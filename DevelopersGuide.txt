@@ -10,8 +10,10 @@ Before a big commit.
 - Push and check that readmydocs just worked fine
 
 # set version number in setup.py, both for version and in download_url, also in the config file of the documentation
-version='X.X',
-download_url='https://github.com/cgre-aachen/gempy/archive/X.X.tar.gz',
+[ ]version='X.X',
+[] download_url='https://github.com/cgre-aachen/gempy/archive/X.X.tar.gz',
+[] in the config for sphinx
+
 # add new tag
 $ git tag X.X -m "Add X.X tag for PyPI"
 # push git tag

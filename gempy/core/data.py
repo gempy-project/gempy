@@ -1,7 +1,7 @@
 import re
 import sys
 import warnings
-from typing import Union
+from typing import Union, Iterable
 
 import numpy as np
 import pandas as pn
@@ -579,7 +579,7 @@ class Series(object):
         return self
 
     @setdoc_pro([reset_order_series.__doc__, pn.DataFrame.drop.__doc__])
-    def delete_series(self, indices: Union[str, list], reset_order_series=True):
+    def delete_series(self, indices: Union[str, Iterable], reset_order_series=True):
         """[s1]
 
         Args:
