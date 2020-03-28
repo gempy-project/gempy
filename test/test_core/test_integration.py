@@ -31,6 +31,39 @@ def load_model():
     gp.get_data(geo_model, 'surface_points').head()
     return geo_model
 
+@pytest.fixture(scope="module")
+def load_model_df():
+
+    df_i = pn.DataFrame(np.random.randn(6,3), columns='X Y Z'.split())
+    df_i['formation'] = ['surface_1' for _ in range(3)] + ['surface_2' for _ in range(3)]
+
+    df_o = pn.DataFrame(np.random.randn(6,6), columns='X Y Z azimuth dip polarity'.split())
+    df_o['formation'] = ['surface_1' for _ in range(3)] + ['surface_2' for _ in range(3)]
+
+    geo_model = gp.create_model('test')
+    # Importing the data directly from the dataframes
+    gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50 ,50 ,50],
+          df_o=df_o, df_i=df_i , default_values=True)
+
+    df_cmp_i = gp.get_data(geo_model, 'surface_points')
+    df_cmp_o = gp.get_data(geo_model, 'orientations')
+
+    assert np.any(np.isnan(df_cmp_i.values[:, :2])) is False, 'data was not set to dataframe'
+    assert np.any(np.isnan(df_cmp_o.values[:, :5])) is False, 'data was not set to dataframe'
+
+    geo_model = gp.create_model('test')
+    # Importing the data directly from the dataframes
+    gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50 ,50 ,50],
+          df_o=df_o, df_i=df_i)
+
+    df_cmp_i2 = gp.get_data(geo_model, 'surface_points')
+    df_cmp_o2 = gp.get_data(geo_model, 'orientations')
+
+    assert np.any(np.isnan(df_cmp_i2.values[:, :2])) is False, 'data was not set to dataframe'
+    assert np.any(np.isnan(df_cmp_o2.values[:, :5])) is False, 'data was not set to dataframe'
+
+
+    return geo_model
 
 @pytest.fixture(scope='module')
 def map_sequential_pile(load_model):
