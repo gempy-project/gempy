@@ -79,6 +79,14 @@ def read_csv(geo_model: Model, path_i=None, path_o=None, **kwargs):
     return True
 
 
+# region Point-Orientation functionality
+@setdoc([Model.read_data.__doc__])
+def read_df(geo_model: Model, df_i=None, df_o=None, **kwargs):
+    if df_i is not None or df_i is not None:
+        geo_model.read_data(df_i, df_o, **kwargs)
+    return True
+
+
 def set_orientation_from_surface_points(geo_model, indices_array):
     """
     Create and set orientations from at least 3 points of the :attr:`gempy.data_management.InputData.surface_points`
@@ -478,6 +486,8 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
     if 'path_i' in kwargs or 'path_o' in kwargs:
         read_csv(geo_model, **kwargs)
+    if 'df_i' in kwargs or 'df_o' in kwargs:
+        read_df(geo_model, **kwargs)
 
     if 'surface_points_df' in kwargs:
         geo_model.set_surface_points(kwargs['surface_points_df'], **kwargs)
