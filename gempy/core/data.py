@@ -1588,13 +1588,13 @@ class SurfacePoints(GeometricData):
         return self
 
     @setdoc_pro([ds.file_path, ds.debug, ds.inplace])
-    def read_surface_points(self, file_path, debug=False, inplace=False,
+    def read_surface_points(self, table_source, debug=False, inplace=False,
                             kwargs_pandas: dict = None, **kwargs, ):
         """
         Read tabular using pandas tools and if inplace set it properly to the surface points object.
 
         Parameters:
-            file_path (str, path object, or file-like object): [s0]
+            table_source (str, path object, file-like object or direct pandas data frame): [s0]
             debug (bool): [s1]
             inplace (bool): [s2]
             kwargs_pandas: kwargs for the panda function :func:`pn.read_csv`
@@ -1627,7 +1627,10 @@ class SurfacePoints(GeometricData):
         if 'sep' not in kwargs_pandas:
             kwargs_pandas['sep'] = ','
 
-        table = pn.read_csv(file_path, **kwargs_pandas)
+        if isinstance(table_source, pn.DataFrame):
+            table = table_source
+        else:
+            table = pn.read_csv(table_source, **kwargs_pandas)
 
         if 'update_surfaces' in kwargs:
             if kwargs['update_surfaces'] is True:
@@ -1986,12 +1989,12 @@ class Orientations(GeometricData):
                                  )
 
     @setdoc_pro([ds.file_path, ds.debug, ds.inplace])
-    def read_orientations(self, file_path, debug=False, inplace=True, kwargs_pandas: dict = None, **kwargs):
+    def read_orientations(self, table_source, debug=False, inplace=True, kwargs_pandas: dict = None, **kwargs):
         """
         Read tabular using pandas tools and if inplace set it properly to the surface points object.
 
         Args:
-            file_path (str, path object, or file-like object): [s0]
+            table_source (str, path object, file-like object, or direct data frame): [s0]
             debug (bool): [s1]
             inplace (bool): [s2]
             kwargs_pandas: kwargs for the panda function :func:`pn.read_csv`
@@ -2032,7 +2035,10 @@ class Orientations(GeometricData):
         if 'sep' not in kwargs_pandas:
             kwargs_pandas['sep'] = ','
 
-        table = pn.read_csv(file_path, **kwargs_pandas)
+        if isinstance(table_source, pn.DataFrame):
+            table = table_source
+        else:
+            table = pn.read_csv(table_source, **kwargs_pandas)
 
         if 'update_surfaces' in kwargs:
             if kwargs['update_surfaces'] is True:
