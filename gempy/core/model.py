@@ -1211,13 +1211,13 @@ class Model(DataMutation, ABC):
         return True
 
     @setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
-    def read_data(self, path_i=None, path_o=None, add_basement=True, **kwargs):
+    def read_data(self, source_i=None, source_o=None, add_basement=True, **kwargs):
         """
-        Read data from a csv
+        Read data from a csv, or directly supplied dataframes
 
         Args:
-            path_i: Path to the data bases of surface_points. Default os.getcwd(),
-            path_o: Path to the data bases of orientations. Default os.getcwd()
+            source_i: Path to the data bases of surface_points. Default os.getcwd(), or direct pandas data frame
+            source_o: Path to the data bases of orientations. Default os.getcwd(), or direct pandas data frame
             add_basement (bool): if True add a basement surface. This wont be interpolated it just gives the values
             for the volume below the last surface.
             **kwargs:
@@ -1229,10 +1229,10 @@ class Model(DataMutation, ABC):
         if 'update_surfaces' not in kwargs:
             kwargs['update_surfaces'] = True
 
-        if path_i:
-            self.surface_points.read_surface_points(path_i, inplace=True, **kwargs)
-        if path_o:
-            self.orientations.read_orientations(path_o, inplace=True, **kwargs)
+        if source_i:
+            self.surface_points.read_surface_points(source_i, inplace=True, **kwargs)
+        if source_o:
+            self.orientations.read_orientations(source_o, inplace=True, **kwargs)
         if add_basement is True:
             self.surfaces.add_surface(['basement'])
             self.map_series_to_surfaces({'Basement': 'basement'}, set_series=True)
