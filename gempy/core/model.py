@@ -1229,9 +1229,9 @@ class Model(DataMutation, ABC):
         if 'update_surfaces' not in kwargs:
             kwargs['update_surfaces'] = True
 
-        if source_i:
+        if isinstance(source_i, pn.DataFrame) or source_i:
             self.surface_points.read_surface_points(source_i, inplace=True, **kwargs)
-        if source_o:
+        if isinstance(source_o, pn.DataFrame) or source_o:
             self.orientations.read_orientations(source_o, inplace=True, **kwargs)
         if add_basement is True:
             self.surfaces.add_surface(['basement'])
