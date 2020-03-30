@@ -216,7 +216,7 @@ class DataMutation(object):
         if self.grid.custom_grid is None:
             self.grid.create_custom_grid(custom_grid)
         else:
-            self.grid.custom_grid.set_custmo_grid(custom_grid)
+            self.grid.custom_grid.set_custom_grid(custom_grid)
             self.grid.update_grid_values()
 
         self.update_from_grid()
@@ -236,11 +236,11 @@ class DataMutation(object):
         return self.grid
 
     @setdoc(Grid.create_centered_grid.__doc__)
-    def set_centered_grid(self, centers, radio, resolution=None):
+    def set_centered_grid(self, centers, radius, resolution=None):
         if self.grid.centered_grid is None:
-            self.grid.create_centered_grid(centers, radio, resolution=resolution)
+            self.grid.create_centered_grid(centers, radius, resolution=resolution)
         else:
-            self.grid.centered_grid.set_centered_grid(centers=centers, radio=radio, resolution=resolution)
+            self.grid.centered_grid.set_centered_grid(centers=centers, radius=radius, resolution=resolution)
             self.grid.update_grid_values()
         self.set_active_grid('centered')
         self.update_from_grid()
@@ -290,10 +290,18 @@ class DataMutation(object):
         return self.series
 
     @setdoc(Series.delete_series.__doc__, indent=False)
-    def delete_series(self, indices: Union[str, list], refactor_order_series=True):
-        """Delete series, update the categories dependet on them and reset the flow control.
+    def delete_series(self, indices: Union[str, list], refactor_order_series=True,
+                      remove_surfaces=False, remove_data=False):
+        """ Delete series, update the categories dependet on them and reset the flow control.
         """
+        indices = np.atleast_1d(indices)
         self.series.delete_series(indices, refactor_order_series)
+
+        if remove_surfaces is True:
+            for s in indices:
+                self.delete_surfaces(self.surfaces.df.groupby('series').get_group(s)['surface'],
+                                     remove_data=remove_data)
+
         self.surfaces.df['series'].cat.remove_categories(indices, inplace=True)
         self.surface_points.df['series'].cat.remove_categories(indices, inplace=True)
         self.orientations.df['series'].cat.remove_categories(indices, inplace=True)
@@ -455,14 +463,16 @@ class DataMutation(object):
         indices = np.atleast_1d(indices)
         self.surfaces.delete_surface(indices, update_id)
 
-        if remove_data is False:
-            remove_data = True
-            warnings.warn('At the moment data must be deleted. Soon will be only deactivated.')
+        # TODO check this does not break anything anymore
+        # if remove_data is False:
+        #     remove_data = True
+        #     warnings.warn('At the moment data must be deleted. Soon will be only deactivated.')
 
         if indices.dtype == int:
             surfaces_names = self.surfaces.df.loc[indices, 'surface']
         else:
             surfaces_names = indices
+
         if remove_data:
             self.surface_points.del_surface_points(self.surface_points.df[self.surface_points.df.surface.isin(surfaces_names)].index)
             self.orientations.del_orientation(self.orientations.df[self.orientations.df.surface.isin(surfaces_names)].index)
@@ -1051,8 +1061,8 @@ class DataMutation(object):
             Surfaces
         """
         # TODO time this function
-       # spu = self.surface_points.df['surface'].unique()
-       # sps = self.surface_points.df['series'].unique()
+        # spu = self.surface_points.df['surface'].unique()
+        # sps = self.surface_points.df['series'].unique()
 
         # # Boolean array of size len surfaces with True active surfaces minus Basemes
         # sel = self.surfaces.df['isActive'] & ~self.surfaces.df['isBasement'] #self.surfaces.df['surface'].isin(spu)

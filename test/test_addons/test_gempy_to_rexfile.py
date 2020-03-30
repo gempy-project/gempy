@@ -75,7 +75,7 @@ class TestGemPyToREX:
 
     def test_geo_model_to_rex(self, geo_model):
 
-        gtr.geo_model_to_rex(geo_model, path='./rexfiles/gtr_testA')
+        gtr.geo_model_to_rex(geo_model, path=os.path.dirname(__file__)+'/rexfiles/gtr_test')
 
     def test_plot_ar(self, geo_model):
         tag = gempy.plot.plot_ar(geo_model, api_token='8e8a12ef-5da2-4790-9a84-15923a287965', project_name='Alesmodel',

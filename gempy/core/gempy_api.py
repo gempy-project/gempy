@@ -145,12 +145,14 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         compile_theano (bool): [s1]
         theano_optimizer (str {'fast_run', 'fast_compile'}): [s2]
         verbose:
-        kwargs:
-            -  pos_density (Optional[int]): Only necessary when type='grav'. Location on the Surfaces().df
-             where density is located (starting on id being 0).
-            - Vs
-            - pos_magnetics
-            -
+        update_kriging (bool): reset kriging values to its default.
+        update_structure (bool): sync Structure instance before setting theano graph.
+
+    Keyword Args:
+        -  pos_density (Optional[int]): Only necessary when type='grav'. Location on the Surfaces().df
+         where density is located (starting on id being 0).
+        - Vs
+        - pos_magnetics
 
     Returns:
 
@@ -192,22 +194,6 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         tz = kwargs.get('tz', 'auto')
         geo_model.interpolator.set_theano_shared_gravity(tz, pos_density)
 
-        # if tz is 'auto' and geo_model.grid.centered_grid is not None:
-        #     print('Calculating the tz components for the centered grid...')
-        #     #tz = geo_model.interpolator.calculate_tz()
-        #     from gempy.assets.geophysics import GravityPreprocessing
-        #     g = GravityPreprocessing(geo_model.grid.centered_grid)
-        #     tz = g.set_tz_kernel()
-        #     print('Done')
-        #
-        # # Set the shared parameters for this piece of tree
-        # # TODO: gravity_interpolator methods should be inherited by interpolator
-        #
-        # geo_model.interpolator.theano_graph.tz.set_value(tz.astype(geo_model.interpolator.dtype))
-        # geo_model.interpolator.theano_graph.pos_density.set_value(pos_density)
-        # geo_model.interpolator.theano_graph.lg0.set_value(geo_model.grid.get_grid_args('centered')[0])
-        # geo_model.interpolator.theano_graph.lg1.set_value(geo_model.grid.get_grid_args('centered')[1])
-
     if 'magnetics' in output:
         pos_magnetics = kwargs.get('pos_magnetics', 1)
         Vs = kwargs.get('Vs', 'auto')
@@ -233,6 +219,7 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         if grid == 'shared':
             geo_model.interpolator.set_theano_shared_grid(grid)
 
+    print('Kriging values: \n', geo_model.additional_data.kriging_data)
     return geo_model.interpolator
 
 
@@ -261,9 +248,9 @@ def get_th_fn(model: Model):
 def update_additional_data(model: Model, update_structure=True, update_kriging=True):
     if update_structure is True:
         model.additional_data.update_structure()
-    # if update_rescaling is True:
-    #     model.additional_data.update_rescaling_data()
+
     if update_kriging is True:
+        print('Setting kriging parameters to their default values.')
         model.additional_data.update_default_kriging()
 
     return model.additional_data
