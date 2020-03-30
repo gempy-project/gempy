@@ -589,6 +589,11 @@ class DataMutation(object):
     def set_surface_points_object(self, surface_points: SurfacePoints, update_model=True):
         raise NotImplementedError
 
+    @staticmethod
+    def _check_possible_column_names(table, possible_candidates):
+        possible_candidates = np.array(possible_candidates)
+        return possible_candidates[np.isin(possible_candidates, table.columns)][0]
+
     @setdoc(SurfacePoints.set_surface_points.__doc__, indent=False, position='beg')
     def set_surface_points(self, table: pn.DataFrame, **kwargs):
         """
@@ -598,10 +603,16 @@ class DataMutation(object):
                 - add_basement (bool): add a basement surface to the df. foo
 
         """
-        coord_x_name = kwargs.get('coord_x_name', "X")
-        coord_y_name = kwargs.get('coord_y_name', "Y")
-        coord_z_name = kwargs.get('coord_z_name', "Z")
-        surface_name = kwargs.get('surface_name', "surface")
+
+        coord_x_name = kwargs.get('coord_x_name') if 'coord_x_name' in kwargs \
+            else self._check_possible_column_names(table, ['X', 'x'])
+        coord_y_name =kwargs.get('coord_y_name') if 'coord_y_name' in kwargs \
+            else self._check_possible_column_names(table, ['Y', 'y'])
+        coord_z_name = kwargs.get('coord_z_name') if 'coord_z_name' in kwargs \
+            else self._check_possible_column_names(table, ['Z', 'z'])
+        surface_name = kwargs.get('surface_name') if 'surface_name' in kwargs \
+            else self._check_possible_column_names(table, ['surface', 'Surface', 'surfaces', 'surfaces', 'formations',
+                                                           'formation'])
         update_surfaces = kwargs.get('update_surfaces', True)
 
         if update_surfaces is True:
@@ -629,17 +640,23 @@ class DataMutation(object):
             table (pn.Dataframe): table with surface points data.
 
         """
-        coord_x_name = kwargs.get('coord_x_name', "X")
-        coord_y_name = kwargs.get('coord_y_name', "Y")
-        coord_z_name = kwargs.get('coord_z_name', "Z")
         g_x_name = kwargs.get('G_x_name', 'G_x')
         g_y_name = kwargs.get('G_y_name', 'G_y')
         g_z_name = kwargs.get('G_z_name', 'G_z')
         azimuth_name = kwargs.get('azimuth_name', 'azimuth')
         dip_name = kwargs.get('dip_name', 'dip')
         polarity_name = kwargs.get('polarity_name', 'polarity')
-        surface_name = kwargs.get('surface_name', "formation")
         update_surfaces = kwargs.get('update_surfaces', False)
+
+        coord_x_name = kwargs.get('coord_x_name') if 'coord_x_name' in kwargs \
+            else self._check_possible_column_names(table, ['X', 'x'])
+        coord_y_name = kwargs.get('coord_y_name') if 'coord_y_name' in kwargs \
+            else self._check_possible_column_names(table, ['Y', 'y'])
+        coord_z_name = kwargs.get('coord_z_name') if 'coord_z_name' in kwargs \
+            else self._check_possible_column_names(table, ['Z', 'z'])
+        surface_name = kwargs.get('surface_name') if 'surface_name' in kwargs \
+            else self._check_possible_column_names(table, ['surface', 'Surface', 'surfaces', 'surfaces', 'formations',
+                                                           'formation', 'Formation'])
 
         if update_surfaces is True:
             self.add_surfaces(table[surface_name].unique())

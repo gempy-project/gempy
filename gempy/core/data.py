@@ -1579,12 +1579,6 @@ class SurfacePoints(GeometricData):
         # Selecting the properties passed to be modified
         self.df.loc[idx, list(kwargs.keys())] = values
 
-        # if is_surface:
-        #     self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
-        #     self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
-        #     self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
-        #     self.sort_table()
-
         return self
 
     @setdoc_pro([ds.file_path, ds.debug, ds.inplace])
