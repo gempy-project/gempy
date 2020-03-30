@@ -15,6 +15,7 @@ import pytest
 mm = gp.DataMutation()
 mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
 
+
 def test_add_surface_points_raise_non_surface():
     with pytest.raises(ValueError):
         mm.add_surface_points(400, 300, -500, 'surface5')
@@ -89,3 +90,7 @@ def test_set_is_fault():
     assert mm.faults.faults_relations_df.loc['foo2', 'foo3'] == True
     assert mm.faults.faults_relations_df.iloc[2,3] == True
     mm.set_is_fault(['foo2'], toggle=True)
+
+
+def test_create_orientation_from_nn(interpolator):
+    geo_model = interpolator
