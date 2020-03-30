@@ -6,9 +6,6 @@ from typing import Union
 import numpy as np
 import pandas as pn
 
-from sklearn.neighbors import NearestNeighbors
-from sklearn.preprocessing import normalize
-
 try:
     import ipywidgets as widgets
     ipywidgets_import = True
@@ -1978,7 +1975,7 @@ class Orientations(GeometricData):
 
         return np.array([*center, *orientation, *normal])
 
-    def create_orientation_from_NN(self, surface_points,  searchcrit):
+    def create_orientation_from_nn(self, surface_points,  searchcrit):
         """
         Calculates the orientation from neighbour points of the same surface
         by given radius (radius-search) or fix number (knn).
@@ -1993,6 +1990,9 @@ class Orientations(GeometricData):
             if is int: uses knn-search.
             if is float: uses radius-search.
         """
+        
+        from sklearn.neighbors import NearestNeighbors
+        from sklearn.preprocessing import normalize
     
         # extract surface names
         surfaces = np.unique(surface_points['surface'])
