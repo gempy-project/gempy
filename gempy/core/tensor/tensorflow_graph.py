@@ -80,6 +80,20 @@ class TFGraph:
         self.n_surface = tf.range(
             1, 5000, dtype='int32', name='ID of surfaces')
 
-        def set_rest_ref_matrix(self, number_of_points_per_surface):
-            ref_positions = tf.cumsum(
-                tf.concat([0, ]))
+    def set_rest_ref_matrix(self, number_of_points_per_surface):
+        # reference point: every first point of each layer
+        ref_positions = tf.cumsum(
+            tf.concat([[0], number_of_points_per_surface[:-1]+1], axis=0))
+
+        ref_positions = tf.expand_dims(ref_positions, 1)
+        ref_points = tf.gather_nd(self.surface_points_all, ref_positions)
+        # repeat the reference points (the number of persurface -1)  times
+        ref_points_repeated = tf.repeat(
+            ref_points, number_of_points_per_surface, 0)
+
+        mask = tf.one_hot(ref_positions, tf.reduce_sum(
+            number_of_points_per_surface+tf.constant(1, tf.int32)), on_value=1, off_value=0., dtype=tf.float64)
+        mask = tf.squeeze(tf.reduce_sum(mask, 0))
+        rest_points = tf.gather_nd(
+            self.surface_points_all, tf.where(mask == 0))
+        return ref_points_repeated, rest_points
