@@ -292,7 +292,7 @@ class DataMutation(object):
     @setdoc(Series.delete_series.__doc__, indent=False)
     def delete_series(self, indices: Union[str, list], refactor_order_series=True,
                       remove_surfaces=False, remove_data=False):
-        """Delete series, update the categories dependet on them and reset the flow control.
+        """ Delete series, update the categories dependet on them and reset the flow control.
         """
         indices = np.atleast_1d(indices)
         self.series.delete_series(indices, refactor_order_series)
