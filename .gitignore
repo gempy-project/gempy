@@ -2,7 +2,7 @@
 
 .idea
 .DS_Store
-
+.vs
 .cache/
 GeMpy/__pycache__/__init__.cpython-36.pyc
 GeMpy/__pycache__/geomodeller_xml_obj.cpython-36.pyc
