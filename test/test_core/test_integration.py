@@ -26,8 +26,8 @@ def load_model():
 
     # Importing the data from CSV-files and setting extent and resolution
     gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50 ,50 ,50],
-          path_o = input_path+"/simple_fault_model_orientations.csv",
-          path_i = input_path+"/simple_fault_model_points.csv", default_values=True)
+                 path_o=input_path+"/simple_fault_model_orientations.csv",
+                 path_i=input_path+"/simple_fault_model_points.csv", default_values=True)
 
     df_cmp_i = gp.get_data(geo_model, 'surface_points')
     df_cmp_o = gp.get_data(geo_model, 'orientations')
@@ -48,7 +48,7 @@ def load_model():
 
 def test_load_model_df():
 
-    verbose = False
+    verbose = True
     df_i = pn.DataFrame(np.random.randn(6,3), columns='X Y Z'.split())
     df_i['formation'] = ['surface_1' for _ in range(3)] + ['surface_2' for _ in range(3)]
 
@@ -58,7 +58,7 @@ def test_load_model_df():
     geo_model = gp.create_model('test')
     # Importing the data directly from the dataframes
     gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
-          df_o=df_o, df_i=df_i , default_values=True)
+                 df_o=df_o, df_i=df_i , default_values=True)
 
     df_cmp_i = gp.get_data(geo_model, 'surface_points')
     df_cmp_o = gp.get_data(geo_model, 'orientations')
@@ -77,7 +77,7 @@ def test_load_model_df():
     geo_model = gp.create_model('test')
     # Importing the data directly from the dataframes
     gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50 ,50 ,50],
-          df_o=df_o, df_i=df_i)
+                 df_o=df_o, df_i=df_i)
 
     df_cmp_i2 = gp.get_data(geo_model, 'surface_points')
     df_cmp_o2 = gp.get_data(geo_model, 'orientations')
@@ -92,6 +92,55 @@ def test_load_model_df():
     assert df_cmp_o2.shape[0] == 6, 'data was not set to dataframe'
 
     return geo_model
+
+
+def test_load_model_df_2():
+    verbose = True
+    df_i = pn.DataFrame(np.random.randn(6,3), columns='X Y Z'.split())
+    df_i['formation'] = ['surface_1' for _ in range(3)] + ['surface_2' for _ in range(3)]
+
+    df_o = pn.DataFrame(np.random.randn(6,6), columns='X Y Z azimuth dip polarity'.split())
+    df_o['formation'] = ['surface_1' for _ in range(3)] + ['surface_2' for _ in range(3)]
+
+    geo_model = gp.create_model('test')
+    # Importing the data directly from the dataframes
+    gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
+                 df_o=df_o, df_i=df_i , default_values=True)
+
+    df_cmp_i = gp.get_data(geo_model, 'surface_points')
+    df_cmp_o = gp.get_data(geo_model, 'orientations')
+
+    if verbose:
+        print(df_cmp_i.head())
+        print(df_cmp_o.head())
+
+    assert not df_cmp_i.empty, 'data was not set to dataframe'
+    assert not df_cmp_o.empty, 'data was not set to dataframe'
+    assert df_cmp_i.shape[0] == 6, 'data was not set to dataframe'
+    assert df_cmp_o.shape[0] == 6, 'data was not set to dataframe'
+
+    # try without the default_values command
+
+    geo_model = gp.create_model('test')
+    # Importing the data directly from the dataframes
+    gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50 ,50 ,50],
+                 surface_points_df=df_i, orientations_df=df_i)
+
+    df_cmp_i2 = gp.get_data(geo_model, 'surface_points')
+    df_cmp_o2 = gp.get_data(geo_model, 'orientations')
+
+    if verbose:
+        print(df_cmp_i2.head())
+        print(df_cmp_o2.head())
+
+    assert not df_cmp_i2.empty, 'data was not set to dataframe'
+    assert not df_cmp_o2.empty, 'data was not set to dataframe'
+    assert df_cmp_i2.shape[0] == 6, 'data was not set to dataframe'
+    assert df_cmp_o2.shape[0] == 6, 'data was not set to dataframe'
+
+    return geo_model
+
+
 
 @pytest.fixture(scope='module')
 def map_sequential_pile(load_model):
