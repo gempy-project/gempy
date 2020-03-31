@@ -80,7 +80,6 @@ class TFGraph:
                                        self.polarity_all, self.surface_points_all,
                                        self.fault_matrix, self.grid_val,
                                        self.values_properties_op]
-
         self.is_erosion = tf.constant([1., 0.], dtype=self.dtype)
         self.is_onlap = tf.constant([0, 1], dtype=self.dtype)
 
