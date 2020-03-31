@@ -808,7 +808,7 @@ class TheanoGraphPro(object):
 
         # self.nugget_effect_scalar_T_op = theano.printing.Print('nug scalar')(self.nugget_effect_scalar_T_op)
 
-        C_I += T.eye(C_I.shape[0]) * 2 * self.nugget_effect_scalar_T_op
+        C_I += T.eye(C_I.shape[0]) * self.nugget_effect_scalar_T_op
         # Add name to the theano node
         C_I.name = 'Covariance SurfacePoints'
 
