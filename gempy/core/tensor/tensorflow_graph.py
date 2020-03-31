@@ -39,6 +39,11 @@ class TFGraph:
         self.number_of_points_per_surface = tf.zeros(
             3, dtype=tf.int32, name='Number of points per surface used to split rest-ref')
 
+        # COMPUTE WEIGHTS
+        # ---------
+        # VARIABLES
+        # ---------
+
         self.dip_angles_all = dip_angles
         self.azimuth_all = azimuth
         self.polarity_all = polarity
@@ -48,6 +53,9 @@ class TFGraph:
         self.dips_position_all = dips_position
         self.dips_position_all_tiled = tf.tile(
             self.dips_position_all, [self.n_dimensions, 1])
+
+        self.ref_layer_points, self.rest_layer_points = self.set_rest_ref_matrix(
+            self.number_of_points_per_surface)
 
         self.fault_matrix = fault_drift
         self.grid_val = grid
@@ -97,3 +105,49 @@ class TFGraph:
         rest_points = tf.gather_nd(
             self.surface_points_all, tf.where(mask == 0))
         return ref_points_repeated, rest_points
+
+    def squared_euclidean_distance(self, x_1, x_2):
+        """
+        Compute the euclidian distances in 3D between all the points in x_1 and x_2
+
+        Arguments:
+            x_1 {[Tensor]} -- shape n_points x number dimension
+            x_2 {[Tensor]} -- shape n_points x number dimension
+
+        Returns:
+            [Tensor] -- Distancse matrix. shape n_points x n_points
+        """
+        sqd = tf.sqrt(tf.reshape(tf.reduce_sum(x_1**2, 1), shape=(x_1.shape[0], 1)) +
+                      tf.reshape(tf.reduce_sum(x_2**2, 1), shape=(1, x_2.shape[0])) -
+                      2*tf.tensordot(x_1, tf.transpose(x_2), 1))
+        return sqd
+
+    def cov_surface_points(self):
+        sed_rest_rest = self.squared_euclidean_distance(
+            self.rest_layer_points, self.rest_layer_points)
+        sed_ref_rest = self.squared_euclidean_distance(
+            self.ref_layer_points, self.rest_layer_points)
+        sed_rest_ref = self.squared_euclidean_distance(
+            self.rest_layer_points, self.ref_layer_points)
+        sed_ref_ref = self.squared_euclidean_distance(
+            self.ref_layer_points, self.ref_layer_points)
+
+        C_I = self.c_o_T*self.i_reescale*(
+            tf.where(sed_rest_rest < self.a_T, x=(1 - 7 * (sed_rest_rest / self.a_T) ** 2 +
+                                                  35 / 4 * (sed_rest_rest / self.a_T) ** 3 -
+                                                  7 / 2 * (sed_rest_rest / self.a_T) ** 5 +
+                                                  3 / 4 * (sed_rest_rest / self.a_T) ** 7), y=0) -
+            tf.where(sed_ref_rest < self.a_T, x=(1 - 7 * (sed_ref_rest / self.a_T) ** 2 +
+                                                 35 / 4 * (sed_ref_rest / self.a_T) ** 3 -
+                                                 7 / 2 * (sed_ref_rest / self.a_T) ** 5 +
+                                                 3 / 4 * (sed_ref_rest / self.a_T) ** 7), y=0) -
+            tf.where(sed_rest_ref < self.a_T, x=(1 - 7 * (sed_rest_ref / self.a_T) ** 2 +
+                                                 35 / 4 * (sed_rest_ref / self.a_T) ** 3 -
+                                                 7 / 2 * (sed_rest_ref / self.a_T) ** 5 +
+                                                 3 / 4 * (sed_rest_ref / self.a_T) ** 7), y=0) +
+            tf.where(sed_ref_ref < self.a_T, x=(1 - 7 * (sed_ref_ref / self.a_T) ** 2 +
+                                                35 / 4 * (sed_ref_ref / self.a_T) ** 3 -
+                                                7 / 2 * (sed_ref_ref / self.a_T) ** 5 +
+                                                3 / 4 * (sed_ref_ref / self.a_T) ** 7), y=0))
+
+        return C_I
