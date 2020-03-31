@@ -134,9 +134,10 @@ class TFGraph:
         Returns:
             [Tensor] -- Distancse matrix. shape n_points x n_points
         """
-        sqd = tf.sqrt(tf.reshape(tf.reduce_sum(x_1**2, 1), shape=(x_1.shape[0], 1)) +
-                      tf.reshape(tf.reduce_sum(x_2**2, 1), shape=(1, x_2.shape[0])) -
-                      2*tf.tensordot(x_1, tf.transpose(x_2), 1))
+        # tf.maximum avoid negative numbers increasing stability
+        sqd = tf.sqrt(tf.maximum(tf.reshape(tf.reduce_sum(x_1**2, 1), shape=(x_1.shape[0], 1)) +
+                                 tf.reshape(tf.reduce_sum(x_2**2, 1), shape=(1, x_2.shape[0])) -
+                                 2*tf.tensordot(x_1, tf.transpose(x_2), 1), 1e-12))
         return sqd
 
     def cov_surface_points(self):
@@ -170,3 +171,43 @@ class TFGraph:
         C_I = C_I + tf.eye(C_I.shape[0], dtype=self.dtype) * \
             self.nugget_effect_scalar_ref_rest
         return C_I
+
+    def cov_gradients(self):
+
+        sed_dips_dips = self.squared_euclidean_distance(
+            self.dips_position_all_tiled, self.dips_position_all_tiled)
+
+        h_u = tf.concat([
+            tf.tile(self.dips_position_all[:, 0] - tf.reshape(
+                self.dips_position_all[:, 0], [self.dips_position_all.shape[0], 1]), [1, 3]),
+            tf.tile(self.dips_position_all[:, 1] - tf.reshape(
+                self.dips_position_all[:, 1], [self.dips_position_all.shape[0], 1]), [1, 3]),
+            tf.tile(self.dips_position_all[:, 2] - tf.reshape(self.dips_position_all[:, 2], [self.dips_position_all.shape[0], 1]), [1, 3])], axis=0)
+
+        h_v = tf.transpose(h_u)
+
+        sub_x = tf.concat([tf.ones([self.dips_position_all.shape[0], self.dips_position_all.shape[0]]), tf.zeros(
+            [self.dips_position_all.shape[0], 2*self.dips_position_all.shape[0]])], axis=1)
+
+        sub_y = tf.concat([tf.concat([tf.zeros([self.dips_position_all.shape[0], self.dips_position_all.shape[0]]), tf.ones(
+            [self.dips_position_all.shape[0], 1*self.dips_position_all.shape[0]])], axis=1), tf.zeros([self.dips_position_all.shape[0], self.dips_position_all.shape[0]])], 1)
+        sub_z = tf.concat([tf.zeros([self.dips_position_all.shape[0], 2*self.dips_position_all.shape[0]]),
+                           tf.ones([self.dips_position_all.shape[0], self.dips_position_all.shape[0]])], axis=1)
+
+        perpendicularity_matrix = tf.cast(
+            tf.concat([sub_x, sub_y, sub_z], axis=0), dtype=tf.float64)
+
+        condistion_fail = tf.math.divide_no_nan(h_u * h_v, sed_dips_dips ** 2)*(tf.where(sed_dips_dips < self.a_T, x=(((-self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_dips / self.a_T ** 3 -
+                                                                                                                                       35 / 2 * sed_dips_dips ** 3 / self.a_T ** 5 +
+                                                                                                                                       21 / 4 * sed_dips_dips ** 5 / self.a_T ** 7))) +
+                                                                                                                      self.c_o_T * 7 * (9 * sed_dips_dips ** 5 - 20 * self.a_T ** 2 * sed_dips_dips ** 3 +
+                                                                                                                                        15 * self.a_T ** 4 * sed_dips_dips - 4 * self.a_T ** 5) / (2 * self.a_T ** 7)), y=0)) -\
+            perpendicularity_matrix*tf.where(sed_dips_dips < self.a_T, x=self.c_o_T * ((-14 / self.a_T ** 2) + 105 / 4 * sed_dips_dips / self.a_T ** 3 -
+                                                                                       35 / 2 * sed_dips_dips ** 3 / self.a_T ** 5 +
+                                                                                       21 / 4 * sed_dips_dips ** 5 / self.a_T ** 7), y=0)
+
+        C_G = tf.where(sed_dips_dips == 0, x=0, y=condistion_fail)
+        C_G = C_G + tf.eye(C_G.shape[0],
+                           dtype=self.dtype)*self.nugget_effect_grad
+
+        return C_G
