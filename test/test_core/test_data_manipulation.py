@@ -214,6 +214,16 @@ def create_orientations(create_surfaces, create_series):
     return orientations
 
 
+def test_add_orientation_with_pole(create_surfaces):
+    orientations = gp.Orientations(create_surfaces)
+    orientations.add_orientation(1, 1, 1, 'foo', pole_vector=(1, 0, 1))
+    orientations.add_orientation(2, 2, 2, 'foo', orientation=(0, 0, 1))
+    orientations.add_orientation(1, 1, 1, 'foo', pole_vector=(.45, 0, .45))
+    orientations.modify_orientations(2, G_x=1, G_z=1)
+
+    print(orientations)
+
+
 @pytest.fixture(scope='module')
 def create_grid():
     # Test creating an empty list

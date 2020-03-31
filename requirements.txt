@@ -1,14 +1,12 @@
 pandas==0.24
-cython
 Theano>=1.0.4
 matplotlib
 numpy
 pytest
 nbsphinx
-seaborn
+seaborn>=0.9
 networkx
 ipywidgets
 scikit-image
 nptyping
-pyvista
 IPython

@@ -30,7 +30,7 @@ def test_gravity():
     geo_model.add_orientations(6, 0, 4, 'surface 1', [0, 0, 1])
     device_loc = np.array([[6, 0, 4]])
 
-    geo_model.set_centered_grid(device_loc, resolution=[10, 10, 100], radio=16000)
+    geo_model.set_centered_grid(device_loc, resolution=[10, 10, 100], radius=16000)
     gp.set_interpolator(geo_model, output=['gravity'], pos_density=2, gradient=True,
                         theano_optimizer='fast_compile')
 

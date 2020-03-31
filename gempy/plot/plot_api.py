@@ -35,12 +35,17 @@ import numpy as np
 import pandas as pn
 
 # Keep Alex code hidden until we merge it properly
-from .vista import _Vista as Vista
+try:
+    import pyvista as pv
+    from .vista import _Vista as Vista
+    PYVISTA_IMPORT = True
+except ImportError:
+    PYVISTA_IMPORT = False
+
 from .visualization_2d_pro import Plot2D
 
 try:
     import mplstereonet
-
     mplstereonet_import = True
 except ImportError:
     mplstereonet_import = False
@@ -54,6 +59,28 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             show_boundaries: Union[bool, list] = True,
             show_topography: Union[bool, list] = False,
             **kwargs):
+    """"Plot 2-D sections of geomodel.
+
+    Plot cross sections either based on custom section traces or cell number in xyz direction.
+    Options to plot lithology block, scalar field or rendered surface lines.
+    Input data and topography can be included.
+
+    Args:
+        model: Geomodel object with solutions.
+        n_axis (int): Subplot axis for multiple sections
+        section_names (list): Names of predefined custom section traces
+        cell_number (list): Position of the array to plot
+        direction (str): Cartesian direction to be plotted (xyz)
+        show_data (bool): Show original input data. Defaults to True.
+        show_lith (bool): Show lithological block volumes. Defaults to True.
+        show_scalar (bool): Show scalar field isolines. Defaults to False.
+        show_boundaries (bool): Show surface boundaries as lines. Defaults to True.
+        show_topography (bool): Show topography on plot. Defaults to False.
+        **kwargs:
+
+    Returns:
+        (Plot2D) Plot2D object
+    """
     section_names = [] if section_names is None else section_names
     section_names = np.atleast_1d(section_names)
     if cell_number is None:
@@ -136,8 +163,16 @@ def plot_2d(model, n_axis=None, section_names: list = None,
 
 
 def plot_section_traces(model):
+    """Plot section traces of section grid in 2-D topview (xy).
+
+    Args:
+        model: Geomodel object with solutions.
+
+    Returns:
+        (Plot2D) Plot2D object
+    """
     pst = plot_2d(model, n_axis=1, section_names=['topography'],
-                  show_data=False, show_boundaries=False)
+                  show_data=False, show_boundaries=False, show_lith=False)
     pst.plot_section_traces(pst.axes[0], show_data=False)
     return pst
 
@@ -201,80 +236,63 @@ def plot_stereonet(self, litho=None, planes=True, poles=True,
         ax.grid(True, color='black', alpha=0.25)
 
 
-def plot_data_3d(geo_model, **kwargs) -> Vista:
-    """Plot input data in 3-D.
+if PYVISTA_IMPORT:
+    def plot_3d(
+            geo_model,
+            render_surfaces: bool = True,
+            render_data: bool = True,
+            render_topography: bool = False,
+            **kwargs,
+    ) -> Vista:
+        """Plot 3-D geomodel.
 
-    Args:
-        geo_model: Geomodel object.
-        **kwargs: Keyword arguments for GemPy Vista instance.
+        Args:
+            geo_model: Geomodel object with solutions.
+            render_surfaces: Render geomodel surfaces. Defaults to True.
+            render_data: Render geomodel input data. Defaults to True.
+            render_topography: Render topography. Defaults to False.
+            real_time: Toggles modyfiable input data and real-time geomodel
+                updating. Defaults to False.
 
-    Returns:
-        (Vista) GemPy Vista object for plotting.
-    """
-    gpv = Vista(geo_model, **kwargs)
-    gpv.set_bounds()
-    gpv._plot_surface_points_all()
-    gpv._plot_orientations_all()
-    gpv.show()
-    return gpv
-
-
-def plot_3d(
-        geo_model,
-        render_surfaces: bool = True,
-        render_data: bool = True,
-        render_topography: bool = False,
-        **kwargs,
-) -> Vista:
-    """Plot 3-D geomodel.
-
-    Args:
-        geo_model: Geomodel object with solutions.
-        render_surfaces: Render geomodel surfaces. Defaults to True.
-        render_data: Render geomodel input data. Defaults to True.
-        render_topography: Render topography. Defaults to False.
-        real_time: Toggles modyfiable input data and real-time geomodel
-            updating. Defaults to False.
-
-    Returns:
-        (Vista) GemPy Vista object for plotting.
-    """
-    gpv = Vista(geo_model, **kwargs)
-    gpv.set_bounds()
-    if render_surfaces:
-        gpv.plot_surfaces_all()
-    if render_data:
-        gpv._plot_surface_points_all()
-        gpv._plot_orientations_all()
-    if render_topography and geo_model.grid.topography is not None:
-        gpv.plot_topography()
-    gpv.show()
-    return gpv
+        Returns:
+            (Vista) GemPy Vista object for plotting.
+        """
+        gpv = Vista(geo_model, **kwargs)
+        gpv.set_bounds()
+        if render_surfaces:
+            gpv.plot_surfaces_all()
+        if render_data:
+            gpv._plot_surface_points_all()
+            gpv._plot_orientations_all()
+        if render_topography and geo_model.grid.topography is not None:
+            gpv.plot_topography()
+        gpv.show()
+        return gpv
 
 
-def plot_interactive_3d(
-        geo_model,
-        name: str,
-        render_topography: bool = False,
-        **kwargs,
-) -> Vista:
-    """Plot interactive 3-D geomodel with three cross sections in subplots.
+    def plot_interactive_3d(
+            geo_model,
+            name: str,
+            render_topography: bool = False,
+            **kwargs,
+    ) -> Vista:
+        """Plot interactive 3-D geomodel with three cross sections in subplots.
 
-    Args:
-        geo_model: Geomodel object with solutions.
-        name (str): Can be either one of the following
-                'lith' - Lithology id block.
-                'scalar' - Scalar field block.
-                'values' - Values matrix block.
-        render_topography: Render topography. Defaults to False.
-        **kwargs:
+        Args:
+            geo_model: Geomodel object with solutions.
+            name (str): Can be either one of the following
+                    'lith' - Lithology id block.
+                    'scalar' - Scalar field block.
+                    'values' - Values matrix block.
+            render_topography: Render topography. Defaults to False.
+            **kwargs:
 
-    Returns:
-        (Vista) GemPy Vista object for plotting.
-    """
-    gpv = Vista(geo_model, plotter_type='background', shape="1|3")
-    gpv.set_bounds()
-    gpv.plot_structured_grid_interactive(name=name, render_topography=render_topography, **kwargs)
+        Returns:
+            (Vista) GemPy Vista object for plotting.
+        """
+        gpv = Vista(geo_model, plotter_type='background', shape="1|3")
+        gpv.set_bounds()
+        gpv.plot_structured_grid_interactive(name=name, render_topography=render_topography, **kwargs)
 
-    gpv.show()
-    return gpv
+        gpv.show()
+        return gpv

@@ -1375,10 +1375,10 @@ class TheanoGraph(object):
         # rotated_fault_points = T.dot(rotated_fault_points, U[-1])  # same
         rotated_ctr = T.mean(rotated_fault_points, axis=0)  # and compute centroid of rotated points
         # a factor: horizontal vector of ellipse of normal fault
-        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()) / 2 \
+        a_radius = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()) / 2 \
                   + self.inf_factor[self.n_surface_op[0] - 1]
         # b_factor: vertical vector of ellipse
-        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()) / 2 \
+        b_radius = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()) / 2 \
                   + self.inf_factor[self.n_surface_op[0] - 1]
 
         # sel = T.lt((rotated_x[:, 0] - rotated_ctr[0])**2 / a_radio**2 +
@@ -1386,8 +1386,8 @@ class TheanoGraph(object):
         #            1)
 
         # ellipse equation: (x, c_x)^2 / a^2 +  (y - c_y)^2 / b^2 <= 1 if in ellipse
-        ellipse_factor = (rotated_x[:,0] - rotated_ctr[0])**2 / a_radio**2 + \
-            (rotated_x[:, 1] - rotated_ctr[1])**2 / b_radio**2
+        ellipse_factor = (rotated_x[:,0] - rotated_ctr[0])**2 / a_radius**2 + \
+            (rotated_x[:, 1] - rotated_ctr[1])**2 / b_radius**2
 
         if "select_finite_faults" in self.verbose:
             ellipse_factor = theano.printing.Print("h")(ellipse_factor)

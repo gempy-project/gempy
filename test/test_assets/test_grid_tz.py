@@ -16,4 +16,4 @@ import pytest
 
 def test_irregular_grid():
     g = CenteredGrid()
-    g.set_centered_grid(np.array([0, 0, 0]), resolution=[5, 5, 5], radio = [100,100,100])
+    g.set_centered_grid(np.array([0, 0, 0]), resolution=[5, 5, 5], radius = [100,100,100])
