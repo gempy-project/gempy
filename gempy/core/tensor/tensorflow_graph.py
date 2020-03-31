@@ -16,15 +16,18 @@ def squared_euclidean_distance(x_1, x_2):
 
 
 class TFGraph:
-    def __init__(self, dips_position, dip_angles, azimuth, polarity, surface_points_coord, fault_drift, grid, values_properties, output=None):
+    def __init__(self, dips_position, dip_angles, azimuth, polarity,
+                 surface_points_coord, fault_drift, grid, values_properties,
+                 number_of_points_per_surface, Range, C_o, nugget_effect_scalar,
+                 nugget_effect_grad, rescalefactor, output=None):
         self.dtype = tf.float64
 
         # CONSTANT PARAMETERS FOR ALL SERIES
         # KRIGING
         # -------
-        self.a_T = tf.constant(-1, dtype=self.dtype, name="Range")
+        self.a_T = tf.divide(Range, rescalefactor)
         self.a_T_surface = self.a_T
-        self.c_o_T = tf.constant(-1, dtype=self.dtype, name="Covariance at 0")
+        self.c_o_T = tf.divide(C_o, rescalefactor)
 
         self.n_universal_eq_T = tf.ones(
             5, dtype=tf.int32, name="Grade of the universal drift")
@@ -36,8 +39,11 @@ class TFGraph:
 
         # Number of dimensions. Now it is not too variable anymore
         self.n_dimensions = 3
-        self.number_of_points_per_surface = tf.zeros(
-            3, dtype=tf.int32, name='Number of points per surface used to split rest-ref')
+
+        self.number_of_points_per_surface = number_of_points_per_surface
+
+        self.nugget_effect_grad = nugget_effect_grad
+        self.nugget_effect_scalar = nugget_effect_scalar
 
         # COMPUTE WEIGHTS
         # ---------
@@ -54,8 +60,10 @@ class TFGraph:
         self.dips_position_all_tiled = tf.tile(
             self.dips_position_all, [self.n_dimensions, 1])
 
-        self.ref_layer_points, self.rest_layer_points = self.set_rest_ref_matrix(
-            self.number_of_points_per_surface)
+        self.ref_layer_points, self.rest_layer_points, self.ref_nugget, self.rest_nugget = self.set_rest_ref_matrix()
+
+        self.nugget_effect_scalar_ref_rest = tf.expand_dims(
+            self.ref_nugget + self.rest_nugget, 1)
 
         self.fault_matrix = fault_drift
         self.grid_val = grid
@@ -72,6 +80,7 @@ class TFGraph:
                                        self.polarity_all, self.surface_points_all,
                                        self.fault_matrix, self.grid_val,
                                        self.values_properties_op]
+
         self.is_erosion = tf.constant([1., 0.], dtype=self.dtype)
         self.is_onlap = tf.constant([0, 1], dtype=self.dtype)
 
@@ -88,23 +97,32 @@ class TFGraph:
         self.n_surface = tf.range(
             1, 5000, dtype='int32', name='ID of surfaces')
 
-    def set_rest_ref_matrix(self, number_of_points_per_surface):
+    def set_rest_ref_matrix(self):
         # reference point: every first point of each layer
         ref_positions = tf.cumsum(
-            tf.concat([[0], number_of_points_per_surface[:-1]+1], axis=0))
+            tf.concat([[0], self.number_of_points_per_surface[:-1]+1], axis=0))
 
         ref_positions = tf.expand_dims(ref_positions, 1)
         ref_points = tf.gather_nd(self.surface_points_all, ref_positions)
+        ref_nugget = tf.gather_nd(self.nugget_effect_scalar, ref_positions)
+
         # repeat the reference points (the number of persurface -1)  times
         ref_points_repeated = tf.repeat(
-            ref_points, number_of_points_per_surface, 0)
+            ref_points, self.number_of_points_per_surface, 0)
+        ref_nugget_repeated = tf.repeat(
+            ref_nugget, self.number_of_points_per_surface, 0)
 
         mask = tf.one_hot(ref_positions, tf.reduce_sum(
-            number_of_points_per_surface+tf.constant(1, tf.int32)), on_value=1, off_value=0., dtype=tf.float64)
-        mask = tf.squeeze(tf.reduce_sum(mask, 0))
+            self.number_of_points_per_surface+tf.constant(1, tf.int32)), on_value=1, off_value=0., dtype=tf.float64)
+        rest_mask = tf.squeeze(tf.reduce_sum(mask, 0))
+
         rest_points = tf.gather_nd(
-            self.surface_points_all, tf.where(mask == 0))
-        return ref_points_repeated, rest_points
+            self.surface_points_all, tf.where(rest_mask == 0))
+
+        rest_nugget = tf.gather_nd(
+            self.nugget_effect_scalar, tf.where(rest_mask == 0))
+
+        return ref_points_repeated, rest_points, ref_nugget_repeated, rest_nugget
 
     def squared_euclidean_distance(self, x_1, x_2):
         """
@@ -150,4 +168,6 @@ class TFGraph:
                                                 7 / 2 * (sed_ref_ref / self.a_T) ** 5 +
                                                 3 / 4 * (sed_ref_ref / self.a_T) ** 7), y=0))
 
+        C_I = C_I + tf.eye(C_I.shape[0], dtype=self.dtype) * \
+            self.nugget_effect_scalar_ref_rest
         return C_I
