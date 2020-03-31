@@ -35,12 +35,17 @@ import numpy as np
 import pandas as pn
 
 # Keep Alex code hidden until we merge it properly
-from .vista import _Vista as Vista
+try:
+    import pyvista as pv
+    from .vista import _Vista as Vista
+    PYVISTA_IMPORT = True
+except ImportError:
+    PYVISTA_IMPORT = False
+
 from .visualization_2d_pro import Plot2D
 
 try:
     import mplstereonet
-
     mplstereonet_import = True
 except ImportError:
     mplstereonet_import = False
@@ -231,62 +236,63 @@ def plot_stereonet(self, litho=None, planes=True, poles=True,
         ax.grid(True, color='black', alpha=0.25)
 
 
-def plot_3d(
-        geo_model,
-        render_surfaces: bool = True,
-        render_data: bool = True,
-        render_topography: bool = False,
-        **kwargs,
-) -> Vista:
-    """Plot 3-D geomodel.
+if PYVISTA_IMPORT:
+    def plot_3d(
+            geo_model,
+            render_surfaces: bool = True,
+            render_data: bool = True,
+            render_topography: bool = False,
+            **kwargs,
+    ) -> Vista:
+        """Plot 3-D geomodel.
 
-    Args:
-        geo_model: Geomodel object with solutions.
-        render_surfaces: Render geomodel surfaces. Defaults to True.
-        render_data: Render geomodel input data. Defaults to True.
-        render_topography: Render topography. Defaults to False.
-        real_time: Toggles modyfiable input data and real-time geomodel
-            updating. Defaults to False.
+        Args:
+            geo_model: Geomodel object with solutions.
+            render_surfaces: Render geomodel surfaces. Defaults to True.
+            render_data: Render geomodel input data. Defaults to True.
+            render_topography: Render topography. Defaults to False.
+            real_time: Toggles modyfiable input data and real-time geomodel
+                updating. Defaults to False.
 
-    Returns:
-        (Vista) GemPy Vista object for plotting.
-    """
-    gpv = Vista(geo_model, **kwargs)
-    gpv.set_bounds()
-    if render_surfaces:
-        gpv.plot_surfaces_all()
-    if render_data:
-        gpv._plot_surface_points_all()
-        gpv._plot_orientations_all()
-    if render_topography and geo_model.grid.topography is not None:
-        gpv.plot_topography()
-    gpv.show()
-    return gpv
+        Returns:
+            (Vista) GemPy Vista object for plotting.
+        """
+        gpv = Vista(geo_model, **kwargs)
+        gpv.set_bounds()
+        if render_surfaces:
+            gpv.plot_surfaces_all()
+        if render_data:
+            gpv._plot_surface_points_all()
+            gpv._plot_orientations_all()
+        if render_topography and geo_model.grid.topography is not None:
+            gpv.plot_topography()
+        gpv.show()
+        return gpv
 
 
-def plot_interactive_3d(
-        geo_model,
-        name: str,
-        render_topography: bool = False,
-        **kwargs,
-) -> Vista:
-    """Plot interactive 3-D geomodel with three cross sections in subplots.
+    def plot_interactive_3d(
+            geo_model,
+            name: str,
+            render_topography: bool = False,
+            **kwargs,
+    ) -> Vista:
+        """Plot interactive 3-D geomodel with three cross sections in subplots.
 
-    Args:
-        geo_model: Geomodel object with solutions.
-        name (str): Can be either one of the following
-                'lith' - Lithology id block.
-                'scalar' - Scalar field block.
-                'values' - Values matrix block.
-        render_topography: Render topography. Defaults to False.
-        **kwargs:
+        Args:
+            geo_model: Geomodel object with solutions.
+            name (str): Can be either one of the following
+                    'lith' - Lithology id block.
+                    'scalar' - Scalar field block.
+                    'values' - Values matrix block.
+            render_topography: Render topography. Defaults to False.
+            **kwargs:
 
-    Returns:
-        (Vista) GemPy Vista object for plotting.
-    """
-    gpv = Vista(geo_model, plotter_type='background', shape="1|3")
-    gpv.set_bounds()
-    gpv.plot_structured_grid_interactive(name=name, render_topography=render_topography, **kwargs)
+        Returns:
+            (Vista) GemPy Vista object for plotting.
+        """
+        gpv = Vista(geo_model, plotter_type='background', shape="1|3")
+        gpv.set_bounds()
+        gpv.plot_structured_grid_interactive(name=name, render_topography=render_topography, **kwargs)
 
-    gpv.show()
-    return gpv
+        gpv.show()
+        return gpv

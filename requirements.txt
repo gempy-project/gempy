@@ -1,5 +1,4 @@
 pandas==0.24
-cython
 Theano>=1.0.4
 matplotlib
 numpy
@@ -10,5 +9,4 @@ networkx
 ipywidgets
 scikit-image
 nptyping
-pyvista
 IPython
