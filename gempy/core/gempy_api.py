@@ -80,11 +80,34 @@ def read_csv(geo_model: Model, path_i=None, path_o=None, **kwargs):
 
 
 # region Point-Orientation functionality
-@setdoc([Model.read_data.__doc__])
-def read_df(geo_model: Model, df_i=None, df_o=None, **kwargs):
-    if df_i is not None or df_i is not None:
-        geo_model.read_data(df_i, df_o, **kwargs)
-    return True
+@setdoc_pro([Model.__doc__])
+def set_geometric_data(geo_model: Model, surface_points_df=None, orientations_df=None, **kwargs):
+    """ Function to set directly pandas.Dataframes to the gempy geometric data objects
+
+    Args:
+        geo_model: [s0]
+        surface_points_df:  A pn.Dataframe object with X, Y, Z, and surface columns
+        orientations_df: A pn.Dataframe object with X, Y, Z, surface columns and pole or orientation columns
+        **kwargs:
+
+    Returns:
+        Modified df
+    """
+
+    r_ = None
+
+    if surface_points_df is not None:
+        geo_model.set_surface_points(surface_points_df, **kwargs)
+        r_ = 'surface_points'
+
+    elif orientations_df is not None:
+        geo_model.set_orientations(orientations_df, **kwargs)
+        r_ = 'data' if r_ == 'surface_points' else 'orientations'
+
+    else:
+        raise AttributeError('You need to pass at least one dataframe')
+
+    return get_data(geo_model, itype=r_)
 
 
 def set_orientation_from_surface_points(geo_model, indices_array):
@@ -471,8 +494,8 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
         path_i: Path to the data bases of surface_points. Default os.getcwd(),
         path_o: Path to the data bases of orientations. Default os.getcwd()
-        surface_points_df: A df object directly
-        orientations_df:
+        surface_points_df: A pn.Dataframe object with X, Y, Z, and surface columns
+        orientations_df: A pn.Dataframe object with X, Y, Z, surface columns and pole or orientation columns
 
     Returns:
         :class:`gempy.data_management.InputData`
@@ -487,7 +510,7 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
     if 'path_i' in kwargs or 'path_o' in kwargs:
         read_csv(geo_model, **kwargs)
     if 'df_i' in kwargs or 'df_o' in kwargs:
-        read_df(geo_model, **kwargs)
+        set_geometric_data(geo_model, **kwargs)
 
     if 'surface_points_df' in kwargs:
         geo_model.set_surface_points(kwargs['surface_points_df'], **kwargs)
