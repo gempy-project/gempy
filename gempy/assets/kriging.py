@@ -568,6 +568,8 @@ def create_gaussian_field(domain, variogram_model, distance_type='euclidian',
     if distance_type == 'euclidian':
         # calculate distances between all input data points
         dist_all_to_all = cdist(sgs_locations, sgs_locations)
+    else:
+        raise ArgumentError('distance_type not understood')
 
     # set counter og active data (start=input data, grwoing by 1 newly calcualted point each run)
     active_data = len(sgs_prop_updating)
