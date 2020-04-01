@@ -458,6 +458,12 @@ def create_kriged_field(domain, variogram_model, distance_type='euclidian',
     '''
     Method to create a kriged field over the defined grid of the gempy solution depending on the defined
     input data (conditioning).
+    :param domain: domain model where domain.data and domain.ip_mean must be define
+    :param variogram_model: the variogram model to pass to the kriging function
+    :param distance_type: 'euclidian' is the only valid option
+    :param moving_neighbourhood: 'all', 'n_closest' or 'range'
+    :param kriging_type: 'OK' for Ordinary Kriging, 'SK' for Simple Kriging
+    :param n_closest_points: number of points to use if 'n_closest' is set for kriging type
     Returns:
         self.results_df (pandas dataframe):   Dataframe containing coordinates, kriging estimate
                                                     and kriging variance for each grid point
@@ -532,6 +538,11 @@ def create_gaussian_field(domain, variogram_model, distance_type='euclidian',
     '''
     Method to create a kriged field over the defined grid of the gempy solution depending on the defined
     input data (conditioning).
+    :param domain: domain model where domain.data and domain.ip_mean must be define
+    :param variogram_model: the variogram model to pass to the kriging function
+    :param distance_type: 'euclidian' is the only valid option
+    :param moving_neighbourhood: 'all', 'n_closest' or 'range'
+    :param kriging_type: 'OK' for Ordinary Kriging, 'SK' for Simple Kriging
     Returns:
         self.results_df (pandas dataframe):   Dataframe containing coordinates, kriging estimate
                                                         and kriging variance for each grid point
