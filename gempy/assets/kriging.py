@@ -89,10 +89,20 @@ class variogram_model(object):
 
     # class containing all the variogram functionality
 
-    def __init__(self, theoretical_model=None, range_=1, sill=1, nugget=0):
+    def __init__(self, theoretical_model='exponential', range_=1, sill=1, nugget=0):
+        """
+        generate a variogram model object which can be used to pass to the krigin
+        interpolator objects as well as calculate the variogram curves as a
+        function of the distance.
 
-        if theoretical_model is None:
-            theoretical_model = 'exponential'
+        The distance is named 'h' here.
+
+        :param theoretical_model [str]: either 'exponential', 'gaussian' or 'spherical'
+        :param range_: the range in h this variogram should have
+        :param sill: the sill (variance of the data) to give the model
+        :param nugget: the nugget (value for gamma at h first value > 0)
+        """
+
         self.theoretical_model = theoretical_model
 
         # default
@@ -101,7 +111,13 @@ class variogram_model(object):
         self.nugget = nugget
 
     def calculate_semivariance(self, d):
+        """
+        calculates the semivariance at distance d.
+        see methods ending with '_variogram_model' for specific info
 
+        :param d: distance (h) to calculate the semivariance for
+        :return: gamma the semivariance
+        """
         if self.theoretical_model == 'exponential':
             gamma = self.exponential_variogram_model(d)
         elif self.theoretical_model == 'gaussian':
@@ -113,7 +129,13 @@ class variogram_model(object):
         return gamma
 
     def calculate_covariance(self, d):
+        """
+        calculates the covariance at distance d.
+        see methods ending with 'e_covariance_model' for specific info
 
+        :param d: distance (h) to calculate the covariance for
+        :return: gamma the covariance
+        """
         if self.theoretical_model == 'exponential':
             gamma = self.exponential_covariance_model(d)
         elif self.theoretical_model == 'gaussian':
@@ -127,13 +149,28 @@ class variogram_model(object):
     # TODO: Add more options
     # seems better now by changing psill in covariance model
     def exponential_variogram_model(self, d):
-        '''Exponential variogram model, effective range approximately 3r, valid in R3'''
+        """
+        Exponential variogram model, effective range approximately 3r, valid in R3
+        implemented as:
+            psill = self.sill - self.nugget
+            gamma = psill * (1. - np.exp(-(np.absolute(d) / (self.range_)))) + self.nugget
+
+        :param d: distance (h) to calculate at
+        :return: gamma the semivariance
+        """
         psill = self.sill - self.nugget
         gamma = psill * (1. - np.exp(-(np.absolute(d) / (self.range_)))) + self.nugget
         return gamma
 
     def exponential_covariance_model(self, d):
-        '''Exponential covariance model, effective range approximately 3r, valid in R3'''
+        """
+        Exponential covariance model, effective range approximately 3r, valid in R3
+        implemented as:
+            psill = self.sill - self.nugget
+            cov = psill * (np.exp(-(np.absolute(d) / (self.range_))))
+        :param d: distance (h) to calculate at
+        :return: cov the covariance
+        """
         psill = self.sill - self.nugget
         cov = psill * (np.exp(-(np.absolute(d) / (self.range_))))
         return cov
@@ -178,7 +215,12 @@ class variogram_model(object):
     # option for covariance
     # display range, sill, nugget, practical range etc.
     def plot(self, type_='variogram', show_parameters=True):
+        """
+        make a plot of this model using matplotlib
 
+        :param type_[str]: 'variogram', 'covariance', 'both'
+        :param show_parameters: bool whether or not to make a textbox with the parameters
+        """
         if show_parameters == True:
             plt.axhline(self.sill, color='black', lw=1)
             plt.text(self.range_*2, self.sill, 'sill', fontsize=12, va='center', ha='center', backgroundcolor='w')
@@ -225,20 +267,20 @@ class field_solution(object):
     def plot_results(self, geo_data, prop='val', direction='y', result='interpolation', cell_number=0, contour=False,
                      cmap='viridis', alpha=0, legend=False, interpolation='nearest', show_data=True):
         """
-        TODO WRITE DOCSTRING
-        Args:
-            geo_data:
-            prop: property that should be plotted - "val", "var" or "both"
-            direction: x, y or z
-            cell_number:
-            contour:
-            cmap:
-            alpha:
-            legend:
 
-        Returns:
-
+        :param geo_data[gempy.core.model.Model]: the geological model to plot the data into
+        :param prop: property that should be plotted - "val", "var" or "both"
+        :param direction[str]: x, y or z for the direction which is to be sliced
+        :param result: NOT USED
+        :param cell_number: the slice (data point number in the 3D-grid) to plot as 2D plane
+        :param contour[bool]: if True use matpplotbib contourf if False use imshow
+        :param cmap[str]: the colormap to use. This value is passed to the matplotlib.cm.get_cmap function
+        :param alpha: the alpha value (transperency) for the colormap
+        :param legend[bool]: if True adds a colorbar to the plot
+        :param interpolation[str]: the interpolation parameter string to pass to the 2D plotting function
+        :param show_data: if True the datapoints will be plotted using scatter
         """
+
         a = np.full_like(self.domain.mask, np.nan, dtype=np.double) #array like lith_block but with nan if outside domain
 
         est_vals = self.results_df['estimated value'].values
