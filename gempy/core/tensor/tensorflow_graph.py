@@ -211,3 +211,33 @@ class TFGraph:
                            dtype=self.dtype)*self.nugget_effect_grad
 
         return C_G
+
+    def cov_ubterface_gradients(self):
+
+        sed_dips_rest = self.squared_euclidean_distance(
+            self.dips_position_all_tiled, self.rest_layer_points)
+        sed_dips_ref = self.squared_euclidean_distance(
+            self.dips_position_all_tiled, self.ref_layer_points)
+
+        def cartesian_dist_no_tile(x_1, x_2):
+            return tf.concat([
+                tf.transpose(
+                    (x_1[:, 0] - tf.reshape(x_2[:, 0], [x_2.shape[0], 1]))),
+                tf.transpose(
+                    (x_1[:, 1] - tf.reshape(x_2[:, 1], [x_2.shape[0], 1]))),
+                tf.transpose((x_1[:, 2] - tf.reshape(x_2[:, 2], [x_2.shape[0], 1])))], axis=0)
+
+        hu_rest = cartesian_dist_no_tile(
+            self.dips_position_all, self.rest_layer_points)
+        hu_ref = cartesian_dist_no_tile(
+            self.dips_position_all, self.ref_layer_points)
+
+        C_GI = self.gi_reescale*tf.transpose(hu_rest *
+                                             tf.where(sed_dips_rest < self.a_T_surface, x=(- self.c_o_T * ((-14 / self.a_T_surface ** 2) + 105 / 4 * sed_dips_rest / self.a_T_surface ** 3 -
+                                                                                                           35 / 2 * sed_dips_rest ** 3 / self.a_T_surface ** 5 +
+                                                                                                           21 / 4 * sed_dips_rest ** 5 / self.a_T_surface ** 7)), y=0) -
+                                             (hu_ref * tf.where(sed_dips_ref < self.a_T_surface, x=- self.c_o_T * ((-14 / self.a_T_surface ** 2) + 105 / 4 * sed_dips_ref / self.a_T_surface ** 3 -
+                                                                                                                   35 / 2 * sed_dips_ref ** 3 / self.a_T_surface ** 5 +
+                                                                                                                   21 / 4 * sed_dips_ref ** 5 / self.a_T_surface ** 7), y=0)))
+
+        return C_GI
