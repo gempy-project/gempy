@@ -212,7 +212,7 @@ class TFGraph:
 
         return C_G
 
-    def cov_ubterface_gradients(self):
+    def cov_interface_gradients(self):
 
         sed_dips_rest = self.squared_euclidean_distance(
             self.dips_position_all_tiled, self.rest_layer_points)
@@ -241,3 +241,39 @@ class TFGraph:
                                                                                                                    21 / 4 * sed_dips_ref ** 5 / self.a_T_surface ** 7), y=0)))
 
         return C_GI
+
+    def universal_matrix(self):
+
+        n = self.dips_position_all.shape[0]
+
+        sub_x = tf.tile(tf.constant([[1., 0., 0.]], self.dtype), [n, 1])
+        sub_y = tf.tile(tf.constant([[0., 1., 0.]], self.dtype), [n, 1])
+        sub_z = tf.tile(tf.constant([[0., 0., 1.]], self.dtype), [n, 1])
+        sub_block1 = tf.concat([sub_x, sub_y, sub_z], 0)
+
+        sub_x_2 = tf.reshape(2 * self.gi_reescale *
+                             self.dips_position_all[:, 0], [n, 1])
+        sub_y_2 = tf.reshape(2 * self.gi_reescale *
+                             self.dips_position_all[:, 1], [n, 1])
+        sub_z_2 = tf.reshape(2 * self.gi_reescale *
+                             self.dips_position_all[:, 2], [n, 1])
+
+        sub_x_2 = tf.pad(sub_x_2, [[0, 0], [0, 2]])
+        sub_y_2 = tf.pad(sub_y_2, [[0, 0], [1, 1]])
+        sub_z_2 = tf.pad(sub_z_2, [[0, 0], [2, 0]])
+        sub_block2 = tf.concat([sub_x_2, sub_y_2, sub_z_2], 0)
+
+        sub_xy = tf.reshape(tf.concat([self.gi_reescale * self.dips_position_all[:, 1],
+                                       self.gi_reescale * self.dips_position_all[:, 0]], 0), [2*n, 1])
+        sub_xy = tf.pad(sub_xy, [[0, 2], [0, 0]])
+        sub_xz = tf.concat([tf.pad(tf.reshape(self.gi_reescale * self.dips_position_all[:, 2], [n, 1]), [
+                           [0, n], [0, 0]]), tf.reshape(self.gi_reescale * self.dips_position_all[:, 0], [n, 1])], 0)
+        sub_yz = tf.reshape(tf.concat([self.gi_reescale * self.dips_position_all[:, 2],
+                                       self.gi_reescale * self.dips_position_all[:, 1]], 0), [2*n, 1])
+        sub_yz = tf.pad(sub_yz, [[2, 0], [0, 0]])
+
+        sub_block3 = tf.concat([sub_xy, sub_xz, sub_yz], 1)
+
+        U_G = tf.concat([sub_block1, sub_block2, sub_block3], 1)
+
+        return U_G
