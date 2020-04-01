@@ -1445,7 +1445,7 @@ class SurfacePoints(GeometricData):
         self.init_dependent_properties()
 
         # Add nugget columns
-        self.df['smooth'] = 1e-6
+        self.df['smooth'] = 2e-6
 
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
