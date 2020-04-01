@@ -341,14 +341,20 @@ class field_solution(object):
             plt.tight_layout()
 
 # TODO: check with new ordianry kriging and nugget effect
-def simple_kriging(a, b, prop, var_mod, inp_mean):
+def simple_kriging(a, b, prop, var_mod, inp_mean, method='solve'):
     '''
     Method for simple kriging calculation.
+    If the matrix is not of full rank use 'lstsq' for the method parameter to force usage of LAPAK's dgelsd function,
+    which uses Singular Value decomposition. If you are not sure, use 'smart' to calculate if the matrix has full rank
+    before trying to solve (WARNING! 'smart' option will have significantly increased computational cost!).
+
     Args:
         a (np.array): distance matrix containing all distances between target point and moving neighbourhood
         b (np.array): distance matrix containing all inter-point distances between locations in moving neighbourhood
         prop (np.array): array containing scalar property values of locations in moving neighbourhood
         var_mod: variogram model object
+        inp_mean:
+        method: (str): 'solve' to use numpy.linalg.solve, 'lstsq' for numpy.linalg.lstsq, or 'smart' (see above)
     Returns:
         result (float?): single scalar property value estimated for target location
         std_ok (float?): single scalar variance value for estimate at target location
@@ -358,7 +364,6 @@ def simple_kriging(a, b, prop, var_mod, inp_mean):
     shape = len(a)
     C = np.zeros((shape, shape))
     c = np.zeros((shape))
-    w = np.zeros((shape))
 
     # Filling matrices with covariances based on calculated distances
     C[:shape, :shape] = var_mod.calculate_covariance(b) #? cov or semiv
@@ -367,9 +372,20 @@ def simple_kriging(a, b, prop, var_mod, inp_mean):
     # nugget effect for simple kriging - dont remember why i set this actively, should be the same
     #np.fill_diagonal(C, self.sill)
 
-    # TODO: find way to check quality of matrix and solutions for instability
     # Solve Kriging equations
-    w = np.linalg.solve(C, c)
+    if method == 'solve':
+        w = np.linalg.solve(C, c)
+    elif method == 'lstsq':
+        w = np.linalg.lstsq(C, c)
+    elif method == 'smart':
+        # this is computationally expensive for big systems
+        if np.linalg.matrix_rank(C) != C.shape[1]:
+            w = np.linalg.lstsq(C, c)
+        else:
+            w = np.linalg.solve(C, c)
+    else:
+        raise AttributeError('method parameter is not recognized: see function hints for supported methods')
+
 
     # calculating estimate and variance for kriging
     pred_var = var_mod.sill - np.sum(w * c)
@@ -378,14 +394,20 @@ def simple_kriging(a, b, prop, var_mod, inp_mean):
 
     return result, pred_var
 
-def ordinary_kriging(a, b, prop, var_mod):
+def ordinary_kriging(a, b, prop, var_mod, method='solve'):
     '''
     Method for ordinary kriging calculation.
+    If the matrix is not of full rank use 'lstsq' for the method parameter to force usage of LAPAK's dgelsd function,
+    which uses Singular Value decomposition. If you are not sure, use 'smart' to calculate if the matrix has full rank
+    before trying to solve (WARNING! 'smart' option will have significantly increased computational cost!).
+
+
     Args:
         a (np.array): distance matrix containing all distances between target point and moving neighbourhood
         b (np.array): distance matrix containing all inter-point distances between locations in moving neighbourhood
         prop (np.array): array containing scalar property values of locations in moving neighbourhood
         var_mod: variogram model object
+        method: (str): 'solve' to use numpy.linalg.solve, 'lstsq' for numpy.linalg.lstsq, or 'smart' (see above)
     Returns:
         result (float?): single scalar property value estimated for target location
         std_ok (float?): single scalar variance value for estimate at target location
@@ -395,7 +417,6 @@ def ordinary_kriging(a, b, prop, var_mod):
     shape = len(a)
     C = np.zeros((shape + 1, shape + 1))
     c = np.zeros((shape + 1))
-    w = np.zeros((shape + 1))
 
     # filling matirces based on model for spatial correlation
     C[:shape, :shape] = var_mod.calculate_semivariance(b)
@@ -412,9 +433,19 @@ def ordinary_kriging(a, b, prop, var_mod):
     # but be aware that it strictly forces estimates to go through data points
     # c[c == self.nugget] = 0
 
-    # TODO: find way to check quality of matrix and solutions for instability
     # Solve Kriging equations
-    w = np.linalg.solve(C, c)
+    if method == 'solve':
+        w = np.linalg.solve(C, c)
+    elif method == 'lstsq':
+        w = np.linalg.lstsq(C, c)
+    elif method == 'smart':
+        # this is computationally expensive for big systems
+        if np.linalg.matrix_rank(C) != C.shape[1]:
+            w = np.linalg.lstsq(C, c)
+        else:
+            w = np.linalg.solve(C, c)
+    else:
+        raise AttributeError('method parameter is not recognized: see function hints for supported methods')
 
     # calculating estimate and variance for kriging
     pred_var = w[shape] + np.sum(w[:shape] * c[:shape])
