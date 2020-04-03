@@ -19,6 +19,7 @@ import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 from copy import deepcopy
 
+
 class domain(object):
 
     def __init__(self, model, domain=None, data=None, set_mean=None):
@@ -125,7 +126,7 @@ class variogram_model(object):
         elif self.theoretical_model == 'spherical':
             gamma = self.spherical_variogram_model(d)
         else:
-            print('theoretical varigoram model not understood')
+            raise KeyError('theoretical varigoram model not understood')
         return gamma
 
     def calculate_covariance(self, d):
@@ -143,7 +144,7 @@ class variogram_model(object):
         elif self.theoretical_model == 'spherical':
             gamma = self.spherical_covariance_model(d)
         else:
-            print('theoretical varigoram model not understood')
+            raise KeyError('theoretical varigoram model not understood')
         return gamma
 
     # TODO: Add more options
@@ -268,16 +269,16 @@ class field_solution(object):
                      cmap='viridis', alpha=0, legend=False, interpolation='nearest', show_data=True):
         """
 
-        :param geo_data[gempy.core.model.Model]: the geological model to plot the data into
+        :param geo_data: [gempy.core.model.Model] the geological model to plot the data into
         :param prop: property that should be plotted - "val", "var" or "both"
-        :param direction[str]: x, y or z for the direction which is to be sliced
+        :param direction: [str]x, y or z for the direction which is to be sliced
         :param result: NOT USED
         :param cell_number: the slice (data point number in the 3D-grid) to plot as 2D plane
-        :param contour[bool]: if True use matpplotbib contourf if False use imshow
-        :param cmap[str]: the colormap to use. This value is passed to the matplotlib.cm.get_cmap function
+        :param contour: [bool] if True use matpplotbib contourf if False use imshow
+        :param cmap: [str] the colormap to use. This value is passed to the matplotlib.cm.get_cmap function
         :param alpha: the alpha value (transperency) for the colormap
-        :param legend[bool]: if True adds a colorbar to the plot
-        :param interpolation[str]: the interpolation parameter string to pass to the 2D plotting function
+        :param legend: [bool] if True adds a colorbar to the plot
+        :param interpolation: [str] the interpolation parameter string to pass to the 2D plotting function
         :param show_data: if True the datapoints will be plotted using scatter
         """
 
@@ -296,7 +297,7 @@ class field_solution(object):
             b = np.full_like(self.domain.mask, np.nan, dtype=np.double)
             b[np.where(self.domain.mask == True)] = est_var
         else:
-            print('prop must be val var or both')
+            raise KeyError('prop must be "val", "var" or "both"')
 
         #create plot object
         p = visualization_2d.PlotSolution(geo_data)
@@ -339,6 +340,7 @@ class field_solution(object):
                                extent=self.domain.sol.grid.regular_grid.extent[[0, 1, 4, 5]])
             helpers.add_colorbar(im2, label='variance[]')
             plt.tight_layout()
+
 
 # TODO: check with new ordianry kriging and nugget effect
 def simple_kriging(a, b, prop, var_mod, inp_mean, method='solve'):
@@ -394,6 +396,7 @@ def simple_kriging(a, b, prop, var_mod, inp_mean, method='solve'):
 
     return result, pred_var
 
+
 def ordinary_kriging(a, b, prop, var_mod, method='solve'):
     '''
     Method for ordinary kriging calculation.
@@ -418,7 +421,7 @@ def ordinary_kriging(a, b, prop, var_mod, method='solve'):
     C = np.zeros((shape + 1, shape + 1))
     c = np.zeros((shape + 1))
 
-    # filling matirces based on model for spatial correlation
+    # filling matrices based on model for spatial correlation
     C[:shape, :shape] = var_mod.calculate_semivariance(b)
     c[:shape] = var_mod.calculate_semivariance(a)
 
@@ -445,13 +448,14 @@ def ordinary_kriging(a, b, prop, var_mod, method='solve'):
         else:
             w = np.linalg.solve(C, c)
     else:
-        raise AttributeError('method parameter is not recognized: see function hints for supported methods')
+        raise KeyError('method parameter is not recognized: see function hints for supported methods')
 
     # calculating estimate and variance for kriging
     pred_var = w[shape] + np.sum(w[:shape] * c[:shape])
     result = np.sum(w[:shape] * prop)
 
     return result, pred_var
+
 
 def create_kriged_field(domain, variogram_model, distance_type='euclidian',
                         moving_neighbourhood='all', kriging_type='OK', n_closest_points=20):
@@ -463,7 +467,7 @@ def create_kriged_field(domain, variogram_model, distance_type='euclidian',
     :param distance_type: 'euclidian' is the only valid option
     :param moving_neighbourhood: 'all', 'n_closest' or 'range'
     :param kriging_type: 'OK' for Ordinary Kriging, 'SK' for Simple Kriging
-    :param n_closest_points: number of points to use if 'n_closest' is set for kriging type
+    :param n_closest_points: number of points to use if 'n_closest' is set for moving_neighbourhood
     Returns:
         self.results_df (pandas dataframe):   Dataframe containing coordinates, kriging estimate
                                                     and kriging variance for each grid point
@@ -509,7 +513,7 @@ def create_kriged_field(domain, variogram_model, distance_type='euclidian',
             b = dist_all_to_all[np.ix_(aux, aux)]
 
         else:
-            print("FATAL ERROR: Moving neighbourhood not understood")
+            raise KeyError("Moving neighbourhood not understood")
 
         # STEP 2: Multiple if elif conditions to calculate kriging at point
         if kriging_type == 'OK':
@@ -517,9 +521,9 @@ def create_kriged_field(domain, variogram_model, distance_type='euclidian',
         elif kriging_type == 'SK':
             val, var = simple_kriging(a, b, prop, variogram_model, domain.inp_mean)
         elif kriging_type == 'UK':
-            print("Universal Kriging not implemented")
+            raise KeyError("Universal Kriging not implemented")
         else:
-            print("FATAL ERROR: Kriging type not understood")
+            raise KeyError("Kriging type not understood")
 
         # STEP 3: Save results
         kriging_result_vals[i] = val
@@ -533,12 +537,13 @@ def create_kriged_field(domain, variogram_model, distance_type='euclidian',
 
     return field_solution(domain, variogram_model, results_df, field_type='interpolation')
 
+
 def create_gaussian_field(domain, variogram_model, distance_type='euclidian',
                         moving_neighbourhood='all', kriging_type='OK', n_closest_points=20):
     '''
     Method to create a kriged field over the defined grid of the gempy solution depending on the defined
     input data (conditioning).
-    :param domain: domain model where domain.data and domain.ip_mean must be define
+    :param domain: domain model where domain.data, krig_grid and domain.ip_mean must be define
     :param variogram_model: the variogram model to pass to the kriging function
     :param distance_type: 'euclidian' is the only valid option
     :param moving_neighbourhood: 'all', 'n_closest' or 'range'
@@ -569,7 +574,7 @@ def create_gaussian_field(domain, variogram_model, distance_type='euclidian',
         # calculate distances between all input data points
         dist_all_to_all = cdist(sgs_locations, sgs_locations)
     else:
-        raise ArgumentError('distance_type not understood')
+        raise KeyError('distance_type not understood')
 
     # set counter og active data (start=input data, grwoing by 1 newly calcualted point each run)
     active_data = len(sgs_prop_updating)
@@ -618,7 +623,7 @@ def create_gaussian_field(domain, variogram_model, distance_type='euclidian',
             b = active_distance_matrix[np.ix_(aux, aux)]
 
         else:
-            print("FATAL ERROR: Moving neighbourhood not understood")
+            raise KeyError("Moving neighbourhood not understood")
 
         # STEP 3: Multiple if elif conditions to calculate kriging at point
         # TODO: Cover case of data location and grid point coinciding
@@ -627,9 +632,9 @@ def create_gaussian_field(domain, variogram_model, distance_type='euclidian',
         elif kriging_type == 'SK':
             val, var = simple_kriging(a, b, prop, variogram_model, domain.inp_mean)
         elif kriging_type == 'UK':
-            print("Universal Kriging not implemented")
+            NotImplementedError("Universal Kriging not implemented")
         else:
-            print("FATAL ERROR: Kriging type not understood")
+            raise KeyError("Kriging type not understood")
 
         # STEP 4: Draw from random distribution
         std_ = np.sqrt(var)
