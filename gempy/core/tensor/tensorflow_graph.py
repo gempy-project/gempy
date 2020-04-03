@@ -21,6 +21,7 @@ class TFGraph:
                  number_of_points_per_surface, Range, C_o, nugget_effect_scalar,
                  nugget_effect_grad, rescalefactor, output=None):
         self.dtype = tf.float64
+        self.lengh_of_faults = tf.constant(0, dtype=tf.int32)
 
         # CONSTANT PARAMETERS FOR ALL SERIES
         # KRIGING
@@ -31,7 +32,7 @@ class TFGraph:
 
         self.n_universal_eq_T = tf.ones(
             5, dtype=tf.int32, name="Grade of the universal drift")
-        self.n_universal_eq_T_op = tf.constant(3)
+        self.n_universal_eq_T_op = tf.constant(9)
 
         # They weight the contribution of the surface_points against the orientations.
         self.i_reescale = tf.constant(4, dtype=self.dtype)
@@ -53,6 +54,11 @@ class TFGraph:
         self.dip_angles_all = dip_angles
         self.azimuth_all = azimuth
         self.polarity_all = polarity
+
+        self.dip_angles = self.dip_angles_all
+        self.azimuth = self.azimuth_all
+        self.polarity = self.polarity_all
+
         self.surface_points_all = surface_points_coord
 
         # Tiling dips to the 3 spatial coordinations
@@ -65,8 +71,18 @@ class TFGraph:
         self.nugget_effect_scalar_ref_rest = tf.expand_dims(
             self.ref_nugget + self.rest_nugget, 1)
 
-        self.fault_matrix = fault_drift
+        self.len_points = self.surface_points_all.shape[0] - \
+            self.number_of_points_per_surface.shape[0]
+
         self.grid_val = grid
+
+        self.fault_matrix = fault_drift
+
+        interface_loc = grid.shape[0]
+        self.fault_drift_at_surface_points_rest = self.fault_matrix[
+            :, interface_loc: interface_loc + self.len_points]
+        self.fault_drift_at_surface_points_ref = self.fault_matrix[
+            :, interface_loc + self.len_points:]
 
         self.values_properties_op = values_properties
 
@@ -135,10 +151,27 @@ class TFGraph:
             [Tensor] -- Distancse matrix. shape n_points x n_points
         """
         # tf.maximum avoid negative numbers increasing stability
+        # numerical issue arise here
         sqd = tf.sqrt(tf.maximum(tf.reshape(tf.reduce_sum(x_1**2, 1), shape=(x_1.shape[0], 1)) +
                                  tf.reshape(tf.reduce_sum(x_2**2, 1), shape=(1, x_2.shape[0])) -
                                  2*tf.tensordot(x_1, tf.transpose(x_2), 1), 1e-12))
         return sqd
+
+    def matrices_shapes(self):
+        """
+        Get all the lengths of the matrices that form the covariance matrix
+
+        Returns:
+             length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C
+        """
+        length_of_CG = tf.constant(self.dips_position_all_tiled.shape[0])
+        length_of_CGI = tf.constant(self.ref_layer_points.shape[0])
+        length_of_U_I = self.n_universal_eq_T_op
+        length_of_faults = self.lengh_of_faults
+
+        length_of_C = length_of_CG + length_of_CGI + length_of_U_I + length_of_faults
+
+        return length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C
 
     def cov_surface_points(self):
         sed_rest_rest = self.squared_euclidean_distance(
@@ -206,7 +239,8 @@ class TFGraph:
                                                                                        35 / 2 * sed_dips_dips ** 3 / self.a_T ** 5 +
                                                                                        21 / 4 * sed_dips_dips ** 5 / self.a_T ** 7), y=0)
 
-        C_G = tf.where(sed_dips_dips == 0, x=0, y=condistion_fail)
+        C_G = tf.where(sed_dips_dips == 0, x=tf.constant(
+            0., dtype=self.dtype), y=condistion_fail)
         C_G = C_G + tf.eye(C_G.shape[0],
                            dtype=self.dtype)*self.nugget_effect_grad
 
@@ -235,10 +269,14 @@ class TFGraph:
         C_GI = self.gi_reescale*tf.transpose(hu_rest *
                                              tf.where(sed_dips_rest < self.a_T_surface, x=(- self.c_o_T * ((-14 / self.a_T_surface ** 2) + 105 / 4 * sed_dips_rest / self.a_T_surface ** 3 -
                                                                                                            35 / 2 * sed_dips_rest ** 3 / self.a_T_surface ** 5 +
-                                                                                                           21 / 4 * sed_dips_rest ** 5 / self.a_T_surface ** 7)), y=0) -
+                                                                                                           21 / 4 * sed_dips_rest ** 5 / self.a_T_surface ** 7)), y=tf.constant(0., dtype=self.dtype)) -
                                              (hu_ref * tf.where(sed_dips_ref < self.a_T_surface, x=- self.c_o_T * ((-14 / self.a_T_surface ** 2) + 105 / 4 * sed_dips_ref / self.a_T_surface ** 3 -
                                                                                                                    35 / 2 * sed_dips_ref ** 3 / self.a_T_surface ** 5 +
-                                                                                                                   21 / 4 * sed_dips_ref ** 5 / self.a_T_surface ** 7), y=0)))
+                                                                                                                   21 / 4 * sed_dips_ref ** 5 / self.a_T_surface ** 7), y=tf.constant(0., dtype=self.dtype))))
+
+        # a temporary solotion to deal with numerical issue. Force small numbers to 0
+        C_GI = tf.where(tf.logical_and(tf.abs(C_GI) > 0, tf.abs(
+            C_GI) < 1e-9), tf.constant(0, dtype=self.dtype), y=C_GI)
 
         return C_GI
 
@@ -267,7 +305,7 @@ class TFGraph:
                                        self.gi_reescale * self.dips_position_all[:, 0]], 0), [2*n, 1])
         sub_xy = tf.pad(sub_xy, [[0, 2], [0, 0]])
         sub_xz = tf.concat([tf.pad(tf.reshape(self.gi_reescale * self.dips_position_all[:, 2], [n, 1]), [
-                           [0, n], [0, 0]]), tf.reshape(self.gi_reescale * self.dips_position_all[:, 0], [n, 1])], 0)
+            [0, n], [0, 0]]), tf.reshape(self.gi_reescale * self.dips_position_all[:, 0], [n, 1])], 0)
         sub_yz = tf.reshape(tf.concat([self.gi_reescale * self.dips_position_all[:, 2],
                                        self.gi_reescale * self.dips_position_all[:, 1]], 0), [2*n, 1])
         sub_yz = tf.pad(sub_yz, [[2, 0], [0, 0]])
@@ -276,4 +314,108 @@ class TFGraph:
 
         U_G = tf.concat([sub_block1, sub_block2, sub_block3], 1)
 
-        return U_G
+        U_I = tf.stack([self.gi_reescale * (self.rest_layer_points[:, 0] - self.ref_layer_points[:, 0]), self.gi_reescale *
+                        (self.rest_layer_points[:, 1] -
+                         self.ref_layer_points[:, 1]),
+                        self.gi_reescale *
+                        (self.rest_layer_points[:, 2] -
+                         self.ref_layer_points[:, 2]),
+                        self.gi_reescale ** 2 *
+                        (self.rest_layer_points[:, 0] ** 2 -
+                         self.ref_layer_points[:, 0] ** 2),
+                        self.gi_reescale ** 2 *
+                        (self.rest_layer_points[:, 1] ** 2 -
+                         self.ref_layer_points[:, 1] ** 2),
+                        self.gi_reescale ** 2 *
+                        (self.rest_layer_points[:, 2] ** 2 -
+                         self.ref_layer_points[:, 2] ** 2),
+                        self.gi_reescale ** 2 * (
+            self.rest_layer_points[:, 0] * self.rest_layer_points[:, 1] - self.ref_layer_points[:, 0] *
+            self.ref_layer_points[:, 1]),
+            self.gi_reescale ** 2 * (
+            self.rest_layer_points[:, 0] * self.rest_layer_points[:, 2] - self.ref_layer_points[:, 0] *
+            self.ref_layer_points[:, 2]),
+            self.gi_reescale ** 2 * (
+            self.rest_layer_points[:, 1] * self.rest_layer_points[:, 2] - self.ref_layer_points[:, 1] *
+            self.ref_layer_points[:, 2])], 1)
+
+        return U_G, U_I
+
+    def faults_matrix(self, f_ref=None, f_res=None):
+        length_of_CG, _, _, length_of_faults = self.matrices_shapes()[
+            :4]
+
+        # self.fault_drift_at_surface_points_rest = self.fault_matrix
+        # self.fault_drift_at_surface_points_ref = self.fault_matrix
+
+        F_I = (self.fault_drift_at_surface_points_ref -
+               self.fault_drift_at_surface_points_rest) + 0.0001
+
+        F_G = tf.zeros((length_of_faults, length_of_CG),
+                       dtype=self.dtype) + 0.0001
+
+        return F_I, F_G
+
+    @tf.function
+    def covariance_matrix(self):
+
+        # length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C = self.matrices_shapes()
+
+        C_G = self.cov_gradients()
+        C_I = self.cov_surface_points()
+        C_GI = self.cov_interface_gradients()
+        U_I, U_G = self.universal_matrix()
+        F_I, F_G = self.faults_matrix()
+
+        A = tf.concat([tf.concat([C_G, tf.transpose(C_GI)], -1),
+                       tf.concat([C_GI, C_I], -1)], 0)
+
+        B = tf.concat([U_I, U_G], 0)
+
+        AB = tf.concat([A, B], -1)
+
+        B_T = tf.transpose(B)
+
+        C = tf.pad(B_T, [[0, 0], [0, U_G.shape[1]]])
+
+        C_matrix = tf.concat([AB, C], 0)
+
+        return C_matrix
+
+    def deg2rad(self, degree_matrix):
+        return degree_matrix*tf.constant(0.0174533, dtype=self.dtype)
+
+    @tf.function
+    def b_vector(self, dip_angles_=None, azimuth_=None, polarity_=None):
+
+        length_of_C = self.matrices_shapes()[-1]
+        if dip_angles_ is None:
+            dip_angles_ = self.dip_angles
+        if azimuth_ is None:
+            azimuth_ = self.azimuth
+        if polarity_ is None:
+            polarity_ = self.polarity
+
+        G_x = tf.sin(self.deg2rad(dip_angles_)) * \
+            tf.sin(self.deg2rad(azimuth_)) * polarity_
+        G_y = tf.sin(self.deg2rad(dip_angles_)) * \
+            tf.cos(self.deg2rad(azimuth_)) * polarity_
+        G_z = tf.cos(self.deg2rad(dip_angles_)) * polarity_
+
+        G = tf.concat([G_x, G_y, G_z], -1)
+
+        G = tf.expand_dims(G, axis=1)
+        b_vector = tf.pad(G, [[0, length_of_C - G.shape[0]], [0, 0]])
+
+        return b_vector
+
+    @tf.function
+    def solve_kriging(self, b=None):
+
+        C_matrix = self.covariance_matrix()
+
+        b_vector = self.b_vector()
+
+        DK = tf.linalg.solve(C_matrix, b_vector)
+
+        return DK
