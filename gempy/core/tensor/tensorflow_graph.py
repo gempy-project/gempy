@@ -449,14 +449,76 @@ class TFGraph:
         sed_dips_SimPoint = self.squared_euclidean_distance(
             self.dips_position_all_tiled, grid_val)
 
-        sigma_0_grad = (weights[:length_of_CG] *
+        sigma_0_grad = tf.reduce_sum((weights[:length_of_CG] *
                         self.gi_reescale * (tf.negative(hu_SimPoint) *\
                                             # first derivative
                                             tf.where((sed_dips_SimPoint < self.a_T_surface),
                                                      x=(- self.c_o_T * ((-14 / self.a_T_surface ** 2) + 105 / 4 * sed_dips_SimPoint / self.a_T_surface ** 3 -
                                                                         35 / 2 * sed_dips_SimPoint ** 3 / self.a_T_surface ** 5 +
                                                                         21 / 4 * sed_dips_SimPoint ** 5 / self.a_T_surface ** 7)),
-                                                     y=tf.constant(0, dtype=tf.float64))))
-
+                                                     y=tf.constant(0, dtype=tf.float64)))),0)
+        
         return sigma_0_grad
+    
+    def contribution_interface(self,grid_val,weights=None):
+        
+        length_of_CG, length_of_CGI = self.matrices_shapes()[:2]
+        
+        # Euclidian distances
+        sed_rest_SimPoint = self.squared_euclidean_distance(self.rest_layer_points, grid_val)
+        sed_ref_SimPoint = self.squared_euclidean_distance(self.ref_layer_points, grid_val)
+        
+        sigma_0_interf = tf.reduce_sum(-weights[length_of_CG:length_of_CG + length_of_CGI, :] *
+                (self.c_o_T * self.i_reescale * (
+                        tf.where(sed_rest_SimPoint < self.a_T_surface,  # SimPoint - Rest Covariances Matrix
+                        x= (1 - 7 * (sed_rest_SimPoint / self.a_T_surface) ** 2 +
+                         35 / 4 * (sed_rest_SimPoint / self.a_T_surface) ** 3 -
+                         7 / 2 * (sed_rest_SimPoint / self.a_T_surface) ** 5 +
+                         3 / 4 * (sed_rest_SimPoint / self.a_T_surface) ** 7),
+                        y=tf.constant(0.,dtype=self.dtype))) -
+                        (tf.where(sed_ref_SimPoint < self.a_T_surface,  # SimPoint- Ref
+                         x = (1 - 7 * (sed_ref_SimPoint / self.a_T_surface) ** 2 +
+                          35 / 4 * (sed_ref_SimPoint / self.a_T_surface) ** 3 -
+                          7 / 2 * (sed_ref_SimPoint / self.a_T_surface) ** 5 +
+                          3 / 4 * (sed_ref_SimPoint / self.a_T_surface) ** 7),
+                        y=tf.constant(0.,dtype = self.dtype)))),0)
+        
+        return sigma_0_interf
+    
+    def contribution_universal_drift(self,grid_val,weights=None):
+        
+        
+        length_of_CG, length_of_CGI, length_of_U_I, length_of_faults, length_of_C = self.matrices_shapes()
+        
+        _submatrix1 = tf.transpose(tf.concat([grid_val,grid_val**2],1))
+
+        _submatrix2 = tf.stack([grid_val[:, 0] * grid_val[:, 1],grid_val[:, 0] * grid_val[:, 2],grid_val[:, 1] * grid_val[:, 2]])
+
+        universal_grid_surface_points_matrix = tf.concat([_submatrix1,_submatrix2],0)
+        
+        i_rescale_aux = tf.concat([tf.ones([3],dtype=tf.float64),tf.tile(tf.expand_dims(self.gi_reescale,0), [6])],-1)
+        
+        _aux_magic_term = tf.tile(tf.expand_dims(i_rescale_aux[:self.n_universal_eq_T_op],0),[grid_val.shape[0],1])
+        
+        f_0 = tf.reduce_sum(weights[length_of_CG + length_of_CGI:length_of_CG + length_of_CGI + length_of_U_I] * self.gi_reescale *
+                    tf.transpose(_aux_magic_term )*
+                    universal_grid_surface_points_matrix[:self.n_universal_eq_T_op],0)
+        
+        return f_0
+    
+    @tf.function
+    def scalar_field(self):
+        
+        grid_val = self.x_to_interpolate(self.grid_val)
+        weights = self.solve_kriging()
+        
+        tiled_weights = self.extend_dual_kriging(weights, grid_val.shape[0])
+        sigma_0_grad = self.contribution_gradient_interface(grid_val, tiled_weights)
+        sigma_0_interf = self.contribution_interface(grid_val, tiled_weights)
+        f_0 = self.contribution_universal_drift(grid_val,weights)
+        
+        scalar_field_results = sigma_0_grad+sigma_0_interf+f_0
+        
+        return scalar_field_results
+        
     
