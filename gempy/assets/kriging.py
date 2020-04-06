@@ -458,7 +458,7 @@ def ordinary_kriging(a, b, prop, var_mod, method='solve'):
 
 
 def create_kriged_field(domain, variogram_model, distance_type='euclidian',
-                        moving_neighbourhood='all', kriging_type='OK', n_closest_points=20):
+                        moving_neighbourhood='all', kriging_type='OK', n_closest_points=20, method='solve'):
     '''
     Method to create a kriged field over the defined grid of the gempy solution depending on the defined
     input data (conditioning).
@@ -468,6 +468,7 @@ def create_kriged_field(domain, variogram_model, distance_type='euclidian',
     :param moving_neighbourhood: 'all', 'n_closest' or 'range'
     :param kriging_type: 'OK' for Ordinary Kriging, 'SK' for Simple Kriging
     :param n_closest_points: number of points to use if 'n_closest' is set for moving_neighbourhood
+    :param method: 'solve' to use numpy.linalg.solve, 'lstsq' for numpy.linalg.lstsq, or 'smart' (see above)
     Returns:
         self.results_df (pandas dataframe):   Dataframe containing coordinates, kriging estimate
                                                     and kriging variance for each grid point
@@ -517,9 +518,9 @@ def create_kriged_field(domain, variogram_model, distance_type='euclidian',
 
         # STEP 2: Multiple if elif conditions to calculate kriging at point
         if kriging_type == 'OK':
-            val, var = ordinary_kriging(a, b, prop, variogram_model)
+            val, var = ordinary_kriging(a, b, prop, variogram_model, method=method)
         elif kriging_type == 'SK':
-            val, var = simple_kriging(a, b, prop, variogram_model, domain.inp_mean)
+            val, var = simple_kriging(a, b, prop, variogram_model, domain.inp_mean, method=method)
         elif kriging_type == 'UK':
             raise KeyError("Universal Kriging not implemented")
         else:
@@ -539,7 +540,7 @@ def create_kriged_field(domain, variogram_model, distance_type='euclidian',
 
 
 def create_gaussian_field(domain, variogram_model, distance_type='euclidian',
-                        moving_neighbourhood='all', kriging_type='OK', n_closest_points=20):
+                        moving_neighbourhood='all', kriging_type='OK', n_closest_points=20, method='solve'):
     '''
     Method to create a kriged field over the defined grid of the gempy solution depending on the defined
     input data (conditioning).
@@ -548,6 +549,7 @@ def create_gaussian_field(domain, variogram_model, distance_type='euclidian',
     :param distance_type: 'euclidian' is the only valid option
     :param moving_neighbourhood: 'all', 'n_closest' or 'range'
     :param kriging_type: 'OK' for Ordinary Kriging, 'SK' for Simple Kriging
+    :param method: 'solve' to use numpy.linalg.solve, 'lstsq' for numpy.linalg.lstsq, or 'smart' (see above)
     Returns:
         self.results_df (pandas dataframe):   Dataframe containing coordinates, kriging estimate
                                                         and kriging variance for each grid point
@@ -628,9 +630,9 @@ def create_gaussian_field(domain, variogram_model, distance_type='euclidian',
         # STEP 3: Multiple if elif conditions to calculate kriging at point
         # TODO: Cover case of data location and grid point coinciding
         if kriging_type == 'OK':
-            val, var = ordinary_kriging(a, b, prop, variogram_model)
+            val, var = ordinary_kriging(a, b, prop, variogram_model, method=method)
         elif kriging_type == 'SK':
-            val, var = simple_kriging(a, b, prop, variogram_model, domain.inp_mean)
+            val, var = simple_kriging(a, b, prop, variogram_model, domain.inp_mean, method=method)
         elif kriging_type == 'UK':
             NotImplementedError("Universal Kriging not implemented")
         else:
