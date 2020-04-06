@@ -19,9 +19,15 @@ class TFGraph:
     def __init__(self, dips_position, dip_angles, azimuth, polarity,
                  surface_points_coord, fault_drift, grid, values_properties,
                  number_of_points_per_surface, Range, C_o, nugget_effect_scalar,
-                 nugget_effect_grad, rescalefactor, output=None):
+                 nugget_effect_grad, rescalefactor, output=None,**kwargs):
         self.dtype = tf.float64
         self.lengh_of_faults = tf.constant(0, dtype=tf.int32)
+        
+        # OPETIONS
+        # -------
+        self.gradient = kwargs.get('gradient', False)
+        self.max_speed = kwargs.get('max_speed', 1)
+        
 
         # CONSTANT PARAMETERS FOR ALL SERIES
         # KRIGING
@@ -42,6 +48,7 @@ class TFGraph:
         self.n_dimensions = 3
 
         self.number_of_points_per_surface = number_of_points_per_surface
+        self.npf = tf.concat([[0],self.number_of_points_per_surface[:-1]],-1)
 
         self.nugget_effect_grad = nugget_effect_grad
         self.nugget_effect_scalar = nugget_effect_scalar
@@ -50,7 +57,13 @@ class TFGraph:
         # ---------
         # VARIABLES
         # ---------
-
+        if self.gradient:
+            self.sig_slope = tf.constant(50,dtype = self.dtype)
+        else:
+            self.sig_slope = tf.constant(50000,dtype = self.dtype,name='Sigmoid slope')
+            self.not_l = tf.constant(50,dtype = self.dtype,name = 'Sigmoid Outside')
+            self.ellipse_factor_exponent = tf.constant(2,dtype = self.dtype,name = 'Attenuation factor')
+            
         self.dip_angles_all = tf.cast(dip_angles,self.dtype)
         self.azimuth_all = azimuth
         self.polarity_all = polarity
@@ -520,5 +533,14 @@ class TFGraph:
         scalar_field_results = sigma_0_grad+sigma_0_interf+f_0
         
         return scalar_field_results
+    
+    def get_scalar_field_at_surface_points(self, Z_x):
         
+        scalar_field_at_surface_points_values = tf.gather_nd(Z_x[-2 * self.len_points: -self.len_points],tf.expand_dims(self.npf,1))
+        
+        return scalar_field_at_surface_points_values
+    
+    def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties_op):
+    
+        slope = self.sig_slope
     

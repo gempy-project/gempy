@@ -143,4 +143,4 @@ Profiles
 notebooks/data/input_data/Claudius/Results_
 
 .vscode
-gempy/assets/model_compare.py
+# gempy/assets/model_compare.py

@@ -1,6 +1,6 @@
 import numpy as np
 import tensorflow as tf
-
+import gempy.core.tensorflow_graph as tfg
 
 class Interpolator(object):
     """Class that act as:
@@ -73,3 +73,7 @@ class Interpolator(object):
 
         self.len_series_w = self.len_series_i + self.len_series_o * \
             3 + self.len_series_u + self.len_series_f
+
+class InterpolatorModel_tf(Interpolator):
+    
+    
