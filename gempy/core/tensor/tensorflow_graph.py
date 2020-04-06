@@ -540,7 +540,41 @@ class TFGraph:
         
         return scalar_field_at_surface_points_values
     
-    def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties_op):
+    
+    
+    def compare(self,a, b, slice_init, Z_x, l, n_surface, drift):
+
+        n_surface_0 = n_surface[:, slice_init:slice_init + 1]
+        n_surface_1 = n_surface[:, slice_init + 1:slice_init + 2]
+        drift = drift[:, slice_init:slice_init + 1]
+
+        # The 5 rules the slope of the function
+        sigm = (-tf.reshape(n_surface_0,(-1, 1)) / (1 + tf.exp(-l * (Z_x - a)))) - \
+                (tf.reshape(n_surface_1,(-1, 1)) / (1 + tf.exp(l * (Z_x - b)))) + tf.reshape(drift,(-1, 1))
+
+        return sigm
+    
+    @tf.function
+    def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties):
     
         slope = self.sig_slope
-    
+        
+        scalar_field_iter = tf.pad(tf.expand_dims(scalar_field_at_surface_points,0),[[0,0],[1,1]])
+        
+        n_surface_op_float_sigmoid_mask = tf.repeat(values_properties,2)
+        n_surface_op_float_sigmoid = tf.expand_dims(tf.concat([tf.concat([[0],n_surface_op_float_sigmoid_mask[1:-1]],-1),[0]],-1),0)
+        drift = tf.expand_dims(tf.concat([n_surface_op_float_sigmoid_mask[0:-1],[0]],-1),0)
+        
+        formations_block = tf.zeros([1,Z_x.shape[0]],dtype=self.dtype)
+        
+        ## need to check if Hessian works for this, otherwise vectorize
+        # code for vectorization
+        # tf.concat([tf.expand_dims(tf.range(scalar_field_iter.shape[1]-1),1),
+        # tf.expand_dims(tf.range(scalar_field_iter.shape[1]-1)+1,1)],-1)
+        
+        for i in tf.range(scalar_field_iter.shape[1]-1):
+            tf.autograph.experimental.set_loop_options( 
+                    shape_invariants=[(formations_block, tf.TensorShape([None,Z_x.shape[0]]))]) 
+            formations_block = formations_block+ self.compare(scalar_field_iter[0][i], scalar_field_iter[0][i+1], 2*i, Z_x, slope, n_surface_op_float_sigmoid, drift)
+
+        return formations_block

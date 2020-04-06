@@ -31,7 +31,7 @@ if __name__ == '__main__':
 
     interp_data = gp.set_interpolator(geo_data, compile_theano=True,
                                       theano_optimizer='fast_run',
-                                      verbose=['npf_op','sfai'])
+                                      verbose=['export_formation_block'])
     geo_data.modify_kriging_parameters('drift equations', [3, 3])
 
     sol = gp.compute_model(geo_data)
@@ -66,9 +66,34 @@ if __name__ == '__main__':
     sigma_0_interf = TFG.contribution_interface(grid_val, tiled_weights)
     f_0 = TFG.contribution_universal_drift(grid_val,weights)
     Z_x = sigma_0_grad+sigma_0_interf+f_0
+    scalar_field_at_surface_points = TFG.get_scalar_field_at_surface_points(Z_x)
+    formations_block = TFG.export_formation_block(Z_x,scalar_field_at_surface_points,values_properties)
+    print(formations_block)
+
     
     Plot_2D_scaler_field(grid,Z_x)
     
     
-
     
+# scalar_field_iter = tf.pad(tf.expand_dims(scalar_field_at_surface_points,0),[[0,0],[1,1]])[0]
+# l = 50.
+# n_surface_op_float_sigmoid_mask = tf.repeat(values_properties,2)
+# n_surface_op_float_sigmoid = tf.expand_dims(tf.concat([tf.concat([[0],n_surface_op_float_sigmoid_mask[1:-1]],-1),[0]],-1),0)
+# drift = tf.expand_dims(tf.concat([n_surface_op_float_sigmoid_mask[0:-1],[0]],-1),0)
+
+
+# def compare(a, b, slice_init, Z_x, l, n_surface, drift):
+
+
+#     slice_init = slice_init
+#     n_surface_0 = n_surface[:, slice_init:slice_init + 1]
+#     n_surface_1 = n_surface[:, slice_init + 1:slice_init + 2]
+#     drift = drift[:, slice_init:slice_init + 1]
+
+
+
+#     # The 5 rules the slope of the function
+#     sigm = (-tf.reshape(n_surface_0,(-1, 1)) / (1 + tf.exp(-l * (Z_x - a)))) - \
+#             (tf.reshape(n_surface_1,(-1, 1)) / (1 + tf.exp(l * (Z_x - b)))) + tf.reshape(drift,(-1, 1))
+
+#     return sigm
