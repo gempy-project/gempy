@@ -1,10 +1,7 @@
-import tensorflow as tf
+import tensorflow as tf ## tensorflow_nightly
 import numpy as np
 import sys
 
-
-def constant32(k):
-    return tf.constant(k, dtype=tf.float32)
 
 
 @tf.function
@@ -25,7 +22,7 @@ class TFGraph:
         
         # OPETIONS
         # -------
-        self.gradient = kwargs.get('gradient', False)
+        self.gradient = kwargs.get('gradient', True)
         self.max_speed = kwargs.get('max_speed', 1)
         
 
@@ -559,7 +556,7 @@ class TFGraph:
     
         slope = self.sig_slope
         
-        scalar_field_iter = tf.pad(tf.expand_dims(scalar_field_at_surface_points,0),[[0,0],[1,1]])
+        scalar_field_iter = tf.pad(tf.expand_dims(scalar_field_at_surface_points,0),[[0,0],[1,1]])[0]
         
         n_surface_op_float_sigmoid_mask = tf.repeat(values_properties,2)
         n_surface_op_float_sigmoid = tf.expand_dims(tf.concat([tf.concat([[0],n_surface_op_float_sigmoid_mask[1:-1]],-1),[0]],-1),0)
@@ -572,9 +569,17 @@ class TFGraph:
         # tf.concat([tf.expand_dims(tf.range(scalar_field_iter.shape[1]-1),1),
         # tf.expand_dims(tf.range(scalar_field_iter.shape[1]-1)+1,1)],-1)
         
-        for i in tf.range(scalar_field_iter.shape[1]-1):
+        for i in tf.range(scalar_field_iter.shape[0]-1):
             tf.autograph.experimental.set_loop_options( 
                     shape_invariants=[(formations_block, tf.TensorShape([None,Z_x.shape[0]]))]) 
-            formations_block = formations_block+ self.compare(scalar_field_iter[0][i], scalar_field_iter[0][i+1], 2*i, Z_x, slope, n_surface_op_float_sigmoid, drift)
+            formations_block = formations_block+ self.compare(scalar_field_iter[i], scalar_field_iter[i+1], 2*i, Z_x, slope, n_surface_op_float_sigmoid, drift)
 
+        if self.gradient is True:
+            ReLU_up = - 0.01 * tf.nn.relu(Z_x - scalar_field_iter[1])
+            ReLU_down =  0.01 * tf.nn.relu(Z_x - scalar_field_iter[-2])
+
+            formations_block += ReLU_down + ReLU_up
+            
         return formations_block
+
+           
