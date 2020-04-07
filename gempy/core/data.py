@@ -1414,7 +1414,6 @@ class SurfacePoints(GeometricData):
         self._columns_i_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r']
         self._columns_i_rend = ['X', 'Y', 'Z', 'surface', 'color']
 
-
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
             self.df: pn.DataFrame
 
@@ -1445,7 +1444,7 @@ class SurfacePoints(GeometricData):
         self.init_dependent_properties()
 
         # Add nugget columns
-        self.df['smooth'] = 1e-6
+        self.df['smooth'] = 2e-6
 
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
@@ -1583,22 +1582,16 @@ class SurfacePoints(GeometricData):
         # Selecting the properties passed to be modified
         self.df.loc[idx, list(kwargs.keys())] = values
 
-        # if is_surface:
-        #     self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
-        #     self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
-        #     self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
-        #     self.sort_table()
-
         return self
 
     @setdoc_pro([ds.file_path, ds.debug, ds.inplace])
-    def read_surface_points(self, file_path, debug=False, inplace=False,
+    def read_surface_points(self, table_source, debug=False, inplace=False,
                             kwargs_pandas: dict = None, **kwargs, ):
         """
         Read tabular using pandas tools and if inplace set it properly to the surface points object.
 
         Parameters:
-            file_path (str, path object, or file-like object): [s0]
+            table_source (str, path object, file-like object or direct pandas data frame): [s0]
             debug (bool): [s1]
             inplace (bool): [s2]
             kwargs_pandas: kwargs for the panda function :func:`pn.read_csv`
@@ -1631,7 +1624,10 @@ class SurfacePoints(GeometricData):
         if 'sep' not in kwargs_pandas:
             kwargs_pandas['sep'] = ','
 
-        table = pn.read_csv(file_path, **kwargs_pandas)
+        if isinstance(table_source, pn.DataFrame):
+            table = table_source
+        else:
+            table = pn.read_csv(table_source, **kwargs_pandas)
 
         if 'update_surfaces' in kwargs:
             if kwargs['update_surfaces'] is True:
@@ -1990,12 +1986,12 @@ class Orientations(GeometricData):
                                  )
 
     @setdoc_pro([ds.file_path, ds.debug, ds.inplace])
-    def read_orientations(self, file_path, debug=False, inplace=True, kwargs_pandas: dict = None, **kwargs):
+    def read_orientations(self, table_source, debug=False, inplace=True, kwargs_pandas: dict = None, **kwargs):
         """
         Read tabular using pandas tools and if inplace set it properly to the surface points object.
 
         Args:
-            file_path (str, path object, or file-like object): [s0]
+            table_source (str, path object, file-like object, or direct data frame): [s0]
             debug (bool): [s1]
             inplace (bool): [s2]
             kwargs_pandas: kwargs for the panda function :func:`pn.read_csv`
@@ -2036,7 +2032,10 @@ class Orientations(GeometricData):
         if 'sep' not in kwargs_pandas:
             kwargs_pandas['sep'] = ','
 
-        table = pn.read_csv(file_path, **kwargs_pandas)
+        if isinstance(table_source, pn.DataFrame):
+            table = table_source
+        else:
+            table = pn.read_csv(table_source, **kwargs_pandas)
 
         if 'update_surfaces' in kwargs:
             if kwargs['update_surfaces'] is True:

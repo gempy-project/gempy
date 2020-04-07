@@ -623,8 +623,6 @@ class TheanoGraphPro(object):
         uv_3d = T.cast(T.round(unique_val[0, :T.prod(self.regular_grid_res)].reshape(self.regular_grid_res, ndim=3)),
                        'int32')
 
-
-
         uv_l = T.horizontal_stack(uv_3d[1:, :, :].reshape((1, -1)),
                                   uv_3d[:, 1:, :].reshape((1, -1)),
                                   uv_3d[:, :, 1:].reshape((1, -1)))
@@ -810,7 +808,7 @@ class TheanoGraphPro(object):
 
         # self.nugget_effect_scalar_T_op = theano.printing.Print('nug scalar')(self.nugget_effect_scalar_T_op)
 
-        C_I += T.eye(C_I.shape[0]) * 2 * self.nugget_effect_scalar_T_op
+        C_I += T.eye(C_I.shape[0]) * self.nugget_effect_scalar_T_op
         # Add name to the theano node
         C_I.name = 'Covariance SurfacePoints'
 

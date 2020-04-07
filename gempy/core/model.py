@@ -292,7 +292,7 @@ class DataMutation(object):
     @setdoc(Series.delete_series.__doc__, indent=False)
     def delete_series(self, indices: Union[str, list], refactor_order_series=True,
                       remove_surfaces=False, remove_data=False):
-        """Delete series, update the categories dependet on them and reset the flow control.
+        """ Delete series, update the categories dependet on them and reset the flow control.
         """
         indices = np.atleast_1d(indices)
         self.series.delete_series(indices, refactor_order_series)
@@ -599,6 +599,11 @@ class DataMutation(object):
     def set_surface_points_object(self, surface_points: SurfacePoints, update_model=True):
         raise NotImplementedError
 
+    @staticmethod
+    def _check_possible_column_names(table, possible_candidates):
+        possible_candidates = np.array(possible_candidates)
+        return possible_candidates[np.isin(possible_candidates, table.columns)][0]
+
     @setdoc(SurfacePoints.set_surface_points.__doc__, indent=False, position='beg')
     def set_surface_points(self, table: pn.DataFrame, **kwargs):
         """
@@ -608,10 +613,16 @@ class DataMutation(object):
                 - add_basement (bool): add a basement surface to the df. foo
 
         """
-        coord_x_name = kwargs.get('coord_x_name', "X")
-        coord_y_name = kwargs.get('coord_y_name', "Y")
-        coord_z_name = kwargs.get('coord_z_name', "Z")
-        surface_name = kwargs.get('surface_name', "surface")
+
+        coord_x_name = kwargs.get('coord_x_name') if 'coord_x_name' in kwargs \
+            else self._check_possible_column_names(table, ['X', 'x'])
+        coord_y_name =kwargs.get('coord_y_name') if 'coord_y_name' in kwargs \
+            else self._check_possible_column_names(table, ['Y', 'y'])
+        coord_z_name = kwargs.get('coord_z_name') if 'coord_z_name' in kwargs \
+            else self._check_possible_column_names(table, ['Z', 'z'])
+        surface_name = kwargs.get('surface_name') if 'surface_name' in kwargs \
+            else self._check_possible_column_names(table, ['surface', 'Surface', 'surfaces', 'surfaces', 'formations',
+                                                           'formation'])
         update_surfaces = kwargs.get('update_surfaces', True)
 
         if update_surfaces is True:
@@ -640,17 +651,23 @@ class DataMutation(object):
             table (pn.Dataframe): table with surface points data.
 
         """
-        coord_x_name = kwargs.get('coord_x_name', "X")
-        coord_y_name = kwargs.get('coord_y_name', "Y")
-        coord_z_name = kwargs.get('coord_z_name', "Z")
         g_x_name = kwargs.get('G_x_name', 'G_x')
         g_y_name = kwargs.get('G_y_name', 'G_y')
         g_z_name = kwargs.get('G_z_name', 'G_z')
         azimuth_name = kwargs.get('azimuth_name', 'azimuth')
         dip_name = kwargs.get('dip_name', 'dip')
         polarity_name = kwargs.get('polarity_name', 'polarity')
-        surface_name = kwargs.get('surface_name', "formation")
         update_surfaces = kwargs.get('update_surfaces', False)
+
+        coord_x_name = kwargs.get('coord_x_name') if 'coord_x_name' in kwargs \
+            else self._check_possible_column_names(table, ['X', 'x'])
+        coord_y_name = kwargs.get('coord_y_name') if 'coord_y_name' in kwargs \
+            else self._check_possible_column_names(table, ['Y', 'y'])
+        coord_z_name = kwargs.get('coord_z_name') if 'coord_z_name' in kwargs \
+            else self._check_possible_column_names(table, ['Z', 'z'])
+        surface_name = kwargs.get('surface_name') if 'surface_name' in kwargs \
+            else self._check_possible_column_names(table, ['surface', 'Surface', 'surfaces', 'surfaces', 'formations',
+                                                           'formation', 'Formation'])
 
         if update_surfaces is True:
             self.add_surfaces(table[surface_name].unique())
@@ -1223,13 +1240,13 @@ class Model(DataMutation, ABC):
         return True
 
     @setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
-    def read_data(self, path_i=None, path_o=None, add_basement=True, **kwargs):
+    def read_data(self, source_i=None, source_o=None, add_basement=True, **kwargs):
         """
-        Read data from a csv
+        Read data from a csv, or directly supplied dataframes
 
         Args:
-            path_i: Path to the data bases of surface_points. Default os.getcwd(),
-            path_o: Path to the data bases of orientations. Default os.getcwd()
+            source_i: Path to the data bases of surface_points. Default os.getcwd(), or direct pandas data frame
+            source_o: Path to the data bases of orientations. Default os.getcwd(), or direct pandas data frame
             add_basement (bool): if True add a basement surface. This wont be interpolated it just gives the values
             for the volume below the last surface.
             **kwargs:
@@ -1240,11 +1257,15 @@ class Model(DataMutation, ABC):
         """
         if 'update_surfaces' not in kwargs:
             kwargs['update_surfaces'] = True
+        if 'path_i' in kwargs:
+            source_i = kwargs['path_i']
+        if 'path_o' in kwargs:
+            source_o = kwargs['path_o']
 
-        if path_i:
-            self.surface_points.read_surface_points(path_i, inplace=True, **kwargs)
-        if path_o:
-            self.orientations.read_orientations(path_o, inplace=True, **kwargs)
+        if isinstance(source_i, pn.DataFrame) or source_i:
+            self.surface_points.read_surface_points(source_i, inplace=True, **kwargs)
+        if isinstance(source_o, pn.DataFrame) or source_o:
+            self.orientations.read_orientations(source_o, inplace=True, **kwargs)
         if add_basement is True:
             self.surfaces.add_surface(['basement'])
             self.map_series_to_surfaces({'Basement': 'basement'}, set_series=True)
