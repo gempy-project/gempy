@@ -311,12 +311,12 @@ class TFGraph:
 
         sub_xy = tf.reshape(tf.concat([self.gi_reescale * self.dips_position_all[:, 1],
                                        self.gi_reescale * self.dips_position_all[:, 0]], 0), [2*n, 1])
-        sub_xy = tf.pad(sub_xy, [[0, 2], [0, 0]])
+        sub_xy = tf.pad(sub_xy, [[0, n], [0, 0]])
         sub_xz = tf.concat([tf.pad(tf.reshape(self.gi_reescale * self.dips_position_all[:, 2], [n, 1]), [
             [0, n], [0, 0]]), tf.reshape(self.gi_reescale * self.dips_position_all[:, 0], [n, 1])], 0)
         sub_yz = tf.reshape(tf.concat([self.gi_reescale * self.dips_position_all[:, 2],
                                        self.gi_reescale * self.dips_position_all[:, 1]], 0), [2*n, 1])
-        sub_yz = tf.pad(sub_yz, [[2, 0], [0, 0]])
+        sub_yz = tf.pad(sub_yz, [[n, 0], [0, 0]])
 
         sub_block3 = tf.concat([sub_xy, sub_xz, sub_yz], 1)
 
@@ -554,14 +554,12 @@ class TFGraph:
     @tf.function
     def export_formation_block(self, Z_x, scalar_field_at_surface_points, values_properties):
     
-        slope = self.sig_slope
-        
+        slope = self.sig_slope 
         scalar_field_iter = tf.pad(tf.expand_dims(scalar_field_at_surface_points,0),[[0,0],[1,1]])[0]
-        
-        n_surface_op_float_sigmoid_mask = tf.repeat(values_properties,2)
-        n_surface_op_float_sigmoid = tf.expand_dims(tf.concat([tf.concat([[0],n_surface_op_float_sigmoid_mask[1:-1]],-1),[0]],-1),0)
-        drift = tf.expand_dims(tf.concat([n_surface_op_float_sigmoid_mask[0:-1],[0]],-1),0)
-        
+
+        n_surface_op_float_sigmoid_mask = tf.repeat(values_properties,2,axis=1)
+        n_surface_op_float_sigmoid = tf.pad(n_surface_op_float_sigmoid_mask[:,1:-1],[[0,0],[1,1]])
+        drift = tf.pad(n_surface_op_float_sigmoid_mask[:,0:-1],[[0,0],[0,1]])
         formations_block = tf.zeros([1,Z_x.shape[0]],dtype=self.dtype)
         
         ## need to check if Hessian works for this, otherwise vectorize
@@ -574,12 +572,15 @@ class TFGraph:
                     shape_invariants=[(formations_block, tf.TensorShape([None,Z_x.shape[0]]))]) 
             formations_block = formations_block+ self.compare(scalar_field_iter[i], scalar_field_iter[i+1], 2*i, Z_x, slope, n_surface_op_float_sigmoid, drift)
 
-        if self.gradient is True:
-            ReLU_up = - 0.01 * tf.nn.relu(Z_x - scalar_field_iter[1])
-            ReLU_down =  0.01 * tf.nn.relu(Z_x - scalar_field_iter[-2])
+        # if self.gradient is True:
+        #     ReLU_up = - 0.01 * tf.nn.relu(Z_x - scalar_field_iter[1])
+        #     ReLU_down =  0.01 * tf.nn.relu(Z_x - scalar_field_iter[-2])
 
-            formations_block += ReLU_down + ReLU_up
+        #     formations_block += ReLU_down + ReLU_up
             
         return formations_block
 
-           
+    def compute_forward_gravity(self,densities = None):
+        n_devices = tf.constant((densities.shape[0])/self.tz.shape[0],dtype = tf.int32)
+        tz_rep = tf.tile(self.tz, n_devices)
+        grav = (densities * tz_rep),((n_devices, -1)).sum(axis=1)

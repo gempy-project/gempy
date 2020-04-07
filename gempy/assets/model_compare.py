@@ -69,31 +69,93 @@ if __name__ == '__main__':
     scalar_field_at_surface_points = TFG.get_scalar_field_at_surface_points(Z_x)
     formations_block = TFG.export_formation_block(Z_x,scalar_field_at_surface_points,values_properties)
     print(formations_block)
-
     
     Plot_2D_scaler_field(grid,Z_x)
     
-    
-    
-# scalar_field_iter = tf.pad(tf.expand_dims(scalar_field_at_surface_points,0),[[0,0],[1,1]])[0]
-# l = 50.
-# n_surface_op_float_sigmoid_mask = tf.repeat(values_properties,2)
-# n_surface_op_float_sigmoid = tf.expand_dims(tf.concat([tf.concat([[0],n_surface_op_float_sigmoid_mask[1:-1]],-1),[0]],-1),0)
-# drift = tf.expand_dims(tf.concat([n_surface_op_float_sigmoid_mask[0:-1],[0]],-1),0)
+    slope = TFG.sig_slope 
+    scalar_field_iter = tf.pad(tf.expand_dims(scalar_field_at_surface_points,0),[[0,0],[1,1]])[0]
+    l = 50.
+    n_surface_op_float_sigmoid_mask = tf.repeat(values_properties,2,axis=1)
+    n_surface_op_float_sigmoid = tf.pad(n_surface_op_float_sigmoid_mask[:,1:-1],[[0,0],[1,1]])
+    drift = tf.pad(n_surface_op_float_sigmoid_mask[:,0:-1],[[0,0],[0,1]])
 
 
-# def compare(a, b, slice_init, Z_x, l, n_surface, drift):
+# -----------
+#Gravity test below
+# -----------
+
+# Theano
+from gempy.assets.geophysics import GravityPreprocessing
+grav_res = 20
+X = np.linspace(7.050000e+05, 747000, grav_res)
+Y = np.linspace(6863000, 6925000, grav_res)
+Z= 300
+xyz= np.meshgrid(X, Y, Z)
+xy_ravel = np.vstack(list(map(np.ravel, xyz))).T
+xy_ravel
+geo_model = gp.load_model('Greenstone', path= '../../notebooks/data/gempy_models')
+geo_model.set_centered_grid(xy_ravel,  resolution = [10, 10, 15], radius=5000)
+g = GravityPreprocessing(geo_model.grid.centered_grid)
+tz = g.set_tz_kernel()
+gp.set_interpolator(geo_model, output=['gravity'], pos_density=1,  gradient=False,
+                    theano_optimizer='fast_run',verbose=['export_formation_block'])  
+interpolator = geo_model.interpolator
+
+values_properties = interpolator.surfaces.df.iloc[:, interpolator.surfaces._n_properties:].values.astype(interpolator.dtype).T
+
+dips_position, dip_angles, azimuth, polarity, surface_points_coord, fault_drift, grid, values_properties = interpolator.get_python_input_block()[
+        0:-3]
+dtype = interpolator.additional_data.options.df.loc['values', 'dtype']
+
+len_rest_form = interpolator.additional_data.structure_data.df.loc[
+    'values', 'len surfaces surface_points']-1
+Range = interpolator.additional_data.kriging_data.df.loc['values', 'range']
+C_o = interpolator.additional_data.kriging_data.df.loc['values', '$C_o$']
+rescale_factor = interpolator.additional_data.rescaling_data.df.loc[
+    'values', 'rescaling factor']
+nugget_effect_grad = np.cast[dtype](
+    np.tile(interpolator.orientations.df['smooth'], 3))
+nugget_effect_scalar = np.cast[interpolator.dtype](
+    interpolator.surface_points.df['smooth'])
+
+sol = gp.compute_model(geo_model, output=['geology'])
+grav = sol.fw_gravity
 
 
-#     slice_init = slice_init
-#     n_surface_0 = n_surface[:, slice_init:slice_init + 1]
-#     n_surface_1 = n_surface[:, slice_init + 1:slice_init + 2]
-#     drift = drift[:, slice_init:slice_init + 1]
+# Tensorflow
+TFG = TFGraph(dips_position, dip_angles, azimuth,
+                polarity, surface_points_coord, fault_drift,
+                grid, values_properties, len_rest_form, Range,
+                C_o, nugget_effect_scalar, nugget_effect_grad,
+                rescale_factor)
+
+slope = TFG.sig_slope 
+grid_val = TFG.x_to_interpolate(grid)
+TFG.covariance_matrix()
 
 
+weights = TFG.solve_kriging()
 
-#     # The 5 rules the slope of the function
-#     sigm = (-tf.reshape(n_surface_0,(-1, 1)) / (1 + tf.exp(-l * (Z_x - a)))) - \
-#             (tf.reshape(n_surface_1,(-1, 1)) / (1 + tf.exp(l * (Z_x - b)))) + tf.reshape(drift,(-1, 1))
+tiled_weights = TFG.extend_dual_kriging(weights, grid_val.shape[0])
 
-#     return sigm
+sigma_0_grad = TFG.contribution_gradient_interface(grid_val, tiled_weights)
+sigma_0_interf = TFG.contribution_interface(grid_val, tiled_weights)
+f_0 = TFG.contribution_universal_drift(grid_val,weights)
+Z_x = sigma_0_grad+sigma_0_interf+f_0
+scalar_field_at_surface_points = TFG.get_scalar_field_at_surface_points(Z_x)
+scalar_field_iter = tf.pad(tf.expand_dims(scalar_field_at_surface_points,0),[[0,0],[1,1]])[0]
+
+TFG.export_formation_block(Z_x,scalar_field_at_surface_points,values_properties)
+
+n_surface_op_float_sigmoid_mask = tf.repeat(values_properties,2,axis=1)
+n_surface_op_float_sigmoid = tf.pad(n_surface_op_float_sigmoid_mask[:,1:-1],[[0,0],[1,1]])
+drift = tf.pad(n_surface_op_float_sigmoid_mask[:,0:-1],[[0,0],[0,1]])
+
+formations_block = tf.zeros([1,Z_x.shape[0]],dtype=TFG.dtype)
+for i in tf.range(scalar_field_iter.shape[0]-1):
+    tf.autograph.experimental.set_loop_options( 
+            shape_invariants=[(formations_block, tf.TensorShape([None,Z_x.shape[0]]))]) 
+    formations_block = formations_block+ TFG.compare(scalar_field_iter[i], scalar_field_iter[i+1], 2*i, Z_x, slope, n_surface_op_float_sigmoid, drift)
+
+
+# formations_block = TFG.export_formation_block(Z_x,scalar_field_at_surface_points,values_properties)
