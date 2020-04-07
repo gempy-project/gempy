@@ -90,3 +90,12 @@ def test_set_is_fault():
     assert mm.faults.faults_relations_df.loc['foo2', 'foo3'] == True
     assert mm.faults.faults_relations_df.iloc[2,3] == True
     mm.set_is_fault(['foo2'], toggle=True)
+
+
+def test_read_data():
+    data_path = os.path.dirname(__file__)+'/../../notebooks/'
+    model = gp.Model()
+    model.read_data(path_i=data_path + "/data/input_data/tut_chapter1/simple_fault_model_points.csv",
+                    path_o=data_path + "/data/input_data/tut_chapter1/simple_fault_model_orientations.csv")
+
+    assert model.surface_points.df.shape[0] == 57

@@ -1257,6 +1257,10 @@ class Model(DataMutation, ABC):
         """
         if 'update_surfaces' not in kwargs:
             kwargs['update_surfaces'] = True
+        if 'path_i' in kwargs:
+            source_i = kwargs['path_i']
+        if 'path_o' in kwargs:
+            source_o = kwargs['path_o']
 
         if isinstance(source_i, pn.DataFrame) or source_i:
             self.surface_points.read_surface_points(source_i, inplace=True, **kwargs)
