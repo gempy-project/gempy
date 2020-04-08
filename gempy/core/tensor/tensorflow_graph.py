@@ -572,15 +572,16 @@ class TFGraph:
                     shape_invariants=[(formations_block, tf.TensorShape([None,Z_x.shape[0]]))]) 
             formations_block = formations_block+ self.compare(scalar_field_iter[i], scalar_field_iter[i+1], 2*i, Z_x, slope, n_surface_op_float_sigmoid, drift)
 
-        # if self.gradient is True:
-        #     ReLU_up = - 0.01 * tf.nn.relu(Z_x - scalar_field_iter[1])
-        #     ReLU_down =  0.01 * tf.nn.relu(Z_x - scalar_field_iter[-2])
+        if self.gradient is True:
+            ReLU_up = - 0.01 * tf.nn.relu(Z_x - scalar_field_iter[1])
+            ReLU_down =  0.01 * tf.nn.relu(Z_x - scalar_field_iter[-2])
 
-        #     formations_block += ReLU_down + ReLU_up
+            formations_block += ReLU_down + ReLU_up
             
         return formations_block
 
-    def compute_forward_gravity(self,densities = None):
-        n_devices = tf.constant((densities.shape[0])/self.tz.shape[0],dtype = tf.int32)
-        tz_rep = tf.tile(self.tz, n_devices)
-        grav = (densities * tz_rep),((n_devices, -1)).sum(axis=1)
+    def compute_forward_gravity(self,tz,lg0,lg1,densities = None):
+        n_devices = tf.math.floordiv((densities.shape[0]),tz.shape[0])
+        tz_rep = tf.tile(tz, [n_devices])
+        grav = tf.reduce_sum(tf.reshape(densities*tz_rep,[400,-1]),axis=1)
+        return grav
