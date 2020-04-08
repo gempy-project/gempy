@@ -1006,8 +1006,8 @@ class DataMutation(object):
 
     # region Theano interface
     @setdoc(InterpolatorModel.__doc__)
-    def set_theano_graph(self, interpolator: InterpolatorModel):
-        """Pass a theano graph of a Interpolator instance other than the Model compose
+    def set_theano_graph(self, interpolator: InterpolatorModel,  update_structure=True, update_kriging=True):
+        """ Pass a theano graph of a Interpolator instance other than the Model compose
 
         Use this method only if you know what are you doing!
 
@@ -1016,13 +1016,17 @@ class DataMutation(object):
 
         Returns:
              True """
+        warnings.warn('This function is going to be deprecated. Use Model.set_theano_function instead',
+                      DeprecationWarning)
         self.interpolator.theano_graph = interpolator.theano_graph
         self.interpolator.theano_function = interpolator.theano_function
+        self.update_additional_data(update_structure=update_structure, update_kriging=update_kriging)
         self.update_to_interpolator()
         return True
 
     @setdoc(InterpolatorModel.__doc__)
-    def set_theano_function(self, interpolator: InterpolatorModel):
+    def set_theano_function(self, interpolator: InterpolatorModel,
+                            update_structure=True, update_kriging=True):
         """
         Pass a theano function and its correspondent graph from an Interpolator instance other than the Model compose
 
@@ -1035,9 +1039,22 @@ class DataMutation(object):
 
         self.interpolator.theano_graph = interpolator.theano_graph
         self.interpolator.theano_function = interpolator.theano_function
-        self.interpolator.set_all_shared_parameters()
-        self.update_structure(update_theano='matrices')
+        # self.rescaling.rescale_data()
+        self.update_additional_data(update_structure=update_structure, update_kriging=update_kriging)
+        self.update_to_interpolator()
+        # self.interpolator.set_all_shared_parameters()
+        # self.update_structure(update_theano='matrices')
         return True
+
+    def update_additional_data(self, update_structure=True, update_kriging=True):
+        if update_structure is True:
+            self.update_structure(update_theano='matrices')
+
+        if update_kriging is True:
+            print('Setting kriging parameters to their default values.')
+            self.additional_data.update_default_kriging()
+
+        return self.additional_data
 
     def update_to_interpolator(self, reset=True):
         """Update all shared parameters from the data objects

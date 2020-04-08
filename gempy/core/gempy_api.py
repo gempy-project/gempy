@@ -223,7 +223,8 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
     if 'gravity' in output:
         pos_density = kwargs.get('pos_density', 1)
         tz = kwargs.get('tz', 'auto')
-        geo_model.interpolator.set_theano_shared_gravity(tz, pos_density)
+        if geo_model.grid.centered_grid is not None:
+            geo_model.interpolator.set_theano_shared_gravity(tz, pos_density)
 
     if 'magnetics' in output:
         pos_magnetics = kwargs.get('pos_magnetics', 1)
@@ -277,14 +278,9 @@ def get_th_fn(model: Model):
 
 # region Additional data functionality
 def update_additional_data(model: Model, update_structure=True, update_kriging=True):
-    if update_structure is True:
-        model.additional_data.update_structure()
-
-    if update_kriging is True:
-        print('Setting kriging parameters to their default values.')
-        model.additional_data.update_default_kriging()
-
-    return model.additional_data
+    warnings.warn('This function is going to be deprecated. Use Model.update_additional_data instead',
+                  DeprecationWarning)
+    return model.update_additional_data(update_structure, update_kriging)
 
 
 def get_additional_data(model: Model):
