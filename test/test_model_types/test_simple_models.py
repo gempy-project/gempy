@@ -17,7 +17,7 @@ class TestNoFaults:
     I am testing all block and potential field values so sol is (n_block+n_pot)
     """
 
-    def test_a(self, interpolator_islith_nofault):
+    def test_a(self, interpolator):
         """
         2 Horizontal layers with drift 0
         """
@@ -26,7 +26,7 @@ class TestNoFaults:
                                      path_o=input_path+"/GeoModeller/test_a/test_a_Foliations.csv",
                                      path_i=input_path+"/GeoModeller/test_a/test_a_Points.csv")
 
-        geo_data.set_theano_function(interpolator_islith_nofault)
+        geo_data.set_theano_function(interpolator)
 
         # Compute model
         sol = gempy.compute_model(geo_data)
@@ -46,7 +46,7 @@ class TestNoFaults:
         # We only compare the block because the absolute pot field I changed it
         np.testing.assert_array_almost_equal(np.round(sol.lith_block[test_values]), real_sol, decimal=0)
 
-    def test_b(self, interpolator_islith_nofault):
+    def test_b(self, interpolator):
         """
         Two layers a bit curvy, drift degree 1
         """
@@ -56,7 +56,7 @@ class TestNoFaults:
                                      path_o=input_path+"/GeoModeller/test_b/test_b_Foliations.csv",
                                      path_i=input_path+"/GeoModeller/test_b/test_b_Points.csv")
 
-        geo_data.set_theano_function(interpolator_islith_nofault)
+        geo_data.set_theano_function(interpolator)
 
         # Compute model
         sol = gempy.compute_model(geo_data)
@@ -76,7 +76,7 @@ class TestNoFaults:
         # We only compare the block because the absolute pot field I changed it
         np.testing.assert_array_almost_equal(np.round(sol.lith_block[test_values]), real_sol, decimal=0)
 
-    def test_c(self, interpolator_islith_nofault):
+    def test_c(self, interpolator):
         """
         Two layers a bit curvy, drift degree 0
         """
@@ -86,7 +86,7 @@ class TestNoFaults:
                                      path_o=input_path+"/GeoModeller/test_c/test_c_Foliations.csv",
                                      path_i=input_path+"/GeoModeller/test_c/test_c_Points.csv")
 
-        geo_data.set_theano_function(interpolator_islith_nofault)
+        geo_data.set_theano_function(interpolator)
 
 
         # Compute model

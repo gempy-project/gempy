@@ -74,6 +74,10 @@ class Solution(object):
         self.sections = None
         self.custom = None
 
+        # Center Grid
+        self.fw_gravity = None
+        self.fw_magnetics = None
+
     def __repr__(self):
         return '\nLithology ids \n  %s \n' \
                % (np.array2string(self.lith_block))

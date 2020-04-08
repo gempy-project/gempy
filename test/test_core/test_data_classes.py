@@ -1,9 +1,3 @@
-
-
-# These two lines are necessary only if GemPy is not installed
-import sys, os
-sys.path.append("../..")
-
 # Importing GemPy
 import gempy as gp
 
@@ -13,14 +7,6 @@ import numpy as np
 import pandas as pn
 import matplotlib.pyplot as plt
 import pytest
-
-# ## Series
-#
-# Series is the object that contains the properties associated with each independent scalar field. Right now it is
-# simply the order of the series (which is infered by the index order). But in the future will be add the unconformity
-# relation or perhaps the type of interpolator
-#
-# Series and Faults classes are quite entagled since fauls are a type of series
 
 
 @pytest.fixture(scope='module')
