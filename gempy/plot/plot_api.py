@@ -37,7 +37,7 @@ import pandas as pn
 # Keep Alex code hidden until we merge it properly
 try:
     import pyvista as pv
-    from .vista import Vista as Vista
+    from ._vista import Vista as Vista
     PYVISTA_IMPORT = True
 except ImportError:
     PYVISTA_IMPORT = False

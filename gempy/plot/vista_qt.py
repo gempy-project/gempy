@@ -3,7 +3,7 @@ from PyQt5.QtCore import *
 from PyQt5.QtGui import *
 from PyQt5.QtWidgets import *
 
-from gempy.plot.vista import Vista
+from gempy.plot._vista import Vista
 
 
 class MainWindow(QMainWindow):  # QtWidgets.QWidget
