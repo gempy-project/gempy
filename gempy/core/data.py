@@ -824,7 +824,8 @@ class Surfaces(object):
 
     def __init__(self, series: Series, surface_names=None, values_array=None, properties_names=None):
 
-        self._columns = ['surface', 'series', 'order_surfaces', 'isBasement', 'isFault', 'isActive','color',
+        self._columns = ['surface', 'series', 'order_surfaces',
+                         'isBasement', 'isFault', 'isActive', 'hasData', 'color',
                          'vertices', 'edges', 'sfai', 'id']
 
         self._columns_vis_drop = ['vertices', 'edges', 'sfai', 'isBasement', 'isFault']
@@ -834,7 +835,8 @@ class Surfaces(object):
 
         df_ = pn.DataFrame(columns=self._columns)
         self.df = df_.astype({'surface': str, 'series': 'category',
-                              'order_surfaces': int, 'isBasement': bool, 'isFault': bool, 'isActive': bool,
+                              'order_surfaces': int,
+                              'isBasement': bool, 'isFault': bool, 'isActive': bool, 'hasData': bool,
                               'color': bool, 'id': int, 'vertices': object, 'edges': object})
 
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
@@ -896,7 +898,6 @@ class Surfaces(object):
          Returns:
              :class:`Surfaces`:
          """
-        #if type(surfaces_list) is list or type(surfaces_list) is np.ndarray:
         if isinstance(surfaces_list, (list, np.ndarray)):
             surfaces_list = np.asarray(surfaces_list)
 

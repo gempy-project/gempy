@@ -86,7 +86,8 @@ class DataMutation(object):
     @setdoc_pro([AdditionalData.update_structure.__doc__, InterpolatorModel.set_theano_shared_structure.__doc__,
                  InterpolatorModel.modify_results_matrices_pro.__doc__,
                  InterpolatorModel.modify_results_weights.__doc__])
-    def update_structure(self, update_theano=None, update_series_is_active=True, update_surface_is_active=True):
+    def update_structure(self, update_theano=None, update_series_is_active=True,
+                         update_surface_is_active=True):
         """Update python and theano structure parameters.
 
         [s0]
@@ -127,6 +128,7 @@ class DataMutation(object):
                 # This is necessary to find the intersection between orientations (series) and
                 # surface points
                 self.surfaces.df['isActive'] = (act_series & bool_surf_points) | self.surfaces.df['isBasement']
+                self.surfaces.df['hasData'] = (act_series| bool_surf_points) # | self.surfaces.df['isBasement']
 
         if update_theano == 'matrices':
             self.interpolator.modify_results_matrices_pro()
