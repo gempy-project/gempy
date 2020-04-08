@@ -6,12 +6,15 @@ Created on 16.04.2019
 @author: Elisa Heim
 """
 
-
 import numpy as np
 from scipy import fftpack
+import scipy.ndimage as ndimage
+import random
 import pandas as pn
+
 try:
     import gdal
+
     GDAL_IMPORT = True
 except ImportError:
     GDAL_IMPORT = False
@@ -19,14 +22,14 @@ import matplotlib.pyplot as plt
 
 
 class Load_DEM_GDAL():
-    '''Class to include height elevation data (e.g. DEMs) with the geological grid '''
+    """Class to include height elevation data (e.g. DEMs) with the geological grid """
 
     def __init__(self, path_dem, grid=None):
-        '''
+        """
         Args:
             path_dem: path where dem is stored. file format: GDAL raster formats
             if grid: cropped to geomodel extent
-        '''
+        """
         if GDAL_IMPORT == False:
             raise ImportError('Gdal package is not installed. No support for raster formats.')
         self.dem = gdal.Open(path_dem)
@@ -52,7 +55,7 @@ class Load_DEM_GDAL():
         self.convert2xyz()
 
     def _get_raster_dimensions(self):
-        '''calculates DEM extent, resolution, and max. z extent (d_z)'''
+        """calculates DEM extent, resolution, and max. z extent (d_z)"""
         ulx, xres, xskew, uly, yskew, yres = self.dem.GetGeoTransform()
         z = self.dem_zval
         if np.any(np.array([xskew, yskew])) != 0:
@@ -71,13 +74,13 @@ class Load_DEM_GDAL():
         plt.colorbar()
 
     def crop2grid(self):
-        '''
+        """
         Crops raster to extent of the geomodel grid.
-        '''
+        """
         cornerpoints_geo = self._get_cornerpoints(self.grid.extent)
         cornerpoints_dtm = self._get_cornerpoints(self.extent)
 
-        #self.check()
+        # self.check()
 
         if np.any(cornerpoints_geo[:2] - cornerpoints_dtm[:2]) != 0:
             path_dest = '_cropped_DEM.tif'
@@ -90,8 +93,8 @@ class Load_DEM_GDAL():
             self._get_raster_dimensions()
         print('Cropped raster to geo_model.grid.extent.')
 
-    def check(self, test=False):
-        #todo make this usable
+    def check(self):
+        # TODO make this usable
         test = np.logical_and.reduce((self.grid.extent[0] <= self.extent[0],
                                       self.grid.extent[1] >= self.extent[1],
                                       self.grid.extent[2] <= self.extent[2],
@@ -105,9 +108,9 @@ class Load_DEM_GDAL():
             raise AssertionError('The model extent is too different from the raster extent.')
 
     def convert2xyz(self):
-        '''
+        """
         Translates the gdal raster object to a numpy array of xyz coordinates.
-        '''
+        """
         path_dest = 'topo.xyz'
         print('storing converted file...')
         shape = self.dem_zval.shape
@@ -124,11 +127,11 @@ class Load_DEM_GDAL():
 
     def _resize(self, resx, resy):
 
-        #self.values_3D_res = skimage.transform.resize(self.values_3D,
+        # self.values_3D_res = skimage.transform.resize(self.values_3D,
         #                                              (resx, resy),
-         #                                             mode='constant',
-         #                                             anti_aliasing=False, preserve_range=True)
-        #self.resolution_res = np.array([resx, resy])
+        #                                             mode='constant',
+        #                                             anti_aliasing=False, preserve_range=True)
+        # self.resolution_res = np.array([resx, resy])
         pass
 
     def resample(self, new_xres, new_yres, save_path):
@@ -182,7 +185,7 @@ class Load_DEM_artificial():
         self.resolution = grid.resolution[:2] if resolution is None else resolution
 
         assert all(np.asarray(self.resolution) >= 2), 'The regular grid needs to be at least of size 2 on all ' \
-                                                     'directions.'
+                                                      'directions.'
         self.extent = self.grid.extent[:4] if extent is None else extent
 
         if d_z is None:
@@ -193,14 +196,14 @@ class Load_DEM_artificial():
         else:
             self.d_z = d_z
 
-        topo = self.fractalGrid(fd, N=self.resolution.max())
+        topo = self.fractalGrid(fd, n=self.resolution.max())
         topo = np.interp(topo, (topo.min(), topo.max()), self.d_z)
 
         self.dem_zval = topo[:self.resolution[1], :self.resolution[0]]  # crop fractal grid with resolution
         self.create_topo_array()
 
-    def fractalGrid(self, fd, N=256):
-        '''
+    def fractalGrid(self, fd, n=256):
+        """
         Modified after https://github.com/samthiele/pycompass/blob/master/examples/3_Synthetic%20Examples.ipynb
 
         Generate isotropic fractal surface image using
@@ -214,14 +217,14 @@ class Load_DEM_artificial():
          -fd = the fractal dimension
          -N = the size of the fractal surface/image
 
-        '''
-        H = 1 - (fd - 2)
-        #X = np.zeros((N, N), complex)
-        A = np.zeros((N, N), complex)
-        powerr = -(H + 1.0) / 2.0
+        """
+        h = 1 - (fd - 2)
+        # X = np.zeros((N, N), complex)
+        a = np.zeros((n, n), complex)
+        powerr = -(h + 1.0) / 2.0
 
-        for i in range(int(N / 2) + 1):
-            for j in range(int(N / 2) + 1):
+        for i in range(int(n / 2) + 1):
+            for j in range(int(n / 2) + 1):
                 phase = 2 * np.pi * np.random.rand()
 
                 if i is not 0 or j is not 0:
@@ -229,40 +232,39 @@ class Load_DEM_artificial():
                 else:
                     rad = 0.0
 
-                A[i, j] = complex(rad * np.cos(phase), rad * np.sin(phase))
+                a[i, j] = complex(rad * np.cos(phase), rad * np.sin(phase))
 
                 if i is 0:
                     i0 = 0
                 else:
-                    i0 = N - i
+                    i0 = n - i
 
                 if j is 0:
                     j0 = 0
                 else:
-                    j0 = N - j
+                    j0 = n - j
 
-                A[i0, j0] = complex(rad * np.cos(phase), -rad * np.sin(phase))
+                a[i0, j0] = complex(rad * np.cos(phase), -rad * np.sin(phase))
 
-                A.imag[int(N / 2)][0] = 0.0
-                A.imag[0, int(N / 2)] = 0.0
-                A.imag[int(N / 2)][int(N / 2)] = 0.0
+                a.imag[int(n / 2)][0] = 0.0
+                a.imag[0, int(n / 2)] = 0.0
+                a.imag[int(n / 2)][int(n / 2)] = 0.0
 
-        for i in range(1, int(N / 2)):
-            for j in range(1, int(N / 2)):
+        for i in range(1, int(n / 2)):
+            for j in range(1, int(n / 2)):
                 phase = 2 * np.pi * np.random.rand()
                 rad = (i * i + j * j) ** powerr * np.random.normal()
-                A[i, N - j] = complex(rad * np.cos(phase), rad * np.sin(phase))
-                A[N - i, j] = complex(rad * np.cos(phase), -rad * np.sin(phase))
+                a[i, n - j] = complex(rad * np.cos(phase), rad * np.sin(phase))
+                a[n - i, j] = complex(rad * np.cos(phase), -rad * np.sin(phase))
 
-        itemp = fftpack.ifft2(A)
+        itemp = fftpack.ifft2(a)
         itemp = itemp - itemp.min()
 
         return itemp.real / itemp.real.max()
 
     def create_topo_array(self):
-        '''for masking the lith block'''
+        """for masking the lith block"""
         x = np.linspace(self.grid.values[:, 0].min(), self.grid.values[:, 0].max(), self.resolution[1])
         y = np.linspace(self.grid.values[:, 1].min(), self.grid.values[:, 1].max(), self.resolution[0])
         xx, yy = np.meshgrid(x, y, indexing='ij')
         self.values_3D = np.dstack([xx.T, yy.T, self.dem_zval.T])
-
