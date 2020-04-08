@@ -8,52 +8,67 @@ from pathlib import Path
 data_path = Path(os.path.dirname(__file__)+'/../../notebooks/data/input_data/')
 
 
+# @pytest.fixture(scope='module')
+# def topology_fabian():
+#     """Return a GemPy Vista instance with basic geomodel attached."""
+#     geo_model = gp.create_data(
+#         [0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
+#         path_o=data_path / 'tut_chapter1/simple_fault_model_orientations.csv',
+#         path_i=data_path / 'tut_chapter1/simple_fault_model_points.csv'
+#     )
+#
+#     gp.set_series(
+#         geo_model,
+#         {"Fault_Series": 'Main_Fault',
+#          "Strat_Series": ('Sandstone_2', 'Siltstone', 'Shale', 'Sandstone_1')}
+#     )
+#     geo_model.set_is_fault(['Fault_Series'])
+#     gp.set_interpolator(geo_model)
+#     gp.compute_model(geo_model)
+#
+#     # with open("input_data/geomodel_fabian_sol.p", "rb") as f:
+#     #     geo_model.solutions = load(f)
+#
+#     edges, centroids = tp.compute_topology(geo_model, voxel_threshold=1)
+#     return edges, centroids
+
+
 @pytest.fixture(scope='module')
-def topology_fabian():
+def topology_fabian(one_fault_model_solution):
     """Return a GemPy Vista instance with basic geomodel attached."""
-    geo_model = gp.create_data(
-        [0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
-        path_o=data_path / 'tut_chapter1/simple_fault_model_orientations.csv',
-        path_i=data_path / 'tut_chapter1/simple_fault_model_points.csv'
-    )
-
-    gp.set_series(
-        geo_model,
-        {"Fault_Series": 'Main_Fault',
-         "Strat_Series": ('Sandstone_2', 'Siltstone', 'Shale', 'Sandstone_1')}
-    )
-    geo_model.set_is_fault(['Fault_Series'])
-    gp.set_interpolator(geo_model)
-    gp.compute_model(geo_model)
-
-    # with open("input_data/geomodel_fabian_sol.p", "rb") as f:
-    #     geo_model.solutions = load(f)
-
+    geo_model = one_fault_model_solution
     edges, centroids = tp.compute_topology(geo_model, voxel_threshold=1)
     return edges, centroids
 
 
-@pytest.fixture
-def topology_jan_unconf():
-    geo_model = gp.create_data(
-        [0, 1000, 0, 1000, 0, 1000],
-        resolution=[50, 50, 50],
-        path_o=data_path / "jan_models/model6_orientations.csv",
-        path_i=data_path / "jan_models/model6_surface_points.csv"
-    )
+# @pytest.fixture
+# def topology_jan_unconf():
+#     geo_model = gp.create_data(
+#         [0, 1000, 0, 1000, 0, 1000],
+#         resolution=[50, 50, 50],
+#         path_o=data_path / "jan_models/model6_orientations.csv",
+#         path_i=data_path / "jan_models/model6_surface_points.csv"
+#     )
+#
+#     gp.map_series_to_surfaces(
+#         geo_model,
+#         {"Strat_Series1": ('rock3'),
+#          "Strat_Series2": ('rock2', 'rock1'),
+#          "Basement_Series": ('basement')}
+#     )
+#
+#     # with open("input_data/geomodel_jan_sol.p", "rb") as f:
+#     # geo_model.solutions = load(f)
+#     gp.set_interpolator(geo_model)
+#     gp.compute_model(geo_model)
+#
+#     edges, centroids = tp.compute_topology(geo_model, voxel_threshold=1)
+#     return edges, centroids
 
-    gp.map_series_to_surfaces(
-        geo_model,
-        {"Strat_Series1": ('rock3'),
-         "Strat_Series2": ('rock2', 'rock1'),
-         "Basement_Series": ('basement')}
-    )
 
-    # with open("input_data/geomodel_jan_sol.p", "rb") as f:
-    # geo_model.solutions = load(f)
-    gp.set_interpolator(geo_model)
-    gp.compute_model(geo_model)
-
+@pytest.fixture(scope='module')
+def topology_jan_unconf(unconformity_model):
+    geo_model = unconformity_model
     edges, centroids = tp.compute_topology(geo_model, voxel_threshold=1)
     return edges, centroids
 
