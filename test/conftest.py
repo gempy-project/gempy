@@ -87,6 +87,22 @@ def model_horizontal_two_layers(interpolator):
     geo_model.set_theano_function(interpolator)
     return geo_model
 
+@pytest.fixture(scope='session')
+def model_complex(interpolator):
+
+    model = gempy.create_data([0, 2500, 0, 1000, 0, 1000], [50, 20, 20],
+                                 path_o=input_path2 + "/input_data/jan_models/fixture_model_orientations.csv",
+                                 path_i=input_path2 + "/input_data/jan_models/fixture_model_surfaces.csv")
+
+    # Assigning series to surface as well as their order (timewise)
+    gp.set_series(model, {"Fault_Series": ('fault'), "Strat_Series1": ('rock3'),
+                                            "Strat_Series2": ('rock2', 'rock1'),
+                                            "Basement_Series": ('basement')})
+
+    model.set_is_fault(['Fault_Series'])
+    model.set_theano_function(interpolator)
+
+    return model
 
 # @pytest.fixture(scope='session')
 # def interpolator():
