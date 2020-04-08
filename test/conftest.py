@@ -16,8 +16,15 @@ def interpolator():
 
 @pytest.fixture(scope='session')
 def interpolator_gravity():
-    m = gp.create_model('JustInterpolator')
+    m = gp.create_model('InterpolatorGravity')
     return gp.set_interpolator(m, theano_optimizer='fast_run', output=['gravity'],
+                               gradient=False)
+
+
+@pytest.fixture(scope='session')
+def interpolator_magnetics():
+    m = gp.create_model('InterpolatorMagnetics')
+    return gp.set_interpolator(m, theano_optimizer='fast_run', output=['magnetics'],
                                gradient=False)
 
 

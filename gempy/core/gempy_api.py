@@ -232,7 +232,8 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         incl = kwargs.get('incl')
         decl = kwargs.get('decl')
         B_ext = kwargs.get('B_ext', 52819.8506939139e-9)
-        geo_model.interpolator.set_theano_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
+        if geo_model.grid.centered_grid is not None:
+            geo_model.interpolator.set_theano_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
 
     if 'topology' in output:
 
@@ -349,7 +350,9 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
         # Set gravity
         model.solutions.fw_gravity = sol[12]
 
-        # TODO: Set magnetcs and set topology
+        # TODO: [X] Set magnetcs and [ ] set topology @A.Schaaf probably it should populate the topology object?
+        model.solutions.fw_magnetics = sol[13]
+
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions
