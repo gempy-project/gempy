@@ -22,7 +22,7 @@ def test_rescaled_marching_cube(interpolator):
     return geo_data
 
 
-def test_custom_grid_solution(interpolator):
+def test_custom_grid_solution(model_horizontal_two_layers):
     """
     Integration test for a gempy model using a custom grid
 
@@ -31,10 +31,7 @@ def test_custom_grid_solution(interpolator):
     :param interpolator_islith_nofault:
     :return:
     """
-    # Importing the data from csv files and settign extent and resolution
-    geo_model = gempy.create_data([0, 10, 0, 10, -10, 0], [10, 10, 10],
-                                 path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
-                                 path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
+    geo_model = model_horizontal_two_layers
     # add a custom grid
     cg = np.array([[5, 5, -9],
                    [5, 5, -5],
@@ -44,7 +41,7 @@ def test_custom_grid_solution(interpolator):
     values = geo_model.set_custom_grid(cg)
     assert geo_model.grid.active_grids[1]
     # set the theano function
-    geo_model.set_theano_function(interpolator)
+
     # Compute model
     sol = gempy.compute_model(geo_model, compute_mesh=False)
     assert sol.custom.shape == (2,1,5)

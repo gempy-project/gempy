@@ -4,7 +4,7 @@ sys.path.append("../..")
 import gempy
 from gempy.addons import gempy_to_rexfile as gtr
 from gempy.addons import rex_api
-
+pyqrcode = pytest.importorskip("pyqrcode")
 input_path = os.path.dirname(__file__)+'/../input_data'
 
 

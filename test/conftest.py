@@ -84,8 +84,8 @@ def model_horizontal_two_layers(interpolator):
                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 
-    gempy.set_interpolator(geo_model,  grid=None, compile_theano=True)
-    return geo_model.interpolator
+    geo_model.set_theano_function(interpolator)
+    return geo_model
 
 
 # @pytest.fixture(scope='session')

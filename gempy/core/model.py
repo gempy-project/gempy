@@ -4,7 +4,7 @@ from abc import ABC
 
 import numpy as np
 import pandas as pn
-from typing import Union
+from typing import Union, Iterable
 import warnings
 
 from gempy.core.data import AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
@@ -148,7 +148,7 @@ class DataMutation(object):
         if hasattr(self.interpolator.theano_graph.grid_val_T, 'get_value'):
             self.interpolator.theano_graph.grid_val_T.set_value(self.grid.values_r.astype(self.interpolator.dtype))
 
-    def set_active_grid(self, grid_name: Union[str, np.ndarray], reset=False):
+    def set_active_grid(self, grid_name: Union[str, Iterable[str]], reset=False):
         """
         Set active a given or several grids.
 
@@ -346,7 +346,7 @@ class DataMutation(object):
         return self.series
 
     @setdoc(Series.reset_order_series.__doc__, indent=False)
-    def reorder_series(self, new_categories: Union[list, np.ndarray]):
+    def reorder_series(self, new_categories: Iterable[str]):
         """Reorder series. Reorder categories of the link Surfaces, sort surface (reset the basement layer)
         remap the Series and Surfaces to the corrspondent dataframes, sort Geometric objects, update structure and
         reset the flow control objects.
@@ -450,7 +450,7 @@ class DataMutation(object):
         return self.surfaces
 
     @setdoc(Surfaces.delete_surface.__doc__, indent=False)
-    def delete_surfaces(self, indices: Union[str, list, np.ndarray], update_id=True, remove_data=True):
+    def delete_surfaces(self, indices: Union[str, Iterable[str]], update_id=True, remove_data=True):
         """
         @TODO When implemeted activate geometric data, change remove data to False by default
         Delete a surface and update all related object.
@@ -511,8 +511,8 @@ class DataMutation(object):
         return self.surfaces
 
     @setdoc(Surfaces.add_surfaces_values.__doc__, indent=False)
-    def add_surface_values(self,  values_array: Union[np.ndarray, list],
-                           properties_names: Union[list, str] = np.empty(0)):
+    def add_surface_values(self,  values_array: Iterable,
+                           properties_names: Iterable[str] = np.empty(0)):
         self.surfaces.add_surfaces_values(values_array, properties_names)
         self.update_structure(update_theano='matrices')
         return self.surfaces
@@ -527,7 +527,7 @@ class DataMutation(object):
         self.surfaces.modify_surface_values(idx, properties_names, values)
         return self.surfaces
 
-    def set_surface_values(self, values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
+    def set_surface_values(self, values_array: Iterable, properties_names: list = np.empty(0)):
         self.surfaces.set_surfaces_values(values_array, properties_names)
         return self.surfaces
 
@@ -689,7 +689,7 @@ class DataMutation(object):
     @setdoc_pro(ds.recompute_rf)
     @setdoc(SurfacePoints.add_surface_points.__doc__, indent=False, position='beg')
     @plot_add_surface_points
-    def add_surface_points(self, X, Y, Z, surface, idx: Union[int, list, np.ndarray] = None,
+    def add_surface_points(self, X, Y, Z, surface, idx: Union[int, Iterable[int]] = None,
                            recompute_rescale_factor=False):
         """
         Args:
@@ -714,7 +714,7 @@ class DataMutation(object):
 
     @setdoc(SurfacePoints.del_surface_points.__doc__, indent=False, position='beg')
     @plot_delete_surface_points
-    def delete_surface_points(self, idx: Union[list, int, np.ndarray]):
+    def delete_surface_points(self, idx: Union[int, Iterable[int]]):
         self.surface_points.del_surface_points(idx)
         self.update_structure(update_theano='matrices')
         return self.surface_points
@@ -770,8 +770,8 @@ class DataMutation(object):
     @setdoc_pro(ds.recompute_rf)
     @setdoc(Orientations.add_orientation.__doc__, indent=False, position='beg')
     @plot_add_orientation
-    def add_orientations(self,  X, Y, Z, surface, pole_vector: np.ndarray = None,
-                         orientation: np.ndarray = None, idx=None, recompute_rescale_factor=False):
+    def add_orientations(self,  X, Y, Z, surface, pole_vector: Iterable = None,
+                         orientation: Iterable = None, idx=None, recompute_rescale_factor=False):
         """
         Args:
             recompute_rescale_factor: [s0]
@@ -893,7 +893,7 @@ class DataMutation(object):
         return self.surfaces
 
     @setdoc_pro(ds.extent)
-    def set_extent(self, extent: Union[list, np.ndarray]):
+    def set_extent(self, extent: Iterable):
         """
         Set project extent
 
