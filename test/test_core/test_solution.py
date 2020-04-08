@@ -4,7 +4,7 @@ import numpy as np
 input_path = os.path.dirname(__file__)+'/../input_data'
 
 
-def test_rescaled_marching_cube(interpolator_islith_nofault):
+def test_rescaled_marching_cube(interpolator):
     """
     2 Horizontal layers with drift 0
     """
@@ -13,7 +13,7 @@ def test_rescaled_marching_cube(interpolator_islith_nofault):
                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 
-    geo_data.set_theano_function(interpolator_islith_nofault)
+    geo_data.set_theano_function(interpolator)
 
     # Compute model
     sol = gempy.compute_model(geo_data, compute_mesh_options={'rescale': True})
@@ -22,7 +22,7 @@ def test_rescaled_marching_cube(interpolator_islith_nofault):
     return geo_data
 
 
-def test_custom_grid_solution(interpolator_islith_nofault):
+def test_custom_grid_solution(interpolator):
     """
     Integration test for a gempy model using a custom grid
 
@@ -44,7 +44,7 @@ def test_custom_grid_solution(interpolator_islith_nofault):
     values = geo_model.set_custom_grid(cg)
     assert geo_model.grid.active_grids[1]
     # set the theano function
-    geo_model.set_theano_function(interpolator_islith_nofault)
+    geo_model.set_theano_function(interpolator)
     # Compute model
     sol = gempy.compute_model(geo_model, compute_mesh=False)
     assert sol.custom.shape == (2,1,5)

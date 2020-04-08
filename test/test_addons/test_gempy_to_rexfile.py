@@ -12,16 +12,8 @@ input_path = os.path.dirname(__file__)+'/../input_data'
                     reason="Skipping this test on Travis CI.")
 class TestGemPyToREX:
     @pytest.fixture(scope='module')
-    def geo_model(self, interpolator_islith_nofault):
-        """
-        2 Horizontal layers with drift 0
-        """
-        # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
-                                     path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
-                                     path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
-
-        geo_data.set_theano_function(interpolator_islith_nofault)
+    def geo_model(self, model_horizontal_two_layers):
+        geo_data = model_horizontal_two_layers
 
         # Compute model
         sol = gempy.compute_model(geo_data, compute_mesh_options={'rescale': True})
@@ -75,7 +67,7 @@ class TestGemPyToREX:
 
     def test_geo_model_to_rex(self, geo_model):
 
-        gtr.geo_model_to_rex(geo_model, path=os.path.dirname(__file__)+'/rexfiles/gtr_test')
+        gtr.geo_model_to_rex(geo_model, path=os.path.dirname(__file__))
 
     def test_plot_ar(self, geo_model):
         tag = gempy.plot.plot_ar(geo_model, api_token='8e8a12ef-5da2-4790-9a84-15923a287965', project_name='Alesmodel',

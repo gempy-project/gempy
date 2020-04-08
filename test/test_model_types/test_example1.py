@@ -33,18 +33,18 @@ class TestFabianModel:
         gp.plot.plot_data(geo_model)
 
     @pytest.fixture(scope='class')
-    def compute_model(self, interpolator_islith_isfault, geo_model):
-        geo_model.set_theano_function(interpolator_islith_isfault)
+    def compute_model(self, interpolator, geo_model):
+        geo_model.set_theano_function(interpolator)
         sol = gp.compute_model(geo_model)
-        print(interpolator_islith_isfault)
+        print(interpolator)
         print(sol)
         return sol
 
-    def test_compute_model(self, interpolator_islith_isfault, geo_model):
-        geo_model.set_theano_function(interpolator_islith_isfault)
+    def test_compute_model(self, interpolator, geo_model):
+        geo_model.set_theano_function(interpolator)
         sol = gp.compute_model(geo_model)
 
-        print(interpolator_islith_isfault)
+        print(interpolator)
         print(sol)
         return sol
 
