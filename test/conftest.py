@@ -29,7 +29,7 @@ def interpolator_magnetics():
 
 
 @pytest.fixture(scope='session')
-def one_fault_model(interpolator):
+def one_fault_model():
     model = gp.create_data([0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
                            path_o=input_path2 + 'tut_chapter1/simple_fault_model_orientations.csv',
                            path_i=input_path2 + 'tut_chapter1/simple_fault_model_points.csv')
@@ -40,13 +40,13 @@ def one_fault_model(interpolator):
                                            'Shale', 'Sandstone_1')},
                   )
     model.set_is_fault(['Fault_Series'])
-    model.set_theano_function(interpolator)
 
     return model
 
 
 @pytest.fixture(scope='session')
-def one_fault_model_solution(one_fault_model):
+def one_fault_model_solution(one_fault_model, interpolator):
+    one_fault_model.set_theano_function(interpolator)
     gp.compute_model(one_fault_model)
     return one_fault_model
 
@@ -87,12 +87,13 @@ def model_horizontal_two_layers(interpolator):
     geo_model.set_theano_function(interpolator)
     return geo_model
 
+
 @pytest.fixture(scope='session')
 def model_complex(interpolator):
 
     model = gempy.create_data([0, 2500, 0, 1000, 0, 1000], [50, 20, 20],
-                                 path_o=input_path2 + "/input_data/jan_models/fixture_model_orientations.csv",
-                                 path_i=input_path2 + "/input_data/jan_models/fixture_model_surfaces.csv")
+                                 path_o=input_path2 + "jan_models/fixture_model_orientations.csv",
+                                 path_i=input_path2 + "jan_models/fixture_model_surfaces.csv")
 
     # Assigning series to surface as well as their order (timewise)
     gp.set_series(model, {"Fault_Series": ('fault'), "Strat_Series1": ('rock3'),

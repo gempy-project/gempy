@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 input_path = os.path.dirname(__file__)+'/../../notebooks/data'
 
 
-class ComplexModel:
+class TestComplexModel:
 
     def test_init_model(self, model_complex):
         print(model_complex)

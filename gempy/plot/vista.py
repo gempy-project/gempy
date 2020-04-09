@@ -24,7 +24,6 @@
     @author: Miguel de la Varga, Bane Sullivan, Alexander Schaaf, Jan von Harten
 """
 
-
 import warnings
 # insys.path.append("../../pyvista")
 from copy import deepcopy
@@ -33,17 +32,19 @@ from typing import Union, Dict, List, Iterable, Set, Tuple
 import matplotlib.colors as mcolors
 from matplotlib import cm
 import numpy as np
-import pandas as pn
+import pandas as pd
 
 # TODO Check if this is necessary if it is implemented in the API
 try:
     import pyvista as pv
     from pyvista.plotting.theme import parse_color
+
     PYVISTA_IMPORT = True
 except ImportError:
     PYVISTA_IMPORT = False
 
 import gempy as gp
+from gempy.plot.vista_widgets import WidgetsCallbacks
 from nptyping import Array
 from logging import debug
 
@@ -59,9 +60,9 @@ except ImportError:
     VTK_IMPORT = False
 
 
-class GemPyToVista:
+class GemPyToVista(WidgetsCallbacks):
 
-    def __init(self, model, plotter_type: str = 'basic', extent=None, lith_c=None, live_updating=False, **kwargs):
+    def __init__(self, model, plotter_type: str = 'basic', extent=None, lith_c=None, live_updating=False, **kwargs):
         """ GemPy 3-D visualization using pyVista.
 
         Args:
@@ -77,21 +78,21 @@ class GemPyToVista:
 
         # Override default notebook value
         kwargs['notebook'] = kwargs.get('notebook', True)
-        
+
         # Model properties
         self.model = model
         self.extent = model.grid.regular_grid.extent if extent is None else extent
-        
+
         # plotting options
         self.live_updating = live_updating
-        
+
         # Choosing plotter
         if plotter_type == 'basic':
             self.p = pv.Plotter(**kwargs)
-        elif plotter_type == 'background':
-            self.p = pv.BackgroundPlotter(**kwargs)
         elif plotter_type == 'notebook':
             self.p = pv.PlotterITK()
+        elif plotter_type == 'background':
+            self.p = pv.BackgroundPlotter(**kwargs)
         else:
             raise AttributeError('Plotter type must be basic, background or notebook.')
 
@@ -99,12 +100,14 @@ class GemPyToVista:
         # Default camera and bounds
         self.set_bounds()
         self.p.view_isometric(negative=False)
-        
+
         # Actors containers
-        self.surface_actors = {}
-        self.surface_points_actors = {}
-        self.orientations_actors = {}
-        
+        self.surface_polydata = {}
+        self.surface_points_polydata = None
+        self.surface_points_widgets = []
+        self.orientations_polydata = None
+        self.orientations_widgets = []
+
         # Topology properties
         self.topo_edges = None
         self.topo_ctrs = None
@@ -150,33 +153,73 @@ class GemPyToVista:
             self.p.show_bounds(
                 bounds=extent, location=location, grid=grid, **kwargs
             )
-        
 
+    def plot_data(self, surface_points=None, orientations=None, **kwargs):
+        """ Plot all the geometric data
 
+        Args:
+            surface_points:
+            orientations:
+            **kwargs:
 
+        Returns:
 
+        """
+        self.plot_surface_points(surface_points, **kwargs)
+        self.plot_orientations(orientations, **kwargs)
 
+    def _select_surface_points(self, surfaces):
+        if surfaces == 'all':
+            surface_points = self.model.surface_points.df
+        else:
+            surface_points = pd.concat(
+                [self.model.surface_points.df.groupby('surface').get_group(group)
+                 for group in surfaces])
+        return surface_points
 
+    def create_sphere_widgets(self, surface_points, colors, test_callback=True, **kwargs):
+        radius = kwargs.get('radius', None)
+        if radius is None:
+            _e = self.extent
+            _e_dx = _e[1] - _e[0]
+            _e_dy = _e[3] - _e[2]
+            _e_dz = _e[5] - _e[4]
+            _e_d_avrg = (_e_dx + _e_dy + _e_dz) / 3
+            radius = _e_d_avrg * .01
 
+            # This is Bane way. It gives me some error with index slicing
+            centers = surface_points[['X', 'Y', 'Z']]
 
+            # This is necessary to change the color of the widget if change id
+            self._color_lot = colors
+            s = self.p.add_sphere_widget(self.call_back_sphere,
+                                         center=centers, color=colors, pass_widget=True,
+                                         test_callback=test_callback,
+                                         indices=surface_points.index.values,
+                                         radius=radius, **kwargs)
+            return s
 
+    def plot_surface_points(self, surfaces: Union[str, Iterable[str]] = 'all',
+                            surface_points: pd.DataFrame = None,
+                            clear=True, colors=None, render_points_as_spheres=True, **kwargs):
+        # Set the colors
+        if colors is None:
+            colors = self._get_color_lot().values
 
+        # Selecting the surfaces to plot
+        if surface_points is None:
+            surface_points = self._select_surface_points(surfaces)
 
+        if self.live_updating is True:
+            if clear is True:
+                self.p.clear_sphere_widgets()
 
+            sphere_widgets = self.create_sphere_widgets(surface_points, colors, **kwargs)
+            self.sphere_widgets = dict(zip(surface_points.index, sphere_widgets))
+        else:
+            poly = pv.PolyData(surface_points[["X", "Y", "Z"]].values)
+            poly['id'] = surface_points['id']
+            cmap = mcolors.ListedColormap(list(self._get_color_lot(faults=False)))
+            self.p.add_mesh(poly, cmap=cmap)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        self.set_bounds()
