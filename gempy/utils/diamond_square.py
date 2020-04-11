@@ -42,11 +42,14 @@ Created on 10.04.2020
 @author: Florian Wellmann
 
 """
+import numpy as np
+import random
+import matplotlib.pyplot as plt
 
 
 class DiaomondSquare(object):
 
-    def __init__(self, size=(16,16), roughness=0.5, z_min=0, z_max=1, seed=87243):
+    def __init__(self, size=(16, 16), roughness=0.5, z_min=0, z_max=1, seed=87243):
         """Implementation of vectorized Diaomnd-Square algorithm for random topography generation
 
         Args:
@@ -57,34 +60,29 @@ class DiaomondSquare(object):
             roughness: roughness parameter, [0,1]: 0: deterministic interpolation, 1: very rough and bumpy
             z_min: minimum height of surface
             z_max: maximum height of surface
-            seed:
+            seed: seed for random function to enable reproducibility and testing
         """
         self.size = size
-        self.h_factor = h_factor
-        self.w_factor = w_factor
+        # Create mesh with optimal size (2**n+1, 2**m+1)
+        # If the input size `self.size` does not match to these dimensions, then the next larger suitable
+        # size is chosen.
+        self.n = np.ceil(np.log2(self.size[0] - 1)).astype('int8')
+        self.m = np.ceil(np.log2(self.size[1] - 1)).astype('int8')
+        self.grid = np.empty((2 ** self.n + 1, 2 ** self.m + 1))
         self.roughness = roughness
         self.z_min = z_min
         self.z_max = z_max
         self.seed = seed
 
-    def create_mesh(self):
-        """Create mesh with optimal size (2**n+1, 2**m+1)
-
-        If the input size `self.size` does not match to these dimensions, then the next larger suitable
-        size is chosen.
-        """
-        self.n = np.ceil(np.log2(size[0] - 1)).astype('int8')
-        self.m = np.ceil(np.log2(size[1] - 1)).astype('int8')
-
-
-
-    def get_selection_diamond(self, z, m_pow):
+    def get_selection_diamond(self, m_pow):
         """get selected points for diamond step on grid z on hierarchy m
 
         This method is mostly implemented for testing and visualization purposes.
         """
 
         m = int(2 ** m_pow)
+
+        z = np.zeros_like(self.grid)
 
         # points to interpolate
         z[m::2 * m, m::2 * m] = 1
@@ -93,21 +91,22 @@ class DiaomondSquare(object):
         z[:-2 * m:2 * m, :-2 * m:2 * m] = 2
 
         # top right
-        z[:m * -(n - 1):m * (n - 1), m * (n - 1)::m * (n - 1)] = 2
+        z[:-2 * m:2 * m, 2 * m::2 * m] = 2
 
         # bottom left
-        z[m * (n - 1)::m * (n - 1), :-m * (n - 1):m * (n - 1)] = 2
+        z[2 * m::2 * m, :-2 * m:2 * m] = 2
 
         # bottom right
-        z[m * (n - 1)::m * (n - 1), m * (n - 1)::m * (n - 1)] = 2
+        z[2 * m::2 * m, 2 * m::2 * m] = 2
 
         return z
 
-    def get_selection_square(self, z, m_pow):
+    def get_selection_square(self, m_pow):
         """Plot selected points for square step on grid z on hierarchy m
 
         This method is mostly implemented for testing and visualization purposes.
         """
+        z = np.zeros_like(self.grid)
         m = int(2 ** m_pow)
 
         # pad cells with zero value
@@ -151,22 +150,24 @@ class DiaomondSquare(object):
 
         return z_pad
 
-    def plot_diamond_and_square(self, z, m_pow_max, pad=False):
+    def plot_diamond_and_square(self, pad=False):
         """Plot selected points for diamond and square step for all hierarchies side by side"""
 
-        shape_ratio = z.shape[0] / z.shape[1]
+        m_pow_max = min(self.n, self.m)
+
+        shape_ratio = self.n / self.m
 
         f, axes = plt.subplots(2, m_pow_max, figsize=(12, 12 * shape_ratio / m_pow_max * 2))
 
         for i, m_pow in enumerate(np.arange(m_pow_max)[::-1]):
             m = 2 ** m_pow
-            z_zero = np.zeros_like(z)
-            z_diamond = get_selection_diamond(z_zero, m_pow)
-            z_square = get_selection_square(z_zero, m_pow)
+            # z_zero = np.zeros_like(self.grid)
+            z_diamond = self.get_selection_diamond(m_pow)
+            z_square = self.get_selection_square(m_pow)
             if pad:
                 z_pad = np.pad(z_diamond, m)
-                axes[0, i].imshow(z_pad)
-                axes[1, i].imshow(z_square)
+                axes[0, i].imshow(z_pad, cmap='viridis', vmin=0, vmax=2)
+                axes[1, i].imshow(z_square, cmap='viridis', vmin=0, vmax=2)
             else:
-                axes[0, i].imshow(z_diamond)
-                axes[1, i].imshow(z_square[m:-m, m:-m])
+                axes[0, i].imshow(z_diamond, cmap='viridis', vmin=0, vmax=2)
+                axes[1, i].imshow(z_square[m:-m, m:-m], cmap='viridis', vmin=0, vmax=2)
