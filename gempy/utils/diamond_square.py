@@ -46,12 +46,42 @@ Created on 10.04.2020
 
 class DiaomondSquare(object):
 
-    def __init__(self):
-        """Implementation of vectorized Diaomnd-Square algorithm for random topography generation"""
-        pass
+    def __init__(self, size=(16,16), roughness=0.5, z_min=0, z_max=1, seed=87243):
+        """Implementation of vectorized Diaomnd-Square algorithm for random topography generation
+
+        Args:
+            size (int, int): shape of grid to interpolate; note: the standard diamond-square algorithm
+                operates on a square grid with side length 2**n+1. This implementation is adjusted to non-square
+                grids with (2**n+1, 2**m+1). If the input size (int, int) is not matching to the ideal dimension,
+                the next bigger size is taken and the grid finally cut (lower left corner is kept);
+            roughness: roughness parameter, [0,1]: 0: deterministic interpolation, 1: very rough and bumpy
+            z_min: minimum height of surface
+            z_max: maximum height of surface
+            seed:
+        """
+        self.size = size
+        self.h_factor = h_factor
+        self.w_factor = w_factor
+        self.roughness = roughness
+        self.z_min = z_min
+        self.z_max = z_max
+        self.seed = seed
+
+    def create_mesh(self):
+        """Create mesh with optimal size (2**n+1, 2**m+1)
+
+        If the input size `self.size` does not match to these dimensions, then the next larger suitable
+        size is chosen.
+        """
+        self.n = np.ceil(np.log2(size[0] - 1)).astype('int8')
+        self.m = np.ceil(np.log2(size[1] - 1)).astype('int8')
+
+
 
     def get_selection_diamond(self, z, m_pow):
         """get selected points for diamond step on grid z on hierarchy m
+
+        This method is mostly implemented for testing and visualization purposes.
         """
 
         m = int(2 ** m_pow)
@@ -75,6 +105,8 @@ class DiaomondSquare(object):
 
     def get_selection_square(self, z, m_pow):
         """Plot selected points for square step on grid z on hierarchy m
+
+        This method is mostly implemented for testing and visualization purposes.
         """
         m = int(2 ** m_pow)
 
@@ -118,3 +150,23 @@ class DiaomondSquare(object):
         z_pad[3 * m::2 * m, m:-m:2 * m] = 2
 
         return z_pad
+
+    def plot_diamond_and_square(self, z, m_pow_max, pad=False):
+        """Plot selected points for diamond and square step for all hierarchies side by side"""
+
+        shape_ratio = z.shape[0] / z.shape[1]
+
+        f, axes = plt.subplots(2, m_pow_max, figsize=(12, 12 * shape_ratio / m_pow_max * 2))
+
+        for i, m_pow in enumerate(np.arange(m_pow_max)[::-1]):
+            m = 2 ** m_pow
+            z_zero = np.zeros_like(z)
+            z_diamond = get_selection_diamond(z_zero, m_pow)
+            z_square = get_selection_square(z_zero, m_pow)
+            if pad:
+                z_pad = np.pad(z_diamond, m)
+                axes[0, i].imshow(z_pad)
+                axes[1, i].imshow(z_square)
+            else:
+                axes[0, i].imshow(z_diamond)
+                axes[1, i].imshow(z_square[m:-m, m:-m])
