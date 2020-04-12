@@ -49,7 +49,7 @@ import matplotlib.pyplot as plt
 class DiaomondSquare(object):
 
     def __init__(self, size: tuple = (16, 16), roughness: float = 0.5, z_min: float = 0, z_max:
-                 float = 1, **kwds: dict):
+                 float = 1, **kwds):
         """Implementation of vectorized Diaomnd-Square algorithm for random topography generation
 
         Args:
