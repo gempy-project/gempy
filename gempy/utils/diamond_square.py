@@ -87,7 +87,6 @@ class DiaomondSquare(object):
         # determine highest hierarchy level (determined by shorter rectangle side)
         m_pow_max = min(self.n, self.m)
         for i, m_pow in enumerate(np.arange(m_pow_max)[::-1]):
-            print(m_pow)
             self.perform_diamond_step(i, m_pow)
             self.perform_square_step(i, m_pow)
 
@@ -105,12 +104,15 @@ class DiaomondSquare(object):
         # Diamond step
         # ----------------
 
+        # get shape of this step
+        step_shape = self.grid[step_size::2 * step_size, step_size::2 * step_size].shape
+
         self.grid[step_size::2 * step_size, step_size::2 * step_size] = \
             (self.grid[:-2 * step_size:2 * step_size, :-2 * step_size:2 * step_size] +
              self.grid[:-2 * step_size:2 * step_size, 2 * step_size::2 * step_size] +
              self.grid[2 * step_size::2 * step_size, :-2 * step_size:2 * step_size] +
              self.grid[2 * step_size::2 * step_size, 2 * step_size::2 * step_size]) / \
-            4. + random.random() ** i * self.roughness
+            4. + np.random.random(step_shape) ** i * self.roughness
 
     def perform_square_step(self, i, m_pow):
         """Perform one square interpolation step on hierarchy m_pow
@@ -129,16 +131,23 @@ class DiaomondSquare(object):
         # Checkerboard odd
         # ----------------
 
+        # get shape of this step
+        step_shape = grid_div[step_size::2 * step_size, 2 * step_size:-2 * step_size:2 * step_size].shape
+
         z_pad[step_size::2 * step_size, 2 * step_size:-2 * step_size:2 * step_size] = \
             (z_pad[step_size::2 * step_size, step_size:-2 * step_size:2 * step_size] +
              z_pad[step_size::2 * step_size, 3 * step_size:-step_size:2 * step_size] +
              z_pad[:-step_size:2 * step_size, 2 * step_size:-2 * step_size:2 * step_size] +
              z_pad[2 * step_size::2 * step_size, 2 * step_size:-2 * step_size:2 * step_size]) / \
-            grid_div[step_size::2 * step_size, 2 * step_size:-2 * step_size:2 * step_size] +\
-            random.random() ** i * self.roughness
+            grid_div[step_size::2 * step_size, 2 * step_size:-2 * step_size:2 * step_size] + \
+            np.random.random(step_shape) ** i\
+            * self.roughness
 
         # Checkerboard even
         # -----------------
+
+        # get shape of this step
+        step_shape = z_pad[2 * step_size:-2 * step_size:2 * step_size, step_size:-step_size:2 * step_size].shape
 
         # check-even, values to interpolate:
         z_pad[2 * step_size:-2 * step_size:2 * step_size, step_size:-step_size:2 * step_size] = \
@@ -147,7 +156,7 @@ class DiaomondSquare(object):
              z_pad[step_size:-2 * step_size:2 * step_size, step_size:-step_size:2 * step_size] +
              z_pad[3 * step_size::2 * step_size, step_size:-step_size:2 * step_size]) / \
             grid_div[2 * step_size:-2 * step_size:2 * step_size, step_size:-step_size:2 * step_size] +\
-            random.random() ** i * self.roughness
+            np.random.random(step_shape) ** i * self.roughness
 
         # assign results back to self.grid
         self.grid = z_pad[step_size:-step_size, step_size:-step_size]
@@ -258,4 +267,4 @@ class DiaomondSquare(object):
         """
         m_pow_max = min(self.n, self.m)
         step_size = int(2 ** m_pow_max)
-        self.grid[::step_size, ::step_size] = np.random.random((self.n, self.m))
+        self.grid[::step_size, ::step_size] = np.random.random(self.grid[::step_size, ::step_size].shape)
