@@ -75,8 +75,11 @@ class DiaomondSquare(object):
         if 'seed' in kwds:
             np.random.seed(kwds['seed'])
 
-    def interpolate(self):
+    def interpolate(self, level='highest'):
         """Perform diamond-square interpolation
+
+        Args:
+            level = 'hightest', int : hierarchy level for interpolation (default: highest)
 
         This step follows the conventional procedure:
         Iterate over hierarchies and repeat:
@@ -85,7 +88,14 @@ class DiaomondSquare(object):
         4) Reduce roughness factor
         """
         # determine highest hierarchy level (determined by shorter rectangle side)
-        m_pow_max = min(self.n, self.m)
+        # m_pow_max = min(self.n, self.m)
+
+        if level == 'highest':
+            m_pow_max = min(self.n, self.m)
+        else:
+            m_pow_max = level
+
+
         for i, m_pow in enumerate(np.arange(m_pow_max)[::-1]):
             self.perform_diamond_step(i, m_pow)
             self.perform_square_step(i, m_pow)
@@ -259,12 +269,21 @@ class DiaomondSquare(object):
                 axes[0, i].imshow(z_diamond, cmap='viridis', vmin=0, vmax=2)
                 axes[1, i].imshow(z_square[m:-m, m:-m], cmap='viridis', vmin=0, vmax=2)
 
-    def random_initialization(self):
-        """Initialize cells on highest hierarchy with random values
+    def random_initialization(self, level='highest'):
+        """Initialize cells on speicifc hierarchy with random values
+
+        Args:
+            level = 'hightest', int : hierarchy level for interpolation (default: highest)
 
         With highest hierarchy, we refer here to the largest diamond-square step, i.e. the corner points
         for a square grid; Or, more formally: the diamond points for `min(self.n, self.m)`
         """
-        m_pow_max = min(self.n, self.m)
+        if level == 'highest':
+            m_pow_max = min(self.n, self.m)
+        else:
+            m_pow_max = level
+
         step_size = int(2 ** m_pow_max)
+        print("Initialize on step size %d" % step_size)
+
         self.grid[::step_size, ::step_size] = np.random.random(self.grid[::step_size, ::step_size].shape)
