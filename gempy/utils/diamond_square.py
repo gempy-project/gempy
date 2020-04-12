@@ -43,13 +43,13 @@ Created on 10.04.2020
 
 """
 import numpy as np
-import random
 import matplotlib.pyplot as plt
 
 
 class DiaomondSquare(object):
 
-    def __init__(self, size=(16, 16), roughness=0.5, z_min=0, z_max=1, **kwds):
+    def __init__(self, size: tuple = (16, 16), roughness: float = 0.5, z_min: float = 0, z_max:
+                 float = 1, **kwds: dict):
         """Implementation of vectorized Diaomnd-Square algorithm for random topography generation
 
         Args:
@@ -75,6 +75,25 @@ class DiaomondSquare(object):
         if 'seed' in kwds:
             np.random.seed(kwds['seed'])
 
+    def random_initialization(self, level='highest'):
+        """Initialize cells on speicifc hierarchy with random values
+
+        Args:
+            level = 'hightest', int : hierarchy level for interpolation (default: highest)
+
+        With highest hierarchy, we refer here to the largest diamond-square step, i.e. the corner points
+        for a square grid; Or, more formally: the diamond points for `min(self.n, self.m)`
+        """
+        if level == 'highest':
+            m_pow_max = min(self.n, self.m)
+        else:
+            m_pow_max = level
+
+        step_size = int(2 ** m_pow_max)
+        print("Initialize on step size %d" % step_size)
+
+        self.grid[::step_size, ::step_size] = np.random.random(self.grid[::step_size, ::step_size].shape)
+
     def interpolate(self, level='highest'):
         """Perform diamond-square interpolation
 
@@ -87,14 +106,11 @@ class DiaomondSquare(object):
         3) Perform Square interpolation step
         4) Reduce roughness factor
         """
-        # determine highest hierarchy level (determined by shorter rectangle side)
-        # m_pow_max = min(self.n, self.m)
-
         if level == 'highest':
+            # determine highest hierarchy level (determined by shorter rectangle side)
             m_pow_max = min(self.n, self.m)
         else:
             m_pow_max = level
-
 
         for i, m_pow in enumerate(np.arange(m_pow_max)[::-1]):
             self.perform_diamond_step(i, m_pow)
@@ -104,7 +120,7 @@ class DiaomondSquare(object):
         """Reset grid back to zero values"""
         self.grid[:, :] = 0
 
-    def perform_diamond_step(self, i, m_pow):
+    def perform_diamond_step(self, i: int, m_pow: int):
         """Perform one diamond interpolation step on hierarchy m_pow
 
         Note: for more details on the vectorized selection, see self.get_selection_diamond()
@@ -124,7 +140,7 @@ class DiaomondSquare(object):
              self.grid[2 * step_size::2 * step_size, 2 * step_size::2 * step_size]) / \
             4. + np.random.random(step_shape) ** i * self.roughness
 
-    def perform_square_step(self, i, m_pow):
+    def perform_square_step(self, i: int, m_pow: int):
         """Perform one square interpolation step on hierarchy m_pow
 
         Note: for more details on the vectorized selection, see self.get_selection_square()
@@ -136,7 +152,7 @@ class DiaomondSquare(object):
 
         # also create a grid for division to divide only by 3 on borders
         grid_div = np.ones_like(self.grid[1:-1, 1:-1]) * 4.
-        grid_div = np.pad(grid_div, step_size+1, mode='constant', constant_values=3.)
+        grid_div = np.pad(grid_div, step_size + 1, mode='constant', constant_values=3.)
 
         # Checkerboard odd
         # ----------------
@@ -150,7 +166,7 @@ class DiaomondSquare(object):
              z_pad[:-step_size:2 * step_size, 2 * step_size:-2 * step_size:2 * step_size] +
              z_pad[2 * step_size::2 * step_size, 2 * step_size:-2 * step_size:2 * step_size]) / \
             grid_div[step_size::2 * step_size, 2 * step_size:-2 * step_size:2 * step_size] + \
-            np.random.random(step_shape) ** i\
+            np.random.random(step_shape) ** i \
             * self.roughness
 
         # Checkerboard even
@@ -165,13 +181,13 @@ class DiaomondSquare(object):
              z_pad[2 * step_size:-2 * step_size:2 * step_size, 2 * step_size::2 * step_size] +
              z_pad[step_size:-2 * step_size:2 * step_size, step_size:-step_size:2 * step_size] +
              z_pad[3 * step_size::2 * step_size, step_size:-step_size:2 * step_size]) / \
-            grid_div[2 * step_size:-2 * step_size:2 * step_size, step_size:-step_size:2 * step_size] +\
+            grid_div[2 * step_size:-2 * step_size:2 * step_size, step_size:-step_size:2 * step_size] + \
             np.random.random(step_shape) ** i * self.roughness
 
         # assign results back to self.grid
         self.grid = z_pad[step_size:-step_size, step_size:-step_size]
 
-    def get_selection_diamond(self, m_pow):
+    def get_selection_diamond(self, m_pow: int):
         """get selected points for diamond step on grid z on hierarchy m
 
         This method is mostly implemented for testing and visualization purposes.
@@ -198,7 +214,7 @@ class DiaomondSquare(object):
 
         return z
 
-    def get_selection_square(self, m_pow):
+    def get_selection_square(self, m_pow: int):
         """Plot selected points for square step on grid z on hierarchy m
 
         This method is mostly implemented for testing and visualization purposes.
@@ -268,22 +284,3 @@ class DiaomondSquare(object):
             else:
                 axes[0, i].imshow(z_diamond, cmap='viridis', vmin=0, vmax=2)
                 axes[1, i].imshow(z_square[m:-m, m:-m], cmap='viridis', vmin=0, vmax=2)
-
-    def random_initialization(self, level='highest'):
-        """Initialize cells on speicifc hierarchy with random values
-
-        Args:
-            level = 'hightest', int : hierarchy level for interpolation (default: highest)
-
-        With highest hierarchy, we refer here to the largest diamond-square step, i.e. the corner points
-        for a square grid; Or, more formally: the diamond points for `min(self.n, self.m)`
-        """
-        if level == 'highest':
-            m_pow_max = min(self.n, self.m)
-        else:
-            m_pow_max = level
-
-        step_size = int(2 ** m_pow_max)
-        print("Initialize on step size %d" % step_size)
-
-        self.grid[::step_size, ::step_size] = np.random.random(self.grid[::step_size, ::step_size].shape)
