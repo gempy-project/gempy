@@ -12,12 +12,8 @@ class TestVista:
     @pytest.fixture(scope='module')
     def vista_object_only_data(self, one_fault_model):
         """
-
         Args:
-            model_horizontal_two_layers (gp.Model):
-
-        Returns:
-
+            one_fault_model:
         """
         from gempy.plot.vista import GemPyToVista
 
@@ -26,13 +22,8 @@ class TestVista:
     @pytest.fixture(scope='module')
     def vista_object_computed(self, one_fault_model_solution):
         """
-
         Args:
             one_fault_model_solution:
-            model_horizontal_two_layers (gp.Model):
-
-        Returns:
-
         """
         from gempy.plot.vista import GemPyToVista
 
@@ -41,13 +32,8 @@ class TestVista:
     @pytest.fixture(scope='module')
     def vista_object_computed_topo(self, one_fault_model_solution):
         """
-
         Args:
             one_fault_model_solution:
-            model_horizontal_two_layers (gp.Model):
-
-        Returns:
-
         """
 
         from gempy.plot.vista import GemPyToVista
@@ -58,38 +44,67 @@ class TestVista:
 
 
     def test_set_bounds(self, vista_object_only_data):
+        """
+        Args:
+            vista_object_only_data:
+        """
         vista_object_only_data.set_bounds()
 
     def test_select_surface_points(self, vista_object_only_data):
-        sp = vista_object_only_data._select_surfaces_data(surfaces='all',
-                                                          data_df=vista_object_only_data.model.surface_points.df)
+        """
+        Args:
+            vista_object_only_data:
+        """
+        sp = vista_object_only_data._select_surfaces_data(data_df=vista_object_only_data.model.surface_points.df,
+                                                          surfaces='all')
         np.testing.assert_almost_equal(sp.loc[4, 'X_r'],  0.486942, 5)
 
-        sp2 = vista_object_only_data._select_surfaces_data(surfaces=['Sandstone_2'], data_df=vista_object_only_data.model.surface_points.df)
+        sp2 = vista_object_only_data._select_surfaces_data(data_df=vista_object_only_data.model.surface_points.df,
+                                                           surfaces=['Sandstone_2'])
         with pytest.raises(KeyError):
             sp2.loc[4, 'X_r']
 
     def test_plot_surface_points_poly_live(self, vista_object_only_data):
+        """
+        Args:
+            vista_object_only_data:
+        """
         vista_object_only_data.live_updating = True
         vista_object_only_data.plot_surface_points()
         print('foo')
 
     def test_plot_surface_points_poly_static(self, vista_object_only_data):
+        """
+        Args:
+            vista_object_only_data:
+        """
         vista_object_only_data.live_updating = False
         vista_object_only_data.plot_surface_points()
         print('foo')
 
     def test_plot_orientations_poly_live(self, vista_object_only_data):
+        """
+        Args:
+            vista_object_only_data:
+        """
         vista_object_only_data.live_updating = True
         vista_object_only_data.plot_orientations()
         print('foo')
 
     def test_plot_orientations_poly_static(self, vista_object_only_data):
+        """
+        Args:
+            vista_object_only_data:
+        """
         vista_object_only_data.live_updating = False
         vista_object_only_data.plot_orientations()
         print('foo')
 
     def test_plot_surfaces(self, vista_object_computed):
+        """
+        Args:
+            vista_object_computed:
+        """
         a = vista_object_computed.plot_surfaces()
         print(a)
         aa = vista_object_computed.plot_surfaces()
@@ -98,18 +113,34 @@ class TestVista:
 
     def test_plot_topography_high(self, vista_object_computed_topo):
        # vista_object_only_data.model.set_topography()
+        """
+        Args:
+            vista_object_computed_topo:
+        """
         vista_object_computed_topo.plot_topography()
 
     def test_plot_topography(self, vista_object_computed_topo):
+        """
+        Args:
+            vista_object_computed_topo:
+        """
         vista_object_computed_topo.plot_topography(scalars='geomap')
         print('foo')
 
     def test_plot_regular_grid_lith(self, vista_object_computed):
+        """
+        Args:
+            vista_object_computed:
+        """
         vista_object_computed.plot_structured_grid('lith', render_topography=False)
         print('foo')
 
     def test_plot_regular_grid_scalar_0(self, vista_object_computed):
         # Add all scalar fields to the pyvista object and plot lith
+        """
+        Args:
+            vista_object_computed:
+        """
         vista_object_computed.plot_structured_grid('all', render_topography=False)
 
         # Change active scalar to stratigraphy
@@ -125,14 +156,26 @@ class TestVista:
         print('foo')
 
     def test_plot_regular_grid_scalar_topo(self, vista_object_computed_topo):
+        """
+        Args:
+            vista_object_computed_topo:
+        """
         vista_object_computed_topo.plot_structured_grid('lith', render_topography=False)
         print('foo')
 
     def test_plot_regular_grid_scalar_1(self, vista_object_computed):
+        """
+        Args:
+            vista_object_computed:
+        """
         vista_object_computed.plot_structured_grid('scalar', render_topography=True)
         print('foo')
 
     def test_plot_regular_grid_select_field(self, vista_object_computed):
+        """
+        Args:
+            vista_object_computed:
+        """
         vista_object_computed.plot_structured_grid('lith')
         with pytest.raises(AttributeError):
             vista_object_computed.set_active_scalar_fields(scalar_field='scalar')

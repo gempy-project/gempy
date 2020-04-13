@@ -65,17 +65,17 @@ except ImportError:
 class GemPyToVista(WidgetsCallbacks):
 
     def __init__(self, model, plotter_type: str = 'basic', extent=None, lith_c=None, live_updating=False, **kwargs):
-        """ GemPy 3-D visualization using pyVista.
+        """GemPy 3-D visualization using pyVista.
 
         Args:
             model (gp.Model): Geomodel instance with solutions.
+            plotter_type (str): Set the plotter type. Defaults to 'basic'.
             extent (List[float], optional): Custom extent. Defaults to None.
-            lith_c (pn.DataFrame, optional): Custom color scheme in the form
-              of a look-up table. Defaults to None.
-            live_updating (bool, optional): Toggles real-time updating of the plot.
-              Defaults to False.
-            plotter_type (str["basic", "background"], optional): Set the
-              plotter type. Defaults to 'basic'.
+            lith_c (pn.DataFrame, optional): Custom color scheme in the form of
+                a look-up table. Defaults to None.
+            live_updating (bool, optional): Toggles real-time updating of the
+                plot. Defaults to False.
+            **kwargs:
         """
 
         # Override default notebook value
@@ -129,14 +129,15 @@ class GemPyToVista(WidgetsCallbacks):
 
     def _get_color_lot(self, lith_c: pd.DataFrame = None, is_faults: bool = True, is_basement: bool = False) -> \
             pd.Series:
-        """ Method to get the right color list depending on the type of plot.
+        """Method to get the right color list depending on the type of plot.
 
         Args:
-            lith_c: Pandas series with index surface names and values hex strings with the colors
-            is_faults: Return the colors of the faults. This should be true for surfaces and input data and false for
-             scalar values.
-            is_basement (bool): Return or not the basement. This should be true for the lith block and false for
-             surfaces and input data.
+            lith_c (pd.DataFrame): Pandas series with index surface names and
+                values hex strings with the colors
+            is_faults (bool): Return the colors of the faults. This should be
+                true for surfaces and input data and false for scalar values.
+            is_basement (bool): Return or not the basement. This should be true
+                for the lith block and false for surfaces and input data.
         """
         if lith_c is None:
             surf_df = self.model.surfaces.df.set_index('surface')
@@ -169,9 +170,10 @@ class GemPyToVista(WidgetsCallbacks):
         """Set and toggle display of bounds of geomodel.
 
         Args:
-            extent (list, optional): [description]. Defaults to None.
-            grid (bool, optional): [description]. Defaults to False.
-            location (str, optional): [description]. Defaults to 'furthest'.
+            extent (list): [description]. Defaults to None.
+            grid (bool): [description]. Defaults to False.
+            location (str): [description]. Defaults to 'furthest'.
+            **kwargs:
         """
         if self.p.plotter_type != 'notebook':
             if extent is None:
@@ -181,20 +183,27 @@ class GemPyToVista(WidgetsCallbacks):
             )
 
     def plot_data(self, surface_points=None, orientations=None, **kwargs):
-        """ Plot all the geometric data
+        """Plot all the geometric data
 
         Args:
             surface_points:
             orientations:
             **kwargs:
-
-        Returns:
-
         """
         self.plot_surface_points(surface_points, **kwargs)
         self.plot_orientations(orientations, **kwargs)
 
-    def _select_surfaces_data(self, surfaces, data_df):
+    @staticmethod
+    def _select_surfaces_data(data_df: pd.core.frame.DataFrame, surfaces: Union[str, List[str]] = 'all') -> \
+            pd.core.frame.DataFrame:
+        """Select the surfaces that has to be plot.
+
+        Args:
+            data_df (pd.core.frame.DataFrame): GemPy data df that contains
+                surface property. E.g Surfaces, SurfacePoints or Orientations.
+            surfaces: If 'all' select all the active data. If a list of surface
+                names or a surface name is passed, plot only those.
+        """
         if surfaces == 'all':
             geometric_data = data_df
         else:
@@ -204,11 +213,30 @@ class GemPyToVista(WidgetsCallbacks):
         return geometric_data
 
     def remove_actor(self, actor, set_bounds=False):
+        """Remove pyvista mesh.
+
+        Args:
+            actor: Pyvista mesh
+            set_bounds (bool): if True reset the bound
+        """
         self.p.remove_actor(actor, reset_camera=False)
         if set_bounds is True:
             self.set_bounds()
 
-    def create_sphere_widgets(self, surface_points, test_callback: bool = True, **kwargs):
+    def create_sphere_widgets(self, surface_points: pd.core.frame.DataFrame,
+                              test_callback: Union[bool, None] = True, **kwargs) \
+            -> List[vtk.vtkInteractionWidgetsPython.vtkSphereWidget]:
+        """Create sphere widgets for each surface points with the call back to
+        recompute the model.
+
+        Args:
+            surface_points (pd.core.frame.DataFrame):
+            test_callback (bool):
+            **kwargs:
+
+        Returns:
+            List[vtkInteractionWidgetsPython.vtkSphereWidget]:
+        """
         radius = kwargs.get('radius', None)
         if radius is None:
             _e = self.extent
@@ -231,9 +259,18 @@ class GemPyToVista(WidgetsCallbacks):
                                          radius=radius, **kwargs)
             return s
 
-    def create_orientations_widget(self, orientations):
-        # pts = orientations
-        # nrms = orientations[["G_x", "G_y", "G_z"]].values
+    def create_orientations_widget(self,
+                                   orientations: pd.core.frame.DataFrame)\
+            -> List[vtk.vtkInteractionWidgetsPython.vtkPlaneWidget]:
+        """Create plane widget for each orientation with interactive recompute
+        of the model
+
+        Args:
+            orientations (pd.core.frame.DataFrame):
+
+        Returns:
+            List[vtkInteractionWidgetsPython.vtkPlaneWidget]:
+        """
         colors = self._get_color_lot()
         widget_list = []
         # for index, pt, nrm in zip(i, pts, nrms):
@@ -256,12 +293,22 @@ class GemPyToVista(WidgetsCallbacks):
 
     def plot_surface_points(self, surfaces: Union[str, Iterable[str]] = 'all',
                             surface_points: pd.DataFrame = None,
-                            clear=True, colors=None, render_points_as_spheres=True,
+                            clear: bool = True, colors=None, render_points_as_spheres=True,
                             point_size=10, **kwargs):
 
         # Selecting the surfaces to plot
+        """
+        Args:
+            surfaces:
+            surface_points (pd.DataFrame):
+            clear (bool):
+            colors:
+            render_points_as_spheres:
+            point_size:
+            **kwargs:
+        """
         if surface_points is None:
-            surface_points = self._select_surfaces_data(surfaces, self.model.surface_points.df)
+            surface_points = self._select_surfaces_data(self.model.surface_points.df, surfaces)
 
         if clear is True:
             self.p.clear_sphere_widgets()
@@ -290,9 +337,17 @@ class GemPyToVista(WidgetsCallbacks):
     def plot_orientations(self, surfaces: Union[str, Iterable[str]] = 'all',
                           orientations: pd.DataFrame = None,
                           clear=True, arrow_size=10, **kwargs):
-        # Selecting the surfaces to plot
+        """
+
+        Args:
+            surfaces:
+            orientations (pd.DataFrame):
+            clear:
+            arrow_size:
+            **kwargs:
+        """
         if orientations is None:
-            orientations = self._select_surfaces_data(surfaces, self.model.orientations.df)
+            orientations = self._select_surfaces_data(self.model.orientations.df, surfaces)
 
         if clear is True:
             self.p.clear_plane_widgets()
@@ -319,13 +374,20 @@ class GemPyToVista(WidgetsCallbacks):
                       **kwargs):
 
         # TODO is this necessary for the updates?
+        """
+        Args:
+            surfaces:
+            surfaces_df (pd.DataFrame):
+            clear:
+            **kwargs:
+        """
         colors = self._get_color_lot(is_faults=True, is_basement=False)
 
         if clear is True:
             [self.p.remove_actor(actor) for actor in self.surface_actors.items()]
 
         if surfaces_df is None:
-            surfaces_df = self._select_surfaces_data(surfaces, self.model.surfaces.df)
+            surfaces_df = self._select_surfaces_data(self.model.surfaces.df, surfaces)
 
         select_active = surfaces_df['isActive']
         for idx, val in surfaces_df[select_active][['vertices', 'edges', 'color', 'surface']].dropna().iterrows():
@@ -344,6 +406,13 @@ class GemPyToVista(WidgetsCallbacks):
             clear=True,
             **kwargs
     ):
+        """
+        Args:
+            topography:
+            scalars:
+            clear:
+            **kwargs:
+        """
         rgb = False
         if clear is True and 'topography' in self.surface_actors:
             self.p.remove_actor(self.surface_actors['topography'])
@@ -411,9 +480,12 @@ class GemPyToVista(WidgetsCallbacks):
         Args:
             scalar_field (str): Can be either one of the following
 
-                'lith' - Lithology id block.
-                'scalar' - Scalar field block.
+                'lith' - Lithology id block. 'scalar' - Scalar field block.
                 'values' - Values matrix block.
+            data:
+            series (str):
+            render_topography (bool):
+            **kwargs:
         """
         regular_grid = self.model.grid.regular_grid
 
@@ -432,11 +504,11 @@ class GemPyToVista(WidgetsCallbacks):
                                                        data=data, scalar_field=scalar_field)
 
         if render_topography == True and regular_grid.mask_topo.shape[0] != 0:
-            main_scalar = 'lith' if scalar_field == 'all' else scalar_field
+            main_scalar = 'lith' if scalar_field == 'all' else regular_grid_mesh.array_names[-1]
             regular_grid_mesh[main_scalar][regular_grid.mask_topo.T.ravel(order='F')] = -100
             regular_grid_mesh = regular_grid_mesh.threshold(-99)
 
-        self.regular_grid_actor = self.p.add_mesh(regular_grid_mesh, cmap=cmap,  # label='values',
+        self.regular_grid_actor = self.p.add_mesh(regular_grid_mesh, cmap=cmap,
                                                   stitle='values', **kwargs)
         self.regular_grid_mesh = regular_grid_mesh
         return [regular_grid_mesh]
@@ -444,16 +516,13 @@ class GemPyToVista(WidgetsCallbacks):
     def set_scalar_data(self, regular_grid, data: Union[dict, gp.Solution, str] = 'Default',
                         scalar_field='all', series='', cmap='viridis'):
         """
-
         Args:
-            cmap:
-            series:
             regular_grid:
             data: dictionary or solution
-            scalar_field: if data is a gp.Solutions object, name of the grid that you want to plot.
-
-        Returns:
-
+            scalar_field: if data is a gp.Solutions object, name of the grid
+                that you want to plot.
+            series:
+            cmap:
         """
         if data == 'Default':
             data = self.model.solutions
@@ -488,7 +557,6 @@ class GemPyToVista(WidgetsCallbacks):
 
     def set_active_scalar_fields(self, scalar_field, regular_grid=None, update_cmap=True):
         """
-
         Args:
             scalar_field:
             regular_grid:
@@ -514,7 +582,6 @@ class GemPyToVista(WidgetsCallbacks):
     def set_scalar_field_cmap(self, cmap: Union[str, dict] = 'viridis',
                               regular_grid_actor = None) -> None:
         """
-
         Args:
             cmap:
             regular_grid_actor (Union[None, vtkRenderingOpenGL2Python.vtkOpenGLActor):
