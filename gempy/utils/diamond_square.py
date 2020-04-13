@@ -49,7 +49,7 @@ import matplotlib.pyplot as plt
 class DiaomondSquare(object):
 
     def __init__(self, size: tuple = (16, 16), roughness: float = 0.5, z_min: float = 0, z_max:
-                 float = 1, **kwds):
+                 float = 1, r_type: chr = 'default', **kwds):
         """Implementation of vectorized Diaomnd-Square algorithm for random topography generation
 
         Args:
@@ -57,10 +57,17 @@ class DiaomondSquare(object):
                 operates on a square grid with side length 2**n+1. This implementation is adjusted to non-square
                 grids with (2**n+1, 2**m+1). If the input size (int, int) is not matching to the ideal dimension,
                 the next bigger size is taken and the grid finally cut (lower left corner is kept);
-            roughness: roughness parameter, [0,1]: 0: deterministic interpolation, 1: very rough and bumpy
+            roughness: roughness parameter, [0,1]: 0: deterministic interpolation, 1: very rough and bumpy (in standard
+                randomisation method - other options available in self.random_func())
             z_min: minimum height of surface
             z_max: maximum height of surface
             seed: seed for random function to enable reproducibility and testing
+            r_type: 'basic', 'level_scale' (See below for details)
+            
+        Options for the randomization function (self.r_type) are:
+        - 'default': standard reduction
+        - 'level_scale' : uniform distribution between z_min, z_max, scaled by (level + 1)
+
         """
         self.size = size
         # Create mesh with optimal size (2**n+1, 2**m+1)
@@ -74,6 +81,42 @@ class DiaomondSquare(object):
         self.z_max = z_max
         if 'seed' in kwds:
             np.random.seed(kwds['seed'])
+        self.base_rand_range = 1
+        self.r_type = r_type
+
+    def random_func(self, i, level_shape):
+        """Define random function to adjust range for subsequent steps
+
+        The random function type is defined on class level (self.r_type)
+        """
+
+        if self.r_type == 'default':
+            if self.roughness > 0:
+                rand_range = self.base_rand_range * 2 ** (- (1 - self.roughness) * i)
+                return np.random.uniform(-rand_range, rand_range, level_shape)
+            else:
+                return 0.
+
+        if self.r_type == 'long_range':
+            if self.roughness > 0:
+                rand_range = self.base_rand_range * 16 ** (- (1 - self.roughness) * i)
+                return np.random.uniform(-rand_range, rand_range, level_shape)
+            else:
+                return 0.
+
+        elif self.r_type == 'level_scale':
+            if self.roughness > 0:
+                return np.random.uniform(self.z_min, self.z_max,
+                                         level_shape) / (1 + i)
+            else:
+                return 0.
+
+        elif self.r_type == 'deterministic':
+            # No randomization at all - deterministic interpolation result
+            return 0.
+
+        else:
+            raise NotImplementedError("Random function type %s not implemented" % self.r_type)
 
     def random_initialization(self, level='highest'):
         """Initialize cells on speicifc hierarchy with random values
@@ -92,7 +135,9 @@ class DiaomondSquare(object):
         step_size = int(2 ** m_pow_max)
         print("Initialize on step size %d" % step_size)
 
-        self.grid[::step_size, ::step_size] = np.random.random(self.grid[::step_size, ::step_size].shape)
+        level_shape = self.grid[::step_size, ::step_size].shape
+
+        self.grid[::step_size, ::step_size] = np.random.uniform(0, 1, level_shape)  # self.random_func(0, level_shape)
 
     def interpolate(self, level='highest'):
         """Perform diamond-square interpolation
@@ -127,18 +172,29 @@ class DiaomondSquare(object):
         """
         step_size = int(2 ** m_pow)
 
+        # adjust random range
+        rand_range = self.roughness * self.base_rand_range * 2 ** (- self.roughness * i)
+
         # Diamond step
         # ----------------
 
         # get shape of this step
-        step_shape = self.grid[step_size::2 * step_size, step_size::2 * step_size].shape
+        level_shape = self.grid[step_size::2 * step_size, step_size::2 * step_size].shape
 
         self.grid[step_size::2 * step_size, step_size::2 * step_size] = \
             (self.grid[:-2 * step_size:2 * step_size, :-2 * step_size:2 * step_size] +
              self.grid[:-2 * step_size:2 * step_size, 2 * step_size::2 * step_size] +
              self.grid[2 * step_size::2 * step_size, :-2 * step_size:2 * step_size] +
              self.grid[2 * step_size::2 * step_size, 2 * step_size::2 * step_size]) / \
-            4. + np.random.random(step_shape) ** i * self.roughness
+            4. + \
+            self.random_func(i, level_shape)
+
+        # np.random.uniform(-rand_range, rand_range, level_shape)
+
+        # self.d * 2**()
+        # self.roughness ** i * (np.random.random(step_shape) - 0.5)
+
+        # (np.random.random(step_shape) - 0.5) * i * self.roughness
 
     def perform_square_step(self, i: int, m_pow: int):
         """Perform one square interpolation step on hierarchy m_pow
@@ -146,6 +202,10 @@ class DiaomondSquare(object):
         Note: for more details on the vectorized selection, see self.get_selection_square()
         """
         step_size = int(2 ** m_pow)
+
+        # adjust random range
+        rand_range = self.roughness * self.base_rand_range * 2 ** (- self.roughness * i)
+        print(rand_range)
 
         # pad cells with zero value
         z_pad = np.pad(self.grid, step_size)
@@ -158,7 +218,7 @@ class DiaomondSquare(object):
         # ----------------
 
         # get shape of this step
-        step_shape = grid_div[step_size::2 * step_size, 2 * step_size:-2 * step_size:2 * step_size].shape
+        level_shape = grid_div[step_size::2 * step_size, 2 * step_size:-2 * step_size:2 * step_size].shape
 
         z_pad[step_size::2 * step_size, 2 * step_size:-2 * step_size:2 * step_size] = \
             (z_pad[step_size::2 * step_size, step_size:-2 * step_size:2 * step_size] +
@@ -166,14 +226,19 @@ class DiaomondSquare(object):
              z_pad[:-step_size:2 * step_size, 2 * step_size:-2 * step_size:2 * step_size] +
              z_pad[2 * step_size::2 * step_size, 2 * step_size:-2 * step_size:2 * step_size]) / \
             grid_div[step_size::2 * step_size, 2 * step_size:-2 * step_size:2 * step_size] + \
-            np.random.random(step_shape) ** i \
-            * self.roughness
+            self.random_func(i, level_shape)
+
+        # np.random.uniform(-rand_range, rand_range, level_shape)
+
+        #    self.roughness ** i * (np.random.random(step_shape) - 0.5)
+
+        # (np.random.random(step_shape) - 0.5) * i * self.roughness
 
         # Checkerboard even
         # -----------------
 
         # get shape of this step
-        step_shape = z_pad[2 * step_size:-2 * step_size:2 * step_size, step_size:-step_size:2 * step_size].shape
+        level_shape = z_pad[2 * step_size:-2 * step_size:2 * step_size, step_size:-step_size:2 * step_size].shape
 
         # check-even, values to interpolate:
         z_pad[2 * step_size:-2 * step_size:2 * step_size, step_size:-step_size:2 * step_size] = \
@@ -182,7 +247,13 @@ class DiaomondSquare(object):
              z_pad[step_size:-2 * step_size:2 * step_size, step_size:-step_size:2 * step_size] +
              z_pad[3 * step_size::2 * step_size, step_size:-step_size:2 * step_size]) / \
             grid_div[2 * step_size:-2 * step_size:2 * step_size, step_size:-step_size:2 * step_size] + \
-            np.random.random(step_shape) ** i * self.roughness
+            self.random_func(i, level_shape)
+
+        # np.random.uniform(-rand_range, rand_range, level_shape)
+
+        # self.roughness ** i * (np.random.random(step_shape) - 0.5)
+
+        # (np.random.random(step_shape) - 0.5) * i * self.roughness
 
         # assign results back to self.grid
         self.grid = z_pad[step_size:-step_size, step_size:-step_size]
