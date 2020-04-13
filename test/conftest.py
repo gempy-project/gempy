@@ -31,6 +31,7 @@ def interpolator_magnetics():
 @pytest.fixture(scope='session')
 def one_fault_model():
     model = gp.create_data([0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
+                           project_name='one_fault_model',
                            path_o=input_path2 + 'tut_chapter1/simple_fault_model_orientations.csv',
                            path_i=input_path2 + 'tut_chapter1/simple_fault_model_points.csv')
 
