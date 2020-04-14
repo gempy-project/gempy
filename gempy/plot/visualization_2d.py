@@ -503,8 +503,8 @@ class PlotSolution(PlotData2D):
                 - altdeg: float = altitude in degrees of sun for hillshade
 
         """
-        azdeg = kwds.get('azdeg', 315)
-        altdeg = kwds.get('altdeg', 45)
+        azdeg = kwargs.get('azdeg', 315)
+        altdeg = kwargs.get('altdeg', 45)
         if solution is None:
             solution = self.model.solutions
 

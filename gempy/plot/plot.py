@@ -153,21 +153,24 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True,
                         show_density=show_density)
 
 
-def plot_map(model, contour_lines=True, show_data=True, show_hillshades = False, figsize=(12, 12)):
+def plot_map(model, contour_lines=True, show_data=True, show_hillshades=False, figsize=(12, 12), **kwargs):
     """
 
     Args:
+        figsize:
+        show_hillshades:
         model:
         contour_lines:
         show_faults:
         show_data:
+        **kwargs
 
     Returns:
 
     """
     plot = PlotSolution(model)
     plot.plot_map(contour_lines=contour_lines, show_data=show_data, show_hillshades=show_hillshades,
-                  figsize=figsize)
+                  figsize=figsize, **kwargs)
 
 
 def plot_section_traces(model, section_names=None, contour_lines=False,
