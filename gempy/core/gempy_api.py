@@ -493,10 +493,11 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
         warnings.warn('Regular grid won\'t be initialize, you will have to create a gridafterwards. See gempy.set_grid')
     else:
         geo_model.set_regular_grid(extent, resolution)
-
-    if 'path_i' in kwargs or 'path_o' in kwargs:
-        read_csv(geo_model, **kwargs)
-
+    try:
+        if 'path_i' in kwargs or 'path_o' in kwargs:
+            read_csv(geo_model, **kwargs)
+    except KeyError:
+        raise KeyError('Loading of CSV file failed. Check if you use commas to separate your data.')
     if 'surface_points_df' in kwargs:
         geo_model.set_surface_points(kwargs['surface_points_df'], **kwargs)
         # if we set the surfaces names with surfaces they cannot be set again on orientations or pandas will complain.
