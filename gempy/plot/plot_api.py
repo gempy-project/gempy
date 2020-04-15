@@ -253,15 +253,16 @@ if PYVISTA_IMPORT:
             render_topography: Render topography. Defaults to False.
             real_time: Toggles modyfiable input data and real-time geomodel
                 updating. Defaults to False.
-            ve: vertical exeggeration of the model
+            ve: int or float for vertical exeggeration of the model
             cpos: list of camera position, focal point and view up
+            fig_path: string containing the file path and name to save a screenshot
 
         Returns:
             (Vista) GemPy Vista object for plotting.
         """
         ve = kwargs.get('ve', 1)
         cpos = kwargs.get('cpos', [[-1., -1., 0.6], [0.0, 0.0, 0.0], [0, 0, 1]])
-
+        fig_path = kwargs.get('fig_path', None)
         gpv = Vista(geo_model)
 
         gpv.set_bounds()
@@ -274,7 +275,10 @@ if PYVISTA_IMPORT:
         if render_topography and geo_model.grid.topography is not None:
             gpv.plot_topography()
         gpv.p.set_scale(1,1,ve)
-        gpv.p.show()
+        if fig_path is not None:
+            gpv.p.show(screenshot = fig_path)
+        else:
+            gpv.p.show()
         return gpv
 
 
