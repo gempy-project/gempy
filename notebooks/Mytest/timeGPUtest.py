@@ -9,7 +9,7 @@ sys.path.append("../../..")
 from gempy.core.tensor.tensorflow_graph import TFGraph
 import tensorflow as tf
 import pandas as pd
-import gempy as gp
+from gempy import create_data, map_series_to_surfaces
 from gempy.assets.geophysics import GravityPreprocessing
 
 
@@ -22,10 +22,10 @@ def Plot_2D_scaler_field(grid, scaler_field):
     plt.contour(XX, ZZ, S)
 
 
-geo_data = gp.create_data([0, 1000, 0, 1000, 0, 1000], resolution=[50, 50, 50],
-                          path_o=os.pardir + "/data/input_data/jan_models/model2_orientations.csv",
-                          path_i=os.pardir + "/data/input_data/jan_models/model2_surface_points.csv")
-gp.map_series_to_surfaces(geo_data, {"Strat_Series": (
+geo_data = create_data([0, 1000, 0, 1000, 0, 1000], resolution=[50, 50, 50],
+                       path_o=os.pardir + "/data/input_data/jan_models/model2_orientations.csv",
+                       path_i=os.pardir + "/data/input_data/jan_models/model2_surface_points.csv")
+map_series_to_surfaces(geo_data, {"Strat_Series": (
     'rock2', 'rock1'), "Basement_Series": ('basement')})
 
 geo_data.add_surface_values([2.61, 3.1, 2.92])
