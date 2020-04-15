@@ -259,9 +259,11 @@ if PYVISTA_IMPORT:
         Returns:
             (Vista) GemPy Vista object for plotting.
         """
-        gpv = Vista(geo_model, **kwargs)
         ve = kwargs.get('ve', 1)
-        cpos = kwargs.get('cpos', [(), () , ()])
+        cpos = kwargs.get('cpos', [[-1., -1., 0.6], [0.0, 0.0, 0.0], [0, 0, 1]])
+
+        gpv = Vista(geo_model)
+
         gpv.set_bounds()
         gpv.p.camera_position = cpos
         if render_surfaces:
@@ -272,7 +274,7 @@ if PYVISTA_IMPORT:
         if render_topography and geo_model.grid.topography is not None:
             gpv.plot_topography()
         gpv.p.set_scale(1,1,ve)
-        gpv.show()
+        gpv.p.show()
         return gpv
 
 
