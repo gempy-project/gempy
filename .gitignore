@@ -142,5 +142,12 @@ test/figs
 Profiles
 notebooks/data/input_data/Claudius/Results_
 
+#George
+
+notebooks/Mytest/Tensorflow_interpolator-Copy1.ipynb
+notebooks/Mytest/Tensorflow_interpolator.ipynb
 .vscode
+gempy/core/tensor/tensorflow_graph_test.py
+gempy/core/tensor/interpolator_tf.py
+
 # gempy/assets/model_compare.py
