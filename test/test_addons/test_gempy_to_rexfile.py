@@ -74,8 +74,19 @@ class TestGemPyToREX:
         rex_api.RexAPI(project_name)
 
     def test_geo_model_to_rex(self, geo_model):
+        rex_bytes = gtr.geomodel_to_rex(geo_model)
+        print(len(rex_bytes['A']))
+        assert len(rex_bytes['A']) == 235706
 
-        gtr.geo_model_to_rex(geo_model, path=os.path.dirname(__file__)+'/rexfiles/gtr_test')
+    def test_rex_bytes_to_file(self, geo_model):
+        rex_bytes = gtr.geomodel_to_rex(geo_model)
+        gtr.write_rex(rex_bytes, path=os.path.dirname(__file__) + '/rexfiles/gtr_test')
+
+    def test_rex_bytes_to_file_except(self):
+        model = gempy.create_data([0,10,0,10,0,10])
+        model.set_default_surfaces()
+        model.surfaces.df['isActive'] = False
+        rex_bytes = gtr.geomodel_to_rex(model)
 
     def test_plot_ar(self, geo_model):
         tag = gempy.plot.plot_ar(geo_model, api_token='8e8a12ef-5da2-4790-9a84-15923a287965', project_name='Alesmodel',

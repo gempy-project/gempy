@@ -401,14 +401,15 @@ def plot_ar(geo_model, path=None, project_name=None, api_token=None, secret=None
         gempy.addons.rex_api.Rextag
     """
     from gempy.addons.rex_api import upload_to_rexcloud
-    from gempy.addons.gempy_to_rexfile import geo_model_to_rex
+    from gempy.addons.gempy_to_rexfile import write_rex, geomodel_to_rex
     if project_name is None:
         project_name = geo_model.meta.project_name
 
     if path is None:
         path='./'
 
-    files_path = geo_model_to_rex(geo_model, path)
+    rex_bytes = geomodel_to_rex(geo_model)
+    files_path = write_rex(rex_bytes, path)
     project_name_ = project_name
     for i in range(40):
         try:

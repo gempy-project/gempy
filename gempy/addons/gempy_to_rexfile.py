@@ -237,13 +237,22 @@ def hex_to_rgb(hex):
     return tuple(int(hex[i:i + hlen // 3], 16) for i in range(0, hlen, hlen // 3))
 
 
-def geo_model_to_rex(geo_model, path='./gempy_rex'):
-    file_names = []
+def geomodel_to_rex(geo_model):
+    """
+
+    Args:
+        geo_model (gempy.Model):
+    """
     mesh_header_size = 128
     file_header_size = 86
-    e = 0
+    rex_bytes = {}
+    try:
+        surface_df = geo_model.surfaces.df.groupby(
+            ('isActive', 'isBasement')).get_group((True, False))
+    except (IndexError, KeyError):
+        raise RuntimeError('No computed surfaces yet.')
 
-    for idx, surface_vals in geo_model.surfaces.df.iterrows():
+    for idx, surface_vals in surface_df.iterrows():
         ver = surface_vals['vertices']
         tri = surface_vals['edges']
         if tri is np.nan:
@@ -251,7 +260,7 @@ def geo_model_to_rex(geo_model, path='./gempy_rex'):
 
         col = surface_vals['color']
 
-        colors = (np.zeros_like(ver) + hex_to_rgb(col))/255
+        colors = (np.zeros_like(ver) + hex_to_rgb(col)) / 255
 
         ver_ = np.copy(ver)
         ver_[:, 2] = ver[:, 1]
@@ -275,7 +284,7 @@ def geo_model_to_rex(geo_model, path='./gempy_rex'):
                                              data_id=1, data_type=3, version_data=1)
 
         # Write mesh block
-        mesh_header_bytes = write_mesh_header(n_vtx_coord / 3, n_triangles / 3, n_vtx_colors=n_vtx_coord/3,
+        mesh_header_bytes = write_mesh_header(n_vtx_coord / 3, n_triangles / 3, n_vtx_colors=n_vtx_coord / 3,
                                               start_vtx_coord=mesh_header_size,
                                               start_nor_coord=mesh_header_size + n_vtx_coord * 4,
                                               start_tex_coord=mesh_header_size + n_vtx_coord * 4,
@@ -298,13 +307,13 @@ def geo_model_to_rex(geo_model, path='./gempy_rex'):
 
         # Write mesh block
         mesh_header_bytes_r = write_mesh_header(n_vtx_coord / 3, n_triangles / 3, n_vtx_colors=n_vtx_coord / 3,
-                                              start_vtx_coord=mesh_header_size,
-                                              start_nor_coord=mesh_header_size + n_vtx_coord * 4,
-                                              start_tex_coord=mesh_header_size + n_vtx_coord * 4,
-                                              start_vtx_colors=mesh_header_size + n_vtx_coord * 4,
-                                              start_triangles=mesh_header_size + 2 *
-                                                              (n_vtx_coord * 4),
-                                              name='test_a', material_id=0)
+                                                start_vtx_coord=mesh_header_size,
+                                                start_nor_coord=mesh_header_size + n_vtx_coord * 4,
+                                                start_tex_coord=mesh_header_size + n_vtx_coord * 4,
+                                                start_vtx_colors=mesh_header_size + n_vtx_coord * 4,
+                                                start_triangles=mesh_header_size + 2 *
+                                                                (n_vtx_coord * 4),
+                                                name='test_a', material_id=0)
 
         mesh_block_bytes_r = write_mesh_coordinates(ver_ravel, tri_ravel, colors=colors.ravel())
 
@@ -312,12 +321,20 @@ def geo_model_to_rex(geo_model, path='./gempy_rex'):
         material_header_bytes = write_data_block_header(data_type=5, version_data=1, size_data=68, data_id=0)
         material_bytes = write_material_data()
 
-        all_bytes = header_bytes + data_bytes + mesh_header_bytes + mesh_block_bytes +\
-                                 data_bytes_r + mesh_header_bytes_r + mesh_block_bytes_r +\
-                                 material_header_bytes + material_bytes
+        all_bytes = header_bytes + data_bytes + mesh_header_bytes + mesh_block_bytes + \
+                    data_bytes_r + mesh_header_bytes_r + mesh_block_bytes_r + \
+                    material_header_bytes + material_bytes
+        rex_bytes[surface_vals['surface']] = all_bytes
+    return rex_bytes
 
-        file_name = path+surface_vals['surface']
-        write_file(all_bytes, file_name)
+
+def write_rex(rex_bytes: dict, path='./gempy_rex'):
+    file_names = []
+    e = 0
+    for key, value in rex_bytes.items():
+
+        file_name = path+key
+        write_file(value, file_name)
         file_names.append(file_name+'.rex')
         e += 1
 

@@ -31,6 +31,7 @@ from gempy.core.solution import Solution
 from gempy.utils.meta import setdoc, setdoc_pro
 import gempy.utils.docstring as ds
 from gempy.core.interpolator import InterpolatorModel
+from gempy.addons.gempy_to_rexfile import geomodel_to_rex
 
 
 # This warning comes from numpy complaining about a theano optimization
