@@ -78,23 +78,23 @@ class TFGraph(tf.Module):
 
         # VARIABLE MANIPULATION
 
-        self.dips_position_all_tiled = tf.tile(
-            self.dips_position_all, [self.n_dimensions, 1])
+        # self.dips_position_all_tiled = tf.tile(
+        #     self.dips_position_all, [self.n_dimensions, 1])
 
-        self.ref_layer_points, self.rest_layer_points, self.ref_nugget, self.rest_nugget = self.set_rest_ref_matrix(
-            self.number_of_points_per_surface, self.surface_points_all, self.nugget_effect_scalar)
+        # self.ref_layer_points, self.rest_layer_points, self.ref_nugget, self.rest_nugget = self.set_rest_ref_matrix(
+        #     self.number_of_points_per_surface, self.surface_points_all, self.nugget_effect_scalar)
 
-        self.nugget_effect_scalar_ref_rest = tf.expand_dims(
-            self.ref_nugget + self.rest_nugget, 1)
+        # self.nugget_effect_scalar_ref_rest = tf.expand_dims(
+        #     self.ref_nugget + self.rest_nugget, 1)
 
-        self.len_points = self.surface_points_all.shape[0] - \
-            self.number_of_points_per_surface.shape[0]
+        # self.len_points = self.surface_points_all.shape[0] - \
+        #     self.number_of_points_per_surface.shape[0]
 
-        interface_loc = self.grid_val.shape[0]
-        self.fault_drift_at_surface_points_rest = self.fault_matrix[
-            :, interface_loc: interface_loc + self.len_points]
-        self.fault_drift_at_surface_points_ref = self.fault_matrix[
-            :, interface_loc + self.len_points:]
+        # interface_loc = self.grid_val.shape[0]
+        # self.fault_drift_at_surface_points_rest = self.fault_matrix[
+        #     :, interface_loc: interface_loc + self.len_points]
+        # self.fault_drift_at_surface_points_ref = self.fault_matrix[
+        #     :, interface_loc + self.len_points:]
 
         if output is None:
             output = ['geology']
@@ -170,7 +170,6 @@ class TFGraph(tf.Module):
 
         return sqd
 
-    @tf.function
     def matrices_shapes(self):
         """
         Get all the lengths of the matrices that form the covariance matrix
@@ -413,7 +412,6 @@ class TFGraph(tf.Module):
     def deg2rad(self, degree_matrix):
         return degree_matrix*tf.constant(0.0174533, dtype=self.dtype)
 
-    @tf.function
     def b_vector(self, dip_angles_=None, azimuth_=None, polarity_=None):
 
         length_of_C = self.matrices_shapes()[-1]
@@ -449,9 +447,9 @@ class TFGraph(tf.Module):
 
         return DK
 
-    def x_to_interpolate(self, grid):
-        grid_val = tf.concat([grid, self.rest_layer_points], 0)
-        grid_val = tf.concat([grid_val, self.ref_layer_points], 0)
+    def x_to_interpolate(self, grid, ref_layer_points, rest_layer_points):
+        grid_val = tf.concat([grid, rest_layer_points], 0)
+        grid_val = tf.concat([grid_val, ref_layer_points], 0)
 
         return grid_val
 
@@ -484,7 +482,6 @@ class TFGraph(tf.Module):
 
         return sigma_0_grad
 
-    @tf.function
     def contribution_interface(self, ref_layer_points, rest_layer_points, grid_val,  weights=None):
 
         length_of_CG, length_of_CGI = self.matrices_shapes()[:2]
@@ -557,7 +554,8 @@ class TFGraph(tf.Module):
         self.fault_drift_at_surface_points_ref = self.fault_matrix[
             :, interface_loc + self.len_points:]
 
-        grid_val = self.x_to_interpolate(self.grid_val)
+        grid_val = self.x_to_interpolate(
+            self.grid_val, self.ref_layer_points, self.rest_layer_points)
         weights = self.solve_kriging(
             self.dips_position_all, self.ref_layer_points, self.rest_layer_points)
 
