@@ -1,7 +1,7 @@
 import sys
 import os
 import numpy as np
-import matplotlib.pyplot as plt
+
 import timeit
 sys.path.append("../..")
 sys.path.append("../../..")
@@ -97,12 +97,12 @@ densities = formations_block[1][lg_0:lg_1]
 
 grav = TFG.compute_forward_gravity(tz, lg_0, lg_1, densities)
 
-xx, yy = np.meshgrid(X, Y)
-grav = tf.reshape(grav, [20, 20])
-gp.plot.plot_data(geo_data, direction='z',)
-ax = plt.gca()
-ax.scatter(xy_ravel[:, 0], xy_ravel[:, 1], s=10, zorder=1)
-ax.contourf(xx, yy, grav, zorder=-1)
+# xx, yy = np.meshgrid(X, Y)
+# grav = tf.reshape(grav, [20, 20])
+# gp.plot.plot_data(geo_data, direction='z',)
+# ax = plt.gca()
+# ax.scatter(xy_ravel[:, 0], xy_ravel[:, 1], s=10, zorder=1)
+# ax.contourf(xx, yy, grav, zorder=-1)
 
 
 # data mutation
@@ -124,9 +124,9 @@ grav = TFG.compute_forward_gravity(tz, lg_0, lg_1, densities)
 
 grav = tf.reshape(grav, [20, 20])
 # Plot gravity response
-xx, yy = np.meshgrid(X, Y)
+# xx, yy = np.meshgrid(X, Y)
 
-gp.plot.plot_data(geo_data, direction='z',)
-ax = plt.gca()
-ax.scatter(xy_ravel[:, 0], xy_ravel[:, 1], s=10, zorder=1)
-ax.contourf(xx, yy, grav, zorder=-1)
+# gp.plot.plot_data(geo_data, direction='z',)
+# ax = plt.gca()
+# ax.scatter(xy_ravel[:, 0], xy_ravel[:, 1], s=10, zorder=1)
+# ax.contourf(xx, yy, grav, zorder=-1)
