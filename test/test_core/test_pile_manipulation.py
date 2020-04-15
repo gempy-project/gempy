@@ -28,7 +28,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 
-def test_pile_geomodel():
+def test_pile_geomodel(interpolator):
     ve = 3
     extent = [451e3, 456e3, 6.7820e6, 6.7840e6, -2309 * ve, -1651 * ve]
 
@@ -71,7 +71,7 @@ def test_pile_geomodel():
     geo_model.surface_points.df.reset_index(inplace=True, drop=True)
     geo_model.orientations.df.reset_index(inplace=True, drop=True)
 
-    gp.set_interpolator(geo_model)
+    geo_model.set_theano_function(interpolator)
     gp.compute_model(geo_model)
 
     gp.plot.plot_section(geo_model, cell_number=25,
@@ -82,7 +82,7 @@ def test_pile_geomodel():
     return geo_model
 
 
-def test_pile_geomodel_2():
+def test_pile_geomodel_2(interpolator):
     ve = 3
     extent = [451e3, 456e3, 6.7820e6, 6.7840e6, -2309 * ve, -1651 * ve]
 
@@ -125,7 +125,7 @@ def test_pile_geomodel_2():
     geo_model.surface_points.df.reset_index(inplace=True, drop=True)
     geo_model.orientations.df.reset_index(inplace=True, drop=True)
 
-    gp.set_interpolator(geo_model, verbose=['mask_matrix_loop', 'mask_e', 'nsle'])
+    geo_model.set_theano_function(interpolator)
     gp.compute_model(geo_model)
 
     gp.plot.plot_section(geo_model, cell_number=25,
@@ -155,7 +155,7 @@ def test_reorder_series():
     print(geo_model.series.df)
 
 
-def test_complete_model(tmpdir):
+def test_complete_model(tmpdir, interpolator):
     # ### Initializing the model:
     compute = True
 
@@ -163,8 +163,7 @@ def test_complete_model(tmpdir):
     geo_model = gp.init_data(geo_model, extent=[0, 4000, 0, 2775, 200, 1200], resolution=[100, 10, 100])
 
     if compute is True:
-        gp.set_interpolator(geo_model, theano_optimizer='fast_compile', update_kriging=True,
-                        verbose=[])
+        geo_model.set_theano_function(interpolator)
 
     from gempy.plot import visualization_2d_pro as vv
 
