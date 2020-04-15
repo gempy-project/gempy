@@ -127,7 +127,7 @@ class TFGraph(tf.Module):
     def set_rest_ref_matrix(self, number_of_points_per_surface, surface_points_all, nugget_effect_scalar):
         # reference point: every first point of each layer
         ref_positions = tf.cumsum(
-            tf.concat([[0], number_of_points_per_surface[:-1]+1], axis=0))
+            tf.concat([[0], number_of_points_per_surface[:-1] + 1], axis=0))
 
         ref_positions = tf.expand_dims(ref_positions, 1)
         ref_points = tf.gather_nd(surface_points_all, ref_positions)
@@ -140,7 +140,7 @@ class TFGraph(tf.Module):
             ref_nugget, number_of_points_per_surface, 0)
 
         mask = tf.one_hot(ref_positions, tf.reduce_sum(
-            number_of_points_per_surface+tf.constant(1, tf.int32)), on_value=1, off_value=0., dtype=tf.float64)
+            number_of_points_per_surface + tf.constant(1, tf.int32)), on_value=1, off_value=0., dtype=tf.float64)
         rest_mask = tf.squeeze(tf.reduce_sum(mask, 0))
 
         rest_points = tf.gather_nd(
@@ -166,7 +166,7 @@ class TFGraph(tf.Module):
 
         sqd = tf.sqrt(tf.maximum(tf.reshape(tf.reduce_sum(x_1**2, 1), shape=(tf.shape(x_1)[0], 1)) +
                                  tf.reshape(tf.reduce_sum(x_2**2, 1), shape=(1, tf.shape(x_2)[0])) -
-                                 2*tf.tensordot(x_1, tf.transpose(x_2), 1), tf.constant(1e-12, dtype=self.dtype)))
+                                 2 * tf.tensordot(x_1, tf.transpose(x_2), 1), tf.constant(1e-12, dtype=self.dtype)))
 
         return sqd
 
@@ -198,7 +198,7 @@ class TFGraph(tf.Module):
         sed_ref_ref = self.squared_euclidean_distance(
             ref_layer_points, ref_layer_points)
 
-        C_I = self.c_o_T*self.i_reescale*(
+        C_I = self.c_o_T * self.i_reescale * (
             tf.where(sed_rest_rest < self.a_T, x=(1 - 7 * (sed_rest_rest / self.a_T) ** 2 +
                                                   35 / 4 * (sed_rest_rest / self.a_T) ** 3 -
                                                   7 / 2 * (sed_rest_rest / self.a_T) ** 5 +
@@ -238,31 +238,31 @@ class TFGraph(tf.Module):
         h_v = tf.transpose(h_u)
 
         sub_x = tf.concat([tf.ones([dips_position_all.shape[0], dips_position_all.shape[0]]), tf.zeros(
-            [dips_position_all.shape[0], 2*dips_position_all.shape[0]])], axis=1)
+            [dips_position_all.shape[0], 2 * dips_position_all.shape[0]])], axis=1)
 
         sub_y = tf.concat([tf.concat([tf.zeros([dips_position_all.shape[0], dips_position_all.shape[0]]), tf.ones(
-            [dips_position_all.shape[0], 1*dips_position_all.shape[0]])], axis=1), tf.zeros([dips_position_all.shape[0], dips_position_all.shape[0]])], 1)
-        sub_z = tf.concat([tf.zeros([dips_position_all.shape[0], 2*dips_position_all.shape[0]]),
+            [dips_position_all.shape[0], 1 * dips_position_all.shape[0]])], axis=1), tf.zeros([dips_position_all.shape[0], dips_position_all.shape[0]])], 1)
+        sub_z = tf.concat([tf.zeros([dips_position_all.shape[0], 2 * dips_position_all.shape[0]]),
                            tf.ones([dips_position_all.shape[0], dips_position_all.shape[0]])], axis=1)
 
         perpendicularity_matrix = tf.cast(
             tf.concat([sub_x, sub_y, sub_z], axis=0), dtype=tf.float64)
 
-        condistion_fail = tf.math.divide_no_nan(h_u * h_v, sed_dips_dips ** 2)*(
+        condistion_fail = tf.math.divide_no_nan(h_u * h_v, sed_dips_dips ** 2) * (
             tf.where(sed_dips_dips < self.a_T,
                      x=(((-self.c_o_T * ((-14. / self.a_T ** 2.) + 105. / 4. * sed_dips_dips / self.a_T ** 3. -
                                          35. / 2. * sed_dips_dips ** 3. / self.a_T ** 5. +
                                          21. / 4. * sed_dips_dips ** 5. / self.a_T ** 7.))) +
                         self.c_o_T * 7. * (9. * sed_dips_dips ** 5. - 20. * self.a_T ** 2. * sed_dips_dips ** 3. +
                                            15. * self.a_T ** 4. * sed_dips_dips - 4. * self.a_T ** 5.) / (2. * self.a_T ** 7.)), y=0.)) -\
-            perpendicularity_matrix*tf.where(sed_dips_dips < self.a_T, x=self.c_o_T * ((-14. / self.a_T ** 2.) + 105. / 4. * sed_dips_dips / self.a_T ** 3. -
-                                                                                       35. / 2. * sed_dips_dips ** 3. / self.a_T ** 5. +
-                                                                                       21. / 4. * sed_dips_dips ** 5. / self.a_T ** 7.), y=0.)
+            perpendicularity_matrix * tf.where(sed_dips_dips < self.a_T, x=self.c_o_T * ((-14. / self.a_T ** 2.) + 105. / 4. * sed_dips_dips / self.a_T ** 3. -
+                                                                                         35. / 2. * sed_dips_dips ** 3. / self.a_T ** 5. +
+                                                                                         21. / 4. * sed_dips_dips ** 5. / self.a_T ** 7.), y=0.)
 
         C_G = tf.where(sed_dips_dips == 0, x=tf.constant(
             0., dtype=self.dtype), y=condistion_fail)
         C_G = C_G + tf.eye(C_G.shape[0],
-                           dtype=self.dtype)*self.nugget_effect_grad
+                           dtype=self.dtype) * self.nugget_effect_grad
 
         return C_G
 
@@ -289,13 +289,13 @@ class TFGraph(tf.Module):
         hu_ref = self.cartesian_dist(
             dips_position_all, ref_layer_points)
 
-        C_GI = self.gi_reescale*tf.transpose(hu_rest *
-                                             tf.where(sed_dips_rest < self.a_T_surface, x=(- self.c_o_T * ((-14 / self.a_T_surface ** 2) + 105 / 4 * sed_dips_rest / self.a_T_surface ** 3 -
-                                                                                                           35 / 2 * sed_dips_rest ** 3 / self.a_T_surface ** 5 +
-                                                                                                           21 / 4 * sed_dips_rest ** 5 / self.a_T_surface ** 7)), y=tf.constant(0., dtype=self.dtype)) -
-                                             (hu_ref * tf.where(sed_dips_ref < self.a_T_surface, x=- self.c_o_T * ((-14 / self.a_T_surface ** 2) + 105 / 4 * sed_dips_ref / self.a_T_surface ** 3 -
-                                                                                                                   35 / 2 * sed_dips_ref ** 3 / self.a_T_surface ** 5 +
-                                                                                                                   21 / 4 * sed_dips_ref ** 5 / self.a_T_surface ** 7), y=tf.constant(0., dtype=self.dtype))))
+        C_GI = self.gi_reescale * tf.transpose(hu_rest *
+                                               tf.where(sed_dips_rest < self.a_T_surface, x=(- self.c_o_T * ((-14 / self.a_T_surface ** 2) + 105 / 4 * sed_dips_rest / self.a_T_surface ** 3 -
+                                                                                                             35 / 2 * sed_dips_rest ** 3 / self.a_T_surface ** 5 +
+                                                                                                             21 / 4 * sed_dips_rest ** 5 / self.a_T_surface ** 7)), y=tf.constant(0., dtype=self.dtype)) -
+                                               (hu_ref * tf.where(sed_dips_ref < self.a_T_surface, x=- self.c_o_T * ((-14 / self.a_T_surface ** 2) + 105 / 4 * sed_dips_ref / self.a_T_surface ** 3 -
+                                                                                                                     35 / 2 * sed_dips_ref ** 3 / self.a_T_surface ** 5 +
+                                                                                                                     21 / 4 * sed_dips_ref ** 5 / self.a_T_surface ** 7), y=tf.constant(0., dtype=self.dtype))))
 
         return C_GI
 
@@ -321,12 +321,12 @@ class TFGraph(tf.Module):
         sub_block2 = tf.concat([sub_x_2, sub_y_2, sub_z_2], 0)
 
         sub_xy = tf.reshape(tf.concat([self.gi_reescale * dips_position_all[:, 1],
-                                       self.gi_reescale * dips_position_all[:, 0]], 0), [2*n, 1])
+                                       self.gi_reescale * dips_position_all[:, 0]], 0), [2 * n, 1])
         sub_xy = tf.pad(sub_xy, [[0, n], [0, 0]])
         sub_xz = tf.concat([tf.pad(tf.reshape(self.gi_reescale * dips_position_all[:, 2], [n, 1]), [
             [0, n], [0, 0]]), tf.reshape(self.gi_reescale * dips_position_all[:, 0], [n, 1])], 0)
         sub_yz = tf.reshape(tf.concat([self.gi_reescale * dips_position_all[:, 2],
-                                       self.gi_reescale * dips_position_all[:, 1]], 0), [2*n, 1])
+                                       self.gi_reescale * dips_position_all[:, 1]], 0), [2 * n, 1])
         sub_yz = tf.pad(sub_yz, [[n, 0], [0, 0]])
 
         sub_block3 = tf.concat([sub_xy, sub_xz, sub_yz], 1)
@@ -410,7 +410,7 @@ class TFGraph(tf.Module):
         return C_matrix
 
     def deg2rad(self, degree_matrix):
-        return degree_matrix*tf.constant(0.0174533, dtype=self.dtype)
+        return degree_matrix * tf.constant(0.0174533, dtype=self.dtype)
 
     def b_vector(self, dip_angles_=None, azimuth_=None, polarity_=None):
 
@@ -482,7 +482,7 @@ class TFGraph(tf.Module):
 
         return sigma_0_grad
 
-    def contribution_interface(self, ref_layer_points, rest_layer_points, grid_val,  weights=None):
+    def contribution_interface(self, ref_layer_points, rest_layer_points, grid_val, weights=None):
 
         length_of_CG, length_of_CGI = self.matrices_shapes()[:2]
 
@@ -564,7 +564,7 @@ class TFGraph(tf.Module):
         sigma_0_grad = self.contribution_gradient_interface(self.dips_position_all,
                                                             grid_val, tiled_weights)
         sigma_0_interf = self.contribution_interface(
-            self.ref_layer_points, self.rest_layer_points,  grid_val, tiled_weights)
+            self.ref_layer_points, self.rest_layer_points, grid_val, tiled_weights)
         f_0 = self.contribution_universal_drift(grid_val, weights)
 
         scalar_field_results = sigma_0_grad + sigma_0_interf + f_0
@@ -579,6 +579,7 @@ class TFGraph(tf.Module):
 
         return scalar_field_at_surface_points_values
 
+    @tf.function
     def compare(self, a, b, slice_init, Z_x, l, n_surface, drift):
 
         n_surface_0 = n_surface[:, slice_init:slice_init + 1]
@@ -589,7 +590,7 @@ class TFGraph(tf.Module):
         sigm = (-tf.reshape(n_surface_0, (-1, 1)) / (1 + tf.exp(-l * (Z_x - a)))) - \
             (tf.reshape(n_surface_1, (-1, 1)) /
              (1 + tf.exp(l * (Z_x - b)))) + tf.reshape(drift, (-1, 1))
-
+        sigm.set_shape([None, None])
         return sigm
 
     @tf.function
@@ -605,19 +606,20 @@ class TFGraph(tf.Module):
             n_surface_op_float_sigmoid_mask[:, 1:-1], [[0, 0], [1, 1]])
         drift = tf.pad(
             n_surface_op_float_sigmoid_mask[:, 0:-1], [[0, 0], [0, 1]])
-        formations_block = tf.zeros([1, Z_x.shape[0]], dtype=self.dtype)
+        formations_block = tf.zeros([1, tf.shape(Z_x)[0]], dtype=self.dtype)
 
         # need to check if Hessian works for this, otherwise vectorize
         # code for vectorization
         # tf.concat([tf.expand_dims(tf.range(scalar_field_iter.shape[1]-1),1),
         # tf.expand_dims(tf.range(scalar_field_iter.shape[1]-1)+1,1)],-1)
 
-        for i in tf.range(scalar_field_iter.shape[0]-1):
+        for i in tf.range(tf.shape(scalar_field_iter)[0] - 1):
             tf.autograph.experimental.set_loop_options(
                 shape_invariants=[(formations_block, tf.TensorShape([None, Z_x.shape[0]]))])
+
             formations_block = formations_block + \
-                self.compare(scalar_field_iter[i], scalar_field_iter[i+1],
-                             2*i, Z_x, slope, n_surface_op_float_sigmoid, drift)
+                self.compare(scalar_field_iter[i], scalar_field_iter[i + 1],
+                             2 * i, Z_x, slope, n_surface_op_float_sigmoid, drift)
 
         if self.gradient is True:
             ReLU_up = - 0.01 * tf.nn.relu(Z_x - scalar_field_iter[1])
@@ -629,7 +631,7 @@ class TFGraph(tf.Module):
 
     @tf.function
     def compute_forward_gravity(self, tz, lg0, lg1, densities=None):
-        n_devices = tf.math.floordiv((densities.shape[0]), tz.shape[0])
+        n_devices = tf.math.floordiv((tf.shape(densities)[0]), tf.shape(tz)[0])
         tz_rep = tf.tile(tz, [n_devices])
-        grav = tf.reduce_sum(tf.reshape(densities*tz_rep, [400, -1]), axis=1)
+        grav = tf.reduce_sum(tf.reshape(densities * tz_rep, [400, -1]), axis=1)
         return grav
