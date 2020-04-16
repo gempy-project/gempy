@@ -31,7 +31,9 @@ class RegularGrid:
     def __init__(self, extent=None, resolution=None, **kwargs):
         self.resolution = np.ones((0, 3), dtype='int64')
         self.extent = np.zeros(6, dtype='float64')
+        self.extent_r = np.zeros(6, dtype='float64')
         self.values = np.zeros((0, 3))
+        self.values_r = np.zeros((0, 3))
         self.mask_topo = np.zeros((0, 3), dtype=bool)
         if extent is not None and resolution is not None:
             self.set_regular_grid(extent, resolution)
@@ -64,18 +66,23 @@ class RegularGrid:
         values = np.vstack(tuple(map(np.ravel, g))).T.astype("float64")
         return values
 
-    def get_dx_dy_dz(self):
-        dx = (self.extent[1] - self.extent[0]) / self.resolution[0]
-        dy = (self.extent[3] - self.extent[2]) / self.resolution[1]
-        dz = (self.extent[5] - self.extent[4]) / self.resolution[2]
+    def get_dx_dy_dz(self, rescale=False):
+        if rescale is True:
+            dx = (self.extent_r[1] - self.extent_r[0]) / self.resolution[0]
+            dy = (self.extent_r[3] - self.extent_r[2]) / self.resolution[1]
+            dz = (self.extent_r[5] - self.extent_r[4]) / self.resolution[2]
+        else:
+            dx = (self.extent[1] - self.extent[0]) / self.resolution[0]
+            dy = (self.extent[3] - self.extent[2]) / self.resolution[1]
+            dz = (self.extent[5] - self.extent[4]) / self.resolution[2]
         return dx, dy, dz
 
     def set_regular_grid(self, extent, resolution):
         """
         Set a regular grid into the values parameters for further computations
         Args:
-             extent (list):  [x_min, x_max, y_min, y_max, z_min, z_max]
-            resolution (list): [nx, ny, nz]
+             extent (list, np.ndarry):  [x_min, x_max, y_min, y_max, z_min, z_max]
+            resolution (list, np.ndarray): [nx, ny, nz]
         """
 
         self.extent = np.asarray(extent, dtype='float64')
@@ -129,11 +136,17 @@ class Sections:
     def _repr_html_(self):
         return self.df.to_html()
 
+    def __repr__(self):
+        return self.df.to_string()
+
     def show(self):
         pass
 
-    def set_sections(self, section_dict):
+    def set_sections(self, section_dict, regular_grid=None, z_ext=None):
         self.section_dict = section_dict
+        if regular_grid is not None:
+            self.z_ext = regular_grid.extent[4:]
+
         self.names = np.array(list(self.section_dict.keys()))
 
         self.get_section_params()
@@ -144,12 +157,18 @@ class Sections:
         self.compute_section_coordinates()
 
     def get_section_params(self):
+        self.points = []
+        self.resolution = []
+        self.length = [0]
+
         for i, section in enumerate(self.names):
             points = [self.section_dict[section][0], self.section_dict[section][1]]
             assert points[0] != points[1], 'The start and end points of the section must not be identical.'
+
             self.points.append(points)
             self.resolution.append(self.section_dict[section][2])
-            self.length.append(self.section_dict[section][2][0] * self.section_dict[section][2][1])
+            self.length = np.append(self.length, self.section_dict[section][2][0] *
+                                    self.section_dict[section][2][1])
         self.length = np.array(self.length).cumsum()
 
     def calculate_all_distances(self):
@@ -233,7 +252,7 @@ class CenteredGrid:
     Logarithmic spaced grid.
     """
 
-    def __init__(self, centers=None, radio=None, resolution=None):
+    def __init__(self, centers=None, radius=None, resolution=None):
         self.grid_type = 'centered_grid'
         self.values = np.empty((0, 3))
         self.length = self.values.shape[0]
@@ -242,28 +261,28 @@ class CenteredGrid:
         self.kernel_dxyz_right = np.empty((0, 3))
         self.tz = np.empty(0)
 
-        if centers is not None and radio is not None:
+        if centers is not None and radius is not None:
             if resolution is None:
                 resolution = [10, 10, 20]
 
-            self.set_centered_grid(centers=centers, radio=radio, resolution=resolution)
+            self.set_centered_grid(centers=centers, radius=radius, resolution=resolution)
 
     @staticmethod
     @setdoc_pro(ds.resolution)
-    def create_irregular_grid_kernel(resolution, radio):
+    def create_irregular_grid_kernel(resolution, radius):
         """
         Create an isometric grid kernel (centered at 0)
 
         Args:
             resolution: [s0]
-            radio (float): Maximum distance of the kernel
+            radius (float): Maximum distance of the kernel
 
         Returns:
             tuple: center of the voxel, left edge of each voxel (for xyz), right edge of each voxel (for xyz).
         """
 
-        if radio is not list or radio is not np.ndarray:
-            radio = np.repeat(radio, 3)
+        if radius is not list or radius is not np.ndarray:
+            radius = np.repeat(radius, 3)
 
         g_ = []
         g_2 = []
@@ -274,10 +293,10 @@ class CenteredGrid:
                 # Make the grid only negative for the z axis
 
                 g_.append(np.geomspace(0.01, 1, int(resolution[xyz])))
-                g_2.append((np.concatenate(([0], g_[xyz])) + 0.05) * - radio[xyz]*1.2)
+                g_2.append((np.concatenate(([0], g_[xyz])) + 0.05) * - radius[xyz] * 1.2)
             else:
                 g_.append(np.geomspace(0.01, 1, int(resolution[xyz] / 2)))
-                g_2.append(np.concatenate((-g_[xyz][::-1], [0], g_[xyz])) * radio[xyz])
+                g_2.append(np.concatenate((-g_[xyz][::-1], [0], g_[xyz])) * radius[xyz])
             d_.append(np.diff(np.pad(g_2[xyz], 1, 'reflect', reflect_type='odd')))
 
         g = np.meshgrid(*g_2)
@@ -290,19 +309,19 @@ class CenteredGrid:
         return kernel_g, kernel_d_left, kernel_d_right
 
     @setdoc_pro(ds.resolution)
-    def set_centered_kernel(self, resolution, radio):
+    def set_centered_kernel(self, resolution, radius):
         """
         Set a centered
 
         Args:
             resolution: [s0]
-            radio (float): Maximum distance of the kernel
+            radius (float): Maximum distance of the kernel
 
         Returns:
 
         """
         self.kernel_centers, self.kernel_dxyz_left, self.kernel_dxyz_right = self.create_irregular_grid_kernel(
-            resolution, radio)
+            resolution, radius)
 
         return self.kernel_centers
 
@@ -316,7 +335,7 @@ class CenteredGrid:
             kernel_centers (Optional[np.array]): center of the voxels of a desired kernel.
             **kwargs:
                 * resolution: [s0]
-                * radio (float): Maximum distance of the kernel
+                * radius (float): Maximum distance of the kernel
         Returns:
 
         """
@@ -429,7 +448,6 @@ class Topography:
 
         self.regular_grid.mask_topo = self._create_grid_mask()
 
-
     def _crop(self):
         pass
 
@@ -483,14 +501,16 @@ class Topography:
         return ((self.values_3D_res[:, :, 2] - zs[0]) / dz + 1).astype(int)
 
     def interpolate_zvals_at_xy(self, xy):
-        assert xy[:, 0][0] <= xy[:, 0][-1], 'At the moment, the xy values of the first point must be smaller than second' \
-                                            '(fix soon)'
-        assert xy[:, 1][0] <= xy[:, 1][-1], 'At the moment, the xy values of the first point must be smaller than second' \
-                                            '(fix soon)'
+        #assert xy[:, 0][0] <= xy[:, 0][-1], 'At the moment, the xy values of the first point must be smaller than second' \
+        #                                    '(fix soon)'
+        #assert xy[:, 1][0] <= xy[:, 1][-1], 'At the moment, the xy values of the first point must be smaller than second' \
+        #                                    '(fix soon)'
         xj = self.values_3D[:, :, 0][0, :]
         yj = self.values_3D[:, :, 1][:, 0]
-        zj = self.values_3D[:, :, 2].T
-        f = interpolate.RectBivariateSpline(xj, yj, zj)
+        # zj = self.values_3D[:, :, 2].T
+        zj = self.values_3D[:, :, 2]
+        # f = interpolate.RectBivariateSpline(xj, yj, zj)
+        f = interpolate.interp2d(xj, yj, zj)
         zi = f(xy[:, 0], xy[:, 1])
         return np.diag(zi)
 
