@@ -25,13 +25,15 @@ import pandas as pn
 from numpy import ndarray
 from typing import Union
 import warnings
-from gempy.core.model import Model, DataMutation, AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
+from gempy.core.model import Model, DataMutation, AdditionalData, Faults, Grid,\
+    MetaData, Orientations, RescaledData, Series, SurfacePoints,\
     Surfaces, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
 from gempy.utils.meta import setdoc, setdoc_pro
 import gempy.utils.docstring as ds
 from gempy.core.interpolator import InterpolatorModel
 from gempy.addons.gempy_to_rexfile import geomodel_to_rex
+from gempy.api_modules.getters import *
 
 
 # This warning comes from numpy complaining about a theano optimization
@@ -39,6 +41,18 @@ warnings.filterwarnings("ignore",
                         message='.* a non-tuple sequence for multidimensional indexing is deprecated; use*.',
                         append=True)
 
+
+# region get
+def get():
+    pass
+# end region
+
+
+# region edit
+def edit(model: Model, data_object, **kwargs):
+    pass
+
+# end region
 
 # region Model
 @setdoc(Model.__doc__)
@@ -50,17 +64,19 @@ def create_model(project_name='default_project'):
 
     """
     return Model(project_name)
+
+
 # endregion
 
 
 # region Series functionality
-@setdoc(Model.map_series_to_surfaces.__doc__)
-def set_series(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = None,
-               set_series=True, sort_data: bool = True):
-    warnings.warn("set_series will get deprecated in the next version of gempy. It still exist only to keep"
-                  "the behaviour equal to older version. Use map_series_to_surfaces isnead.", FutureWarning)
-
-    map_series_to_surfaces(geo_model, mapping_object, set_series, sort_data)
+# @setdoc(Model.map_series_to_surfaces.__doc__)
+# def set_series(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = None,
+#                set_series=True, sort_data: bool = True):
+#     warnings.warn("set_series will get deprecated in the next version of gempy. It still exist only to keep"
+#                   "the behaviour equal to older version. Use map_series_to_surfaces isnead.", FutureWarning)
+#
+#     map_series_to_surfaces(geo_model, mapping_object, set_series, sort_data)
 
 
 @setdoc(Model.map_series_to_surfaces.__doc__)
@@ -69,6 +85,8 @@ def map_series_to_surfaces(geo_model: Model, mapping_object: Union[dict, pn.Cate
     """"""
     geo_model.map_series_to_surfaces(mapping_object, set_series, sort_geometric_data, remove_unused_series)
     return geo_model.surfaces
+
+
 # endregion
 
 
@@ -150,16 +168,18 @@ def set_orientation_from_surface_points(geo_model, indices_array):
                                        surface=form)
 
     return geo_model.orientations
+
+
 # endregion
 
 
 # region Interpolator functionality
-@setdoc([InterpolatorModel.__doc__])
-@setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
-def set_interpolation_data(*args, **kwargs):
-    warnings.warn('set_interpolation_data will be deprecrated in GemPy 2.2. Use '
-                  'set_interpolator instead.', DeprecationWarning)
-    return set_interpolator(*args, **kwargs)
+# @setdoc([InterpolatorModel.__doc__])
+# @setdoc_pro([Model.__doc__, ds.compile_theano, ds.theano_optimizer])
+# def set_interpolation_data(*args, **kwargs):
+#     warnings.warn('set_interpolation_data will be deprecrated in GemPy 2.2. Use '
+#                   'set_interpolator instead.', DeprecationWarning)
+#     return set_interpolator(*args, **kwargs)
 
 
 @setdoc([InterpolatorModel.__doc__])
@@ -237,7 +257,6 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
             geo_model.interpolator.set_theano_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
 
     if 'topology' in output:
-
         # This id is necessary for topology
         id_list = geo_model.surfaces.df.groupby('isFault').cumcount() + 1
         geo_model.add_surface_values(id_list, 'topology_id')
@@ -257,24 +276,6 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
     return geo_model.interpolator
 
 
-def get_interpolator(model: Model):
-    return model.interpolator
-
-
-def get_th_fn(model: Model):
-    """
-    Get the compiled theano function
-
-    Args:
-        model (:class:`gempy.core.model.Model`)
-
-    Returns:
-        :class:`theano.compile.function_module.Function`: Compiled function if C or CUDA which computes the interpolation given the input data
-            (XYZ of dips, dip, azimuth, polarity, XYZ ref surface_points, XYZ rest surface_points)
-    """
-    assert getattr(model.interpolator, 'theano_function', False) is not None, 'Theano has not been compiled yet'
-
-    return model.interpolator.theano_function
 # endregion
 
 
@@ -285,8 +286,6 @@ def update_additional_data(model: Model, update_structure=True, update_kriging=T
     return model.update_additional_data(update_structure, update_kriging)
 
 
-def get_additional_data(model: Model):
-    return model.get_additional_data()
 # endregion
 
 
@@ -322,12 +321,12 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
 
     assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1, \
         'To compute the model is necessary at least 2 interface points per layer'
-    assert len(model.interpolator.len_series_i) == len(model.interpolator.len_series_o),\
+    assert len(model.interpolator.len_series_i) == len(model.interpolator.len_series_o), \
         'Every Series/Fault need at least 1 orientation and 2 surfaces points.'
 
     if output is not None:
         warnings.warn('Argument output has no effect anymore and will be deprecated in GemPy 2.2.'
-                      'Set the output only in gempy.set_interpolator.', DeprecationWarning,)
+                      'Set the output only in gempy.set_interpolator.', DeprecationWarning, )
 
     i = model.interpolator.get_python_input_block(append_control=True, fault_drift=None)
     model.interpolator.reset_flow_control_initial_results(reset_weights, reset_scalar, reset_block)
@@ -382,49 +381,18 @@ def compute_model_at(new_grid: Union[ndarray], model: Model, **kwargs):
     # Now we are good to compute the model again only in the new point
     sol = compute_model(model, set_solutions=False, **kwargs)
     return sol
+
+
 # endregion
 
 
 # region Solution
 
-def get_surfaces(model_solution: Union[Model, Solution]):
-    """
-    Get vertices and simplices of the surface_points for its vtk visualization and further
-    analysis
 
-    Args:
-       model_solution (:class:`Model` or :class:`Solution)
-
-    Returns:
-        list[np.array]: vertices, simpleces
-    """
-    if isinstance(model_solution, Model):
-        return model_solution.solutions.vertices, model_solution.solutions.edges
-    elif isinstance(model_solution, Solution):
-        return model_solution.vertices, model_solution.edges
-    else:
-        raise AttributeError
 # endregion
 
 
 # region Model level functions
-def get_data(model: Model, itype='data', numeric=False):
-    """
-    Method to return the data stored in :class:`DataFrame` within a :class:`gempy.interpolator.InterpolatorData`
-    object.
-
-    Args:
-        model (:class:`gempy.core.model.Model`)
-        itype(str {'all', 'surface_points', 'orientations', 'surfaces', 'series', 'faults', 'faults_relations',
-        additional data}): input data type to be retrieved.
-        numeric (bool): if True it only returns numerical properties. This may be useful due to memory issues
-        verbosity (int): Number of properties shown
-
-    Returns:
-        pandas.core.frame.DataFrame
-
-    """
-    return model.get_data(itype=itype, numeric=numeric)
 
 
 def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] = (50, 50, 50),
@@ -505,10 +473,12 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
         geo_model.set_orientations(kwargs['orientations_df'], **kwargs)
 
     return geo_model
+
+
 # endregion
 
 
-@setdoc_pro([Model.__doc__],)
+@setdoc_pro([Model.__doc__], )
 def activate_interactive_df(geo_model: Model, plot_object=None):
     """
     Experimental: Activate the use of the QgridModelIntegration:
@@ -536,7 +506,6 @@ def activate_interactive_df(geo_model: Model, plot_object=None):
 # region Save
 @setdoc(Model.save_model_pickle.__doc__)
 def save_model_to_pickle(model: Model, path=None):
-
     model.save_model_pickle(path)
     return True
 
@@ -593,23 +562,26 @@ def load_model(name, path=None, recompile=False):
     # rel_matrix = np.load()
     # set additonal data
     geo_model.additional_data.kriging_data.df = pn.read_csv(f'{path}/{name}_kriging_data.csv', index_col=0,
-                                            dtype={'range': 'float64', '$C_o$': 'float64', 'drift equations': object,
-                                            'nugget grad': 'float64', 'nugget scalar': 'float64'})
+                                                            dtype={'range': 'float64', '$C_o$': 'float64',
+                                                                   'drift equations': object,
+                                                                   'nugget grad': 'float64',
+                                                                   'nugget scalar': 'float64'})
 
     geo_model.additional_data.kriging_data.str2int_u_grade()
 
     geo_model.additional_data.options.df = pn.read_csv(f'{path}/{name}_options.csv', index_col=0,
-                                            dtype={'dtype': 'category', 'output': 'category',
-                                            'theano_optimizer': 'category', 'device': 'category',
-                                            'verbosity': object})
+                                                       dtype={'dtype': 'category', 'output': 'category',
+                                                              'theano_optimizer': 'category', 'device': 'category',
+                                                              'verbosity': object})
     geo_model.additional_data.options.df['dtype'].cat.set_categories(['float32', 'float64'], inplace=True)
-    geo_model.additional_data.options.df['theano_optimizer'].cat.set_categories(['fast_run', 'fast_compile'], inplace=True)
+    geo_model.additional_data.options.df['theano_optimizer'].cat.set_categories(['fast_run', 'fast_compile'],
+                                                                                inplace=True)
     geo_model.additional_data.options.df['device'].cat.set_categories(['cpu', 'cuda'], inplace=True)
     geo_model.additional_data.options.df['output'].cat.set_categories(['geology', 'gradients'], inplace=True)
 
     # do series properly - this needs proper check
     geo_model.series.df = pn.read_csv(f'{path}/{name}_series.csv', index_col=0,
-                                            dtype={'order_series': 'int32', 'BottomRelation': 'category'})
+                                      dtype={'order_series': 'int32', 'BottomRelation': 'category'})
     series_index = pn.CategoricalIndex(geo_model.series.df.index.values)
     # geo_model.series.df.index = pn.CategoricalIndex(series_index)
     geo_model.series.df.index = series_index
@@ -623,7 +595,7 @@ def load_model(name, path=None, recompile=False):
 
     # do faults properly - check
     geo_model.faults.df = pn.read_csv(f'{path}/{name}_faults.csv', index_col=0,
-                                            dtype={'isFault': 'bool', 'isFinite': 'bool'})
+                                      dtype={'isFault': 'bool', 'isFinite': 'bool'})
     geo_model.faults.df.index = series_index
 
     # # do faults relations properly - this is where I struggle

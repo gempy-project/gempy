@@ -21,14 +21,17 @@ warnings.filterwarnings("ignore",
 def create_series(series_distribution=None, order=None):
     return Series(series_distribution=series_distribution, order=order)
 
+
 @setdoc(Surfaces.__doc__)
 def create_formations(values_array=None, values_names=np.empty(0), formation_names=np.empty(0)):
     f = Surfaces(values_array=values_array, properties_names=values_names, formation_names=formation_names)
     return f
 
+
 @setdoc(Faults.__doc__)
 def create_faults(series: Series, series_fault=None, rel_matrix=None):
     return Faults(series=series, series_fault=series_fault, rel_matrix=rel_matrix)
+
 
 @setdoc(Grid.__doc__)
 def create_grid(grid_type: str, **kwargs):

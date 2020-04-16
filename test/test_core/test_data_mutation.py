@@ -1,15 +1,9 @@
 # These two lines are necessary only if GemPy is not installed
-import sys, os
-sys.path.append("../..")
-
 # Importing GemPy
 import gempy as gp
 
-
 # Importing auxiliary libraries
 import numpy as np
-import pandas as pn
-import matplotlib.pyplot as plt
 import pytest
 
 mm = gp.DataMutation()

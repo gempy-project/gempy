@@ -1,8 +1,4 @@
-import gempy.core.data as gd
-import gempy.core.gempy_api as gp
-import pandas as pn
-import numpy as np
-import os
+import gempy.gempy_api as gp
 import pytest
 
 

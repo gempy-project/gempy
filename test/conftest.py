@@ -1,8 +1,8 @@
 import pytest
-import gempy.core.gempy_api as gempy
+import gempy.gempy_api as gempy
 import gempy as gp
 
-import sys, os
+import os
 
 input_path = os.path.dirname(__file__)+'/input_data'
 input_path2 = os.path.dirname(__file__)+'/../notebooks/data/input_data/'
@@ -35,9 +35,9 @@ def one_fault_model(interpolator):
                            path_i=input_path2 + 'tut_chapter1/simple_fault_model_points.csv')
 
     # Assigning series to surface as well as their order (timewise)
-    gp.set_series(model, {"Fault_Series": 'Main_Fault',
-                          "Strat_Series": ('Sandstone_2', 'Siltstone',
-                                           'Shale', 'Sandstone_1')},
+    gp.map_series_to_surfaces(model, {"Fault_Series": 'Main_Fault',
+                                      "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                      'Shale', 'Sandstone_1')},
                   )
     model.set_is_fault(['Fault_Series'])
     model.set_theano_function(interpolator)

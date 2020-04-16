@@ -13,7 +13,7 @@ PACKAGE_PARENT = '..'
 SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.expanduser(__file__))))
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
-from .core.gempy_api import *
+from gempy.gempy_api import *
 import gempy.plot.plot_api as _plot
 import gempy.plot.plot as plot
 
