@@ -15,7 +15,7 @@ except ModuleNotFoundError:
 # This is for sphenix to find the packages
 from gempy.core.grid_modules import grid_types
 from gempy.core.checkers import check_for_nans
-from gempy.utils.meta import setdoc, setdoc_pro
+from gempy.utils.meta import _setdoc, _setdoc_pro
 import gempy.utils.docstring as ds
 
 pn.options.mode.chained_assignment = None
@@ -46,7 +46,7 @@ class MetaData(object):
         self.project_name = project_name
 
 
-@setdoc_pro([grid_types.RegularGrid.__doc__, grid_types.CustomGrid.__doc__])
+@_setdoc_pro([grid_types.RegularGrid.__doc__, grid_types.CustomGrid.__doc__])
 class Grid(object):
     """ Class to generate grids.
 
@@ -114,7 +114,7 @@ class Grid(object):
     def __repr__(self):
         return 'Grid Object. Values: \n' + np.array_repr(self.values)
 
-    @setdoc(grid_types.RegularGrid.__doc__)
+    @_setdoc(grid_types.RegularGrid.__doc__)
     def create_regular_grid(self, extent=None, resolution=None, set_active=True, *args, **kwargs):
         """
         Set a new regular grid and activate it.
@@ -130,7 +130,7 @@ class Grid(object):
             self.set_active('regular')
         return self.regular_grid
 
-    @setdoc_pro(ds.coord)
+    @_setdoc_pro(ds.coord)
     def create_custom_grid(self, custom_grid: np.ndarray):
         """
         Set a new regular grid and activate it.
@@ -187,13 +187,13 @@ class Grid(object):
         self.topography.show()
         self.set_active('topography')
 
-    @setdoc(grid_types.Sections.__doc__)
+    @_setdoc(grid_types.Sections.__doc__)
     def create_section_grid(self, section_dict):
         self.sections = grid_types.Sections(regular_grid=self.regular_grid, section_dict=section_dict)
         self.set_active('sections')
         return self.sections
 
-    @setdoc(grid_types.CenteredGrid.set_centered_grid.__doc__)
+    @_setdoc(grid_types.CenteredGrid.set_centered_grid.__doc__)
     def create_centered_grid(self, centers, radius, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
         self.centered_grid = grid_types.CenteredGrid(centers, radius, resolution)
@@ -440,7 +440,7 @@ class Faults(object):
         return faults_series
 
 
-@setdoc_pro(Faults.__doc__)
+@_setdoc_pro(Faults.__doc__)
 class Series(object):
     """ Class that contains the functionality and attributes related to the series. Notice that series does not only
     refers to stratigraphic series but to any set of surfaces which will be interpolated together (comfortably).
@@ -481,7 +481,7 @@ class Series(object):
         """
         self.df.at[:, 'order_series'] = pn.RangeIndex(1, self.df.shape[0] + 1)
 
-    @setdoc_pro(reset_order_series.__doc__)
+    @_setdoc_pro(reset_order_series.__doc__)
     def set_series_index(self, series_order: Union[list, np.ndarray], reset_order_series=True):
         """
         Rewrite the index of the series df
@@ -547,7 +547,7 @@ class Series(object):
             self.faults.df.loc[series_list, 'isFault'] = True
         return self
 
-    @setdoc_pro(reset_order_series.__doc__)
+    @_setdoc_pro(reset_order_series.__doc__)
     def add_series(self, series_list: Union[str, list], reset_order_series=True):
         """ Add series to the df
 
@@ -578,7 +578,7 @@ class Series(object):
             self.reset_order_series()
         return self
 
-    @setdoc_pro([reset_order_series.__doc__, pn.DataFrame.drop.__doc__])
+    @_setdoc_pro([reset_order_series.__doc__, pn.DataFrame.drop.__doc__])
     def delete_series(self, indices: Union[str, Iterable], reset_order_series=True):
         """[s1]
 
@@ -602,7 +602,7 @@ class Series(object):
             self.reset_order_series()
         return self
 
-    @setdoc_pro(pn.CategoricalIndex.rename_categories.__doc__)
+    @_setdoc_pro(pn.CategoricalIndex.rename_categories.__doc__)
     def rename_series(self, new_categories: Union[dict, list]):
         """
         [s0]
@@ -623,7 +623,7 @@ class Series(object):
 
         return self
 
-    @setdoc_pro([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
+    @_setdoc_pro([pn.CategoricalIndex.reorder_categories.__doc__, pn.CategoricalIndex.sort_values.__doc__])
     def reorder_series(self, new_categories: Union[list, np.ndarray]):
         """[s0] [s1]
 
@@ -803,7 +803,7 @@ class Colors:
         return self.surfaces
 
 
-@setdoc_pro(Series.__doc__)
+@_setdoc_pro(Series.__doc__)
 class Surfaces(object):
     """
     Class that contains the surfaces of the model and the values of each of them.
@@ -975,7 +975,7 @@ class Surfaces(object):
             self.colors.update_colors()
         return self
 
-    @setdoc_pro([update_id.__doc__, pn.DataFrame.drop.__doc__])
+    @_setdoc_pro([update_id.__doc__, pn.DataFrame.drop.__doc__])
     def delete_surface(self, indices: Union[int, str, list, np.ndarray], update_id=True):
         """[s1]
 
@@ -999,7 +999,7 @@ class Surfaces(object):
             self.reset_order_surfaces()
         return self
 
-    @setdoc(pn.Series.replace.__doc__)
+    @_setdoc(pn.Series.replace.__doc__)
     def rename_surfaces(self, to_replace: Union[str, list, dict],  **kwargs):
         if np.isin(to_replace, self.df['surface']).any():
             print('Two surfaces cannot have the same name.')
@@ -1213,7 +1213,7 @@ class Surfaces(object):
         return self
 
 
-@setdoc_pro(Surfaces.__doc__)
+@_setdoc_pro(Surfaces.__doc__)
 class GeometricData(object):
     """
     Parent class of the objects which containing the input parameters: surface_points and orientations. This class
@@ -1258,7 +1258,7 @@ class GeometricData(object):
         return self
 
     @staticmethod
-    @setdoc(pn.read_csv.__doc__, indent=False)
+    @_setdoc(pn.read_csv.__doc__, indent=False)
     def read_data(file_path, **kwargs):
         """"""
         if 'sep' not in kwargs:
@@ -1279,7 +1279,7 @@ class GeometricData(object):
                             inplace=True)
         return self.df
 
-    @setdoc_pro(Series.__doc__)
+    @_setdoc_pro(Series.__doc__)
     def set_series_categories_from_series(self, series: Series):
         """set the series categorical columns with the series index of the passed :class:`Series`
 
@@ -1295,7 +1295,7 @@ class GeometricData(object):
 
         return True
 
-    @setdoc_pro(Surfaces.__doc__)
+    @_setdoc_pro(Surfaces.__doc__)
     def set_surface_categories_from_surfaces(self, surfaces: Surfaces):
         """set the series categorical columns with the series index of the passed :class:`Series`.
 
@@ -1307,7 +1307,7 @@ class GeometricData(object):
         self.df['surface'].cat.set_categories(surfaces.df['surface'], inplace=True)
         return True
 
-    @setdoc_pro(Series.__doc__)
+    @_setdoc_pro(Series.__doc__)
     def map_data_from_series(self, series, attribute: str, idx=None):
         """
         Map columns from the :class:`Series` data frame to a :class:`GeometricData` data frame.
@@ -1335,7 +1335,7 @@ class GeometricData(object):
             self.df['order_series'].cat.remove_unused_categories(inplace=True)
         return self
 
-    @setdoc_pro(Surfaces.__doc__)
+    @_setdoc_pro(Surfaces.__doc__)
     def map_data_from_surfaces(self, surfaces, attribute: str, idx=None):
         """
         Map columns from the :class:`Series` data frame to a :class:`GeometricData` data frame.
@@ -1384,7 +1384,7 @@ class GeometricData(object):
     #     self.df.loc[idx, 'isFault'] = self.df.loc[[idx], 'series'].map(faults.df['isFault'])
 
 
-@setdoc_pro([Surfaces.__doc__, ds.coord, ds.surface_sp])
+@_setdoc_pro([Surfaces.__doc__, ds.coord, ds.surface_sp])
 class SurfacePoints(GeometricData):
     """
     Data child with specific methods to manipulate interface data. It is initialize without arguments to give
@@ -1419,7 +1419,7 @@ class SurfacePoints(GeometricData):
 
         self.set_surface_points(coord, surface)
 
-    @setdoc_pro([ds.coord, ds.surface_sp])
+    @_setdoc_pro([ds.coord, ds.surface_sp])
     def set_surface_points(self, coord: np.ndarray = None, surface: list = None):
         """
         Set coordinates and surface columns on the df.
@@ -1451,7 +1451,7 @@ class SurfacePoints(GeometricData):
 
         return self
 
-    @setdoc_pro([ds.x, ds.y, ds.z, ds.surface_sp, ds.idx_sp])
+    @_setdoc_pro([ds.x, ds.y, ds.z, ds.surface_sp, ds.idx_sp])
     def add_surface_points(self, x: Union[float, np.ndarray], y: Union[float, np.ndarray], z: Union[float, np.ndarray],
                            surface: Union[list, np.ndarray], idx: Union[int, list, np.ndarray] = None):
         """
@@ -1523,7 +1523,7 @@ class SurfacePoints(GeometricData):
         self.sort_table()
         return self, idx
 
-    @setdoc_pro([ds.idx_sp])
+    @_setdoc_pro([ds.idx_sp])
     def del_surface_points(self, idx: Union[int, list, np.ndarray]):
         """
         Delete surface points
@@ -1536,7 +1536,7 @@ class SurfacePoints(GeometricData):
         self.df.drop(idx, inplace=True)
         return self
 
-    @setdoc_pro([ds.idx_sp, ds.x, ds.y, ds.z, ds.surface_sp])
+    @_setdoc_pro([ds.idx_sp, ds.x, ds.y, ds.z, ds.surface_sp])
     def modify_surface_points(self, idx: Union[int, list, np.ndarray], **kwargs):
         """
          Allows modification of the x,y and/or z-coordinates of an interface at specified dataframe index.
@@ -1584,7 +1584,7 @@ class SurfacePoints(GeometricData):
 
         return self
 
-    @setdoc_pro([ds.file_path, ds.debug, ds.inplace])
+    @_setdoc_pro([ds.file_path, ds.debug, ds.inplace])
     def read_surface_points(self, table_source, debug=False, inplace=False,
                             kwargs_pandas: dict = None, **kwargs, ):
         """
@@ -1671,7 +1671,7 @@ class SurfacePoints(GeometricData):
         return self
 
 
-@setdoc_pro([Surfaces.__doc__, ds.coord_ori, ds.surface_sp, ds.pole_vector, ds.orientations])
+@_setdoc_pro([Surfaces.__doc__, ds.coord_ori, ds.surface_sp, ds.pole_vector, ds.orientations])
 class Orientations(GeometricData):
     """
     Data child with specific methods to manipulate orientation data. It is initialize without arguments to give
@@ -1702,7 +1702,7 @@ class Orientations(GeometricData):
 
         self.set_orientations(coord, pole_vector, orientation, surface)
 
-    @setdoc_pro([ds.coord_ori, ds.surface_sp, ds.pole_vector, ds.orientations])
+    @_setdoc_pro([ds.coord_ori, ds.surface_sp, ds.pole_vector, ds.orientations])
     def set_orientations(self, coord: np.ndarray = None, pole_vector: np.ndarray = None,
                          orientation: np.ndarray = None, surface: list = None):
         """
@@ -1760,7 +1760,7 @@ class Orientations(GeometricData):
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
 
-    @setdoc_pro([ds.x, ds.y, ds.z, ds.surface_sp, ds.pole_vector, ds.orientations, ds.idx_sp])
+    @_setdoc_pro([ds.x, ds.y, ds.z, ds.surface_sp, ds.pole_vector, ds.orientations, ds.idx_sp])
     def add_orientation(self, x, y, z, surface, pole_vector: Union[list, tuple, np.ndarray] = None,
                         orientation: Union[list, np.ndarray] = None, idx=None):
         """
@@ -1826,7 +1826,7 @@ class Orientations(GeometricData):
         self.sort_table()
         return self
 
-    @setdoc_pro([ds.idx_sp])
+    @_setdoc_pro([ds.idx_sp])
     def del_orientation(self, idx):
         """
         Delete orientation
@@ -1839,7 +1839,7 @@ class Orientations(GeometricData):
         """
         self.df.drop(idx, inplace=True)
 
-    @setdoc_pro([ds.idx_sp, ds.surface_sp])
+    @_setdoc_pro([ds.idx_sp, ds.surface_sp])
     def modify_orientations(self, idx, **kwargs):
         """
          Allows modification of any of an orientation column at a given index.
@@ -1957,7 +1957,7 @@ class Orientations(GeometricData):
 
         return True
 
-    @setdoc_pro([SurfacePoints.__doc__])
+    @_setdoc_pro([SurfacePoints.__doc__])
     def create_orientation_from_surface_points(self, surface_points: SurfacePoints, indices):
         # TODO test!!!!
         """
@@ -1985,7 +1985,7 @@ class Orientations(GeometricData):
                                  [0, 0, 1],
                                  )
 
-    @setdoc_pro([ds.file_path, ds.debug, ds.inplace])
+    @_setdoc_pro([ds.file_path, ds.debug, ds.inplace])
     def read_orientations(self, table_source, debug=False, inplace=True, kwargs_pandas: dict = None, **kwargs):
         """
         Read tabular using pandas tools and if inplace set it properly to the surface points object.
@@ -2158,7 +2158,7 @@ class Orientations(GeometricData):
         return ctr, normal
 
 
-@setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Grid.__doc__])
+@_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Grid.__doc__])
 class RescaledData(object):
     """
     Auxiliary class to rescale the coordinates between 0 and 1 to increase float stability.
@@ -2196,7 +2196,7 @@ class RescaledData(object):
     def _repr_html_(self):
         return self.df.T.to_html()
 
-    @setdoc_pro([ds.centers, ds.rescaling_factor])
+    @_setdoc_pro([ds.centers, ds.rescaling_factor])
     def modify_rescaling_parameters(self, attribute, value):
         """
         Modify the parameters used to rescale data
@@ -2224,7 +2224,7 @@ class RescaledData(object):
         else:
             self.df.loc['values', attribute] = value
 
-    @setdoc_pro([ds.centers, ds.rescaling_factor])
+    @_setdoc_pro([ds.centers, ds.rescaling_factor])
     def rescale_data(self, rescaling_factor=None, centers=None):
         """
         Rescale inplace: surface_points, orientations---adding columns in the categories_df---and grid---adding values_r
@@ -2275,7 +2275,7 @@ class RescaledData(object):
         return self.orientations.df[['X_r', 'Y_r', 'Z_r']]
 
     @staticmethod
-    @setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__])
+    @_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__])
     def max_min_coord(surface_points=None, orientations=None):
         """
         Find the maximum and minimum location of any input data in each cartesian coordinate
@@ -2302,7 +2302,7 @@ class RescaledData(object):
         min_coord = df.min()[['X', 'Y', 'Z']]
         return max_coord, min_coord
 
-    @setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, ds.centers])
+    @_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, ds.centers])
     def compute_data_center(self, surface_points=None, orientations=None,
                             max_coord=None, min_coord=None, inplace=True):
         """
@@ -2332,7 +2332,7 @@ class RescaledData(object):
     #     # TODO this should update the additional data
     #     self.compute_data_center(surface_points, orientations, max_coord, min_coord, inplace=True)
 
-    @setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, ds.rescaling_factor])
+    @_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, ds.rescaling_factor])
     def compute_rescaling_factor(self, surface_points=None, orientations=None,
                                  max_coord=None, min_coord=None, inplace=True):
         """
@@ -2361,7 +2361,7 @@ class RescaledData(object):
     #     self.compute_rescaling_factor(surface_points, orientations, max_coord, min_coord, inplace=True)
 
     @staticmethod
-    @setdoc_pro([SurfacePoints.__doc__, compute_data_center.__doc__, compute_rescaling_factor.__doc__, ds.idx_sp])
+    @_setdoc_pro([SurfacePoints.__doc__, compute_data_center.__doc__, compute_rescaling_factor.__doc__, ds.idx_sp])
     def rescale_surface_points(surface_points, rescaling_factor, centers, idx: list = None):
         """
         Rescale inplace: surface_points. The rescaled values will get stored on the linked objects.
@@ -2386,7 +2386,7 @@ class RescaledData(object):
         new_coord_surface_points.rename(columns={"X": "X_r", "Y": "Y_r", "Z": 'Z_r'}, inplace=True)
         return new_coord_surface_points
 
-    @setdoc_pro(ds.idx_sp)
+    @_setdoc_pro(ds.idx_sp)
     def set_rescaled_surface_points(self, idx: Union[list, np.ndarray] = None):
         """
         Set the rescaled coordinates into the surface_points categories_df
@@ -2418,7 +2418,7 @@ class RescaledData(object):
         return rescaled_data_point
 
     @staticmethod
-    @setdoc_pro([Orientations.__doc__, compute_data_center.__doc__, compute_rescaling_factor.__doc__, ds.idx_sp])
+    @_setdoc_pro([Orientations.__doc__, compute_data_center.__doc__, compute_rescaling_factor.__doc__, ds.idx_sp])
     def rescale_orientations(orientations, rescaling_factor, centers, idx: list = None):
         """
         Rescale inplace: surface_points. The rescaled values will get stored on the linked objects.
@@ -2443,7 +2443,7 @@ class RescaledData(object):
 
         return new_coord_orientations
 
-    @setdoc_pro(ds.idx_sp)
+    @_setdoc_pro(ds.idx_sp)
     def set_rescaled_orientations(self, idx: Union[list, np.ndarray] = None):
         """
         Set the rescaled coordinates into the surface_points categories_df
@@ -2479,7 +2479,7 @@ class RescaledData(object):
         self.grid.regular_grid.extent_r, self.grid.regular_grid.values_r = self.grid.extent_r, self.grid.values_r
 
 
-@setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Surfaces.__doc__, Faults.__doc__])
+@_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Surfaces.__doc__, Faults.__doc__])
 class Structure(object):
     """
     The structure_data class analyse the different lengths of subset in the interface and orientations categories_df
@@ -2728,7 +2728,7 @@ class Options(object):
         return True
 
 
-@setdoc_pro([Grid.__doc__, Structure.__doc__])
+@_setdoc_pro([Grid.__doc__, Structure.__doc__])
 class KrigingParameters(object):
     """
     Class that stores and computes the default values for the kriging parameters used during the interpolation.
@@ -2905,8 +2905,8 @@ class KrigingParameters(object):
         return self.df['drift equations']
 
 
-@setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Grid.__doc__, Surfaces.__doc__, Faults.__doc__,
-             RescaledData.__doc__, Structure.__doc__, KrigingParameters.__doc__, Options.__doc__])
+@_setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Grid.__doc__, Surfaces.__doc__, Faults.__doc__,
+              RescaledData.__doc__, Structure.__doc__, KrigingParameters.__doc__, Options.__doc__])
 class AdditionalData(object):
     """
     Container class that encapsulate :class:`Structure`, :class:`KrigingParameters`, :class:`Options` and

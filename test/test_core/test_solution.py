@@ -8,8 +8,8 @@ def test_rescaled_marching_cube(interpolator):
     """
     2 Horizontal layers with drift 0
     """
-    # Importing the data from csv files and settign extent and resolution
-    geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+    # Importing the data from csv files and setting extent and resolution
+    geo_data = gempy.create_data('Simple interpolator', [0, 10, 0, 10, -10, 0], [50, 50, 50],
                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 
