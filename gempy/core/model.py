@@ -20,9 +20,9 @@ pn.options.mode.chained_assignment = None
 
 # TODO rename to ImplicitCoKriging
 @_setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__, SurfacePoints.__doc__,
-              Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
-              Solution.__doc__])
-class DataMutation(object):
+             Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
+             Solution.__doc__])
+class ImplicitCoKriging(object):
     """
     This class handles all the mutation of an object belonging to model and the update of every single object depend
     on that.
@@ -641,8 +641,6 @@ class DataMutation(object):
         self.map_geometric_data_df(self.surface_points.df)
         self.rescaling.rescale_data()
         self.update_structure()
-    #    self.additional_data.update_structure()
-      #  self.additional_data.update_default_kriging()
 
     @_setdoc(Orientations.set_orientations.__doc__, indent=False, position='beg')
     def set_orientations(self, table: pn.DataFrame, **kwargs):
@@ -682,9 +680,7 @@ class DataMutation(object):
 
         self.map_geometric_data_df(self.orientations.df)
         self.rescaling.rescale_data()
-      #  self.additional_data.update_structure()
         self.update_structure()
-       # self.additional_data.update_default_kriging()
 
     @_setdoc_pro(ds.recompute_rf)
     @_setdoc(SurfacePoints.add_surface_points.__doc__, indent=False, position='beg')
@@ -1039,11 +1035,9 @@ class DataMutation(object):
 
         self.interpolator.theano_graph = interpolator.theano_graph
         self.interpolator.theano_function = interpolator.theano_function
-        # self.rescaling.rescale_data()
         self.update_additional_data(update_structure=update_structure, update_kriging=update_kriging)
         self.update_to_interpolator()
-        # self.interpolator.set_all_shared_parameters()
-        # self.update_structure(update_theano='matrices')
+
         return True
 
     def update_additional_data(self, update_structure=True, update_kriging=True):
@@ -1094,38 +1088,6 @@ class DataMutation(object):
         Returns:
             Surfaces
         """
-        # TODO time this function
-        # spu = self.surface_points.df['surface'].unique()
-        # sps = self.surface_points.df['series'].unique()
-
-        # # Boolean array of size len surfaces with True active surfaces minus Basemes
-        # sel = self.surfaces.df['isActive'] & ~self.surfaces.df['isBasement'] #self.surfaces.df['surface'].isin(spu)
-        #
-        # # Loop each series
-        # for e, name_series in enumerate(self.series.df.groupby('isActive').get_group(True).index):
-        #     try:
-        #
-        #         # Scalar field at surfaces point of each seroies
-        #         sfai_series = self.solutions.scalar_field_at_surface_points[e]
-        #         sfai_order_aux = np.argsort(sfai_series[np.nonzero(sfai_series)])
-        #
-        #         # sfai args in order
-        #         sfai_order = (sfai_order_aux - sfai_order_aux.shape[0]) * -1
-        #
-        #         if len(sfai_order) == 0:
-        #             sfai_order = np.array([1])
-        #         # select surfaces which exist in surface_points of the series
-        #         group = self.surfaces.df[sel].groupby('series').get_group(name_series)
-        #
-        #         idx = group.index
-        #         surface_names = group['surface']
-        #         right_order_surfaces = self.surfaces.df.loc[idx, 'surface'].map(
-        #             pn.DataFrame(sfai_order, index=surface_names)[0])
-        #
-        #         self.surfaces.df.loc[idx, 'order_surfaces'] = right_order_surfaces
-        #
-        #     except IndexError:
-        #         pass
 
         sfai_order = self.solutions.scalar_field_at_surface_points.sum(axis=0)
         sel = self.surfaces.df['isActive'] & ~self.surfaces.df['isBasement']
@@ -1145,8 +1107,8 @@ class DataMutation(object):
 
 
 # TODO rename to Project. With DEP time
-@_setdoc([MetaData.__doc__, DataMutation.__doc__], indent=False)
-class Model(DataMutation, ABC):
+@_setdoc([MetaData.__doc__, ImplicitCoKriging.__doc__], indent=False)
+class Project(ImplicitCoKriging):
     """ Container class of all objects that constitute a GemPy model.
 
     In addition the class provides the methods that act in more than one of this class. Model is a child class of
