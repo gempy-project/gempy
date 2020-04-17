@@ -2718,7 +2718,7 @@ class Options(object):
         import theano
         self.df.loc['values', 'device'] = theano.config.device
 
-        if theano.config.device == 'cpu':
+        if self.df.loc['values', 'device'] == 'cpu':
             self.df.loc['values', 'dtype'] = 'float64'
         else:
             self.df.loc['values', 'dtype'] = 'float32'

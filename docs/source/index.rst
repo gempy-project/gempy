@@ -33,6 +33,7 @@ Contents:
 
    self
    code
+   examples/index
    about
 
 The core algorithm of *GemPy* is based on a universal cokriging interpolation method devised by

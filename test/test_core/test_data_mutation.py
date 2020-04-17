@@ -5,6 +5,7 @@ import gempy as gp
 # Importing auxiliary libraries
 import numpy as np
 import pytest
+import os
 
 mm = gp.DataMutation()
 mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
