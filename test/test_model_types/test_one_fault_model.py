@@ -11,7 +11,7 @@ class TestFabianModel:
 
     # @pytest.fixture(scope='class')
     # def one_fault_model(self):
-    #     model = gp.create_data([0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
+    #     model = gp.create_data(extent=[0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
     #                            path_o=input_path + '/input_data/tut_chapter1/simple_fault_model_orientations.csv',
     #                            path_i=input_path + '/input_data/tut_chapter1/simple_fault_model_points.csv')
     #

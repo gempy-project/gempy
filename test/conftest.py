@@ -46,7 +46,7 @@ def one_fault_model_no_interp():
 
 @pytest.fixture(scope='session')
 def one_fault_model(one_fault_model_no_interp, interpolator):
-    # model = gp.create_data([0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
+    # model = gp.create_data(extent=[0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
     #                        path_o=input_path2 + 'tut_chapter1/simple_fault_model_orientations.csv',
     #                        path_i=input_path2 + 'tut_chapter1/simple_fault_model_points.csv')
     #
@@ -108,7 +108,7 @@ def model_horizontal_two_layers(interpolator):
 @pytest.fixture(scope='session')
 def model_complex(interpolator):
 
-    model = gempy.create_data([0, 2500, 0, 1000, 0, 1000], [50, 20, 20],
+    model = gempy.create_data(extent=[0, 2500, 0, 1000, 0, 1000], [50, 20, 20],
                                  path_o=input_path2 + "jan_models/fixture_model_orientations.csv",
                                  path_i=input_path2 + "jan_models/fixture_model_surfaces.csv")
 
@@ -139,7 +139,7 @@ def model_complex(interpolator):
 #
 #     geo_model.set_is_fault(['Fault_Series'])
 #
-#     gp.set_interpolation_data(geo_model, grid=None,
+#     gp.set_interpolator(geo_model, grid=None,
 #                               compile_theano=True,
 #                               theano_optimizer='fast_compile',
 #                               verbose=[])
@@ -157,14 +157,14 @@ def model_complex(interpolator):
 #                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
 #                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 #
-#     interpolator = gempy.set_interpolation_data(geo_model, grid=None, compile_theano=True)
+#     interpolator = gempy.set_interpolator(geo_model, grid=None, compile_theano=True)
 #     return interpolator
 
 #
 # @pytest.fixture(scope='session')
 # def theano_f():
 #     # Importing the data from csv files and settign extent and resolution
-#     geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+#     geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], [50, 50, 50],
 #                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
 #                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 #
@@ -176,7 +176,7 @@ def model_complex(interpolator):
 # @pytest.fixture(scope='session')
 # def theano_f_1f():
 #     # Importing the data from csv files and settign extent and resolution
-#     geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+#     geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], [50, 50, 50],
 #                                  path_o=input_path+"/GeoModeller/test_d/test_d_Foliations.csv",
 #                                  path_i=input_path+"/GeoModeller/test_d/test_d_Points.csv")
 #
@@ -190,7 +190,7 @@ def model_complex(interpolator):
 # @pytest.fixture(scope='session')
 # def theano_f_grav():
 #     # Importing the data from csv files and settign extent and resolution
-#     geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+#     geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], [50, 50, 50],
 #                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
 #                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 #

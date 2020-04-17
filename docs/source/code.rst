@@ -73,7 +73,7 @@ Front end
     read_csv
     save_model
     save_model_to_pickle
-    set_interpolation_data
+    set_interpolator
     set_orientation_from_surface_points
     set_series
     update_additional_data
