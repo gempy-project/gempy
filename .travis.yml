@@ -5,6 +5,8 @@ dist: xenial
 python:
   - '3.7'
 
+env: TRAVIS=true
+
 install:
   - pip install --upgrade setuptools pip
   - pip install cython
@@ -16,18 +18,12 @@ install:
   - pip install pyevtk
   - pip install dataclasses emg3d pyvista panel discretize
 
-
 script:
 
   - pytest -v notebooks/integrations/ --nbval-lax --ignore-glob='*discret*'
-  - pytest -v notebooks/examples/ --nbval-lax --current-env --ignore-glob='*pography*' --ignore-glob='*lesmodel*' --ignore-glob=*Course*
-  - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='ch1-6*' --ignore-glob='ch1-7*'
+  - pytest -v notebooks/examples/ --nbval-lax --current-env --ignore-glob='*pography*' --ignore-glob='*lesmodel*' --ignore-glob='*Course*'
+  - pytest -v notebooks/tutorials/ --nbval-lax --current-env --ignore-glob='*ch1-6*' --ignore-glob='ch1-7*' --ignore-glob='*ch1-10*' --ignore-glob='*MaskedMarchinCube_Onlap_relations*'
   - pytest
 
-sudo: required
 cache: pip
 
-#before_script: # configure a headless display to test plot generation
-#  - "export DISPLAY=:99.0"
-#  - "sh -e /etc/init.d/xvfb start"
-#  - sleep 3 # give xvfb some time to start

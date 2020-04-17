@@ -1,18 +1,14 @@
 # These two lines are necessary only if GemPy is not installed
-import sys, os
-sys.path.append("../..")
+# sys.path.append("../..")
 
 # Importing GemPy
 import gempy as gp
-from gempy.assets.geophysics import MagneticsPreprocessing
 
 # Importing auxiliary libraries
 import numpy as np
-import matplotlib.pyplot as plt
-import pytest
 
 
-def test_gravity():
+def test_gravity(interpolator_gravity):
     geo_model = gp.create_model('2-layers')
     gp.init_data(geo_model, extent=[0, 12, -2, 2, 0, 4], resolution=[500, 1, 500])
     geo_model.add_surfaces('surface 1')
@@ -30,11 +26,12 @@ def test_gravity():
     geo_model.add_orientations(6, 0, 4, 'surface 1', [0, 0, 1])
     device_loc = np.array([[6, 0, 4]])
 
-    geo_model.set_centered_grid(device_loc, resolution=[10, 10, 100], radio=16000)
-    gp.set_interpolator(geo_model, output=['gravity'], pos_density=2, gradient=True,
-                        theano_optimizer='fast_compile')
-
+    geo_model.set_centered_grid(device_loc, resolution=[10, 10, 100], radius=16000)
+    geo_model.set_theano_function(interpolator_gravity)
+    geo_model.interpolator.set_theano_shared_gravity(pos_density=2)
+    print(geo_model.additional_data)
     gp.compute_model(geo_model, set_solutions=True, compute_mesh=False)
     print(geo_model.solutions.fw_gravity)
     np.testing.assert_almost_equal(geo_model.solutions.fw_gravity,
-                                   np.array([-9291.8003]), decimal=4)
+                                   np.array([-1624.1714]), decimal=4)
+

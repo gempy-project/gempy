@@ -1,30 +1,22 @@
 import pytest
-
-import numpy as np
 import sys, os
 sys.path.append("../..")
 import gempy
-import matplotlib.pyplot as plt
 from gempy.addons import gempy_to_rexfile as gtr
-
+from gempy.addons import rex_api
+pyqrcode = pytest.importorskip("pyqrcode")
 input_path = os.path.dirname(__file__)+'/../input_data'
 
 
+@pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
+                    reason="Skipping this test on Travis CI.")
 class TestGemPyToREX:
     @pytest.fixture(scope='module')
-    def geo_model(self, interpolator_islith_nofault):
-        """
-        2 Horizontal layers with drift 0
-        """
-        # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
-                                     path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
-                                     path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
-
-        geo_data.set_theano_function(interpolator_islith_nofault)
+    def geo_model(self, model_horizontal_two_layers):
+        geo_data = model_horizontal_two_layers
 
         # Compute model
-        sol = gempy.compute_model(geo_data)
+        sol = gempy.compute_model(geo_data, compute_mesh_options={'rescale': True})
 
         return geo_data
 
@@ -48,7 +40,7 @@ class TestGemPyToREX:
                                               start_data=file_header_size)
 
         # Write data block
-        data_bytes = gtr.write_data_block(size_data=data_block_size_no_header,
+        data_bytes = gtr.write_data_block_header(size_data=data_block_size_no_header,
                                           data_id=1, data_type=3, version_data=1)
 
         # Write mesh block
@@ -67,6 +59,17 @@ class TestGemPyToREX:
         if False:
             gtr.write_file(all_bytes, './rexfiles/one_mesh_test')
 
-    def TEST_geo_model_to_rex(self, geo_model):
+    def TEST_rex_cloud_api(self):
+        import datetime
+        timestamp = datetime.datetime.now()
+        project_name = str(timestamp)
+        rex_api.RexAPI(project_name)
 
-        gtr.geo_model_to_res(geo_model, path='./rexfiles/gtr_test')
+    def test_geo_model_to_rex(self, geo_model):
+
+        gtr.geo_model_to_rex(geo_model, path=os.path.dirname(__file__))
+
+    def test_plot_ar(self, geo_model):
+        tag = gempy.plot.plot_ar(geo_model, api_token='8e8a12ef-5da2-4790-9a84-15923a287965', project_name='Alesmodel',
+                                 secret='45tBkVGgbhodX1C9SCaGf7FxBOCTDIQv')
+        print(tag.display_tag(reverse=False))

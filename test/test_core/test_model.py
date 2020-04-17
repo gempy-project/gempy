@@ -21,14 +21,76 @@ sys.path.append("../..")
 
 @pytest.fixture(scope="module")
 def load_model():
+    verbose = False
     geo_model = gp.create_model('Model_Tuto1-1')
 
     # Importing the data from CSV-files and setting extent and resolution
     gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50 ,50 ,50],
-          path_o = input_path+"/simple_fault_model_orientations.csv",
-          path_i = input_path+"/simple_fault_model_points.csv", default_values=True)
+                 path_o=input_path+"/simple_fault_model_orientations.csv",
+                 path_i=input_path+"/simple_fault_model_points.csv", default_values=True)
 
-    gp.get_data(geo_model, 'surface_points').head()
+    df_cmp_i = gp.get_data(geo_model, 'surface_points')
+    df_cmp_o = gp.get_data(geo_model, 'orientations')
+
+    df_o = pn.read_csv(input_path + "/simple_fault_model_orientations.csv")
+    df_i = pn.read_csv(input_path + "/simple_fault_model_points.csv")
+
+    assert not df_cmp_i.empty, 'data was not set to dataframe'
+    assert not df_cmp_o.empty, 'data was not set to dataframe'
+    assert df_cmp_i.shape[0] == df_i.shape[0], 'data was not set to dataframe'
+    assert df_cmp_o.shape[0] == df_o.shape[0], 'data was not set to dataframe'
+
+    if verbose:
+        gp.get_data(geo_model, 'surface_points').head()
+
+    return geo_model
+
+
+def test_load_model_df():
+
+    verbose = True
+    df_i = pn.DataFrame(np.random.randn(6,3), columns='X Y Z'.split())
+    df_i['formation'] = ['surface_1' for _ in range(3)] + ['surface_2' for _ in range(3)]
+
+    df_o = pn.DataFrame(np.random.randn(6,6), columns='X Y Z azimuth dip polarity'.split())
+    df_o['formation'] = ['surface_1' for _ in range(3)] + ['surface_2' for _ in range(3)]
+
+    geo_model = gp.create_model('test')
+    # Importing the data directly from the dataframes
+    gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
+                 surface_points_df=df_i, orientations_df=df_o, default_values=True)
+
+    df_cmp_i = gp.get_data(geo_model, 'surface_points')
+    df_cmp_o = gp.get_data(geo_model, 'orientations')
+
+    if verbose:
+        print(df_cmp_i.head())
+        print(df_cmp_o.head())
+
+    assert not df_cmp_i.empty, 'data was not set to dataframe'
+    assert not df_cmp_o.empty, 'data was not set to dataframe'
+    assert df_cmp_i.shape[0] == 6, 'data was not set to dataframe'
+    assert df_cmp_o.shape[0] == 6, 'data was not set to dataframe'
+
+    # try without the default_values command
+
+    geo_model = gp.create_model('test')
+    # Importing the data directly from the dataframes
+    gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50 ,50 ,50],
+                 surface_points_df=df_i, orientations_df=df_o)
+
+    df_cmp_i2 = gp.get_data(geo_model, 'surface_points')
+    df_cmp_o2 = gp.get_data(geo_model, 'orientations')
+
+    if verbose:
+        print(df_cmp_i2.head())
+        print(df_cmp_o2.head())
+
+    assert not df_cmp_i2.empty, 'data was not set to dataframe'
+    assert not df_cmp_o2.empty, 'data was not set to dataframe'
+    assert df_cmp_i2.shape[0] == 6, 'data was not set to dataframe'
+    assert df_cmp_o2.shape[0] == 6, 'data was not set to dataframe'
+
     return geo_model
 
 
@@ -56,9 +118,9 @@ def test_define_sequential_pile(map_sequential_pile):
     print(map_sequential_pile.surfaces)
 
 
-def test_compute_model(interpolator_islith_isfault, map_sequential_pile):
+def test_compute_model(interpolator, map_sequential_pile):
     geo_model = map_sequential_pile
-    geo_model.set_theano_graph(interpolator_islith_isfault)
+    geo_model.set_theano_graph(interpolator)
 
     gp.compute_model(geo_model, compute_mesh=False)
 
@@ -82,9 +144,9 @@ def test_compute_model(interpolator_islith_isfault, map_sequential_pile):
     plt.savefig(os.path.dirname(__file__)+'/../figs/test_integration_scalar')
 
 
-def test_kriging_mutation(interpolator_islith_isfault, map_sequential_pile):
+def test_kriging_mutation(interpolator, map_sequential_pile):
     geo_model = map_sequential_pile
-    geo_model.set_theano_graph(interpolator_islith_isfault)
+    geo_model.set_theano_graph(interpolator)
 
     gp.compute_model(geo_model, compute_mesh=False)
     gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
@@ -93,14 +155,18 @@ def test_kriging_mutation(interpolator_islith_isfault, map_sequential_pile):
     #plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation')
 
     geo_model.modify_kriging_parameters('range', 1)
-
     geo_model.modify_kriging_parameters('drift equations', [0, 3])
-    print(geo_model.solutions.lith_block, geo_model.additional_data)
 
+    print(geo_model.solutions.lith_block, geo_model.additional_data)
+    # copy dataframe before interpolator is calculated
+    pre = geo_model.additional_data.kriging_data.df.copy()
+
+    gp.set_interpolator(geo_model, compile_theano=True,
+                        theano_optimizer='fast_compile', update_kriging=False)
     gp.compute_model(geo_model, compute_mesh=False)
     gp.plot.plot_scalar_field(geo_model, cell_number=25, series=1, N=15,
                               direction='y', show_data=True)
 
     print(geo_model.solutions.lith_block, geo_model.additional_data)
-   # plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation2')
-
+    # plt.savefig(os.path.dirname(__file__)+'/figs/test_kriging_mutation2')
+    assert geo_model.additional_data.kriging_data.df['range'][0] == pre['range'][0]

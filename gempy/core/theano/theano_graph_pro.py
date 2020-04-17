@@ -438,8 +438,9 @@ class TheanoGraphPro(object):
         self.sfai_op = series[3][-1]
 
         mask = series[4][-1]
-        self.mask_op2 = mask
+        #self.mask_op2 = mask
         mask_rev_cumprod = T.vertical_stack(mask[[-1]], T.cumprod(T.invert(mask[:-1]), axis=0))
+        self.mask_op2 = mask_rev_cumprod
         block_mask = mask * mask_rev_cumprod
 
         fault_mask = series[5][-1]
@@ -621,8 +622,6 @@ class TheanoGraphPro(object):
     def get_boundary_voxels(self, unique_val):
         uv_3d = T.cast(T.round(unique_val[0, :T.prod(self.regular_grid_res)].reshape(self.regular_grid_res, ndim=3)),
                        'int32')
-
-
 
         uv_l = T.horizontal_stack(uv_3d[1:, :, :].reshape((1, -1)),
                                   uv_3d[:, 1:, :].reshape((1, -1)),
@@ -809,7 +808,7 @@ class TheanoGraphPro(object):
 
         # self.nugget_effect_scalar_T_op = theano.printing.Print('nug scalar')(self.nugget_effect_scalar_T_op)
 
-        C_I += T.eye(C_I.shape[0]) * 2 * self.nugget_effect_scalar_T_op
+        C_I += T.eye(C_I.shape[0]) * self.nugget_effect_scalar_T_op
         # Add name to the theano node
         C_I.name = 'Covariance SurfacePoints'
 
@@ -1551,11 +1550,11 @@ class TheanoGraphPro(object):
         rotated_x = T.dot(T.dot(grid, U), V)
         rotated_fault_points = T.dot(T.dot(fault_points.T, U), V)
         rotated_ctr = T.mean(rotated_fault_points, axis=0)
-        a_radio = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()) / 2
-        b_radio = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()) / 2
+        a_radius = (rotated_fault_points[:, 0].max() - rotated_fault_points[:, 0].min()) / 2
+        b_radius = (rotated_fault_points[:, 1].max() - rotated_fault_points[:, 1].min()) / 2
 
-        ellipse_factor = (rotated_x[:, 0] - rotated_ctr[0])**2 / a_radio**2 + \
-            (rotated_x[:, 1] - rotated_ctr[1])**2 / b_radio**2
+        ellipse_factor = (rotated_x[:, 0] - rotated_ctr[0])**2 / a_radius**2 + \
+            (rotated_x[:, 1] - rotated_ctr[1])**2 / b_radius**2
 
         if "select_finite_faults" in self.verbose:
             ellipse_factor = theano.printing.Print("h")(ellipse_factor)

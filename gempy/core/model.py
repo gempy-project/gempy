@@ -4,7 +4,7 @@ from abc import ABC
 
 import numpy as np
 import pandas as pn
-from typing import Union
+from typing import Union, Iterable
 import warnings
 
 from gempy.core.data import AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
@@ -18,6 +18,7 @@ from gempy.plot.decorators import *
 pn.options.mode.chained_assignment = None
 
 
+# TODO rename to ImplicitCoKriging
 @setdoc_pro([Grid.__doc__, Faults.__doc__, Series.__doc__, Surfaces.__doc__, SurfacePoints.__doc__,
              Orientations.__doc__, RescaledData.__doc__, AdditionalData.__doc__, InterpolatorModel.__doc__,
              Solution.__doc__])
@@ -147,7 +148,7 @@ class DataMutation(object):
         if hasattr(self.interpolator.theano_graph.grid_val_T, 'get_value'):
             self.interpolator.theano_graph.grid_val_T.set_value(self.grid.values_r.astype(self.interpolator.dtype))
 
-    def set_active_grid(self, grid_name: Union[str, np.ndarray], reset=False):
+    def set_active_grid(self, grid_name: Union[str, Iterable[str]], reset=False):
         """
         Set active a given or several grids.
 
@@ -215,7 +216,7 @@ class DataMutation(object):
         if self.grid.custom_grid is None:
             self.grid.create_custom_grid(custom_grid)
         else:
-            self.grid.custom_grid.set_custmo_grid(custom_grid)
+            self.grid.custom_grid.set_custom_grid(custom_grid)
             self.grid.update_grid_values()
 
         self.update_from_grid()
@@ -235,26 +236,27 @@ class DataMutation(object):
         return self.grid
 
     @setdoc(Grid.create_centered_grid.__doc__)
-    def set_centered_grid(self, centers, radio, resolution=None):
+    def set_centered_grid(self, centers, radius, resolution=None):
         if self.grid.centered_grid is None:
-            self.grid.create_centered_grid(centers, radio, resolution=resolution)
+            self.grid.create_centered_grid(centers, radius, resolution=resolution)
         else:
-            self.grid.centered_grid.set_centered_grid(centers=centers, radio=radio, resolution=resolution)
+            self.grid.centered_grid.set_centered_grid(centers=centers, radius=radius, resolution=resolution)
             self.grid.update_grid_values()
-
+        self.set_active_grid('centered')
         self.update_from_grid()
         print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid
 
     @setdoc(Grid.create_section_grid.__doc__)
     def set_section_grid(self, section_dict):
+        # TODO being able to change the regular grid associated to the section grid
         if self.grid.sections is None:
             self.grid.create_section_grid(section_dict=section_dict)
         else:
-            self.grid.sections.set_sections(section_dict)
+            self.grid.sections.set_sections(section_dict, regular_grid=self.grid.regular_grid)
 
+        self.set_active_grid('sections')
         self.update_from_grid()
-        print(f'Active grids: {self.grid.grid_types[self.grid.active_grids]}')
         return self.grid.sections
 
     # endregion
@@ -288,10 +290,18 @@ class DataMutation(object):
         return self.series
 
     @setdoc(Series.delete_series.__doc__, indent=False)
-    def delete_series(self, indices: Union[str, list], refactor_order_series=True):
-        """Delete series, update the categories dependet on them and reset the flow control.
+    def delete_series(self, indices: Union[str, list], refactor_order_series=True,
+                      remove_surfaces=False, remove_data=False):
+        """ Delete series, update the categories dependet on them and reset the flow control.
         """
+        indices = np.atleast_1d(indices)
         self.series.delete_series(indices, refactor_order_series)
+
+        if remove_surfaces is True:
+            for s in indices:
+                self.delete_surfaces(self.surfaces.df.groupby('series').get_group(s)['surface'],
+                                     remove_data=remove_data)
+
         self.surfaces.df['series'].cat.remove_categories(indices, inplace=True)
         self.surface_points.df['series'].cat.remove_categories(indices, inplace=True)
         self.orientations.df['series'].cat.remove_categories(indices, inplace=True)
@@ -336,7 +346,7 @@ class DataMutation(object):
         return self.series
 
     @setdoc(Series.reset_order_series.__doc__, indent=False)
-    def reorder_series(self, new_categories: Union[list, np.ndarray]):
+    def reorder_series(self, new_categories: Iterable[str]):
         """Reorder series. Reorder categories of the link Surfaces, sort surface (reset the basement layer)
         remap the Series and Surfaces to the corrspondent dataframes, sort Geometric objects, update structure and
         reset the flow control objects.
@@ -354,7 +364,7 @@ class DataMutation(object):
         self.orientations.sort_table()
 
         self.interpolator.set_flow_control()
-        self.update_structure()
+        self.update_structure(update_theano='weights')
         return self.series
 
     # endregion
@@ -440,7 +450,7 @@ class DataMutation(object):
         return self.surfaces
 
     @setdoc(Surfaces.delete_surface.__doc__, indent=False)
-    def delete_surfaces(self, indices: Union[str, list, np.ndarray], update_id=True, remove_data=True):
+    def delete_surfaces(self, indices: Union[str, Iterable[str]], update_id=True, remove_data=True):
         """
         @TODO When implemeted activate geometric data, change remove data to False by default
         Delete a surface and update all related object.
@@ -453,14 +463,16 @@ class DataMutation(object):
         indices = np.atleast_1d(indices)
         self.surfaces.delete_surface(indices, update_id)
 
-        if remove_data is False:
-            remove_data = True
-            warnings.warn('At the moment data must be deleted. Soon will be only deactivated.')
+        # TODO check this does not break anything anymore
+        # if remove_data is False:
+        #     remove_data = True
+        #     warnings.warn('At the moment data must be deleted. Soon will be only deactivated.')
 
         if indices.dtype == int:
             surfaces_names = self.surfaces.df.loc[indices, 'surface']
         else:
             surfaces_names = indices
+
         if remove_data:
             self.surface_points.del_surface_points(self.surface_points.df[self.surface_points.df.surface.isin(surfaces_names)].index)
             self.orientations.del_orientation(self.orientations.df[self.orientations.df.surface.isin(surfaces_names)].index)
@@ -499,8 +511,8 @@ class DataMutation(object):
         return self.surfaces
 
     @setdoc(Surfaces.add_surfaces_values.__doc__, indent=False)
-    def add_surface_values(self,  values_array: Union[np.ndarray, list],
-                           properties_names: Union[list, str] = np.empty(0)):
+    def add_surface_values(self,  values_array: Iterable,
+                           properties_names: Iterable[str] = np.empty(0)):
         self.surfaces.add_surfaces_values(values_array, properties_names)
         self.update_structure(update_theano='matrices')
         return self.surfaces
@@ -515,7 +527,7 @@ class DataMutation(object):
         self.surfaces.modify_surface_values(idx, properties_names, values)
         return self.surfaces
 
-    def set_surface_values(self, values_array: Union[np.ndarray, list], properties_names: list = np.empty(0)):
+    def set_surface_values(self, values_array: Iterable, properties_names: list = np.empty(0)):
         self.surfaces.set_surfaces_values(values_array, properties_names)
         return self.surfaces
 
@@ -571,7 +583,7 @@ class DataMutation(object):
             aux = self.series.df.index.drop('Basement').array
             self.reorder_series(np.append(aux, 'Basement'))
 
-        if twofins is False: #assert if every fault has its own series
+        if twofins is False: # assert if every fault has its own series
             for serie in list(self.faults.df[self.faults.df['isFault'] == True].index):
                 assert np.sum(self.surfaces.df['series'] == serie) < 2, \
                 'Having more than one fault in a series is generally rather bad. Better give each '\
@@ -587,6 +599,11 @@ class DataMutation(object):
     def set_surface_points_object(self, surface_points: SurfacePoints, update_model=True):
         raise NotImplementedError
 
+    @staticmethod
+    def _check_possible_column_names(table, possible_candidates):
+        possible_candidates = np.array(possible_candidates)
+        return possible_candidates[np.isin(possible_candidates, table.columns)][0]
+
     @setdoc(SurfacePoints.set_surface_points.__doc__, indent=False, position='beg')
     def set_surface_points(self, table: pn.DataFrame, **kwargs):
         """
@@ -596,10 +613,16 @@ class DataMutation(object):
                 - add_basement (bool): add a basement surface to the df. foo
 
         """
-        coord_x_name = kwargs.get('coord_x_name', "X")
-        coord_y_name = kwargs.get('coord_y_name', "Y")
-        coord_z_name = kwargs.get('coord_z_name', "Z")
-        surface_name = kwargs.get('surface_name', "surface")
+
+        coord_x_name = kwargs.get('coord_x_name') if 'coord_x_name' in kwargs \
+            else self._check_possible_column_names(table, ['X', 'x'])
+        coord_y_name =kwargs.get('coord_y_name') if 'coord_y_name' in kwargs \
+            else self._check_possible_column_names(table, ['Y', 'y'])
+        coord_z_name = kwargs.get('coord_z_name') if 'coord_z_name' in kwargs \
+            else self._check_possible_column_names(table, ['Z', 'z'])
+        surface_name = kwargs.get('surface_name') if 'surface_name' in kwargs \
+            else self._check_possible_column_names(table, ['surface', 'Surface', 'surfaces', 'surfaces', 'formations',
+                                                           'formation'])
         update_surfaces = kwargs.get('update_surfaces', True)
 
         if update_surfaces is True:
@@ -617,8 +640,9 @@ class DataMutation(object):
 
         self.map_geometric_data_df(self.surface_points.df)
         self.rescaling.rescale_data()
-        self.additional_data.update_structure()
-        self.additional_data.update_default_kriging()
+        self.update_structure()
+    #    self.additional_data.update_structure()
+      #  self.additional_data.update_default_kriging()
 
     @setdoc(Orientations.set_orientations.__doc__, indent=False, position='beg')
     def set_orientations(self, table: pn.DataFrame, **kwargs):
@@ -627,17 +651,23 @@ class DataMutation(object):
             table (pn.Dataframe): table with surface points data.
 
         """
-        coord_x_name = kwargs.get('coord_x_name', "X")
-        coord_y_name = kwargs.get('coord_y_name', "Y")
-        coord_z_name = kwargs.get('coord_z_name', "Z")
         g_x_name = kwargs.get('G_x_name', 'G_x')
         g_y_name = kwargs.get('G_y_name', 'G_y')
         g_z_name = kwargs.get('G_z_name', 'G_z')
         azimuth_name = kwargs.get('azimuth_name', 'azimuth')
         dip_name = kwargs.get('dip_name', 'dip')
         polarity_name = kwargs.get('polarity_name', 'polarity')
-        surface_name = kwargs.get('surface_name', "formation")
         update_surfaces = kwargs.get('update_surfaces', False)
+
+        coord_x_name = kwargs.get('coord_x_name') if 'coord_x_name' in kwargs \
+            else self._check_possible_column_names(table, ['X', 'x'])
+        coord_y_name = kwargs.get('coord_y_name') if 'coord_y_name' in kwargs \
+            else self._check_possible_column_names(table, ['Y', 'y'])
+        coord_z_name = kwargs.get('coord_z_name') if 'coord_z_name' in kwargs \
+            else self._check_possible_column_names(table, ['Z', 'z'])
+        surface_name = kwargs.get('surface_name') if 'surface_name' in kwargs \
+            else self._check_possible_column_names(table, ['surface', 'Surface', 'surfaces', 'surfaces', 'formations',
+                                                           'formation', 'Formation'])
 
         if update_surfaces is True:
             self.add_surfaces(table[surface_name].unique())
@@ -652,13 +682,14 @@ class DataMutation(object):
 
         self.map_geometric_data_df(self.orientations.df)
         self.rescaling.rescale_data()
-        self.additional_data.update_structure()
-        self.additional_data.update_default_kriging()
+      #  self.additional_data.update_structure()
+        self.update_structure()
+       # self.additional_data.update_default_kriging()
 
     @setdoc_pro(ds.recompute_rf)
     @setdoc(SurfacePoints.add_surface_points.__doc__, indent=False, position='beg')
     @plot_add_surface_points
-    def add_surface_points(self, X, Y, Z, surface, idx: Union[int, list, np.ndarray] = None,
+    def add_surface_points(self, X, Y, Z, surface, idx: Union[int, Iterable[int]] = None,
                            recompute_rescale_factor=False):
         """
         Args:
@@ -683,7 +714,7 @@ class DataMutation(object):
 
     @setdoc(SurfacePoints.del_surface_points.__doc__, indent=False, position='beg')
     @plot_delete_surface_points
-    def delete_surface_points(self, idx: Union[list, int, np.ndarray]):
+    def delete_surface_points(self, idx: Union[int, Iterable[int]]):
         self.surface_points.del_surface_points(idx)
         self.update_structure(update_theano='matrices')
         return self.surface_points
@@ -739,8 +770,8 @@ class DataMutation(object):
     @setdoc_pro(ds.recompute_rf)
     @setdoc(Orientations.add_orientation.__doc__, indent=False, position='beg')
     @plot_add_orientation
-    def add_orientations(self,  X, Y, Z, surface, pole_vector: np.ndarray = None,
-                         orientation: np.ndarray = None, idx=None, recompute_rescale_factor=False):
+    def add_orientations(self,  X, Y, Z, surface, pole_vector: Iterable = None,
+                         orientation: Iterable = None, idx=None, recompute_rescale_factor=False):
         """
         Args:
             recompute_rescale_factor: [s0]
@@ -862,7 +893,7 @@ class DataMutation(object):
         return self.surfaces
 
     @setdoc_pro(ds.extent)
-    def set_extent(self, extent: Union[list, np.ndarray]):
+    def set_extent(self, extent: Iterable):
         """
         Set project extent
 
@@ -975,8 +1006,8 @@ class DataMutation(object):
 
     # region Theano interface
     @setdoc(InterpolatorModel.__doc__)
-    def set_theano_graph(self, interpolator: InterpolatorModel):
-        """Pass a theano graph of a Interpolator instance other than the Model compose
+    def set_theano_graph(self, interpolator: InterpolatorModel,  update_structure=True, update_kriging=True):
+        """ Pass a theano graph of a Interpolator instance other than the Model compose
 
         Use this method only if you know what are you doing!
 
@@ -985,13 +1016,17 @@ class DataMutation(object):
 
         Returns:
              True """
+        warnings.warn('This function is going to be deprecated. Use Model.set_theano_function instead',
+                      DeprecationWarning)
         self.interpolator.theano_graph = interpolator.theano_graph
         self.interpolator.theano_function = interpolator.theano_function
+        self.update_additional_data(update_structure=update_structure, update_kriging=update_kriging)
         self.update_to_interpolator()
         return True
 
     @setdoc(InterpolatorModel.__doc__)
-    def set_theano_function(self, interpolator: InterpolatorModel):
+    def set_theano_function(self, interpolator: InterpolatorModel,
+                            update_structure=True, update_kriging=True):
         """
         Pass a theano function and its correspondent graph from an Interpolator instance other than the Model compose
 
@@ -1004,9 +1039,22 @@ class DataMutation(object):
 
         self.interpolator.theano_graph = interpolator.theano_graph
         self.interpolator.theano_function = interpolator.theano_function
-        self.interpolator.set_all_shared_parameters()
-        self.update_structure(update_theano='matrices')
+        # self.rescaling.rescale_data()
+        self.update_additional_data(update_structure=update_structure, update_kriging=update_kriging)
+        self.update_to_interpolator()
+        # self.interpolator.set_all_shared_parameters()
+        # self.update_structure(update_theano='matrices')
         return True
+
+    def update_additional_data(self, update_structure=True, update_kriging=True):
+        if update_structure is True:
+            self.update_structure(update_theano='matrices')
+
+        if update_kriging is True:
+            print('Setting kriging parameters to their default values.')
+            self.additional_data.update_default_kriging()
+
+        return self.additional_data
 
     def update_to_interpolator(self, reset=True):
         """Update all shared parameters from the data objects
@@ -1047,8 +1095,8 @@ class DataMutation(object):
             Surfaces
         """
         # TODO time this function
-       # spu = self.surface_points.df['surface'].unique()
-       # sps = self.surface_points.df['series'].unique()
+        # spu = self.surface_points.df['surface'].unique()
+        # sps = self.surface_points.df['series'].unique()
 
         # # Boolean array of size len surfaces with True active surfaces minus Basemes
         # sel = self.surfaces.df['isActive'] & ~self.surfaces.df['isBasement'] #self.surfaces.df['surface'].isin(spu)
@@ -1096,6 +1144,7 @@ class DataMutation(object):
         return self.surfaces
 
 
+# TODO rename to Project. With DEP time
 @setdoc([MetaData.__doc__, DataMutation.__doc__], indent=False)
 class Model(DataMutation, ABC):
     """ Container class of all objects that constitute a GemPy model.
@@ -1108,7 +1157,6 @@ class Model(DataMutation, ABC):
 
         self.meta = MetaData(project_name=project_name)
         super().__init__()
-        #self.interpolator_gravity = None
 
     def __repr__(self):
         return self.meta.project_name + ' ' + self.meta.date
@@ -1209,13 +1257,13 @@ class Model(DataMutation, ABC):
         return True
 
     @setdoc([SurfacePoints.read_surface_points.__doc__, Orientations.read_orientations.__doc__])
-    def read_data(self, path_i=None, path_o=None, add_basement=True, **kwargs):
+    def read_data(self, source_i=None, source_o=None, add_basement=True, **kwargs):
         """
-        Read data from a csv
+        Read data from a csv, or directly supplied dataframes
 
         Args:
-            path_i: Path to the data bases of surface_points. Default os.getcwd(),
-            path_o: Path to the data bases of orientations. Default os.getcwd()
+            source_i: Path to the data bases of surface_points. Default os.getcwd(), or direct pandas data frame
+            source_o: Path to the data bases of orientations. Default os.getcwd(), or direct pandas data frame
             add_basement (bool): if True add a basement surface. This wont be interpolated it just gives the values
             for the volume below the last surface.
             **kwargs:
@@ -1226,11 +1274,15 @@ class Model(DataMutation, ABC):
         """
         if 'update_surfaces' not in kwargs:
             kwargs['update_surfaces'] = True
+        if 'path_i' in kwargs:
+            source_i = kwargs['path_i']
+        if 'path_o' in kwargs:
+            source_o = kwargs['path_o']
 
-        if path_i:
-            self.surface_points.read_surface_points(path_i, inplace=True, **kwargs)
-        if path_o:
-            self.orientations.read_orientations(path_o, inplace=True, **kwargs)
+        if isinstance(source_i, pn.DataFrame) or source_i:
+            self.surface_points.read_surface_points(source_i, inplace=True, **kwargs)
+        if isinstance(source_o, pn.DataFrame) or source_o:
+            self.orientations.read_orientations(source_o, inplace=True, **kwargs)
         if add_basement is True:
             self.surfaces.add_surface(['basement'])
             self.map_series_to_surfaces({'Basement': 'basement'}, set_series=True)

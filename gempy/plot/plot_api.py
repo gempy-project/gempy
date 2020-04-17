@@ -20,23 +20,29 @@
 
     Created on 10/11/2019
 
-    @author: Elisa Heim, Miguel de la Varga
+    @author: Alex Schaaf, Elisa Heim, Miguel de la Varga
 """
 
-from os import path
-import sys
-
 # This is for sphenix to find the packages
-#sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
+# sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
-from .visualization_2d_pro import Plot2D
+from typing import Union
+
+import matplotlib.pyplot as plt
 # from .vista import Vista
 # import gempy as _gempy
 import numpy as np
 import pandas as pn
-import matplotlib.pyplot as plt
-from typing import Union
 
+# Keep Alex code hidden until we merge it properly
+try:
+    import pyvista as pv
+    from .vista import _Vista as Vista
+    PYVISTA_IMPORT = True
+except ImportError:
+    PYVISTA_IMPORT = False
+
+from .visualization_2d_pro import Plot2D
 
 try:
     import mplstereonet
@@ -45,10 +51,36 @@ except ImportError:
     mplstereonet_import = False
 
 
-def plot_2d(model, n_axis = None, section_names:list = None, cell_number: list = None, direction: list = 'y',
-            show_data: Union[bool, list] = True, show_lith: Union[bool, list] = True,
-            show_scalar: Union[bool, list] = False, show_boundaries: Union[bool, list] = True, **kwargs):
+def plot_2d(model, n_axis=None, section_names: list = None,
+            cell_number: list = None, direction: list = 'y',
+            show_data: Union[bool, list] = True,
+            show_lith: Union[bool, list] = True,
+            show_scalar: Union[bool, list] = False,
+            show_boundaries: Union[bool, list] = True,
+            show_topography: Union[bool, list] = False,
+            **kwargs):
+    """"Plot 2-D sections of geomodel.
 
+    Plot cross sections either based on custom section traces or cell number in xyz direction.
+    Options to plot lithology block, scalar field or rendered surface lines.
+    Input data and topography can be included.
+
+    Args:
+        model: Geomodel object with solutions.
+        n_axis (int): Subplot axis for multiple sections
+        section_names (list): Names of predefined custom section traces
+        cell_number (list): Position of the array to plot
+        direction (str): Cartesian direction to be plotted (xyz)
+        show_data (bool): Show original input data. Defaults to True.
+        show_lith (bool): Show lithological block volumes. Defaults to True.
+        show_scalar (bool): Show scalar field isolines. Defaults to False.
+        show_boundaries (bool): Show surface boundaries as lines. Defaults to True.
+        show_topography (bool): Show topography on plot. Defaults to False.
+        **kwargs:
+
+    Returns:
+        (Plot2D) Plot2D object
+    """
     section_names = [] if section_names is None else section_names
     section_names = np.atleast_1d(section_names)
     if cell_number is None:
@@ -68,17 +100,26 @@ def plot_2d(model, n_axis = None, section_names:list = None, cell_number: list =
         show_scalar = [show_scalar] * n_axis
     if type(show_boundaries) is bool:
         show_boundaries = [show_boundaries] * n_axis
+    if type(show_topography) is bool:
+        show_topography = [show_topography] * n_axis
 
     p = Plot2D(model, **kwargs)
     p.create_figure(**kwargs)
     # init e
     e = 0
 
+    # Check if topography in section names
+    # try:
+    #     section_names.pop(np.where('topography'==np.array(section_names))[0])
+    #
+    # except TypeError:
+    #     pass
+
     for e, sn in enumerate(section_names):
         assert e < 10, 'Reached maximum of axes'
 
-        ax_pos = (int(n_axis/2)+1)*100+20+e+1
-        print(ax_pos, '1')
+        ax_pos = (int(n_axis / 2) + 1) * 100 + 20 + e + 1
+        # print(ax_pos, '1')
         temp_ax = p.add_section(section_name=sn, ax_pos=ax_pos, **kwargs)
         if show_data[e] is True:
             p.plot_data(temp_ax, section_name=sn, **kwargs)
@@ -88,33 +129,60 @@ def plot_2d(model, n_axis = None, section_names:list = None, cell_number: list =
             p.plot_scalar_field(temp_ax, section_name=sn, **kwargs)
         if show_boundaries[e] is True:
             p.plot_contacts(temp_ax, section_name=sn, **kwargs)
+        if show_topography[e] is True:
+            p.plot_topography(temp_ax, section_name=sn, **kwargs)
 
         # If there are section we need to shift one axis for the perpendicular
         e = e + 1
 
     for e2 in range(len(cell_number)):
-        assert (e+e2) < 10, 'Reached maximum of axes'
+        assert (e + e2) < 10, 'Reached maximum of axes'
 
-        ax_pos = (int(n_axis/2)+1)*100+20+e+e2+1
+        ax_pos = (int(n_axis / 2) + 1) * 100 + 20 + e + e2 + 1
         print(ax_pos)
 
-        temp_ax = p.add_section(cell_number=cell_number[e2], direction=direction[e2], ax_pos=ax_pos)
-        if show_data[e+e2] is True:
-            p.plot_data(temp_ax, cell_number=cell_number[e2], direction=direction[e2], **kwargs)
-        if show_lith[e+e2] is True:
-            p.plot_lith(temp_ax, cell_number=cell_number[e2], direction=direction[e2], **kwargs)
-        if show_scalar[e+e2] is True:
-            p.plot_scalar_field(temp_ax, cell_number=cell_number[e2], direction=direction[e2], **kwargs)
-        if show_boundaries[e+e2] is True:
-            p.plot_contacts(temp_ax, cell_number=cell_number[e2], direction=direction[e2], **kwargs)
+        temp_ax = p.add_section(cell_number=cell_number[e2],
+                                direction=direction[e2], ax_pos=ax_pos)
+        if show_data[e + e2] is True:
+            p.plot_data(temp_ax, cell_number=cell_number[e2],
+                        direction=direction[e2], **kwargs)
+        if show_lith[e + e2] is True:
+            p.plot_lith(temp_ax, cell_number=cell_number[e2],
+                        direction=direction[e2], **kwargs)
+        if show_scalar[e + e2] is True:
+            p.plot_scalar_field(temp_ax, cell_number=cell_number[e2],
+                                direction=direction[e2], **kwargs)
+        if show_boundaries[e + e2] is True:
+            p.plot_contacts(temp_ax, cell_number=cell_number[e2],
+                            direction=direction[e2], **kwargs)
+        if show_topography[e + e2] is True:
+            p.plot_topography(temp_ax, cell_number=cell_number[e2],
+                              direction=direction[e2], **kwargs)
 
     return p
 
 
-def plot_stereonet(self, litho=None, planes=True, poles=True, single_plots=False,
+def plot_section_traces(model):
+    """Plot section traces of section grid in 2-D topview (xy).
+
+    Args:
+        model: Geomodel object with solutions.
+
+    Returns:
+        (Plot2D) Plot2D object
+    """
+    pst = plot_2d(model, n_axis=1, section_names=['topography'],
+                  show_data=False, show_boundaries=False, show_lith=False)
+    pst.plot_section_traces(pst.axes[0], show_data=False)
+    return pst
+
+
+def plot_stereonet(self, litho=None, planes=True, poles=True,
+                   single_plots=False,
                    show_density=False):
     if mplstereonet_import is False:
-        raise ImportError('mplstereonet package is not installed. No stereographic projection available.')
+        raise ImportError(
+            'mplstereonet package is not installed. No stereographic projection available.')
 
     from collections import OrderedDict
 
@@ -125,7 +193,9 @@ def plot_stereonet(self, litho=None, planes=True, poles=True, single_plots=False
         fig, ax = mplstereonet.subplots(figsize=(5, 5))
         df_sub2 = pn.DataFrame()
         for i in litho:
-            df_sub2 = df_sub2.append(self.model.orientations.df[self.model.orientations.df['surface'] == i])
+            df_sub2 = df_sub2.append(self.model.orientations.df[
+                                         self.model.orientations.df[
+                                             'surface'] == i])
 
     for formation in litho:
         if single_plots:
@@ -136,21 +206,27 @@ def plot_stereonet(self, litho=None, planes=True, poles=True, single_plots=False
         # if series_only:
         # df_sub = self.model.orientations.df[self.model.orientations.df['series'] == formation]
         # else:
-        df_sub = self.model.orientations.df[self.model.orientations.df['surface'] == formation]
+        df_sub = self.model.orientations.df[
+            self.model.orientations.df['surface'] == formation]
 
         if poles:
-            ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o', markersize=7,
+            ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o',
+                    markersize=7,
                     markerfacecolor=self._color_lot[formation],
-                    markeredgewidth=1.1, markeredgecolor='gray', label=formation + ': ' + 'pole point')
+                    markeredgewidth=1.1, markeredgecolor='gray',
+                    label=formation + ': ' + 'pole point')
         if planes:
-            ax.plane(df_sub['azimuth'] - 90, df_sub['dip'], color=self._color_lot[formation],
+            ax.plane(df_sub['azimuth'] - 90, df_sub['dip'],
+                     color=self._color_lot[formation],
                      linewidth=1.5, label=formation + ': ' + 'azimuth/dip')
         if show_density:
             if single_plots:
                 ax.density_contourf(df_sub['azimuth'] - 90, df_sub['dip'],
-                                    measurement='poles', cmap='viridis', alpha=.5)
+                                    measurement='poles', cmap='viridis',
+                                    alpha=.5)
             else:
-                ax.density_contourf(df_sub2['azimuth'] - 90, df_sub2['dip'], measurement='poles', cmap='viridis',
+                ax.density_contourf(df_sub2['azimuth'] - 90, df_sub2['dip'],
+                                    measurement='poles', cmap='viridis',
                                     alpha=.5)
 
         fig.subplots_adjust(top=0.8)
@@ -158,3 +234,65 @@ def plot_stereonet(self, litho=None, planes=True, poles=True, single_plots=False
         by_label = OrderedDict(zip(labels, handles))
         ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
         ax.grid(True, color='black', alpha=0.25)
+
+
+if PYVISTA_IMPORT:
+    def plot_3d(
+            geo_model,
+            render_surfaces: bool = True,
+            render_data: bool = True,
+            render_topography: bool = False,
+            **kwargs,
+    ) -> Vista:
+        """Plot 3-D geomodel.
+
+        Args:
+            geo_model: Geomodel object with solutions.
+            render_surfaces: Render geomodel surfaces. Defaults to True.
+            render_data: Render geomodel input data. Defaults to True.
+            render_topography: Render topography. Defaults to False.
+            real_time: Toggles modyfiable input data and real-time geomodel
+                updating. Defaults to False.
+
+        Returns:
+            (Vista) GemPy Vista object for plotting.
+        """
+        gpv = Vista(geo_model, **kwargs)
+        gpv.set_bounds()
+        if render_surfaces:
+            gpv.plot_surfaces_all()
+        if render_data:
+            gpv._plot_surface_points_all()
+            gpv._plot_orientations_all()
+        if render_topography and geo_model.grid.topography is not None:
+            gpv.plot_topography()
+        gpv.show()
+        return gpv
+
+
+    def plot_interactive_3d(
+            geo_model,
+            name: str,
+            render_topography: bool = False,
+            **kwargs,
+    ) -> Vista:
+        """Plot interactive 3-D geomodel with three cross sections in subplots.
+
+        Args:
+            geo_model: Geomodel object with solutions.
+            name (str): Can be either one of the following
+                    'lith' - Lithology id block.
+                    'scalar' - Scalar field block.
+                    'values' - Values matrix block.
+            render_topography: Render topography. Defaults to False.
+            **kwargs:
+
+        Returns:
+            (Vista) GemPy Vista object for plotting.
+        """
+        gpv = Vista(geo_model, plotter_type='background', shape="1|3")
+        gpv.set_bounds()
+        gpv.plot_structured_grid_interactive(name=name, render_topography=render_topography, **kwargs)
+
+        gpv.show()
+        return gpv

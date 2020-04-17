@@ -34,40 +34,6 @@ Check out the documentation either in [gempy.org](https://www.gempy.org/) (bette
 * [References](#ref)
 
 <a name="feat"></a>
-## News
-### GemPy v2.0 release
-
-It has been a long journey since the release of GemPy v1.0. What started as a small library to carry out research
-on uncertainty analysis for structural geology has grown to be used in multiple projects around the world. Carried
-by the community enthusiasm, we commenced a way-longer-than-planned rewritten of the code in order to
-not only be able to fulfill the needs of many of you but also to set the foundations of a package driven by the
-community. For this end, all the logic has been splat into multiple modules, classes and containers limiting
-duplicities and exposing a large mutation api at different levels of abstraction. Hope the work has been worth it.
-
-So long,
-
-Miguel
-
-#### What is new
-- Full redesign of the back-end: much more modular, explicit and avoiding object duplicities to insane levels
-- Topography
-- Onlap, Erosion relations
-- Choose your favourite type of fault: infinite faults, finite faults, faults offsetting faults, faults ending on series
-- Masked marching cubes: this fix the ugly surfaces following the voxels faces
-- All series are fully stored after interpolation
-- Save your model
-- Compile once, modify as much as you want
-- Full integration with qgrid
-- Real time computations via vtk or python-qgrid
-- Adaptive regular grids for geophysics
-- Refactored some legacy names:
-    + formations renamed to surfaces
-    + interfaces renamed to surfaces_points
-- Minor changes:
-    + New colormap and easy way to change the surfaces colors (even integration with widgets!)
-    + The order of the formations will be given by the interpolation itself if the input was wrong
-    + The split between reference and rest surface_points happens in theano. This makes the modification
-    of reference points much easier
 
 
 ## Features
@@ -157,9 +123,8 @@ map, which can then be reimported into GoogleEarth.
 
 *GemPy* requires Python 3 and makes use of numerous open-source libraries:
 
-* pandas>=0.21.0
-* cython
-* Theano
+* pandas==0.24
+* Theano>=1.0.4
 * matplotlib
 * numpy
 * pytest
@@ -167,20 +132,21 @@ map, which can then be reimported into GoogleEarth.
 * seaborn
 * networkx
 * ipywidgets
+* scikit-image
+* nptyping
+* pyvista
+* IPython
 
 Optional:
 
-* git+git://github.com/Leguark/scikit-image@master
-* steno3d
 * vtk
 * gdal
-* qgrid
-* pymc
+* qgrid==1.3.0
 * pymc3
-
-* `vtk>=7` for interactive 3-D visualization 
-* `pymc` or `pymc3`
-* `steno3d` 
+* pyvolume
+* pyevtk
+* pyqrcode
+* mplstereonet
 
 Overall we recommend the use of a dedicated Python distribution, such as 
 [Anaconda](https://www.continuum.io/what-is-anaconda), for hassle-free package installation. 
@@ -263,21 +229,45 @@ and then manually install it using the provided Python install file by calling
 
 in the cloned or downloaded repository folder. Make sure you have installed all necessary dependencies listed above before using *GemPy*.
 
-##### Windows installation guide (Jun 2019)
+##### Windows installation guide (March 2020)
 
-1) Install CUDA if you do not have it already.
+1) This step is **only important if you want GPU acceleration**. Install CUDA if you
+ do not have it already.
+    - For CUDA > 10 (For RTX cards you need those drivers):
+        - Go to your cuda installation (probably
+         `C:\Program Files\NVIDIA GPU Computing Toolkit\CUDA\v10.2\bin` )
+        - Duplicate cublas64_XX and nvrtc64_XX and rename them to cublas64_70 and nvrtc64_70
 
-2) Install Anaconda3 2019.03 with Python 3.7 (this is the last release).
+2) Install Conda (recommended latest miniconda)
+    - Install in you user
+    - Add conda to the main path
+    - Add conda enviroment:
+        - `conda create --name gempy`
+        - `conda init powershell`
+        -  As admin `Set-ExecutionPolicy RemoteSigned`
+    - After this stage we should have a new empty environment attached to a user
 
 3) Install Theano and associated packages from the Anaconda prompt as administrator, and finally install GemPy 2.0:
 
-- conda update --all
-- conda install libpython
-- conda install m2w64-toolchain
-- conda install git
-- conda install pygpu
-- pip install theano==1.0.4
-- pip install gempy
+    - conda update --all
+    - conda install libpython
+    - conda install m2w64-toolchain
+    - conda install git
+    - conda install -c conda-forge pygpu
+    - conda install python==3.7 **Downgrade python back to 3.7 till vtk has 
+    support for python 3.8**
+    - pip install theano==1.0.4
+    - pip install gempy
+
+4) Set up Jupyter to work properly with conda environments:
+    - conda install Jupyter
+    - conda install nb_conda_kernels
+    - pip install jupyter-conda
+    
+5) Optional requirements:
+    - pip install pyvista
+    - pip install pyevtk
+    - conda install gdal
 
 Note that:
 

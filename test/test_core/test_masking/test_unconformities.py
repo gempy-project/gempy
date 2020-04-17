@@ -19,7 +19,7 @@ save = False
 
 
 @pytest.fixture(scope="module")
-def geo_model():
+def geo_model(interpolator):
     geo_model = gp.create_model('Test_uncomformities')
 
     # Importing the data from CSV-files and setting extent and resolution
@@ -33,7 +33,7 @@ def geo_model():
                                "Fold_Series": ('Basefold', 'Topfold', 'basement')})
 
     # Create the theano model
-    gp.set_interpolator(geo_model, theano_optimizer='fast_compile')
+    geo_model.set_theano_function(interpolator)
 
     return geo_model
 

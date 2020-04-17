@@ -20,22 +20,17 @@
     @author: Miguel de la Varga
 """
 
-from os import path
-import sys
 import numpy as np
 import pandas as pn
 from numpy import ndarray
 from typing import Union
 import warnings
-import copy
-# This is for sphenix to find the packages
-# sys.path.append(path.dirname(path.dirname(path.abspath(__file__))))
 from gempy.core.model import Model, DataMutation, AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
     Surfaces, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
 from gempy.utils.meta import setdoc, setdoc_pro
 import gempy.utils.docstring as ds
-from gempy.core.interpolator import InterpolatorGravity, InterpolatorModel
+from gempy.core.interpolator import InterpolatorModel
 
 
 # This warning comes from numpy complaining about a theano optimization
@@ -82,6 +77,37 @@ def read_csv(geo_model: Model, path_i=None, path_o=None, **kwargs):
     if path_i is not None or path_o is not None:
         geo_model.read_data(path_i, path_o, **kwargs)
     return True
+
+
+# region Point-Orientation functionality
+@setdoc_pro([Model.__doc__])
+def set_geometric_data(geo_model: Model, surface_points_df=None, orientations_df=None, **kwargs):
+    """ Function to set directly pandas.Dataframes to the gempy geometric data objects
+
+    Args:
+        geo_model: [s0]
+        surface_points_df:  A pn.Dataframe object with X, Y, Z, and surface columns
+        orientations_df: A pn.Dataframe object with X, Y, Z, surface columns and pole or orientation columns
+        **kwargs:
+
+    Returns:
+        Modified df
+    """
+
+    r_ = None
+
+    if surface_points_df is not None:
+        geo_model.set_surface_points(surface_points_df, **kwargs)
+        r_ = 'surface_points'
+
+    elif orientations_df is not None:
+        geo_model.set_orientations(orientations_df, **kwargs)
+        r_ = 'data' if r_ == 'surface_points' else 'orientations'
+
+    else:
+        raise AttributeError('You need to pass at least one dataframe')
+
+    return get_data(geo_model, itype=r_)
 
 
 def set_orientation_from_surface_points(geo_model, indices_array):
@@ -150,12 +176,14 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         compile_theano (bool): [s1]
         theano_optimizer (str {'fast_run', 'fast_compile'}): [s2]
         verbose:
-        kwargs:
-            -  pos_density (Optional[int]): Only necessary when type='grav'. Location on the Surfaces().df
-             where density is located (starting on id being 0).
-            - Vs
-            - pos_magnetics
-            -
+        update_kriging (bool): reset kriging values to its default.
+        update_structure (bool): sync Structure instance before setting theano graph.
+
+    Keyword Args:
+        -  pos_density (Optional[int]): Only necessary when type='grav'. Location on the Surfaces().df
+         where density is located (starting on id being 0).
+        - Vs
+        - pos_magnetics
 
     Returns:
 
@@ -195,23 +223,8 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
     if 'gravity' in output:
         pos_density = kwargs.get('pos_density', 1)
         tz = kwargs.get('tz', 'auto')
-        geo_model.interpolator.set_theano_shared_gravity(tz, pos_density)
-
-        # if tz is 'auto' and geo_model.grid.centered_grid is not None:
-        #     print('Calculating the tz components for the centered grid...')
-        #     #tz = geo_model.interpolator.calculate_tz()
-        #     from gempy.assets.geophysics import GravityPreprocessing
-        #     g = GravityPreprocessing(geo_model.grid.centered_grid)
-        #     tz = g.set_tz_kernel()
-        #     print('Done')
-        #
-        # # Set the shared parameters for this piece of tree
-        # # TODO: gravity_interpolator methods should be inherited by interpolator
-        #
-        # geo_model.interpolator.theano_graph.tz.set_value(tz.astype(geo_model.interpolator.dtype))
-        # geo_model.interpolator.theano_graph.pos_density.set_value(pos_density)
-        # geo_model.interpolator.theano_graph.lg0.set_value(geo_model.grid.get_grid_args('centered')[0])
-        # geo_model.interpolator.theano_graph.lg1.set_value(geo_model.grid.get_grid_args('centered')[1])
+        if geo_model.grid.centered_grid is not None:
+            geo_model.interpolator.set_theano_shared_gravity(tz, pos_density)
 
     if 'magnetics' in output:
         pos_magnetics = kwargs.get('pos_magnetics', 1)
@@ -219,7 +232,8 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         incl = kwargs.get('incl')
         decl = kwargs.get('decl')
         B_ext = kwargs.get('B_ext', 52819.8506939139e-9)
-        geo_model.interpolator.set_theano_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
+        if geo_model.grid.centered_grid is not None:
+            geo_model.interpolator.set_theano_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
 
     if 'topology' in output:
 
@@ -238,6 +252,7 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         if grid == 'shared':
             geo_model.interpolator.set_theano_shared_grid(grid)
 
+    print('Kriging values: \n', geo_model.additional_data.kriging_data)
     return geo_model.interpolator
 
 
@@ -264,14 +279,9 @@ def get_th_fn(model: Model):
 
 # region Additional data functionality
 def update_additional_data(model: Model, update_structure=True, update_kriging=True):
-    if update_structure is True:
-        model.additional_data.update_structure()
-    # if update_rescaling is True:
-    #     model.additional_data.update_rescaling_data()
-    if update_kriging is True:
-        model.additional_data.update_default_kriging()
-
-    return model.additional_data
+    warnings.warn('This function is going to be deprecated. Use Model.update_additional_data instead',
+                  DeprecationWarning)
+    return model.update_additional_data(update_structure, update_kriging)
 
 
 def get_additional_data(model: Model):
@@ -280,10 +290,11 @@ def get_additional_data(model: Model):
 
 
 # region Computing the model
-@setdoc_pro([Model.__doc__, Solution.compute_surface_regular_grid.__doc__,
+@setdoc_pro([Model.__doc__, Solution.compute_marching_cubes_regular_grid.__doc__,
              Model.set_surface_order_from_solution.__doc__])
 def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=False, reset_scalar=False,
-                  reset_block=False, sort_surfaces=True, debug=False, set_solutions=True) -> Solution:
+                  reset_block=False, sort_surfaces=True, debug=False, set_solutions=True,
+                  **kwargs) -> Solution:
     """
     Computes the geological model and any extra output given in the additional data option.
 
@@ -297,6 +308,10 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
         sort_surfaces (bool): if True call Model.set_surface_order_from_solution: [s2]
         debug (bool): if True, the computed interpolation are not stored in any object but instead returned
         set_solutions (bool): Default True. If True set the results into the :class:`Solutions` linked object.
+
+    Keyword Args:
+        compute_mesh_options (dict): options for the marching cube function.
+            1) rescale: True
 
     Returns:
         :class:`Solutions`
@@ -325,7 +340,7 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
 
         # Set geology:
         if model.grid.active_grids[0] is np.True_:
-            model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh)
+            model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh, **kwargs)
         if model.grid.active_grids[1] is np.True_:
             model.solutions.set_solution_to_custom(sol)
         if model.grid.active_grids[2] is np.True_:
@@ -335,7 +350,9 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
         # Set gravity
         model.solutions.fw_gravity = sol[12]
 
-        # TODO: Set magnetcs and set topology
+        # TODO: [X] Set magnetcs and [ ] set topology @A.Schaaf probably it should populate the topology object?
+        model.solutions.fw_magnetics = sol[13]
+
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions
@@ -463,8 +480,8 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
         path_i: Path to the data bases of surface_points. Default os.getcwd(),
         path_o: Path to the data bases of orientations. Default os.getcwd()
-        surface_points_df: A df object directly
-        orientations_df:
+        surface_points_df: A pn.Dataframe object with X, Y, Z, and surface columns
+        orientations_df: A pn.Dataframe object with X, Y, Z, surface columns and pole or orientation columns
 
     Returns:
         :class:`gempy.data_management.InputData`

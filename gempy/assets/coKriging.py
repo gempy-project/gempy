@@ -948,7 +948,7 @@ def select_points(df, grid_to_inter, cluster, SED_f = theano_sed(), n_rep=10):
             selected_cluster_grid = cluster_grid[i * size_range:(i + 1) * size_range]
             dist = SED_f(df, selected_cluster_grid)
 
-            # Checking the radio of the simulation
+            # Checking the radius of the simulation
             for r in range(100, 1000, 100):
                 select = (dist < r).any(axis=1)
                 if select.sum() > 50:
@@ -1025,7 +1025,7 @@ def SGS_run(df, grid_to_inter, cluster,
           #  h_x0 = h_x0[~np.any(h_x0 == 0, axis=1)]
             h_xi = SED_f(coord_data, coord_data)
 
-            # Checking the radio of the simulation
+            # Checking the radius of the simulation
             for r in range(50, 1000, 1):
                 select = (h_x0 < r).any(axis=1)
                 if select.sum() > 50:

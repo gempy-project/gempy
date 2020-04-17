@@ -5,20 +5,20 @@ with open("README.md", "r") as fh:
 
 setup(
     name='gempy',
-    version='2.0.1',
+    version='2.1.1',
     packages=find_packages(exclude=('test', 'docs')),
     include_package_data=True,
     install_requires=[
-        'cython',
         'numpy',
-        'pandas',
+        'pandas==0.24',
         'matplotlib',
         'theano',
         'scikit-image',
-        'seaborn'
+        'seaborn',
+        'nptyping',
     ],
     url='https://github.com/cgre-aachen/gempy',
-    download_url='https://github.com/cgre-aachen/gempy/archive/2.0.0tar.gz',
+    download_url='https://github.com/cgre-aachen/gempy/archive/2.1.1tar.gz',
     license='LGPL v3',
     author='Miguel de la Varga, Elisa Heim, Alexander Schaaf, Fabian Stamm, Florian Wellmann',
     author_email='varga@aices.rwth-aachen.de',

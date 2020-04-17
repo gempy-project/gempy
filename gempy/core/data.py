@@ -1,7 +1,7 @@
 import re
 import sys
 import warnings
-from typing import Union
+from typing import Union, Iterable
 
 import numpy as np
 import pandas as pn
@@ -194,13 +194,17 @@ class Grid(object):
         return self.sections
 
     @setdoc(grid_types.CenteredGrid.set_centered_grid.__doc__)
-    def create_centered_grid(self, centers, radio, resolution=None):
+    def create_centered_grid(self, centers, radius, resolution=None):
         """Initialize gravity grid. Deactivate the rest of the grids"""
-        self.centered_grid = grid_types.CenteredGrid(centers, radio, resolution)
+        self.centered_grid = grid_types.CenteredGrid(centers, radius, resolution)
        # self.active_grids = np.zeros(4, dtype=bool)
         self.set_active('centered')
 
     def deactivate_all_grids(self):
+        """
+        Deactivates the active grids array
+        :return:
+        """
         self.active_grids = np.zeros(5, dtype=bool)
         self.update_grid_values()
         return self.active_grids
@@ -575,7 +579,7 @@ class Series(object):
         return self
 
     @setdoc_pro([reset_order_series.__doc__, pn.DataFrame.drop.__doc__])
-    def delete_series(self, indices: Union[str, list], reset_order_series=True):
+    def delete_series(self, indices: Union[str, Iterable], reset_order_series=True):
         """[s1]
 
         Args:
@@ -1410,7 +1414,6 @@ class SurfacePoints(GeometricData):
         self._columns_i_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r']
         self._columns_i_rend = ['X', 'Y', 'Z', 'surface', 'color']
 
-
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
             self.df: pn.DataFrame
 
@@ -1441,7 +1444,7 @@ class SurfacePoints(GeometricData):
         self.init_dependent_properties()
 
         # Add nugget columns
-        self.df['smooth'] = 1e-6
+        self.df['smooth'] = 2e-6
 
         assert ~self.df['surface'].isna().any(), 'Some of the surface passed does not exist in the Formation' \
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
@@ -1579,22 +1582,16 @@ class SurfacePoints(GeometricData):
         # Selecting the properties passed to be modified
         self.df.loc[idx, list(kwargs.keys())] = values
 
-        # if is_surface:
-        #     self.map_data_from_surfaces(self.surfaces, 'series', idx=idx)
-        #     self.map_data_from_surfaces(self.surfaces, 'id', idx=idx)
-        #     self.map_data_from_series(self.surfaces.series, 'order_series', idx=idx)
-        #     self.sort_table()
-
         return self
 
     @setdoc_pro([ds.file_path, ds.debug, ds.inplace])
-    def read_surface_points(self, file_path, debug=False, inplace=False,
+    def read_surface_points(self, table_source, debug=False, inplace=False,
                             kwargs_pandas: dict = None, **kwargs, ):
         """
         Read tabular using pandas tools and if inplace set it properly to the surface points object.
 
         Parameters:
-            file_path (str, path object, or file-like object): [s0]
+            table_source (str, path object, file-like object or direct pandas data frame): [s0]
             debug (bool): [s1]
             inplace (bool): [s2]
             kwargs_pandas: kwargs for the panda function :func:`pn.read_csv`
@@ -1627,7 +1624,10 @@ class SurfacePoints(GeometricData):
         if 'sep' not in kwargs_pandas:
             kwargs_pandas['sep'] = ','
 
-        table = pn.read_csv(file_path, **kwargs_pandas)
+        if isinstance(table_source, pn.DataFrame):
+            table = table_source
+        else:
+            table = pn.read_csv(table_source, **kwargs_pandas)
 
         if 'update_surfaces' in kwargs:
             if kwargs['update_surfaces'] is True:
@@ -1761,7 +1761,7 @@ class Orientations(GeometricData):
                                                  'object. %s' % self.df['surface'][self.df['surface'].isna()]
 
     @setdoc_pro([ds.x, ds.y, ds.z, ds.surface_sp, ds.pole_vector, ds.orientations, ds.idx_sp])
-    def add_orientation(self, x, y, z, surface, pole_vector: Union[list, np.ndarray] = None,
+    def add_orientation(self, x, y, z, surface, pole_vector: Union[list, tuple, np.ndarray] = None,
                         orientation: Union[list, np.ndarray] = None, idx=None):
         """
         Add orientation.
@@ -1770,7 +1770,7 @@ class Orientations(GeometricData):
             x (float, np.ndarray): [s0]
             y (float, np.ndarray): [s1]
             z (float, np.ndarray): [s2]
-            surface (list[str]): [s3]
+            surface (list[str], str): [s3]
             pole_vector (np.ndarray): [s4]
             orientation (np.ndarray): [s5]
             idx (Optional[int, list[int]): [s6]
@@ -1986,12 +1986,12 @@ class Orientations(GeometricData):
                                  )
 
     @setdoc_pro([ds.file_path, ds.debug, ds.inplace])
-    def read_orientations(self, file_path, debug=False, inplace=True, kwargs_pandas: dict = None, **kwargs):
+    def read_orientations(self, table_source, debug=False, inplace=True, kwargs_pandas: dict = None, **kwargs):
         """
         Read tabular using pandas tools and if inplace set it properly to the surface points object.
 
         Args:
-            file_path (str, path object, or file-like object): [s0]
+            table_source (str, path object, file-like object, or direct data frame): [s0]
             debug (bool): [s1]
             inplace (bool): [s2]
             kwargs_pandas: kwargs for the panda function :func:`pn.read_csv`
@@ -2032,7 +2032,10 @@ class Orientations(GeometricData):
         if 'sep' not in kwargs_pandas:
             kwargs_pandas['sep'] = ','
 
-        table = pn.read_csv(file_path, **kwargs_pandas)
+        if isinstance(table_source, pn.DataFrame):
+            table = table_source
+        else:
+            table = pn.read_csv(table_source, **kwargs_pandas)
 
         if 'update_surfaces' in kwargs:
             if kwargs['update_surfaces'] is True:
@@ -2463,15 +2466,17 @@ class RescaledData(object):
     def rescale_grid(grid, rescaling_factor, centers: pn.DataFrame):
         new_grid_extent = (grid.regular_grid.extent - np.repeat(centers, 2)) / rescaling_factor + 0.5001
         new_grid_values = (grid.values - centers) / rescaling_factor + 0.5001
-        return new_grid_extent, new_grid_values
+        return new_grid_extent, new_grid_values,
 
     def set_rescaled_grid(self):
         """
         Set the rescaled coordinates and extent into a grid object
         """
 
-        self.grid.extent_r, self.grid.values_r = self.rescale_grid(self.grid, self.df.loc['values', 'rescaling factor'],
-                                                                   self.df.loc['values', 'centers'])
+        self.grid.extent_r, self.grid.values_r = self.rescale_grid(
+            self.grid, self.df.loc['values', 'rescaling factor'], self.df.loc['values', 'centers'])
+
+        self.grid.regular_grid.extent_r, self.grid.regular_grid.values_r = self.grid.extent_r, self.grid.values_r
 
 
 @setdoc_pro([SurfacePoints.__doc__, Orientations.__doc__, Surfaces.__doc__, Faults.__doc__])
@@ -2743,10 +2748,10 @@ class KrigingParameters(object):
         self.structure = structure
         self.grid = grid
 
-        df_ = pn.DataFrame(np.array([np.nan, np.nan, 3, 0.01, 1e-6]).reshape(1, -1),
+        df_ = pn.DataFrame(np.array([np.nan, np.nan, 3]).reshape(1, -1),
                            index=['values'],
                            columns=['range', '$C_o$', 'drift equations',
-                                    'nugget grad', 'nugget scalar'])
+                                    ])
 
         self.df = df_.astype({'drift equations': object})
         self.set_default_range()
@@ -2957,8 +2962,6 @@ class AdditionalData(object):
         self.kriging_data.set_default_range()
         self.kriging_data.set_default_c_o()
         self.kriging_data.set_u_grade()
-        self.kriging_data.df['nugget grad'] = 0.01
-        self.kriging_data.df['nugget scalar'] = 1e-6
 
     def update_structure(self):
         """

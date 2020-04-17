@@ -1,9 +1,3 @@
-
-
-# These two lines are necessary only if GemPy is not installed
-import sys, os
-sys.path.append("../..")
-
 # Importing GemPy
 import gempy as gp
 
@@ -13,14 +7,6 @@ import numpy as np
 import pandas as pn
 import matplotlib.pyplot as plt
 import pytest
-
-# ## Series
-#
-# Series is the object that contains the properties associated with each independent scalar field. Right now it is
-# simply the order of the series (which is infered by the index order). But in the future will be add the unconformity
-# relation or perhaps the type of interpolator
-#
-# Series and Faults classes are quite entagled since fauls are a type of series
 
 
 @pytest.fixture(scope='module')
@@ -212,6 +198,16 @@ def create_orientations(create_surfaces, create_series):
 
     orientations.update_annotations()
     return orientations
+
+
+def test_add_orientation_with_pole(create_surfaces):
+    orientations = gp.Orientations(create_surfaces)
+    orientations.add_orientation(1, 1, 1, 'foo', pole_vector=(1, 0, 1))
+    orientations.add_orientation(2, 2, 2, 'foo', orientation=(0, 0, 1))
+    orientations.add_orientation(1, 1, 1, 'foo', pole_vector=(.45, 0, .45))
+    orientations.modify_orientations(2, G_x=1, G_z=1)
+
+    print(orientations)
 
 
 @pytest.fixture(scope='module')
