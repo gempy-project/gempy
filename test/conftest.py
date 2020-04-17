@@ -113,7 +113,7 @@ def model_complex(interpolator):
                                  path_i=input_path2 + "jan_models/fixture_model_surfaces.csv")
 
     # Assigning series to surface as well as their order (timewise)
-    gp.set_series(model, {"Fault_Series": ('fault'), "Strat_Series1": ('rock3'),
+    gp.map_series_to_surfaces(model, {"Fault_Series": ('fault'), "Strat_Series1": ('rock3'),
                                             "Strat_Series2": ('rock2', 'rock1'),
                                             "Basement_Series": ('basement')})
 
