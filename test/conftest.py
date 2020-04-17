@@ -108,7 +108,7 @@ def model_horizontal_two_layers(interpolator):
 @pytest.fixture(scope='session')
 def model_complex(interpolator):
 
-    model = gempy.create_data(extent=[0, 2500, 0, 1000, 0, 1000], [50, 20, 20],
+    model = gempy.create_data(extent=[0, 2500, 0, 1000, 0, 1000], resolution = [50, 20, 20],
                                  path_o=input_path2 + "jan_models/fixture_model_orientations.csv",
                                  path_i=input_path2 + "jan_models/fixture_model_surfaces.csv")
 
