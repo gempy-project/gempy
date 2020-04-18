@@ -44,7 +44,7 @@ jobs:
           github_token: $travis_doc # defined via the Travis interface
           local_dir: docs/build/html
           on:
-            branch: sphinx-gallery
+            branch: sphinx-gallery2
           target-branch: gh-pages
 cache: pip
 
