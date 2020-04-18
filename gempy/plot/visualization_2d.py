@@ -29,6 +29,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+from matplotlib.colors import LightSource
 from matplotlib.ticker import FixedFormatter, FixedLocator
 import seaborn as sns
 from os import path
@@ -487,7 +488,23 @@ class PlotSolution(PlotData2D):
         self._show_legend = False
 
     def plot_map(self, solution: Solution = None, contour_lines=False, show_data=True,
-                 show_all_data=False, figsize=(12,12)):
+                 show_all_data=False, show_hillshades=False, figsize=(12,12), **kwargs):
+        """
+
+        Args:
+            solution:
+            contour_lines:
+            show_data:
+            show_all_data:
+            show_hillshades: Calculate and add hillshading using elevation data
+            figsize:
+            **kwargs:
+                - azdeg: float = azimuth of sun for hillshade
+                - altdeg: float = altitude in degrees of sun for hillshade
+
+        """
+        azdeg = kwargs.get('azdeg', 315)
+        altdeg = kwargs.get('altdeg', 45)
         if solution is None:
             solution = self.model.solutions
 
@@ -499,7 +516,12 @@ class PlotSolution(PlotData2D):
         except AttributeError:
             warnings.warn('Geological map not computed. Activate the topography grid.')
 
-        if show_data:
+        if show_data == True and show_hillshades == True:
+            self.plot_data(direction='z', at='topography', show_all_data=show_all_data)
+            ls = LightSource(azdeg=azdeg, altdeg=altdeg)
+            hillshade_topography = ls.hillshade(self.model.grid.topography.values_3D[:, :, 2])
+            plt.imshow(hillshade_topography, origin='lower', extent=self.model.grid.topography.extent, alpha=0.75)
+        elif show_data == True and show_hillshades == False:
             self.plot_data(direction='z', at='topography', show_all_data=show_all_data)
         else:
             fig, ax = plt.subplots(figsize=figsize)

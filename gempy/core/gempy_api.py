@@ -223,8 +223,7 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
     if 'gravity' in output:
         pos_density = kwargs.get('pos_density', 1)
         tz = kwargs.get('tz', 'auto')
-        if geo_model.grid.centered_grid is not None:
-            geo_model.interpolator.set_theano_shared_gravity(tz, pos_density)
+        geo_model.interpolator.set_theano_shared_gravity(tz, pos_density)
 
     if 'magnetics' in output:
         pos_magnetics = kwargs.get('pos_magnetics', 1)
@@ -232,8 +231,7 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         incl = kwargs.get('incl')
         decl = kwargs.get('decl')
         B_ext = kwargs.get('B_ext', 52819.8506939139e-9)
-        if geo_model.grid.centered_grid is not None:
-            geo_model.interpolator.set_theano_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
+        geo_model.interpolator.set_theano_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
 
     if 'topology' in output:
 
@@ -279,9 +277,14 @@ def get_th_fn(model: Model):
 
 # region Additional data functionality
 def update_additional_data(model: Model, update_structure=True, update_kriging=True):
-    warnings.warn('This function is going to be deprecated. Use Model.update_additional_data instead',
-                  DeprecationWarning)
-    return model.update_additional_data(update_structure, update_kriging)
+    if update_structure is True:
+        model.additional_data.update_structure()
+
+    if update_kriging is True:
+        print('Setting kriging parameters to their default values.')
+        model.additional_data.update_default_kriging()
+
+    return model.additional_data
 
 
 def get_additional_data(model: Model):
@@ -350,9 +353,7 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
         # Set gravity
         model.solutions.fw_gravity = sol[12]
 
-        # TODO: [X] Set magnetcs and [ ] set topology @A.Schaaf probably it should populate the topology object?
-        model.solutions.fw_magnetics = sol[13]
-
+        # TODO: Set magnetcs and set topology
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions
@@ -492,10 +493,11 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
         warnings.warn('Regular grid won\'t be initialize, you will have to create a gridafterwards. See gempy.set_grid')
     else:
         geo_model.set_regular_grid(extent, resolution)
-
-    if 'path_i' in kwargs or 'path_o' in kwargs:
-        read_csv(geo_model, **kwargs)
-
+    try:
+        if 'path_i' in kwargs or 'path_o' in kwargs:
+            read_csv(geo_model, **kwargs)
+    except KeyError:
+        raise KeyError('Loading of CSV file failed. Check if you use commas to separate your data.')
     if 'surface_points_df' in kwargs:
         geo_model.set_surface_points(kwargs['surface_points_df'], **kwargs)
         # if we set the surfaces names with surfaces they cannot be set again on orientations or pandas will complain.
