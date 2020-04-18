@@ -45,6 +45,6 @@ jobs:
           local_dir: docs/build/html
           on:
             branch: sphinx-gallery2
-          target-branch: gh-pages
+          target_branch: gh-pages
 cache: pip
 
