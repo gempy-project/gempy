@@ -24,13 +24,13 @@ import sys
 import IPython.sphinxext
 from pygments.plugin import find_plugin_lexers
 sys.path.insert(0, os.path.abspath('.'))
-# sys.path.insert(0, os.path.abspath('../../gempy/grid_modules/'))
-# sys.path.insert(0, os.path.abspath('../../gempy/core/'))
-# sys.path.insert(0, os.path.abspath('../../gempy/core/theano/'))
-# sys.path.insert(0, os.path.abspath('../../gempy/core/grid_modules/'))
-# sys.path.insert(0, os.path.abspath('../../gempy/assets/'))
-# sys.path.insert(0, os.path.abspath('../../gempy/bayesian/'))
-# sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
+sys.path.insert(0, os.path.abspath('../../gempy/grid_modules/'))
+sys.path.insert(0, os.path.abspath('../../gempy/core/'))
+sys.path.insert(0, os.path.abspath('../../gempy/core/theano/'))
+sys.path.insert(0, os.path.abspath('../../gempy/core/grid_modules/'))
+sys.path.insert(0, os.path.abspath('../../gempy/assets/'))
+sys.path.insert(0, os.path.abspath('../../gempy/bayesian/'))
+sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
 sys.path.insert(0, os.path.abspath('../..'))
 import gempy
 from unittest.mock import MagicMock
