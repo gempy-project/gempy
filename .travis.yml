@@ -9,8 +9,8 @@ env: TRAVIS=true
 
 install:
   - pip install --upgrade setuptools pip
-  - pip install cython
   - pip install -r requirements.txt
+  - pip install sphinx-gallery
   - pip install qgrid
   - pip install nbval
   - pip install vtk
