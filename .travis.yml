@@ -41,7 +41,7 @@ jobs:
         deploy:
           provider: pages # deploy on github pages
           skip_cleanup: true
-          github_token: travis_doc # defined via the Travis interface
+          github_token: $travis_doc # defined via the Travis interface
           local_dir: build/html
           on:
             branch: sphinx-gallery2
