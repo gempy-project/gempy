@@ -35,14 +35,16 @@ jobs:
   include:
       - stage: deploy
         name: Deploy to GitHub Pages
-        if: (NOT type IN (pull_request)) AND (branch = sphinx-gallery) # only deploy if merging on master
+       # if: (NOT type IN (pull_request)) AND (branch = sphinx-gallery) # only deploy if merging on master
         before_script: cd docs
         script: pipenv run make html
         deploy:
           provider: pages # deploy on github pages
           skip_cleanup: true
-          github_token: "$token" # defined via the Travis interface
+          github_token: "$travis_doc" # defined via the Travis interface
           local_dir: build/html
-
+          on:
+            branch: sphinx-gallery
+          target-branch: gh-pages
 cache: pip
 
