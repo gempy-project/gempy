@@ -27,19 +27,16 @@ script:
 
 
 stages:
-  - build and test
   - deploy
 #after_success:
 #   - travis-sphinx deploy
 
 jobs:
   include:
-      - stage: build and test # This stage builds and lints in parallel
-        name: Build
-        script: pipenv run make html # build the docs
       - stage: deploy
         name: Deploy to GitHub Pages
         if: (NOT type IN (pull_request)) AND (branch = sphinx-gallery) # only deploy if merging on master
+        before_script: cd docs
         script: pipenv run make html
         deploy:
           provider: pages # deploy on github pages
