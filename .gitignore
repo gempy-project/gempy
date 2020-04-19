@@ -140,5 +140,5 @@ docs/build
 test/figs
 
 Profiles
-notebooks/data/input_data/Claudius/Results_
+examples/data/input_data/Claudius/Results_
 
