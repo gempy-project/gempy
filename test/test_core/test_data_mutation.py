@@ -88,7 +88,7 @@ def test_set_is_fault():
 
 
 def test_read_data():
-    data_path = os.path.dirname(__file__)+'/../../notebooks/'
+    data_path = os.path.dirname(__file__)+'/../../examples/'
     model = gp.Model()
     model.read_data(path_i=data_path + "/data/input_data/tut_chapter1/simple_fault_model_points.csv",
                     path_o=data_path + "/data/input_data/tut_chapter1/simple_fault_model_orientations.csv")

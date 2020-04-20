@@ -2,7 +2,7 @@ import os
 import pytest
 import gempy as gp
 
-input_path = os.path.dirname(__file__) + '/../../notebooks/data'
+input_path = os.path.dirname(__file__) + '/../../examples/data'
 
 
 @pytest.mark.skipif("TRAVIS" in os.environ and os.environ["TRAVIS"] == "true",
