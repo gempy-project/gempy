@@ -1,4 +1,3 @@
-import jupytext, os
 import os
 import pypandoc as pdoc
 import json
@@ -64,8 +63,8 @@ for root, dirs, files in os.walk(directory):
             new_file = new_dir+'/'+file.replace('.ipynb', '.py')
             try:
                 os.makedirs(new_dir)
-            except WindowsError as err:
-                print(err)
+            except:
+                pass
             #jupytext.write(nb, new_file, fmt='sphinx')
             convert_ipynb_to_gallery(nb, new_file)
 
