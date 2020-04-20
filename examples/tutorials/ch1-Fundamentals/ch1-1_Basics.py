@@ -245,6 +245,19 @@ gp.get_data(geo_model, 'orientations')
 gp.plot.plot_data(geo_model, direction='y');
 
 # %%
+plot = gp._plot.plot_2d(geo_model)
+#plt.figure(plot.fig.number)
+plot.fig
+#g = plt.gcf()
+#print(g is plot.fig)
+#plt.savefig('f',)
+#plt.show()
+
+# %%
+plt.plot(2, 3)
+plt.show()
+
+# %%
 # Using *plot\_data\_3D*, we can also visualize this data in 3D. Note that
 # direct 3D visualization in GemPy requires `the Visualization
 # Toolkit <https://www.vtk.org/>`__ (VTK) to be installed.

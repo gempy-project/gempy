@@ -81,6 +81,9 @@ def plot_2d(model, n_axis=None, section_names: list = None,
     Returns:
         (Plot2D) Plot2D object
     """
+    if section_names is None and cell_number is None:
+        cell_number = ['mid']
+
     section_names = [] if section_names is None else section_names
     section_names = np.atleast_1d(section_names)
     if cell_number is None:
@@ -123,9 +126,9 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         temp_ax = p.add_section(section_name=sn, ax_pos=ax_pos, **kwargs)
         if show_data[e] is True:
             p.plot_data(temp_ax, section_name=sn, **kwargs)
-        if show_lith[e] is True:
+        if show_lith[e] is True and model.solutions.lith_block.shape[0] != 0:
             p.plot_lith(temp_ax, section_name=sn, **kwargs)
-        if show_scalar[e] is True:
+        if show_scalar[e] is True and model.solutions.scalar_field_matrix.shape[0] != 0:
             p.plot_scalar_field(temp_ax, section_name=sn, **kwargs)
         if show_boundaries[e] is True:
             p.plot_contacts(temp_ax, section_name=sn, **kwargs)
@@ -146,10 +149,10 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         if show_data[e + e2] is True:
             p.plot_data(temp_ax, cell_number=cell_number[e2],
                         direction=direction[e2], **kwargs)
-        if show_lith[e + e2] is True:
+        if show_lith[e + e2] is True and model.solutions.lith_block.shape[0] != 0:
             p.plot_lith(temp_ax, cell_number=cell_number[e2],
                         direction=direction[e2], **kwargs)
-        if show_scalar[e + e2] is True:
+        if show_scalar[e + e2] is True and model.solutions.scalar_field_matrix.shape[0] != 0:
             p.plot_scalar_field(temp_ax, cell_number=cell_number[e2],
                                 direction=direction[e2], **kwargs)
         if show_boundaries[e + e2] is True:
