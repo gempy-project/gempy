@@ -2,7 +2,7 @@ import os
 import pypandoc as pdoc
 import json
 
-#%%
+# %%
 
 
 def convert_ipynb_to_gallery(nb, new_file):
@@ -37,11 +37,15 @@ def convert_ipynb_to_gallery(nb, new_file):
                 rst_source = rst_source.encode().decode('utf-8', 'ignore')
                 commented_source = '\n'.join(['# ' + x for x in
                                               rst_source.split('\n')])
-                python_file = python_file + '\n\n\n' + '#' * 70 + '\n' + \
-                    commented_source
+                #python_file = python_file + '\n\n\n' + '#' * 70 + '\n' + \
+                #    commented_source
+
+                python_file = python_file + '\n\n\n' + '# %%' + '\n' + \
+                              commented_source
+
             elif cell['cell_type'] == 'code':
                 source = ''.join(cell['source'])
-                python_file = python_file + '\n' * 2 + source
+                python_file = python_file + '\n' * 2 + '# %% \n' + source
 
     python_file = python_file.replace("\n%", "\n# %")
     open(new_file, 'w', newline='').write(python_file)
