@@ -8,7 +8,7 @@ import gempy as gp
 import matplotlib.pyplot as plt
 import pdb
 
-input_path = os.path.dirname(__file__)+'/../../notebooks/data'
+input_path = os.path.dirname(__file__)+'/../../examples/data'
 
 
 def test_set_orientations():

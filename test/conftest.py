@@ -5,7 +5,7 @@ import gempy as gp
 import os
 
 input_path = os.path.dirname(__file__)+'/input_data'
-input_path2 = os.path.dirname(__file__)+'/../notebooks/data/input_data/'
+input_path2 = os.path.dirname(__file__)+'/../examples/data/input_data/'
 
 
 @pytest.fixture(scope='session')
