@@ -35,7 +35,6 @@ from gempy.core.interpolator import InterpolatorModel
 from gempy.addons.gempy_to_rexfile import geomodel_to_rex
 from gempy.api_modules.getters import *
 
-
 # This warning comes from numpy complaining about a theano optimization
 warnings.filterwarnings("ignore",
                         message='.* a non-tuple sequence for multidimensional indexing is deprecated; use*.',

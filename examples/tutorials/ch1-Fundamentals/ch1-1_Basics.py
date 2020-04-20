@@ -7,6 +7,7 @@ Chapter 1: Basics of geological modeling with GemPy
 # %% 
 # These two lines are necessary only if GemPy is not installed
 import sys, os
+
 sys.path.append("../../..")
 
 # Importing GemPy
@@ -18,7 +19,6 @@ import gempy as gp
 # Importing auxiliary libraries
 import numpy as np
 import matplotlib.pyplot as plt
-
 
 # %%
 # Importing and creating a set of input data
@@ -75,15 +75,15 @@ import matplotlib.pyplot as plt
 geo_model = gp.create_model('Tutorial_ch1-1_Basics')
 
 # %% 
-data_path= '../..'
+data_path = os.getcwd()+'/examples'
 # Importing the data from CSV-files and setting extent and resolution
-gp.init_data(geo_model, [0,2000.,0,2000.,0,2000.],[50,50,50], 
-      path_o = data_path+"/data/input_data/tut_chapter1/simple_fault_model_orientations.csv",
-      path_i = data_path+"/data/input_data/tut_chapter1/simple_fault_model_points.csv", default_values=True); #%%
+gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
+             path_o=data_path + "/data/input_data/tut_chapter1/simple_fault_model_orientations.csv",
+             path_i=data_path + "/data/input_data/tut_chapter1/simple_fault_model_points.csv",
+             default_values=True)
 
-# %% 
+# %%
 geo_model.surfaces
-
 
 # %%
 # The input data can then be listed using the command ``get_data``. Note
@@ -91,12 +91,12 @@ geo_model.surfaces
 # still completely arbitrary. We will fix this in the following.
 # 
 
+
 # %% 
 gp.get_data(geo_model, 'surface_points').head()
 
 # %% 
 gp.get_data(geo_model, 'orientations').head()
-
 
 # %%
 # Declaring the sequential order of geological formations
@@ -161,10 +161,10 @@ geo_model.surfaces
 
 # %% 
 gp.map_series_to_surfaces(geo_model,
-       
-                          {"Fault_Series":'Main_Fault', 
-                             "Strat_Series": ('Sandstone_2','Siltstone',
-                                              'Shale', 'Sandstone_1', 'basement')}, remove_unused_series=True);
+                          {"Fault_Series": 'Main_Fault',
+                           "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                            'Shale', 'Sandstone_1', 'basement')},
+                          remove_unused_series=True)
 
 # %% 
 geo_model.surfaces
@@ -184,7 +184,6 @@ geo_model.faults
 # %% 
 geo_model.faults.faults_relations_df
 
-
 # %%
 # Returning information from our input data
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -199,7 +198,6 @@ geo_model.faults.faults_relations_df
 
 # %% 
 geo_model.grid.values
-
 
 # %%
 # As mentioned before, GemPy's core algorithm is based on interpolation of
@@ -220,7 +218,6 @@ geo_model.grid.values
 # %% 
 gp.get_data(geo_model, 'surface_points').head()
 
-
 # %%
 # Orientations Dataframe:
 # ^^^^^^^^^^^^^^^^^^^^^^^
@@ -228,7 +225,6 @@ gp.get_data(geo_model, 'surface_points').head()
 
 # %% 
 gp.get_data(geo_model, 'orientations')
-
 
 # %%
 # Notice that now all **surfaces** have been assigned to a **series** and
@@ -248,7 +244,6 @@ gp.get_data(geo_model, 'orientations')
 # %matplotlib inline
 gp.plot.plot_data(geo_model, direction='y');
 
-
 # %%
 # Using *plot\_data\_3D*, we can also visualize this data in 3D. Note that
 # direct 3D visualization in GemPy requires `the Visualization
@@ -267,7 +262,6 @@ gp.plot.plot_data(geo_model, direction='y');
 
 # %% 
 gp.plot.plot_3D(geo_model);
-
 
 # %%
 # Model generation
@@ -289,8 +283,6 @@ gp.set_interpolation_data(geo_model,
                           compile_theano=True,
                           theano_optimizer='fast_compile',
                           verbose=[])
-
-
 
 # %%
 # This function rescales the extent and coordinates of the original data
@@ -320,7 +312,6 @@ gp.set_interpolation_data(geo_model,
 
 # %% 
 gp.get_data(geo_model, 'kriging')
-
 
 # %%
 # At this point, we have all we need to compute our full model via
@@ -366,7 +357,6 @@ sol
 # %% 
 geo_model.solutions
 
-
 # %%
 # Direct model visualization in GemPy
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -392,7 +382,6 @@ gp.plot.plot_section(geo_model, cell_number=25,
 # %% 
 geo_model.surfaces
 
-
 # %%
 # With ``cell_number=25`` and remembering that we defined our resolution
 # to be 50 cells in each direction, we have chosen a section going through
@@ -407,11 +396,10 @@ geo_model.surfaces
 # 
 
 # %% 
-gp.plot.plot_scalar_field(geo_model, cell_number=25, N=15, series=0, 
+gp.plot.plot_scalar_field(geo_model, cell_number=25, N=15, series=0,
                           direction='y', show_data=True)
 
 plt.colorbar()
-
 
 # %%
 # This illustrates well the fold-related deformation of the stratigraphy,
@@ -427,7 +415,6 @@ geo_model.solutions.scalar_field_at_surface_points
 gp.plot.plot_section(geo_model, cell_number=25, block=geo_model.solutions.block_matrix[0, 0],
                      show_data=False)
 
-
 # %%
 # Marching cubes and vtk visualization
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -441,11 +428,10 @@ gp.plot.plot_section(geo_model, cell_number=25, block=geo_model.solutions.block_
 # 
 
 # %% 
-ver , sim = gp.get_surfaces(geo_model)
+ver, sim = gp.get_surfaces(geo_model)
 
 # %% 
 gp.plot.plot_3D(geo_model)
-
 
 # %%
 # Using the rescaled interpolation data, we can also run our 3D VTK
@@ -467,9 +453,8 @@ gp.plot.plot_3D(geo_model)
 # 
 
 # %% 
-x_i = np.array([[3,5,6]])
+x_i = np.array([[3, 5, 6]])
 sol = gp.compute_model_at(x_i, geo_model)
-
 
 # %%
 # Therefore if we just want the value at **x\_i**:
@@ -477,7 +462,6 @@ sol = gp.compute_model_at(x_i, geo_model)
 
 # %% 
 sol[0][0, :x_i.shape[0]]
-
 
 # %%
 # Save the model
@@ -498,4 +482,4 @@ sol[0][0, :x_i.shape[0]]
 # 
 
 # %% 
-gp.save_model(geo_model, path=data_path+'/data/gempy_models')
+gp.save_model(geo_model, path=data_path + '/data/gempy_models')

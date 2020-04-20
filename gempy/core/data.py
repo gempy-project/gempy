@@ -1234,10 +1234,12 @@ class GeometricData(object):
         self.df = pn.DataFrame()
 
     def __repr__(self):
-        return self.df.to_string()
+        c_ = self._columns_rend
+        return self.df[c_].to_string()
 
     def _repr_html_(self):
-        return self.df.to_html()
+        c_ = self._columns_rend
+        return self.df[c_].to_html()
 
     def init_dependent_properties(self):
         """Set the defaults values to the columns before gets mapped with the the :class:`Surfaces` attribute. This
@@ -1408,11 +1410,11 @@ class SurfacePoints(GeometricData):
                                'order_series', 'surface_number']
 
         self._columns_i_1 = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'surface', 'series', 'id',
-                             'order_series', 'isFault', 'Smoothness']
+                             'order_series', 'isFault', 'smooth']
 
         self._columns_rep = ['X', 'Y', 'Z', 'surface', 'series']
         self._columns_i_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r']
-        self._columns_i_rend = ['X', 'Y', 'Z', 'surface', 'color']
+        self._columns_rend = ['X', 'Y', 'Z', 'smooth', 'surface']
 
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
             self.df: pn.DataFrame
@@ -1695,7 +1697,7 @@ class Orientations(GeometricData):
         self._columns_o_1 = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity',
                              'surface', 'series', 'id', 'order_series', 'isFault']
         self._columns_o_num = ['X', 'Y', 'Z', 'X_r', 'Y_r', 'Z_r', 'G_x', 'G_y', 'G_z', 'dip', 'azimuth', 'polarity']
-        self._columns_o_rend = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'surface', 'color']
+        self._columns_rend = ['X', 'Y', 'Z', 'G_x', 'G_y', 'G_z', 'smooth', 'surface']
 
         if (np.array(sys.version_info[:2]) <= np.array([3, 6])).all():
             self.df: pn.DataFrame

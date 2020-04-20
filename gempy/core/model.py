@@ -1292,7 +1292,7 @@ class Model(DataMutation, ABC):
         self.additional_data.update_default_kriging()
         return True
 
-    def get_data(self, itype='data', numeric=False):
+    def get_data(self, itype='data', verbosity=0, numeric=False):
         """
         Method that returns the surface_points and orientations pandas Dataframes. Can return both at the same time or only
         one of the two
@@ -1307,10 +1307,13 @@ class Model(DataMutation, ABC):
             pandas.core.frame.DataFrame: Data frame with the raw data
 
         """
-        # TODO adapt this
 
-        show_par_f = self.orientations.df.columns
-        show_par_i = self.surface_points.df.columns
+        if verbosity == 0:
+            show_par_f = self.orientations._columns_rend
+            show_par_i = self.surface_points._columns_rend
+        elif verbosity == 1:
+            show_par_f = self.orientations._columns_o_1
+            show_par_i = self.surface_points._columns_i_1
 
         if numeric:
             show_par_f = self.orientations._columns_o_num
