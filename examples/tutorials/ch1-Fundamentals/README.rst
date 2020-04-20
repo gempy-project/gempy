@@ -1,4 +1,4 @@
-This are the fundamentals of gempy
+Chapter 1: GemPy fundamentals
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-foo bar kk
+These examples show the basic functionality to create geometries.
