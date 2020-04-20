@@ -1,16 +1,6 @@
-# ---
-# jupyter:
-#   jupytext:
-#     text_representation:
-#       extension: .py
-#       format_name: sphinx
-#       format_version: '1.1'
-#       jupytext_version: 1.4.2
-#   kernelspec:
-#     display_name: Python 3
-#     language: python
-#     name: python3
-# ---
+"""
+ch1-3-Grids.
+"""
 
 import sys
 sys.path.append("../../..")
@@ -20,188 +10,269 @@ import numpy as np
 import matplotlib.pyplot as plt
 import os
 
-""
 from gempy.core.data import Grid
 
-"""
-## The Grid Class
 
-The grid class will interact with the rest of data classes and grid subclases. Its main purpose is to feed coordinates XYZ to the interpolator.
-"""
+######################################################################
+# The Grid Class
+# --------------
+# 
+# The grid class will interact with the rest of data classes and grid
+# subclases. Its main purpose is to feed coordinates XYZ to the
+# interpolator.
+# 
 
 grid = Grid()
 
-###############################################################################
-# The most important attribute of Grid is `values` (and `values_r` which are the values rescaled) which are the 3D points in space that kriging will be evaluated on. This array will be feed by "grid types" on a **composition** relation with Grid:
 
-###############################################################################
-# ![Photo-2019-07-08-11-32-37_struc.PNG](attachment:Photo-2019-07-08-11-32-37_struc.PNG)
+######################################################################
+# The most important attribute of Grid is ``values`` (and ``values_r``
+# which are the values rescaled) which are the 3D points in space that
+# kriging will be evaluated on. This array will be feed by �grid types� on
+# a **composition** relation with Grid:
+# 
+
+
+######################################################################
+# .. figure:: attachment:Photo-2019-07-08-11-32-37_struc.PNG
+#    :alt: Photo-2019-07-08-11-32-37_struc.PNG
+# 
+#    Photo-2019-07-08-11-32-37_struc.PNG
+# 
 
 grid.values, grid.values_r
 
-###############################################################################
-# At the moment of writing this tutorial, there is 5 grid types. The number of grid types is scalable and down the road we aim to connect other grid packages (like Discretize) as an extra Grid type
+
+######################################################################
+# At the moment of writing this tutorial, there is 5 grid types. The
+# number of grid types is scalable and down the road we aim to connect
+# other grid packages (like Discretize) as an extra Grid type
+# 
 
 grid.grid_types
 
-###############################################################################
-# Each grid vill containt its own `values` attribute as well as other methods to manipulate them depending on the type of grid.
+
+######################################################################
+# Each grid vill containt its own ``values`` attribute as well as other
+# methods to manipulate them depending on the type of grid.
+# 
 
 grid.regular_grid.values
 
-###############################################################################
-# We can see what grids are activated (i.e. they are going to be interpolated and therefore will live on `Grid().values`) by:
+
+######################################################################
+# We can see what grids are activated (i.e.�they are going to be
+# interpolated and therefore will live on ``Grid().values``) by:
+# 
 
 grid.active_grids
 
-###############################################################################
-# By default only the *regular grid* is active. However, since the regular grid is still empty `Grid().values` is empty too.
+
+######################################################################
+# By default only the *regular grid* is active. However, since the regular
+# grid is still empty ``Grid().values`` is empty too.
+# 
 
 grid.values
 
-###############################################################################
+
+######################################################################
 # The last important attribute of Grid is the length:
+# 
 
 grid.length
 
-###############################################################################
-# Length gives back the interface indices between grids on the `Grid().values` attribute. This can be used after interpolation to know which interpolated values and coordinates correspond to each grid type. You can use the method get_grid_args to return the indices by name:
+
+######################################################################
+# Length gives back the interface indices between grids on the
+# ``Grid().values`` attribute. This can be used after interpolation to
+# know which interpolated values and coordinates correspond to each grid
+# type. You can use the method get_grid_args to return the indices by
+# name:
+# 
 
 grid.get_grid_args('topography')
 
-###############################################################################
-# By now all is a bit confusing because we have no values. Lets start adding values to the different grids:
 
-###############################################################################
-# ### Regular grid
-#
-# The `Grid` class have a bunch of methods to set each grid type and activate them.
+######################################################################
+# By now all is a bit confusing because we have no values. Lets start
+# adding values to the different grids:
+# 
+
+
+######################################################################
+# Regular grid
+# ~~~~~~~~~~~~
+# 
+# The ``Grid`` class have a bunch of methods to set each grid type and
+# activate them.
+# 
 
 help(grid.create_regular_grid)
 
-""
 grid.create_regular_grid(extent = [0,100,0,100,-100,0],  resolution = [20,20,20])
 
-###############################################################################
-# Now the regular grid object composed on `Grid` has been filled:
+
+######################################################################
+# Now the regular grid object composed on ``Grid`` has been filled:
+# 
 
 grid.regular_grid.values
 
-###############################################################################
-# And the regular grid has been set active (it was already active in any case):
+
+######################################################################
+# And the regular grid has been set active (it was already active in any
+# case):
+# 
 
 grid.active_grids
 
-###############################################################################
+
+######################################################################
 # Therefore the grid values will be equal to the regular grid:
+# 
 
 grid.values
 
-###############################################################################
+
+######################################################################
 # And the indices to extract the different arrays:
+# 
 
 grid.length
 
-###############################################################################
-# ### Custom grid
-#
+
+######################################################################
+# Custom grid
+# ~~~~~~~~~~~
+# 
 # Completely free XYZ values.
+# 
 
 grid.create_custom_grid(np.array([[1,2,3],
                                   [4,5,6],
                                   [7,8,9]]))
 
-###############################################################################
-# Again set_any_grid will create a grid and activate it. So now the compose object will contain values:
+
+######################################################################
+# Again set_any_grid will create a grid and activate it. So now the
+# compose object will contain values:
+# 
 
 grid.custom_grid.values
 
-###############################################################################
+
+######################################################################
 # and since is actived, will be add to the grid.values stack:
+# 
 
 grid.active_grids
 
-""
 grid.values.shape
 
-###############################################################################
-# We can still recover those values with `get_grid` or by getting the slicing args:
+
+######################################################################
+# We can still recover those values with ``get_grid`` or by getting the
+# slicing args:
+# 
 
 grid.get_grid('custom')
 
-""
 l0, l1 = grid.get_grid_args('custom')
 l0, l1
 
-""
 grid.values[l0:l1]
 
-###############################################################################
-# ### Topography
-#
-# Now we can set the topography. `gempy.core.grid_types.Topography` contains methods to create manual topographies as well as gdal for dealing with raster data. By default we will create a random topography:
+
+######################################################################
+# Topography
+# ~~~~~~~~~~
+# 
+# Now we can set the topography. ``gempy.core.grid_types.Topography``
+# contains methods to create manual topographies as well as gdal for
+# dealing with raster data. By default we will create a random topography:
+# 
 
 np.random.seed(55500)
 grid.create_topography()
 
-""
 grid.active_grids
 
-###############################################################################
+
+######################################################################
 # Now the grid values will contain both the regular grid and topography:
+# 
 
 grid.values, grid.length
 
-###############################################################################
+
+######################################################################
 # The topography args are got as follows:
+# 
 
 l0, l1 = grid.get_grid_args('topography')
 l0, l1
 
-###############################################################################
-# Abd we can slice the values array as any other numpy array: 
+
+######################################################################
+# Abd we can slice the values array as any other numpy array:
+# 
 
 grid.values[l0: l1]
 
-###############################################################################
+
+######################################################################
 # We can compare it to the topography.values:
+# 
 
 grid.topography.values
 
-###############################################################################
-# Now that we have more than one grid we can activate and deactivate any of them in real time:
+
+######################################################################
+# Now that we have more than one grid we can activate and deactivate any
+# of them in real time:
+# 
 
 grid.set_inactive('topography')
 grid.set_inactive('regular')
 
-###############################################################################
+
+######################################################################
 # Since now all grids are deactivated the values will be empty:
+# 
 
 grid.values
 
-""
 grid.set_active('topography')
 
-""
 grid.values, grid.values.shape
 
-""
 grid.set_active('regular')
 
-""
 grid.values
 
-###############################################################################
-# ### Centered Grid
-#
-# This grid contains an irregular grid where the majority of voxels are centered around a value (or values). This type of grid is usually used to compute certain types of forward physiscs where the influence decreases with distance (e.g. gravity: Check tutorial 2.2-Cell-selection https://github.com/cgreaachen/gempy/blob/master/notebooks/tutorials/ch2-2-Cell_selection.ipynb)
+
+######################################################################
+# Centered Grid
+# ~~~~~~~~~~~~~
+# 
+# This grid contains an irregular grid where the majority of voxels are
+# centered around a value (or values). This type of grid is usually used
+# to compute certain types of forward physiscs where the influence
+# decreases with distance (e.g.�gravity: Check tutorial 2.2-Cell-selection
+# https://github.com/cgreaachen/gempy/blob/master/notebooks/tutorials/ch2-2-Cell_selection.ipynb)
+# 
 
 grid.create_centered_grid(centers=np.array([[300, 0, 0],[0,0,0]]), resolution=[10,10,20], radius=100)
 
-###############################################################################
-# Resolution and radius create a geometric spaced kernel (blue dots) which will be use to create a grid around each of the center points (red dots):
 
-# #%matplotlib qt5
+######################################################################
+# Resolution and radius create a geometric spaced kernel (blue dots) which
+# will be use to create a grid around each of the center points (red
+# dots):
+# 
+
+#%matplotlib qt5
 # This import registers the 3D projection, but is otherwise unused.
 from mpl_toolkits.mplot3d import Axes3D  # noqa: F401 unused import
 
@@ -225,7 +296,10 @@ ax.set_zlabel('Z Label')
 
 
 
-###############################################################################
-# ### Section Grid
-#
+
+######################################################################
+# Section Grid
+# ~~~~~~~~~~~~
+# 
 # This grid type has its own tutorial. See ch1-3b
+# 

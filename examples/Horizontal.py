@@ -22,8 +22,8 @@ os.environ["THEANO_FLAGS"] = "mode=FAST_RUN,device=cpu"
 
 # %%
 geo_data = gp.create_data([0,1000,0,1000,0,1000],resolution=[50,50,50],
-                        path_o = os.getcwd()+"/../examples/data/input_data/jan_models/model1_orientations.csv",
-                        path_i = os.getcwd()+"/../examples/data/input_data/jan_models/model1_surface_points.csv")
+                        path_o = os.getcwd()+"/data/input_data/jan_models/model1_orientations.csv",
+                        path_i = os.getcwd()+"/data/input_data/jan_models/model1_surface_points.csv")
 
 # %%
 """
