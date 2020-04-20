@@ -651,13 +651,9 @@ class Colors:
         import seaborn as sns
         """generate colordict that assigns black to faults and random colors to surfaces"""
         gp_defcols = ['#015482','#9f0052','#ffbe00','#728f02','#443988','#ff3f20','#5DA629']
-
-        # This can be the most horrible code of the whole package
-        for i in ['muted', 'pastel', 'deep', 'bright', 'dark', 'colorblind']:
-            s = sns.color_palette(i).as_hex()
-            gp_defcols += s
-            if len(gp_defcols) >= len(self.surfaces.df):
-                break
+        n_additional_colors=len(self.surfaces.df)-len(gp_defcols)
+        s = sns.color_palette(n_colors=n_additional_colors).as_hex()
+        gp_defcols += s
 
         colordict = dict(zip(list(self.surfaces.df['surface']), gp_defcols[:len(self.surfaces.df)]))
         self.colordict_default = colordict
