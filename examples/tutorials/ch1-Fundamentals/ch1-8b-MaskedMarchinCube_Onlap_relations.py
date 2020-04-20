@@ -1,25 +1,10 @@
-# ---
-# jupyter:
-#   jupytext:
-#     text_representation:
-#       extension: .py
-#       format_name: sphinx
-#       format_version: '1.1'
-#       jupytext_version: 1.4.2
-#   kernelspec:
-#     display_name: Python 3
-#     language: python
-#     name: python3
-# ---
+"""
+Chapter 1.8: Onlap relationships
+--------------------------------
 
 """
-## Chapter 1.8: Onlap relationships
-***
-In some geologic cases we want to represent an onlap relationship, where layers deposited onto an erosive surface. This is also useful to model subduction zones as layers onlap the dipping plate. While surfaces in GemPy normally define the bottom of a unit, onlap surfaces represent the top surface, directly followed by other units.
 
-Let's start as always by importing the necessary dependencies:
-"""
-
+# %% 
 # These two lines are necessary only if gempy is not installed
 import sys, os
 sys.path.append("../../..")
@@ -29,7 +14,7 @@ import skimage
 import gempy as gp
 import matplotlib.pyplot as plt
 # Embedding matplotlib figures into the notebooks
-# #%matplotlib inline
+#%matplotlib inline
 
 
 # Aux imports
@@ -39,86 +24,111 @@ import matplotlib
 import theano
 import qgrid
 
-# #%matplotlib widget
+#%matplotlib widget
 
-###############################################################################
-# We import a model from an existing folder, representing a subduction zone with onlap relationships.
-# The theano function is automatically recombiled to allow changes.
 
+# %%
+# We import a model from an existing folder, representing a subduction
+# zone with onlap relationships. The theano function is automatically
+# recombiled to allow changes.
+# 
+
+# %% 
 geo_model = gp.load_model('Tutorial_ch1-8_Onlap_relations', path= '../../data/gempy_models', recompile=False)
 
-""
+# %% 
 geo_model.additional_data
 
-""
+# %% 
 geo_model.surfaces
 
-###############################################################################
-# Displaying the input data:
 
+# %%
+# Displaying the input data:
+# 
+
+# %% 
 geo_model.series
 
-""
+# %% 
 gp.plot.plot_data(geo_model, direction='y')
 
-""
+# %% 
 gp.set_interpolation_data(geo_model, verbose=[])
 
-""
+# %% 
 geo_model.set_regular_grid([-200,1000,-500,500,-1000,0], [100,100,100])
 
-""
+# %% 
 gp.compute_model(geo_model, compute_mesh=True)
 
-""
+# %% 
 geo_model.solutions.compute_all_surfaces();
 
-""
+# %% 
 geo_model.solutions.scalar_field_at_surface_points
 
-""
+# %% 
 gp.plot.plot_section(geo_model, 2, block=geo_model.solutions.lith_block, show_data=True)
 
-###############################################################################
-# ## Marching cubes explanation.
-#
-# The geological model above is done ovelying several fields. This is a common geometry in geological models due to tectonics and similar effects over the history of a region.
 
+# %%
+# Marching cubes explanation.
+# ---------------------------
+# 
+# The geological model above is done ovelying several fields. This is a
+# common geometry in geological models due to tectonics and similar
+# effects over the history of a region.
+# 
+
+# %% 
 # Example of block of rock1 and rock 2
 gp.plot.plot_section(geo_model, 2, block=geo_model.solutions.block_matrix[1], show_data=True)
 
-""
+# %% 
 # Example of block for onlap surface
 gp.plot.plot_section(geo_model, 20, block=geo_model.solutions.block_matrix[2], show_data=True)
 
-###############################################################################
-# This discretizations are coming for an interpolated scalar field:
 
+# %%
+# This discretizations are coming for an interpolated scalar field:
+# 
+
+# %% 
 # Example of scalar field of rock1 and rock 2
 gp.plot.plot_scalar_field(geo_model, 25, series=1)
 plt.colorbar()
 
-""
+# %% 
 # Example of scalar field of onlap series
 gp.plot.plot_scalar_field(geo_model, 25, series=2)
 plt.colorbar()
 
-###############################################################################
-# The way to overlap this different fields is given by boolean matrices that encode their stratigraphic relations:
 
+# %%
+# The way to overlap this different fields is given by boolean matrices
+# that encode their stratigraphic relations:
+# 
+
+# %% 
 # Example of block of rock1 and rock 2
 plt.imshow(geo_model.solutions.mask_matrix[1].reshape(100,100,100)[:,20,:].T, origin='bottom')
 
-""
+# %% 
 # Example of onlap
 plt.imshow(geo_model.solutions.mask_matrix[3].reshape(100,100,100)[:,20,:].T, origin='bottom')
 
-###############################################################################
-# But actually this boolean arrays are within the volume! The surfaces where we want to perform the marching cube are at the interfaces of the boolean arrays. To do so we add some padding:
 
+# %%
+# But actually this boolean arrays are within the volume! The surfaces
+# where we want to perform the marching cube are at the interfaces of the
+# boolean arrays. To do so we add some padding:
+# 
+
+# %% 
 geo_model.solutions.mask_matrix[0]
 
-""
+# %% 
 from gempy.utils.input_manipulation import find_interfaces_from_block_bottoms
 
 # Example of block of rock1 and rock 2
@@ -126,25 +136,37 @@ mp1 = find_interfaces_from_block_bottoms(geo_model.solutions.mask_matrix[1].resh
 
 plt.imshow(mp1[:,20,:].T, origin='bottom')
 
-""
+# %% 
 # Example of block of rock1 and rock 2
 mp2 = find_interfaces_from_block_bottoms(geo_model.solutions.mask_matrix[3].reshape(100,100,100), True)
 
 plt.imshow(mp2[:,20,:].T, origin='bottom')
 
-###############################################################################
-# ### Performing marching cubes
-#
-# Now lets go back to the original model. For this example lets forcus on the green, purple and magenta surfaces:
 
+# %%
+# Performing marching cubes
+# ~~~~~~~~~~~~~~~~~~~~~~~~~
+# 
+# Now lets go back to the original model. For this example lets forcus on
+# the green, purple and magenta surfaces:
+# 
+
+# %% 
 gp.plot.plot_section(geo_model, 2, block=geo_model.solutions.lith_block, show_data=True)
 
-###############################################################################
-# If we just perform the marching cube in the scalar fields we saw above the mesh will be continuos:
 
-###############################################################################
-# #### Classic marching cubes
+# %%
+# If we just perform the marching cube in the scalar fields we saw above
+# the mesh will be continuos:
+# 
 
+
+# %%
+# Classic marching cubes
+# ^^^^^^^^^^^^^^^^^^^^^^
+# 
+
+# %% 
 from skimage import measure
 
 scalar_field = geo_model.solutions.scalar_field_matrix
@@ -193,19 +215,30 @@ v4, s4, normals, values = measure.marching_cubes_lewiner(
 )
 
 
-""
+# %% 
 fig = gp.plot.ipyvolumeVisualization(geo_model)
 fig.plot_surfaces()
 
-###############################################################################
-# ![foo2](../../data/figures/ipv.png)
 
-###############################################################################
+# %%
+# .. figure:: ../../data/figures/ipv.png
+#    :alt: foo2
+# 
+#    foo2
+# 
+
+
+# %%
 # However what we want is that the layers end in the other layers:
+# 
 
-###############################################################################
-# #### Masked marching cubes
 
+# %%
+# Masked marching cubes
+# ^^^^^^^^^^^^^^^^^^^^^
+# 
+
+# %% 
 from skimage import measure
 
 scalar_field = geo_model.solutions.scalar_field_matrix
@@ -258,20 +291,31 @@ v4, s4, normals, values = measure.marching_cubes_lewiner(
 
 
 
-""
+# %% 
 fig = gp.plot.ipyvolumeVisualization(geo_model)
 fig.plot_surfaces()
 
-###############################################################################
-# ![foo](../../data/figures/ipyvolume.png)
-#
 
-###############################################################################
-# ###  Speed comparison
+# %%
+# .. figure:: ../../data/figures/ipyvolume.png
+#    :alt: foo
+# 
+#    foo
+# 
 
-###############################################################################
-# #### Original
 
+# %%
+# Speed comparison
+# ~~~~~~~~~~~~~~~~
+# 
+
+
+# %%
+# Original
+# ^^^^^^^^
+# 
+
+# %% 
 scalar_field = geo_model.solutions.scalar_field_matrix
 level = geo_model.solutions.scalar_field_at_surface_points
 
@@ -321,9 +365,13 @@ v4, s4, normals, values = measure.marching_cubes_lewiner(
     mask=None,
 )
 
-###############################################################################
-# #### Masked
 
+# %%
+# Masked
+# ^^^^^^
+# 
+
+# %% 
 # %%timeit
 scalar_field = geo_model.solutions.scalar_field_matrix
 level = geo_model.solutions.scalar_field_at_surface_points
@@ -374,18 +422,26 @@ v4, s4, normals, values = measure.marching_cubes_lewiner(
 )
 
 
-""
+# %% 
 # Number of Trues
 print(geo_model.solutions.mask_matrix_pad[0].sum(), geo_model.solutions.mask_matrix_pad[0].sum()/1e4,'%')
 print(geo_model.solutions.mask_matrix_pad[1].sum(), geo_model.solutions.mask_matrix_pad[1].sum()/1e4,'%')
 print(geo_model.solutions.mask_matrix_pad[3].sum(), geo_model.solutions.mask_matrix_pad[3].sum()/1e4,'%')
 
-###############################################################################
-# #### Masked all True
 
-###############################################################################
-# But if we make the masking all Trues it takes a bit longer than just calling the unmodified function (which we do when we pass None). (Not in my new laptop apparently)
+# %%
+# Masked all True
+# ^^^^^^^^^^^^^^^
+# 
 
+
+# %%
+# But if we make the masking all Trues it takes a bit longer than just
+# calling the unmodified function (which we do when we pass None). (Not in
+# my new laptop apparently)
+# 
+
+# %% 
 # %%timeit
 scalar_field = geo_model.solutions.scalar_field_matrix
 level = geo_model.solutions.scalar_field_at_surface_points
@@ -436,16 +492,22 @@ v4, s4, normals, values = measure.marching_cubes_lewiner(
 )
 
 
-""
+# %% 
 gp.plot.plot_3D(geo_model)
 
-###############################################################################
-# Update if any changes were made:
 
+# %%
+# Update if any changes were made:
+# 
+
+# %% 
 #geo_model.update_to_interpolator()
 #gp.compute_model(geo_model, compute_mesh=False)
 
-###############################################################################
-# Save model if any changes were made:
 
+# %%
+# Save model if any changes were made:
+# 
+
+# %% 
 #geo_model.save_model('Tutorial_ch1-8_Onlap_relations')
