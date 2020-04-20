@@ -1,22 +1,16 @@
 """
     This file is part of gempy.
-
     gempy is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
-
     Foobar is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
-
     You should have received a copy of the GNU General Public License
     along with gempy.  If not, see <http://www.gnu.org/licenses/>.
-
-
     Created on 10/10 /2018
-
     @author: Miguel de la Varga
 """
 
@@ -43,10 +37,8 @@ warnings.filterwarnings("ignore",
 @setdoc(Model.__doc__)
 def create_model(project_name='default_project'):
     """Create a Model object
-
     Returns:
         Model
-
     """
     return Model(project_name)
 # endregion
@@ -83,13 +75,11 @@ def read_csv(geo_model: Model, path_i=None, path_o=None, **kwargs):
 @setdoc_pro([Model.__doc__])
 def set_geometric_data(geo_model: Model, surface_points_df=None, orientations_df=None, **kwargs):
     """ Function to set directly pandas.Dataframes to the gempy geometric data objects
-
     Args:
         geo_model: [s0]
         surface_points_df:  A pn.Dataframe object with X, Y, Z, and surface columns
         orientations_df: A pn.Dataframe object with X, Y, Z, surface columns and pole or orientation columns
         **kwargs:
-
     Returns:
         Modified df
     """
@@ -114,14 +104,11 @@ def set_orientation_from_surface_points(geo_model, indices_array):
     """
     Create and set orientations from at least 3 points of the :attr:`gempy.data_management.InputData.surface_points`
      Dataframe
-
     Args:
         geo_model (:class:`Model`):
         indices_array (array-like): 1D or 2D array with the pandas indices of the
           :attr:`surface_points`. If 2D every row of the 2D matrix will be used to create an
           orientation
-
-
     Returns:
         :attr:`orientations`: Already updated inplace
     """
@@ -169,7 +156,6 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
                      **kwargs):
     """
     Method to create a graph and compile the theano code to compute the interpolation.
-
     Args:
         geo_model (:class:`Model`): [s0]
         output (list[str:{geo, grav}]): type of interpolation.
@@ -178,15 +164,12 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         verbose:
         update_kriging (bool): reset kriging values to its default.
         update_structure (bool): sync Structure instance before setting theano graph.
-
     Keyword Args:
         -  pos_density (Optional[int]): Only necessary when type='grav'. Location on the Surfaces().df
          where density is located (starting on id being 0).
         - Vs
         - pos_magnetics
-
     Returns:
-
     """
     # output = list(output)
     if output is None:
@@ -223,7 +206,8 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
     if 'gravity' in output:
         pos_density = kwargs.get('pos_density', 1)
         tz = kwargs.get('tz', 'auto')
-        geo_model.interpolator.set_theano_shared_gravity(tz, pos_density)
+        if geo_model.grid.centered_grid is not None:
+            geo_model.interpolator.set_theano_shared_gravity(tz, pos_density)
 
     if 'magnetics' in output:
         pos_magnetics = kwargs.get('pos_magnetics', 1)
@@ -231,7 +215,8 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         incl = kwargs.get('incl')
         decl = kwargs.get('decl')
         B_ext = kwargs.get('B_ext', 52819.8506939139e-9)
-        geo_model.interpolator.set_theano_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
+        if geo_model.grid.centered_grid is not None:
+            geo_model.interpolator.set_theano_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
 
     if 'topology' in output:
 
@@ -261,10 +246,8 @@ def get_interpolator(model: Model):
 def get_th_fn(model: Model):
     """
     Get the compiled theano function
-
     Args:
         model (:class:`gempy.core.model.Model`)
-
     Returns:
         :class:`theano.compile.function_module.Function`: Compiled function if C or CUDA which computes the interpolation given the input data
             (XYZ of dips, dip, azimuth, polarity, XYZ ref surface_points, XYZ rest surface_points)
@@ -277,14 +260,9 @@ def get_th_fn(model: Model):
 
 # region Additional data functionality
 def update_additional_data(model: Model, update_structure=True, update_kriging=True):
-    if update_structure is True:
-        model.additional_data.update_structure()
-
-    if update_kriging is True:
-        print('Setting kriging parameters to their default values.')
-        model.additional_data.update_default_kriging()
-
-    return model.additional_data
+    warnings.warn('This function is going to be deprecated. Use Model.update_additional_data instead',
+                  DeprecationWarning)
+    return model.update_additional_data(update_structure, update_kriging)
 
 
 def get_additional_data(model: Model):
@@ -300,7 +278,6 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
                   **kwargs) -> Solution:
     """
     Computes the geological model and any extra output given in the additional data option.
-
     Args:
         model (:class:`Model`): [s0]
         output (str {'geology', 'gravity'}): Compute the lithologies or gravity
@@ -311,11 +288,9 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
         sort_surfaces (bool): if True call Model.set_surface_order_from_solution: [s2]
         debug (bool): if True, the computed interpolation are not stored in any object but instead returned
         set_solutions (bool): Default True. If True set the results into the :class:`Solutions` linked object.
-
     Keyword Args:
         compute_mesh_options (dict): options for the marching cube function.
             1) rescale: True
-
     Returns:
         :class:`Solutions`
     """
@@ -353,7 +328,9 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
         # Set gravity
         model.solutions.fw_gravity = sol[12]
 
-        # TODO: Set magnetcs and set topology
+        # TODO: [X] Set magnetcs and [ ] set topology @A.Schaaf probably it should populate the topology object?
+        model.solutions.fw_magnetics = sol[13]
+
         if sort_surfaces:
             model.set_surface_order_from_solution()
         return model.solutions
@@ -363,13 +340,10 @@ def compute_model(model: Model, output=None, compute_mesh=True, reset_weights=Fa
 def compute_model_at(new_grid: Union[ndarray], model: Model, **kwargs):
     """
     This function creates a new custom grid and deactivate all the other grids and compute the model there:
-
     This function does the same as :func:`compute_model` plus the addition functionallity of
      passing a given array of points where evaluate the model instead of using the :class:`gempy.core.data.GridClass`.
-
     Args:
         kwargs: :func:`compute_model` arguments
-
     Returns:
         :class:`Solution`
     """
@@ -391,10 +365,8 @@ def get_surfaces(model_solution: Union[Model, Solution]):
     """
     Get vertices and simplices of the surface_points for its vtk visualization and further
     analysis
-
     Args:
        model_solution (:class:`Model` or :class:`Solution)
-
     Returns:
         list[np.array]: vertices, simpleces
     """
@@ -412,17 +384,14 @@ def get_data(model: Model, itype='data', numeric=False):
     """
     Method to return the data stored in :class:`DataFrame` within a :class:`gempy.interpolator.InterpolatorData`
     object.
-
     Args:
         model (:class:`gempy.core.model.Model`)
         itype(str {'all', 'surface_points', 'orientations', 'surfaces', 'series', 'faults', 'faults_relations',
         additional data}): input data type to be retrieved.
         numeric (bool): if True it only returns numerical properties. This may be useful due to memory issues
         verbosity (int): Number of properties shown
-
     Returns:
         pandas.core.frame.DataFrame
-
     """
     return model.get_data(itype=itype, numeric=numeric)
 
@@ -431,26 +400,20 @@ def create_data(extent: Union[list, ndarray], resolution: Union[list, ndarray] =
                 project_name: str = 'default_project', **kwargs) -> Model:
     """
     Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
-
     - Grid :class:`gempy.core.data.GridClass`: To regular grid.
     - read_csv: SurfacePoints and orientations: From csv files
     - set_values to default
-
-
     Args:
         extent (list or array):  [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data
          and default of for the grid class.
         resolution (list or array): [nx, ny, nz]. Resolution for the visualization of data
          and default of for the grid class.
         project_name (str)
-
     Keyword Args:
         path_i: Path to the data bases of surface_points. Default os.getcwd(),
         path_o: Path to the data bases of orientations. Default os.getcwd()
-
     Returns:
         :class:`Model`
-
     """
 
     geo_model = create_model(project_name)
@@ -463,12 +426,9 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
               **kwargs) -> Model:
     """
     Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
-
     - Grid :class:`gempy.core.data.GridClass`: To regular grid.
     - read_csv: SurfacePoints and orientations: From csv files
     - set_values to default
-
-
     Args:
         geo_model (:class:Model): [s0]
         extent (list or array):  [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data
@@ -476,9 +436,7 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
         resolution (list or array): [nx, ny, nz]. Resolution for the visualization of data
          and default of for the grid class.
         project_name (str)
-
     Keyword Args:
-
         path_i: Path to the data bases of surface_points. Default os.getcwd(),
         path_o: Path to the data bases of orientations. Default os.getcwd()
         surface_points_df: A pn.Dataframe object with X, Y, Z, and surface columns
