@@ -1,16 +1,22 @@
 """
     This file is part of gempy.
+
     gempy is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
     (at your option) any later version.
+
     Foobar is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
+
     You should have received a copy of the GNU General Public License
     along with gempy.  If not, see <http://www.gnu.org/licenses/>.
+
+
     Created on 10/10 /2018
+
     @author: Miguel de la Varga
 """
 
@@ -37,8 +43,10 @@ warnings.filterwarnings("ignore",
 @setdoc(Model.__doc__)
 def create_model(project_name='default_project'):
     """Create a Model object
+
     Returns:
         Model
+
     """
     return Model(project_name)
 # endregion
@@ -75,11 +83,13 @@ def read_csv(geo_model: Model, path_i=None, path_o=None, **kwargs):
 @setdoc_pro([Model.__doc__])
 def set_geometric_data(geo_model: Model, surface_points_df=None, orientations_df=None, **kwargs):
     """ Function to set directly pandas.Dataframes to the gempy geometric data objects
+
     Args:
         geo_model: [s0]
         surface_points_df:  A pn.Dataframe object with X, Y, Z, and surface columns
         orientations_df: A pn.Dataframe object with X, Y, Z, surface columns and pole or orientation columns
         **kwargs:
+
     Returns:
         Modified df
     """
@@ -104,11 +114,14 @@ def set_orientation_from_surface_points(geo_model, indices_array):
     """
     Create and set orientations from at least 3 points of the :attr:`gempy.data_management.InputData.surface_points`
      Dataframe
+
     Args:
         geo_model (:class:`Model`):
         indices_array (array-like): 1D or 2D array with the pandas indices of the
           :attr:`surface_points`. If 2D every row of the 2D matrix will be used to create an
           orientation
+
+
     Returns:
         :attr:`orientations`: Already updated inplace
     """
