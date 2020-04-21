@@ -83,10 +83,11 @@ class ImplicitCoKriging(object):
 
         return idx
 
-    @_setdoc_pro([AdditionalData.update_structure.__doc__, InterpolatorModel.set_theano_shared_structure.__doc__,
-                  InterpolatorModel.modify_results_matrices_pro.__doc__,
-                  InterpolatorModel.modify_results_weights.__doc__])
-    def update_structure(self, update_theano=None, update_series_is_active=True, update_surface_is_active=True):
+    @setdoc_pro([AdditionalData.update_structure.__doc__, InterpolatorModel.set_theano_shared_structure.__doc__,
+                 InterpolatorModel.modify_results_matrices_pro.__doc__,
+                 InterpolatorModel.modify_results_weights.__doc__])
+    def update_structure(self, update_theano=None, update_series_is_active=True,
+                         update_surface_is_active=True):
         """Update python and theano structure parameters.
 
         [s0]
@@ -127,6 +128,7 @@ class ImplicitCoKriging(object):
                 # This is necessary to find the intersection between orientations (series) and
                 # surface points
                 self.surfaces.df['isActive'] = (act_series & bool_surf_points) | self.surfaces.df['isBasement']
+                self.surfaces.df['hasData'] = (act_series| bool_surf_points) # | self.surfaces.df['isBasement']
 
         if update_theano == 'matrices':
             self.interpolator.modify_results_matrices_pro()
@@ -409,6 +411,7 @@ class ImplicitCoKriging(object):
         if change_color:
             print('Fault colors changed. If you do not like this behavior, set change_color to False.')
             self.surfaces.colors.make_faults_black(series_fault)
+        self.update_from_series(False, False, False)
         self.update_structure(update_theano='matrices')
         return self.faults
 
@@ -904,7 +907,7 @@ class ImplicitCoKriging(object):
         self.rescaling.set_rescaled_grid()
         return self.grid
 
-    def update_from_series(self, rename_series: dict = None, reorder_series=True, sort_geometric_data=True,
+    def update_from_series(self, reorder_series=True, sort_geometric_data=True,
                            update_interpolator=True):
         """
         Update all objects dependent on series.
@@ -913,7 +916,7 @@ class ImplicitCoKriging(object):
         however is useful if you want to make sure all objects are up to date with the latest changes on series.
 
         Args:
-            rename_series (dict): DEP see :meth:`rename_series`
+
             reorder_series (bool): if True reorder all pandas categories accordingly to the series.df
             sort_geometric_data (bool): It True sort the geometric data after mapping the new order
             update_interpolator (bool): If True update the theano shared variables dependent on the structure
@@ -921,12 +924,6 @@ class ImplicitCoKriging(object):
         Returns:
             True
         """
-        # Add categories from series to surface
-        # Updating surfaces['series'] categories
-        if rename_series is None:
-            self.surfaces.df['series'].cat.set_categories(self.series.df.index, inplace=True)
-        else:
-            self.surfaces.df['series'].cat.rename_categories(rename_series, inplace=True)
 
         if reorder_series is True:
             self.surfaces.df['series'].cat.reorder_categories(np.asarray(self.series.df.index),
@@ -939,7 +936,7 @@ class ImplicitCoKriging(object):
 
         # Update surface is active from series does not work because you can have only a subset of surfaces of a
         # series active
-        # self.surfaces.df['isActive'] = self.surfaces.df['series'].map(self.series.df['isActive'])
+        self.surfaces.df['isFault'] = self.surfaces.df['series'].map(self.faults.df['isFault'])
         self.surfaces.set_basement()
 
         # Add categories from series

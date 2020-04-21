@@ -37,7 +37,7 @@ import pandas as pn
 # Keep Alex code hidden until we merge it properly
 try:
     import pyvista as pv
-    from .vista import _Vista as Vista
+    from ._vista import Vista as Vista
     PYVISTA_IMPORT = True
 except ImportError:
     PYVISTA_IMPORT = False
@@ -242,9 +242,9 @@ def plot_stereonet(self, litho=None, planes=True, poles=True,
 if PYVISTA_IMPORT:
     def plot_3d(
             geo_model,
-            render_surfaces: bool = True,
-            render_data: bool = True,
-            render_topography: bool = False,
+            show_surfaces: bool = True,
+            show_data: bool = True,
+            show_topography: bool = False,
             **kwargs,
     ) -> Vista:
         """Plot 3-D geomodel.
@@ -262,12 +262,12 @@ if PYVISTA_IMPORT:
         """
         gpv = Vista(geo_model, **kwargs)
         gpv.set_bounds()
-        if render_surfaces:
-            gpv.plot_surfaces_all()
-        if render_data:
+        if show_surfaces:
+            gpv.plot_surfaces()
+        if show_data:
             gpv._plot_surface_points_all()
             gpv._plot_orientations_all()
-        if render_topography and geo_model.grid.topography is not None:
+        if show_topography and geo_model.grid.topography is not None:
             gpv.plot_topography()
         gpv.show()
         return gpv
