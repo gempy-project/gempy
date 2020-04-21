@@ -26,13 +26,14 @@
 # This is for sphenix to find the packages
 # sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
-from typing import Union
+from typing import Union, List
 
 import matplotlib.pyplot as plt
 # from .vista import Vista
 # import gempy as _gempy
 import numpy as np
 import pandas as pn
+from gempy.plot.vista import GemPyToVista
 
 # Keep Alex code hidden until we merge it properly
 try:
@@ -55,9 +56,12 @@ def plot_2d(model, n_axis=None, section_names: list = None,
             cell_number: list = None, direction: list = 'y',
             show_data: Union[bool, list] = True,
             show_lith: Union[bool, list] = True,
+            show_values: Union[bool, list] = False,
+            show_block: Union[bool, list] = False,
             show_scalar: Union[bool, list] = False,
             show_boundaries: Union[bool, list] = True,
             show_topography: Union[bool, list] = False,
+            series_n: Union[int, List[int]] = 0,
             **kwargs):
     """"Plot 2-D sections of geomodel.
 
@@ -66,6 +70,8 @@ def plot_2d(model, n_axis=None, section_names: list = None,
     Input data and topography can be included.
 
     Args:
+        show_block:
+        show_values:
         model: Geomodel object with solutions.
         n_axis (int): Subplot axis for multiple sections
         section_names (list): Names of predefined custom section traces
@@ -76,6 +82,8 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         show_scalar (bool): Show scalar field isolines. Defaults to False.
         show_boundaries (bool): Show surface boundaries as lines. Defaults to True.
         show_topography (bool): Show topography on plot. Defaults to False.
+        series_n (int): number of the scalar field.
+         TODO being able to pass a list of int for each axis
         **kwargs:
 
     Returns:
@@ -99,12 +107,18 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         show_data = [show_data] * n_axis
     if type(show_lith) is bool:
         show_lith = [show_lith] * n_axis
+    if type(show_values) is bool:
+        show_values = [show_values] * n_axis
+    if type(show_block) is bool:
+        show_block = [show_block] * n_axis
     if type(show_scalar) is bool:
         show_scalar = [show_scalar] * n_axis
     if type(show_boundaries) is bool:
         show_boundaries = [show_boundaries] * n_axis
     if type(show_topography) is bool:
         show_topography = [show_topography] * n_axis
+    if type(series_n) is int:
+        series_n = [series_n] * n_axis
 
     p = Plot2D(model, **kwargs)
     p.create_figure(**kwargs)
@@ -118,18 +132,25 @@ def plot_2d(model, n_axis=None, section_names: list = None,
     # except TypeError:
     #     pass
 
+    # is 10 and 10 because in the ax pos is the second digit
+    n_columns = 10 if len(section_names) + len(cell_number) < 2 else 20
+
     for e, sn in enumerate(section_names):
         assert e < 10, 'Reached maximum of axes'
 
-        ax_pos = (int(n_axis / 2) + 1) * 100 + 20 + e + 1
+        ax_pos = (int(n_axis / 2) + 1) * 100 + n_columns + e + 1
         # print(ax_pos, '1')
         temp_ax = p.add_section(section_name=sn, ax_pos=ax_pos, **kwargs)
         if show_data[e] is True:
             p.plot_data(temp_ax, section_name=sn, **kwargs)
         if show_lith[e] is True and model.solutions.lith_block.shape[0] != 0:
             p.plot_lith(temp_ax, section_name=sn, **kwargs)
+        elif show_values[e] is True and model.solutions.values_matrix.shape[0] != 0:
+            p.plot_values(temp_ax, series_n=series_n[e], section_name=sn, **kwargs)
+        elif show_block[e] is True and model.solutions.block_matrix.shape[0] != 0:
+            p.plot_block(temp_ax, series_n=series_n[e], section_name=sn, **kwargs)
         if show_scalar[e] is True and model.solutions.scalar_field_matrix.shape[0] != 0:
-            p.plot_scalar_field(temp_ax, section_name=sn, **kwargs)
+            p.plot_scalar_field(temp_ax, series_n=series_n[e], section_name=sn, **kwargs)
         if show_boundaries[e] is True:
             p.plot_contacts(temp_ax, section_name=sn, **kwargs)
         if show_topography[e] is True:
@@ -141,7 +162,7 @@ def plot_2d(model, n_axis=None, section_names: list = None,
     for e2 in range(len(cell_number)):
         assert (e + e2) < 10, 'Reached maximum of axes'
 
-        ax_pos = (int(n_axis / 2) + 1) * 100 + 20 + e + e2 + 1
+        ax_pos = (int(n_axis / 2) + 1) * 100 + n_columns + e + e2 + 1
         print(ax_pos)
 
         temp_ax = p.add_section(cell_number=cell_number[e2],
@@ -152,8 +173,14 @@ def plot_2d(model, n_axis=None, section_names: list = None,
         if show_lith[e + e2] is True and model.solutions.lith_block.shape[0] != 0:
             p.plot_lith(temp_ax, cell_number=cell_number[e2],
                         direction=direction[e2], **kwargs)
+        elif show_values[e + e2] is True and model.solutions.values_matrix.shape[0] != 0:
+            p.plot_values(temp_ax, series_n=series_n[e], cell_number=cell_number[e2],
+                          direction=direction[e2], **kwargs)
+        elif show_block[e + e2] is True and model.solutions.block_matrix.shape[0] != 0:
+            p.plot_block(temp_ax, series_n=series_n[e], cell_number=cell_number[e2],
+                         direction=direction[e2], **kwargs)
         if show_scalar[e + e2] is True and model.solutions.scalar_field_matrix.shape[0] != 0:
-            p.plot_scalar_field(temp_ax, cell_number=cell_number[e2],
+            p.plot_scalar_field(temp_ax, series_n=series_n[e], cell_number=cell_number[e2],
                                 direction=direction[e2], **kwargs)
         if show_boundaries[e + e2] is True:
             p.plot_contacts(temp_ax, cell_number=cell_number[e2],
@@ -239,63 +266,82 @@ def plot_stereonet(self, litho=None, planes=True, poles=True,
         ax.grid(True, color='black', alpha=0.25)
 
 
-if PYVISTA_IMPORT:
-    def plot_3d(
-            geo_model,
-            show_surfaces: bool = True,
+def plot_3d(model, plotter_type='background',
             show_data: bool = True,
-            show_topography: bool = False,
-            **kwargs,
-    ) -> Vista:
-        """Plot 3-D geomodel.
+            show_surfaces: bool = True,
+            show_lith: bool = True,
+            show_scalar: bool = False,
+            show_boundaries: bool = True,
+            show_topography: Union[bool, list] = False,
+            **kwargs):
 
-        Args:
-            geo_model: Geomodel object with solutions.
-            render_surfaces: Render geomodel surfaces. Defaults to True.
-            render_data: Render geomodel input data. Defaults to True.
-            render_topography: Render topography. Defaults to False.
-            real_time: Toggles modyfiable input data and real-time geomodel
-                updating. Defaults to False.
-
-        Returns:
-            (Vista) GemPy Vista object for plotting.
-        """
-        gpv = Vista(geo_model, **kwargs)
-        gpv.set_bounds()
-        if show_surfaces:
-            gpv.plot_surfaces()
-        if show_data:
-            gpv._plot_surface_points_all()
-            gpv._plot_orientations_all()
-        if show_topography and geo_model.grid.topography is not None:
-            gpv.plot_topography()
-        gpv.show()
-        return gpv
-
-
-    def plot_interactive_3d(
-            geo_model,
-            name: str,
-            render_topography: bool = False,
-            **kwargs,
-    ) -> Vista:
-        """Plot interactive 3-D geomodel with three cross sections in subplots.
-
-        Args:
-            geo_model: Geomodel object with solutions.
-            name (str): Can be either one of the following
-                    'lith' - Lithology id block.
-                    'scalar' - Scalar field block.
-                    'values' - Values matrix block.
-            render_topography: Render topography. Defaults to False.
-            **kwargs:
-
-        Returns:
-            (Vista) GemPy Vista object for plotting.
-        """
-        gpv = Vista(geo_model, plotter_type='background', shape="1|3")
-        gpv.set_bounds()
-        gpv.plot_structured_grid_interactive(name=name, render_topography=render_topography, **kwargs)
-
-        gpv.show()
-        return gpv
+    gpv = GemPyToVista(model, plotter_type=plotter_type, **kwargs)
+    if show_surfaces and len(model.solutions.vertices) != 0:
+        gpv.plot_surfaces()
+    if show_data:
+        gpv.plot_data()
+    if show_topography and model.grid.topography is not None:
+        gpv.plot_topography()
+    #gpv.p.show()
+    return gpv
+#
+# if PYVISTA_IMPORT and False:
+#     def plot_3d(
+#             geo_model,
+#             show_surfaces: bool = True,
+#             show_data: bool = True,
+#             show_topography: bool = False,
+#             **kwargs,
+#     ) -> Vista:
+#         """Plot 3-D geomodel.
+#
+#         Args:
+#             geo_model: Geomodel object with solutions.
+#             render_surfaces: Render geomodel surfaces. Defaults to True.
+#             render_data: Render geomodel input data. Defaults to True.
+#             render_topography: Render topography. Defaults to False.
+#             real_time: Toggles modyfiable input data and real-time geomodel
+#                 updating. Defaults to False.
+#
+#         Returns:
+#             (Vista) GemPy Vista object for plotting.
+#         """
+#         gpv = Vista(geo_model, **kwargs)
+#         gpv.set_bounds()
+#         if show_surfaces:
+#             gpv.plot_surfaces()
+#         if show_data:
+#             gpv._plot_surface_points_all()
+#             gpv._plot_orientations_all()
+#         if show_topography and geo_model.grid.topography is not None:
+#             gpv.plot_topography()
+#         gpv.show()
+#         return gpv
+#
+#
+#     def plot_interactive_3d(
+#             geo_model,
+#             name: str,
+#             render_topography: bool = False,
+#             **kwargs,
+#     ) -> Vista:
+#         """Plot interactive 3-D geomodel with three cross sections in subplots.
+#
+#         Args:
+#             geo_model: Geomodel object with solutions.
+#             name (str): Can be either one of the following
+#                     'lith' - Lithology id block.
+#                     'scalar' - Scalar field block.
+#                     'values' - Values matrix block.
+#             render_topography: Render topography. Defaults to False.
+#             **kwargs:
+#
+#         Returns:
+#             (Vista) GemPy Vista object for plotting.
+#         """
+#         gpv = Vista(geo_model, plotter_type='background', shape="1|3")
+#         gpv.set_bounds()
+#         gpv.plot_structured_grid_interactive(name=name, render_topography=render_topography, **kwargs)
+#
+#         gpv.show()
+#         return gpv

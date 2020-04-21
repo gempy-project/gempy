@@ -10,14 +10,14 @@ input_path = os.path.dirname(__file__) + '/../../notebooks/data'
                     reason="Skipping this test on Travis CI.")
 class TestVista:
     @pytest.fixture(scope='module')
-    def vista_object_only_data(self, one_fault_model):
+    def vista_object_only_data(self, one_fault_model_no_interp):
         """
         Args:
             one_fault_model:
         """
         from gempy.plot.vista import GemPyToVista
 
-        return GemPyToVista(one_fault_model, plotter_type='background')
+        return GemPyToVista(one_fault_model_no_interp, plotter_type='background')
 
     @pytest.fixture(scope='module')
     def vista_object_computed(self, one_fault_model_solution):
@@ -81,6 +81,10 @@ class TestVista:
         """
         vista_object_only_data.live_updating = False
         vista_object_only_data.plot_surface_points()
+        print('foo')
+
+    def test_plot_data_static(self, vista_object_only_data):
+        vista_object_only_data.plot_data()
         print('foo')
 
     def test_plot_orientations_poly_live(self, vista_object_only_data):

@@ -159,7 +159,7 @@ p2.plot_topography(a, sec_name_2)
 # # Axes 1
 p2.plot_contacts(p2.axes[0], cell_number=3)
 #p2.plot_lith(p2.axes[0], cell_number=3)
-p2.plot_scalar_field(p2.axes[0], cell_number=3, sn=1)
+p2.plot_scalar_field(p2.axes[0], cell_number=3, series_n=1)
 #p2.plot_topography(p2.axes[0], cell_number=2)
 
 # #axes2.

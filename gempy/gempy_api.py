@@ -228,6 +228,9 @@ def compute_model(model: Project, output=None, at: np.ndarray = None, compute_me
 
     # Check config
     # ------------
+    assert model.interpolator.theano_function is not None, 'You need to compile' \
+                                                           'graph before. See `gempy.set_interpolator`.'
+
     assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1, \
         'To compute the model is necessary at least 2 interface points per layer'
     assert len(model.interpolator.len_series_i) == len(model.interpolator.len_series_o), \

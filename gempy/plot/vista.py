@@ -179,22 +179,25 @@ class GemPyToVista(WidgetsCallbacks):
             if extent is None:
                 extent = self.extent
             self.p.show_bounds(
-                bounds=extent, location=location, grid=grid, **kwargs
+                bounds=extent, location=location, grid=grid, use_2d=True, **kwargs
             )
 
-    def plot_data(self, surface_points=None, orientations=None, **kwargs):
+    def plot_data(self, surfaces='all', surface_points=None, orientations=None, **kwargs):
         """Plot all the geometric data
 
         Args:
+            surfaces(str, List[str]): Name of the surface, or list of names of surfaces to plot.
+             By default all will plot all surfaces.
             surface_points:
             orientations:
             **kwargs:
         """
-        self.plot_surface_points(surface_points, **kwargs)
-        self.plot_orientations(orientations, **kwargs)
+        self.plot_surface_points(surfaces=surfaces, surface_points=surface_points, **kwargs)
+        self.plot_orientations(surfaces=surfaces, orientations=orientations, **kwargs)
 
     @staticmethod
-    def _select_surfaces_data(data_df: pd.core.frame.DataFrame, surfaces: Union[str, List[str]] = 'all') -> \
+    def _select_surfaces_data(data_df: pd.core.frame.DataFrame,
+                              surfaces: Union[str, List[str]] = 'all') -> \
             pd.core.frame.DataFrame:
         """Select the surfaces that has to be plot.
 

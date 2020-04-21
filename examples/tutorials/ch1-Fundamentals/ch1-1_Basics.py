@@ -74,8 +74,8 @@ import matplotlib.pyplot as plt
 # %% 
 geo_model = gp.create_model('Tutorial_ch1-1_Basics')
 
-# %% 
-data_path = os.getcwd()+'/examples'
+# %%
+data_path = 'https://raw.githubusercontent.com/cgre-aachen/gempy_data/master/'
 # Importing the data from CSV-files and setting extent and resolution
 gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
              path_o=data_path + "/data/input_data/tut_chapter1/simple_fault_model_orientations.csv",
@@ -240,21 +240,8 @@ gp.get_data(geo_model, 'orientations')
 # attribute to be either :math:`x`, :math:`y` or :math:`z`).
 # 
 
-# %% 
-# %matplotlib inline
-gp.plot.plot_data(geo_model, direction='y');
-
 # %%
-plot = gp._plot.plot_2d(geo_model)
-#plt.figure(plot.fig.number)
-plot.fig
-#g = plt.gcf()
-#print(g is plot.fig)
-#plt.savefig('f',)
-#plt.show()
-
-# %%
-plt.plot(2, 3)
+plot = gp._plot.plot_2d(geo_model, show_lith=False, show_boundaries=False)
 plt.show()
 
 # %%
@@ -271,10 +258,10 @@ plt.show()
 # 
 # Executing the cell below will open a new window with a 3D interactive
 # plot of our data.
-# 
 
-# %% 
-gp.plot.plot_3D(geo_model);
+
+# %%
+gp._plot.plot_3d(geo_model, plotter_type='basic')
 
 # %%
 # Model generation
@@ -292,10 +279,10 @@ gp.plot.plot_3D(geo_model);
 # 
 
 # %% 
-gp.set_interpolation_data(geo_model,
-                          compile_theano=True,
-                          theano_optimizer='fast_compile',
-                          verbose=[])
+gp.set_interpolator(geo_model,
+                    compile_theano=True,
+                    theano_optimizer='fast_compile',
+                    verbose=[])
 
 # %%
 # This function rescales the extent and coordinates of the original data
@@ -387,11 +374,9 @@ geo_model.solutions.lith_block
 # %% 
 geo_model.grid.values
 
-# %% 
-# %matplotlib inline
-gp.plot.plot_section(geo_model, cell_number=25,
-                     direction='y', show_data=True)
-
+# %%
+gp._plot.plot_2d(geo_model, show_data=False)
+plt.show()
 # %% 
 geo_model.surfaces
 
@@ -411,8 +396,14 @@ geo_model.surfaces
 # %% 
 gp.plot.plot_scalar_field(geo_model, cell_number=25, N=15, series=0,
                           direction='y', show_data=True)
+# %%
+gp._plot.plot_2d(geo_model, show_data=False, show_scalar=True, show_lith=False)
+plt.show()
 
-plt.colorbar()
+# %%
+gp._plot.plot_2d(geo_model, series_n=1, show_data=False, show_scalar=True, show_lith=False)
+plt.show()
+
 
 # %%
 # This illustrates well the fold-related deformation of the stratigraphy,
@@ -424,9 +415,14 @@ plt.colorbar()
 # %% 
 geo_model.solutions.scalar_field_at_surface_points
 
-# %% 
-gp.plot.plot_section(geo_model, cell_number=25, block=geo_model.solutions.block_matrix[0, 0],
-                     show_data=False)
+# %%
+gp._plot.plot_2d(geo_model, show_block=True, show_lith=False)
+plt.show()
+
+# %%
+gp._plot.plot_2d(geo_model, series_n=1, show_block=True, show_lith=False)
+plt.show()
+
 
 # %%
 # Marching cubes and vtk visualization
@@ -443,8 +439,9 @@ gp.plot.plot_section(geo_model, cell_number=25, block=geo_model.solutions.block_
 # %% 
 ver, sim = gp.get_surfaces(geo_model)
 
-# %% 
-gp.plot.plot_3D(geo_model)
+
+# %%
+gp._plot.plot_3d(geo_model, plotter_type='basic')
 
 # %%
 # Using the rescaled interpolation data, we can also run our 3D VTK
@@ -467,14 +464,16 @@ gp.plot.plot_3D(geo_model)
 
 # %% 
 x_i = np.array([[3, 5, 6]])
-sol = gp.compute_model_at(x_i, geo_model)
+sol = gp.compute_model(geo_model, at=x_i)
 
 # %%
 # Therefore if we just want the value at **x\_i**:
-# 
 
-# %% 
-sol[0][0, :x_i.shape[0]]
+# %%
+sol.custom
+
+#%%
+# This return the id, and the scalar field values for each series
 
 # %%
 # Save the model
@@ -495,4 +494,5 @@ sol[0][0, :x_i.shape[0]]
 # 
 
 # %% 
-gp.save_model(geo_model, path=data_path + '/data/gempy_models')
+gp.save_model(geo_model)
+
