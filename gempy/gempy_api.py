@@ -25,7 +25,7 @@ import pandas as pn
 from numpy import ndarray
 from typing import Union
 import warnings
-from gempy.core.model import Model
+from gempy.core.model import Project
 from gempy.core.solution import Solution
 from gempy.utils.meta import _setdoc, _setdoc_pro
 
@@ -38,7 +38,7 @@ def get():
 # endregion
 
 # region edit
-def edit(model: Model, data_object: str, method: str, **kwargs):
+def edit(model: Project, data_object: str, method: str, **kwargs):
     """Function to edit any of the data_objects of gempy. Check
      https://www.gempy.org/documentation-1 Data for documentation.
 
@@ -60,8 +60,8 @@ def edit(model: Model, data_object: str, method: str, **kwargs):
 
 
 # region mapping
-@_setdoc(Model.map_series_to_surfaces.__doc__)
-def map_series_to_surfaces(geo_model: Model, mapping_object: Union[dict, pn.Categorical] = None,
+@_setdoc(Project.map_series_to_surfaces.__doc__)
+def map_series_to_surfaces(geo_model: Project, mapping_object: Union[dict, pn.Categorical] = None,
                            set_series=True, sort_geometric_data: bool = True, remove_unused_series=True):
     """"""
     geo_model.map_series_to_surfaces(mapping_object, set_series, sort_geometric_data, remove_unused_series)
@@ -72,24 +72,24 @@ def map_series_to_surfaces(geo_model: Model, mapping_object: Union[dict, pn.Cate
 
 
 # region create
-@_setdoc(Model.__doc__)
+@_setdoc(Project.__doc__)
 def create_model(project_name='default_project'):
-    """Create a Model object
+    """Create a Project object
     #TODO: Adding saving address
 
     Returns:
-        Model
+        Project
 
     """
-    return Model(project_name)
+    return Project(project_name)
 
 
 def create_data(project_name: str = 'default_project',
                 extent: Union[list, ndarray] = None,
                 resolution: Union[list, ndarray] = None,
-                **kwargs) -> Model:
+                **kwargs) -> Project:
     """
-    Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
+    Create a :class:`gempy.core.model.Project` object and initialize some of the main functions such as:
 
     - Grid :class:`gempy.core.data.GridClass`: To regular grid.
     - read_csv: SurfacePoints and orientations: From csv files
@@ -108,7 +108,7 @@ def create_data(project_name: str = 'default_project',
         path_o: Path to the data bases of orientations. Default os.getcwd()
 
     Returns:
-        :class:`Model`
+        :class:`Project`
 
     """
 
@@ -119,12 +119,12 @@ def create_data(project_name: str = 'default_project',
 
 # TODO We need to decide how to initialize a model. Having create_data and init
 #  data  does not seem too robust
-@_setdoc_pro([Model.__doc__])
-def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
+@_setdoc_pro([Project.__doc__])
+def init_data(geo_model: Project, extent: Union[list, ndarray] = None,
               resolution: Union[list, ndarray] = None,
-              **kwargs) -> Model:
+              **kwargs) -> Project:
     """
-    Create a :class:`gempy.core.model.Model` object and initialize some of the main functions such as:
+    Create a :class:`gempy.core.model.Project` object and initialize some of the main functions such as:
 
     - Grid :class:`gempy.core.data.GridClass`: To regular grid.
     - read_csv: SurfacePoints and orientations: From csv files
@@ -132,7 +132,7 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 
 
     Args:
-        geo_model (:class:Model): [s0]
+        geo_model (:class:Project): [s0]
         extent (list or array):  [x_min, x_max, y_min, y_max, z_min, z_max]. Extent for the visualization of data
          and default of for the grid class.
         resolution (list or array): [nx, ny, nz]. Resolution for the visualization of data
@@ -175,8 +175,8 @@ def init_data(geo_model: Model, extent: Union[list, ndarray] = None,
 # If everything works out properly update. Should happen automatically. Therefore
 # we will keep it just as a method
 # region update
-def update_additional_data(model: Model, update_structure=True, update_kriging=True):
-    warnings.warn('This function is going to be deprecated. Use Model.update_additional_data instead',
+def update_additional_data(model: Project, update_structure=True, update_kriging=True):
+    warnings.warn('This function is going to be deprecated. Use Project.update_additional_data instead',
                   DeprecationWarning)
     return model.update_additional_data(update_structure, update_kriging)
 
@@ -185,8 +185,8 @@ def update_additional_data(model: Model, update_structure=True, update_kriging=T
 
 
 # region io
-@_setdoc([Model.read_data.__doc__])
-def read_csv(geo_model: Model, path_i=None, path_o=None, **kwargs):
+@_setdoc([Project.read_data.__doc__])
+def read_csv(geo_model: Project, path_i=None, path_o=None, **kwargs):
     if path_i is not None or path_o is not None:
         geo_model.read_data(path_i, path_o, **kwargs)
     return True
@@ -196,9 +196,9 @@ def read_csv(geo_model: Model, path_i=None, path_o=None, **kwargs):
 
 
 # region Computing the model
-@_setdoc_pro([Model.__doc__, Solution.compute_marching_cubes_regular_grid.__doc__,
-              Model.set_surface_order_from_solution.__doc__])
-def compute_model(model: Model, output=None, at: np.ndarray = None, compute_mesh=True,
+@_setdoc_pro([Project.__doc__, Solution.compute_marching_cubes_regular_grid.__doc__,
+              Project.set_surface_order_from_solution.__doc__])
+def compute_model(model: Project, output=None, at: np.ndarray = None, compute_mesh=True,
                   reset_weights=False, reset_scalar=False,
                   reset_block=False, sort_surfaces=True,
                   debug=False, set_solutions=True,
@@ -207,14 +207,14 @@ def compute_model(model: Model, output=None, at: np.ndarray = None, compute_mesh
     Computes the geological model and any extra output given in the additional data option.
 
     Args:
-        model (:class:`Model`): [s0]
+        model (:class:`Project`): [s0]
         output (str {'geology', 'gravity'}): Compute the lithologies or gravity
         at (np.ndarray[n, 3]: Numpy array where you want to interpolate.
         compute_mesh (bool): if True compute marching cubes: [s1]
         reset_weights (bool): Not Implemented
         reset_scalar (bool): Not Implemented
         reset_block (bool): Not Implemented
-        sort_surfaces (bool): if True call Model.set_surface_order_from_solution: [s2]
+        sort_surfaces (bool): if True call Project.set_surface_order_from_solution: [s2]
         debug (bool): if True, the computed interpolation are not stored in any object but instead returned
         set_solutions (bool): Default True. If True set the results into the :class:`Solutions` linked object.
 
@@ -272,8 +272,8 @@ def compute_model(model: Model, output=None, at: np.ndarray = None, compute_mesh
         return model.solutions
 
 
-@_setdoc([Model.set_custom_grid.__doc__, compute_model.__doc__], indent=False)
-def compute_model_at(new_grid: Union[ndarray], model: Model, **kwargs):
+@_setdoc([Project.set_custom_grid.__doc__, compute_model.__doc__], indent=False)
+def compute_model_at(new_grid: Union[ndarray], model: Project, **kwargs):
     """
     This function creates a new custom grid and deactivate all the other grids and compute the model there:
 
@@ -300,10 +300,10 @@ def compute_model_at(new_grid: Union[ndarray], model: Model, **kwargs):
 
 
 # region activate
-@_setdoc_pro([Model.__doc__], )
-def activate_interactive_df(geo_model: Model, plot_object=None):
+@_setdoc_pro([Project.__doc__], )
+def activate_interactive_df(geo_model: Project, plot_object=None):
     """
-    Experimental: Activate the use of the QgridModelIntegration:
+    Experimental: Activate the use of the QgridProjectIntegration:
     TODO evaluate the use of this functionality
 
     Notes: Since this feature is for advance levels we will keep only object oriented functionality. Should we

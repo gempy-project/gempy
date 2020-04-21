@@ -1106,7 +1106,19 @@ class ImplicitCoKriging(object):
         return self.surfaces
 
 
-# TODO rename to Project. With DEP time
+def Model(project_name= 'default_project'):
+    """ Container class of all objects that constitute a GemPy model.
+
+      In addition the class provides the methods that act in more than one of this class. Model is a child class of
+      :class:`DataMutation` and :class:`MetaData`.
+
+      """
+    warnings.warn('This C;ass is going to be deprecated in GemPy 2.3. '
+                  'Use Project instead.',
+                  DeprecationWarning)
+    return Project(project_name)
+
+
 @_setdoc([MetaData.__doc__, ImplicitCoKriging.__doc__], indent=False)
 class Project(ImplicitCoKriging):
     """ Container class of all objects that constitute a GemPy model.

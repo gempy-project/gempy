@@ -7,18 +7,18 @@ import pandas as pn
 import numpy as np
 
 # region Save
-from gempy import Model, create_model, init_data
+from gempy import Project, create_model, init_data
 from gempy.utils.meta import _setdoc
 
 
-@_setdoc(Model.save_model_pickle.__doc__)
-def save_model_to_pickle(model: Model, path=None):
+@_setdoc(Project.save_model_pickle.__doc__)
+def save_model_to_pickle(model: Project, path=None):
     model.save_model_pickle(path)
     return True
 
 
-@_setdoc(Model.save_model.__doc__)
-def save_model(model: Model, name=None, path=None):
+@_setdoc(Project.save_model.__doc__)
+def save_model(model: Project, name=None, path=None):
     try:
         model.grid.topography.topo = None
     except AttributeError:
@@ -27,7 +27,7 @@ def save_model(model: Model, name=None, path=None):
     return True
 
 
-@_setdoc(Model.load_model_pickle.__doc__)
+@_setdoc(Project.load_model_pickle.__doc__)
 def load_model_pickle(path):
     """
     Read InputData object from python pickle.
@@ -36,10 +36,10 @@ def load_model_pickle(path):
        path (str): path where save the pickle
 
     Returns:
-        :class:`Model`
+        :class:`Project`
 
     """
-    return Model.load_model_pickle(path)
+    return Project.load_model_pickle(path)
 
 
 def load_model(name, path=None, recompile=False):
@@ -52,7 +52,7 @@ def load_model(name, path=None, recompile=False):
         recompile (bool): if true, theano functions will be recompiled
 
     Returns:
-        :class:`Model`
+        :class:`Project`
 
     """
     # TODO: Divide each dataframe in its own function

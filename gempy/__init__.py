@@ -15,7 +15,7 @@ from gempy.gempy_api import *
 from gempy.api_modules.getters import *
 from gempy.api_modules.setters import *
 from gempy.api_modules.io import *
-from gempy.core.model import DataMutation, AdditionalData, Faults, Grid, \
+from gempy.core.model import ImplicitCoKriging, AdditionalData, Faults, Grid, \
     MetaData, Orientations, RescaledData, Series, SurfacePoints, \
     Surfaces, Options, Structure, KrigingParameters
 

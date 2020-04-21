@@ -45,18 +45,19 @@ def one_fault_model_no_interp():
 
 
 @pytest.fixture(scope='session')
-def one_fault_model(one_fault_model_no_interp, interpolator):
-    # model = gp.create_data(extent=[0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
-    #                        path_o=input_path2 + 'tut_chapter1/simple_fault_model_orientations.csv',
-    #                        path_i=input_path2 + 'tut_chapter1/simple_fault_model_points.csv')
-    #
-    # # Assigning series to surface as well as their order (timewise)
-    # gp.map_series_to_surfaces(model, {"Fault_Series": 'Main_Fault',
-    #                                   "Strat_Series": ('Sandstone_2', 'Siltstone',
-    #                                   'Shale', 'Sandstone_1')},
-    #               )
-    # model.set_is_fault(['Fault_Series'])
-    model = one_fault_model_no_interp
+def one_fault_model(interpolator):
+    """This only makes sense for running small test fast"""
+    model = gp.create_data('one_fault_model', [0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
+                           path_o=input_path2 + 'tut_chapter1/simple_fault_model_orientations.csv',
+                           path_i=input_path2 + 'tut_chapter1/simple_fault_model_points.csv')
+
+    # Assigning series to surface as well as their order (timewise)
+    gp.map_series_to_surfaces(model, {"Fault_Series": 'Main_Fault',
+                                      "Strat_Series": ('Sandstone_2', 'Siltstone',
+                                                       'Shale', 'Sandstone_1')},
+                              )
+    model.set_is_fault(['Fault_Series'])
+
     model.set_theano_function(interpolator)
 
     return model
