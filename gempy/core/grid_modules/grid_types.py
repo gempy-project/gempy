@@ -500,7 +500,7 @@ class Topography:
         dz = (zs[-1] - zs[0]) / len(zs)
         return ((self.values_3D_res[:, :, 2] - zs[0]) / dz + 1).astype(int)
 
-    def interpolate_zvals_at_xy(self, xy, method):
+    def interpolate_zvals_at_xy(self, xy, method='interp2d'):
         """
         Interpolates DEM values on a defined section
 
@@ -522,10 +522,10 @@ class Topography:
             else:
                 return np.flipud(zi).diagonal()
         else:
-            assert xy[:, 0][0] <= xy[:, 0][-1], 'At the moment, the xy values of the first point must be smaller than second' \
-                                               '(fix soon)'
-            assert xy[:, 1][0] <= xy[:, 1][-1], 'At the moment, the xy values of the first point must be smaller than second' \
-                                               '(fix soon)'
+            assert xy[:, 0][0] <= xy[:, 0][-1], 'The xy values of the first point must be smaller than second.' \
+                                               'Please use interp2d as method argument. Will be fixed.'
+            assert xy[:, 1][0] <= xy[:, 1][-1], 'The xy values of the first point must be smaller than second.' \
+                                               'Please use interp2d as method argument. Will be fixed.'
             f = interpolate.RectBivariateSpline(xj, yj, zj)
             zi = f(xy[:, 0], xy[:, 1])
             return np.flipud(zi).diagonal()
