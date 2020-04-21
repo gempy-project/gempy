@@ -65,6 +65,7 @@ def one_fault_model(interpolator):
 
 @pytest.fixture(scope='session')
 def one_fault_model_solution(one_fault_model):
+
     gp.compute_model(one_fault_model)
     return one_fault_model
 

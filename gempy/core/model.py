@@ -83,7 +83,7 @@ class ImplicitCoKriging(object):
 
         return idx
 
-    @setdoc_pro([AdditionalData.update_structure.__doc__, InterpolatorModel.set_theano_shared_structure.__doc__,
+    @_setdoc_pro([AdditionalData.update_structure.__doc__, InterpolatorModel.set_theano_shared_structure.__doc__,
                  InterpolatorModel.modify_results_matrices_pro.__doc__,
                  InterpolatorModel.modify_results_weights.__doc__])
     def update_structure(self, update_theano=None, update_series_is_active=True,

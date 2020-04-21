@@ -37,11 +37,12 @@ class TestVista:
         """
 
         from gempy.plot.vista import GemPyToVista
+        one_fault_model_solution.update_additional_data()
+        one_fault_model_solution.update_to_interpolator()
         one_fault_model_solution.set_topography()
         gp.compute_model(one_fault_model_solution)
 
         return GemPyToVista(one_fault_model_solution, plotter_type='background')
-
 
     def test_set_bounds(self, vista_object_only_data):
         """
