@@ -2,7 +2,7 @@
 # region Auxiliary
 
 
-def setdoc(docstring, indent=True, position='end'):
+def _setdoc(docstring, indent=True, position='end'):
     if type(docstring) is list:
         try:
             docstring = '----'.join(docstring)
@@ -28,7 +28,7 @@ def setdoc(docstring, indent=True, position='end'):
     return decor
 
 
-def setdoc_pro(docstring):
+def _setdoc_pro(docstring):
     if type(docstring) is not list:
         docstring = [docstring]
         # try:

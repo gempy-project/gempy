@@ -4,7 +4,7 @@ import skimage.transform
 import matplotlib.pyplot as plt
 from scipy.constants import G
 from scipy import interpolate
-from gempy.utils.meta import setdoc, setdoc_pro
+from gempy.utils.meta import _setdoc, _setdoc_pro
 import gempy.utils.docstring as ds
 from typing import Optional
 import pandas as pn
@@ -268,7 +268,7 @@ class CenteredGrid:
             self.set_centered_grid(centers=centers, radius=radius, resolution=resolution)
 
     @staticmethod
-    @setdoc_pro(ds.resolution)
+    @_setdoc_pro(ds.resolution)
     def create_irregular_grid_kernel(resolution, radius):
         """
         Create an isometric grid kernel (centered at 0)
@@ -308,7 +308,7 @@ class CenteredGrid:
 
         return kernel_g, kernel_d_left, kernel_d_right
 
-    @setdoc_pro(ds.resolution)
+    @_setdoc_pro(ds.resolution)
     def set_centered_kernel(self, resolution, radius):
         """
         Set a centered
@@ -325,7 +325,7 @@ class CenteredGrid:
 
         return self.kernel_centers
 
-    @setdoc_pro(ds.resolution)
+    @_setdoc_pro(ds.resolution)
     def set_centered_grid(self, centers, kernel_centers=None, **kwargs):
         """
         Main method of the class, set the XYZ values around centers using a kernel.

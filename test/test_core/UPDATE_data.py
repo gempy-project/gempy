@@ -21,7 +21,7 @@ def test_read_surface_points():
 @pytest.fixture
 def test_model_init(scope="module"):
     # Create empty model
-    model = gp.Model()
+    model = gp.Project()
     return model
 
 @pytest.fixture

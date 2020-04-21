@@ -4,12 +4,12 @@ import warnings
 from skimage import measure
 from gempy.utils.input_manipulation import find_interfaces_from_block_bottoms
 from gempy.core.data import Grid, Surfaces, Series
-from gempy.utils.meta import setdoc, setdoc_pro
+from gempy.utils.meta import _setdoc, _setdoc_pro
 import gempy.utils.docstring as ds
 
 
-@setdoc_pro([Grid.__doc__, Surfaces.__doc__, Series.__doc__, ds.weights_vector, ds.sfai, ds.bai, ds.mai, ds.vai,
-             ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges, ds.geological_map])
+@_setdoc_pro([Grid.__doc__, Surfaces.__doc__, Series.__doc__, ds.weights_vector, ds.sfai, ds.bai, ds.mai, ds.vai,
+              ds.lith_block, ds.sfm, ds.bm, ds.mm, ds.vm, ds.vertices, ds.edges, ds.geological_map])
 class Solution(object):
     """
     This class stores the output of the interpolation and the necessary objects to visualize and manipulate this data.
@@ -166,7 +166,7 @@ class Solution(object):
 
         return True
 
-    @setdoc(measure.marching_cubes_lewiner.__doc__)
+    @_setdoc(measure.marching_cubes_lewiner.__doc__)
     def compute_marching_cubes_regular_grid(self, level: float, scalar_field, mask_array=None, classic=False,
                                             rescale=False, **kwargs):
         """
@@ -243,7 +243,7 @@ class Solution(object):
             self.mask_matrix_pad.append(mask_pad)
         return True
 
-    @setdoc(compute_marching_cubes_regular_grid.__doc__)
+    @_setdoc(compute_marching_cubes_regular_grid.__doc__)
     def compute_all_surfaces(self, **kwargs):
         """
         Compute all surfaces of the model given the geological features rules.

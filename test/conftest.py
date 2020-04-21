@@ -29,17 +29,34 @@ def interpolator_magnetics():
 
 
 @pytest.fixture(scope='session')
-def one_fault_model(interpolator):
-    model = gp.create_data([0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
+def one_fault_model_no_interp():
+    """This only makes sense for running small test fast"""
+    model = gp.create_data('one_fault_model', [0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
                            path_o=input_path2 + 'tut_chapter1/simple_fault_model_orientations.csv',
                            path_i=input_path2 + 'tut_chapter1/simple_fault_model_points.csv')
 
     # Assigning series to surface as well as their order (timewise)
     gp.map_series_to_surfaces(model, {"Fault_Series": 'Main_Fault',
                                       "Strat_Series": ('Sandstone_2', 'Siltstone',
-                                      'Shale', 'Sandstone_1')},
-                  )
+                                                       'Shale', 'Sandstone_1')},
+                              )
     model.set_is_fault(['Fault_Series'])
+    return model
+
+
+@pytest.fixture(scope='session')
+def one_fault_model(one_fault_model_no_interp, interpolator):
+    # model = gp.create_data(extent=[0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
+    #                        path_o=input_path2 + 'tut_chapter1/simple_fault_model_orientations.csv',
+    #                        path_i=input_path2 + 'tut_chapter1/simple_fault_model_points.csv')
+    #
+    # # Assigning series to surface as well as their order (timewise)
+    # gp.map_series_to_surfaces(model, {"Fault_Series": 'Main_Fault',
+    #                                   "Strat_Series": ('Sandstone_2', 'Siltstone',
+    #                                   'Shale', 'Sandstone_1')},
+    #               )
+    # model.set_is_fault(['Fault_Series'])
+    model = one_fault_model_no_interp
     model.set_theano_function(interpolator)
 
     return model
@@ -53,7 +70,7 @@ def one_fault_model_solution(one_fault_model):
 
 @pytest.fixture(scope='session')
 def unconformity_model(interpolator):
-    geo_model = gp.create_data(
+    geo_model = gp.create_data('unconformity_model',
         [0, 1000, 0, 1000, 0, 1000],
         resolution=[50, 50, 50],
         path_o=input_path2 + "jan_models/model6_orientations.csv",
@@ -91,12 +108,12 @@ def model_horizontal_two_layers(interpolator):
 @pytest.fixture(scope='session')
 def model_complex(interpolator):
 
-    model = gempy.create_data([0, 2500, 0, 1000, 0, 1000], [50, 20, 20],
+    model = gempy.create_data(extent=[0, 2500, 0, 1000, 0, 1000], resolution = [50, 20, 20],
                                  path_o=input_path2 + "jan_models/fixture_model_orientations.csv",
                                  path_i=input_path2 + "jan_models/fixture_model_surfaces.csv")
 
     # Assigning series to surface as well as their order (timewise)
-    gp.set_series(model, {"Fault_Series": ('fault'), "Strat_Series1": ('rock3'),
+    gp.map_series_to_surfaces(model, {"Fault_Series": ('fault'), "Strat_Series1": ('rock3'),
                                             "Strat_Series2": ('rock2', 'rock1'),
                                             "Basement_Series": ('basement')})
 
@@ -122,7 +139,7 @@ def model_complex(interpolator):
 #
 #     geo_model.set_is_fault(['Fault_Series'])
 #
-#     gp.set_interpolation_data(geo_model, grid=None,
+#     gp.set_interpolator(geo_model, grid=None,
 #                               compile_theano=True,
 #                               theano_optimizer='fast_compile',
 #                               verbose=[])
@@ -140,14 +157,14 @@ def model_complex(interpolator):
 #                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
 #                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 #
-#     interpolator = gempy.set_interpolation_data(geo_model, grid=None, compile_theano=True)
+#     interpolator = gempy.set_interpolator(geo_model, grid=None, compile_theano=True)
 #     return interpolator
 
 #
 # @pytest.fixture(scope='session')
 # def theano_f():
 #     # Importing the data from csv files and settign extent and resolution
-#     geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+#     geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], [50, 50, 50],
 #                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
 #                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 #
@@ -159,7 +176,7 @@ def model_complex(interpolator):
 # @pytest.fixture(scope='session')
 # def theano_f_1f():
 #     # Importing the data from csv files and settign extent and resolution
-#     geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+#     geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], [50, 50, 50],
 #                                  path_o=input_path+"/GeoModeller/test_d/test_d_Foliations.csv",
 #                                  path_i=input_path+"/GeoModeller/test_d/test_d_Points.csv")
 #
@@ -173,7 +190,7 @@ def model_complex(interpolator):
 # @pytest.fixture(scope='session')
 # def theano_f_grav():
 #     # Importing the data from csv files and settign extent and resolution
-#     geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+#     geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], [50, 50, 50],
 #                                  path_o=input_path + "/GeoModeller/test_a/test_a_Foliations.csv",
 #                                  path_i=input_path + "/GeoModeller/test_a/test_a_Points.csv")
 #

@@ -75,7 +75,7 @@ class TestGemPyToREX:
         gtr.write_rex(rex_bytes, path=os.path.dirname(__file__) + '/rexfiles/gtr_test')
 
     def test_rex_bytes_to_file_except(self):
-        model = gempy.create_data([0,10,0,10,0,10])
+        model = gempy.create_data(extent=[0,10,0,10,0,10])
         model.set_default_surfaces()
         model.surfaces.df['isActive'] = False
         rex_bytes = gtr.geomodel_to_rex(model)

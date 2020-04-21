@@ -22,7 +22,7 @@ class TestNoFaults:
         2 Horizontal layers with drift 0
         """
         # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+        geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], [50, 50, 50],
                                      path_o=input_path+"/GeoModeller/test_a/test_a_Foliations.csv",
                                      path_i=input_path+"/GeoModeller/test_a/test_a_Points.csv")
 
@@ -52,7 +52,7 @@ class TestNoFaults:
         """
 
         # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+        geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], [50, 50, 50],
                                      path_o=input_path+"/GeoModeller/test_b/test_b_Foliations.csv",
                                      path_i=input_path+"/GeoModeller/test_b/test_b_Points.csv")
 
@@ -82,7 +82,7 @@ class TestNoFaults:
         """
 
         # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+        geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], [50, 50, 50],
                                      path_o=input_path+"/GeoModeller/test_c/test_c_Foliations.csv",
                                      path_i=input_path+"/GeoModeller/test_c/test_c_Points.csv")
 
@@ -117,7 +117,7 @@ class TestFaults:
         """
 
         # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+        geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], [50, 50, 50],
                                      path_o=input_path+"/GeoModeller/test_d/test_d_Foliations.csv",
                                      path_i=input_path+"/GeoModeller/test_d/test_d_Points.csv")
 
@@ -147,7 +147,7 @@ class TestFaults:
         Two layers a bit curvy, 1 fault
         """
         # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data([0, 10, 0, 10, -10, 0], [50, 50, 50],
+        geo_data = gempy.create_data(extent=[0, 10, 0, 10, -10, 0], [50, 50, 50],
                                      path_o=input_path+"/GeoModeller/test_e/test_e_Foliations.csv",
                                      path_i=input_path+"/GeoModeller/test_e/test_e_Points.csv")
 
@@ -177,7 +177,7 @@ class TestFaults:
         """
 
         # Importing the data from csv files and settign extent and resolution
-        geo_data = gempy.create_data([0, 2000, 0, 2000, -2000, 0], [50, 50, 50],
+        geo_data = gempy.create_data(extent=[0, 2000, 0, 2000, -2000, 0], [50, 50, 50],
                                      path_o=input_path+"/GeoModeller/test_f/test_f_Foliations.csv",
                                      path_i=input_path+"/GeoModeller/test_f/test_f_Points.csv")
 

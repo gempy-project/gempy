@@ -13,7 +13,7 @@ input_path = os.path.dirname(__file__)+'/../../examples/data'
 
 def test_set_orientations():
     # Importing the data from CSV-files and setting extent and resolution
-    geo_data = gp.create_data([0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
+    geo_data = gp.create_data(extent=[0, 2000, 0, 2000, 0, 2000], [50, 50, 50],
                               path_o=input_path+'/input_data/tut_chapter1/simple_fault_model_orientations.csv',
                               path_i=input_path+'/input_data/tut_chapter1/simple_fault_model_points.csv')
 

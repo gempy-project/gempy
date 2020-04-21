@@ -11,7 +11,7 @@ def test_find_interfaces():
     block = np.load(input_path+'/noddy_block.npy')
     bool_block = im.find_interfaces_from_block(block, 1)
 
-    geo_data = gp.create_data([0, 6000,
+    geo_data = gp.create_data(extent=[0, 6000,
                                0, 6000,
                                0, 500], resolution=[60, 60 ,6])
 

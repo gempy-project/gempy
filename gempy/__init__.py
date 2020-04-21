@@ -4,8 +4,6 @@ Created on 21/10/2016
 
 @author: Miguel de la Varga
 """
-
-
 import sys
 import os
 
@@ -14,6 +12,14 @@ SCRIPT_DIR = os.path.dirname(os.path.realpath(os.path.join(os.getcwd(), os.path.
 sys.path.append(os.path.normpath(os.path.join(SCRIPT_DIR, PACKAGE_PARENT)))
 
 from gempy.gempy_api import *
+from gempy.api_modules.getters import *
+from gempy.api_modules.setters import *
+from gempy.api_modules.io import *
+from gempy.core.model import DataMutation, AdditionalData, Faults, Grid, \
+    MetaData, Orientations, RescaledData, Series, SurfacePoints, \
+    Surfaces, Options, Structure, KrigingParameters
+
+from gempy.addons.gempy_to_rexfile import geomodel_to_rex
 import gempy.plot.plot_api as _plot
 import gempy.plot.plot as plot
 
