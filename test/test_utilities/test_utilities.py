@@ -4,6 +4,8 @@ import theano
 import numpy as np
 import sys, os
 
+import gempy.core.data_modules.stack
+
 sys.path.append("../..")
 import gempy as gp
 
@@ -28,9 +30,10 @@ def test_set_orientations():
 
 def test_restricting_wrapper():
     from gempy.core.model import RestrictingWrapper
-    surface = gp.Surfaces(gp.Series(gp.Faults()))
+    surface = gp.Surfaces(gempy.core.data_modules.stack.Series(gempy.core.data_modules.stack.Faults()))
 
     s = RestrictingWrapper(surface)
 
     print(s)
-    print(s.add_surfaces)
+    with pytest.raises(AttributeError):
+        print(s.add_surfaces)

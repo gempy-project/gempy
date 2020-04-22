@@ -4,12 +4,8 @@ import sys
 # This is for sphenix to find the packages
 sys.path.append(path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
-import numpy as _np
-from numpy import ndarray
-from pandas import DataFrame
 from gempy.core.model import *
 from typing import Union
-from gempy.utils.meta import _setdoc
 
 
 def add_surface_points(data: Union[Project, SurfacePoints]):

@@ -7,6 +7,10 @@ Chapter 1.2: Data Structure and Manipulation
 # %% 
 # These two lines are necessary only if GemPy is not installed
 import sys, os
+
+import gempy.core.data_modules.geometric_data
+import gempy.core.data_modules.stack
+
 sys.path.append("../../..")
 
 # Importing GemPy
@@ -37,8 +41,8 @@ import matplotlib.pyplot as plt
 # 
 
 # %% 
-faults = gp.Faults()
-series = gp.Series(faults)
+faults = gempy.core.data_modules.stack.Faults()
+series = gempy.core.data_modules.stack.Series(faults)
 series.df
 
 
@@ -405,7 +409,7 @@ surfaces.colors.change_colors(new_colors)
 # 
 
 # %% 
-surface_points = gp.SurfacePoints(surfaces)
+surface_points = gempy.core.data_modules.geometric_data.SurfacePoints(surfaces)
 #orientations = gp.Orientations()
 
 # %% 
@@ -446,7 +450,7 @@ faults
 # 
 
 # %% 
-orientations = gp.Orientations(surfaces)
+orientations = gempy.core.data_modules.geometric_data.Orientations(surfaces)
 
 # %% 
 orientations
@@ -520,7 +524,7 @@ grid.values
 # 
 
 # %% 
-rescaling = gp.RescaledData(surface_points, orientations, grid)
+rescaling = gempy.core.data_modules.geometric_data.RescaledData(surface_points, orientations, grid)
 
 
 # %% 

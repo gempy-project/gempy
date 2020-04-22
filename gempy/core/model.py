@@ -7,8 +7,10 @@ import pandas as pn
 from typing import Union, Iterable
 import warnings
 
-from gempy.core.data import AdditionalData, Faults, Grid, MetaData, Orientations, RescaledData, Series, SurfacePoints,\
-    Surfaces, Options, Structure, KrigingParameters
+from gempy.core.data_modules.geometric_data import Orientations, SurfacePoints,\
+    RescaledData, Surfaces, Grid
+from gempy.core.data_modules.stack import Faults, Series
+from gempy.core.data import AdditionalData,  MetaData, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
 from gempy.core.interpolator import InterpolatorModel, InterpolatorGravity
 from gempy.utils.meta import _setdoc, _setdoc_pro
@@ -334,7 +336,7 @@ class ImplicitCoKriging(object):
         return self._stack
 
     @_setdoc(Series.add_series.__doc__, indent=False)
-    def add_series(self, series_list: Union[str, list], reset_order_series=True):
+    def add_features(self, series_list: Union[str, list], reset_order_series=True):
         """ Add series, update the categories dependet on them and reset the flow control.
         """
         self._stack.add_series(series_list, reset_order_series)
@@ -344,9 +346,14 @@ class ImplicitCoKriging(object):
         self._interpolator.set_flow_control()
         return self._stack
 
+    def add_series(self, series_list: Union[str, list], reset_order_series=True):
+        warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
+                                          'Please use add_features instead')
+        return self.add_features(series_list, reset_order_series)
+
     @_setdoc(Series.delete_series.__doc__, indent=False)
-    def delete_series(self, indices: Union[str, list], refactor_order_series=True,
-                      remove_surfaces=False, remove_data=False):
+    def delete_features(self, indices: Union[str, list], refactor_order_series=True,
+                        remove_surfaces=False, remove_data=False):
         """ Delete series, update the categories dependet on them and reset the flow control.
         """
         indices = np.atleast_1d(indices)
@@ -367,8 +374,16 @@ class ImplicitCoKriging(object):
         self._interpolator.set_flow_control()
         return self._stack
 
+    def delete_series(self, indices: Union[str, list], refactor_order_series=True,
+                     remove_surfaces=False, remove_data=False):
+
+        warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
+                                          'Please use delete_features instead')
+        return self.delete_features(indices, refactor_order_series,
+                                    remove_surfaces, remove_data)
+
     @_setdoc(Series.rename_series.__doc__, indent=False)
-    def rename_series(self, new_categories: Union[dict, list]):
+    def rename_features(self, new_categories: Union[dict, list]):
         """Rename series and update the categories dependet on them."""
         self._stack.rename_series(new_categories)
         self._surfaces.df['series'].cat.rename_categories(new_categories, inplace=True)
@@ -376,8 +391,13 @@ class ImplicitCoKriging(object):
         self._orientations.df['series'].cat.rename_categories(new_categories, inplace=True)
         return self._stack
 
+    def rename_series(self, new_categories: Union[dict, list]):
+        warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
+                                          'Please use rename_features instead')
+        self.rename_features(new_categories)
+
     @_setdoc(Series.modify_order_series.__doc__, indent=False)
-    def modify_order_series(self, new_value: int, idx: str):
+    def modify_order_features(self, new_value: int, idx: str):
         """Modify order of the series. Reorder categories of the link Surfaces, sort surface (reset the basement layer)
         remap the Series and Surfaces to the corrspondent dataframes, sort Geometric objects, update structure and
         reset the flow control objects.
@@ -400,8 +420,13 @@ class ImplicitCoKriging(object):
         self.update_structure()
         return self._stack
 
+    def modify_order_series(self, new_value: int, idx: str):
+        warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
+                                          'Please use modify_order_features instead')
+        return self.modify_options(new_value, idx)
+
     @_setdoc(Series.reset_order_series.__doc__, indent=False)
-    def reorder_series(self, new_categories: Iterable[str]):
+    def reorder_features(self, new_categories: Iterable[str]):
         """Reorder series. Reorder categories of the link Surfaces, sort surface (reset the basement layer)
         remap the Series and Surfaces to the corrspondent dataframes, sort Geometric objects, update structure and
         reset the flow control objects.
@@ -421,6 +446,11 @@ class ImplicitCoKriging(object):
         self._interpolator.set_flow_control()
         self.update_structure(update_theano='weights')
         return self._stack
+
+    def reorder_series(self, new_categories: Iterable[str]):
+        warnings.warn(DeprecationWarning, 'Series are getting renamed to Stack/features.'
+                                          'Please use reorder_features instead')
+        return self.reorder_features(new_categories)
 
     # endregion
 
@@ -637,7 +667,7 @@ class ImplicitCoKriging(object):
 
         if set_series is True and self._stack.df.index.isin(['Basement']).any():
             aux = self._stack.df.index.drop('Basement').array
-            self.reorder_series(np.append(aux, 'Basement'))
+            self.reorder_features(np.append(aux, 'Basement'))
 
         if twofins is False: # assert if every fault has its own series
             for serie in list(self._faults.df[self._faults.df['isFault'] == True].index):

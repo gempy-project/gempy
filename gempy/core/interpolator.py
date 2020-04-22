@@ -1,5 +1,7 @@
 from typing import Union
-from gempy.core.data import SurfacePoints, Orientations, Grid, Surfaces, Series, Faults, AdditionalData
+from gempy.core.data import Grid, Surfaces, AdditionalData
+from gempy.core.data_modules.geometric_data import  SurfacePoints, Orientations
+from gempy.core.data_modules.stack import Faults, Series
 from gempy.utils.meta import _setdoc_pro, _setdoc
 import gempy.utils.docstring as ds
 

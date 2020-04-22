@@ -51,7 +51,7 @@ def edit(model: Project, data_object: str, method: str, **kwargs):
     Returns:
 
     """
-    data_object = getattr(model, data_object)
+    data_object = getattr(model, '_'+data_object)
     m = getattr(data_object, method)
     return m(**kwargs)
 

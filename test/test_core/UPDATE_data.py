@@ -4,16 +4,19 @@ import numpy as np
 import os
 import pytest
 
+import gempy.core.data_modules.geometric_data
+import gempy.core.data_modules.stack
+
 
 @pytest.fixture(scope="module")
 def test_read_surface_points():
-    surface_points = gp.SurfacePoints()
+    surface_points = gempy.core.data_modules.geometric_data.SurfacePoints()
     surface_points.read_surface_points(os.pardir + "/input_data/FabLessPoints_Points.csv", inplace=True)
 
     # Test setting series
-    series = gp.Series(series_distribution={"fault": 'MainFault',
+    series = gempy.core.data_modules.stack.Series(series_distribution={"fault": 'MainFault',
                                             "Rest": ('SecondaryReservoir', 'Seal3', 'Reservoir', 'Overlying'),
-                                            })
+                                                                       })
     surface_points.map_data_from_series(series, 'id')
     return surface_points
 
@@ -33,7 +36,7 @@ def test_create_series():
 
 @pytest.fixture()
 def test_create_faults(test_create_series):
-    faults = gp.Faults(test_create_series)
+    faults = gempy.core.data_modules.stack.Faults(test_create_series)
     return faults
 
 @pytest.fixture()
@@ -80,7 +83,7 @@ class Testsurface_points:
 class TestOrientations:
     @pytest.fixture(scope='class')
     def test_read_orientations(self):
-        orientations = gp.Orientations()
+        orientations = gempy.core.data_modules.geometric_data.Orientations()
         orientations.read_orientations(os.pardir + "/input_data/FabLessPoints_Foliations.csv", inplace=True)
         return orientations
 
@@ -121,7 +124,7 @@ class TestGrid:
 class TestSeries:
 
     def test_set_series(self, test_read_surface_points):
-        series = gp.Series()
+        series = gempy.core.data_modules.stack.Series()
         # We can pass a pandas categories_df
         series.set_series_categories(pn.DataFrame({"fault": ['test2'],
                                         "Rest": 'SecondaryReservoir'}))
@@ -132,9 +135,9 @@ class TestSeries:
         print(series)
 
         # Test init series
-        series = gp.Series(series_distribution={"fault": 'MainFault',
+        series = gempy.core.data_modules.stack.Series(series_distribution={"fault": 'MainFault',
                                                 "Rest": ('SecondaryReservoir', 'Seal3', 'Reservoir', 'Overlying'),
-                                                })
+                                                                           })
         return series
 
     @pytest.fixture
@@ -160,12 +163,12 @@ class TestSeries:
 
 class TestFaults:
     def test_set_faults(self, test_create_series):
-        faults = gp.Faults(test_create_series)
+        faults = gempy.core.data_modules.stack.Faults(test_create_series)
         faults.set_is_fault(['Rest'])
         print(faults)
 
     def test_default_faults(self, test_create_series):
-        faults = gp.Faults(test_create_series)
+        faults = gempy.core.data_modules.stack.Faults(test_create_series)
         print(faults)
 
     def test_set_fault_relations(self, test_create_faults):

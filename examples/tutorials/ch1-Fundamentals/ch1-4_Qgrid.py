@@ -40,7 +40,7 @@ gp.init_data(geo_model, [0, 1000, 0, 1000, -1000, 0], [50, 50, 50])
 geo_model.set_default_surfaces()
 
 # %% 
-geo_model._stack.add_series(['foo'])
+geo_model._stack.add_features(['foo'])
 geo_model.update_from_series()
 geo_model._stack
 

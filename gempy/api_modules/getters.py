@@ -1,7 +1,7 @@
 """ Getters API
 
 """
-from gempy.core.model import Project, Solution
+from gempy import Project, Solution
 from typing import Union
 import warnings
 

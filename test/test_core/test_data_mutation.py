@@ -78,7 +78,7 @@ def test_add_default_orientation():
 
 def test_set_is_fault():
     mm = gp.ImplicitCoKriging()
-    mm.add_series(['foo1', 'foo2', 'foo3'])
+    mm.add_features(['foo1', 'foo2', 'foo3'])
     assert (mm._faults.df.index == np.array(['Default series', 'foo1', 'foo2', 'foo3'])).all()
     assert (mm._faults.faults_relations_df.index == ['Default series', 'foo1', 'foo2', 'foo3']).all()
     mm.set_is_fault(['foo2'])

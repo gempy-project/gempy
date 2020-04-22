@@ -473,7 +473,7 @@ class QgridModelIntegration(object):
                 print(series_object.df.reset_index())
 
             idx = event['index']
-            self._geo_model.add_series(['series' + str(idx)])
+            self._geo_model.add_features(['series' + str(idx)])
 
             # This is because qgrid does not accept editing indeces. We enable the modification of the series name
             # by reindexing the df and change another column
@@ -493,7 +493,7 @@ class QgridModelIntegration(object):
             idx = event['indices']
             cat_idx = qgrid_widget.df.loc[idx, 'series_names']
 
-            self._geo_model.delete_series(cat_idx)
+            self._geo_model.delete_features(cat_idx)
 
             qgrid_widget.df = series_object.df.reset_index().rename(columns={'index': 'series_names'}).astype(
                 {'series_names': str})
@@ -510,14 +510,14 @@ class QgridModelIntegration(object):
                 print(cat_idx)
                 print(series_object.df.index)
             if event['column'] == 'series_names':
-                self._geo_model.rename_series({event['old']: event['new']})
+                self._geo_model.rename_features({event['old']: event['new']})
             if event['column'] == 'BottomRelation':
                 #series_object.df.loc[cat_idx, 'BottomRelation'] = event['new']
                 self._geo_model.set_bottom_relation(cat_idx, event['new'])
             if event['column'] == 'order_series':
                 idx = event['index']
                 try:
-                    self._geo_model.modify_order_series(int(event['new']), idx)
+                    self._geo_model.modify_order_features(int(event['new']), idx)
                 except AssertionError:
                     pass
 
