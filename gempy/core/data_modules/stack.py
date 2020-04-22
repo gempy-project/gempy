@@ -248,7 +248,7 @@ class Series(object):
         # But we need to update the values too
         for c in series_order:
             self.df.loc[c, 'BottomRelation'] = 'Erosion'
-            self.faults.df.loc[c] = [False, False]
+            self.faults.df.loc[c, ['isFault', 'isFinite']] = [False, False]
             self.faults.faults_relations_df.loc[c, c] = False
 
         self.faults.faults_relations_df.fillna(False, inplace=True)
@@ -298,7 +298,7 @@ class Series(object):
 
         for c in series_list:
             self.df.loc[c, 'BottomRelation'] = 'Erosion'
-            self.faults.df.loc[c] = [False, False]
+            self.faults.df.loc[c, ['isFault', 'isFinite']] = [False, False]
             self.faults.faults_relations_df.loc[c, c] = False
 
         self.faults.faults_relations_df.fillna(False, inplace=True)
@@ -319,7 +319,12 @@ class Series(object):
             Series
         """
         self.df.drop(indices, inplace=True)
-        self.faults.df.drop(indices, inplace=True)
+        # If we are using the Stack class it is just one elemnt in memory
+        try:
+            self.faults.df.drop(indices, inplace=True)
+        except KeyError:
+            pass
+
         self.faults.faults_relations_df.drop(indices, axis=0, inplace=True)
         self.faults.faults_relations_df.drop(indices, axis=1, inplace=True)
 
@@ -413,3 +418,48 @@ class Series(object):
         self.faults.faults_relations_df.columns = self.faults.faults_relations_df.columns.add_categories(
             ['index', 'qgrid_unfiltered_index'])
         self.faults.set_default_faults_relations()
+
+
+class MockFault:
+    pass
+
+
+class Stack(Series, Faults):
+
+    def __init__(self, features_names: Iterable = None, series_fault: Iterable = None,
+                 rel_matrix: Iterable = None):
+        if features_names is None:
+            features_names = ['Default series']
+
+        # Set unique df
+        self.df = pn.DataFrame(np.array([[1, np.nan, False, False, False]]),
+                               index=pn.CategoricalIndex(features_names, ordered=False),
+                               columns=['order_series', 'BottomRelation', 'isActive', 'isFault', 'isFinite'])
+
+        self.df['order_series'] = self.df['order_series'].astype(int)
+        self.df['BottomRelation'] = pn.Categorical(['Erosion'], categories=['Erosion', 'Onlap', 'Fault'])
+        self.df['isActive'] = False
+        self.df['isFault'] = False
+        self.df['isFinite'] = False
+        # self.faults = MockFault()
+        # self.faults.df = self.df
+
+        self.faults = self
+        self.faults_relations_df = pn.DataFrame(index=pn.CategoricalIndex(['Default series']),
+                                                columns=pn.CategoricalIndex(['Default series', '']), dtype='bool')
+
+        self.set_is_fault(series_fault=series_fault)
+        self.set_fault_relation(rel_matrix=rel_matrix)
+        self.n_faults = 0
+        self._offset_faults = False
+
+
+
+
+
+
+
+
+
+
+

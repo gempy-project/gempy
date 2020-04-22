@@ -258,6 +258,20 @@ class TestDataManipulation:
         return create_additional_data
 
 
+def test_stack():
+    stack = gempy.core.data_modules.stack.Stack()
+    stack.set_series_index(['foo', 'foo2', 'foo5', 'foo7'])
+    stack.add_series('foo3')
+    stack.delete_series('foo2')
+    stack.rename_series({'foo': 'boo'})
+    stack.reorder_series(['foo3', 'boo', 'foo7', 'foo5'])
+    stack.set_is_fault(['boo'])
 
+    faults = stack
+    faults.set_is_fault(['boo'])
 
+    fr = np.zeros((4, 4))
+    fr[2, 2] = True
+    faults.set_fault_relation(fr)
 
+    stack.add_series('foo20')

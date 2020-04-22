@@ -9,7 +9,7 @@ import warnings
 
 from gempy.core.data_modules.geometric_data import Orientations, SurfacePoints,\
     RescaledData, Surfaces, Grid
-from gempy.core.data_modules.stack import Faults, Series
+from gempy.core.data_modules.stack import Stack, Faults, Series
 from gempy.core.data import AdditionalData,  MetaData, Options, Structure, KrigingParameters
 from gempy.core.solution import Solution
 from gempy.core.interpolator import InterpolatorModel, InterpolatorGravity
@@ -56,8 +56,14 @@ class ImplicitCoKriging(object):
     def __init__(self):
 
         self._grid = Grid()
+        # Old way
         self._faults = Faults()
         self._stack = Series(self._faults)
+
+        # New way
+        self._stack = Stack()
+        self._faults = self._stack.faults
+
         self._series = self._stack
         self._surfaces = Surfaces(self._stack)
         self._surface_points = SurfacePoints(self._surfaces)
