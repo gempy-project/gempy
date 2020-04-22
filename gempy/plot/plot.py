@@ -153,7 +153,7 @@ def plot_stereonet(geo_data, litho=None, planes=True, poles=True,
                         show_density=show_density)
 
 
-def plot_map(model, contour_lines=True, show_data=True, show_hillshades=False, figsize=(12, 12), **kwargs):
+def plot_map(model, contour_lines=True, show_data=True, show_hillshades: bool = False, figsize=(12, 12), **kwargs):
     """
 
     Args:
@@ -388,6 +388,7 @@ def plot_topology(
         edge_kwargs=edge_kwargs
     )
 
+
 def plot_ar(geo_model, path=None, project_name=None, api_token=None, secret=None):
     """ Create, upload and retrieve tag to visualize the model in AR in rexview
 
@@ -409,7 +410,7 @@ def plot_ar(geo_model, path=None, project_name=None, api_token=None, secret=None
         project_name = geo_model.meta.project_name
 
     if path is None:
-        path='./'
+        path = './'
 
     files_path = geo_model_to_rex(geo_model, path)
     project_name_ = project_name
@@ -418,7 +419,7 @@ def plot_ar(geo_model, path=None, project_name=None, api_token=None, secret=None
             tag = upload_to_rexcloud(files_path, project_name=project_name_, api_token=api_token, secret=secret)
             break
         except ConnectionError:
-            project_name_ = project_name+str(i)
+            project_name_ = project_name + str(i)
             pass
 
     return tag

@@ -26,7 +26,7 @@
 # This is for sphenix to find the packages
 # sys.path.append( path.dirname( path.dirname( path.abspath(__file__) ) ) )
 
-from typing import Union
+from typing import Union, List, Any
 
 import matplotlib.pyplot as plt
 # from .vista import Vista
@@ -260,9 +260,9 @@ if PYVISTA_IMPORT:
         Returns:
             (Vista) GemPy Vista object for plotting.
         """
-        ve = kwargs.get('ve', 1)
-        cpos = kwargs.get('cpos', [[-1., -1., 0.6], [0.0, 0.0, 0.0], [0, 0, 1]])
-        fig_path = kwargs.get('fig_path', None)
+        ve: float = kwargs.get('ve', 1)
+        cpos = kwargs.get('cpos', [[-1.0, -1.0, 0.6], [0.0, 0.0, 0.0], [0.0, 0.0, 1.0]])
+        fig_path: str = kwargs.get('fig_path', None)
         gpv = Vista(geo_model)
 
         gpv.set_bounds()
