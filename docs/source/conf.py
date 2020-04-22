@@ -31,7 +31,8 @@ sys.path.insert(0, os.path.abspath('.'))
 # sys.path.insert(0, os.path.abspath('../../gempy/assets/'))
 # sys.path.insert(0, os.path.abspath('../../gempy/bayesian/'))
 # sys.path.insert(0, os.path.abspath('../../gempy/plot/'))
-sys.path.insert(0, os.path.abspath('../..'))
+# sys.path.insert(0, os.path.abspath('../..'))
+sys.path.insert(0, os.path.abspath('../../gempy'))
 import gempy
 from unittest.mock import MagicMock
 
@@ -68,7 +69,6 @@ extensions = [
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
     'sphinx.ext.napoleon',
-#    'sphinxcontrib.bibtex',
     'IPython.sphinxext.ipython_console_highlighting',
     'IPython.sphinxext.ipython_directive',
     'sphinx_gallery.gen_gallery'
@@ -142,13 +142,19 @@ sphinx_gallery_conf = {
     # Sort gallery example by file name instead of number of lines (default)
     "within_subsection_order": FileNameSortKey,
     # directory where function granular galleries are stored
-    "backreferences_dir": None,
+    "backreferences_dir": 'gen_modules/backreferences',
     # Modules for which function level galleries are created.  In
-    "doc_module": "gempy",
+    "doc_module": ("gempy", 'numpy'),
     "image_scrapers": ('pyvista', 'matplotlib'),
     'first_notebook_cell': ("%matplotlib inline\n"
                             "from pyvista import set_plot_theme\n"
                             "set_plot_theme('document')"),
+    'reference_url': {
+        # The module you locally document uses None
+        'sphinx_gallery': None,
+
+    },
+
 }
 
 

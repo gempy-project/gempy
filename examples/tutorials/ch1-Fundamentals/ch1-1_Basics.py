@@ -14,6 +14,9 @@ import gempy as gp
 import numpy as np
 import matplotlib.pyplot as plt
 
+#%%
+a = np.sin(55)
+
 # %%
 # Importing and creating a set of input data
 # ------------------------------------------

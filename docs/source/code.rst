@@ -56,6 +56,7 @@ Front end
 .. currentmodule:: gempy_api
 .. autosummary::
     :toctree: GemPy API
+    :template: module.rst
 
     activate_interactive_df
     compute_model

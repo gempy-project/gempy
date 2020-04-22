@@ -43,11 +43,6 @@ class Faults(object):
     def _repr_html_(self):
         return self.df.to_html()
 
-    # def sort_faults(self):
-    #     self.df.sort_index(inplace=True)
-    #     self.faults_relations_df.sort_index(inplace=True)
-    #     self.faults_relations_df.sort_index(axis=1, inplace=True)
-
     def set_is_fault(self, series_fault: Union[str, list, np.ndarray] = None, toggle=False, offset_faults=False):
         """
         Set a flag to the series that are faults.
