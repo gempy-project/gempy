@@ -15,6 +15,6 @@ def test_find_interfaces():
                                0, 6000,
                                0, 500], resolution=[60, 60 ,6])
 
-    p_df = im.interfaces_from_interfaces_block(bool_block, geo_data.grid.values)
+    p_df = im.interfaces_from_interfaces_block(bool_block, geo_data._grid.values)
 
     im.set_interfaces_from_block(geo_data, block)

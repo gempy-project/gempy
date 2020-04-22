@@ -219,7 +219,7 @@ class PlotPosterior:
             if gridsize == "auto":
                 gridsize = int(len(x) ** 0.35)
             self.axjoin.hexbin(x, y, mincnt=1, gridsize=gridsize, **joint_kwargs)
-            self.axjoin.grid(False)
+            self.axjoin._grid(False)
 
     def plot_trace(self, plotters, iteration, n_iterations=20):
         i_0 = np.max([0, (iteration - n_iterations)])

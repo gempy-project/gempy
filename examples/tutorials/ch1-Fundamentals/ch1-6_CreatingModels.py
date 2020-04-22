@@ -49,7 +49,7 @@ else:
 gp.set_interpolation_data(geo_model, theano_optimizer='fast_run',  verbose=[])
 
 # %% 
-geo_model.additional_data
+geo_model._additional_data
 
 # %% 
 gp.compute_model(geo_model, debug=False,compute_mesh=False, sort_surfaces=False)
@@ -112,11 +112,11 @@ geo_model.qi.get('faults_relations')
 # 
 
 # %% 
-geo_model.interpolator.theano_graph.not_l.set_value(1.)
+geo_model._interpolator.theano_graph.not_l.set_value(1.)
 vtk_object.update_model()
 
 # %% 
-geo_model.interpolator.theano_graph.ellipse_factor_exponent.set_value(50)
+geo_model._interpolator.theano_graph.ellipse_factor_exponent.set_value(50)
 
 # %% 
 vtk_object.update_model()
@@ -131,7 +131,7 @@ vtk_object.update_model()
 geo_model.set_topography(d_z=np.array([0,-600]))
 
 # %% 
-geo_model.grid.active_grids
+geo_model._grid.active_grids
 
 # %% 
 gp.compute_model(geo_model)
@@ -146,7 +146,7 @@ gp.plot.plot_map(geo_model)
 vtk_object.render_topography()
 
 # %% 
-np.unique(geo_model.surface_points.df['id'])
+np.unique(geo_model._surface_points.df['id'])
 
 # %% 
-geo_model.surface_points
+geo_model._surface_points

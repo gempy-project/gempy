@@ -62,10 +62,10 @@ class Plot2D:
 
     def __init__(self, model, cmap=None, norm=None, **kwargs):
         self.model = model
-        self._color_lot = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
+        self._color_lot = dict(zip(self.model._surfaces.df['surface'], self.model._surfaces.df['color']))
 
         if cmap is None:
-            self.cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
+            self.cmap = mcolors.ListedColormap(list(self.model._surfaces.df['color']))
             self._custom_colormap = False
         else:
             self.cmap = cmap
@@ -78,10 +78,10 @@ class Plot2D:
 
     def update_colot_lot(self, color_dir=None):
         if color_dir is None:
-            color_dir = dict(zip(self.model.surfaces.df['surface'], self.model.surfaces.df['color']))
+            color_dir = dict(zip(self.model._surfaces.df['surface'], self.model._surfaces.df['color']))
         self._color_lot = color_dir
         if self._custom_colormap is False:
-            self.cmap = mcolors.ListedColormap(list(self.model.surfaces.df['color']))
+            self.cmap = mcolors.ListedColormap(list(self.model._surfaces.df['color']))
             self.norm = mcolors.Normalize(vmin=0.5, vmax=len(self.cmap.colors) + 0.5)
 
     def remove(self, ax):
@@ -105,10 +105,10 @@ class Plot2D:
         elif n < 0:
             n = 3
 
-        j = np.where(self.model.grid.sections.names == section_name)[0][0]
-        startend = list(self.model.grid.sections.section_dict.values())[j]
+        j = np.where(self.model._grid.sections.names == section_name)[0][0]
+        startend = list(self.model._grid.sections.section_dict.values())[j]
         p1, p2 = startend[0], startend[1]
-        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, n)
+        xy = self.model._grid.sections.calculate_line_coordinates_2points(p1, p2, n)
         if len(np.unique(xy[:, 0])) == 1:
             labels = xy[:, 1].astype(int)
             axname = 'Y'
@@ -126,22 +126,22 @@ class Plot2D:
         Slice the 3D array (blocks or scalar field) in the specific direction selected in the plot functions
 
         """
-        _a, _b, _c = (slice(0, self.model.grid.regular_grid.resolution[0]),
-                      slice(0, self.model.grid.regular_grid.resolution[1]),
-                      slice(0, self.model.grid.regular_grid.resolution[2]))
+        _a, _b, _c = (slice(0, self.model._grid.regular_grid.resolution[0]),
+                      slice(0, self.model._grid.regular_grid.resolution[1]),
+                      slice(0, self.model._grid.regular_grid.resolution[2]))
 
         if direction == "x":
-            cell_number = int(self.model.grid.regular_grid.resolution[0] / 2) if cell_number == 'mid' else cell_number
+            cell_number = int(self.model._grid.regular_grid.resolution[0] / 2) if cell_number == 'mid' else cell_number
             _a, x, y, Gx, Gy = cell_number, "Y", "Z", "G_y", "G_z"
-            extent_val = self.model.grid.regular_grid.extent[[2, 3, 4, 5]]
+            extent_val = self.model._grid.regular_grid.extent[[2, 3, 4, 5]]
         elif direction == "y":
-            cell_number = int(self.model.grid.regular_grid.resolution[1] / 2) if cell_number == 'mid' else cell_number
+            cell_number = int(self.model._grid.regular_grid.resolution[1] / 2) if cell_number == 'mid' else cell_number
             _b, x, y, Gx, Gy = cell_number, "X", "Z", "G_x", "G_z"
-            extent_val = self.model.grid.regular_grid.extent[[0, 1, 4, 5]]
+            extent_val = self.model._grid.regular_grid.extent[[0, 1, 4, 5]]
         elif direction == "z":
-            cell_number = int(self.model.grid.regular_grid.resolution[2] / 2) if cell_number == 'mid' else cell_number
+            cell_number = int(self.model._grid.regular_grid.resolution[2] / 2) if cell_number == 'mid' else cell_number
             _c, x, y, Gx, Gy = cell_number, "X", "Y", "G_x", "G_y"
-            extent_val = self.model.grid.regular_grid.extent[[0, 1, 2, 3]]
+            extent_val = self.model._grid.regular_grid.extent[[0, 1, 2, 3]]
         else:
             raise AttributeError(str(direction) + "must be a cartesian direction, i.e. xyz")
         return _a, _b, _c, extent_val, x, y, Gx, Gy
@@ -181,13 +181,13 @@ class Plot2D:
                 ax.set_title('Geological map')
                 ax.set_xlabel('X')
                 ax.set_ylabel('Y')
-                extent_val = self.model.grid.topography.extent
+                extent_val = self.model._grid.topography.extent
             else:
 
-                dist = self.model.grid.sections.df.loc[section_name, 'dist']
+                dist = self.model._grid.sections.df.loc[section_name, 'dist']
 
                 extent_val = [0, dist,
-                              self.model.grid.regular_grid.extent[4], self.model.grid.regular_grid.extent[5]]
+                              self.model._grid.regular_grid.extent[4], self.model._grid.regular_grid.extent[5]]
 
                 labels, axname = self._make_section_xylabels(section_name, len(ax.get_xticklabels()) - 2)
                 pos_list = np.linspace(0, dist, len(labels))
@@ -260,7 +260,7 @@ class Plot2D:
             if section_name == 'topography':
                 try:
                     image = self.model.solutions.geological_map[0].reshape(
-                        self.model.grid.topography.values_3D[:, :, 2].shape)
+                        self.model._grid.topography.values_3D[:, :, 2].shape)
                     # mask = self.model.solutions.geological_map[4].reshape(
                     #    self.model.grid.topography.values_3D[:, :, 2].shape)
                 except AttributeError:
@@ -270,8 +270,8 @@ class Plot2D:
                     section_name) == np.str_, 'section name must be a string of the name of the section'
                 assert self.model.solutions.sections is not None, 'no sections for plotting defined'
 
-                l0, l1 = self.model.grid.sections.get_section_args(section_name)
-                shape = self.model.grid.sections.df.loc[section_name, 'resolution']
+                l0, l1 = self.model._grid.sections.get_section_args(section_name)
+                shape = self.model._grid.sections.df.loc[section_name, 'resolution']
                 image = self.model.solutions.sections[0][0][l0:l1].reshape(shape[0], shape[1]).T
                 # mask = self.model.solutions.sections[0].reshape(shape[0], shape[1]).T
 
@@ -283,9 +283,9 @@ class Plot2D:
             # else:
             #     _mask = mask
             if resolution is None:
-                resolution = self.model.grid.regular_grid.resolution
+                resolution = self.model._grid.regular_grid.resolution
 
-            plot_block = block.reshape(self.model.grid.regular_grid.resolution)
+            plot_block = block.reshape(self.model._grid.regular_grid.resolution)
             image = plot_block[_a, _b, _c].T
             # mask = _mask.reshape(-1, *self.model.grid.regular_grid.resolution)[:, _a, _b, _c]
         else:
@@ -401,12 +401,12 @@ class Plot2D:
             if section_name == 'topography':
                 try:
                     image = self.model.solutions.geological_map[1][series_n].reshape(
-                        self.model.grid.topography.values_3D[:, :, 2].shape)
+                        self.model._grid.topography.values_3D[:, :, 2].shape)
                 except AttributeError:
                     raise AttributeError('Geological map not computed. Activate the topography grid.')
             else:
-                l0, l1 = self.model.grid.sections.get_section_args(section_name)
-                shape = self.model.grid.sections.df.loc[section_name, 'resolution']
+                l0, l1 = self.model._grid.sections.get_section_args(section_name)
+                shape = self.model._grid.sections.df.loc[section_name, 'resolution']
                 image = self.model.solutions.sections[1][series_n][l0:l1].reshape(shape).T
 
         elif cell_number is not None or block is not None:
@@ -416,7 +416,7 @@ class Plot2D:
             else:
                 _block = block
 
-            plot_block = _block.reshape(self.model.grid.regular_grid.resolution)
+            plot_block = _block.reshape(self.model._grid.regular_grid.resolution)
             image = plot_block[_a, _b, _c].T
         else:
             raise AttributeError
@@ -445,27 +445,27 @@ class Plot2D:
         """
         self.update_colot_lot()
 
-        points = self.model.surface_points.df.copy()
-        orientations = self.model.orientations.df.copy()
+        points = self.model._surface_points.df.copy()
+        orientations = self.model._orientations.df.copy()
         section_name, cell_number, direction = self._check_default_section(ax, section_name, cell_number, direction)
 
         if section_name is not None:
             if section_name == 'topography':
 
                 topo_comp = kwargs.get('topo_comp', 5000)
-                decimation_aux = int(self.model.grid.topography.values.shape[0] / topo_comp)
-                tpp = self.model.grid.topography.values[::decimation_aux + 1, :]
-                cartesian_point_dist = (dd.cdist(tpp, self.model.surface_points.df[['X', 'Y', 'Z']])
+                decimation_aux = int(self.model._grid.topography.values.shape[0] / topo_comp)
+                tpp = self.model._grid.topography.values[::decimation_aux + 1, :]
+                cartesian_point_dist = (dd.cdist(tpp, self.model._surface_points.df[['X', 'Y', 'Z']])
                                         < projection_distance).sum(axis=0).astype(bool)
-                cartesian_ori_dist = (dd.cdist(tpp, self.model.orientations.df[['X', 'Y', 'Z']])
+                cartesian_ori_dist = (dd.cdist(tpp, self.model._orientations.df[['X', 'Y', 'Z']])
                                       < projection_distance).sum(axis=0).astype(bool)
                 x, y, Gx, Gy = 'X', 'Y', 'G_x', 'G_y'
 
             else:
                 # Project points:
-                shift = np.asarray(self.model.grid.sections.df.loc[section_name, 'start'])
-                end_point = np.atleast_2d(np.asarray(self.model.grid.sections.df.loc[section_name, 'stop']) - shift)
-                A_rotate = np.dot(end_point.T, end_point) / self.model.grid.sections.df.loc[section_name, 'dist'] ** 2
+                shift = np.asarray(self.model._grid.sections.df.loc[section_name, 'start'])
+                end_point = np.atleast_2d(np.asarray(self.model._grid.sections.df.loc[section_name, 'stop']) - shift)
+                A_rotate = np.dot(end_point.T, end_point) / self.model._grid.sections.df.loc[section_name, 'dist'] ** 2
 
                 cartesian_point_dist = np.sqrt(((np.dot(
                     A_rotate, (points[['X', 'Y']]).T).T - points[['X', 'Y']]) ** 2).sum(axis=1))
@@ -485,26 +485,26 @@ class Plot2D:
         else:
 
             if cell_number is None:
-                cell_number = int(self.model.grid.regular_grid.resolution[0] / 2)
+                cell_number = int(self.model._grid.regular_grid.resolution[0] / 2)
             elif cell_number == 'mid':
-                cell_number = int(self.model.grid.regular_grid.resolution[0] / 2)
+                cell_number = int(self.model._grid.regular_grid.resolution[0] / 2)
 
             if direction == 'x' or direction == 'X':
                 arg_ = 0
-                dx = self.model.grid.regular_grid.dx
+                dx = self.model._grid.regular_grid.dx
                 dir = 'X'
             elif direction == 'y' or direction == 'Y':
                 arg_ = 2
-                dx = self.model.grid.regular_grid.dy
+                dx = self.model._grid.regular_grid.dy
                 dir = 'Y'
             elif direction == 'z' or direction == 'Z':
                 arg_ = 4
-                dx = self.model.grid.regular_grid.dz
+                dx = self.model._grid.regular_grid.dz
                 dir = 'Z'
             else:
                 raise AttributeError('Direction must be x, y, z')
 
-            _loc = self.model.grid.regular_grid.extent[arg_] + dx * cell_number
+            _loc = self.model._grid.regular_grid.extent[arg_] + dx * cell_number
             cartesian_point_dist = points[dir] - _loc
             cartesian_ori_dist = orientations[dir] - _loc
 
@@ -542,26 +542,26 @@ class Plot2D:
     def calculate_p1p2(self, direction, cell_number):
 
         if direction == 'y':
-            cell_number = int(self.model.grid.regular_grid.resolution[1] / 2) if cell_number == 'mid' else cell_number
+            cell_number = int(self.model._grid.regular_grid.resolution[1] / 2) if cell_number == 'mid' else cell_number
 
-            y = self.model.grid.regular_grid.extent[2] + self.model.grid.regular_grid.dy * cell_number
-            p1 = [self.model.grid.regular_grid.extent[0], y]
-            p2 = [self.model.grid.regular_grid.extent[1], y]
+            y = self.model._grid.regular_grid.extent[2] + self.model._grid.regular_grid.dy * cell_number
+            p1 = [self.model._grid.regular_grid.extent[0], y]
+            p2 = [self.model._grid.regular_grid.extent[1], y]
 
         elif direction == 'x':
-            cell_number = int(self.model.grid.regular_grid.resolution[0] / 2) if cell_number == 'mid' else cell_number
+            cell_number = int(self.model._grid.regular_grid.resolution[0] / 2) if cell_number == 'mid' else cell_number
 
-            x = self.model.grid.regular_grid.extent[0] + self.model.grid.regular_grid.dx * cell_number
-            p1 = [x, self.model.grid.regular_grid.extent[2]]
-            p2 = [x, self.model.grid.regular_grid.extent[3]]
+            x = self.model._grid.regular_grid.extent[0] + self.model._grid.regular_grid.dx * cell_number
+            p1 = [x, self.model._grid.regular_grid.extent[2]]
+            p2 = [x, self.model._grid.regular_grid.extent[3]]
 
         else:
             raise NotImplementedError
         return p1, p2
 
     def _slice_topo_4_sections(self, p1, p2, resx):
-        xy = self.model.grid.sections.calculate_line_coordinates_2points(p1, p2, resx)
-        z = self.model.grid.topography.interpolate_zvals_at_xy(xy)
+        xy = self.model._grid.sections.calculate_line_coordinates_2points(p1, p2, resx)
+        z = self.model._grid.topography.interpolate_zvals_at_xy(xy)
         return xy[:, 0], xy[:, 1], z
 
     def plot_topography(self, ax, section_name=None, cell_number=None, direction='y', block=None, **kwargs):
@@ -570,38 +570,38 @@ class Plot2D:
 
         if section_name is not None and section_name != 'topography':
 
-            p1 = self.model.grid.sections.df.loc[section_name, 'start']
-            p2 = self.model.grid.sections.df.loc[section_name, 'stop']
-            x, y, z = self._slice_topo_4_sections(p1, p2, self.model.grid.topography.resolution[0])
+            p1 = self.model._grid.sections.df.loc[section_name, 'start']
+            p2 = self.model._grid.sections.df.loc[section_name, 'stop']
+            x, y, z = self._slice_topo_4_sections(p1, p2, self.model._grid.topography.resolution[0])
 
-            pseudo_x = np.linspace(0, self.model.grid.sections.df.loc[section_name, 'dist'], z.shape[0])
+            pseudo_x = np.linspace(0, self.model._grid.sections.df.loc[section_name, 'dist'], z.shape[0])
             a = np.vstack((pseudo_x, z)).T
             xy = np.append(a,
-                           ([self.model.grid.sections.df.loc[section_name, 'dist'], a[:, 1][-1]],
-                            [self.model.grid.sections.df.loc[section_name, 'dist'],
-                             self.model.grid.regular_grid.extent[5]],
-                            [0, self.model.grid.regular_grid.extent[5]],
+                           ([self.model._grid.sections.df.loc[section_name, 'dist'], a[:, 1][-1]],
+                            [self.model._grid.sections.df.loc[section_name, 'dist'],
+                             self.model._grid.regular_grid.extent[5]],
+                            [0, self.model._grid.regular_grid.extent[5]],
                             [0, a[:, 1][0]])).reshape(-1, 2)
 
             ax.fill(xy[:, 0], xy[:, 1], 'k', zorder=10)
 
         elif cell_number is not None or block is not None:
             p1, p2 = self.calculate_p1p2(direction, cell_number)
-            resx = self.model.grid.regular_grid.resolution[0]
-            resy = self.model.grid.regular_grid.resolution[1]
+            resx = self.model._grid.regular_grid.resolution[0]
+            resy = self.model._grid.regular_grid.resolution[1]
             x, y, z = self._slice_topo_4_sections(p1, p2, resx)
             if direction == 'x':
                 a = np.vstack((y, z)).T
-                ext = self.model.grid.regular_grid.extent[[2, 3]]
+                ext = self.model._grid.regular_grid.extent[[2, 3]]
             elif direction == 'y':
                 a = np.vstack((x, z)).T
-                ext = self.model.grid.regular_grid.extent[[0, 1]]
+                ext = self.model._grid.regular_grid.extent[[0, 1]]
             else:
                 raise NotImplementedError
             a = np.append(a,
                           ([ext[1], a[:, 1][-1]],
-                           [ext[1], self.model.grid.regular_grid.extent[5]],
-                           [ext[0], self.model.grid.regular_grid.extent[5]],
+                           [ext[1], self.model._grid.regular_grid.extent[5]],
+                           [ext[0], self.model._grid.regular_grid.extent[5]],
                            [ext[0], a[:, 1][0]]))
             line = a.reshape(-1, 2)
             ax.fill(line[:, 0], line[:, 1], color='k')
@@ -612,15 +612,15 @@ class Plot2D:
         section_name, cell_number, direction = self._check_default_section(ax, section_name, cell_number, direction)
 
         if only_faults:
-            contour_idx = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
+            contour_idx = list(self.model._faults.df[self.model._faults.df['isFault'] == True].index)
         else:
-            contour_idx = list(self.model.surfaces.df.index)
+            contour_idx = list(self.model._surfaces.df.index)
         extent_val = [*ax.get_xlim(), *ax.get_ylim()]
         zorder = kwargs.get('zorder', 100)
 
         if section_name is not None:
             if section_name == 'topography':
-                shape = self.model.grid.topography.resolution
+                shape = self.model._grid.topography.resolution
                 #    a = self.model.solutions.geological_map_scalfield
                 #    extent = self.model.grid.topography.extent
                 scalar_fields = self.model.solutions.geological_map[1]
@@ -639,8 +639,8 @@ class Plot2D:
                     c_id = c_id2
 
             else:
-                l0, l1 = self.model.grid.sections.get_section_args(section_name)
-                shape = self.model.grid.sections.df.loc[section_name, 'resolution']
+                l0, l1 = self.model._grid.sections.get_section_args(section_name)
+                shape = self.model._grid.sections.df.loc[section_name, 'resolution']
                 scalar_fields = self.model.solutions.sections[1][:, l0:l1]
 
                 c_id = 0  # color id startpoint
@@ -651,7 +651,7 @@ class Plot2D:
                     # Ignore warning about some scalars not being on the plot since it is very common
                     # that an interface does not exit for a given section
                     c_id2 = c_id + len(level)  # color id endpoint
-                    color_list = self.model.surfaces.df.groupby('isActive').get_group(True)['color'][c_id:c_id2][::-1]
+                    color_list = self.model._surfaces.df.groupby('isActive').get_group(True)['color'][c_id:c_id2][::-1]
 
                     ax.contour(block.reshape(shape).T, 0, levels=np.sort(level),
                                # colors=self.cmap.colors[self.model.surfaces.df['isActive']][c_id:c_id2],
@@ -663,7 +663,7 @@ class Plot2D:
 
         elif cell_number is not None or block is not None:
             _slice = self._slice(direction, cell_number)[:3]
-            shape = self.model.grid.regular_grid.resolution
+            shape = self.model._grid.regular_grid.resolution
             c_id = 0  # color id startpoint
 
             for e, block in enumerate(self.model.solutions.scalar_field_matrix):
@@ -673,7 +673,7 @@ class Plot2D:
                 c_id2 = c_id + len(level)
                 #    print(c_id, c_id2)
 
-                color_list = self.model.surfaces.df.groupby('isActive').get_group(True)['color'][c_id:c_id2][::-1]
+                color_list = self.model._surfaces.df.groupby('isActive').get_group(True)['color'][c_id:c_id2][::-1]
                 #    print(color_list)
 
                 ax.contour(block.reshape(shape)[_slice].T, 0, levels=np.sort(level),
@@ -686,47 +686,47 @@ class Plot2D:
     def plot_section_traces(self, ax, section_names=None, show_data=True, **kwargs):
 
         if section_names is None:
-            section_names = list(self.model.grid.sections.names)
+            section_names = list(self.model._grid.sections.names)
 
         if show_data:
             self.plot_data(ax, section_name='topography', **kwargs)
 
         for section in section_names:
-            j = np.where(self.model.grid.sections.names == section)[0][0]
-            x1, y1 = np.asarray(self.model.grid.sections.df.loc[section, 'start'])
-            x2, y2 = np.asarray(self.model.grid.sections.df.loc[section, 'stop'])
+            j = np.where(self.model._grid.sections.names == section)[0][0]
+            x1, y1 = np.asarray(self.model._grid.sections.df.loc[section, 'start'])
+            x2, y2 = np.asarray(self.model._grid.sections.df.loc[section, 'stop'])
             ax.plot([x1, x2], [y1, y2], label=section, linestyle='--')
             ax.legend(frameon=True)
 
     def plot_topo_g(self, ax, G, centroids, direction="y",
                     label_kwargs=None, node_kwargs=None, edge_kwargs=None):
-        res = self.model.grid.regular_grid.resolution
+        res = self.model._grid.regular_grid.resolution
         if direction == "y":
             c1, c2 = (0, 2)
-            e1 = self.model.grid.regular_grid.extent[1] - self.model.grid.regular_grid.extent[0]
-            e2 = self.model.grid.regular_grid.extent[5] - self.model.grid.regular_grid.extent[4]
-            d1 = self.model.grid.regular_grid.extent[0]
-            d2 = self.model.grid.regular_grid.extent[4]
+            e1 = self.model._grid.regular_grid.extent[1] - self.model._grid.regular_grid.extent[0]
+            e2 = self.model._grid.regular_grid.extent[5] - self.model._grid.regular_grid.extent[4]
+            d1 = self.model._grid.regular_grid.extent[0]
+            d2 = self.model._grid.regular_grid.extent[4]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = res[0]
             r2 = res[2]
         elif direction == "x":
             c1, c2 = (1, 2)
-            e1 = self.model.grid.regular_grid.extent[3] - self.model.grid.regular_grid.extent[2]
-            e2 = self.model.grid.regular_grid.extent[5] - self.model.grid.regular_grid.extent[4]
-            d1 = self.model.grid.regular_grid.extent[2]
-            d2 = self.model.grid.regular_grid.extent[4]
+            e1 = self.model._grid.regular_grid.extent[3] - self.model._grid.regular_grid.extent[2]
+            e2 = self.model._grid.regular_grid.extent[5] - self.model._grid.regular_grid.extent[4]
+            d1 = self.model._grid.regular_grid.extent[2]
+            d2 = self.model._grid.regular_grid.extent[4]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = res[1]
             r2 = res[2]
         elif direction == "z":
             c1, c2 = (0, 1)
-            e1 = self.model.grid.regular_grid.extent[1] - self.model.grid.regular_grid.extent[0]
-            e2 = self.model.grid.regular_grid.extent[3] - self.model.grid.regular_grid.extent[2]
-            d1 = self.model.grid.regular_grid.extent[0]
-            d2 = self.model.grid.regular_grid.extent[2]
+            e1 = self.model._grid.regular_grid.extent[1] - self.model._grid.regular_grid.extent[0]
+            e2 = self.model._grid.regular_grid.extent[3] - self.model._grid.regular_grid.extent[2]
+            d1 = self.model._grid.regular_grid.extent[0]
+            d2 = self.model._grid.regular_grid.extent[2]
             if len(list(centroids.items())[0][1]) == 2:
                 c1, c2 = (0, 1)
             r1 = res[0]

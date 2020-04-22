@@ -68,8 +68,8 @@ def plot_3D(geo_model, render_surfaces=True, render_data=True,
         vv.set_surface_points()
         vv.set_orientations()
     if render_surfaces is True:
-        vv.set_surfaces(geo_model.surfaces)
-    if render_topography is True and geo_model.grid.topography is not None:
+        vv.set_surfaces(geo_model._surfaces)
+    if render_topography is True and geo_model._grid.topography is not None:
         vv.set_topography()
 
     vv.render_model(**kwargs)

@@ -46,7 +46,7 @@ def _setup_axis(ax, x_range, col_name=None, grid=False, ylabelsize=None, yrot=No
     if col_name is not None:
         ax.set_yticks([0])
         ax.set_yticklabels([col_name], fontsize=ylabelsize, rotation=yrot)
-        ax.yaxis.grid(grid)
+        ax.yaxis._grid(grid)
     else:
         ax.yaxis.set_visible(False)
     ax.patch.set_alpha(0)
@@ -516,7 +516,7 @@ def _joyplot(data,
             last_axis.xaxis.set_visible(False)
 
         last_axis.yaxis.set_visible(False)
-        last_axis.grid(xgrid)
+        last_axis._grid(xgrid)
 
 
         # Last axis on the back

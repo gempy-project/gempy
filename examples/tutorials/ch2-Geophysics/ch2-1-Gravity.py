@@ -24,9 +24,9 @@ import qgrid
 
 geo_model = gp.load_model('Greenstone', path= '../../data/gempy_models')
 
-geo_model.series
+geo_model._stack
 
-geo_model.surfaces
+geo_model._surfaces
 
 gp.plot.plot_data(geo_model)
 
@@ -74,7 +74,7 @@ plt.scatter(xy_ravel[:,0], xy_ravel[:, 1], s=1)
 
 geo_model.set_centered_grid(xy_ravel,  resolution = [10, 10, 15], radius=5000)
 
-geo_model.grid.centered_grid.kernel_centers
+geo_model._grid.centered_grid.kernel_centers
 
 
 ######################################################################
@@ -84,7 +84,7 @@ geo_model.grid.centered_grid.kernel_centers
 
 from gempy.assets.geophysics import GravityPreprocessing
 
-g = GravityPreprocessing(geo_model.grid.centered_grid)
+g = GravityPreprocessing(geo_model._grid.centered_grid)
 
 tz = g.set_tz_kernel()
 
@@ -103,7 +103,7 @@ tz
 # future the name) to compute the density block at running time.
 # 
 
-geo_model.surfaces
+geo_model._surfaces
 
 
 ######################################################################

@@ -37,10 +37,10 @@ import qgrid
 geo_model = gp.load_model('Tutorial_ch1-8_Onlap_relations', path= '../../data/gempy_models', recompile=False)
 
 # %% 
-geo_model.additional_data
+geo_model._additional_data
 
 # %% 
-geo_model.surfaces
+geo_model._surfaces
 
 
 # %%
@@ -48,7 +48,7 @@ geo_model.surfaces
 # 
 
 # %% 
-geo_model.series
+geo_model._stack
 
 # %% 
 gp.plot.plot_data(geo_model, direction='y')
@@ -173,45 +173,45 @@ scalar_field = geo_model.solutions.scalar_field_matrix
 level = geo_model.solutions.scalar_field_at_surface_points
 
 v0, s0, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[0].reshape(geo_model.grid.regular_grid.resolution[0],
-                         geo_model.grid.regular_grid.resolution[1],
-                         geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[0].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[0,0],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
 
 )
 
 
 v1, s1, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[1].reshape(geo_model.grid.regular_grid.resolution[0],
-                         geo_model.grid.regular_grid.resolution[1],
-                         geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[1].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[1,1],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
 )
 
 v2, s2, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[1].reshape(geo_model.grid.regular_grid.resolution[0],
-                         geo_model.grid.regular_grid.resolution[1],
-                         geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[1].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[1,2],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
 )
 
 v3, s3, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[3].reshape(geo_model.grid.regular_grid.resolution[0],
-                         geo_model.grid.regular_grid.resolution[1],
-                         geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[3].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[2, 3],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
 )
 
 v4, s4, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[3].reshape(geo_model.grid.regular_grid.resolution[0],
-                         geo_model.grid.regular_grid.resolution[1],
-                         geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[3].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[3, 4],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
 )
 
 
@@ -245,47 +245,47 @@ scalar_field = geo_model.solutions.scalar_field_matrix
 level = geo_model.solutions.scalar_field_at_surface_points
 
 v0, s0, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[0].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[0].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[0,0],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=geo_model.solutions.mask_matrix_pad[0],
 )
 
 v1, s1, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[1].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[1].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[1,1],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=geo_model.solutions.mask_matrix_pad[1],
 )
 
 v2, s2, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[1].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[1].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[1,2],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=geo_model.solutions.mask_matrix_pad[1],
 )
 
 v3, s3, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[2].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[2].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[2, 3],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=geo_model.solutions.mask_matrix_pad[3],
 )
 
 v4, s4, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[3].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[3].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[3, 4],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=geo_model.solutions.mask_matrix_pad[3],
 )
 
@@ -320,48 +320,48 @@ scalar_field = geo_model.solutions.scalar_field_matrix
 level = geo_model.solutions.scalar_field_at_surface_points
 
 v0, s0, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[0].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[0].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[0,0],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=None,
 )
 
 
 v1, s1, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[1].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[1].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[1,1],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=None,
 )
 
 v2, s2, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[1].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[1].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[1,2],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=None,
 )
 
 v3, s3, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[3].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[3].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[2, 3],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=None,
 )
 
 v4, s4, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[3].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[3].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[3, 4],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=None,
 )
 
@@ -377,47 +377,47 @@ scalar_field = geo_model.solutions.scalar_field_matrix
 level = geo_model.solutions.scalar_field_at_surface_points
 
 v0, s0, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[0].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[0].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[0,0],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=geo_model.solutions.mask_matrix_pad[0],
 )
 
 v1, s1, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[1].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[1].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[1,1],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=geo_model.solutions.mask_matrix_pad[1],
 )
 
 v2, s2, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[1].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[1].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[1,2],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=geo_model.solutions.mask_matrix_pad[1],
 )
 
 v3, s3, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[2].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[2].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[2, 3],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=geo_model.solutions.mask_matrix_pad[3],
 )
 
 v4, s4, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[3].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[3].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[3, 4],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=geo_model.solutions.mask_matrix_pad[3],
 )
 
@@ -447,47 +447,47 @@ scalar_field = geo_model.solutions.scalar_field_matrix
 level = geo_model.solutions.scalar_field_at_surface_points
 
 v0, s0, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[0].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[0].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[0,0],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=np.ones_like(geo_model.solutions.mask_matrix_pad[0]),
 )
 
 v1, s1, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[1].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[1].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[1,1],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=np.ones_like(geo_model.solutions.mask_matrix_pad[0]),
 )
 
 v2, s2, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[1].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[1].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[1,2],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=np.ones_like(geo_model.solutions.mask_matrix_pad[0]),
 )
 
 v3, s3, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[2].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[2].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[2, 3],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=np.ones_like(geo_model.solutions.mask_matrix_pad[0]),
 )
 
 v4, s4, normals, values = measure.marching_cubes_lewiner(
-    scalar_field[3].reshape(geo_model.grid.regular_grid.resolution[0],
-                            geo_model.grid.regular_grid.resolution[1],
-                            geo_model.grid.regular_grid.resolution[2]),
+    scalar_field[3].reshape(geo_model._grid.regular_grid.resolution[0],
+                            geo_model._grid.regular_grid.resolution[1],
+                            geo_model._grid.regular_grid.resolution[2]),
     level[3, 4],
-    spacing=geo_model.grid.regular_grid.get_dx_dy_dz(),
+    spacing=geo_model._grid.regular_grid.get_dx_dy_dz(),
     mask=np.ones_like(geo_model.solutions.mask_matrix_pad[0]),
 )
 

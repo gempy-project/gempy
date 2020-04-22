@@ -71,8 +71,8 @@ class __Vista:
         kwargs['notebook'] = kwargs.get('notebook', True)
 
         self.model = model
-        self.extent = model.grid.regular_grid.extent if extent is None else extent
-        self._color_lot = model.surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
+        self.extent = model._grid.regular_grid.extent if extent is None else extent
+        self._color_lot = model._surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
 
         self.s_widget = pn.DataFrame(columns=['val'])
         self.p_widget = pn.DataFrame(columns=['val'])
@@ -95,9 +95,9 @@ class __Vista:
 
     def update_colot_lot(self, lith_c=None):
         if lith_c is None:
-            lith_c = self.model.surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
+            lith_c = self.model._surfaces.df.set_index('id')['color'] if lith_c is None else lith_c
             # Hopefully this removes the colors that exist in surfaces but not in data
-            idx_uniq = self.model.surface_points.df['id'].unique()
+            idx_uniq = self.model._surface_points.df['id'].unique()
             # + basement
             idx = np.append(idx_uniq, idx_uniq.max()+1)
             lith_c = lith_c[idx]
@@ -123,7 +123,7 @@ class __Vista:
 
         self.update_colot_lot()
         if regular_grid is None:
-            regular_grid = self.model.grid.regular_grid
+            regular_grid = self.model._grid.regular_grid
 
         g_values = regular_grid.values
         g_3D = g_values.reshape(*regular_grid.resolution, 3).T
@@ -131,7 +131,7 @@ class __Vista:
 
         self.plot_scalar_data(rg, data, name)
         if name == 'lith':
-            n_faults = self.model.faults.df['isFault'].sum()
+            n_faults = self.model._faults.df['isFault'].sum()
             cmap = mcolors.ListedColormap(list(self._color_lot[n_faults:]))
 
             kwargs['cmap'] = kwargs.get('cmap', cmap)
@@ -199,7 +199,7 @@ class __Vista:
         self.model.modify_surface_points(index, X=[new_center[0]], Y=[new_center[1]], Z=[new_center[2]])
 
     def call_back_sphere_move_changes(self, indices):
-        df_changes = self.model.surface_points.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
+        df_changes = self.model._surface_points.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
         for index, df_row in df_changes.iterrows():
             new_center = df_row[['X', 'Y', 'Z']].values
 
@@ -246,7 +246,7 @@ class __Vista:
             radius = _e_d_avrg * .01
 
         if surface_points is None:
-            surface_points = self.model.surface_points.df
+            surface_points = self.model._surface_points.df
 
         test_callback = True if self.real_time is True else False
 
@@ -297,7 +297,7 @@ class __Vista:
         return True
 
     def call_back_plane_move_changes(self, indices):
-        df_changes = self.model.orientations.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z',
+        df_changes = self.model._orientations.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z',
                                                                              'G_x', 'G_y', 'G_z', 'id']]
         for index, new_values_df in df_changes.iterrows():
             new_center = new_values_df[['X', 'Y', 'Z']].values
@@ -313,9 +313,9 @@ class __Vista:
             plane1.SetCenter(new_center[0], new_center[1], new_center[2])
 
             plane1.GetPlaneProperty().SetColor(
-                parse_color(self.model.surfaces.df.set_index('id')['color'][new_values_df['id']]))  # self.C_LOT[new_values_df['id']])
+                parse_color(self.model._surfaces.df.set_index('id')['color'][new_values_df['id']]))  # self.C_LOT[new_values_df['id']])
             plane1.GetHandleProperty().SetColor(
-                parse_color(self.model.surfaces.df.set_index('id')['color'][new_values_df['id']]))
+                parse_color(self.model._surfaces.df.set_index('id')['color'][new_values_df['id']]))
         return True
 
     def plot_orientations(self, orientations=None, clear=True, **kwargs):
@@ -326,14 +326,14 @@ class __Vista:
         kwargs['test_callback'] = kwargs.get('test_callback', False)
 
         if orientations is None:
-            orientations = self.model.orientations.df
+            orientations = self.model._orientations.df
         for e, val in orientations.iterrows():
             c = self._color_lot[val['id']]
             p = self.p.add_plane_widget(self.call_back_plane,
                                         implicit=False, pass_widget=True,
                                         normal=val[['G_x', 'G_y', 'G_z']],
                                         origin=val[['X', 'Y', 'Z']], color=c,
-                                        bounds=self.model.grid.regular_grid.extent,
+                                        bounds=self.model._grid.regular_grid.extent,
                                         factor=factor, **kwargs)
             p.WIDGET_INDEX = e
             self.p_widget.at[e] = p
@@ -346,7 +346,7 @@ class __Vista:
                 self.delete_surface(actor)
 
         if surfaces is None:
-            surfaces = self.model.surfaces.df
+            surfaces = self.model._surfaces.df
 
         select_active = surfaces['isActive']
         for idx, val in surfaces[select_active][['vertices', 'edges', 'color']].dropna().iterrows():
@@ -359,7 +359,7 @@ class __Vista:
         return self.surf_polydata
 
     def update_surfaces(self):
-        surfaces = self.model.surfaces
+        surfaces = self.model._surfaces
         # TODO add the option of update specific surfaces
         for idx, val in surfaces.df[['vertices', 'edges', 'color']].dropna().iterrows():
             self.surf_polydata.loc[idx, 'val'].points = val['vertices']
@@ -398,7 +398,7 @@ class __Vista:
 
         """
         if topography is None:
-            topography = self.model.grid.topography.values
+            topography = self.model._grid.topography.values
         rgb = False
 
         # Create vtk object
@@ -464,7 +464,7 @@ class Vista:
         if extent:
             self.extent = list(extent)
         else:
-            self.extent = list(model.grid.regular_grid.extent)
+            self.extent = list(model._grid.regular_grid.extent)
 
         if plotter_type == 'basic':
             self.p = pv.Plotter(**kwargs)
@@ -499,8 +499,8 @@ class Vista:
 
     def _get_color_lot(self, lith_c=None, faults=True):
         if lith_c is None:
-            surf_df = self.model.surfaces.df.set_index('surface')
-            unique_surf_points = np.unique(self.model.surface_points.df['id'])
+            surf_df = self.model._surfaces.df.set_index('surface')
+            unique_surf_points = np.unique(self.model._surface_points.df['id'])
 
             if len(unique_surf_points) != 0:
                 bool_surf_points = np.zeros(surf_df.shape[0], dtype=bool)
@@ -527,7 +527,7 @@ class Vista:
 
     def _update_color_lot(self, lith_c=None):
         if lith_c is None:
-            active_surfaces = self.model.surfaces.df.groupby('isActive').get_group(True)
+            active_surfaces = self.model._surfaces.df.groupby('isActive').get_group(True)
             lith_c = active_surfaces.set_index('surface')['color'] if lith_c is None else lith_c
             #
             # # Hopefully this removes the colors that exist in surfaces but not in data
@@ -565,12 +565,12 @@ class Vista:
         if fmt is None:
             return self._plot_surface_points_all()
 
-        i = self.model.surface_points.df.groupby("surface").groups[fmt]
+        i = self.model._surface_points.df.groupby("surface").groups[fmt]
         if len(i) == 0:
             return False
 
         mesh = pv.PolyData(
-            self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
+            self.model._surface_points.df.loc[i][["X", "Y", "Z"]].values
         )
         if self._actor_exists(mesh):
             return []
@@ -594,7 +594,7 @@ class Vista:
             return self._plot_orientations_all()
 
         meshes = []
-        i = self.model.orientations.df.groupby("surface").groups[fmt]
+        i = self.model._orientations.df.groupby("surface").groups[fmt]
         if len(i) == 0:
             return meshes
         if not length:
@@ -608,8 +608,8 @@ class Vista:
                 )
             ) / 10
 
-        pts = self.model.orientations.df.loc[i][["X", "Y", "Z"]].values
-        nrms = self.model.orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
+        pts = self.model._orientations.df.loc[i][["X", "Y", "Z"]].values
+        nrms = self.model._orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
         if colors is None:
             colors = self._get_color_lot()
 
@@ -640,7 +640,7 @@ class Vista:
         # for fmt in self.model.surfaces.df.surface:
         #     if fmt.lower() == "basement":
         #         continue
-        for fmt in self.model.surfaces.df.groupby('hasData').get_group(True)['surface']:
+        for fmt in self.model._surfaces.df.groupby('hasData').get_group(True)['surface']:
             new_meshes = self.plot_surface_points(fmt, colors=colors, **kwargs)
             for mesh in new_meshes:
                 if mesh is not None:
@@ -650,7 +650,7 @@ class Vista:
     def _plot_orientations_all(self, **kwargs):
         colors = self._get_color_lot()
         meshes = []
-        for fmt in self.model.surfaces.df.surface:
+        for fmt in self.model._surfaces.df.surface:
             if fmt.lower() == "basement":
                 continue
             orient_meshes = self.plot_orientations(fmt, colors=colors, **kwargs)
@@ -660,7 +660,7 @@ class Vista:
         return meshes
 
     def get_surface(self, fmt: str) -> pv.PolyData:
-        i = self.model.surfaces.df.index[np.where(self.model.surfaces.df.surface == fmt)[0][0]]
+        i = self.model._surfaces.df.index[np.where(self.model._surfaces.df.surface == fmt)[0][0]]
         ver = self.model.solutions.vertices[i]
 
         sim = self._simplices_to_pv_tri_simplices(
@@ -709,7 +709,7 @@ class Vista:
 
         horizons = []
         if not value:
-            value = np.mean(self.model.grid.regular_grid.get_dx_dy_dz()[:2])
+            value = np.mean(self.model._grid.regular_grid.get_dx_dy_dz()[:2])
 
         # TODO: this somehow doesn't work properly with Gullfaks model
         horizons.append(
@@ -746,7 +746,7 @@ class Vista:
         colors = self._get_color_lot()
         meshes = []
         if fmts is None:
-            fmts = self.model.surfaces.df.surface[:-1].values
+            fmts = self.model._surfaces.df.surface[:-1].values
         fmts = np.atleast_1d(fmts)
         for fmt in fmts:
             m = self.plot_surface(fmt, colors=colors, **kwargs)
@@ -773,7 +773,7 @@ class Vista:
                 'scalar' - Scalar field block.
                 'values' - Values matrix block.
         """
-        regular_grid = self.model.grid.regular_grid
+        regular_grid = self.model._grid.regular_grid
 
         grid_values = regular_grid.values
         grid_3d = grid_values.reshape(*regular_grid.resolution, 3).T
@@ -781,15 +781,15 @@ class Vista:
 
         if name == "lith":
             vals = self.model.solutions.lith_block.copy()
-            n_faults = self.model.faults.df['isFault'].sum()
+            n_faults = self.model._faults.df['isFault'].sum()
             cmap = mcolors.ListedColormap(list(self._get_color_lot(faults=False)))
             kwargs['cmap'] = kwargs.get('cmap', cmap)
         elif name == "scalar":
             if series == None:
                 # default to oldest series above basement
-                series = self.model.series.df.iloc[-2].name
+                series = self.model._stack.df.iloc[-2].name
             vals = self.model.solutions.scalar_field_matrix.copy()[
-                self.model.series.df.index.get_loc(series)]
+                self.model._stack.df.index.get_loc(series)]
         elif name == "values":
             vals = self.model.solutions.values_matrix.copy().T
             if vals.shape[1] == 0:
@@ -931,7 +931,7 @@ class Vista:
         # )q
 
     def _update_surface_polydata(self):
-        surfaces = self.model.surfaces.df
+        surfaces = self.model._surfaces.df
         for surf, (idx, val) in zip(
                 surfaces.surface,
                 surfaces[['vertices', 'edges']].dropna().iterrows()
@@ -946,11 +946,11 @@ class Vista:
 
     def plot_surface_points_interactive(self, fmt: str, **kwargs):
         self._live_updating = True
-        i = self.model.surface_points.df.groupby("surface").groups[fmt]
+        i = self.model._surface_points.df.groupby("surface").groups[fmt]
         if len(i) == 0:
             return
 
-        pts = self.model.surface_points.df.loc[i][["X", "Y", "Z"]].values
+        pts = self.model._surface_points.df.loc[i][["X", "Y", "Z"]].values
 
         self.p.add_sphere_widget(
             self._callback_surface_points,
@@ -967,19 +967,19 @@ class Vista:
 
     def plot_surface_points_interactive_all(self, **kwargs):
         self._live_updating = True
-        for fmt in self.model.surfaces.df.surface:
+        for fmt in self.model._surfaces.df.surface:
             if fmt.lower() == "basement":
                 continue
             self.plot_surface_points_interactive(fmt, **kwargs)
 
     def plot_orientations_interactive(self, fmt: str):
         self._live_updating = True
-        i = self.model.orientations.df.groupby("surface").groups[fmt]
+        i = self.model._orientations.df.groupby("surface").groups[fmt]
         if len(i) == 0:
             return
 
-        pts = self.model.orientations.df.loc[i][["X", "Y", "Z"]].values
-        nrms = self.model.orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
+        pts = self.model._orientations.df.loc[i][["X", "Y", "Z"]].values
+        nrms = self.model._orientations.df.loc[i][["G_x", "G_y", "G_z"]].values
 
         for index, pt, nrm in zip(i, pts, nrms):
             widget = self.p.add_plane_widget(
@@ -997,7 +997,7 @@ class Vista:
 
     def plot_orientations_interactive_all(self):
         self._live_updating = True
-        for fmt in self.model.surfaces.df.surface:
+        for fmt in self.model._surfaces.df.surface:
             if fmt.lower() == "basement":
                 continue
             self.plot_orientations_interactive(fmt)
@@ -1015,7 +1015,7 @@ class Vista:
         Returns:
             Dict[int, Array[float, 3]]: Rescaled centroid dictionary.
         """
-        res = self.model.grid.regular_grid.resolution
+        res = self.model._grid.regular_grid.resolution
         scaling = np.diff(self.extent)[::2] / res
 
         scaled_centroids = {}
@@ -1095,7 +1095,7 @@ class Vista:
     ):
         if not topography:
             try:
-                topography = self.model.grid.topography.values
+                topography = self.model._grid.topography.values
             except AttributeError:
                 print("Unable to plot topography: Given geomodel instance "
                       "does not contain topography grid.")
@@ -1146,13 +1146,13 @@ class Vista:
         Returns:
 
         """
-        regular_grid = self.model.grid.regular_grid
+        regular_grid = self.model._grid.regular_grid
 
         grid_values = regular_grid.values
         grid_3d = grid_values.reshape(*regular_grid.resolution, 3).T
         mesh = pv.StructuredGrid(*grid_3d)
 
-        values = self.model.solutions.scalar_field_matrix.reshape(self.model.grid.regular_grid.resolution)
+        values = self.model.solutions.scalar_field_matrix.reshape(self.model._grid.regular_grid.resolution)
         mesh["vol"] = values.flatten()
         contours = mesh.contour(np.linspace(values.min(), values.max(), surfaces_nr + 2))
         self.p.add_mesh(contours, show_scalar_bar=True, label="scalar_field_main")

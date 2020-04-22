@@ -65,7 +65,7 @@ def map_series_to_surfaces(geo_model: Project, mapping_object: Union[dict, pn.Ca
                            set_series=True, sort_geometric_data: bool = True, remove_unused_series=True):
     """"""
     geo_model.map_series_to_surfaces(mapping_object, set_series, sort_geometric_data, remove_unused_series)
-    return geo_model.surfaces
+    return geo_model._surfaces
 
 
 # endregion
@@ -228,27 +228,27 @@ def compute_model(model: Project, output=None, at: np.ndarray = None, compute_me
 
     # Check config
     # ------------
-    assert model.interpolator.theano_function is not None, 'You need to compile' \
+    assert model._interpolator.theano_function is not None, 'You need to compile' \
                                                            'graph before. See `gempy.set_interpolator`.'
 
-    assert model.additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1, \
+    assert model._additional_data.structure_data.df.loc['values', 'len surfaces surface_points'].min() > 1, \
         'To compute the model is necessary at least 2 interface points per layer'
-    assert len(model.interpolator.len_series_i) == len(model.interpolator.len_series_o), \
+    assert len(model._interpolator.len_series_i) == len(model._interpolator.len_series_o), \
         'Every Series/Fault need at least 1 orientation and 2 surfaces points.'
 
     if output is not None:
         warnings.warn('Argument output has no effect anymore and will be deprecated in GemPy 2.2.'
                       'Set the output only in gempy.set_interpolator.', DeprecationWarning, )
     if at is not None:
-        model.grid.deactivate_all_grids()
+        model._grid.deactivate_all_grids()
         model.set_custom_grid(at)
 
     # ------------
 
-    i = model.interpolator.get_python_input_block(append_control=True, fault_drift=None)
-    model.interpolator.reset_flow_control_initial_results(reset_weights, reset_scalar, reset_block)
+    i = model._interpolator.get_python_input_block(append_control=True, fault_drift=None)
+    model._interpolator.reset_flow_control_initial_results(reset_weights, reset_scalar, reset_block)
 
-    sol = model.interpolator.theano_function(*i)
+    sol = model._interpolator.theano_function(*i)
 
     if debug is True or set_solutions is False:
         return sol
@@ -256,13 +256,13 @@ def compute_model(model: Project, output=None, at: np.ndarray = None, compute_me
     elif set_solutions is True:
 
         # Set geology:
-        if model.grid.active_grids[0] is np.True_:
+        if model._grid.active_grids[0] is np.True_:
             model.solutions.set_solution_to_regular_grid(sol, compute_mesh=compute_mesh, **kwargs)
-        if model.grid.active_grids[1] is np.True_:
+        if model._grid.active_grids[1] is np.True_:
             model.solutions.set_solution_to_custom(sol)
-        if model.grid.active_grids[2] is np.True_:
+        if model._grid.active_grids[2] is np.True_:
             model.solutions.set_solution_to_topography(sol)
-        if model.grid.active_grids[3] is np.True_:
+        if model._grid.active_grids[3] is np.True_:
             model.solutions.set_solution_to_sections(sol)
         # Set gravity
         model.solutions.fw_gravity = sol[12]
@@ -293,7 +293,7 @@ def compute_model_at(new_grid: Union[ndarray], model: Project, **kwargs):
     #     set_grid(model, Grid('custom_grid', custom_grid=new_grid))
     warnings.warn('compute_model_at will be deprecated in GemPy 2.2.'
                   'Use argument `at` in compute_model instead', DeprecationWarning)
-    model.grid.deactivate_all_grids()
+    model._grid.deactivate_all_grids()
     model.set_custom_grid(new_grid)
 
     # Now we are good to compute the model again only in the new point

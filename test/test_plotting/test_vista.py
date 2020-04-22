@@ -56,11 +56,11 @@ class TestVista:
         Args:
             vista_object_only_data:
         """
-        sp = vista_object_only_data._select_surfaces_data(data_df=vista_object_only_data.model.surface_points.df,
+        sp = vista_object_only_data._select_surfaces_data(data_df=vista_object_only_data.model._surface_points.df,
                                                           surfaces='all')
         np.testing.assert_almost_equal(sp.loc[4, 'X_r'],  0.486942, 5)
 
-        sp2 = vista_object_only_data._select_surfaces_data(data_df=vista_object_only_data.model.surface_points.df,
+        sp2 = vista_object_only_data._select_surfaces_data(data_df=vista_object_only_data.model._surface_points.df,
                                                            surfaces=['Sandstone_2'])
         with pytest.raises(KeyError):
             sp2.loc[4, 'X_r']

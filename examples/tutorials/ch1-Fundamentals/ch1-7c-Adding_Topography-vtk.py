@@ -31,7 +31,7 @@ gp.init_data(geo_model, extent=[450000, 460000, 70000,80000,-1000,500],resolutio
 
 # %% 
 # use happy spring colors! 
-geo_model.surfaces.colors.change_colors({'layer1':'#ff8000','basement':'#88cc60'})
+geo_model._surfaces.colors.change_colors({'layer1': '#ff8000', 'basement': '#88cc60'})
 
 # %% 
 # %matplotlib inline
@@ -74,13 +74,13 @@ vtkp = gp.plot.plot_3D(geo_model)
 vtkp.resume()
 
 # %% 
-geo_model.grid.topography.load_from_gdal(filepath=fp)
+geo_model._grid.topography.load_from_gdal(filepath=fp)
 
 # %% 
 geo_model.set_topography(source='gdal',filepath=fp)
 
 # %% 
-plt.imshow(geo_model.grid.topography.topo.dem_zval)
+plt.imshow(geo_model._grid.topography.topo.dem_zval)
 plt.colorbar()
 
 # %% 
@@ -104,9 +104,9 @@ vtkp.update_model()
 geo_model.set_topography(d_z=np.array([0,100]), fd=0.9, plot_object= vtkp)
 
 # %% 
-gp.plot.plot_section(geo_model, 25, direction='y', block=geo_model.grid.regular_grid.mask_topo,
-                show_topo=False)
+gp.plot.plot_section(geo_model, 25, direction='y', block=geo_model._grid.regular_grid.mask_topo,
+                     show_topo=False)
 
 # %% 
-gp.plot.plot_section(geo_model, 25, direction='x', block=geo_model.grid.regular_grid.mask_topo,
-                show_topo=False)
+gp.plot.plot_section(geo_model, 25, direction='x', block=geo_model._grid.regular_grid.mask_topo,
+                     show_topo=False)

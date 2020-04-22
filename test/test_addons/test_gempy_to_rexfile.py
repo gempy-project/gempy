@@ -77,7 +77,7 @@ class TestGemPyToREX:
     def test_rex_bytes_to_file_except(self):
         model = gempy.create_data(extent=[0,10,0,10,0,10])
         model.set_default_surfaces()
-        model.surfaces.df['isActive'] = False
+        model._surfaces.df['isActive'] = False
         rex_bytes = gtr.geomodel_to_rex(model)
 
     def test_plot_ar(self, geo_model):

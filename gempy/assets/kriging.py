@@ -66,7 +66,7 @@ class domain(object):
 
         # Apply mask to lith_block and grid
         self.krig_lith = self.sol.lith_block[self.mask]
-        self.krig_grid = self.sol.grid.values[self.mask]
+        self.krig_grid = self.sol._grid.values[self.mask]
 
     def set_data(self, data):
         """
@@ -271,14 +271,14 @@ class field_solution(object):
 
             plot.plot_section(geo_data, direction=direction, cell_number=cell_number)
             if contour == True:
-                im = plt.contourf(a.reshape(self.domain.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
+                im = plt.contourf(a.reshape(self.domain.sol._grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
                                   origin='lower', levels=25,
                                   extent=extent_val, interpolation=interpolation)
                 if legend:
                     ax = plt.gca()
                     helpers.add_colorbar(axes=ax, label='prop', cs=im)
             else:
-                im = plt.imshow(a.reshape(self.domain.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
+                im = plt.imshow(a.reshape(self.domain.sol._grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
                                 origin='lower',
                                 extent=extent_val, interpolation=interpolation)
                 if legend:
@@ -287,14 +287,14 @@ class field_solution(object):
         else:
             f, ax = plt.subplots(1, 2, sharex=True, sharey=True)
             ax[0].title.set_text('Estimated value')
-            im1 = ax[0].imshow(a.reshape(self.domain.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
+            im1 = ax[0].imshow(a.reshape(self.domain.sol._grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
                                origin='lower', interpolation=interpolation,
-                               extent=self.domain.sol.grid.regular_grid.extent[[0, 1, 4, 5]])
+                               extent=self.domain.sol._grid.regular_grid.extent[[0, 1, 4, 5]])
             helpers.add_colorbar(im1, label='property value')
             ax[1].title.set_text('Variance')
-            im2 = ax[1].imshow(b.reshape(self.domain.sol.grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
+            im2 = ax[1].imshow(b.reshape(self.domain.sol._grid.regular_grid.resolution)[_a, _b, _c].T, cmap=cmap,
                                origin='lower', interpolation=interpolation,
-                               extent=self.domain.sol.grid.regular_grid.extent[[0, 1, 4, 5]])
+                               extent=self.domain.sol._grid.regular_grid.extent[[0, 1, 4, 5]])
             helpers.add_colorbar(im2, label='variance[]')
             plt.tight_layout()
 

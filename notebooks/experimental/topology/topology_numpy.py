@@ -48,10 +48,10 @@ def get_fault_ids(geo_model) -> np.array:
         (np.array) of int surface id's.
     """
     isfault = np.isin(
-        geo_model.surfaces.df.series, 
-        geo_model.faults.df.index[geo_model.faults.df.isFault]
+        geo_model._surfaces.df._stack,
+        geo_model._faults.df.index[geo_model._faults.df.isFault]
     )
-    return geo_model.surfaces.df.id[isfault].values
+    return geo_model._surfaces.df.id[isfault].values
 
 
 def get_labels_block(
@@ -521,9 +521,9 @@ def compute_topology(geo_model, n_shift:int=1) -> tuple:
         tuple: set of edges, centroid dictionary
     """
     lb, fb = lithblock_to_lb_fb(geo_model)
-    n_faults = np.count_nonzero(geo_model.faults.df.isFault)
-    n_liths = len(geo_model.surfaces.df) - n_faults
-    res = geo_model.grid.regular_grid.resolution
+    n_faults = np.count_nonzero(geo_model._faults.df.isFault)
+    n_liths = len(geo_model._surfaces.df) - n_faults
+    res = geo_model._grid.regular_grid.resolution
 
     topology_labels = get_topology_labels(lb, fb, n_liths)
     shift_xyz_block = topology_shift(topology_labels, res, n_shift=n_shift)

@@ -52,13 +52,13 @@ model = gp.Model()
 # 
 
 # %% 
-model.surface_points
+model._surface_points
 
 # %% 
-model.surfaces
+model._surfaces
 
 # %% 
-model.series
+model._stack
 
 
 # %%
@@ -66,7 +66,7 @@ model.series
 # 
 
 # %% 
-model.surfaces.df['series'], model.surfaces.df['surface'] 
+model._surfaces.df['series'], model._surfaces.df['surface']
 
 
 # %%
@@ -74,7 +74,7 @@ model.surfaces.df['series'], model.surfaces.df['surface']
 # 
 
 # %% 
-model.additional_data
+model._additional_data
 
 
 # %%
@@ -93,11 +93,11 @@ model.read_data(path_i=data_path+"/data/input_data/tut_chapter1/simple_fault_mod
                 path_o=data_path+"/data/input_data/tut_chapter1/simple_fault_model_orientations.csv")
 
 # %% 
-model.orientations
+model._orientations
 
 # %% 
-a = model.surfaces.df['series'].cat
-a.set_categories(model.series.df.index)
+a = model._surfaces.df['series'].cat
+a.set_categories(model._stack.df.index)
 
 # %% 
 model.map_series_to_surfaces({"Fault_Series":('Main_Fault', 'Silstone'), 
@@ -105,16 +105,16 @@ model.map_series_to_surfaces({"Fault_Series":('Main_Fault', 'Silstone'),
                                              'Shale', )}, )
 
 # %% 
-model.series
+model._stack
 
 # %% 
-model.surfaces
+model._surfaces
 
 # %% 
-model.surface_points.df.head()
+model._surface_points.df.head()
 
 # %% 
-model.orientations.df.head()
+model._orientations.df.head()
 
 
 # %%
@@ -129,16 +129,16 @@ model.map_series_to_surfaces({"Fault_Series":'Main_Fault',
                                                  'Shale', 'Sandstone_1')})
 
 # %% 
-model.surfaces.df['series']
+model._surfaces.df['series']
 
 # %% 
-model.surfaces
+model._surfaces
 
 # %% 
-model.surface_points.df.head()
+model._surface_points.df.head()
 
 # %% 
-model.series
+model._stack
 
 
 # %%
@@ -146,13 +146,13 @@ model.series
 # 
 
 # %% 
-model.faults
+model._faults
 
 # %% 
 model.set_is_fault(['Fault_Series'])
 
 # %% 
-model.surface_points.df.head()
+model._surface_points.df.head()
 
 
 # %%
@@ -163,7 +163,7 @@ model.surface_points.df.head()
 # 
 
 # %% 
-model.additional_data
+model._additional_data
 
 
 # %%
@@ -176,7 +176,7 @@ model.additional_data
 # 
 
 # %% 
-model.grid.values
+model._grid.values
 
 # %% 
 model.set_regular_grid([0,10,0,10,0,10], [50,50,50])

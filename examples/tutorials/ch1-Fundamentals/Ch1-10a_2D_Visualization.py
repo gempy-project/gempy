@@ -48,7 +48,7 @@ section_dict = {'section1':([0,0],[1000,1000],[100,80]),
 geo_data.set_section_grid(section_dict)
 
 # %% 
-geo_data.grid.sections
+geo_data._grid.sections
 
 # %% 
 gp.set_interpolation_data(geo_data, theano_optimizer='fast_compile',
@@ -60,7 +60,7 @@ gp.map_series_to_surfaces(geo_data, {"Fault_Series":'fault',
 geo_data.set_is_fault(['Fault_Series'])
 
 # %% 
-geo_data.grid.active_grids
+geo_data._grid.active_grids
 
 # %% 
 gp.compute_model(geo_data);

@@ -33,14 +33,14 @@ def test_rename_surface():
     mm = gp.ImplicitCoKriging()
     mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
     mm.rename_surfaces({'foo1': 'changed'})
-    assert mm.surfaces.df.loc[1, 'surface'] == 'changed'
+    assert mm._surfaces.df.loc[1, 'surface'] == 'changed'
 
 
 def test_modify_order_surfaces():
     mm = gp.ImplicitCoKriging()
     mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
     mm.modify_order_surfaces(3, 2)
-    assert mm.surfaces.df.iloc[2, 0] == 'foo2'
+    assert mm._surfaces.df.iloc[2, 0] == 'foo2'
 
 
 def test_add_surface_values():
@@ -55,9 +55,9 @@ def test_modify_surface_values():
     mm = gp.ImplicitCoKriging()
     mm.add_surfaces(['surface1', 'foo1', 'foo2', 'foo3'])
     mm.add_surface_points(400, 300, -500, 'foo2')
-    print(mm.surface_points)
+    print(mm._surface_points)
     mm.modify_surface_points(0, Y=800)
-    print(mm.surface_points)
+    print(mm._surface_points)
 
 
 def test_set_surface_values():
@@ -79,11 +79,11 @@ def test_add_default_orientation():
 def test_set_is_fault():
     mm = gp.ImplicitCoKriging()
     mm.add_series(['foo1', 'foo2', 'foo3'])
-    assert (mm.faults.df.index == np.array(['Default series', 'foo1', 'foo2', 'foo3'])).all()
-    assert (mm.faults.faults_relations_df.index == ['Default series', 'foo1', 'foo2', 'foo3']).all()
+    assert (mm._faults.df.index == np.array(['Default series', 'foo1', 'foo2', 'foo3'])).all()
+    assert (mm._faults.faults_relations_df.index == ['Default series', 'foo1', 'foo2', 'foo3']).all()
     mm.set_is_fault(['foo2'])
-    assert mm.faults.faults_relations_df.loc['foo2', 'foo3'] == True
-    assert mm.faults.faults_relations_df.iloc[2,3] == True
+    assert mm._faults.faults_relations_df.loc['foo2', 'foo3'] == True
+    assert mm._faults.faults_relations_df.iloc[2, 3] == True
     mm.set_is_fault(['foo2'], toggle=True)
 
 
@@ -93,4 +93,4 @@ def test_read_data():
     model.read_data(path_i=data_path + "/data/input_data/tut_chapter1/simple_fault_model_points.csv",
                     path_o=data_path + "/data/input_data/tut_chapter1/simple_fault_model_orientations.csv")
 
-    assert model.surface_points.df.shape[0] == 57
+    assert model._surface_points.df.shape[0] == 57

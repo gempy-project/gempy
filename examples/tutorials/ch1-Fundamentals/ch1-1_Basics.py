@@ -83,7 +83,7 @@ gp.init_data(geo_model, [0, 2000., 0, 2000., 0, 2000.], [50, 50, 50],
              default_values=True)
 
 # %%
-geo_model.surfaces
+geo_model._surfaces
 
 # %%
 # The input data can then be listed using the command ``get_data``. Note
@@ -157,7 +157,7 @@ gp.get_data(geo_model, 'orientations').head()
 # 
 
 # %% 
-geo_model.surfaces
+geo_model._surfaces
 
 # %% 
 gp.map_series_to_surfaces(geo_model,
@@ -167,22 +167,22 @@ gp.map_series_to_surfaces(geo_model,
                           remove_unused_series=True)
 
 # %% 
-geo_model.surfaces
+geo_model._surfaces
 
 # %% 
-geo_model.series
+geo_model._stack
 
 # %% 
 geo_model.set_is_fault(['Fault_Series'])
 
 # %% 
-geo_model.faults.faults_relations_df
+geo_model._faults.faults_relations_df
 
 # %% 
-geo_model.faults
+geo_model._faults
 
 # %% 
-geo_model.faults.faults_relations_df
+geo_model._faults.faults_relations_df
 
 # %%
 # Returning information from our input data
@@ -197,7 +197,7 @@ geo_model.faults.faults_relations_df
 # 
 
 # %% 
-geo_model.grid.values
+geo_model._grid.values
 
 # %%
 # As mentioned before, GemPy's core algorithm is based on interpolation of
@@ -340,16 +340,16 @@ gp.get_data(geo_model, 'kriging')
 # 
 
 # %% 
-geo_model.additional_data.structure_data
+geo_model._additional_data.structure_data
 
 # %% 
-geo_model.surfaces
+geo_model._surfaces
 
 # %% 
 sol = gp.compute_model(geo_model, compute_mesh=True, sort_surfaces=False)
 
 # %% 
-geo_model.surfaces
+geo_model._surfaces
 
 # %% 
 sol
@@ -372,13 +372,13 @@ gp.compute_model(geo_model)
 geo_model.solutions.lith_block
 
 # %% 
-geo_model.grid.values
+geo_model._grid.values
 
 # %%
 gp._plot.plot_2d(geo_model, show_data=False)
 plt.show()
 # %% 
-geo_model.surfaces
+geo_model._surfaces
 
 # %%
 # With ``cell_number=25`` and remembering that we defined our resolution

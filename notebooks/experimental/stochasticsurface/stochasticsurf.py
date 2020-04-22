@@ -37,12 +37,12 @@ class _StochasticSurfaceAbstract(ABC):
     @property
     def surface_points(self) -> pd.DataFrame:
         """Access geomodel surface points."""
-        return self.geo_model.surface_points.df.loc[self.isurf]
+        return self.geo_model._surface_points.df.loc[self.isurf]
 
     @property
     def orientations(self) -> pd.DataFrame:
         """Access geomodel orientations."""
-        return self.geo_model.orientations.df.loc[self.iorient]
+        return self.geo_model._orientations.df.loc[self.iorient]
 
     @abstractmethod
     def parametrize_surfpts_naive(self, factor: float = 0.01) -> None:
@@ -103,7 +103,7 @@ class StochasticSurfaceScipy(_StochasticSurfaceAbstract):
         """
         direction = direction.capitalize()
         i = {"Z": 5, "X": 1, "Y": 3}
-        scale = self.geo_model.grid.extent[i[direction]] * factor
+        scale = self.geo_model._grid.extent[i[direction]] * factor
 
         params = [
             ss.norm(loc=0, scale=scale)

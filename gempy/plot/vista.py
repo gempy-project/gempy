@@ -84,7 +84,7 @@ class GemPyToVista(WidgetsCallbacks):
 
         # Model properties
         self.model = model
-        self.extent = model.grid.regular_grid.extent if extent is None else extent
+        self.extent = model._grid.regular_grid.extent if extent is None else extent
 
         # plotting options
         self.live_updating = live_updating
@@ -140,8 +140,8 @@ class GemPyToVista(WidgetsCallbacks):
                 for the lith block and false for surfaces and input data.
         """
         if lith_c is None:
-            surf_df = self.model.surfaces.df.set_index('surface')
-            unique_surf_points = np.unique(self.model.surface_points.df['id'])
+            surf_df = self.model._surfaces.df.set_index('surface')
+            unique_surf_points = np.unique(self.model._surface_points.df['id'])
 
             if len(unique_surf_points) != 0:
                 bool_surf_points = np.zeros(surf_df.shape[0], dtype=bool)
@@ -311,7 +311,7 @@ class GemPyToVista(WidgetsCallbacks):
             **kwargs:
         """
         if surface_points is None:
-            surface_points = self._select_surfaces_data(self.model.surface_points.df, surfaces)
+            surface_points = self._select_surfaces_data(self.model._surface_points.df, surfaces)
 
         if clear is True:
             self.p.clear_sphere_widgets()
@@ -350,7 +350,7 @@ class GemPyToVista(WidgetsCallbacks):
             **kwargs:
         """
         if orientations is None:
-            orientations = self._select_surfaces_data(self.model.orientations.df, surfaces)
+            orientations = self._select_surfaces_data(self.model._orientations.df, surfaces)
 
         if clear is True:
             self.p.clear_plane_widgets()
@@ -390,7 +390,7 @@ class GemPyToVista(WidgetsCallbacks):
             [self.p.remove_actor(actor) for actor in self.surface_actors.items()]
 
         if surfaces_df is None:
-            surfaces_df = self._select_surfaces_data(self.model.surfaces.df, surfaces)
+            surfaces_df = self._select_surfaces_data(self.model._surfaces.df, surfaces)
 
         select_active = surfaces_df['isActive']
         for idx, val in surfaces_df[select_active][['vertices', 'edges', 'color', 'surface']].dropna().iterrows():
@@ -422,7 +422,7 @@ class GemPyToVista(WidgetsCallbacks):
 
         if not topography:
             try:
-                topography = self.model.grid.topography.values
+                topography = self.model._grid.topography.values
             except AttributeError:
                 raise AttributeError("Unable to plot topography: Given geomodel instance "
                                      "does not contain topography grid.")
@@ -490,7 +490,7 @@ class GemPyToVista(WidgetsCallbacks):
             render_topography (bool):
             **kwargs:
         """
-        regular_grid = self.model.grid.regular_grid
+        regular_grid = self.model._grid.regular_grid
 
         if regular_grid.values is self._grid_values:
             regular_grid_mesh = self.regular_grid_mesh
@@ -538,12 +538,12 @@ class GemPyToVista(WidgetsCallbacks):
                 cmap = mcolors.ListedColormap(hex_colors)
             if scalar_field == 'scalar' or scalar_field == 'all':
                 scalar_field_ = 'sf_'
-                for e, series in enumerate(self.model.series.df.groupby('isActive').groups[True]):
+                for e, series in enumerate(self.model._stack.df.groupby('isActive').groups[True]):
                     regular_grid[scalar_field_ + series] = data.scalar_field_matrix[e]
 
             if (scalar_field == 'values' or scalar_field == 'all') and data.values_matrix.shape[0] != 0:
                 scalar_field_ = 'values_'
-                for e, lith_property in enumerate(self.model.surfaces.df.columns[self.model.surfaces._n_properties:]):
+                for e, lith_property in enumerate(self.model._surfaces.df.columns[self.model._surfaces._n_properties:]):
                     regular_grid[scalar_field_ + lith_property] = data.values_matrix[e]
 
         if type(data) == dict:

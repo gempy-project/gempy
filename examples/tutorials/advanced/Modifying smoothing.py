@@ -56,9 +56,9 @@ interp_data = gp.set_interpolation_data(geo_data, theano_optimizer='fast_compile
 
 geo_data.update_to_interpolator()
 
-geo_data.orientations
+geo_data._orientations
 
-geo_data.interpolator.theano_graph.nugget_effect_grad_T.get_value()
+geo_data._interpolator.theano_graph.nugget_effect_grad_T.get_value()
 
 sol = gp.compute_model(geo_data)
 
@@ -81,11 +81,11 @@ vtkplot = gp.plot.plot_3D(geo_data, )
 
 vtkplot.set_real_time_on()
 
-a = geo_data.surface_points.df['X'] > 510
-sel = geo_data.surface_points.df.index[a]
+a = geo_data._surface_points.df['X'] > 510
+sel = geo_data._surface_points.df.index[a]
 sel
 
 geo_data.modify_surface_points(sel, smooth=100, plot_object=vtkplot)
 
-geo_data.interpolator.theano_graph.nugget_effect_scalar_T.get_value()
+geo_data._interpolator.theano_graph.nugget_effect_scalar_T.get_value()
 

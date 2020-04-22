@@ -40,9 +40,9 @@ gp.init_data(geo_model, [0, 1000, 0, 1000, -1000, 0], [50, 50, 50])
 geo_model.set_default_surfaces()
 
 # %% 
-geo_model.series.add_series(['foo'])
+geo_model._stack.add_series(['foo'])
 geo_model.update_from_series()
-geo_model.series
+geo_model._stack
 
 
 # %%
@@ -124,7 +124,7 @@ geo_model.qi.qgrid_fr
 # 
 
 # %% 
-geo_model.faults.faults_relations_df
+geo_model._faults.faults_relations_df
 
 
 # %%
@@ -148,4 +148,4 @@ geo_model.qi.qgrid_se
 # 
 
 # %% 
-geo_model.additional_data
+geo_model._additional_data

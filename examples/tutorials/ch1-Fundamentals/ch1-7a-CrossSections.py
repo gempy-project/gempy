@@ -53,7 +53,7 @@ geo_model.set_is_fault(['Fault_Series'])
 section_dict = {'section1':([0,0],[2000,2000],[100,80]),
          'section2':([800,0],[800,2000],[150,100]),
          'section3':([0,200],[1500,500],[200,150])} #p1,p2,resolution
-geo_model.grid.create_section_grid(section_dict)
+geo_model._grid.create_section_grid(section_dict)
 
 
 # %%
@@ -70,7 +70,7 @@ geo_model.set_topography(fd=1.2,d_z=np.array([600,2000]),resolution=np.array([50
 # 
 
 # %% 
-geo_model.grid.grid_types[geo_model.grid.active_grids]
+geo_model._grid.grid_types[geo_model._grid.active_grids]
 
 # %% 
 gp.plot.plot_section_traces(geo_model)

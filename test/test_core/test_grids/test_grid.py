@@ -29,8 +29,8 @@ class TestGrid:
 
         geo_data.set_section_grid(section_dict)
 
-        print(geo_data.grid.sections)
-        np.testing.assert_almost_equal(geo_data.grid.sections.df.loc['section3', 'dist'], 304.138127,
+        print(geo_data._grid.sections)
+        np.testing.assert_almost_equal(geo_data._grid.sections.df.loc['section3', 'dist'], 304.138127,
                                        decimal=4)
 
     def test_set_section_twice(self):
@@ -41,7 +41,7 @@ class TestGrid:
 
         geo_data.set_section_grid(section_dict)
         geo_data.set_section_grid(section_dict)
-        print(geo_data.grid.sections)
+        print(geo_data._grid.sections)
 
     def test_custom_grid(self):
         # create custom grid

@@ -33,10 +33,10 @@ import qgrid
 geo_model = gp.load_model('Tutorial_ch1-9b_Fault_relations', path= '../../data/gempy_models')
 
 # %% 
-geo_model.surfaces
+geo_model._surfaces
 
 # %% 
-geo_model.additional_data
+geo_model._additional_data
 
 
 # %%
@@ -53,13 +53,13 @@ gp.plot.plot_data(geo_model, direction='x')
 gp.set_interpolation_data(geo_model)
 
 # %% 
-geo_model.series
+geo_model._stack
 
 # %% 
-geo_model.faults
+geo_model._faults
 
 # %% 
-geo_model.faults.faults_relations_df
+geo_model._faults.faults_relations_df
 
 # %% 
 gp.compute_model(geo_model, compute_mesh=False)
@@ -77,7 +77,7 @@ gp.plot.plot_scalar_field(geo_model, 25, series=2)
 # 
 
 # %% 
-geo_model.interpolator.theano_graph.offset.set_value(1)
+geo_model._interpolator.theano_graph.offset.set_value(1)
 gp.compute_model(geo_model, compute_mesh=False)
 
 # %% 

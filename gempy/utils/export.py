@@ -24,7 +24,7 @@ def export_geomap2geotiff(path, geo_model, geo_map=None, geotiff_filepath=None):
     norm = plot._norm
 
     if geo_map is None:
-        geo_map = geo_model.solutions.geological_map[0].reshape(geo_model.grid.topography.resolution)
+        geo_map = geo_model.solutions.geological_map[0].reshape(geo_model._grid.topography.resolution)
 
     if geotiff_filepath is None:
         # call the other function
@@ -73,8 +73,8 @@ def export_moose_input(geo_model, path=None):
         
     """
     # get model dimensions
-    nx, ny, nz = geo_model.grid.regular_grid.resolution
-    xmin, xmax, ymin, ymax, zmin, zmax = geo_model.solutions.grid.regular_grid.extent
+    nx, ny, nz = geo_model._grid.regular_grid.resolution
+    xmin, xmax, ymin, ymax, zmin, zmax = geo_model.solutions._grid.regular_grid.extent
     
     # get unit IDs and restructure them
     ids = np.round(geo_model.solutions.lith_block)
@@ -87,7 +87,7 @@ def export_moose_input(geo_model, path=None):
     idstring = '\n  '.join(map(str, liths))
 
     # create a dictionary with unit names and corresponding unit IDs
-    sids = dict(zip(geo_model.surfaces.df['surface'], geo_model.surfaces.df['id']))
+    sids = dict(zip(geo_model._surfaces.df['surface'], geo_model._surfaces.df['id']))
     surfs = list(sids.keys())
     uids = list(sids.values())
     # create strings for fstring, so in MOOSE, units have a name instead of an ID

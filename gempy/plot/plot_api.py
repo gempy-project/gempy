@@ -217,14 +217,14 @@ def plot_stereonet(self, litho=None, planes=True, poles=True,
     from collections import OrderedDict
 
     if litho is None:
-        litho = self.model.orientations.df['surface'].unique()
+        litho = self.model._orientations.df['surface'].unique()
 
     if single_plots is False:
         fig, ax = mplstereonet.subplots(figsize=(5, 5))
         df_sub2 = pn.DataFrame()
         for i in litho:
-            df_sub2 = df_sub2.append(self.model.orientations.df[
-                                         self.model.orientations.df[
+            df_sub2 = df_sub2.append(self.model._orientations.df[
+                                         self.model._orientations.df[
                                              'surface'] == i])
 
     for formation in litho:
@@ -236,8 +236,8 @@ def plot_stereonet(self, litho=None, planes=True, poles=True,
         # if series_only:
         # df_sub = self.model.orientations.df[self.model.orientations.df['series'] == formation]
         # else:
-        df_sub = self.model.orientations.df[
-            self.model.orientations.df['surface'] == formation]
+        df_sub = self.model._orientations.df[
+            self.model._orientations.df['surface'] == formation]
 
         if poles:
             ax.pole(df_sub['azimuth'] - 90, df_sub['dip'], marker='o',
@@ -263,7 +263,7 @@ def plot_stereonet(self, litho=None, planes=True, poles=True,
         handles, labels = ax.get_legend_handles_labels()
         by_label = OrderedDict(zip(labels, handles))
         ax.legend(by_label.values(), by_label.keys(), bbox_to_anchor=(1.9, 1.1))
-        ax.grid(True, color='black', alpha=0.25)
+        ax._grid(True, color='black', alpha=0.25)
 
 
 def plot_3d(model, plotter_type='background',
@@ -280,7 +280,7 @@ def plot_3d(model, plotter_type='background',
         gpv.plot_surfaces()
     if show_data:
         gpv.plot_data()
-    if show_topography and model.grid.topography is not None:
+    if show_topography and model._grid.topography is not None:
         gpv.plot_topography()
     #gpv.p.show()
     return gpv

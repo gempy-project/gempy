@@ -15,23 +15,23 @@ def _extract_boundaries(self, axes, section_name='topography'):
     """
     cs = []
 
-    faults = list(self.model.faults.df[self.model.faults.df['isFault'] == True].index)
+    faults = list(self.model._faults.df[self.model._faults.df['isFault'] == True].index)
 
     if section_name == 'topography':
-        shape = self.model.grid.topography.resolution
+        shape = self.model._grid.topography.resolution
         a = self.model.solutions.geological_map[1]
-        extent = [self.model.grid.topography.extent[0],
-                  self.model.grid.topography.extent[1],
-                  self.model.grid.topography.extent[2],
-                  self.model.grid.topography.extent[3]]
+        extent = [self.model._grid.topography.extent[0],
+                  self.model._grid.topography.extent[1],
+                  self.model._grid.topography.extent[2],
+                  self.model._grid.topography.extent[3]]
     else:
-        l0, l1 = self.model.grid.sections.get_section_args(section_name)
-        j = np.where(self.model.grid.sections.names == section_name)[0][0]
-        shape = [self.model.grid.sections.resolution[j][0], self.model.grid.sections.resolution[j][1]]
+        l0, l1 = self.model._grid.sections.get_section_args(section_name)
+        j = np.where(self.model._grid.sections.names == section_name)[0][0]
+        shape = [self.model._grid.sections.resolution[j][0], self.model._grid.sections.resolution[j][1]]
         a = self.model.solutions.sections[1][:, l0:l1]
         # b = self.model.solutions.sections[0][:, l0:l1].reshape(shape).T
-        extent = [0, self.model.grid.sections.dist[j][0], self.model.grid.regular_grid.extent[4],
-                  self.model.grid.regular_grid.extent[5]]
+        extent = [0, self.model._grid.sections.dist[j][0], self.model._grid.regular_grid.extent[4],
+                  self.model._grid.regular_grid.extent[5]]
 
     zorder = 2
     counter = a.shape[0]
@@ -101,7 +101,7 @@ def get_polygon_dictionary(geo_model, section_name):
 
     surflist = []
     for color in colors:
-        surflist.append(geo_model.surfaces.df[geo_model.surfaces.df['color'] == color]['surface'].values[0])
+        surflist.append(geo_model._surfaces.df[geo_model._surfaces.df['color'] == color]['surface'].values[0])
 
     # Todo remove this dirty fix (for merle)
     if len(all_paths) != len(surflist):

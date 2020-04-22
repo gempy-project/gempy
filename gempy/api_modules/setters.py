@@ -61,24 +61,24 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         output = type_
 
     if theano_optimizer is not None:
-        geo_model.additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
+        geo_model._additional_data.options.df.at['values', 'theano_optimizer'] = theano_optimizer
     if verbose is not None:
-        geo_model.additional_data.options.df.at['values', 'verbosity'] = verbose
+        geo_model._additional_data.options.df.at['values', 'verbosity'] = verbose
 
-    geo_model.interpolator.create_theano_graph(geo_model.additional_data, inplace=True,
-                                               output=output, **kwargs)
+    geo_model._interpolator.create_theano_graph(geo_model._additional_data, inplace=True,
+                                                output=output, **kwargs)
 
     # TODO add kwargs
-    geo_model.rescaling.rescale_data()
+    geo_model._rescaling.rescale_data()
     geo_model.update_additional_data(update_structure=update_structure, update_kriging=update_kriging)
-    geo_model.surface_points.sort_table()
-    geo_model.orientations.sort_table()
+    geo_model._surface_points.sort_table()
+    geo_model._orientations.sort_table()
 
     if 'gravity' in output:
         pos_density = kwargs.get('pos_density', 1)
         tz = kwargs.get('tz', 'auto')
-        if geo_model.grid.centered_grid is not None:
-            geo_model.interpolator.set_theano_shared_gravity(tz, pos_density)
+        if geo_model._grid.centered_grid is not None:
+            geo_model._interpolator.set_theano_shared_gravity(tz, pos_density)
 
     if 'magnetics' in output:
         pos_magnetics = kwargs.get('pos_magnetics', 1)
@@ -86,27 +86,27 @@ def set_interpolator(geo_model: Model, output: list = None, compile_theano: bool
         incl = kwargs.get('incl')
         decl = kwargs.get('decl')
         B_ext = kwargs.get('B_ext', 52819.8506939139e-9)
-        if geo_model.grid.centered_grid is not None:
-            geo_model.interpolator.set_theano_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
+        if geo_model._grid.centered_grid is not None:
+            geo_model._interpolator.set_theano_shared_magnetics(Vs, pos_magnetics, incl, decl, B_ext)
 
     if 'topology' in output:
         # This id is necessary for topology
-        id_list = geo_model.surfaces.df.groupby('isFault').cumcount() + 1
+        id_list = geo_model._surfaces.df.groupby('isFault').cumcount() + 1
         geo_model.add_surface_values(id_list, 'topology_id')
-        geo_model.interpolator.set_theano_shared_topology()
+        geo_model._interpolator.set_theano_shared_topology()
 
         # TODO it is missing to pass to theano the position of topology_id
 
     if compile_theano is True:
-        geo_model.interpolator.set_all_shared_parameters(reset_ctrl=True)
+        geo_model._interpolator.set_all_shared_parameters(reset_ctrl=True)
 
-        geo_model.interpolator.compile_th_fn_geo(inplace=True, grid=grid)
+        geo_model._interpolator.compile_th_fn_geo(inplace=True, grid=grid)
     else:
         if grid == 'shared':
-            geo_model.interpolator.set_theano_shared_grid(grid)
+            geo_model._interpolator.set_theano_shared_grid(grid)
 
-    print('Kriging values: \n', geo_model.additional_data.kriging_data)
-    return geo_model.interpolator
+    print('Kriging values: \n', geo_model._additional_data.kriging_data)
+    return geo_model._interpolator
 
 
 @_setdoc_pro([Model.__doc__])
@@ -158,24 +158,24 @@ def set_orientation_from_surface_points(geo_model, indices_array):
 
     if np.ndim(indices_array) is 1:
         indices = indices_array
-        form = geo_model.surface_points.df['surface'].loc[indices].unique()
+        form = geo_model._surface_points.df['surface'].loc[indices].unique()
         assert form.shape[0] is 1, 'The interface points must belong to the same surface'
         form = form[0]
 
-        ori_parameters = geo_model.orientations.create_orientation_from_surface_points(
-            geo_model.surface_points, indices)
+        ori_parameters = geo_model._orientations.create_orientation_from_surface_points(
+            geo_model._surface_points, indices)
         geo_model.add_orientations(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                    orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
                                    surface=form)
     elif np.ndim(indices_array) is 2:
         for indices in indices_array:
-            form = geo_model.surface_points.df['surface'].loc[indices].unique()
+            form = geo_model._surface_points.df['surface'].loc[indices].unique()
             assert form.shape[0] is 1, 'The interface points must belong to the same surface'
             form = form[0]
-            ori_parameters = geo_model.orientations.create_orientation_from_surface_points(
-                geo_model.surface_points, indices)
+            ori_parameters = geo_model._orientations.create_orientation_from_surface_points(
+                geo_model._surface_points, indices)
             geo_model.add_orientations(X=ori_parameters[0], Y=ori_parameters[1], Z=ori_parameters[2],
                                        orientation=ori_parameters[3:6], pole_vector=ori_parameters[6:9],
                                        surface=form)
 
-    return geo_model.orientations
+    return geo_model._orientations

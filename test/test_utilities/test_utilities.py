@@ -23,4 +23,14 @@ def test_set_orientations():
     gp.map_series_to_surfaces(geo_data, {"Fault_Series": 'Main_Fault',
                                          "Strat_Series": ('Sandstone_2', 'Siltstone')})
 
-    geo_data.orientations.create_orientation_from_surface_points(geo_data.surface_points, [0, 1, 2])
+    geo_data._orientations.create_orientation_from_surface_points(geo_data._surface_points, [0, 1, 2])
+
+
+def test_restricting_wrapper():
+    from gempy.core.model import RestrictingWrapper
+    surface = gp.Surfaces(gp.Series(gp.Faults()))
+
+    s = RestrictingWrapper(surface)
+
+    print(s)
+    print(s.add_surfaces)

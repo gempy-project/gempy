@@ -55,7 +55,7 @@ class MainWidget(QWidget):
         self.tree_items = {"surfaces": {}}
         self.tree_actors = {"surfaces": {}}
 
-        for id_, row in self.model.surfaces.df.iterrows():
+        for id_, row in self.model._surfaces.df.iterrows():
             item = QTreeWidgetItem([row.surface])
             item.setCheckState(0, Qt.Unchecked)
             self.tree.addTopLevelItem(item)

@@ -45,7 +45,7 @@ def get_surfaces(model_solution: Union[Project, Solution]):
 
 
 def get_interpolator(model: Project):
-    return model.interpolator
+    return model._interpolator
 
 
 def get_th_fn(model: Project):
@@ -59,9 +59,9 @@ def get_th_fn(model: Project):
         :class:`theano.compile.function_module.Function`: Compiled function if C or CUDA which computes the interpolation given the input data
             (XYZ of dips, dip, azimuth, polarity, XYZ ref surface_points, XYZ rest surface_points)
     """
-    assert getattr(model.interpolator, 'theano_function', False) is not None, 'Theano has not been compiled yet'
+    assert getattr(model._interpolator, 'theano_function', False) is not None, 'Theano has not been compiled yet'
 
-    return model.interpolator.theano_function
+    return model._interpolator.theano_function
 
 
 def get_additional_data(model: Project):

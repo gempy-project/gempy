@@ -29,7 +29,7 @@ class WidgetsCallbacks:
         self.model.modify_surface_points(index, X=[new_center[0]], Y=[new_center[1]], Z=[new_center[2]])
 
     def call_back_sphere_move_changes(self, indices):
-        df_changes = self.model.surface_points.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
+        df_changes = self.model._surface_points.df.loc[np.atleast_1d(indices)][['X', 'Y', 'Z', 'id']]
         for index, df_row in df_changes.iterrows():
             new_center = df_row[['X', 'Y', 'Z']].values
 
@@ -55,7 +55,7 @@ class WidgetsCallbacks:
         return del_widg
 
     def update_surfaces(self):
-        surfaces = self.model.surfaces
+        surfaces = self.model._surfaces
         # TODO add the option of update specific surfaces
         for idx, val in surfaces.df[['vertices', 'edges', 'color']].dropna().iterrows():
             self.surf_polydata.loc[idx, 'val'].points = val['vertices']

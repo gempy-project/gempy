@@ -28,7 +28,7 @@ gp.init_data(geo_model, extent=[450000, 460000, 70000,80000,-1000,500],resolutio
 
 # %% 
 # use happy spring colors! 
-geo_model.surfaces.colors.change_colors({'layer1':'#ff8000','basement':'#88cc60'})
+geo_model._surfaces.colors.change_colors({'layer1': '#ff8000', 'basement': '#88cc60'})
 
 # %% 
 # %matplotlib inline
@@ -36,7 +36,7 @@ gp.map_series_to_surfaces(geo_model, {'series':('layer1','basement')})
 
 # %% 
 s = {'s1': ([450000,75000],[460000,75500],[100,100])}
-geo_model.grid.create_section_grid(s)
+geo_model._grid.create_section_grid(s)
 
 
 # %%
@@ -96,7 +96,7 @@ geo_model.set_topography(source='random',fd=1.9, d_z=np.array([0,250]), resoluti
 
 # %% 
 #save
-geo_model.grid.topography.save('test_topo')
+geo_model._grid.topography.save('test_topo')
 
 # %% 
 #load

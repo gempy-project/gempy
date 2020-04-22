@@ -54,7 +54,7 @@ geo_model.set_topography(d_z=np.array([-600,-100]))
 # 
 
 # %% 
-geo_model.grid.set_active('topography')
+geo_model._grid.set_active('topography')
 
 # %% 
 s = gp.compute_model(geo_model, compute_mesh=True, debug=False)
@@ -83,7 +83,7 @@ geo_model.set_topography(d_z=np.array([-600,-100]), plot_object=vtkp)
 vtkp.resume()
 
 # %% 
-geo_model.surfaces
+geo_model._surfaces
 
 # %% 
 vtkp.resume()

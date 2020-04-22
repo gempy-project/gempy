@@ -247,7 +247,7 @@ def geomodel_to_rex(geo_model):
     file_header_size = 86
     rex_bytes = {}
     try:
-        surface_df = geo_model.surfaces.df.groupby(
+        surface_df = geo_model._surfaces.df.groupby(
             ('isActive', 'isBasement')).get_group((True, False))
     except (IndexError, KeyError):
         raise RuntimeError('No computed surfaces yet.')

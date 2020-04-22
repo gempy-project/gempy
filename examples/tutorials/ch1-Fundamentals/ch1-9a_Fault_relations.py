@@ -33,13 +33,13 @@ import qgrid
 geo_model = gp.load_model('Tutorial_ch1-9a_Fault_relations', path= '../../data/gempy_models', recompile=True)
 
 # %% 
-geo_model.faults.faults_relations_df
+geo_model._faults.faults_relations_df
 
 # %% 
-geo_model.faults
+geo_model._faults
 
 # %% 
-geo_model.surfaces
+geo_model._surfaces
 
 # %% 
 gp.compute_model(geo_model, compute_mesh=False)

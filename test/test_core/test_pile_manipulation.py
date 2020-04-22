@@ -64,12 +64,12 @@ def test_pile_geomodel(interpolator):
     geo_model.set_fault_relation(rel_matrix)
 
     surf_groups = pd.read_csv(input_path + "/filtered_surface_points.csv").group
-    geo_model.surface_points.df["group"] = surf_groups
+    geo_model._surface_points.df["group"] = surf_groups
     orient_groups = pd.read_csv(input_path + "/filtered_orientations.csv").group
-    geo_model.orientations.df["group"] = orient_groups
+    geo_model._orientations.df["group"] = orient_groups
 
-    geo_model.surface_points.df.reset_index(inplace=True, drop=True)
-    geo_model.orientations.df.reset_index(inplace=True, drop=True)
+    geo_model._surface_points.df.reset_index(inplace=True, drop=True)
+    geo_model._orientations.df.reset_index(inplace=True, drop=True)
 
     geo_model.set_theano_function(interpolator)
     gp.compute_model(geo_model)
@@ -118,12 +118,12 @@ def test_pile_geomodel_2(interpolator):
     geo_model.set_fault_relation(rel_matrix)
 
     surf_groups = pd.read_csv(input_path + "/filtered_surface_points.csv").group
-    geo_model.surface_points.df["group"] = surf_groups
+    geo_model._surface_points.df["group"] = surf_groups
     orient_groups = pd.read_csv(input_path + "/filtered_orientations.csv").group
-    geo_model.orientations.df["group"] = orient_groups
+    geo_model._orientations.df["group"] = orient_groups
 
-    geo_model.surface_points.df.reset_index(inplace=True, drop=True)
-    geo_model.orientations.df.reset_index(inplace=True, drop=True)
+    geo_model._surface_points.df.reset_index(inplace=True, drop=True)
+    geo_model._orientations.df.reset_index(inplace=True, drop=True)
 
     geo_model.set_theano_function(interpolator)
     gp.compute_model(geo_model)
@@ -150,9 +150,9 @@ def test_reorder_series():
     geo_model.add_series(['Fault1'])
     geo_model.set_is_fault(['Fault1'])
     geo_model.reorder_series(['Fault1', 'Cycle1'])
-    assert (geo_model.series.df['BottomRelation'] == ['Fault', 'Erosion']).all()
-    assert (geo_model.series.df.index == ['Fault1', 'Cycle1']).all()
-    print(geo_model.series.df)
+    assert (geo_model._stack.df['BottomRelation'] == ['Fault', 'Erosion']).all()
+    assert (geo_model._stack.df.index == ['Fault1', 'Cycle1']).all()
+    print(geo_model._stack.df)
 
 
 def test_complete_model(tmpdir, interpolator):
@@ -173,8 +173,8 @@ def test_complete_model(tmpdir, interpolator):
     ax = p2d.add_section(direction='z', ax_pos=121)
 
     ax2 = p2d.add_section(direction='y', ax_pos=122)
-    ax2.set_xlim(geo_model.grid.regular_grid.extent[0], geo_model.grid.regular_grid.extent[1])
-    ax2.set_ylim(geo_model.grid.regular_grid.extent[4], geo_model.grid.regular_grid.extent[5])
+    ax2.set_xlim(geo_model._grid.regular_grid.extent[0], geo_model._grid.regular_grid.extent[1])
+    ax2.set_ylim(geo_model._grid.regular_grid.extent[4], geo_model._grid.regular_grid.extent[5])
 
     geo_model.add_surfaces(['D', 'C', 'B', 'A'])
 
